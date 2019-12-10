@@ -1,6 +1,7 @@
 package sc.fiji.bdv;
 
 import bdv.util.BdvHandle;
+import bdv.util.BdvHandleFrame;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
 import sc.fiji.bdv.sourcehandling.AddSourceFromFileMenuEntryAdder;
@@ -22,7 +23,9 @@ public class MenuAdder
 	public void addMenu( String menuText, String menuItemText )
 	{
 		final JMenu jMenu = createMenuItem( menuText, menuItemText );
-		BdvMenuUtils.addMenu( bdvHandle, jMenu );
+		final JMenuBar bdvMenuBar = ( ( BdvHandleFrame ) bdvHandle ).getBigDataViewer().getViewerFrame().getJMenuBar();
+		bdvMenuBar.add( jMenu );
+		bdvMenuBar.updateUI();
 	}
 
 	public JMenu createMenuItem( String menuText, String menuItemText )
