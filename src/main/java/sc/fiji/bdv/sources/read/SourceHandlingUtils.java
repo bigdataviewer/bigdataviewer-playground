@@ -1,4 +1,4 @@
-package sc.fiji.bdv.sourcehandling;
+package sc.fiji.bdv.sources.read;
 
 import bdv.util.BdvHandle;
 

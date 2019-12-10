@@ -1,8 +1,6 @@
-package sc.fiji.bdv.sourcehandling;
+package sc.fiji.bdv.sources.read;
 
-import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
-import bdv.util.BdvOptions;
 import bdv.viewer.Source;
 
 public class SourceLoaderAndAdder implements Runnable

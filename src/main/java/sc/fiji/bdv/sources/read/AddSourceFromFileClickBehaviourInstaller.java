@@ -1,11 +1,9 @@
-package sc.fiji.bdv.sourcehandling;
+package sc.fiji.bdv.sources.read;
 
 import bdv.util.BdvHandle;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
 import org.scijava.ui.behaviour.ClickBehaviour;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
-import org.scijava.ui.behaviour.util.Behaviours;
 import sc.fiji.bdv.BDVSingleton;
 import sc.fiji.bdv.BehaviourInstaller;
 

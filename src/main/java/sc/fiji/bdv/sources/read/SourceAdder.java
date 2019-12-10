@@ -1,15 +1,9 @@
-package sc.fiji.bdv.sourcehandling;
+package sc.fiji.bdv.sources.read;
 
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
 import bdv.viewer.Source;
-import mpicbg.spim.data.SpimData;
-import mpicbg.spim.data.SpimDataException;
-import mpicbg.spim.data.XmlIoSpimData;
-import sc.fiji.bdv.BDVSingleton;
-
-import javax.swing.*;
 
 public class SourceAdder implements Runnable
 {

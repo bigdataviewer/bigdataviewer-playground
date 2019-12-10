@@ -1,16 +1,12 @@
-package sc.fiji.bdv.sourcehandling;
+package sc.fiji.bdv.sources.read;
 
 import bdv.BigDataViewer;
 import bdv.tools.brightness.ConverterSetup;
-import bdv.util.BdvFunctions;
-import bdv.util.BdvHandle;
-import bdv.util.BdvOptions;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
-import mpicbg.spim.data.registration.ViewRegistration;
 
 import java.util.ArrayList;
 
