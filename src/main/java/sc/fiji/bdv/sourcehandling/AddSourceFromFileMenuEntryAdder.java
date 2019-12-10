@@ -4,34 +4,24 @@ import bdv.util.BdvHandle;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
 import sc.fiji.bdv.BDVSingleton;
-import sc.fiji.bdv.BdvMenuUtils;
+import sc.fiji.bdv.MenuAdder;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class AddSourceFromFileMenuEntry implements ActionListener
+public class AddSourceFromFileMenuEntryAdder implements ActionListener
 {
 	private final BdvHandle bdvHandle;
 
-	public AddSourceFromFileMenuEntry( BdvHandle bdvHandle )
+	public AddSourceFromFileMenuEntryAdder( BdvHandle bdvHandle )
 	{
 		this.bdvHandle = bdvHandle;
 	}
 
 	public void add( String menuText, String menuItemText )
 	{
-		final JMenu jMenu = createMenuItem( menuText, menuItemText );
-		BdvMenuUtils.addMenu( bdvHandle, jMenu );
-	}
-
-	public JMenu createMenuItem( String menuText, String menuItemText )
-	{
-		final JMenu jMenu = new JMenu( menuText );
-		final JMenuItem jMenuItem = new JMenuItem( menuItemText );
-		jMenuItem.addActionListener( this );
-		jMenu.add(jMenuItem);
-		return jMenu;
+		final MenuAdder menuAdder = new MenuAdder( bdvHandle, this );
+		menuAdder.addMenu( menuText, menuItemText );
 	}
 
 	@Override
@@ -43,7 +33,7 @@ public class AddSourceFromFileMenuEntry implements ActionListener
 	public static void main( String[] args ) throws SpimDataException
 	{
 		final BdvHandle bdvHandle = BDVSingleton.getInstance( new XmlIoSpimData().load( "/Users/tischer/Documents/bigdataviewer-playground/src/test/resources/mri-stack.xml" ) );
-		new AddSourceFromFileMenuEntry( bdvHandle ).add("Source", "Add from File");
+		new AddSourceFromFileMenuEntryAdder( bdvHandle ).add( "Source", "Open" );
 	}
 }
 
