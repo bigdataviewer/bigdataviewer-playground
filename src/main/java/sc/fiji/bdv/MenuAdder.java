@@ -4,7 +4,6 @@ import bdv.util.BdvHandle;
 import bdv.util.BdvHandleFrame;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
-import sc.fiji.bdv.sources.read.AddSourceFromFileMenuEntryAdder;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;

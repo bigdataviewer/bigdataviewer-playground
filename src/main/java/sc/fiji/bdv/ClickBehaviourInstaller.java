@@ -1,5 +1,6 @@
 package sc.fiji.bdv;
 
+import bdv.tools.transformation.TransformedSource;
 import bdv.util.BdvHandle;
 import org.scijava.ui.behaviour.Behaviour;
 import org.scijava.ui.behaviour.ClickBehaviour;
@@ -7,12 +8,12 @@ import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
-public class BehaviourInstaller
+public class ClickBehaviourInstaller
 {
 	private final BdvHandle bdvHandle;
 	private final Behaviour behaviour;
 
-	public BehaviourInstaller( BdvHandle bdvHandle, ClickBehaviour behaviour )
+	public ClickBehaviourInstaller( BdvHandle bdvHandle, ClickBehaviour behaviour )
 	{
 		this.bdvHandle = bdvHandle;
 		this.behaviour = behaviour;
