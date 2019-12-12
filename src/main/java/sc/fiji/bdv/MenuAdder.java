@@ -35,10 +35,4 @@ public class MenuAdder
 		jMenu.add( jMenuItem );
 		return jMenu;
 	}
-
-	public static void main( String[] args ) throws SpimDataException
-	{
-		final BdvHandle bdvHandle = BDVSingleton.getInstance( new XmlIoSpimData().load( "/Users/tischer/Documents/bigdataviewer-playground/src/test/resources/mri-stack.xml" ) );
-		new AddSourceFromFileMenuEntryAdder( bdvHandle ).add("Source", "Open" );
-	}
 }
