@@ -1,0 +1,54 @@
+package sc.fiji.bdv.navigate.ui;
+
+import bdv.util.BdvHandle;
+import net.imglib2.realtransform.AffineTransform3D;
+import org.scijava.command.Command;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdv.BDVSingleton;
+import sc.fiji.bdv.navigate.ViewTransformator;
+import sc.fiji.bdv.navigate.ViewerTransformLogger;
+
+import java.security.PublicKey;
+
+/**
+ * LogViewTransformCommand
+ * <p>
+ * <p>
+ * <p>
+ * Author: @haesleinhuepf
+ * 12 2019
+ */
+
+@Plugin(type = Command.class, menuPath = "Plugins>BigDataViewer>Tools>Change view transform")
+public class ViewTransformatorCommand implements Command {
+
+    //@Parameter
+    BdvHandle bdvHandle;
+
+    @Parameter
+    public Double translateX = 0.0;
+    @Parameter
+    public Double translateY = 0.0;
+    @Parameter
+    public Double translateZ = 0.0;
+
+    @Parameter
+    public Double rotateAroundX = 0.0;
+    @Parameter
+    public Double rotateAroundY = 0.0;
+    @Parameter
+    public Double rotateAroundZ = 0.0;
+
+    @Override
+    public void run() {
+        bdvHandle = BDVSingleton.getInstance();
+        AffineTransform3D affineTransform3D = new AffineTransform3D();
+        affineTransform3D.translate(translateX, translateY, translateZ);
+        affineTransform3D.rotate(0, rotateAroundX);
+        affineTransform3D.rotate(1, rotateAroundY);
+        affineTransform3D.rotate(2, rotateAroundZ);
+
+        new ViewTransformator(bdvHandle, affineTransform3D).run();
+    }
+}
