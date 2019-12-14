@@ -1,10 +1,7 @@
 package sc.fiji.bdv.navigate;
 
 import bdv.util.BdvHandle;
-import bdv.viewer.animate.SimilarityTransformAnimator;
-import bdv.viewer.state.ViewerState;
 import net.imglib2.realtransform.AffineTransform3D;
-import sc.fiji.bdv.BDVUtils;
 
 /**
  * ViewTransformator

@@ -1,6 +1,5 @@
 package sc.fiji.bdv.screenshot;
 
-import bdv.tools.transformation.TransformedSource;
 import bdv.util.BdvHandle;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
@@ -29,7 +28,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static sc.fiji.bdv.BDVUtils.*;
+import static sc.fiji.bdv.BdvUtils.*;
 
 /**
  * ScreenShotMaker
