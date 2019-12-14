@@ -11,6 +11,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Util;
 import sc.fiji.bdv.BDVSingleton;
+import sc.fiji.bdv.ClickBehaviourInstaller;
 
 /**
  * Demo
@@ -33,7 +34,8 @@ public class Demo {
         //BdvFunctions.show(rai, "name", BdvOptions.options().addTo(bdvHandle));
         //BdvFunctions.show(rai, "name", BdvOptions.options());
 
-        //new ClickBehaviourInstaller( bdvHandle, ( x, y ) -> new SourcesLoaderAndAdder( bdvHandle ).run() ).install( "AddSourceFromFile", "ctrl L" );
+        // add a click behaviour to BDV for making screenshots
+        new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new ScreenShotMaker( bdvHandle ).getScreenshot().show() ).install( "Make screenshot", "print" );
 
         // retrieve a screenshot from the BDV
         ScreenShotMaker screenShotMaker = new ScreenShotMaker(bdvHandle);

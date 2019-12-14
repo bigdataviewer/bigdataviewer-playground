@@ -17,7 +17,7 @@ import sc.fiji.bdv.screenshot.ScreenShotMaker;
  * 12 2019
  */
 
-@Plugin(type = Command.class, menuPath = "Plugins>BigDataViewer>Tools")
+@Plugin(type = Command.class, menuPath = "Plugins>BigDataViewer>Tools>Screenshot")
 public class ScreenShotCommand implements Command {
 
     //@Parameter
