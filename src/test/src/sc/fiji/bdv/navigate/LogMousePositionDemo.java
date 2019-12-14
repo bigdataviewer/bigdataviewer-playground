@@ -30,5 +30,7 @@ public class LogMousePositionDemo {
         // add a click behavior for logging mouse positions
         new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new PositionLogger( bdvHandle ).run() ).install( "Log mouse position", "ctrl D" );
 
+        // log the current position
+        new PositionLogger( bdvHandle ).run();
     }
 }
