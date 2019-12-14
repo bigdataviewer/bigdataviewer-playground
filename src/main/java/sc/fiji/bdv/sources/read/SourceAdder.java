@@ -12,7 +12,7 @@ public class SourceAdder implements Runnable
 	private final BdvHandle bdvHandle;
 	private final Source source;
 	private final boolean autoContrast;
-	private final boolean adjustViewerTransform;
+	private final boolean autoAdjustViewerTransform;
 
 	public SourceAdder( BdvHandle bdvHandle, Source source )
 	{
@@ -20,12 +20,12 @@ public class SourceAdder implements Runnable
 	}
 
 	public SourceAdder( BdvHandle bdvHandle, Source source,
-						boolean autoContrast, boolean adjustViewerTransform )
+						boolean autoContrast, boolean autoAdjustViewerTransform )
 	{
 		this.bdvHandle = bdvHandle;
 		this.source = source;
 		this.autoContrast = autoContrast;
-		this.adjustViewerTransform = adjustViewerTransform;
+		this.autoAdjustViewerTransform = autoAdjustViewerTransform;
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class SourceAdder implements Runnable
 					0.99, lastSource );
 		}
 
-		if ( adjustViewerTransform )
+		if ( autoAdjustViewerTransform )
 		{
 			final ViewerTransformAdjuster adjuster =
 					new ViewerTransformAdjuster( bdvHandle, source );

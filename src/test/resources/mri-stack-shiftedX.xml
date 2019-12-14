@@ -8,7 +8,7 @@
     <ViewSetups>
       <ViewSetup>
         <id>0</id>
-        <name>mri-stack</name>
+        <name>mri-stack-shiftedX</name>
         <size>186 226 27</size>
         <voxelSize>
           <unit>cm</unit>

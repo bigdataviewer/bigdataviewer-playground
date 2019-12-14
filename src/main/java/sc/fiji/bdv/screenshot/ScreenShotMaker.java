@@ -28,6 +28,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static sc.fiji.bdv.BdvUtils.*;
 
 /**
  * ScreenShotMaker
@@ -72,7 +73,6 @@ public class ScreenShotMaker {
         process();
         return screenShot;
     }
-
 
     private static < R extends RealType< R >> CompositeImage captureView(
             BdvHandle bdv,

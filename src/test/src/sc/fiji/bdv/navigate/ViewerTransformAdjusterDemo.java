@@ -26,19 +26,15 @@ import sc.fiji.bdv.sources.read.SourcesLoaderAndAdder;
  * 12 2019
  */
 public class ViewerTransformAdjusterDemo {
-    public static void main(String[] args) throws SpimDataException
+    public static void main(String[] args)
     {
-        final SpimData mriSource = new XmlIoSpimData().load( "src/test/resources/mri-stack.xml" );
+        BdvHandle bdvHandle = BDVSingleton.getInstance( );
 
-        BdvHandle bdvHandle = BDVSingleton.getInstance( mriSource );
+        new SourcesLoaderAndAdder( bdvHandle, "src/test/resources/mri-stack.xml" ).run();
 
-        final SourceLoader sourceLoader = new SourceLoader( "src/test/resources/mri-stack-shiftedX.xml" );
-        sourceLoader.run();
-
-        // This is the point here:
-        final boolean adjustViewerTransform = true;
-
-        final SourceAdder sourceAdder = new SourceAdder( bdvHandle, sourceLoader.getSource( 0 ), true, adjustViewerTransform );
-        sourceAdder.run();
+        final SourcesLoaderAndAdder loaderAndAdder = new SourcesLoaderAndAdder( bdvHandle, "src/test/resources/mri-stack-shiftedX.xml" );
+        loaderAndAdder.setAutoAdjustViewerTransform( true );
+        loaderAndAdder.setAutoContrast( true );
+        loaderAndAdder.run();
     }
 }
