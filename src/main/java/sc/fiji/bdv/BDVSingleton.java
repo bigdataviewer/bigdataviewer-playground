@@ -18,7 +18,7 @@ public class BDVSingleton
 	private static BdvHandle bdvHandle = null;
 
 	public static BdvHandle getInstance() {
-		final ArrayImg source = ArrayImgs.shorts(1,1,1);
+		final ArrayImg source = ArrayImgs.shorts(100,100,100);
 
 		if (bdvHandle == null) {
 			BdvStackSource stackSource = BdvFunctions.show(source, "empty");
