@@ -2,10 +2,11 @@ package sc.fiji.bdv.sources.read;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;
+import mpicbg.spim.data.SpimData;
 import sc.fiji.bdv.BDVSingleton;
 import sc.fiji.bdv.ClickBehaviourInstaller;
 import sc.fiji.bdv.MenuAdder;
-import sc.fiji.bdv.util.MultipleFileSelector;
+import sc.fiji.swing.MultipleFileSelector;
 
 import javax.swing.*;
 import java.io.File;
@@ -48,11 +49,17 @@ public class SourcesLoaderAndAdder implements Runnable
 
 	public static void main( String[] args )
 	{
-		final BdvHandle bdvHandle = BDVSingleton.getInstance( );
+		final String filePath = SourcesLoaderAndAdder.class.getResource( "../src/test/resources/mri-stack.xml" ).getFile();
 
-		final MenuAdder menuAdder = new MenuAdder( bdvHandle, e -> new SourcesLoaderAndAdder( bdvHandle ).run() );
-		menuAdder.addMenu( "Sources", "Load Source(s)  [Ctrl+L]" );
+		final SourceLoader sourceLoader = new SourceLoader( filePath );
+		sourceLoader.run();
+		final SpimData spimData = sourceLoader.getSpimData();
 
-		new ClickBehaviourInstaller( bdvHandle, ( x, y ) -> new SourcesLoaderAndAdder( bdvHandle ).run() ).install( "AddSourceFromFile", "ctrl L" );
+		final BdvHandle bdvHandle = BDVSingleton.getInstance( spimData );
+
+//		final MenuAdder menuAdder = new MenuAdder( bdvHandle, e -> new SourcesLoaderAndAdder( bdvHandle ).run() );
+//		menuAdder.addMenu( "Sources", "Load Source(s)  [Ctrl+L]" );
+//
+//		new ClickBehaviourInstaller( bdvHandle, ( x, y ) -> new SourcesLoaderAndAdder( bdvHandle ).run() ).install( "AddSourceFromFile", "ctrl L" );
 	}
 }
