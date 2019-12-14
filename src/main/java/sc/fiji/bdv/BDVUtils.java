@@ -201,6 +201,11 @@ public class BDVUtils {
     }
 
 
+    public static void repaint( BdvHandle bdvHandle )
+    {
+        bdvHandle.getViewerPanel().requestRepaint();
+    }
+
     public static double[] getScale(AffineTransform3D sourceTransform) {
         double[] calibration = new double[3];
 
