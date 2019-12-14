@@ -3,7 +3,7 @@ In this repository, we collect useful additions for the [BigDataViewer](https://
 
 ## List of actions
 * Read a source from disc
-* Add a source
+* Add a source to a BDV
 * [Log the current mouse position](https://github.com/haesleinhuepf/bigdataviewer-playground/blob/master/src/test/src/sc/fiji/bdv/navigate/LogMousePositionDemo.java#L33)
 * [Log the current viewer transform](https://github.com/haesleinhuepf/bigdataviewer-playground/blob/master/src/test/src/sc/fiji/bdv/navigate/ViewTransformSetAndLogDemo.java#L35)
 * [Change the current viewer transform](https://github.com/haesleinhuepf/bigdataviewer-playground/blob/master/src/test/src/sc/fiji/bdv/navigate/ViewTransformSetAndLogDemo.java#L37-L40)
@@ -35,10 +35,12 @@ Pseudo code example:
   }
 ```
   
-* To enable user access, most functionality in this repository is supplied as ImageJ/Fiji menu entry. Technically these menu entries are implemented as [SciJava Command](https://javadoc.scijava.org/SciJava/org/scijava/command/Command.html).
 * Furthermore, [Demo code](https://github.com/haesleinhuepf/bigdataviewer-playground/tree/master/src/test/src/sc/fiji/bdv) in the test sources directory should demonstrate 
   * the individual functionality, 
   * how to add it as key listeners to the BigDataViewer,
   * how to add it to the right-click menu of the BigDataViewer 
+  * how to add it to the BigDataViewer menu
   * and how to be called programmatically.
+
+* To enable additional user access, some functionality in this repository could also be a ImageJ/Fiji. Technically these menu entries are implemented as [SciJava Command](https://javadoc.scijava.org/SciJava/org/scijava/command/Command.html).
   
