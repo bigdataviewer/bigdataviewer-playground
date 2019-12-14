@@ -85,6 +85,12 @@
 	</properties>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-vistools</artifactId>

@@ -15,6 +15,8 @@ public class MenuAdder
 
 	public MenuAdder( BdvHandle bdvHandle, ActionListener actionListener )
 	{
+		System.setProperty("apple.laf.useScreenMenuBar", "false");
+
 		this.bdvHandle = bdvHandle;
 		this.actionListener = actionListener;
 	}

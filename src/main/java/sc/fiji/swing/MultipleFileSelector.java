@@ -1,4 +1,4 @@
-package sc.fiji.bdv.util;
+package sc.fiji.swing;
 
 import javax.swing.*;
 import java.io.File;
