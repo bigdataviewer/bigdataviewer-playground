@@ -14,14 +14,14 @@ import sc.fiji.bdv.BDVSingleton;
 import sc.fiji.bdv.ClickBehaviourInstaller;
 
 /**
- * Demo
+ * ViewTransformSetAndLogDemo
  * <p>
  * <p>
  * <p>
  * Author: @haesleinhuepf
  * 12 2019
  */
-public class Demo {
+public class ScreenshotDemo {
     public static void main(String[] args) {
 
         // load and convert an image
@@ -35,7 +35,7 @@ public class Demo {
         //BdvFunctions.show(rai, "name", BdvOptions.options());
 
         // add a click behaviour to BDV for making screenshots
-        new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new ScreenShotMaker( bdvHandle ).getScreenshot().show() ).install( "Make screenshot", "print" );
+        new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new ScreenShotMaker( bdvHandle ).getScreenshot().show() ).install( "Make screenshot", "ctrl D" );
 
         // retrieve a screenshot from the BDV
         ScreenShotMaker screenShotMaker = new ScreenShotMaker(bdvHandle);

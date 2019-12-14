@@ -8,17 +8,16 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdv.BDVSingleton;
 import sc.fiji.bdv.ClickBehaviourInstaller;
-import sc.fiji.bdv.screenshot.ScreenShotMaker;
 
 /**
- * Demo
+ * ViewTransformSetAndLogDemo
  * <p>
  * <p>
  * <p>
  * Author: @haesleinhuepf
  * 12 2019
  */
-public class Demo {
+public class LogMousePositionDemo {
     public static void main(String[] args) {
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
@@ -28,19 +27,8 @@ public class Demo {
         // Open BigDataViewer and show the image
         BdvHandle bdvHandle = BDVSingleton.getInstance(rai, "name");
 
-        // add a click behavior for logging transforms
-        new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new ViewerTransformLogger( bdvHandle ).run() ).install( "Log view transform", "ctrl O" );
-
-        // log transform
-        new ViewerTransformLogger(bdvHandle).run();
-
-        // update transform
-        AffineTransform3D affineTransform3D = new AffineTransform3D();
-        affineTransform3D.rotate(2, 45);
-        new ViewTransformator(bdvHandle, affineTransform3D).run();
-
-        // log transform
-        new ViewerTransformLogger(bdvHandle).run();
+        // add a click behavior for logging mouse positions
+        new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new PositionLogger( bdvHandle ).run() ).install( "Log mouse position", "ctrl D" );
 
     }
 }
