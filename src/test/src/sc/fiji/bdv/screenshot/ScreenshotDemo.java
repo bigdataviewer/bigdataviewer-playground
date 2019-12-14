@@ -12,6 +12,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Util;
 import sc.fiji.bdv.BDVSingleton;
 import sc.fiji.bdv.ClickBehaviourInstaller;
+import sc.fiji.bdv.MenuAdder;
 
 /**
  * ViewTransformSetAndLogDemo
@@ -36,6 +37,9 @@ public class ScreenshotDemo {
 
         // add a click behaviour to BDV for making screenshots
         new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new ScreenShotMaker( bdvHandle ).getScreenshot().show() ).install( "Make screenshot", "ctrl D" );
+
+        // add a menu entry to the BDV
+        new MenuAdder(bdvHandle, (e) -> { new ScreenShotMaker(bdvHandle).getScreenshot().show();}).addMenu("Edit", "Screenshot");
 
         // retrieve a screenshot from the BDV
         ScreenShotMaker screenShotMaker = new ScreenShotMaker(bdvHandle);
