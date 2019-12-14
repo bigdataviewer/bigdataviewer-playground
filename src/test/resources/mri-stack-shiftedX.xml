@@ -33,7 +33,7 @@
   <ViewRegistrations>
     <ViewRegistration timepoint="0" setup="0">
       <ViewTransform type="affine">
-        <affine>1.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 10.0 0.0</affine>
+        <affine>1.0 0.0 0.0 50.0 0.0 1.0 0.0 0.0 0.0 0.0 10.0 0.0</affine>
       </ViewTransform>
     </ViewRegistration>
   </ViewRegistrations>
