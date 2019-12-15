@@ -2,29 +2,22 @@ package sc.fiji.bdv.ui;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;
-import mpicbg.spim.data.SpimData;
-import net.imagej.ImageJ;
-import org.scijava.ItemVisibility;
+import org.scijava.ItemIO;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdv.BDVSingleton;
-import sc.fiji.bdv.MenuAdder;
 import sc.fiji.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdv.sources.display.BrightnessAdjuster;
-import sc.fiji.bdv.sources.read.SourceAdder;
-import sc.fiji.bdv.sources.read.SourceLoader;
-import sc.fiji.bdv.sources.read.SourcesLoaderAndAdder;
-import sc.fiji.util.Util;
+import sc.fiji.bdv.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdv.source.display.BrightnessAdjuster;
+import sc.fiji.bdv.source.read.SourceAdder;
+import sc.fiji.bdv.source.read.SourceLoader;
 
 import java.io.File;
 
-@Plugin( type = Command.class, menuPath = "Plugins>BigDataViewer>Tools>Add Single XML/HDF5" )
+@Plugin( type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>Add Single XML/HDF5" )
 public class SingleSourceLoaderCommand implements Command
 {
-	/**
-	 * TODO: Can we have a bdvHandle as a Parameter?
-	 */
+	@Parameter(type = ItemIO.BOTH)
 	public static BdvHandle bdvHandle;
 
 	@Parameter ( label = "XML/HDF5 Image Source File")
