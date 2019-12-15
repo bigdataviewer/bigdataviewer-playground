@@ -74,7 +74,6 @@ public class ScreenShotMaker {
         return screenShot;
     }
 
-
     private static < R extends RealType< R >> CompositeImage captureView(
             BdvHandle bdv,
             double pixelSpacing,
