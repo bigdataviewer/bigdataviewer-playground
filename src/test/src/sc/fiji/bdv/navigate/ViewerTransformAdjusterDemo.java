@@ -3,6 +3,7 @@ package sc.fiji.bdv.navigate;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import ij.IJ;
+import ij.ImageJ;
 import ij.ImagePlus;
 import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
