@@ -1,4 +1,4 @@
-package src.sc.fiji.bdv.sourceAndConverter;
+package sc.fiji.bdv.sourceAndConverter;
 
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
@@ -18,16 +18,8 @@ public class AffineTransformSourceAndConverterDemo {
 
         // Open BigDataViewer
         BdvHandle bdvHandle = BDVSingleton.getInstance();
-        // RAAAhhh! How to get this to work ?
-        /*final String filePath = AffineTransformSourceAndConverterDemo.class
-                .getClassLoader()
-                .getResource( "/src/test/resources/mri-stack.xml" ).getFile();*/
 
-
-        final String filePath = "C:\\Users\\nicol\\Desktop\\mri-stack.xml";
-                /*AffineTransformSourceAndConverterDemo.class
-                .getClassLoader()
-                .getResource( "/src/test/resources/mri-stack.xml" ).getFile();*/
+        final String filePath = "src/test/resources/mri-stack.xml";
 
         final SourceLoader sourceLoader = new SourceLoader( filePath );
         sourceLoader.run();
@@ -48,6 +40,5 @@ public class AffineTransformSourceAndConverterDemo {
 
         AddSourceToBdv addsrc = new AddSourceToBdv(bdvHandle, sat.getSourceOut());
         addsrc.run();
-
     }
 }

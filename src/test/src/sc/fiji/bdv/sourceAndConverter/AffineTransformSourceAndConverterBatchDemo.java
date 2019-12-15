@@ -1,4 +1,4 @@
-package src.sc.fiji.bdv.sourceAndConverter;
+package sc.fiji.bdv.sourceAndConverter;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;
@@ -51,7 +51,6 @@ public class AffineTransformSourceAndConverterBatchDemo {
 
         // Display all the transformed sources, using the bdvAdder
         transformedSources.forEach(bdvAdder::accept);
-
     }
 
     static public void makeGrid(BdvHandle bdvh, int sourceIndex, int nx, int ny, int shiftx, int shifty) {
