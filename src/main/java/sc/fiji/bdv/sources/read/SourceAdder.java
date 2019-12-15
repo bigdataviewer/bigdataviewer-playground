@@ -4,6 +4,7 @@ import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
 import bdv.viewer.Source;
+import sc.fiji.bdv.navigate.ViewerTransformAdjuster;
 
 public class SourceAdder implements Runnable
 {
