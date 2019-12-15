@@ -18,7 +18,7 @@ import sc.fiji.bdv.ClickBehaviourInstaller;
  * 12 2019
  */
 public class LogMousePositionDemo {
-    public static void main(String[] args) {
+    public static void main(String... args) {
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
         RandomAccessibleInterval rai = ImageJFunctions.wrapReal(imp);

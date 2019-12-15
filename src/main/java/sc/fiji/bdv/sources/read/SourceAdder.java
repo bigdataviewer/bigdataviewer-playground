@@ -3,9 +3,7 @@ package sc.fiji.bdv.sources.read;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
-import bdv.util.BdvStackSource;
 import bdv.viewer.Source;
-import sc.fiji.bdv.BdvUtils;
 
 public class SourceAdder implements Runnable
 {
@@ -31,6 +29,6 @@ public class SourceAdder implements Runnable
 		BdvFunctions.show( source, BdvOptions.options().addTo( bdvHandle ) );
 
 		final int numSources = bdvHandle.getSetupAssignments().getMinMaxGroups().size();
-		BdvUtils.initBrightness( bdvHandle, 0.01, 0.99, numSources - 1  );
+		//BdvUtils.initBrightness( bdvHandle, 0.01, 0.99, numSources - 1  );
 	}
 }
