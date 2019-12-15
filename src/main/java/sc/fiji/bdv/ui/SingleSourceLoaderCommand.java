@@ -68,27 +68,4 @@ public class SingleSourceLoaderCommand implements Command
 		sourceLoader.run();
 		source = sourceLoader.getSource( 0 );
 	}
-
-	public static void main( String[] args )
-	{
-		final ImageJ ij = new ImageJ();
-		ij.ui().showUI();
-
-		final String filePath = "/Users/tischer/Documents/bigdataviewer-playground/src/test/resources/mri-stack.xml";
-
-		final SourceLoader sourceLoader = new SourceLoader( filePath );
-		sourceLoader.run();
-		final SpimData spimData = sourceLoader.getSpimData();
-
-		final BdvHandle bdvHandle = BDVSingleton.getInstance( spimData );
-
-		//BdvUtils.initBrightness( bdvHandle, 0.01, 0.99, 0 );
-
-		final MenuAdder menuAdder = new MenuAdder( bdvHandle, e ->
-		{
-			SingleSourceLoaderCommand.bdvHandle = bdvHandle;
-			ij.command().run( SingleSourceLoaderCommand.class, true );
-		} );
-		menuAdder.addMenu( "Sources", "Load Sources" );
-	}
 }
