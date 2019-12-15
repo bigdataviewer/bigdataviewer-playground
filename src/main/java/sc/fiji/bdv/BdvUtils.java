@@ -4,6 +4,7 @@ import bdv.VolatileSpimSource;
 import bdv.tools.brightness.MinMaxGroup;
 import bdv.tools.brightness.SetupAssignments;
 import bdv.tools.transformation.TransformedSource;
+import bdv.util.Bdv;
 import bdv.util.BdvHandle;
 import bdv.util.BdvStackSource;
 import bdv.viewer.Interpolation;
@@ -77,7 +78,6 @@ public class BdvUtils {
     {
         return bdvHandle.getViewerPanel().getState().getVisibleSourceIndices();
     }
-
 
     public static boolean isSourceIntersectingCurrentView( BdvHandle bdv, int sourceIndex, boolean is2D )
     {
@@ -230,62 +230,41 @@ public class BdvUtils {
         return calibration;
     }
 
-
-    public static ARGBType getSourceColor(BdvHandle bdvHandle, int sourceId )
+    public static MinMaxGroup getMinMaxGroup( BdvHandle bdvHandle, Source< ? > source )
     {
-        return bdvHandle.getSetupAssignments().getConverterSetups().get( sourceId ).getColor();
+        final int sourceIndex = getSourceIndex( bdvHandle, source );
+
+        final MinMaxGroup minmax = bdvHandle.getSetupAssignments().getMinMaxGroups().get( sourceIndex );
+
+        return minmax;
     }
 
-    public static double[] getDisplayRange( BdvHandle bdvHandle, int sourceId )
+    public static int getSourceIndex( Bdv bdv, Source< ? > source )
+    {
+        final List< SourceState< ? > > sources =
+                bdv.getBdvHandle().getViewerPanel().getState().getSources();
+
+        for ( int i = 0; i < sources.size(); ++i )
+            if ( sources.get( i ).getSpimSource().equals( source ) )
+                return i;
+
+        return -1;
+    }
+
+    public static ARGBType getSourceColor(BdvHandle bdvHandle, int sourceIndex )
+    {
+        return bdvHandle.getSetupAssignments().getConverterSetups().get( sourceIndex ).getColor();
+    }
+
+    public static double[] getDisplayRange( BdvHandle bdvHandle, int sourceIndex )
     {
         final double displayRangeMin = bdvHandle.getSetupAssignments()
-                .getConverterSetups().get( sourceId ).getDisplayRangeMin();
+                .getConverterSetups().get( sourceIndex ).getDisplayRangeMin();
         final double displayRangeMax = bdvHandle.getSetupAssignments()
-                .getConverterSetups().get( sourceId ).getDisplayRangeMax();
+                .getConverterSetups().get( sourceIndex ).getDisplayRangeMax();
 
         return new double[]{ displayRangeMin, displayRangeMax };
     }
 
-    public static void initBrightness(
-            final BdvHandle bdvHandle,
-            final double cumulativeMinCutoff,
-            final double cumulativeMaxCutoff,
-            int sourceIndex )
-    {
-        final ViewerState state = bdvHandle.getViewerPanel().getState();
-        final SetupAssignments setupAssignments = bdvHandle.getSetupAssignments();
-
-        final Source< ? > source = state.getSources().get( sourceIndex ).getSpimSource();
-        final int timepoint = state.getCurrentTimepoint();
-        if ( !source.isPresent( timepoint ) )
-            return;
-        if ( !UnsignedShortType.class.isInstance( source.getType() ) )
-            return;
-        @SuppressWarnings( "unchecked" )
-        final RandomAccessibleInterval< UnsignedShortType > img = ( RandomAccessibleInterval< UnsignedShortType > ) source.getSource( timepoint, source.getNumMipmapLevels() - 1 );
-        final long z = ( img.min( 2 ) + img.max( 2 ) + 1 ) / 2;
-
-        final int numBins = 6535;
-        final Histogram1d< UnsignedShortType > histogram = new Histogram1d<>( Views.iterable( Views.hyperSlice( img, 2, z ) ), new Real1dBinMapper< UnsignedShortType >( 0, 65535, numBins, false ) );
-        final DiscreteFrequencyDistribution dfd = histogram.dfd();
-        final long[] bin = new long[] { 0 };
-        double cumulative = 0;
-        int i = 0;
-        for ( ; i < numBins && cumulative < cumulativeMinCutoff; ++i )
-        {
-            bin[ 0 ] = i;
-            cumulative += dfd.relativeFrequency( bin );
-        }
-        final int min = i * 65535 / numBins;
-        for ( ; i < numBins && cumulative < cumulativeMaxCutoff; ++i )
-        {
-            bin[ 0 ] = i;
-            cumulative += dfd.relativeFrequency( bin );
-        }
-        final int max = i * 65535 / numBins;
-        final MinMaxGroup minmax = setupAssignments.getMinMaxGroups().get( sourceIndex );
-        minmax.getMinBoundedValue().setCurrentValue( min );
-        minmax.getMaxBoundedValue().setCurrentValue( max );
-    }
 
 }

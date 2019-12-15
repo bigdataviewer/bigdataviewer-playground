@@ -6,6 +6,7 @@ import bdv.util.BdvOptions;
 import bdv.viewer.Source;
 import sc.fiji.bdv.BdvUtils;
 import sc.fiji.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdv.sources.display.BrightnessAdjuster;
 
 public class SourceAdder implements Runnable
 {
@@ -35,20 +36,12 @@ public class SourceAdder implements Runnable
 
 		if ( autoContrast )
 		{
-			final int numSources = bdvHandle.getSetupAssignments()
-					.getMinMaxGroups().size();
-
-			final int lastSource = numSources - 1;
-
-			BdvUtils.initBrightness( bdvHandle, 0.01,
-					0.99, lastSource );
+			new BrightnessAdjuster( bdvHandle, source, 0.01, 0.99 ).run();
 		}
 
 		if ( autoAdjustViewerTransform )
 		{
-			final ViewerTransformAdjuster adjuster =
-					new ViewerTransformAdjuster( bdvHandle, source );
-			adjuster.run();
+			new ViewerTransformAdjuster( bdvHandle, source ).run();
 		}
 	}
 }
