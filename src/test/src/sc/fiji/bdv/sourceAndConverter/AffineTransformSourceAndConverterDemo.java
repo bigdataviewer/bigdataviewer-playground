@@ -7,10 +7,10 @@ import bdv.viewer.Source;
 import mpicbg.spim.data.SpimData;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdv.BDVSingleton;
-import sc.fiji.bdv.sources.add.AddSourceToBdv;
-import sc.fiji.bdv.sources.get.GetSourceByIndexFromBdv;
-import sc.fiji.bdv.sources.read.SourceLoader;
-import sc.fiji.bdv.sources.transform.SourceAffineTransform;
+import sc.fiji.bdv.source.add.AddSourceToBdv;
+import sc.fiji.bdv.source.get.GetSourceByIndexFromBdv;
+import sc.fiji.bdv.source.read.SourceLoader;
+import sc.fiji.bdv.source.transform.SourceAffineTransform;
 
 public class AffineTransformSourceAndConverterDemo {
 

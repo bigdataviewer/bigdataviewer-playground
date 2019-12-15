@@ -1,7 +1,6 @@
-package sc.fiji.bdv.sources.display;
+package sc.fiji.bdv.source.display;
 
 import bdv.tools.brightness.MinMaxGroup;
-import bdv.tools.brightness.SetupAssignments;
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;
 import bdv.viewer.state.ViewerState;

@@ -1,8 +1,8 @@
-package sc.fiji.bdv.sources.transform;
+package sc.fiji.bdv.source.transform;
 
-import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.Source;
-import net.imglib2.realtransform.AffineTransform3D;
+import bdv.img.WarpedSource;
+import net.imglib2.realtransform.RealTransform;
 
 import java.util.function.Function;
 
@@ -12,20 +12,20 @@ import java.util.function.Function;
 // Another information : the transform is duplicated during the call to setFixedTransform ->
 // Transform not passed by reference
 
-public class SourceAffineTransform implements Runnable, Function<Source, Source> {
+public class SourceRealTransform implements Runnable, Function<Source,Source> {
 
     Source sourceIn;
-    AffineTransform3D at3D;
-    TransformedSource sourceOut;
+    RealTransform rt;
+    WarpedSource sourceOut;
 
-    public SourceAffineTransform(Source src, AffineTransform3D at3D) {
+    public SourceRealTransform(Source src, RealTransform rt) {
         this.sourceIn = src;
-        this.at3D = at3D;
+        this.rt = rt;
     }
 
     @Override
     public void run() {
-       sourceOut = (TransformedSource) apply(sourceIn);
+        sourceOut = (WarpedSource) apply(sourceIn);
     }
 
     public Source getSourceOut() {
@@ -33,8 +33,9 @@ public class SourceAffineTransform implements Runnable, Function<Source, Source>
     }
 
     public Source apply(Source in) {
-        TransformedSource out = new TransformedSource(in);
-        out.setFixedTransform(at3D);
+        WarpedSource out = new WarpedSource(in, "Transformed_"+in.getName());
+        out.updateTransform(rt);
+        out.setIsTransformed(true);
         return out;
     }
 }

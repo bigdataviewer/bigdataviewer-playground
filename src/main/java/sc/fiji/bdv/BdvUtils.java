@@ -152,7 +152,7 @@ public class BdvUtils {
 
 
     /**
-     * Returns the highest level where the sources voxel spacings are <= the requested ones.
+     * Returns the highest level where the source voxel spacings are <= the requested ones.
      *
      *
      * @param source

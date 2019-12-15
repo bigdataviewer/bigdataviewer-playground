@@ -9,10 +9,10 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdv.BDVSingleton;
-import sc.fiji.bdv.sources.add.AddSourceToBdv;
-import sc.fiji.bdv.sources.get.GetSourceByIndexFromBdv;
-import sc.fiji.bdv.sources.get.GetSourcesByIndexFromBdv;
-import sc.fiji.bdv.sources.transform.SourceAffineTransform;
+import sc.fiji.bdv.source.add.AddSourceToBdv;
+import sc.fiji.bdv.source.get.GetSourceByIndexFromBdv;
+import sc.fiji.bdv.source.get.GetSourcesByIndexFromBdv;
+import sc.fiji.bdv.source.transform.SourceAffineTransform;
 
 import java.util.List;
 
@@ -43,13 +43,13 @@ public class AffineTransformSourceAndConverterBatchDemo {
 
         // Construct source getter based on their indexes and on a BdvHandle
         GetSourcesByIndexFromBdv srcGetter = new GetSourcesByIndexFromBdv(bdvHandle, 2,4,6,8,10,12);
-        // Actually get the sources
+        // Actually get the source
         srcGetter.run();
 
-        // Transform all the sources, using the affineTransformer
+        // Transform all the source, using the affineTransformer
         List<Source> transformedSources = Lists.transform(srcGetter.getSources(), affineTransformer::apply);
 
-        // Display all the transformed sources, using the bdvAdder
+        // Display all the transformed source, using the bdvAdder
         transformedSources.forEach(bdvAdder::accept);
 
     }

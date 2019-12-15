@@ -1,4 +1,4 @@
-package sc.fiji.bdv.sources.read.ui;
+package sc.fiji.bdv.source.read.ui;
 
 import bdv.util.BdvHandle;
 import mpicbg.spim.data.SpimData;
@@ -8,10 +8,9 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdv.BDVSingleton;
-import sc.fiji.bdv.BdvUtils;
 import sc.fiji.bdv.MenuAdder;
-import sc.fiji.bdv.sources.read.SourceLoader;
-import sc.fiji.bdv.sources.read.SourcesLoaderAndAdder;
+import sc.fiji.bdv.source.read.SourceLoader;
+import sc.fiji.bdv.source.read.SourcesLoaderAndAdder;
 import sc.fiji.util.Util;
 
 import java.io.File;
