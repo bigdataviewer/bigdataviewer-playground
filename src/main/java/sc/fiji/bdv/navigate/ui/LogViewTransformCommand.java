@@ -27,8 +27,6 @@ public class LogViewTransformCommand implements Command {
 
     @Override
     public void run() {
-        bdvHandle = BDVSingleton.getInstance();
-
         new ViewerTransformLogger(bdvHandle).run();
     }
 }

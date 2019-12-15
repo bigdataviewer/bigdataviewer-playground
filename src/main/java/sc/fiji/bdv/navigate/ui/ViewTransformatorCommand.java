@@ -43,7 +43,6 @@ public class ViewTransformatorCommand implements Command {
 
     @Override
     public void run() {
-        bdvHandle = BDVSingleton.getInstance();
         AffineTransform3D affineTransform3D = new AffineTransform3D();
         affineTransform3D.translate(translateX, translateY, translateZ);
         affineTransform3D.rotate(0, rotateAroundX);

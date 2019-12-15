@@ -44,30 +44,4 @@ public class SourcesLoaderAndAdderCommand implements Command
 		new SourcesLoaderAndAdder( bdvHandle, filePaths ).run();
 	}
 
-	/*
-	Unnecessary use SimpleIJLaunch in test repository
-
-	public static void main( String[] args )
-	{
-		final ImageJ ij = new ImageJ();
-		ij.ui().showUI();
-
-		final String filePath = "/Users/tischer/Documents/bigdataviewer-playground/src/test/resources/mri-stack.xml";
-
-		final SourceLoader sourceLoader = new SourceLoader( filePath );
-		sourceLoader.run();
-		final SpimData spimData = sourceLoader.getSpimData();
-
-		final BdvHandle bdvHandle = BDVSingleton.getInstance( spimData );
-
-		//BdvUtils.initBrightness( bdvHandle, 0.01, 0.99, 0 );
-
-		final MenuAdder menuAdder = new MenuAdder( bdvHandle, e ->
-		{
-			SourcesLoaderAndAdderCommand.bdvHandle = bdvHandle;
-			ij.command().run( SourcesLoaderAndAdderCommand.class, true );
-		} );
-		menuAdder.addMenu( "Sources", "Load Sources" );
-	}
-	*/
 }

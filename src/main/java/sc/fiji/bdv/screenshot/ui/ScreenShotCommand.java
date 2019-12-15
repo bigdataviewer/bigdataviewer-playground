@@ -32,12 +32,9 @@ public class ScreenShotCommand implements Command {
 
     @Override
     public void run() {
-        bdvHandle = BDVSingleton.getInstance();
-
         ScreenShotMaker screenShotMaker = new ScreenShotMaker(bdvHandle);
         screenShotMaker.setPhysicalPixelSpacingInXY(targetPixelSizeInXY, targetPixelUnit);
         ImagePlus image = screenShotMaker.getScreenshot();
         image.show();
-
     }
 }
