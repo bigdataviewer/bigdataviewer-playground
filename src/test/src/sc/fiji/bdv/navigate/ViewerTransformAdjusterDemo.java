@@ -1,22 +1,8 @@
 package sc.fiji.bdv.navigate;
 
-import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
-import ij.IJ;
-import ij.ImageJ;
-import ij.ImagePlus;
-import mpicbg.spim.data.SpimData;
-import mpicbg.spim.data.SpimDataException;
-import mpicbg.spim.data.XmlIoSpimData;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdv.BDVSingleton;
-import sc.fiji.bdv.ClickBehaviourInstaller;
-import sc.fiji.bdv.screenshot.ScreenShotMaker;
-import sc.fiji.bdv.sources.read.SourceAdder;
-import sc.fiji.bdv.sources.read.SourceLoader;
-import sc.fiji.bdv.sources.read.SourcesLoaderAndAdder;
+import sc.fiji.bdv.source.read.SourcesLoaderAndAdder;
 
 /**
  * ViewerTransformAdjusterDemo

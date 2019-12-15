@@ -1,10 +1,10 @@
-package sc.fiji.bdv.sources.read.ui;
+package sc.fiji.bdv.source.read.ui;
 
 import bdv.util.BdvHandle;
 import sc.fiji.bdv.BDVSingleton;
 import sc.fiji.bdv.ClickBehaviourInstaller;
 import sc.fiji.bdv.MenuAdder;
-import sc.fiji.bdv.sources.read.SourcesLoaderAndAdder;
+import sc.fiji.bdv.source.read.SourcesLoaderAndAdder;
 import sc.fiji.swing.MultipleFileSelector;
 
 import javax.swing.*;
