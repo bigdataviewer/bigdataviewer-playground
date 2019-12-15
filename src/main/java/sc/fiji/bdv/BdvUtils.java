@@ -1,6 +1,7 @@
 package sc.fiji.bdv;
 
 import bdv.VolatileSpimSource;
+import bdv.tools.brightness.MinMaxGroup;
 import bdv.tools.transformation.TransformedSource;
 import bdv.util.Bdv;
 import bdv.util.BdvHandle;
