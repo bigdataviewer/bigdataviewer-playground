@@ -1,15 +1,7 @@
-package sc.fiji.bdv.sources.read;
+package sc.fiji.bdv.source.read;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;
-import mpicbg.spim.data.SpimData;
-import sc.fiji.bdv.BDVSingleton;
-import sc.fiji.bdv.ClickBehaviourInstaller;
-import sc.fiji.bdv.MenuAdder;
-import sc.fiji.swing.MultipleFileSelector;
-
-import javax.swing.*;
-import java.io.File;
 
 public class SourcesLoaderAndAdder implements Runnable
 {

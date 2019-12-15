@@ -1,6 +1,7 @@
 package sc.fiji.bdv;
 
 import bdv.VolatileSpimSource;
+import bdv.tools.brightness.MinMaxGroup;
 import bdv.tools.transformation.TransformedSource;
 import bdv.util.Bdv;
 import bdv.util.BdvHandle;
@@ -151,7 +152,7 @@ public class BdvUtils {
 
 
     /**
-     * Returns the highest level where the sources voxel spacings are <= the requested ones.
+     * Returns the highest level where the source voxel spacings are <= the requested ones.
      *
      *
      * @param source

@@ -181,9 +181,9 @@ public class ScreenShotMaker {
             /*
         RealRandomAccess< ? extends RealType< ? > > sourceAccess;
         if ( interpolate )
-            sourceAccess = getInterpolatedRealTypeNonVolatileRealRandomAccess( sources, t, level, Interpolation.NLINEAR );
+            sourceAccess = getInterpolatedRealTypeNonVolatileRealRandomAccess( source, t, level, Interpolation.NLINEAR );
         else
-            sourceAccess = getInterpolatedRealTypeNonVolatileRealRandomAccess( sources, t, level, Interpolation.NEARESTNEIGHBOR );
+            sourceAccess = getInterpolatedRealTypeNonVolatileRealRandomAccess( source, t, level, Interpolation.NEARESTNEIGHBOR );
 
         return sourceAccess;*/
     }
