@@ -15,10 +15,12 @@ public class SourcesLoaderAndAdder implements Runnable
 {
 	private final BdvHandle bdvHandle;
 	private String[] filePaths;
+	private boolean autoContrast = true;
+	private boolean autoAdjustViewerTransform = true;
 
-	public SourcesLoaderAndAdder( BdvHandle bdvHandle )
+	public SourcesLoaderAndAdder( BdvHandle bdvHandle, String filePath )
 	{
-		this( bdvHandle, null );
+		this( bdvHandle, new String[]{ filePath } );
 	}
 
 	public SourcesLoaderAndAdder( BdvHandle bdvHandle, String[] filePaths )
@@ -27,39 +29,26 @@ public class SourcesLoaderAndAdder implements Runnable
 		this.filePaths = filePaths;
 	}
 
+	public void setAutoContrast( boolean autoContrast )
+	{
+		this.autoContrast = autoContrast;
+	}
+
+	public void setAutoAdjustViewerTransform( boolean autoAdjustViewerTransform )
+	{
+		this.autoAdjustViewerTransform = autoAdjustViewerTransform;
+	}
+
 	@Override
 	public void run()
 	{
-		SwingUtilities.invokeLater( () ->
+		for ( String filePath : filePaths )
 		{
-			if ( filePaths == null )
-			{
-				final MultipleFileSelector fileSelector = new MultipleFileSelector();
-				if ( ! fileSelector.showUI() ) return;
-				filePaths = fileSelector.getSelectedFilePaths();
-			}
+			final SourceLoader sourceLoader = new SourceLoader( filePath );
+			sourceLoader.run();
+			final Source source = sourceLoader.getSource( 0 );
 
-			for ( String filePath : filePaths )
-			{
-				final Source source = new SourceLoader( filePath ).getSource( 0 );
-				new SourceAdder( bdvHandle, source ).run();
-			}
-		});
-	}
-
-	public static void main( String[] args )
-	{
-		final String filePath = SourcesLoaderAndAdder.class.getResource( "../src/test/resources/mri-stack.xml" ).getFile();
-
-		final SourceLoader sourceLoader = new SourceLoader( filePath );
-		sourceLoader.run();
-		final SpimData spimData = sourceLoader.getSpimData();
-
-		final BdvHandle bdvHandle = BDVSingleton.getInstance( spimData );
-
-//		final MenuAdder menuAdder = new MenuAdder( bdvHandle, e -> new SourcesLoaderAndAdder( bdvHandle ).run() );
-//		menuAdder.addMenu( "Sources", "Load Source(s)  [Ctrl+L]" );
-//
-//		new ClickBehaviourInstaller( bdvHandle, ( x, y ) -> new SourcesLoaderAndAdder( bdvHandle ).run() ).install( "AddSourceFromFile", "ctrl L" );
+			new SourceAdder( bdvHandle, source, autoContrast, autoAdjustViewerTransform ).run();
+		}
 	}
 }
