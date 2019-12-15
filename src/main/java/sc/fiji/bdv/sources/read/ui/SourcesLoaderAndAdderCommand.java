@@ -57,7 +57,7 @@ public class SourcesLoaderAndAdderCommand implements Command
 
 		final BdvHandle bdvHandle = BDVSingleton.getInstance( spimData );
 
-		BdvUtils.initBrightness( bdvHandle, 0.01, 0.99, 0 );
+		//BdvUtils.initBrightness( bdvHandle, 0.01, 0.99, 0 );
 
 		final MenuAdder menuAdder = new MenuAdder( bdvHandle, e ->
 		{

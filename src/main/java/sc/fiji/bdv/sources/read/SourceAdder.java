@@ -33,6 +33,9 @@ public class SourceAdder implements Runnable
 	{
 		BdvFunctions.show( source, BdvOptions.options().addTo( bdvHandle ) );
 
+		final int numSources = bdvHandle.getSetupAssignments().getMinMaxGroups().size();
+		//BdvUtils.initBrightness( bdvHandle, 0.01, 0.99, numSources - 1  );
+		/*
 		if ( autoContrast )
 		{
 			final int numSources = bdvHandle.getSetupAssignments()
@@ -43,7 +46,7 @@ public class SourceAdder implements Runnable
 			BdvUtils.initBrightness( bdvHandle, 0.01,
 					0.99, lastSource );
 		}
-
+		*/
 		if ( autoAdjustViewerTransform )
 		{
 			final ViewerTransformAdjuster adjuster =
