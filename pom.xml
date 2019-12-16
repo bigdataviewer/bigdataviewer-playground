@@ -75,7 +75,7 @@
 	</ciManagement>
 
 	<properties>
-		<package-name>sc.fiji.bdv</package-name>
+		<package-name>sc.fiji.bdvpg.bdv</package-name>
 
 		<license.licenseName>bsd_2</license.licenseName>
 		<license.projectName>ImgLib2: a general-purpose, multidimensional image processing library.</license.projectName>
@@ -113,6 +113,11 @@
         <dependency>
             <groupId>sc.fiji</groupId>
             <artifactId>bigwarp_fiji</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.scijava</groupId>
+            <artifactId>scijava-ui-swing</artifactId>
+            <version>0.13.0</version>
         </dependency>
     </dependencies>
 
