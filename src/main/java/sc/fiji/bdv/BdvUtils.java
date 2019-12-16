@@ -227,6 +227,8 @@ public class BdvUtils {
     {
         final int sourceIndex = getSourceIndex( bdvHandle, source );
 
+        System.out.println("sourceINdex = "+ sourceIndex);
+
         final MinMaxGroup minmax = bdvHandle.getSetupAssignments().getMinMaxGroups().get( sourceIndex );
 
         return minmax;
@@ -237,9 +239,14 @@ public class BdvUtils {
         final List< SourceState< ? > > sources =
                 bdv.getBdvHandle().getViewerPanel().getState().getSources();
 
-        for ( int i = 0; i < sources.size(); ++i )
-            if ( sources.get( i ).getSpimSource().equals( source ) )
+        System.out.println("look for : "+  source);
+
+        for ( int i = 0; i < sources.size(); ++i ) {
+            System.out.println("c:"+sources.get(i).getSpimSource());
+
+            if (sources.get(i).getSpimSource().equals(source))
                 return i;
+        }
 
         return -1;
     }

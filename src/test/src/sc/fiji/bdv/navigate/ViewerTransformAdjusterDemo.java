@@ -1,4 +1,4 @@
-package sc.fiji.bdv.navigate;
+package src.sc.fiji.bdv.navigate;
 
 import bdv.util.BdvHandle;
 import sc.fiji.bdv.BDVSingleton;
@@ -20,8 +20,8 @@ public class ViewerTransformAdjusterDemo {
         new SourcesLoaderAndAdder( bdvHandle, "src/test/resources/mri-stack.xml" ).run();
 
         final SourcesLoaderAndAdder loaderAndAdder = new SourcesLoaderAndAdder( bdvHandle, "src/test/resources/mri-stack-shiftedX.xml" );
-        loaderAndAdder.setAutoAdjustViewerTransform( true );
-        loaderAndAdder.setAutoContrast( true );
+        //loaderAndAdder.setAutoAdjustViewerTransform( true );
+        //loaderAndAdder.setAutoContrast( true );
         loaderAndAdder.run();
     }
 }

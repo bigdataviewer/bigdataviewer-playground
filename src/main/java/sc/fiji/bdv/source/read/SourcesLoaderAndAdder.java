@@ -7,8 +7,6 @@ public class SourcesLoaderAndAdder implements Runnable
 {
 	private final BdvHandle bdvHandle;
 	private String[] filePaths;
-	private boolean autoContrast = true;
-	private boolean autoAdjustViewerTransform = true;
 
 	public SourcesLoaderAndAdder( BdvHandle bdvHandle, String filePath )
 	{
@@ -21,16 +19,6 @@ public class SourcesLoaderAndAdder implements Runnable
 		this.filePaths = filePaths;
 	}
 
-	public void setAutoContrast( boolean autoContrast )
-	{
-		this.autoContrast = autoContrast;
-	}
-
-	public void setAutoAdjustViewerTransform( boolean autoAdjustViewerTransform )
-	{
-		this.autoAdjustViewerTransform = autoAdjustViewerTransform;
-	}
-
 	@Override
 	public void run()
 	{
@@ -40,7 +28,7 @@ public class SourcesLoaderAndAdder implements Runnable
 			sourceLoader.run();
 			final Source source = sourceLoader.getSource( 0 );
 
-			new SourceAdder( bdvHandle, source, autoContrast, autoAdjustViewerTransform ).run();
+			new SourceAdder( bdvHandle, source ).run();
 		}
 	}
 }

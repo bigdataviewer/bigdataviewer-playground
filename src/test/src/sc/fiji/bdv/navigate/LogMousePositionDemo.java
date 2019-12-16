@@ -1,4 +1,4 @@
-package sc.fiji.bdv.navigate;
+package src.sc.fiji.bdv.navigate;
 
 import bdv.util.BdvHandle;
 import ij.IJ;
@@ -8,6 +8,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdv.BDVSingleton;
 import sc.fiji.bdv.ClickBehaviourInstaller;
+import sc.fiji.bdv.navigate.PositionLogger;
 
 /**
  * ViewTransformSetAndLogDemo

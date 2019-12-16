@@ -8,6 +8,7 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdv.BDVSingleton;
 import sc.fiji.bdv.navigate.ViewTransformator;
 import sc.fiji.bdv.navigate.ViewerTransformLogger;
+import sc.fiji.bdv.scijava.ScijavaBdvDefaults;
 
 import java.security.PublicKey;
 
@@ -20,10 +21,10 @@ import java.security.PublicKey;
  * 12 2019
  */
 
-@Plugin(type = Command.class, menuPath = "Plugins>BigDataViewer>Tools>Change view transform")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>Change view transform")
 public class ViewTransformatorCommand implements Command {
 
-    //@Parameter
+    @Parameter
     BdvHandle bdvHandle;
 
     @Parameter
@@ -42,7 +43,6 @@ public class ViewTransformatorCommand implements Command {
 
     @Override
     public void run() {
-        bdvHandle = BDVSingleton.getInstance();
         AffineTransform3D affineTransform3D = new AffineTransform3D();
         affineTransform3D.translate(translateX, translateY, translateZ);
         affineTransform3D.rotate(0, rotateAroundX);

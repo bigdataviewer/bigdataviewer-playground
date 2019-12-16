@@ -6,6 +6,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdv.BDVSingleton;
+import sc.fiji.bdv.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdv.screenshot.ScreenShotMaker;
 
 /**
@@ -17,10 +18,10 @@ import sc.fiji.bdv.screenshot.ScreenShotMaker;
  * 12 2019
  */
 
-@Plugin(type = Command.class, menuPath = "Plugins>BigDataViewer>Tools>Screenshot")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>Screenshot")
 public class ScreenShotCommand implements Command {
 
-    //@Parameter
+    @Parameter
     BdvHandle bdvHandle;
 
     @Parameter
@@ -31,12 +32,9 @@ public class ScreenShotCommand implements Command {
 
     @Override
     public void run() {
-        bdvHandle = BDVSingleton.getInstance();
-
         ScreenShotMaker screenShotMaker = new ScreenShotMaker(bdvHandle);
         screenShotMaker.setPhysicalPixelSpacingInXY(targetPixelSizeInXY, targetPixelUnit);
         ImagePlus image = screenShotMaker.getScreenshot();
         image.show();
-
     }
 }
