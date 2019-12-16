@@ -1,4 +1,4 @@
-package sc.fiji.bdv.ui;
+package sc.fiji.command;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;

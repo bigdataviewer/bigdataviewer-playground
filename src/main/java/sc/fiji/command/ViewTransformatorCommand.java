@@ -1,4 +1,4 @@
-package sc.fiji.bdv.navigate.ui;
+package sc.fiji.command;
 
 import bdv.util.BdvHandle;
 import net.imglib2.realtransform.AffineTransform3D;

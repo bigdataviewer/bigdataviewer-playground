@@ -1,4 +1,4 @@
-package sc.fiji.bdv.navigate.ui;
+package sc.fiji.command;
 
 import bdv.util.BdvHandle;
 import org.scijava.command.Command;

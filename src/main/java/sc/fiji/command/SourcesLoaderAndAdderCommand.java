@@ -1,4 +1,4 @@
-package sc.fiji.source.read.ui;
+package sc.fiji.command;
 
 import bdv.util.BdvHandle;
 import org.scijava.ItemIO;

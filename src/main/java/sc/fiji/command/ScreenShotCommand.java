@@ -1,4 +1,4 @@
-package sc.fiji.bdv.screenshot.ui;
+package sc.fiji.command;
 
 import bdv.util.BdvHandle;
 import ij.ImagePlus;
