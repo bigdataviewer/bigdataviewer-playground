@@ -1,6 +1,7 @@
 package sc.fiji.bdvpg.bdv;
 
 import bdv.tools.brightness.MinMaxGroup;
+import bdv.tools.transformation.TransformedSource;
 import bdv.util.Bdv;
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;
@@ -229,6 +230,15 @@ public class BdvUtils {
         return minmax;
     }
 
+
+    /**
+     * TODO: remove the print statements or make them some debug mode.
+     *
+     *
+     * @param bdv
+     * @param source
+     * @return
+     */
     public static int getSourceIndex( Bdv bdv, Source< ? > source )
     {
         final List< SourceState< ? > > sources =
@@ -239,7 +249,9 @@ public class BdvUtils {
         for ( int i = 0; i < sources.size(); ++i ) {
             System.out.println("c:"+sources.get(i).getSpimSource());
 
-            if (sources.get(i).getSpimSource().equals(source))
+            final Source wrappedSource = ( ( TransformedSource ) sources.get( i ).getSpimSource() ).getWrappedSource();
+
+            if ( wrappedSource.equals(source) )
                 return i;
         }
 

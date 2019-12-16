@@ -7,7 +7,6 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.source.append.AddSourceToBdv;
-import sc.fiji.bdvpg.bdv.source.displayopts.BrightnessAdjuster;
 import sc.fiji.bdvpg.log.SystemLogger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.source.importer.samples.MandelbrotSourceGetter;

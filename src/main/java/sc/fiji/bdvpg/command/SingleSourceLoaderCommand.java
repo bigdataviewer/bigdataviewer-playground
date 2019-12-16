@@ -8,7 +8,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.bdv.source.displayopts.BrightnessAdjuster;
+import sc.fiji.bdvpg.bdv.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.bdv.source.append.SourceAdder;
 import sc.fiji.bdvpg.source.importer.SourceLoader;
 
@@ -47,7 +47,7 @@ public class SingleSourceLoaderCommand implements Command
 
 	public void adjustBrightness()
 	{
-		new BrightnessAdjuster( bdvHandle, source, 0.01, 0.99 ).run();
+		new BrightnessAutoAdjuster( bdvHandle, source, 0.01, 0.99 ).run();
 	}
 
 	public void addSource()
