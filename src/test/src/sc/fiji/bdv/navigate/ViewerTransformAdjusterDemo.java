@@ -2,7 +2,7 @@ package src.sc.fiji.bdv.navigate;
 
 import bdv.util.BdvHandle;
 import sc.fiji.bdv.BDVSingleton;
-import sc.fiji.bdv.source.read.SourcesLoaderAndAdder;
+import sc.fiji.source.read.SourcesLoaderAndAdder;
 
 /**
  * ViewerTransformAdjusterDemo

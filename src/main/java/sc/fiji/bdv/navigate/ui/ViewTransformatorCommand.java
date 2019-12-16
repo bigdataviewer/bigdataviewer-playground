@@ -5,12 +5,8 @@ import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdv.BDVSingleton;
 import sc.fiji.bdv.navigate.ViewTransformator;
-import sc.fiji.bdv.navigate.ViewerTransformLogger;
-import sc.fiji.bdv.scijava.ScijavaBdvDefaults;
-
-import java.security.PublicKey;
+import sc.fiji.scijava.ScijavaBdvDefaults;
 
 /**
  * LogViewTransformCommand

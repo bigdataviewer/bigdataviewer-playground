@@ -1,4 +1,4 @@
-package sc.fiji.bdv.sourceAndConverter;
+package sc.fiji.sourceandconverter;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;
@@ -9,10 +9,10 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdv.BDVSingleton;
-import sc.fiji.bdv.source.add.AddSourceToBdv;
-import sc.fiji.bdv.source.get.GetSourceByIndexFromBdv;
-import sc.fiji.bdv.source.get.GetSourcesByIndexFromBdv;
-import sc.fiji.bdv.source.transform.SourceAffineTransform;
+import sc.fiji.source.add.AddSourceToBdv;
+import sc.fiji.source.get.GetSourceByIndexFromBdv;
+import sc.fiji.source.get.GetSourcesByIndexFromBdv;
+import sc.fiji.source.transform.SourceAffineTransform;
 
 import java.util.List;
 

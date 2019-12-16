@@ -7,10 +7,10 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdv.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdv.source.display.BrightnessAdjuster;
-import sc.fiji.bdv.source.read.SourceAdder;
-import sc.fiji.bdv.source.read.SourceLoader;
+import sc.fiji.scijava.ScijavaBdvDefaults;
+import sc.fiji.source.display.BrightnessAdjuster;
+import sc.fiji.source.read.SourceAdder;
+import sc.fiji.source.read.SourceLoader;
 
 import java.io.File;
 
