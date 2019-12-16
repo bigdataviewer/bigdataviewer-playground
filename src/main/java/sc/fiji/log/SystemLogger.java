@@ -1,6 +1,4 @@
-package sc.fiji.bdv.log;
-
-import sc.fiji.bdv.log.Logger;
+package sc.fiji.log;
 
 public class SystemLogger implements Logger
 {

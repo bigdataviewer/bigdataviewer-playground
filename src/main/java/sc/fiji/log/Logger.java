@@ -1,4 +1,4 @@
-package sc.fiji.bdv.log;
+package sc.fiji.log;
 
 public interface Logger
 {

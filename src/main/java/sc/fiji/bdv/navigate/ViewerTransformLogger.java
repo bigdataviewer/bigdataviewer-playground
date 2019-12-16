@@ -1,11 +1,10 @@
 package sc.fiji.bdv.navigate;
 
 import bdv.util.BdvHandle;
-import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
-import sc.fiji.bdv.log.Logger;
-import sc.fiji.bdv.log.Logs;
-import sc.fiji.bdv.log.SystemLogger;
+import sc.fiji.log.Logger;
+import sc.fiji.log.Logs;
+import sc.fiji.log.SystemLogger;
 
 public class ViewerTransformLogger implements Runnable
 {
