@@ -1,7 +1,8 @@
-package sc.fiji.bdvpg.source.read;
+package sc.fiji.bdvpg.bdv.source.append;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;
+import sc.fiji.bdvpg.source.importer.SourceLoader;
 
 public class SourcesLoaderAndAdder implements Runnable
 {

@@ -8,7 +8,7 @@ import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.BdvWindowCreate;
+import sc.fiji.bdvpg.command.BdvWindowCreate;
 import sc.fiji.bdvpg.scijava.GuavaWeakCacheService;
 
 import java.lang.ref.WeakReference;

@@ -8,9 +8,9 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.source.display.BrightnessAdjuster;
-import sc.fiji.bdvpg.source.read.SourceAdder;
-import sc.fiji.bdvpg.source.read.SourceLoader;
+import sc.fiji.bdvpg.bdv.source.displayopts.BrightnessAdjuster;
+import sc.fiji.bdvpg.bdv.source.append.SourceAdder;
+import sc.fiji.bdvpg.source.importer.SourceLoader;
 
 import java.io.File;
 

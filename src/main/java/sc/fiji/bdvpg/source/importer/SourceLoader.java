@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.source.read;
+package sc.fiji.bdvpg.source.importer;
 
 import bdv.BigDataViewer;
 import bdv.tools.brightness.ConverterSetup;

@@ -1,4 +1,4 @@
-package src.sc.fiji.bdv.navigate;
+package src.sc.fiji.bdvpg.bdv.navigate;
 
 import bdv.util.BdvHandle;
 import ij.IJ;

@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.bdv.screenshot;
+package sc.fiji.bdvpg.bdv.source.screenshot;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.Interpolation;

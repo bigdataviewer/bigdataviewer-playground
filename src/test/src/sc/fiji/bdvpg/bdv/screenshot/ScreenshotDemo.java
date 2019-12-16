@@ -1,4 +1,4 @@
-package src.sc.fiji.bdv.screenshot;
+package src.sc.fiji.bdvpg.bdv.screenshot;
 
 import bdv.util.BdvHandle;
 import ij.IJ;
@@ -8,7 +8,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import sc.fiji.bdvpg.bdv.BDVSingleton;
 import sc.fiji.bdvpg.bdv.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.bdv.MenuAdder;
-import sc.fiji.bdvpg.bdv.screenshot.ScreenShotMaker;
+import sc.fiji.bdvpg.bdv.source.screenshot.ScreenShotMaker;
 
 /**
  * ViewTransformSetAndLogDemo

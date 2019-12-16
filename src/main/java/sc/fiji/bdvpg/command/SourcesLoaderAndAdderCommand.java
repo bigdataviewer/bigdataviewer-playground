@@ -7,7 +7,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.source.read.SourcesLoaderAndAdder;
+import sc.fiji.bdvpg.bdv.source.append.SourcesLoaderAndAdder;
 
 import java.io.File;
 import java.util.Arrays;

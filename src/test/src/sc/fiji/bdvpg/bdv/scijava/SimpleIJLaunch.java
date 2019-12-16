@@ -1,4 +1,4 @@
-package src.sc.fiji.bdv.scijava;
+package src.sc.fiji.bdvpg.bdv.scijava;
 
 import net.imagej.ImageJ;
 

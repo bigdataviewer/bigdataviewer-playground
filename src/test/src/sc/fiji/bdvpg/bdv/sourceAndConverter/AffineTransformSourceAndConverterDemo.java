@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.sourceandconverter;
+package src.sc.fiji.bdvpg.bdv.sourceAndConverter;
 
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
@@ -7,9 +7,9 @@ import bdv.viewer.Source;
 import mpicbg.spim.data.SpimData;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.bdv.BDVSingleton;
-import sc.fiji.bdvpg.source.add.AddSourceToBdv;
-import sc.fiji.bdvpg.source.get.GetSourceByIndexFromBdv;
-import sc.fiji.bdvpg.source.read.SourceLoader;
+import sc.fiji.bdvpg.bdv.source.append.AddSourceToBdv;
+import sc.fiji.bdvpg.bdv.source.get.GetSourceByIndexFromBdv;
+import sc.fiji.bdvpg.source.importer.SourceLoader;
 import sc.fiji.bdvpg.source.transform.SourceAffineTransform;
 
 public class AffineTransformSourceAndConverterDemo {
