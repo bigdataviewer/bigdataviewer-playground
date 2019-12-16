@@ -1,9 +1,7 @@
 package sc.fiji.bdv;
 
 import bdv.VolatileSpimSource;
-import bdv.tools.brightness.MinMaxGroup;
 import bdv.tools.transformation.TransformedSource;
-import bdv.util.Bdv;
 import bdv.util.BdvHandle;
 import bdv.util.BdvStackSource;
 import bdv.viewer.Interpolation;
@@ -27,7 +25,7 @@ import java.util.logging.Logger;
  * Author: @haesleinhuepf, @tischi
  * 12 2019
  */
-public class BdvUtils {
+public class BDVUtils {
     /**
      * TODO: does that make sense?
      *
@@ -71,6 +69,7 @@ public class BdvUtils {
     {
         return bdvHandle.getViewerPanel().getState().getVisibleSourceIndices();
     }
+
 
     public static boolean isSourceIntersectingCurrentView( BdvHandle bdv, int sourceIndex, boolean is2D )
     {
@@ -223,38 +222,18 @@ public class BdvUtils {
         return calibration;
     }
 
-    public static MinMaxGroup getMinMaxGroup( BdvHandle bdvHandle, Source< ? > source )
+
+    public static ARGBType getSourceColor(BdvHandle bdvHandle, int sourceId )
     {
-        final int sourceIndex = getSourceIndex( bdvHandle, source );
-
-        final MinMaxGroup minmax = bdvHandle.getSetupAssignments().getMinMaxGroups().get( sourceIndex );
-
-        return minmax;
+        return bdvHandle.getSetupAssignments().getConverterSetups().get( sourceId ).getColor();
     }
 
-    public static int getSourceIndex( Bdv bdv, Source< ? > source )
-    {
-        final List< SourceState< ? > > sources =
-                bdv.getBdvHandle().getViewerPanel().getState().getSources();
-
-        for ( int i = 0; i < sources.size(); ++i )
-            if ( sources.get( i ).getSpimSource().equals( source ) )
-                return i;
-
-        return -1;
-    }
-
-    public static ARGBType getSourceColor(BdvHandle bdvHandle, int sourceIndex )
-    {
-        return bdvHandle.getSetupAssignments().getConverterSetups().get( sourceIndex ).getColor();
-    }
-
-    public static double[] getDisplayRange( BdvHandle bdvHandle, int sourceIndex )
+    public static double[] getDisplayRange( BdvHandle bdvHandle, int sourceId )
     {
         final double displayRangeMin = bdvHandle.getSetupAssignments()
-                .getConverterSetups().get( sourceIndex ).getDisplayRangeMin();
+                .getConverterSetups().get( sourceId ).getDisplayRangeMin();
         final double displayRangeMax = bdvHandle.getSetupAssignments()
-                .getConverterSetups().get( sourceIndex ).getDisplayRangeMax();
+                .getConverterSetups().get( sourceId ).getDisplayRangeMax();
 
         return new double[]{ displayRangeMin, displayRangeMax };
     }
