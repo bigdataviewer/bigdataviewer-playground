@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.bdv;
+package sc.fiji.bdvpg.behaviour;
 
 import bdv.util.BdvHandle;
 import org.scijava.ui.behaviour.Behaviour;
