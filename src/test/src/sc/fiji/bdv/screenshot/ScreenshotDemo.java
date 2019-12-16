@@ -1,19 +1,14 @@
 package src.sc.fiji.bdv.screenshot;
 
-import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
-import bdv.util.BdvOptions;
-import bdv.util.RandomAccessibleIntervalSource;
-import bdv.viewer.Source;
 import ij.IJ;
 import ij.ImagePlus;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.util.Util;
-import sc.fiji.bdv.BDVSingleton;
-import sc.fiji.bdv.ClickBehaviourInstaller;
-import sc.fiji.bdv.MenuAdder;
-import sc.fiji.bdv.screenshot.ScreenShotMaker;
+import sc.fiji.bdvpg.bdv.BDVSingleton;
+import sc.fiji.bdvpg.bdv.ClickBehaviourInstaller;
+import sc.fiji.bdvpg.bdv.MenuAdder;
+import sc.fiji.bdvpg.bdv.screenshot.ScreenShotMaker;
 
 /**
  * ViewTransformSetAndLogDemo

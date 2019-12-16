@@ -6,11 +6,10 @@ import ij.ImagePlus;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
-import sc.fiji.bdv.BDVSingleton;
-import sc.fiji.bdv.ClickBehaviourInstaller;
-import sc.fiji.bdv.navigate.ViewTransformator;
-import sc.fiji.bdv.navigate.ViewerTransformLogger;
-import sc.fiji.bdv.screenshot.ScreenShotMaker;
+import sc.fiji.bdvpg.bdv.BDVSingleton;
+import sc.fiji.bdvpg.bdv.ClickBehaviourInstaller;
+import sc.fiji.bdvpg.bdv.navigate.ViewTransformator;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformLogger;
 
 /**
  * ViewTransformSetAndLogDemo
