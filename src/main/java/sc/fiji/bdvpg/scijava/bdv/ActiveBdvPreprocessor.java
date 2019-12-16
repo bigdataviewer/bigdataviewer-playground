@@ -8,7 +8,7 @@ import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.command.BdvWindowCreate;
+import sc.fiji.bdvpg.command.BdvWindowCreateCommand;
 import sc.fiji.bdvpg.scijava.GuavaWeakCacheService;
 
 import java.lang.ref.WeakReference;
@@ -54,7 +54,7 @@ public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle>  {
             {
 
                 return (BdvHandle)
-                        cs.run(BdvWindowCreate.class,
+                        cs.run(BdvWindowCreateCommand.class,
                         true,
                             "is2D", false,
                             "windowTitle", "Bdv",
