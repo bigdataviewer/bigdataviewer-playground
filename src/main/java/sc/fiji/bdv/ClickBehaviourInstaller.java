@@ -20,7 +20,7 @@ public class ClickBehaviourInstaller
 	}
 
 	/**
-	 * TODO: probably just create one behaviours for each BDV?
+	 * TODO: probably just create one behaviour for each BDV?
 	 *
 	 * @param name
 	 * @param trigger
