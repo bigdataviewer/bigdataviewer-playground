@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.bdv.source.displayopts;
+package sc.fiji.bdvpg.bdv.source.display;
 
 import bdv.tools.brightness.MinMaxGroup;
 import bdv.util.BdvHandle;
@@ -12,14 +12,20 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.view.Views;
 import sc.fiji.bdvpg.bdv.BdvUtils;
 
-public class BrightnessAdjuster implements Runnable
+public class BrightnessAutoAdjuster implements Runnable
 {
 	private final BdvHandle bdvHandle;
 	private final Source< ? > source;
 	private final double cumulativeMinCutoff;
 	private final double cumulativeMaxCutoff;
 
-	public BrightnessAdjuster( final BdvHandle bdvHandle, final Source< ? > source, final double cumulativeMinCutoff, final double cumulativeMaxCutoff )
+
+	public BrightnessAutoAdjuster( final BdvHandle bdvHandle, final Source< ? > source )
+	{
+		this( bdvHandle, source, 0.01, 0.99 );
+	}
+
+	public BrightnessAutoAdjuster( final BdvHandle bdvHandle, final Source< ? > source, final double cumulativeMinCutoff, final double cumulativeMaxCutoff )
 	{
 		this.bdvHandle = bdvHandle;
 		this.source = source;
