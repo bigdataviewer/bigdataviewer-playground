@@ -18,10 +18,10 @@ import sc.fiji.bdvpg.source.importer.samples.Wave3DSourceGetter;
 public class BdvAppendSampleCommand implements Command {
 
     @Parameter(type = ItemIO.BOTH)
-    BdvHandle bdvh;
+    public BdvHandle bdvh;
 
     @Parameter(choices = {"Mandelbrot", "Wave3D", "Voronoi", "Big Voronoi"})
-    String sampleName;
+    public String sampleName;
 
     @Override
     public void run() {
