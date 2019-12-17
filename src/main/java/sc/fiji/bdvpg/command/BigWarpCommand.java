@@ -2,6 +2,7 @@ package sc.fiji.bdvpg.command;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import org.scijava.ItemIO;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -31,6 +32,11 @@ public class BigWarpCommand implements Command {
     @Parameter(label="Source Index, comma separated, range allowed '0:10'")
     public String sourceIndexStringFixedSource = "0";
 
+    @Parameter(type = ItemIO.OUTPUT)
+    BdvHandle bdvhQ;
+
+    @Parameter(type = ItemIO.OUTPUT)
+    BdvHandle bdvhP;
 
     GetSourceAndConverterByIndexFromBdv getter;
 
@@ -47,7 +53,12 @@ public class BigWarpCommand implements Command {
         List<SourceAndConverter> fixedSources = idxFixedSources.stream().map(idx -> getter.apply(idx)).collect(Collectors.toList());
 
         // Launch BigWarp
-        new BigWarpLauncher(movingSources, fixedSources, bigWarpName).run();
+        BigWarpLauncher bwl = new BigWarpLauncher(movingSources, fixedSources, bigWarpName);
+        bwl.run();
+
+        // Output bdvh handles -> will be put in the object service
+        bdvhQ = bwl.getBdvHandleQ();
+        bdvhP = bwl.getBdvHandleP();
     }
 
 }
