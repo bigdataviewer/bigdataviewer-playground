@@ -247,12 +247,22 @@ public class BdvUtils {
         System.out.println("look for : "+  source);
 
         for ( int i = 0; i < sources.size(); ++i ) {
-            System.out.println("c:"+sources.get(i).getSpimSource());
+            final Source< ? > bdvSource = sources.get( i ).getSpimSource();
 
-            final Source wrappedSource = ( ( TransformedSource ) sources.get( i ).getSpimSource() ).getWrappedSource();
+            System.out.println("c:"+ bdvSource );
 
-            if ( wrappedSource.equals(source) )
-                return i;
+            if ( bdvSource instanceof TransformedSource )
+            {
+                final Source wrappedSource = ( ( TransformedSource ) bdvSource ).getWrappedSource();
+
+                if ( wrappedSource.equals( source ) )
+                    return i;
+            }
+            else
+            {
+                if ( bdvSource.equals( source ) )
+                    return i;
+            }
         }
 
         return -1;
