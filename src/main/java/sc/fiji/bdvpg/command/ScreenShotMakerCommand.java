@@ -9,7 +9,7 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.bdv.source.screenshot.ScreenShotMaker;
 
 /**
- * ScreenShotCommand
+ * ScreenShotMakerCommand
  * <p>
  * <p>
  * <p>
@@ -18,7 +18,7 @@ import sc.fiji.bdvpg.bdv.source.screenshot.ScreenShotMaker;
  */
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>Screenshot")
-public class ScreenShotCommand implements Command {
+public class ScreenShotMakerCommand implements Command {
 
     @Parameter
     BdvHandle bdvh;

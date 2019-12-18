@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BigWarp>Launch BigWarp",
         label = "Starts BigWarp from existing sources")
-public class BigWarpCommand implements Command {
+public class BigWarpLauncherCommand implements Command {
 
     @Parameter
     String bigWarpName;

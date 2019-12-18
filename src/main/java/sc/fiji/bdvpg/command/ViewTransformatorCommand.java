@@ -9,7 +9,7 @@ import sc.fiji.bdvpg.bdv.navigate.ViewTransformator;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 
 /**
- * LogViewTransformCommand
+ * ViewTransformLoggerCommand
  * <p>
  * <p>
  * <p>

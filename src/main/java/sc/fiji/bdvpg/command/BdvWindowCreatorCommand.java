@@ -20,7 +20,7 @@ import java.awt.*;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Create Empty BDV Frame",
     label = "Creates an empty Bdv window")
-public class BdvWindowCreateCommand implements Command {
+public class BdvWindowCreatorCommand implements Command {
 
     @Parameter(label = "Create a 2D Bdv window")
     public boolean is2D = false;

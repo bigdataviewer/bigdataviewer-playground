@@ -15,7 +15,7 @@ import sc.fiji.bdvpg.source.importer.samples.VoronoiSourceGetter;
 import sc.fiji.bdvpg.source.importer.samples.Wave3DSourceGetter;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>Append Sample Source to Bdv Window")
-public class BdvAppendSampleCommand implements Command {
+public class BdvSampleAdderCommand implements Command {
 
     @Parameter(type = ItemIO.BOTH)
     public BdvHandle bdvh;
