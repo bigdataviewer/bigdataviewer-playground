@@ -1,15 +1,17 @@
 package sc.fiji.bdvpg.spimdata.importer;
 
+import bdv.spimdata.XmlIoSpimDataMinimal;
 import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
+import mpicbg.spim.data.generic.AbstractSpimData;
 
 import java.io.File;
 import java.util.function.Function;
 
-public class SpimDataImporterXML implements Runnable, Function<File, SpimData> {
+public class SpimDataImporterXML implements Runnable, Function<File, AbstractSpimData> {
 
-    SpimData spimData;
+    AbstractSpimData spimData;
 
     File f;
 
@@ -19,18 +21,18 @@ public class SpimDataImporterXML implements Runnable, Function<File, SpimData> {
 
     @Override
     public void run() {
-        spimData = apply(f);
+        // Unnecessary
     }
 
-    public SpimData get() {
-        return spimData;
+    public AbstractSpimData get() {
+        return apply(f);
     }
 
     @Override
-    public SpimData apply(File file) {
-        SpimData sd = null;
+    public AbstractSpimData apply(File file) {
+        AbstractSpimData sd = null;
         try {
-            sd = new XmlIoSpimData().load(file.getAbsolutePath());
+            sd = new XmlIoSpimDataMinimal().load(file.getAbsolutePath());
         } catch (SpimDataException e) {
             e.printStackTrace();
         }

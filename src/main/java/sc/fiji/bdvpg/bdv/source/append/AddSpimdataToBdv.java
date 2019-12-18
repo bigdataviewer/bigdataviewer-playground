@@ -5,15 +5,16 @@ import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
 import bdv.viewer.Source;
 import mpicbg.spim.data.SpimData;
+import mpicbg.spim.data.generic.AbstractSpimData;
 
 import java.util.function.Consumer;
 
-public class AddSpimdataToBdv implements Runnable, Consumer<SpimData> {
+public class AddSpimdataToBdv implements Runnable, Consumer<AbstractSpimData> {
 
-    SpimData spimDataIn;
+    AbstractSpimData spimDataIn;
     BdvHandle bdvh;
 
-    public AddSpimdataToBdv(BdvHandle bdvh, SpimData spimData) {
+    public AddSpimdataToBdv(BdvHandle bdvh, AbstractSpimData spimData) {
         this.spimDataIn=spimData;
         this.bdvh=bdvh;
     }
@@ -23,7 +24,7 @@ public class AddSpimdataToBdv implements Runnable, Consumer<SpimData> {
     }
 
     @Override
-    public void accept(SpimData spimData) {
+    public void accept(AbstractSpimData spimData) {
         BdvFunctions.show(spimData, BdvOptions.options().addTo(bdvh));
     }
 }
