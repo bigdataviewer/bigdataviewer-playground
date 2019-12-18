@@ -325,8 +325,8 @@ public class SwingAbstractSpimDataViewer extends
 
         // TabbedPane
         tabbedPane = new JTabbedPane();
-        tabbedPane.add("Tree Ordering", tabOrdering);
         tabbedPane.add("Tree", treeView);
+        tabbedPane.add("Tree Ordering", tabOrdering);
 
         // Global Panel
         panel = new JPanel();
@@ -353,6 +353,7 @@ public class SwingAbstractSpimDataViewer extends
         //});
 
         //panel.add(saveButton, BorderLayout.EAST);
+        // myTree.expandPath(new TreePath(currentNode.getPath()));
 
         this.redraw();
         return panel;

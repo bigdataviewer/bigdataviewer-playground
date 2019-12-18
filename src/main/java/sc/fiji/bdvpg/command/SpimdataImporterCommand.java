@@ -11,7 +11,7 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataImporterXML;
 
 import java.io.File;
 
-@Plugin( type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>SpimData>Spimdata from XML File" )
+@Plugin( type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"SpimData>Spimdata from XML File" )
 public class SpimdataImporterCommand implements Command {
 
     @Parameter
