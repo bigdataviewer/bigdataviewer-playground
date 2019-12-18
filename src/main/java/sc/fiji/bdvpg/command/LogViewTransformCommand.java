@@ -20,10 +20,10 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 public class LogViewTransformCommand implements Command {
 
     @Parameter
-    BdvHandle bdvHandle;
+    BdvHandle bdvh;
 
     @Override
     public void run() {
-        new ViewerTransformLogger(bdvHandle).run();
+        new ViewerTransformLogger(bdvh).run();
     }
 }

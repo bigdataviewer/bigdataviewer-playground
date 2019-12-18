@@ -21,7 +21,7 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 public class ViewTransformatorCommand implements Command {
 
     @Parameter
-    BdvHandle bdvHandle;
+    BdvHandle bdvh;
 
     @Parameter
     public Double translateX = 0.0;
@@ -45,6 +45,6 @@ public class ViewTransformatorCommand implements Command {
         affineTransform3D.rotate(1, rotateAroundY);
         affineTransform3D.rotate(2, rotateAroundZ);
 
-        new ViewTransformator(bdvHandle, affineTransform3D).run();
+        new ViewTransformator(bdvh, affineTransform3D).run();
     }
 }

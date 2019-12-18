@@ -28,7 +28,7 @@ public class ScreenshotDemo {
 
         // Open BigDataViewer and show the image
         BdvHandle bdvHandle = BDVSingleton.getInstance(rai, "name");
-        //BdvFunctions.show(rai, "name", BdvOptions.options().addTo(bdvHandle));
+        //BdvFunctions.show(rai, "name", BdvOptions.options().addTo(bdvh));
         //BdvFunctions.show(rai, "name", BdvOptions.options());
 
         // add a click behaviour to BDV for making screenshots
