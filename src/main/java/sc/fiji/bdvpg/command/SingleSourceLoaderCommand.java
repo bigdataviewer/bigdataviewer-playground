@@ -18,7 +18,7 @@ import java.io.File;
 public class SingleSourceLoaderCommand implements Command
 {
 	@Parameter(type = ItemIO.BOTH)
-	public static BdvHandle bdvHandle;
+	public static BdvHandle bdvh;
 
 	@Parameter ( label = "XML/HDF5 Image Source File")
 	private File file;
@@ -42,17 +42,17 @@ public class SingleSourceLoaderCommand implements Command
 
 	public void adjustViewerTransform()
 	{
-		new ViewerTransformAdjuster( bdvHandle, source ).run();
+		new ViewerTransformAdjuster(bdvh, source ).run();
 	}
 
 	public void adjustBrightness()
 	{
-		new BrightnessAdjuster( bdvHandle, source, 0.01, 0.99 ).run();
+		new BrightnessAdjuster(bdvh, source, 0.01, 0.99 ).run();
 	}
 
 	public void addSource()
 	{
-		new SourceAdder( bdvHandle, source ).run();
+		new SourceAdder(bdvh, source ).run();
 	}
 
 	public void loadSource()

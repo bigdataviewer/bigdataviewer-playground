@@ -21,7 +21,7 @@ import sc.fiji.bdvpg.bdv.source.screenshot.ScreenShotMaker;
 public class ScreenShotCommand implements Command {
 
     @Parameter
-    BdvHandle bdvHandle;
+    BdvHandle bdvh;
 
     @Parameter
     public double targetPixelSizeInXY = 1;
@@ -31,7 +31,7 @@ public class ScreenShotCommand implements Command {
 
     @Override
     public void run() {
-        ScreenShotMaker screenShotMaker = new ScreenShotMaker(bdvHandle);
+        ScreenShotMaker screenShotMaker = new ScreenShotMaker(bdvh);
         screenShotMaker.setPhysicalPixelSpacingInXY(targetPixelSizeInXY, targetPixelUnit);
         ImagePlus image = screenShotMaker.getScreenshot();
         image.show();
