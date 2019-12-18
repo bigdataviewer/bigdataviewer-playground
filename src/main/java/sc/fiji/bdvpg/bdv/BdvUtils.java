@@ -49,12 +49,12 @@ public class BdvUtils
         final double viewerPhysicalVoxelSpacingX = viewerPhysicalWidth / windowWidth;
         final double viewerPhysicalVoxelSpacingY = viewerPhysicalHeight / windowHeight;
 
-        IJ.log( "[DEBUG] windowWidth = " + windowWidth );
-        IJ.log( "[DEBUG] windowHeight = " + windowHeight );
-        IJ.log( "[DEBUG] viewerPhysicalWidth = " + viewerPhysicalWidth );
-        IJ.log( "[DEBUG] viewerPhysicalHeight = " + viewerPhysicalHeight );
-        IJ.log( "[DEBUG] viewerPhysicalVoxelSpacingX = " + viewerPhysicalVoxelSpacingX );
-        IJ.log( "[DEBUG] viewerPhysicalVoxelSpacingY = " + viewerPhysicalVoxelSpacingY );
+        System.out.println( "[DEBUG] windowWidth = " + windowWidth );
+        System.out.println( "[DEBUG] windowHeight = " + windowHeight );
+        System.out.println( "[DEBUG] viewerPhysicalWidth = " + viewerPhysicalWidth );
+        System.out.println( "[DEBUG] viewerPhysicalHeight = " + viewerPhysicalHeight );
+        System.out.println( "[DEBUG] viewerPhysicalVoxelSpacingX = " + viewerPhysicalVoxelSpacingX );
+        System.out.println( "[DEBUG] viewerPhysicalVoxelSpacingY = " + viewerPhysicalVoxelSpacingY );
 
         return viewerPhysicalVoxelSpacingX;
     }

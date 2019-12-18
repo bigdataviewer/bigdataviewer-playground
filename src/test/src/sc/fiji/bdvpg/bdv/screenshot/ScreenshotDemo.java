@@ -8,7 +8,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import sc.fiji.bdvpg.bdv.BDVSingleton;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.bdv.MenuAdder;
-import sc.fiji.bdvpg.bdv.source.screenshot.ScreenShotMaker;
+import sc.fiji.bdvpg.bdv.screenshot.ScreenShotMaker;
 
 /**
  * ViewTransformSetAndLogDemo
