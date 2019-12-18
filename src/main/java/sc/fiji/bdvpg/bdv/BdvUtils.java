@@ -6,6 +6,7 @@ import bdv.util.Bdv;
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;
 import bdv.viewer.state.SourceState;
+import ij.IJ;
 import net.imglib2.*;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
@@ -22,33 +23,42 @@ import java.util.List;
  * Author: @haesleinhuepf, @tischi
  * 12 2019
  */
-public class BdvUtils {
-    /**
-     * TODO: does that make sense?
-     *
-     * @param bdv
-     * @return
-     */
-    public static double[] getViewerVoxelSpacing( BdvHandle bdv )
+public class BdvUtils
+{
+    public static double getViewerVoxelSpacing( BdvHandle bdv )
     {
+        final int windowWidth = getBdvWindowWidth( bdv );
+        final int windowHeight = getBdvWindowHeight( bdv );
+
         final AffineTransform3D viewerTransform = new AffineTransform3D();
         bdv.getViewerPanel().getState().getViewerTransform( viewerTransform );
 
-        final double[] zeroCanvas = { 0, 0, 0 };
-        final double[] zeroGlobal = new double[ 3 ];
+        final double[] physicalA = new double[ 3 ];
+        final double[] physicalB = new double[ 3 ];
 
-        final double[] oneCanvas = { 1, 1, 1 };
-        final double[] oneGlobal = new double[ 3 ];
+        viewerTransform.applyInverse( physicalA, new double[]{ 0, 0, 0} );
+        viewerTransform.applyInverse( physicalB, new double[]{ 0, windowWidth, 0} );
 
-        viewerTransform.applyInverse( zeroGlobal, zeroCanvas );
-        viewerTransform.applyInverse( oneGlobal, oneCanvas );
+        double viewerPhysicalWidth = LinAlgHelpers.distance( physicalA, physicalB );
 
-        final double[] viewerVoxelSpacing = new double[ 3 ];
-        for ( int d = 0; d < 3; d++ )
-            viewerVoxelSpacing[ d ] = Math.abs( zeroGlobal[ d ] - oneGlobal[ d ]);
+        viewerTransform.applyInverse( physicalA, new double[]{ 0, 0, 0} );
+        viewerTransform.applyInverse( physicalB, new double[]{ windowHeight, 0, 0} );
 
-        return viewerVoxelSpacing;
+        double viewerPhysicalHeight = LinAlgHelpers.distance( physicalA, physicalB );
+
+        final double viewerPhysicalVoxelSpacingX = viewerPhysicalWidth / windowWidth;
+        final double viewerPhysicalVoxelSpacingY = viewerPhysicalHeight / windowHeight;
+
+        IJ.log( "[DEBUG] windowWidth = " + windowWidth );
+        IJ.log( "[DEBUG] windowHeight = " + windowHeight );
+        IJ.log( "[DEBUG] viewerPhysicalWidth = " + viewerPhysicalWidth );
+        IJ.log( "[DEBUG] viewerPhysicalHeight = " + viewerPhysicalHeight );
+        IJ.log( "[DEBUG] viewerPhysicalVoxelSpacingX = " + viewerPhysicalVoxelSpacingX );
+        IJ.log( "[DEBUG] viewerPhysicalVoxelSpacingY = " + viewerPhysicalVoxelSpacingY );
+
+        return viewerPhysicalVoxelSpacingX;
     }
+
 
 
     public static int getBdvWindowWidth( BdvHandle bdvHandle )

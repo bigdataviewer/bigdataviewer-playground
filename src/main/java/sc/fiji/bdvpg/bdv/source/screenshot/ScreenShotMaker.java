@@ -76,16 +76,16 @@ public class ScreenShotMaker {
 
     private static < R extends RealType< R >> CompositeImage captureView(
             BdvHandle bdv,
-            double pixelSpacing,
+            double outputVoxelSpacing,
             String voxelUnits,
             boolean checkSourceIntersectionWithViewerPlaneOnlyIn2D )
     {
         final AffineTransform3D viewerTransform = new AffineTransform3D();
         bdv.getViewerPanel().getState().getViewerTransform( viewerTransform );
 
-        final double[] viewerVoxelSpacing = getViewerVoxelSpacing( bdv );
+        final double viewerVoxelSpacing = getViewerVoxelSpacing( bdv );
 
-        double dxy = pixelSpacing / viewerVoxelSpacing[ 0 ] ;
+        double dxy = outputVoxelSpacing / viewerVoxelSpacing;
 
         final int w = getBdvWindowWidth( bdv );
         final int h = getBdvWindowHeight( bdv );
@@ -93,8 +93,7 @@ public class ScreenShotMaker {
         final long captureWidth = ( long ) Math.ceil( w / dxy );
         final long captureHeight = ( long ) Math.ceil( h / dxy );
 
-        // TODO: Maybe capture Segmentations (or everything?) as ARGBType images?
-        // Like this, the label masks would look as nice as in the Bdv.
+        // TODO: Maybe capture as ARGBType images?
         final ArrayList<RandomAccessibleInterval<UnsignedShortType>> captures = new ArrayList<>();
         final ArrayList<ARGBType> colors = new ArrayList<>();
         final ArrayList< Boolean > isSegmentations = new ArrayList<>();
@@ -113,7 +112,7 @@ public class ScreenShotMaker {
 
             Source< ? > source = getSource( bdv, sourceIndex );
 
-            final int level = getLevel( source, pixelSpacing );
+            final int level = getLevel( source, outputVoxelSpacing );
             final AffineTransform3D sourceTransform =
                     getSourceTransform( source, t, level );
 
@@ -156,18 +155,22 @@ public class ScreenShotMaker {
             displayRanges.add( getDisplayRange( bdv, sourceIndex) );
         }
 
-        final double[] captureVoxelSpacing = new double[ 3 ];
-        for ( int d = 0; d < 2; d++ )
-            captureVoxelSpacing[ d ] = pixelSpacing;
-
-        captureVoxelSpacing[ 2 ] = viewerVoxelSpacing[ 2 ]; // TODO: makes sense?
+        final double[] captureVoxelSpacing = getCaptureVoxelSpacing( outputVoxelSpacing, viewerVoxelSpacing );
 
         if ( captures.size() > 0 )
             return asCompositeImage( captureVoxelSpacing, voxelUnits, captures, colors, displayRanges, isSegmentations );
         else
             return null;
+    }
 
+    private static double[] getCaptureVoxelSpacing( double outputVoxelSpacing, double viewerVoxelSpacing )
+    {
+        final double[] captureVoxelSpacing = new double[ 3 ];
+        for ( int d = 0; d < 2; d++ )
+            captureVoxelSpacing[ d ] = outputVoxelSpacing;
 
+        captureVoxelSpacing[ 2 ] = viewerVoxelSpacing; // TODO: makes sense?
+        return captureVoxelSpacing;
     }
 
     public static RealRandomAccess< ? extends RealType< ? > >
