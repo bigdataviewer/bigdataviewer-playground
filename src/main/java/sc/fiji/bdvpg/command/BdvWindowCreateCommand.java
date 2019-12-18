@@ -10,6 +10,7 @@ import org.scijava.command.Command;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.bdv.BdvCreator;
 import sc.fiji.bdvpg.scijava.GuavaWeakCacheService;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.bdv.BdvHandleHelper;
@@ -42,65 +43,16 @@ public class BdvWindowCreateCommand implements Command {
     @Parameter
     ObjectService os;
 
-    //@Parameter(choices = {"BdvHandleFrame","BdvHandlePanel"})
-    String type = "BdvHandleFrame";
 
     @Override
     public void run() {
-        BdvOptions opts = BdvOptions.options();
-        if (is2D) {
-            opts = opts.is2D();
-        }
-
         //------------ BdvHandleFrame
-        if (type.equals("BdvHandleFrame")) {
-            ArrayImg dummyImg = ArrayImgs.bytes(2, 2, 2);
-            BdvStackSource bss = BdvFunctions.show(dummyImg, "dummy", opts.frameTitle(windowTitle).sourceTransform(new AffineTransform3D()));
-            bdvh = bss.getBdvHandle();
-            AffineTransform3D at3D = new AffineTransform3D();
-            at3D.translate(-px, -py, -pz);
-            double scale = bdvh.getViewerPanel().getWidth() / s;
-            at3D.scale(scale, scale, 1);
-            bdvh.getViewerPanel().setCurrentViewerTransform(at3D);
-            bdvh.getViewerPanel().requestRepaint();
-            bss.removeFromBdv();
-        }
-
-
-        //------------ BdvHandlePanel
-
-        if (type.equals("BdvHandlePanel")) {
-            JFrame frame = new JFrame(windowTitle);
-            JPanel viewer = new JPanel(new MigLayout());
-            bdvh = new BdvHandlePanel(frame, opts);
-            viewer.add( bdvh.getViewerPanel(), "span, grow, push" );
-
-            // Hack for 3d
-            ArrayImg dummyImg = ArrayImgs.bytes(2, 2, 2);
-            BdvStackSource bss = BdvFunctions.show(dummyImg, "dummy", opts.frameTitle(windowTitle).sourceTransform(new AffineTransform3D()).addTo(bdvh));
-            //bdvh = bss.getBdvHandle();
-            AffineTransform3D at3D = new AffineTransform3D();
-            at3D.translate(-px, -py, -pz);
-            //double scale = bdvh.getViewerPanel().getWidth() / s;
-            //at3D.scale(scale, scale, 1);
-            //bdvh.getViewerPanel().setCurrentViewerTransform(at3D);
-            //bdvh.getViewerPanel().requestRepaint();
-            //bss.removeFromBdv();
-            //
-
-            frame.setMinimumSize(new Dimension(500,500));
-            frame.setContentPane(viewer);
-            frame.pack();
-            frame.setVisible(true);
-
-            double scale = bdvh.getViewerPanel().getWidth() / s;
-            at3D.scale(scale, scale, 1);
-            bdvh.getViewerPanel().setCurrentViewerTransform(at3D);
-            bdvh.getViewerPanel().requestRepaint();
-            bss.removeFromBdv();
-        }
-
+        BdvCreator creator = new BdvCreator(is2D, windowTitle);
+        creator.run();
+        bdvh = creator.getBdvHandle();
+        //------------ Allows to remove the BdvHandle from the objectService when closed by the user
         BdvHandleHelper.setBdvHandleCloseOperation(bdvh,os,cacheService, true);
+        //------------ Renames window to ensure unicity
         windowTitle = BdvHandleHelper.getUniqueWindowTitle(os, windowTitle);
         BdvHandleHelper.setWindowTitle(bdvh, windowTitle);
     }
