@@ -3,7 +3,9 @@ package sc.fiji.bdvpg.bdv.source.get;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 
-public class GetSourceAndConverterByIndexFromBdv implements Runnable {
+import java.util.function.Function;
+
+public class GetSourceAndConverterByIndexFromBdv implements Runnable, Function<Integer, SourceAndConverter> {
 
     SourceAndConverter srcOut;
     BdvHandle bdvh;
@@ -15,10 +17,15 @@ public class GetSourceAndConverterByIndexFromBdv implements Runnable {
     }
 
     public void run() {
-        srcOut = bdvh.getViewerPanel().getState().getSources().get(index);
+        srcOut = apply(index);
     }
 
     public SourceAndConverter getSource() {
         return srcOut;
+    }
+
+    @Override
+    public SourceAndConverter apply(Integer integer) {
+        return bdvh.getViewerPanel().getState().getSources().get(integer);
     }
 }
