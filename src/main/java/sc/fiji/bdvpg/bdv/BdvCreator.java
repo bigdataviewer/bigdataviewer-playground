@@ -58,6 +58,8 @@ public class BdvCreator implements Runnable
 
 	public BdvHandle getBdvHandle()
 	{
+		if ( bdvHandle == null ) run();
+
 		return bdvHandle;
 	}
 }
