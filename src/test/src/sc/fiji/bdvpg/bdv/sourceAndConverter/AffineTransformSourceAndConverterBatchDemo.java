@@ -9,7 +9,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.bdv.BDVSingleton;
-import sc.fiji.bdvpg.bdv.source.append.AddSourceToBdv;
+import sc.fiji.bdvpg.bdv.source.append.SourceBdvAdder;
 import sc.fiji.bdvpg.bdv.source.get.GetSourceByIndexFromBdv;
 import sc.fiji.bdvpg.bdv.source.get.GetSourcesByIndexFromBdv;
 import sc.fiji.bdvpg.source.transform.SourceAffineTransform;
@@ -39,7 +39,7 @@ public class AffineTransformSourceAndConverterBatchDemo {
         // Creates a bdv adder ( = an action described as in the readme but it also implements Consumer<Source> -> it has one Source input and no output
         // This bdvAdder is a Consumer because it takes one Source as an input and do not return anything
         // It is initializes with a null Source -> this source specified in the constructor is only useful for single action
-        AddSourceToBdv bdvAdder = new AddSourceToBdv(bdvHandle, null);
+        SourceBdvAdder bdvAdder = new SourceBdvAdder(bdvHandle, null);
 
         // Construct source getter based on their indexes and on a BdvHandle
         GetSourcesByIndexFromBdv srcGetter = new GetSourcesByIndexFromBdv(bdvHandle, 2,4,6,8,10,12);
@@ -50,7 +50,7 @@ public class AffineTransformSourceAndConverterBatchDemo {
         List<Source> transformedSources = Lists.transform(srcGetter.getSources(), affineTransformer::apply);
 
         // Display all the transformed source, using the bdvAdder
-        transformedSources.forEach(bdvAdder::accept);
+        transformedSources.forEach(bdvAdder::apply);
     }
 
     static public void makeGrid(BdvHandle bdvh, int sourceIndex, int nx, int ny, int shiftx, int shifty) {
@@ -64,7 +64,7 @@ public class AffineTransformSourceAndConverterBatchDemo {
                 at3D.translate(px*shiftx, py*shifty, 0);
                 SourceAffineTransform sat = new SourceAffineTransform(src, at3D); // Not necessary to specify a source
                 sat.run();
-                new AddSourceToBdv(bdvh, sat.getSourceOut()).run();
+                new SourceBdvAdder(bdvh, sat.getSourceOut()).run();
             }
         }
     }

@@ -4,9 +4,7 @@ import bdv.util.BdvHandle;
 import bdv.util.BdvStackSource;
 import bdv.viewer.SourceAndConverter;
 import sc.fiji.bdvpg.bdv.BdvCreator;
-import sc.fiji.bdvpg.bdv.source.append.SourceAdder;
-import sc.fiji.bdvpg.bdv.source.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAdder;
+import sc.fiji.bdvpg.bdv.source.append.SourceAndConverterBdvAdder;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterLoader;
 
 public class SourceAndConverterLoaderDemo
@@ -24,7 +22,7 @@ public class SourceAndConverterLoaderDemo
 
 		// add
 		//
-		final SourceAndConverterAdder adder = new SourceAndConverterAdder( bdvHandle, sourceAndConverter );
+		final SourceAndConverterBdvAdder adder = new SourceAndConverterBdvAdder( bdvHandle, sourceAndConverter );
 		adder.run();
 
 		// change brightness

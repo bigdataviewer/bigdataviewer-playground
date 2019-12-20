@@ -6,7 +6,7 @@ import org.scijava.ItemIO;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.source.append.AddSourceToBdv;
+import sc.fiji.bdvpg.bdv.source.append.SourceBdvAdder;
 import sc.fiji.bdvpg.bdv.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.log.SystemLogger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -48,7 +48,7 @@ public class BdvAppendSampleCommand implements Command {
                 new SystemLogger().err("Invalid sample name");
                 return;
         }
-        new AddSourceToBdv(bdvh, src).run();
+        new SourceBdvAdder(bdvh, src).run();
 
         new BrightnessAutoAdjuster(bdvh, src, 0.01, 0.99).run();
     }
