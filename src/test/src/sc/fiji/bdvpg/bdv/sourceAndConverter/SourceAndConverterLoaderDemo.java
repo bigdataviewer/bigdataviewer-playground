@@ -29,7 +29,11 @@ public class SourceAndConverterLoaderDemo
 
 		// change brightness
 		//
-		final BdvStackSource bdvStackSource = adder.getBdvStackSource();
+		final BdvStackSource< ? > bdvStackSource = adder.getBdvStackSource();
 		bdvStackSource.setDisplayRange( 0, 255 );
+
+		// get the sac from the stacksource
+		//
+		final SourceAndConverter< ? > sac = bdvStackSource.getSources().get( 0 );
 	}
 }
