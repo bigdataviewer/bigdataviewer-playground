@@ -13,7 +13,7 @@ public class SourceAndConverterLoaderDemo
 	{
 		final BdvCreator bdvCreator = new BdvCreator( false );
 		bdvCreator.run();
-		final BdvHandle bdvHandle = bdvCreator.getBdvHandle();
+		final BdvHandle bdvHandle = bdvCreator.get();
 
 		// load
 		//

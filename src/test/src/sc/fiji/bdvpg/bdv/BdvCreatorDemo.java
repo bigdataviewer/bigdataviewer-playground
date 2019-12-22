@@ -8,6 +8,6 @@ public class BdvCreatorDemo
 	{
 		final BdvCreator bdvCreator = new BdvCreator( false, "Hello World!" );
 		bdvCreator.run();
-		final BdvHandle bdvHandle = bdvCreator.getBdvHandle();
+		final BdvHandle bdvHandle = bdvCreator.get();
 	}
 }

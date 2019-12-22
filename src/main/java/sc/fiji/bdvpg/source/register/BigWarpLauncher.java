@@ -10,6 +10,7 @@ import bigwarp.BigWarpInit;
 import mpicbg.spim.data.SpimDataException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,6 +39,14 @@ public class BigWarpLauncher implements Runnable {
     BdvHandle bdvHandleP;
 
     BdvHandle bdvHandleQ;
+
+    public BigWarpLauncher(Source movingSource, Source fixedSource, String bigWarpName) {
+        this(Arrays.asList(movingSource), Arrays.asList(fixedSource), bigWarpName);
+    }
+
+    public BigWarpLauncher(SourceAndConverter movingSource, SourceAndConverter fixedSource, String bigWarpName) {
+        this(Arrays.asList(movingSource), Arrays.asList(fixedSource), bigWarpName);
+    }
 
     // Issue with constructor :
     // Making a constructor with lists of SourceAndConverters:
