@@ -1,7 +1,9 @@
 package sc.fiji.bdvpg.source.importer.samples;
 
 import bdv.util.RandomAccessibleIntervalSource;
+import bdv.util.RealRandomAccessibleSource;
 import bdv.viewer.Source;
+import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imglib2.*;
 import net.imglib2.algorithm.util.Grids;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -10,6 +12,7 @@ import net.imglib2.neighborsearch.NearestNeighborSearch;
 import net.imglib2.neighborsearch.NearestNeighborSearchOnKDTree;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.Type;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
@@ -39,7 +42,32 @@ public class VoronoiSourceGetter implements Runnable, Supplier<Source> {
     @Override
     public Source get() {
         RandomAccessibleInterval voronoi = getVoronoiTestLabelImage(imgSize, numPts, copyImg);
-        return new RandomAccessibleIntervalSource<>( voronoi, new FloatType(), new AffineTransform3D(), "Voronoi_"+numPts+" Pts_["+imgSize[0]+","+imgSize[1]+","+imgSize[2]+"]" );
+        VoxelDimensions voxDimensions = new VoxelDimensions() {
+            @Override
+            public String unit() {
+                return "undefined";
+            }
+
+            @Override
+            public void dimensions(double[] dimensions) {
+                dimensions[0] = 1;
+                dimensions[1] = 1;
+                dimensions[2] = 1;
+            }
+
+            @Override
+            public double dimension(int d) {
+                return 1;
+            }
+
+            @Override
+            public int numDimensions() {
+                return 3;
+            }
+        };
+
+        return  new RandomAccessibleIntervalSource<>( voronoi, new FloatType(), new AffineTransform3D(), "Voronoi_"+numPts+" Pts_["+imgSize[0]+","+imgSize[1]+","+imgSize[2]+"]" );
+
     }
 
     public static RandomAccessibleInterval<FloatType> getVoronoiTestLabelImage(final long[] imgTestSize, int numPts, boolean copyImg) {

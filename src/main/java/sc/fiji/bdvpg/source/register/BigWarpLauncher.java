@@ -95,6 +95,9 @@ public class BigWarpLauncher implements Runnable {
             }
 
             List<ConverterSetup> allConverterSetups = new ArrayList<>();
+            ((SourceAndConverter)movingSources.get(0)).getConverter();
+
+            System.out.println("imp convsetup ? = "+ (((SourceAndConverter)movingSources.get(0)).getConverter() instanceof ConverterSetup));
 
             bwData = new BigWarp.BigWarpData(allSources, allConverterSetups, null, mvSrcIndices, fxSrcIndices);
 

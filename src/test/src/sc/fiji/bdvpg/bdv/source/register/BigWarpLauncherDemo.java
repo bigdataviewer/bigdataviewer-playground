@@ -1,5 +1,6 @@
 package sc.fiji.bdvpg.bdv.source.register;
 
+import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
 import bdv.util.BdvStackSource;
 import bdv.viewer.Source;
@@ -36,18 +37,21 @@ public class BigWarpLauncherDemo {
         // Initializes BigWarp with SourceAndConverters retrieved from the BdvStackSources
         // With SourceAndConverter
 
-        /*BigWarpLauncher bwl = new BigWarpLauncher(
+        ConverterSetup cs;
+
+        BigWarpLauncher bwl = new BigWarpLauncher(
                 (SourceAndConverter) bdvs_mandelbrot.getSources().get(0),
-                (SourceAndConverter) bdvs_voronoi.getSources().get(0),
+                (SourceAndConverter) bdvs_mandelbrot.getSources().get(0),
                 "BigWarpDemo"
-                );*/
+                );
 
         // With Source
+        /*
         BigWarpLauncher bwl = new BigWarpLauncher(
                 ((SourceAndConverter) bdvs_mandelbrot.getSources().get(0)).getSpimSource(),
                 ((SourceAndConverter) bdvs_voronoi.getSources().get(0)).getSpimSource(),
                 "BigWarpDemo"
-        );
+        );*/
 
         // Launches BigWarp
         bwl.run();
