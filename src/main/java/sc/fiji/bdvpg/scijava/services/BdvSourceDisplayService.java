@@ -247,7 +247,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
     }
 
     /**
-     * Service initilalization
+     * Service initialization
      */
     @Override
     public void initialize() {

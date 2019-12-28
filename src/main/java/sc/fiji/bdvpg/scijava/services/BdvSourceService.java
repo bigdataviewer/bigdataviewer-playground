@@ -23,6 +23,8 @@ import java.util.function.Consumer;
  * This service adds the Source to the ObjectService, but on top of it,
  * It contains a Map which contains any object which can be linked to the source.
  *
+ * It also handles SpimData object, but split all Sources into individual ones
+ *
  * The most interesting of these objects are actually created by the BdvSourceDisplayService:
  * - Converter to ARGBType, ConverterSetup, and Volatile view
  *
