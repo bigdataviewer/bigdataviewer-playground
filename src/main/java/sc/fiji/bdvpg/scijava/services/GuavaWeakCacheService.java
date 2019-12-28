@@ -29,7 +29,7 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.scijava;
+package sc.fiji.bdvpg.scijava.services;
 
 import bdv.util.BdvHandle;
 import com.google.common.cache.Cache;
@@ -79,17 +79,9 @@ public class GuavaWeakCacheService extends AbstractService implements CacheServi
         });
     }
 
-    @Parameter
-    ScriptService scriptService;
 
     @Override
     public void initialize() {
-        // TODO : change location of these aliases
-        scriptService.addAlias(BdvHandle.class);
-        scriptService.addAlias(RealTransform.class);
-        scriptService.addAlias(AffineTransform3D.class);
-        scriptService.addAlias(AbstractSpimData.class);
-
         cache = CacheBuilder.newBuilder().weakKeys().build();
     }
 

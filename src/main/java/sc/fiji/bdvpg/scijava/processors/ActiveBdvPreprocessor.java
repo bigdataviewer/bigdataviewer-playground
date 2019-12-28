@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.scijava.bdv;
+package sc.fiji.bdvpg.scijava.processors;
 
 import bdv.util.BdvHandle;
 import net.imagej.display.process.SingleInputPreprocessor;
@@ -9,7 +9,7 @@ import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.command.BdvWindowCreateCommand;
-import sc.fiji.bdvpg.scijava.GuavaWeakCacheService;
+import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -19,10 +19,6 @@ import java.util.concurrent.ExecutionException;
 /**
  * Fills single, unresolved module inputs with the active {@link BdvHandle},
  * <em>or a newly created one if none</em>.
- * <p>
- * This behavior differs from other {@link SingleInputPreprocessor}s so that all
- * SciView operations can be used to create a SciView window on demand.
- * </p>
  *
  * @author Curtis Rueden, Nicolas Chiaruttini
  */
