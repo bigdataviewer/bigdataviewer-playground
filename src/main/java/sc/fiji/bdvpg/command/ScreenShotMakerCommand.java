@@ -9,7 +9,7 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.bdv.source.screenshot.ScreenShotMaker;
 
 /**
- * ScreenShotCommand
+ * ScreenShotMakerCommand
  * <p>
  * <p>
  * <p>
@@ -18,10 +18,10 @@ import sc.fiji.bdvpg.bdv.source.screenshot.ScreenShotMaker;
  */
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>Screenshot")
-public class ScreenShotCommand implements Command {
+public class ScreenShotMakerCommand implements Command {
 
     @Parameter
-    BdvHandle bdvHandle;
+    BdvHandle bdvh;
 
     @Parameter
     public double targetPixelSizeInXY = 1;
@@ -31,7 +31,7 @@ public class ScreenShotCommand implements Command {
 
     @Override
     public void run() {
-        ScreenShotMaker screenShotMaker = new ScreenShotMaker(bdvHandle);
+        ScreenShotMaker screenShotMaker = new ScreenShotMaker(bdvh);
         screenShotMaker.setPhysicalPixelSpacingInXY(targetPixelSizeInXY, targetPixelUnit);
         ImagePlus image = screenShotMaker.getScreenshot();
         image.show();

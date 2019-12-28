@@ -7,7 +7,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.source.append.AddSourceToBdv;
-import sc.fiji.bdvpg.bdv.source.displayopts.BrightnessAdjuster;
+import sc.fiji.bdvpg.bdv.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.log.SystemLogger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.source.importer.samples.MandelbrotSourceGetter;
@@ -15,13 +15,13 @@ import sc.fiji.bdvpg.source.importer.samples.VoronoiSourceGetter;
 import sc.fiji.bdvpg.source.importer.samples.Wave3DSourceGetter;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>Append Sample Source to Bdv Window")
-public class BdvAppendSampleCommand implements Command {
+public class BdvSampleAdderCommand implements Command {
 
     @Parameter(type = ItemIO.BOTH)
-    BdvHandle bdvh;
+    public BdvHandle bdvh;
 
     @Parameter(choices = {"Mandelbrot", "Wave3D", "Voronoi", "Big Voronoi"})
-    String sampleName;
+    public String sampleName;
 
     @Override
     public void run() {
@@ -50,7 +50,6 @@ public class BdvAppendSampleCommand implements Command {
         }
         new AddSourceToBdv(bdvh, src).run();
 
-        // DO NOT WORK
-        //new BrightnessAdjuster(bdvh, src, 0.01, 0.99).run();
+        new BrightnessAutoAdjuster(bdvh, src, 0.01, 0.99).run();
     }
 }

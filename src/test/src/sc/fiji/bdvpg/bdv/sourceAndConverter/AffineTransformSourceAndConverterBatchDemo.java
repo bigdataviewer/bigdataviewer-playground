@@ -1,4 +1,4 @@
-package src.sc.fiji.bdvpg.bdv.sourceAndConverter;
+package sc.fiji.bdvpg.bdv.sourceAndConverter;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;

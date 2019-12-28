@@ -18,7 +18,7 @@ import org.scijava.script.ScriptService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
-import sc.fiji.bdvpg.command.BdvWindowCreateCommand;
+import sc.fiji.bdvpg.command.BdvWindowCreatorCommand;
 import sc.fiji.bdvpg.scijava.gui.ARGBColorConverterSetup;
 
 import java.lang.ref.WeakReference;
@@ -113,7 +113,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
             try
             {
                 return (BdvHandle)
-                        cs.run(BdvWindowCreateCommand.class,
+                        cs.run(BdvWindowCreatorCommand.class,
                                 true,
                                 "is2D", false,
                                 "windowTitle", "Bdv",

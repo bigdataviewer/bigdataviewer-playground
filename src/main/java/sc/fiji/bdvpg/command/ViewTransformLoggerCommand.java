@@ -8,7 +8,7 @@ import sc.fiji.bdvpg.bdv.navigate.ViewerTransformLogger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 
 /**
- * LogViewTransformCommand
+ * ViewTransformLoggerCommand
  * <p>
  * <p>
  * <p>
@@ -17,13 +17,13 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
  */
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>Log view transform")
-public class LogViewTransformCommand implements Command {
+public class ViewTransformLoggerCommand implements Command {
 
     @Parameter
-    BdvHandle bdvHandle;
+    BdvHandle bdvh;
 
     @Override
     public void run() {
-        new ViewerTransformLogger(bdvHandle).run();
+        new ViewerTransformLogger(bdvh).run();
     }
 }

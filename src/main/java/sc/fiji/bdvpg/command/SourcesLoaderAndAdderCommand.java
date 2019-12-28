@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class SourcesLoaderAndAdderCommand implements Command
 {
 	@Parameter(type = ItemIO.BOTH)
-	BdvHandle bdvHandle;
+	BdvHandle bdvh;
 
 	/**
 	 * TODO:
@@ -36,7 +36,7 @@ public class SourcesLoaderAndAdderCommand implements Command
 	{
 		final String[] filePaths = (String[]) Arrays.stream(files).map(f->f.getAbsolutePath()).collect(Collectors.toList()).toArray();
 
-		new SourcesLoaderAndAdder( bdvHandle, filePaths ).run();
+		new SourcesLoaderAndAdder(bdvh, filePaths ).run();
 	}
 
 }
