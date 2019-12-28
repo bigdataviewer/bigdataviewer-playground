@@ -1,19 +1,9 @@
 package sc.fiji.bdvpg.scijava.services;
 
-import bdv.tools.brightness.ConverterSetup;
 import bdv.viewer.Source;
-import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.generic.AbstractSpimData;
-import net.imglib2.Volatile;
-import net.imglib2.converter.Converter;
-import net.imglib2.display.RealARGBColorConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
-import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.type.numeric.RealType;
-import net.imglib2.util.Util;
-import org.scijava.event.EventHandler;
-import org.scijava.event.EventService;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -22,124 +12,136 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.scijava.ui.UIService;
-import sc.fiji.bdvpg.scijava.gui.ARGBColorConverterSetup;
 
 import javax.swing.*;
 import java.util.*;
 import java.util.function.Consumer;
 
+/**
+ * Scijava Service which centralizes Bdv Sources, independently of their display
+ * Bdv Sources can be registered to this Service.
+ * This service adds the Source to the ObjectService, but on top of it,
+ * It contains a Map which contains any object which can be linked to the source.
+ *
+ * The most interesting of these objects are actually created by the BdvSourceDisplayService:
+ * - Converter to ARGBType, ConverterSetup, and Volatile view
+ *
+ * TODO : Think more carefully : maybe the volatile source should be done here...
+ * Because when multiply wrapped source end up here, it maybe isn't possible to make the volatile view
+ */
+
 @Plugin(type=Service.class)
 public class BdvSourceService extends AbstractService implements SciJavaService {
 
+    /**
+     * Standard logger
+     */
+    public static Consumer<String> log = (str) -> System.out.println(BdvSourceService.class.getSimpleName()+":"+str);
+
+    /**
+     * Error logger
+     */
+    public static Consumer<String> errlog = (str) -> System.err.println(BdvSourceService.class.getSimpleName()+":"+str);
+
+    /**
+     * Scijava Object Service : will contain all the sources
+     */
     @Parameter
     private ObjectService objectService;
 
     /**
-     * Map containing objects that are 1 to 1 linked to a Source
+     * Scriptservice : used for adding Source alias to help for scripting
      */
-    Map<Source, Map<String, Object>> data;
-
-    final public static String  SPIMDATALIST = "SPIMDATALIST";
-
     @Parameter
     ScriptService scriptService;
 
+    /**
+     * uiService : used ot check if an UI is available to create a Swing Panel
+     */
     @Parameter
     UIService uiService;
 
-    @Parameter
-    EventService es;
+    /**
+     * Map containing objects that are 1 to 1 linked to a Source
+     * TODO : ask if it should contain a WeakReference to Source keys (Potential Memory leak ?)
+     */
+    Map<Source, Map<String, Object>> data;
 
-    public static Consumer<String> log = (str) -> System.out.println(BdvSourceService.class.getSimpleName()+":"+str);
+    /**
+     * Reserved key for the data map. data.get(source).get(SPIMDATALIST)
+     * is expected to return a List of Spimdata Objects which refer to this source
+     * whether a list of necessary is not obvious at the moment
+     * TODO : make an example
+     */
+    final public static String  SPIMDATALIST = "SPIMDATALIST";
 
-    public static Consumer<String> errlog = (str) -> System.err.println(BdvSourceService.class.getSimpleName()+":"+str);
-
+    /**
+     * Test if a Source is already registered in the Service
+     * @param src
+     * @return
+     */
     public boolean isRegistered(Source src) {
         return data.containsKey(src);
     }
 
+    /**
+     * Register a Bdv Source in this Service.
+     * Called in the BdvSourcePostProcessor
+     * @param src
+     */
     public void registerSource(Source src) {
         if (data.containsKey(src)) {
             log.accept("Source already registered");
             return;
         }
-
-        // Essentially copy What's in BdvVisTools
         final int numTimepoints = 1;
-
-
-        if ( src.getType() instanceof RealType ) {
-            registerRealTypeSource(src);//addSourceToListsRealType( ( Source ) source, setupId, ( List ) converterSetups, ( List ) sources );
-		/*else if ( type instanceof ARGBType )
-			addSourceToListsARGBType( ( Source ) source, setupId, ( List ) converterSetups, ( List ) sources );
-		else if ( type instanceof VolatileARGBType )
-			addSourceToListsVolatileARGBType( ( Source ) source, setupId, ( List ) converterSetups, ( List ) sources );*/
-        } else {
-            errlog.accept("Cannot register Source of type "+src.getType().getClass().getSimpleName());
-            return;
-        }
-
+        Map<String, Object> sourceData = new HashMap<>();
+        data.put(src, sourceData);
         objectService.addObject(src);
-
         if (uiAvailable) ui.update(src);
 
     }
 
-    public < T extends RealType< T >> void registerRealTypeSource(Source<T> source) {
-        log.accept("Real Typed Source Registration...");
-        final T type = Util.getTypeFromInterval( source.getSource( 0, 0 ) );
-        final double typeMin = Math.max( 0, Math.min( type.getMinValue(), 65535 ) );
-        final double typeMax = Math.max( 0, Math.min( type.getMaxValue(), 65535 ) );
-        final RealARGBColorConverter< T > converter ;
-        if ( source.getType() instanceof Volatile)
-            converter = new RealARGBColorConverter.Imp0<>( typeMin, typeMax );
-        else
-            converter = new RealARGBColorConverter.Imp1<>( typeMin, typeMax );
-        converter.setColor( new ARGBType( 0xffffffff ) );
-
-        final ARGBColorConverterSetup setup = new ARGBColorConverterSetup( converter );
-
-        Map<String, Object> sourceData = new HashMap<>();
-        //sourceData.put(CONVERTER, converter);
-        //sourceData.put(CONVERTERSETUP, setup);
-        data.put(source, sourceData);
-
-        log.accept("Real Typed Source Registered");
-
-    }
-
+    /**
+     * Inner Swing UI for this Service, exists only if an UI is available in the current execution context
+     */
     UIBdvSourceService ui;
 
+    /**
+     * Flags if the Inner UI exists
+     */
     boolean uiAvailable = false;
 
     public UIBdvSourceService getUI() {
         return ui;
     }
 
+    /**
+     * Service initialization
+     */
     @Override
     public void initialize() {
         scriptService.addAlias(Source.class);
+        // -- TODO Check whether it's a good idea to add this here
         scriptService.addAlias(RealTransform.class);
         scriptService.addAlias(AffineTransform3D.class);
         scriptService.addAlias(AbstractSpimData.class);
-        data = new HashMap<>();
+        // -- End of to check$
 
+        data = new HashMap<>();
         if (uiService!=null) {
             log.accept("uiService detected : Constructing JPanel for BdvSourceService");
             ui = new UIBdvSourceService(this);
             uiAvailable = true;
         }
-
         log.accept("Service initialized.");
-
-        es.subscribe(this);
     }
 
-    @EventHandler
-    public void listen() {
-        log.accept("listen method triggered");
-    }
-
+    /**
+     * Inner Swing UI for Bdv Source
+     * Really really basic at the moment
+     * TODO : improve UI
+     */
     public class UIBdvSourceService {
 
         BdvSourceService bss;
@@ -170,17 +172,6 @@ public class BdvSourceService extends AbstractService implements SciJavaService 
                 textArea.setText(text);
             }
         }
-
-        /* public void addConverterSetupControl(Source src) {
-            JSlider slider = new JSlider();
-            slider.setMinimum(0);
-            slider.setMaximum(65535);
-            slider.addChangeListener(e -> {
-                JSlider s = (JSlider) e.getSource();
-                System.out.println(s.getValue());
-            });
-            panel.add(slider);
-        } */
     }
 
 }
