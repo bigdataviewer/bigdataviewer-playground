@@ -13,16 +13,10 @@ public class SourceAndConverterLoaderDemo
 	public static void main( String[] args )
 	{
 		final BdvHandle bdvHandle = createBdv();
-		final SourceAndConverter< ? > sourceAndConverter = loadSourceAndConverter();
+		final SourceAndConverter< ? > sourceAndConverter = new SourceAndConverterLoader( "src/test/resources/mri-stack.xml" ).getSourceAndConverter( 0 );
 		new SourceAndConverterBdvAdder( bdvHandle, sourceAndConverter ).run();
 		new ViewerTransformAdjuster( bdvHandle, sourceAndConverter.getSpimSource() ).run();
 		new BrightnessAdjuster( bdvHandle, sourceAndConverter, 0, 255.0 ).run();
-	}
-
-	public static SourceAndConverter< ? > loadSourceAndConverter()
-	{
-		final SourceAndConverterLoader loader = new SourceAndConverterLoader( "src/test/resources/mri-stack.xml" );
-		return loader.getSourceAndConverter( 0 );
 	}
 
 	public static BdvHandle createBdv()
