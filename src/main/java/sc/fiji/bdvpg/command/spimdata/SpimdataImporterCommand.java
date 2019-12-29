@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.command;
+package sc.fiji.bdvpg.command.spimdata;
 
 import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.generic.AbstractSpimData;

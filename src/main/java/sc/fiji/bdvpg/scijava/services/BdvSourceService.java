@@ -17,6 +17,8 @@ import javax.swing.*;
 import java.util.*;
 import java.util.function.Consumer;
 
+import static sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService.VOLATILESOURCE;
+
 /**
  * Scijava Service which centralizes Bdv Sources, independently of their display
  * Bdv Sources can be registered to this Service.
@@ -70,12 +72,12 @@ public class BdvSourceService extends AbstractService implements SciJavaService 
     Map<Source, Map<String, Object>> data;
 
     /**
-     * Reserved key for the data map. data.get(source).get(SPIMDATALIST)
+     * Reserved key for the data map. data.get(source).get(SETSPIMDATA)
      * is expected to return a List of Spimdata Objects which refer to this source
      * whether a list of necessary is not obvious at the moment
      * TODO : make an example
      */
-    final public static String  SPIMDATALIST = "SPIMDATALIST";
+    final public static String SETSPIMDATA = "SETSPIMDATA";
 
     /**
      * Test if a Source is already registered in the Service
@@ -91,7 +93,7 @@ public class BdvSourceService extends AbstractService implements SciJavaService 
      * Called in the BdvSourcePostProcessor
      * @param src
      */
-    public void registerSource(Source src) {
+    public void register(Source src) {
         if (data.containsKey(src)) {
             log.accept("Source already registered");
             return;
@@ -101,8 +103,34 @@ public class BdvSourceService extends AbstractService implements SciJavaService 
         data.put(src, sourceData);
         objectService.addObject(src);
         if (uiAvailable) ui.update(src);
-
     }
+
+    /**
+     * Register a Bdv Source in this Service.
+     * Called in the BdvSourcePostProcessor
+     * @param src
+     */
+    public void register(Source src, Source vsrc) {
+        if (data.containsKey(src)) {
+            log.accept("Source already registered");
+            return;
+        }
+        final int numTimepoints = 1;
+        Map<String, Object> sourceData = new HashMap<>();
+        data.put(src, sourceData);
+        sourceData.put(VOLATILESOURCE, vsrc);
+        objectService.addObject(src);
+        if (uiAvailable) ui.update(src);
+    }
+
+    public void linkToSpimData(Source src, AbstractSpimData asd) {
+        // TODO
+        if (data.get(src).get(SETSPIMDATA)==null) {
+            data.get(src).put(SETSPIMDATA, new HashSet<>());
+        }
+        ((Set)data.get(src).get(SETSPIMDATA)).add(asd);
+    }
+
 
     /**
      * Inner Swing UI for this Service, exists only if an UI is available in the current execution context

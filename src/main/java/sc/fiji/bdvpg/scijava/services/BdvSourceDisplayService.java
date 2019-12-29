@@ -19,7 +19,7 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import sc.fiji.bdvpg.command.BdvWindowCreatorCommand;
-import sc.fiji.bdvpg.scijava.gui.ARGBColorConverterSetup;
+import bdv.util.ARGBColorConverterSetup;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
@@ -165,7 +165,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
     public void show(BdvHandle bdvh, Source src) {
         // If the source is not registered, register it
         if (!bss.isRegistered(src)) {
-            bss.registerSource(src);
+            bss.register(src);
         }
 
         // Does it already have additional objects necessary for display ?
@@ -256,6 +256,23 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         sourcesDisplayedInBdvWindows = new HashMap<>();
         locationsDisplayingSource = new HashMap<>();
         log.accept("Service initialized.");
+    }
+
+    public void closeBdv(BdvHandle bdvh) {
+        // Programmatically or User action
+        // Before closing the Bdv Handle, we need to keep up to date all objects:
+        // 1 The set of opened BdvHandle
+        bdvhs.remove(bdvh);
+        // 2 sourcesDisplayedInBdvWindows
+        sourcesDisplayedInBdvWindows.remove(bdvh);
+        // 3 locationsDisplayingSource
+        locationsDisplayingSource.values().forEach(list -> {
+            list.removeIf(bdvhr -> bdvhr.bdvh.equals(bdvh));
+        });
+        // Actually close the bdv window
+        // bdvh.close();
+        log.accept("bvdh:"+bdvh.toString()+" closed");
+        os.removeObject(bdvh);
     }
 
     /**

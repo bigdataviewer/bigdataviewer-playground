@@ -9,6 +9,7 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.BdvCreator;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
 
 
@@ -37,6 +38,8 @@ public class BdvWindowCreatorCommand implements Command {
     @Parameter
     ObjectService os;
 
+    @Parameter
+    BdvSourceDisplayService bdvsds;
 
     @Override
     public void run() {
@@ -45,9 +48,10 @@ public class BdvWindowCreatorCommand implements Command {
         creator.run();
         bdvh = creator.getBdvHandle();
         //------------ Allows to remove the BdvHandle from the objectService when closed by the user
-        BdvHandleHelper.setBdvHandleCloseOperation(bdvh,os,cacheService, true);
+        BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService,  bdvsds, true);
         //------------ Renames window to ensure unicity
         windowTitle = BdvHandleHelper.getUniqueWindowTitle(os, windowTitle);
         BdvHandleHelper.setWindowTitle(bdvh, windowTitle);
+        os.addObject(bdvh);
     }
 }

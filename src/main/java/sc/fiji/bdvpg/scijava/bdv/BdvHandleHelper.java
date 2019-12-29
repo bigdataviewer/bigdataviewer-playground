@@ -4,6 +4,7 @@ import bdv.util.BdvHandle;
 import ij.plugin.frame.Recorder;
 import org.scijava.cache.CacheService;
 import org.scijava.object.ObjectService;
+import sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -13,20 +14,20 @@ import java.util.List;
 
 public class BdvHandleHelper {
 
-    public static void setBdvHandleCloseOperation(BdvHandle bdvh, ObjectService os, CacheService cs, boolean putWindowOnTop) {
+    public static void setBdvHandleCloseOperation(BdvHandle bdvh, CacheService cs, BdvSourceDisplayService bdvsds, boolean putWindowOnTop) {
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bdvh.getViewerPanel());
 
         topFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
-                os.removeObject(bdvh);
+                bdvsds.closeBdv(bdvh);
                 e.getWindow().dispose();
-                if (Recorder.record) {
+                /*if (Recorder.record) {
                     // run("Select Bdv Window", "bdvh=bdv.util.BdvHandleFrame@e6c7718");
                     String cmdrecord = "run(\"Close Bdv Window\", \"bdvh=" + getWindowTitle(bdvh) + "\");\n";
                     Recorder.recordString(cmdrecord);
-                }
+                }*/
             }
 
             @Override
@@ -34,16 +35,16 @@ public class BdvHandleHelper {
                 super.windowActivated(e);
                 cs.put("LAST_ACTIVE_BDVH", new WeakReference<>(bdvh));
                 // Very old school
-                if (Recorder.record) {
+                /*if (Recorder.record) {
                     // run("Select Bdv Window", "bdvh=bdv.util.BdvHandleFrame@e6c7718");
                     String cmdrecord = "run(\"Select Bdv Window\", \"bdvh=" + getWindowTitle(bdvh) + "\");\n";
                     Recorder.recordString(cmdrecord);
-                }
+                }*/
             }
         });
 
         if (putWindowOnTop) {
-            cs.put("LAST_ACTIVE_BDVH", new WeakReference<>(bdvh));// why a weak reference ? wrong!
+            cs.put("LAST_ACTIVE_BDVH", new WeakReference<>(bdvh));// why a weak reference ? because we want to dispose the bdvhandle if it is closed
         }
     }
 
@@ -70,7 +71,7 @@ public class BdvHandleHelper {
 
     public static String getUniqueWindowTitle(ObjectService os, String iniTitle) {
         List<BdvHandle> bdvs = os.getObjects(BdvHandle.class);
-        boolean duplicateExist = true;
+        boolean duplicateExist;
         String uniqueTitle = iniTitle;
         duplicateExist = bdvs.stream().filter(bdv ->
                 (bdv.toString().equals(iniTitle))||(getWindowTitle(bdv).equals(iniTitle)))

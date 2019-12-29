@@ -1,7 +1,6 @@
 package sc.fiji.bdvpg.scijava.processors;
 
 import bdv.viewer.Source;
-import org.scijava.convert.ConvertService;
 import org.scijava.module.Module;
 import org.scijava.module.process.AbstractPostprocessorPlugin;
 import org.scijava.module.process.PostprocessorPlugin;
@@ -34,7 +33,7 @@ public class BdvSourcePostprocessor extends AbstractPostprocessorPlugin {
                log.accept("Is it registered ? ");
                if (!bss.isRegistered(src)) {
                    log.accept("No.");
-                   bss.registerSource(src);
+                   bss.register(src);
                } else {
                    log.accept("Yes.");
                }

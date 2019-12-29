@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.scijava.gui;
+package bdv.util;
 
 import bdv.tools.brightness.ConverterSetup;
 import bdv.viewer.RequestRepaint;
