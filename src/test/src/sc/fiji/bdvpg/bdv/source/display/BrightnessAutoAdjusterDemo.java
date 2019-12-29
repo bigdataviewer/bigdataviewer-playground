@@ -1,11 +1,7 @@
 package sc.fiji.bdvpg.bdv.source.display;
 
-import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
-import bdv.util.BdvOptions;
 import bdv.viewer.Source;
-import bdv.viewer.SourceAndConverter;
-import mpicbg.spim.data.SpimData;
 import sc.fiji.bdvpg.bdv.BDVSingleton;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.source.append.SourceAdder;

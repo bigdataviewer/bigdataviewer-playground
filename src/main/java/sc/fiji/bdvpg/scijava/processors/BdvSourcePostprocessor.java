@@ -26,7 +26,7 @@ public class BdvSourcePostprocessor extends AbstractPostprocessorPlugin {
     public void process(Module module) {
 
        module.getOutputs().forEach((name, object)-> {
-           log.accept("input:\t"+name+"\tclass:\t"+object.getClass().getSimpleName());
+           //log.accept("input:\t"+name+"\tclass:\t"+object.getClass().getSimpleName());
            if (object instanceof Source) {
                Source src = (Source) object;
                log.accept("Source found.");
@@ -40,11 +40,32 @@ public class BdvSourcePostprocessor extends AbstractPostprocessorPlugin {
                /**
                 * Default behaviour : display it on the active window
                 */
-               if (bhs!=null) {
-                   bhs.show(src);
+               //if (bhs!=null) {
+               //    bhs.show(src);
+               //}
+               module.resolveOutput(name);
+           }
+           if (object instanceof Source[]) {
+               Source[] srcs = (Source[]) object;
+               for (Source src:srcs) {
+                   log.accept("Source found.");
+                   log.accept("Is it registered ? ");
+                   if (!bss.isRegistered(src)) {
+                       log.accept("No.");
+                       bss.register(src);
+                   } else {
+                       log.accept("Yes.");
+                   }
+                   /**
+                    * Default behaviour : display it on the active window
+                    */
+                   //if (bhs!=null) {
+                   //    bhs.show(src);
+                   //}
                }
                module.resolveOutput(name);
            }
+
        });
 
     }

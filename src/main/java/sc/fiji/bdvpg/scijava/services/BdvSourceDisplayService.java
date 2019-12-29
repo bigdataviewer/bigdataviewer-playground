@@ -18,7 +18,7 @@ import org.scijava.script.ScriptService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
-import sc.fiji.bdvpg.command.BdvWindowCreatorCommand;
+import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import bdv.util.ARGBColorConverterSetup;
 
 import java.lang.ref.WeakReference;

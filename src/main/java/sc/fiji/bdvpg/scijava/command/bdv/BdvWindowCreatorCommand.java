@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.command;
+package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.*;
 import org.scijava.ItemIO;

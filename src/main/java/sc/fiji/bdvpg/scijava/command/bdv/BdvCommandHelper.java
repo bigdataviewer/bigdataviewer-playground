@@ -1,8 +1,8 @@
-package sc.fiji.bdvpg.command;
+package sc.fiji.bdvpg.scijava.command.bdv;
 
 import java.util.ArrayList;
 
-public class CommandHelper {
+public class BdvCommandHelper {
 
     /**
      * Convert a comma separated list of indexes into an arraylist of integer

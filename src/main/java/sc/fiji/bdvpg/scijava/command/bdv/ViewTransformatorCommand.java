@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.command;
+package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
 import net.imglib2.realtransform.AffineTransform3D;

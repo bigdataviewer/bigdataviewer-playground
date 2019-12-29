@@ -1,6 +1,5 @@
-package sc.fiji.bdvpg.command.spimdata;
+package sc.fiji.bdvpg.scijava.command.spimdata;
 
-import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.ItemIO;
 import org.scijava.command.Command;

@@ -52,9 +52,9 @@ public class BdvSpimdataPostprocessor extends AbstractPostprocessorPlugin {
                        final SpimSource s = vs.nonVolatile();
                        bss.register(s,vs);
                        bss.linkToSpimData(s,asd);
-                       if (bhs!=null) {
-                           bhs.show(s);
-                       }
+                       //if (bhs!=null) {
+                       //    bhs.show(s);
+                       //}
                    } else if ( ARGBType.class.isInstance( type ) ) {
                        //TODO
                        errlog.accept("Cannot open Spimdata with Source of Type ARGBType");
