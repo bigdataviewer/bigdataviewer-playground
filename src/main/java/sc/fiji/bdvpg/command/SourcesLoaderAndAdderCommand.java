@@ -6,8 +6,9 @@ import org.scijava.ItemVisibility;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.bdv.source.append.SourceBdvAdder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.bdv.source.append.SourcesLoaderAndAdder;
+import sc.fiji.bdvpg.source.importer.SourceLoader;
 
 import java.io.File;
 import java.util.Arrays;
@@ -35,8 +36,11 @@ public class SourcesLoaderAndAdderCommand implements Command
 	public void run()
 	{
 		final String[] filePaths = (String[]) Arrays.stream(files).map(f->f.getAbsolutePath()).collect(Collectors.toList()).toArray();
-
-		new SourcesLoaderAndAdder( bdvHandle, filePaths ).run();
+		for (File f:files) {
+			SourceLoader sl = new SourceLoader(f.getAbsolutePath());
+			sl.run();
+			new SourceBdvAdder(bdvHandle, sl.getSource(0));
+		}
 	}
 
 }

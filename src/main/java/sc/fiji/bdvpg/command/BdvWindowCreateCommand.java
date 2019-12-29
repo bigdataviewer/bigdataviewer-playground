@@ -1,10 +1,6 @@
 package sc.fiji.bdvpg.command;
 
 import bdv.util.*;
-import net.imglib2.img.array.ArrayImg;
-import net.imglib2.img.array.ArrayImgs;
-import net.imglib2.realtransform.AffineTransform3D;
-import net.miginfocom.swing.MigLayout;
 import org.scijava.ItemIO;
 import org.scijava.command.Command;
 import org.scijava.object.ObjectService;
@@ -14,9 +10,6 @@ import sc.fiji.bdvpg.bdv.BdvCreator;
 import sc.fiji.bdvpg.scijava.GuavaWeakCacheService;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.bdv.BdvHandleHelper;
-
-import javax.swing.*;
-import java.awt.*;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Create Empty BDV Frame",
     label = "Creates an empty Bdv window")
@@ -49,7 +42,7 @@ public class BdvWindowCreateCommand implements Command {
         //------------ BdvHandleFrame
         BdvCreator creator = new BdvCreator(is2D, windowTitle);
         creator.run();
-        bdvh = creator.getBdvHandle();
+        bdvh = creator.get();
         //------------ Allows to remove the BdvHandle from the objectService when closed by the user
         BdvHandleHelper.setBdvHandleCloseOperation(bdvh,os,cacheService, true);
         //------------ Renames window to ensure unicity

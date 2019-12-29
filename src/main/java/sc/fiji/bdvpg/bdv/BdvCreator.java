@@ -9,7 +9,9 @@ import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.realtransform.AffineTransform3D;
 
-public class BdvCreator implements Runnable
+import java.util.function.Supplier;
+
+public class BdvCreator implements Runnable, Supplier<BdvHandle>
 {
 	private final boolean is2D;
 	private final String name;
@@ -56,7 +58,7 @@ public class BdvCreator implements Runnable
 		bss.removeFromBdv();
 	}
 
-	public BdvHandle getBdvHandle()
+	public BdvHandle get()
 	{
 		if ( bdvHandle == null ) run();
 

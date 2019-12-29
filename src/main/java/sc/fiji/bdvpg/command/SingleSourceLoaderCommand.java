@@ -7,9 +7,9 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.bdv.source.append.SourceBdvAdder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.bdv.source.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.bdv.source.append.SourceAdder;
 import sc.fiji.bdvpg.source.importer.SourceLoader;
 
 import java.io.File;
@@ -52,7 +52,7 @@ public class SingleSourceLoaderCommand implements Command
 
 	public void addSource()
 	{
-		new SourceAdder( bdvHandle, source ).run();
+		new SourceBdvAdder( bdvHandle, source ).run();
 	}
 
 	public void loadSource()

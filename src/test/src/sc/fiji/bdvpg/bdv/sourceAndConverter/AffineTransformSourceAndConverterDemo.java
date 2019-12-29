@@ -7,7 +7,7 @@ import bdv.viewer.Source;
 import mpicbg.spim.data.SpimData;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.bdv.BDVSingleton;
-import sc.fiji.bdvpg.bdv.source.append.AddSourceToBdv;
+import sc.fiji.bdvpg.bdv.source.append.SourceBdvAdder;
 import sc.fiji.bdvpg.bdv.source.get.GetSourceByIndexFromBdv;
 import sc.fiji.bdvpg.source.importer.SourceLoader;
 import sc.fiji.bdvpg.source.transform.SourceAffineTransform;
@@ -38,7 +38,7 @@ public class AffineTransformSourceAndConverterDemo {
         SourceAffineTransform sat = new SourceAffineTransform(src, at3d);
         sat.run();
 
-        AddSourceToBdv addsrc = new AddSourceToBdv(bdvHandle, sat.getSourceOut());
+        SourceBdvAdder addsrc = new SourceBdvAdder(bdvHandle, sat.getSourceOut());
         addsrc.run();
     }
 }
