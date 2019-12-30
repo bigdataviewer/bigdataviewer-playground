@@ -48,16 +48,12 @@ public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle>  {
         if ((bdvhs == null)||(bdvhs.size()==0)) {
              try
             {
-
                 return (BdvHandle)
-                        cs.run(BdvWindowCreatorCommand.class,
-                        true,
+                        cs.run(BdvWindowCreatorCommand.class,true,
                             "is2D", false,
-                            "windowTitle", "Bdv",
-                            "px",0,
-                            "py",0,
-                            "pz",0,
-                            "s",1).get().getOutput("bdvh");//*/
+                            "windowTitle", "Bdv")
+                                .get()
+                                .getOutput("bdvh");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {

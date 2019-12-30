@@ -49,7 +49,7 @@ public class BigWarpLauncher implements Runnable {
     // Alternative maybe better option :
     // Use array : Source[] or SourceAndConverter[] (and maybe this issue was the reason for BigWarp choosing this in the beginning)
 
-    public BigWarpLauncher(List movingSources, List fixedSources, String bigWarpName) {
+    public BigWarpLauncher(List movingSources, List fixedSources, String bigWarpName, List<ConverterSetup> allConverterSetups) {
 
         this.bigWarpName = bigWarpName;
 
@@ -85,7 +85,9 @@ public class BigWarpLauncher implements Runnable {
                 fxSrcIndices[i] = i+movingSources.size();
             }
 
-            List<ConverterSetup> allConverterSetups = new ArrayList<>();
+            if (allConverterSetups==null) {
+                allConverterSetups = new ArrayList<>();
+            }
 
             bwData = new BigWarp.BigWarpData(allSources, allConverterSetups, null, mvSrcIndices, fxSrcIndices);
 
@@ -114,8 +116,8 @@ public class BigWarpLauncher implements Runnable {
         try {
             bigWarp = new BigWarp(bwData, bigWarpName, null);
             // What does P and Q stand for ? Not sure about who's moving and who's fixed
-            bdvHandleP = new ViewerPanelHandle(bigWarp.getViewerFrameP().getViewerPanel(), bigWarpName+"_Moving");
-            bdvHandleQ = new ViewerPanelHandle(bigWarp.getViewerFrameQ().getViewerPanel(), bigWarpName+"_Fixed");
+            bdvHandleP = new ViewerPanelHandle(bigWarp.getViewerFrameP().getViewerPanel(), bigWarp.getSetupAssignments(), bigWarpName+"_Moving");
+            bdvHandleQ = new ViewerPanelHandle(bigWarp.getViewerFrameQ().getViewerPanel(), bigWarp.getSetupAssignments(), bigWarpName+"_Fixed");
         } catch (SpimDataException e) {
             e.printStackTrace();
         }

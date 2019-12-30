@@ -1,7 +1,9 @@
 package sc.fiji.bdvpg.scijava.services;
 
 import bdv.tools.brightness.ConverterSetup;
+import bdv.tools.brightness.SetupAssignments;
 import bdv.util.BdvHandle;
+import bdv.viewer.BigWarpConverterSetupWrapper;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.Volatile;
@@ -22,6 +24,7 @@ import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import bdv.util.ARGBColorConverterSetup;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -116,11 +119,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
                         cs.run(BdvWindowCreatorCommand.class,
                                 true,
                                 "is2D", false,
-                                "windowTitle", "Bdv",
-                                "px",0,
-                                "py",0,
-                                "pz",0,
-                                "s",1).get().getOutput("bdvh");//*/
+                                "windowTitle", "Bdv").get().getOutput("bdvh");//*/
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
@@ -168,6 +167,31 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
             bss.register(src);
         }
 
+        // Stores in which BdvHandle the source will be displayed
+        if (!sourcesDisplayedInBdvWindows.containsKey(bdvh)) {
+            sourcesDisplayedInBdvWindows.put(bdvh, new ArrayList<>());
+        }
+        sourcesDisplayedInBdvWindows.get(bdvh).add(src);
+
+        SourceAndConverter sac = getSourceAndConverter(src);
+
+        bdvh.getViewerPanel().addSource(sac);
+        bdvh.getSetupAssignments().addSetup((ConverterSetup)bss.data.get(src).get(CONVERTERSETUP));
+
+        // Stores where the source is displayed (BdvHandle and index)
+        BdvHandleRef bhr = new BdvHandleRef(bdvh, bdvh.getViewerPanel().getState().numSources());
+        if (!(locationsDisplayingSource.containsKey(src))) {
+            System.out.println("erase locations display source of "+src.getName());
+            locationsDisplayingSource.put(src, new ArrayList<>());
+        }
+        locationsDisplayingSource.get(src).add(bhr);
+    }
+
+    public ConverterSetup getConverterSetup(Source src) {
+        return (ConverterSetup)bss.data.get(src).get(CONVERTERSETUP);
+    }
+
+    public SourceAndConverter getSourceAndConverter(Source src) {
         // Does it already have additional objects necessary for display ?
         // - Converter to ARGBType
         // - ConverterSetup
@@ -180,12 +204,6 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
             createVolatile(src);
         }
 
-        // Stores in which BdvHandle the source will be displayed
-        if (!sourcesDisplayedInBdvWindows.containsKey(bdvh)) {
-            sourcesDisplayedInBdvWindows.put(bdvh, new ArrayList<>());
-        }
-        sourcesDisplayedInBdvWindows.get(bdvh).add(src);
-
         // Construct SourceAndConverter Object
         // TODO : Volatile
         //SourceAndConverter vsac = null;
@@ -194,16 +212,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         //}
 
         SourceAndConverter sac = new SourceAndConverter(src, (Converter) bss.data.get(src).get(CONVERTER));
-        bdvh.getViewerPanel().addSource(sac);
-        bdvh.getSetupAssignments().addSetup((ConverterSetup)bss.data.get(src).get(CONVERTERSETUP));
-
-        // Stores where the source is displayed (BdvHandle and index)
-        BdvHandleRef bhr = new BdvHandleRef(bdvh, bdvh.getViewerPanel().getState().numSources());
-        if (!locationsDisplayingSource.containsKey(src)) {
-            locationsDisplayingSource.put(src, new ArrayList<>());
-        }
-        locationsDisplayingSource.get(src).add(bhr);
-
+        return sac;
     }
 
     /**
@@ -275,6 +284,63 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         os.removeObject(bdvh);
     }
 
+    public void registerSourceAndConverter(SourceAndConverter sac) {
+        if (!bss.isRegistered(sac.getSpimSource())) {
+            log.accept("Unregistered source and converter object");
+            if (sac.asVolatile()==null) {
+                bss.register(sac.getSpimSource());
+                bss.data.get(sac.getSpimSource()).put(CONVERTER, sac.getConverter());
+            } else {
+                bss.register(sac.getSpimSource(), sac.asVolatile().getSpimSource());
+                bss.data.get(sac.getSpimSource()).put(CONVERTER, sac.getConverter());
+            }
+        }
+    }
+
+    public void registerBdvSource(BdvHandle bdvh_in, int index) {
+        SourceAndConverter sac = bdvh_in.getViewerPanel().getState().getSources().get(index);
+
+        Source key = sac.getSpimSource();
+        //if (
+        registerSourceAndConverter(sac);//) {
+        // Stores where the source is displayed (BdvHandle and index)
+        BdvHandleRef bhr = new BdvHandleRef(bdvh_in, index);
+        if (!locationsDisplayingSource.containsKey(key)) {
+            locationsDisplayingSource.put(key, new ArrayList<>());
+        }
+        locationsDisplayingSource.get(key).add(bhr);
+        // Updates converter setup callback to handle multiple displays of sources
+
+        ConverterSetup cs = getConverterSetupsViaReflection(bdvh_in).get(index);
+
+        // BigWarp Hack
+        if (cs instanceof BigWarpConverterSetupWrapper) {
+            BigWarpConverterSetupWrapper wcs = (BigWarpConverterSetupWrapper) cs;
+            wcs.getSourceConverterSetup().setViewer(() -> {
+                //logLocationsDisplayingSource();
+                if (locationsDisplayingSource.get(key) != null) {
+                    locationsDisplayingSource.get(key).forEach(bhref -> bhref.bdvh.getViewerPanel().requestRepaint());
+                }
+            });
+        } else {
+            cs.setViewer(() -> {
+                if (locationsDisplayingSource.get(key) != null) {
+                    locationsDisplayingSource.get(key).forEach(bhref -> bhref.bdvh.getViewerPanel().requestRepaint());
+                }
+            });
+        }
+        bss.data.get(key).put(CONVERTERSETUP, cs);
+    }
+
+    public void logLocationsDisplayingSource() {
+        locationsDisplayingSource.forEach((src, lbdvref) -> {
+            System.out.println(src.getName()+":"+src.toString());
+            lbdvref.forEach(bdvref -> {
+                System.out.println("\t bdv = "+bdvref.bdvh.toString()+"\t i = "+bdvref.indexInBdv);
+            });
+        });
+    }
+
     /**
      * Class containing a BdvHandle and an index -> reference to where a Source is located
      */
@@ -286,5 +352,19 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
             this.bdvh = bdvh;
             this.indexInBdv = idx;
         }
+    }
+
+    public List< ConverterSetup > getConverterSetupsViaReflection(BdvHandle bdvh) {
+        try {
+            Field fConverterSetup = SetupAssignments.class.getDeclaredField("setups");
+
+            fConverterSetup.setAccessible(true);
+
+            return (ArrayList< ConverterSetup >) fConverterSetup.get(bdvh.getSetupAssignments());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
