@@ -2,13 +2,10 @@ package sc.fiji.bdvpg.converter;
 
 import net.imglib2.converter.Converter;
 import net.imglib2.display.ColorConverter;
-import net.imglib2.ops.parse.token.Int;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public abstract class RealARGBColorConverter< R extends RealType< ? > > implements ColorConverter, Converter< R, ARGBType >
@@ -36,7 +33,7 @@ public abstract class RealARGBColorConverter< R extends RealType< ? > > implemen
 
 	protected int black;
 
-	// a place to specify special colors for special values
+	// specify special colors for special values
 	protected Map< Double, Integer > valueToColor = new HashMap<>(  );
 
 	public Map< Double, Integer > getValueToColor()

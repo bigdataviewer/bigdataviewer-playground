@@ -29,7 +29,7 @@ public class SourceAndConverterFromSpimData
 	@SuppressWarnings( { "unchecked", "rawtypes" } )
 	public static void init(
 			final AbstractSpimData< ? > spimData,
-			final List< ConverterSetup > converterSetups, // TODO: Remove this if we do not use it
+			final List< ConverterSetup > converterSetups, // TODO: Remove?
 			final List< SourceAndConverter< ? > > sources )
 	{
 		final AbstractSequenceDescription< ?, ?, ? > seq = spimData.getSequenceDescription();
@@ -51,7 +51,7 @@ public class SourceAndConverterFromSpimData
 			final AbstractSpimData< ? > spimData,
 			final BasicViewSetup setup,
 			final T type,
-			final List< ConverterSetup > converterSetups,
+			final List< ConverterSetup > converterSetups, //TODO: Remove?
 			final List< SourceAndConverter< ? > > sources )
 	{
 		if ( spimData.getSequenceDescription().getImgLoader() instanceof WrapBasicImgLoader )
@@ -61,12 +61,18 @@ public class SourceAndConverterFromSpimData
 		}
 		final double typeMin = Math.max( 0, Math.min( type.getMinValue(), 65535 ) );
 		final double typeMax = Math.max( 0, Math.min( type.getMaxValue(), 65535 ) );
+
+		// Use a special version of RealARGBColorConverter,
+		// which can have special value color pairs,
+		// stored in a valueToColor Map (see usage below)
 		final RealARGBColorConverter< V > vconverter = new RealARGBColorConverter.Imp0<>( typeMin, typeMax );
 		vconverter.setColor( new ARGBType( 0xffffffff ) );
 		final RealARGBColorConverter< T > converter = new RealARGBColorConverter.Imp1<>( typeMin, typeMax );
 		converter.setColor( new ARGBType( 0xffffffff ) );
 
-		// Make 0 values invisible by setting the alpha value to zero
+		// Use the valueToColor Map to make 0 values invisible,
+		// also for averaging by setting their alpha value to zero
+		// TODO: this could be made configurable if we find other use cases
 		vconverter.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
 		converter.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
 
