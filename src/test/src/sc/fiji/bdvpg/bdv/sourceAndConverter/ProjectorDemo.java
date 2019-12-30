@@ -1,14 +1,16 @@
 package sc.fiji.bdvpg.bdv.sourceAndConverter;
 
 import bdv.util.BdvHandle;
+import bdv.util.BdvOptions;
 import bdv.viewer.SourceAndConverter;
 import sc.fiji.bdvpg.bdv.BdvCreator;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.source.append.SourceAndConverterBdvAdder;
+import sc.fiji.bdvpg.projector.AccumulateProjectorARGB;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterLoader;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
 
-public class SourceAndConverterLoaderDemo
+public class ProjectorDemo
 {
 	public static void main( String[] args )
 	{
@@ -21,7 +23,9 @@ public class SourceAndConverterLoaderDemo
 
 	public static BdvHandle createBdv()
 	{
-		final BdvCreator bdvCreator = new BdvCreator();
+
+		final BdvOptions bdvOptions = new BdvOptions().accumulateProjectorFactory( AccumulateProjectorARGB.factory );
+		final BdvCreator bdvCreator = new BdvCreator( bdvOptions );
 		bdvCreator.run();
 		return bdvCreator.get();
 	}

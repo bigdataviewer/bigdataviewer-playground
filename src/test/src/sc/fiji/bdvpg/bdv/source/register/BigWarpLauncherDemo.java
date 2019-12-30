@@ -15,7 +15,7 @@ import sc.fiji.bdvpg.source.register.BigWarpLauncher;
 public class BigWarpLauncherDemo {
     public static void main(String... args) {
         // Makes a BDV window (holding sample sources)
-        BdvHandle bdvh = new BdvCreator(false).get();
+        BdvHandle bdvh = new BdvCreator().get();
 
         // Builds the source adder
         SourceBdvAdder adder = new SourceBdvAdder(bdvh, null);

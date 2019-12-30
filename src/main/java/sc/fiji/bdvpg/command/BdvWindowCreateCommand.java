@@ -40,7 +40,9 @@ public class BdvWindowCreateCommand implements Command {
     @Override
     public void run() {
         //------------ BdvHandleFrame
-        BdvCreator creator = new BdvCreator(is2D, windowTitle);
+        BdvOptions bdvOptions = new BdvOptions().frameTitle( windowTitle );
+        if ( is2D ) bdvOptions =  bdvOptions.is2D();
+        BdvCreator creator = new BdvCreator( bdvOptions );
         creator.run();
         bdvh = creator.get();
         //------------ Allows to remove the BdvHandle from the objectService when closed by the user

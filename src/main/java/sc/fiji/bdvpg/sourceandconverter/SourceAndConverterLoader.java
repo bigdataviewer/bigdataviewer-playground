@@ -45,7 +45,8 @@ public class SourceAndConverterLoader implements Runnable
 		final ArrayList< ConverterSetup > converterSetups = new ArrayList<>();
 		final ArrayList< SourceAndConverter< ? > > sources = new ArrayList<>();
 		BigDataViewer.initSetups( spimData, converterSetups, sources );
-		return sources.get( sourceIndex );
+		final SourceAndConverter< ? > sourceAndConverter = sources.get( sourceIndex );
+		return sourceAndConverter;
 	}
 
 }

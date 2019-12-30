@@ -6,7 +6,7 @@ public class BdvCreatorDemo
 {
 	public static void main( String[] args )
 	{
-		final BdvCreator bdvCreator = new BdvCreator( false, "Hello World!" );
+		final BdvCreator bdvCreator = new BdvCreator( );
 		bdvCreator.run();
 		final BdvHandle bdvHandle = bdvCreator.get();
 	}
