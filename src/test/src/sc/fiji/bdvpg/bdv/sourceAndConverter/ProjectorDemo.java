@@ -2,21 +2,27 @@ package sc.fiji.bdvpg.bdv.sourceAndConverter;
 
 import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
-import bdv.util.Prefs;
 import bdv.viewer.SourceAndConverter;
-import net.imglib2.display.RealARGBColorConverter;
 import sc.fiji.bdvpg.bdv.BdvCreator;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.source.append.SourceAndConverterBdvAdder;
-import sc.fiji.bdvpg.projector.AccumulateProjectorARGB;
+import sc.fiji.bdvpg.projector.AccumulateAverageProjectorARGB;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterLoader;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
 
+
+/**
+ * Demonstrates average projection of two sources.
+ *
+ * TODO: make projection mode optional or dependend on some source metadata.
+ */
 public class ProjectorDemo
 {
 	public static void main( String[] args )
 	{
 		final BdvHandle bdvHandle = createBdv();
+
+		// add 1st source
 		final SourceAndConverter< ? > sourceAndConverter = new SourceAndConverterLoader( "src/test/resources/mri-stack.xml" ).getSourceAndConverter( 0 );
 		new SourceAndConverterBdvAdder( bdvHandle, sourceAndConverter ).run();
 		new ViewerTransformAdjuster( bdvHandle, sourceAndConverter.getSpimSource() ).run();
@@ -30,7 +36,10 @@ public class ProjectorDemo
 
 	public static BdvHandle createBdv()
 	{
-		final BdvOptions bdvOptions = new BdvOptions().accumulateProjectorFactory( AccumulateProjectorARGB.factory );
+		// specify average projector factory
+		final BdvOptions bdvOptions = new BdvOptions()
+				.accumulateProjectorFactory( AccumulateAverageProjectorARGB.factory );
+
 		final BdvCreator bdvCreator = new BdvCreator( bdvOptions );
 		bdvCreator.run();
 		return bdvCreator.get();

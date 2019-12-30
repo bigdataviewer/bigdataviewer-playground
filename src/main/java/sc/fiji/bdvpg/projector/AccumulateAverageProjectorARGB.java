@@ -13,12 +13,12 @@ import net.imglib2.type.numeric.ARGBType;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 
-public class AccumulateProjectorARGB extends AccumulateProjector< ARGBType, ARGBType >
+public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBType, ARGBType >
 {
 	public static AccumulateProjectorFactory< ARGBType > factory = new AccumulateProjectorFactory< ARGBType >()
 	{
 		@Override
-		public AccumulateProjectorARGB createAccumulateProjector(
+		public AccumulateAverageProjectorARGB createAccumulateProjector(
 				final ArrayList< VolatileProjector > sourceProjectors,
 				final ArrayList< Source< ? > > sources,
 				final ArrayList< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
@@ -26,7 +26,7 @@ public class AccumulateProjectorARGB extends AccumulateProjector< ARGBType, ARGB
 				final int numThreads,
 				final ExecutorService executorService )
 		{
-			return new AccumulateProjectorARGB(
+			return new AccumulateAverageProjectorARGB(
 					sourceProjectors,
 					sources,
 					sourceScreenImages,
@@ -38,7 +38,7 @@ public class AccumulateProjectorARGB extends AccumulateProjector< ARGBType, ARGB
 
 	private final ArrayList< Source< ? > > sourceList;
 
-	public AccumulateProjectorARGB(
+	public AccumulateAverageProjectorARGB(
 			final ArrayList< VolatileProjector > sourceProjectors,
 			final ArrayList< Source< ? > > sources,
 			final ArrayList< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
