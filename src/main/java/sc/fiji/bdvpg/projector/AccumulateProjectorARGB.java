@@ -55,12 +55,11 @@ public class AccumulateProjectorARGB extends AccumulateProjector< ARGBType, ARGB
 			final Cursor< ? extends ARGBType >[] accesses,
 			final ARGBType target )
 	{
-		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, numNonZeroAvg = 0;
+		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, n = 0;
 		int aAccu = 0, rAccu = 0, gAccu = 0, bAccu = 0;
 
 		int sourceIndex = 0;
 
-		final double[] position = new double[ 3 ];
 		for ( final Cursor< ? extends ARGBType > access : accesses )
 		{
 			final int value = access.get().get();
@@ -69,14 +68,16 @@ public class AccumulateProjectorARGB extends AccumulateProjector< ARGBType, ARGB
 			final int g = ARGBType.green( value );
 			final int b = ARGBType.blue( value );
 
-			if ( a == 0 ) continue; // TODO: think about it
+			if ( a == 0 )
+			{
+				continue; // TODO: think about it
+			}
 
 			Source< ? > source = sourceList.get( sourceIndex++ );
 			if ( source instanceof TransformedSource )
 				source = (( TransformedSource )source).getWrappedSource();
-			access.localize( position );
 
-			if ( true )
+			if ( false )
 			{
 				aAccu += a;
 				rAccu += r;
@@ -89,16 +90,16 @@ public class AccumulateProjectorARGB extends AccumulateProjector< ARGBType, ARGB
 				rAvg += r;
 				gAvg += g;
 				bAvg += b;
-				numNonZeroAvg++;
+				n++;
 			}
 		}
 
-		if ( numNonZeroAvg > 0 )
+		if ( n > 0 )
 		{
-			aAvg /= numNonZeroAvg;
-			rAvg /= numNonZeroAvg;
-			gAvg /= numNonZeroAvg;
-			bAvg /= numNonZeroAvg;
+			aAvg /= n;
+			rAvg /= n;
+			gAvg /= n;
+			bAvg /= n;
 		}
 
 		aAccu += aAvg;

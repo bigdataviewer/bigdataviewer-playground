@@ -1,11 +1,11 @@
 package sc.fiji.bdvpg.sourceandconverter;
 
-import bdv.BigDataViewer;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
+import sc.fiji.bdvpg.spimdata.SourceAndConverterFromSpimData;
 
 import java.util.ArrayList;
 
@@ -44,7 +44,7 @@ public class SourceAndConverterLoader implements Runnable
 
 		final ArrayList< ConverterSetup > converterSetups = new ArrayList<>();
 		final ArrayList< SourceAndConverter< ? > > sources = new ArrayList<>();
-		BigDataViewer.initSetups( spimData, converterSetups, sources );
+		SourceAndConverterFromSpimData.init( spimData, converterSetups, sources );
 		final SourceAndConverter< ? > sourceAndConverter = sources.get( sourceIndex );
 		return sourceAndConverter;
 	}

@@ -14,20 +14,22 @@ import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.sequence.Angle;
 import mpicbg.spim.data.sequence.Channel;
 import net.imglib2.Volatile;
-import net.imglib2.display.RealARGBColorConverter;
 import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.volatiles.VolatileARGBType;
+import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 
 import java.util.List;
+
+
 
 public class SourceAndConverterFromSpimData
 {
 	@SuppressWarnings( { "unchecked", "rawtypes" } )
-	public static void initSetups(
+	public static void init(
 			final AbstractSpimData< ? > spimData,
-			final List< ConverterSetup > converterSetups,
+			final List< ConverterSetup > converterSetups, // TODO: Remove this if we do not use it
 			final List< SourceAndConverter< ? > > sources )
 	{
 		final AbstractSequenceDescription< ?, ?, ? > seq = spimData.getSequenceDescription();
@@ -63,6 +65,10 @@ public class SourceAndConverterFromSpimData
 		vconverter.setColor( new ARGBType( 0xffffffff ) );
 		final RealARGBColorConverter< T > converter = new RealARGBColorConverter.Imp1<>( typeMin, typeMax );
 		converter.setColor( new ARGBType( 0xffffffff ) );
+
+		// Make 0 values invisible by setting the alpha value to zero
+		vconverter.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
+		converter.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
 
 		final int setupId = setup.getId();
 		final String setupName = createSetupName( setup );

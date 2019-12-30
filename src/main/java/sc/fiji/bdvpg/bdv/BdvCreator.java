@@ -4,6 +4,7 @@ import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
 import bdv.util.BdvStackSource;
+import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import bdv.viewer.render.AccumulateProjectorFactory;
 import net.imglib2.img.array.ArrayImg;
@@ -47,6 +48,8 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 		BdvStackSource bss = BdvFunctions.show( dummyImg, "dummy", bdvOptions );
 
 		bdvHandle = bss.getBdvHandle();
+
+		bdvHandle.getViewerPanel().setInterpolation( Interpolation.NLINEAR );
 
 		bss.removeFromBdv();
 	}

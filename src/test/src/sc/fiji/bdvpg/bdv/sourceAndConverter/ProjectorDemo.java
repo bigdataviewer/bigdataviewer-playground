@@ -2,6 +2,7 @@ package sc.fiji.bdvpg.bdv.sourceAndConverter;
 
 import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
+import bdv.util.Prefs;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.display.RealARGBColorConverter;
 import sc.fiji.bdvpg.bdv.BdvCreator;
@@ -19,17 +20,16 @@ public class ProjectorDemo
 		final SourceAndConverter< ? > sourceAndConverter = new SourceAndConverterLoader( "src/test/resources/mri-stack.xml" ).getSourceAndConverter( 0 );
 		new SourceAndConverterBdvAdder( bdvHandle, sourceAndConverter ).run();
 		new ViewerTransformAdjuster( bdvHandle, sourceAndConverter.getSpimSource() ).run();
-		new BrightnessAdjuster( bdvHandle, sourceAndConverter, 0, 255.0 ).run();
+		new BrightnessAdjuster( bdvHandle, sourceAndConverter, 10, 255.0 ).run();
 
 		// add 2nd source
 		final SourceAndConverter< ? > sourceAndConverter2 = new SourceAndConverterLoader( "src/test/resources/mri-stack-shiftedX.xml" ).getSourceAndConverter( 0 );
 		new SourceAndConverterBdvAdder( bdvHandle, sourceAndConverter2 ).run();
-		new BrightnessAdjuster( bdvHandle, sourceAndConverter2, 0, 255.0 ).run();
+		new BrightnessAdjuster( bdvHandle, sourceAndConverter2, 10, 255.0 ).run();
 	}
 
 	public static BdvHandle createBdv()
 	{
-
 		final BdvOptions bdvOptions = new BdvOptions().accumulateProjectorFactory( AccumulateProjectorARGB.factory );
 		final BdvCreator bdvCreator = new BdvCreator( bdvOptions );
 		bdvCreator.run();
