@@ -311,7 +311,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         locationsDisplayingSource.get(key).add(bhr);
         // Updates converter setup callback to handle multiple displays of sources
 
-        ConverterSetup cs = getConverterSetupsViaReflection(bdvh_in).get(index);
+        ConverterSetup cs = bdvh_in.getSetupAssignments().getConverterSetups().get(index);//getConverterSetupsViaReflection(bdvh_in).get(index);
 
         // BigWarp Hack
         if (cs instanceof BigWarpConverterSetupWrapper) {
@@ -334,9 +334,9 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
 
     public void logLocationsDisplayingSource() {
         locationsDisplayingSource.forEach((src, lbdvref) -> {
-            System.out.println(src.getName()+":"+src.toString());
+            log.accept(src.getName()+":"+src.toString());
             lbdvref.forEach(bdvref -> {
-                System.out.println("\t bdv = "+bdvref.bdvh.toString()+"\t i = "+bdvref.indexInBdv);
+                log.accept("\t bdv = "+bdvref.bdvh.toString()+"\t i = "+bdvref.indexInBdv);
             });
         });
     }
@@ -354,7 +354,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         }
     }
 
-    public List< ConverterSetup > getConverterSetupsViaReflection(BdvHandle bdvh) {
+    /*public List< ConverterSetup > getConverterSetupsViaReflection(BdvHandle bdvh) {
         try {
             Field fConverterSetup = SetupAssignments.class.getDeclaredField("setups");
 
@@ -366,5 +366,5 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
             e.printStackTrace();
         }
         return null;
-    }
+    }*/
 }
