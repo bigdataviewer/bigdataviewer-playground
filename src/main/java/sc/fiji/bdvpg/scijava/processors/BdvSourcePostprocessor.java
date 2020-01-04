@@ -15,9 +15,6 @@ import java.util.function.Consumer;
 public class BdvSourcePostprocessor extends AbstractPostprocessorPlugin {
 
     @Parameter
-    private BdvSourceDisplayService bhs;
-
-    @Parameter
     BdvSourceService bss;
 
     public static Consumer<String> log = (str) -> System.out.println(BdvSourcePostprocessor.class.getSimpleName()+":"+str);
@@ -37,12 +34,6 @@ public class BdvSourcePostprocessor extends AbstractPostprocessorPlugin {
                } else {
                    log.accept("Yes.");
                }
-               /**
-                * Default behaviour : display it on the active window
-                */
-               //if (bhs!=null) {
-               //    bhs.show(src);
-               //}
                module.resolveOutput(name);
            }
            if (object instanceof Source[]) {
@@ -56,17 +47,9 @@ public class BdvSourcePostprocessor extends AbstractPostprocessorPlugin {
                    } else {
                        log.accept("Yes.");
                    }
-                   /**
-                    * Default behaviour : display it on the active window
-                    */
-                   //if (bhs!=null) {
-                   //    bhs.show(src);
-                   //}
                }
                module.resolveOutput(name);
            }
-
        });
-
     }
 }

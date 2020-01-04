@@ -8,7 +8,6 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService;
 
-
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>Append Source To Bdv")
 public class BdvSourceAdderCommand implements Command {
 

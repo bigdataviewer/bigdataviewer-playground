@@ -14,6 +14,9 @@ import org.scijava.service.Service;
 import org.scijava.ui.UIService;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import java.awt.*;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -177,29 +180,49 @@ public class BdvSourceService extends AbstractService implements SciJavaService 
         BdvSourceService bss;
         JFrame frame;
         JPanel panel;
-        JTextArea textArea;
+        /**
+         * Swing JTree used for displaying Sources object
+         */
+        JTree tree;
+        DefaultMutableTreeNode top;
+        JScrollPane treeView;
+        DefaultTreeModel model;
+        Set<Source> displayedSource = new HashSet<>();
 
         public UIBdvSourceService(BdvSourceService bss) {
                 this.bss = bss;
                 frame = new JFrame("Bdv Sources");
-                panel = new JPanel();
-                textArea = new JTextArea();
-                textArea.setText("Bdv Sources will be displayed here.");
-                panel.add(textArea);
+                panel = new JPanel(new BorderLayout());
+
+                //textArea = new JTextArea();
+                //textArea.setText("Bdv Sources will be displayed here.");
+                //panel.add(textArea);
+
+
+                // Tree view of Spimdata
+                top = new DefaultMutableTreeNode("Sources");
+                tree = new JTree(top);
+
+                //tree.setRootVisible(false);
+
+                model = (DefaultTreeModel)tree.getModel();
+                treeView = new JScrollPane(tree);
+
+                panel.add(treeView, BorderLayout.CENTER);
                 frame.add(panel);
                 frame.pack();
                 frame.setVisible(true);
         }
 
-        Set<Source> displayedSource = new HashSet<>();
-
         public void update(Source src) {
             if (displayedSource.contains(src)) {
-                // Need to update
+                // No Need to update
             } else {
-                String text = textArea.getText();
-                text+= "\n"+src.getName();
-                textArea.setText(text);
+                DefaultMutableTreeNode node = new DefaultMutableTreeNode(src);
+                top.add(node);
+                model.reload(top);
+                panel.revalidate();
+                displayedSource.add(src);
             }
         }
     }

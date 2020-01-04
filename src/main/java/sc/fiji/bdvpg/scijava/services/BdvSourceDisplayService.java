@@ -8,9 +8,11 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.Volatile;
 import net.imglib2.converter.Converter;
+import net.imglib2.display.ColorConverter;
 import net.imglib2.display.RealARGBColorConverter;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.util.Pair;
 import net.imglib2.util.Util;
 import org.scijava.command.CommandService;
 import org.scijava.object.ObjectService;
@@ -267,6 +269,11 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         log.accept("Service initialized.");
     }
 
+    /**
+     * Closes appropriately a BdvHandle which means that it updates
+     * the callbacks for ConverterSetups and updates the ObjectService
+     * @param bdvh
+     */
     public void closeBdv(BdvHandle bdvh) {
         // Programmatically or User action
         // Before closing the Bdv Handle, we need to keep up to date all objects:
@@ -278,12 +285,42 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         locationsDisplayingSource.values().forEach(list -> {
             list.removeIf(bdvhr -> bdvhr.bdvh.equals(bdvh));
         });
-        // Actually close the bdv window
-        // bdvh.close();
         log.accept("bvdh:"+bdvh.toString()+" closed");
         os.removeObject(bdvh);
+
+        // Fix BigWarp closing issue
+        boolean isPaired = pairedBdvs.stream().filter(p -> (p.getA()==bdvh)||(p.getB()==bdvh)).findFirst().isPresent();
+        if (isPaired) {
+            Pair<BdvHandle, BdvHandle> pair = pairedBdvs.stream().filter(p -> (p.getA()==bdvh)||(p.getB()==bdvh)).findFirst().get();
+            pairedBdvs.remove(pair);
+            if (pair.getA()==bdvh) {
+                closeBdv(pair.getB());
+            } else {
+                closeBdv(pair.getA());
+            }
+        }
     }
 
+    // Enables closing of BigWarp BdvHandles
+    List<Pair<BdvHandle, BdvHandle>> pairedBdvs = new ArrayList<>();
+    public void pairClosing(BdvHandle bdv1, BdvHandle bdv2) {
+        pairedBdvs.add(new Pair<BdvHandle, BdvHandle>() {
+            @Override
+            public BdvHandle getA() {
+                return bdv1;
+            }
+
+            @Override
+            public BdvHandle getB() {
+                return bdv2;
+            }
+        });
+    }
+
+    /**
+     * Registers into the BdvSourceService a SourceAndConverter object
+     * @param sac
+     */
     public void registerSourceAndConverter(SourceAndConverter sac) {
         if (!bss.isRegistered(sac.getSpimSource())) {
             log.accept("Unregistered source and converter object");
@@ -294,9 +331,19 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
                 bss.register(sac.getSpimSource(), sac.asVolatile().getSpimSource());
                 bss.data.get(sac.getSpimSource()).put(CONVERTER, sac.getConverter());
             }
+            if (sac.getConverter() instanceof ColorConverter) {
+                log.accept("The converter is a color converter");
+            }
         }
     }
 
+    /**
+     * Registers a source which has originated from a BdvHandle
+     * Useful for BigWarp where the grid and the deformation magnitude are created
+     * into bigwarp
+     * @param bdvh_in
+     * @param index
+     */
     public void registerBdvSource(BdvHandle bdvh_in, int index) {
         SourceAndConverter sac = bdvh_in.getViewerPanel().getState().getSources().get(index);
 
@@ -311,13 +358,13 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         locationsDisplayingSource.get(key).add(bhr);
         // Updates converter setup callback to handle multiple displays of sources
 
-        ConverterSetup cs = bdvh_in.getSetupAssignments().getConverterSetups().get(index);//getConverterSetupsViaReflection(bdvh_in).get(index);
+        //ConverterSetup cs = bdvh_in.getSetupAssignments().getConverterSetups().get(index);//
+        ConverterSetup cs = getConverterSetupsViaReflection(bdvh_in).get(index);
 
         // BigWarp Hack
         if (cs instanceof BigWarpConverterSetupWrapper) {
             BigWarpConverterSetupWrapper wcs = (BigWarpConverterSetupWrapper) cs;
             wcs.getSourceConverterSetup().setViewer(() -> {
-                //logLocationsDisplayingSource();
                 if (locationsDisplayingSource.get(key) != null) {
                     locationsDisplayingSource.get(key).forEach(bhref -> bhref.bdvh.getViewerPanel().requestRepaint());
                 }
@@ -354,7 +401,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         }
     }
 
-    /*public List< ConverterSetup > getConverterSetupsViaReflection(BdvHandle bdvh) {
+    public List< ConverterSetup > getConverterSetupsViaReflection(BdvHandle bdvh) {
         try {
             Field fConverterSetup = SetupAssignments.class.getDeclaredField("setups");
 
@@ -366,5 +413,5 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
             e.printStackTrace();
         }
         return null;
-    }*/
+    }
 }

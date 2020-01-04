@@ -61,8 +61,9 @@ public class BigWarpLauncherCommand implements Command {
         bdvhQ = bwl.getBdvHandleQ();
         bdvhP = bwl.getBdvHandleP();
 
+        bsds.pairClosing(bdvhQ,bdvhP);
+
         // TODO
-        // BdvHandleHelper.setBdvHandleCloseOperation(bdvhP, );
         warpedSources = new SourceAndConverter[movingSources.length];
 
         for (int i=0;i<warpedSources.length;i++) {

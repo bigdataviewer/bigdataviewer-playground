@@ -22,9 +22,6 @@ import java.util.function.Consumer;
 public class BdvSpimdataPostprocessor extends AbstractPostprocessorPlugin {
 
     @Parameter
-    private BdvSourceDisplayService bhs;
-
-    @Parameter
     BdvSourceService bss;
 
     public static Consumer<String> log = (str) -> System.out.println(BdvSpimdataPostprocessor.class.getSimpleName()+":"+str);

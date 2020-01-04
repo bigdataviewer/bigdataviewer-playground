@@ -25,10 +25,7 @@ import java.util.function.Consumer;
 public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
 
     @Parameter
-    private BdvSourceDisplayService bsds;
-
-    @Parameter
-    BdvSourceService bss;
+    BdvSourceDisplayService bsds;
 
     @Parameter
     ObjectService os;
@@ -53,14 +50,9 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
                 String windowTitle = BdvHandleHelper.getWindowTitle(bdvh);
                 windowTitle = BdvHandleHelper.getUniqueWindowTitle(os, windowTitle);
                 BdvHandleHelper.setWindowTitle(bdvh, windowTitle);
-                // register sourceandconverter present in the bdvhandle whether inner Bdv Sources are registered
-                //bdvh.getViewerPanel().getState().getSources().forEach(sac -> {
-                //    bsds.registerSourceAndConverter(sac, bdvh.getSetupAssignments().);
-                //});
                 for (int i=0;i<bdvh.getViewerPanel().getState().numSources();i++) {
                     bsds.registerBdvSource(bdvh,i);
                 }
-
                 module.resolveOutput(name);
             }
         });
