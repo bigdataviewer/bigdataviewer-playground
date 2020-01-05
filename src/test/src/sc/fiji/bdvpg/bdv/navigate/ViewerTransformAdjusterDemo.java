@@ -50,8 +50,6 @@ public class ViewerTransformAdjusterDemo {
 
         new ViewerTransformAdjuster(bdvHandle, BdvService.getSourceService().getSourcesFromSpimdata(asd).get(0)).run();
 
-
-
         //new SourcesLoaderAndAdder( bdvHandle, "src/test/resources/mri-stack.xml" ).run();
 
         //final SourcesLoaderAndAdder loaderAndAdder = new SourcesLoaderAndAdder( bdvHandle, "src/test/resources/mri-stack-shiftedX.xml" );

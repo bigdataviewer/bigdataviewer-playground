@@ -4,26 +4,26 @@ import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
 import bdv.util.BdvStackSource;
+import bdv.viewer.Interpolation;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.realtransform.AffineTransform3D;
-import sc.fiji.bdvpg.services.BdvService;
 
-public class BdvCreator implements Runnable
+import java.util.function.Supplier;
+
+public class BdvCreator implements Runnable, Supplier<BdvHandle>
 {
-	private final boolean is2D;
-	private final String name;
+	private BdvOptions bdvOptions;
 	private BdvHandle bdvHandle;
 
-	public BdvCreator( boolean is2D )
+	public BdvCreator( )
 	{
-		this( is2D, "BigDataViewer" );
+		this.bdvOptions = BdvOptions.options();
 	}
 
-	public BdvCreator( boolean is2D, String name )
+	public BdvCreator( BdvOptions bdvOptions  )
 	{
-		this.is2D = is2D;
-		this.name = name;
+		this.bdvOptions = bdvOptions;
 	}
 
 	@Override
@@ -38,23 +38,23 @@ public class BdvCreator implements Runnable
 	 */
 	private void createEmptyBdv()
 	{
-		BdvOptions bdvOptions = BdvOptions.options();
-		if (is2D)
-			bdvOptions = bdvOptions.is2D();
-
 		ArrayImg dummyImg = ArrayImgs.bytes(2, 2, 2);
 
-		BdvStackSource bss = BdvFunctions.show(
-				dummyImg, "dummy",
-				bdvOptions.frameTitle(name)
-						.sourceTransform(new AffineTransform3D()));
+		bdvOptions = bdvOptions.sourceTransform( new AffineTransform3D() );
+
+		BdvStackSource bss = BdvFunctions.show( dummyImg, "dummy", bdvOptions );
 
 		bdvHandle = bss.getBdvHandle();
+
+		//bdvHandle.getViewerPanel().setInterpolation( Interpolation.NLINEAR );
+
 		bss.removeFromBdv();
 	}
 
-	public BdvHandle getBdvHandle()
+	public BdvHandle get()
 	{
+		if ( bdvHandle == null ) run();
+
 		return bdvHandle;
 	}
 }

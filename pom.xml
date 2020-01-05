@@ -100,6 +100,12 @@
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-vistools</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>bigdataviewer-core</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>ij</artifactId>
@@ -118,7 +124,15 @@
         <dependency>
             <groupId>sc.fiji</groupId>
             <artifactId>bigwarp_fiji</artifactId>
+
+			<!-- See Issue https://github.com/saalfeldlab/bigwarp/issues/83
+			<version>5.1.0</version>-->
         </dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2</artifactId>
+			<version>5.8.0</version>
+		</dependency>
         <dependency>
             <groupId>org.scijava</groupId>
             <artifactId>scijava-ui-swing</artifactId>

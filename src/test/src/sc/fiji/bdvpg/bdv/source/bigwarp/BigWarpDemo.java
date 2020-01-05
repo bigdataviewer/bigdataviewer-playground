@@ -64,10 +64,8 @@ public class BigWarpDemo {
         ij.command().run(BigWarpLauncherCommand.class, true,
                 "movingSources", new Source[]{mandelbrot},
                         "fixedSources", new Source[]{blobs},
-                        "BigWarpName", "Big Warp Demo"
+                        "bigWarpName", "Big Warp Demo"
                 );
-
-
 
     }
 }
