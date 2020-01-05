@@ -82,6 +82,7 @@
 		<license.organizationName>MPI CBG</license.organizationName>
 		<license.copyrightOwners>Robert Haase, MPI CBG</license.copyrightOwners>
 		<imagej.app.directory>C:/Programs/Fiji.app/</imagej.app.directory>
+		<imglib2.version>5.8.0</imglib2.version>
 	</properties>
 
 	<dependencies>
@@ -131,7 +132,6 @@
 		<dependency>
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
-			<version>5.8.0</version>
 		</dependency>
         <dependency>
             <groupId>org.scijava</groupId>
