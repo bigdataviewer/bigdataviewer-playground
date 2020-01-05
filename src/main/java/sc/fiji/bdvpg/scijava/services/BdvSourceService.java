@@ -7,6 +7,8 @@ import bdv.viewer.Source;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
+import mpicbg.spim.data.sequence.Angle;
+import mpicbg.spim.data.sequence.Channel;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
 import net.imglib2.type.numeric.ARGBType;
@@ -135,7 +137,8 @@ public class BdvSourceService extends AbstractService implements SciJavaService,
             final int setupId = setup.getId();
             final Object type = imgLoader.getSetupImgLoader( setupId ).getImageType();
             if ( RealType.class.isInstance( type ) ) {
-                final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, "" );
+                String sourceName = createSetupName(setup);
+                final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
                 final SpimSource s = vs.nonVolatile();
                 register(s,vs);
                 linkToSpimData(s,asd);
@@ -146,6 +149,24 @@ public class BdvSourceService extends AbstractService implements SciJavaService,
                 errlog.accept("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
             }
         }
+    }
+
+    private static String createSetupName( final BasicViewSetup setup )
+    {
+        if ( setup.hasName() )
+            return setup.getName();
+
+        String name = "";
+
+        final Angle angle = setup.getAttribute( Angle.class );
+        if ( angle != null )
+            name += ( name.isEmpty() ? "" : " " ) + "a " + angle.getName();
+
+        final Channel channel = setup.getAttribute( Channel.class );
+        if ( channel != null )
+            name += ( name.isEmpty() ? "" : " " ) + "c " + channel.getName();
+
+        return name;
     }
 
     @Override

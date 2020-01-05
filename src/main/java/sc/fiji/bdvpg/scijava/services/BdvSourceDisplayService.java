@@ -8,7 +8,6 @@ import bdv.util.LUTConverterSetup;
 import bdv.viewer.BigWarpConverterSetupWrapper;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import edu.mines.jtk.dsp.Conv;
 import net.imglib2.Volatile;
 import net.imglib2.converter.Converter;
 import net.imglib2.converter.RealLUTConverter;
@@ -192,9 +191,21 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
      * Updates all references of other Sources present
      * @param source
      */
-    public void remove(Source source) {
+    public void removeFromAllBdvs(Source source) {
         while (locationsDisplayingSource.get(source).size()>0) {
             remove(locationsDisplayingSource.get(source).get(0).bdvh, source);
+        }
+    }
+
+    /**
+     * Removes a source from the active Bdv
+     * Updates all references of other Sources present
+     * @param source
+     */
+    public void removeFromActiveBdv(Source source) {
+        // This condition avoids creating a window for nothing
+        if (os.getObjects(BdvHandle.class).size()>0) {
+            remove(getActiveBdv(), source);
         }
     }
 
@@ -205,7 +216,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
      * @param source
      */
     public void remove(BdvHandle bdvh, Source source) {
-        // Needs to remove the source, if present
+        // Needs to removeFromAllBdvs the source, if present
         while (locationsDisplayingSource.get(source).stream().anyMatch(
             bdvHandleRef -> bdvHandleRef.bdvh.equals(bdvh)
         )) {
@@ -220,17 +231,11 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
             bdvh.getViewerPanel().removeSource(source);
             if (bss.getAttachedSourceData().get(source).get(CONVERTERSETUP)!=null) {
                 log.accept("Removing converter setup...");
-                //getConverterSetupsViaReflection(bdvh).remove(index);//bss.getAttachedSourceData().get(CONVERTERSETUP));
                 bdvh.getSetupAssignments().removeSetup((ConverterSetup) bss.getAttachedSourceData().get(source).get(CONVERTERSETUP));
-                //bdvh.getSetupAssignments()
-                //        .removeSetup((ConverterSetup) bss.getAttachedSourceData().get(CONVERTERSETUP));
             }
 
-
+            // Removes reference to where the source is located
             locationsDisplayingSource.get(source).remove(bdvhr);
-
-            BdvStackSource bss;
-
 
             // Updates reference of index location
             locationsDisplayingSource
@@ -243,8 +248,6 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
                                 .forEach(bdvHandleRef ->
                                         bdvHandleRef.indexInBdv--);
                     });
-
-
 
         }
         bdvh.getViewerPanel().requestRepaint();
@@ -274,13 +277,15 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         }
 
         // Construct SourceAndConverter Object
-        // TODO : Volatile
-        //SourceAndConverter vsac = null;
-        //if (bss.data.get(src).volatileSource!=null) {
-        //    vsac = new SourceAndConverter(bss.data.get(src).volatileSource, bss.data.get(src).converter);
-        //}
+        SourceAndConverter vsac = null;
+        if (bss.data.get(src).get(VOLATILESOURCE)!=null) {
+            log.accept("The source has a volatile view!");
+            vsac = new SourceAndConverter((Source)bss.data.get(src).get(VOLATILESOURCE),(Converter) bss.data.get(src).get(CONVERTER));
+        } else {
+            log.accept("The source has no volatile view");
+        }
 
-        SourceAndConverter sac = new SourceAndConverter(src, (Converter) bss.data.get(src).get(CONVERTER));
+        SourceAndConverter sac = new SourceAndConverter(src, (Converter) bss.data.get(src).get(CONVERTER), vsac);
         return sac;
     }
 
@@ -320,10 +325,10 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
                 .collect(Collectors.toSet());
 
         // Step 4 : remove where the source was displayed
-        remove(source);
+        removeFromAllBdvs(source);
 
         // Step 5 : update converter and convertersetup and show again the source
-        // Step 2 : remove the prexisting Converters and Converter Setup
+        // Step 2 : removeFromAllBdvs the prexisting Converters and Converter Setup
         bss.getAttachedSourceData().get(source).put(CONVERTER, cvt);
         bss.getAttachedSourceData().get(source).put(CONVERTERSETUP, setup);
 
@@ -368,7 +373,16 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
      * @param source
      */
     public void createVolatile(Source source) {
-        // TODO
+        if (bss.getAttachedSourceData().get(source).get(VOLATILESOURCE)==null) {
+            if (source.getType() instanceof Volatile) {
+                log.accept("Source is already volatile. No need to create a volatile source");
+            }
+            // TODO
+
+
+        } else {
+            log.accept("Source already has a volatile view");
+        }
     }
 
     /**
@@ -529,17 +543,4 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         return null;
     }
 
-    public List< ConverterSetup > getConverterSetupGroupsViaReflection(BdvHandle bdvh) {
-        try {
-            Field fConverterSetup = SetupAssignments.class.getDeclaredField("setups");
-
-            fConverterSetup.setAccessible(true);
-
-            return (ArrayList< ConverterSetup >) fConverterSetup.get(bdvh.getSetupAssignments());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }
