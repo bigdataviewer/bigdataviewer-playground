@@ -7,6 +7,7 @@ import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
+import sc.fiji.bdvpg.services.BdvService;
 
 import java.util.ArrayList;
 
@@ -35,13 +36,13 @@ public class SourceLoader implements Runnable
 	public SpimData getSpimData()
 	{
 		if ( spimData == null ) run();
-
+		BdvService.getSourceService().register(spimData);
 		return spimData;
 	}
 
 	/**
 	 * TODO: think about converter
-	 *
+	 * Should this method stay there ? a getSpimData could be enough
 	 * @param sourceIndex
 	 * @return
 	 */
@@ -53,6 +54,7 @@ public class SourceLoader implements Runnable
 		final ArrayList< SourceAndConverter< ? > > sources = new ArrayList<>();
 		BigDataViewer.initSetups( spimData, converterSetups, sources );
 		final Source source = sources.get( sourceIndex ).getSpimSource();
+		BdvService.getSourceService().register(source);
 		return source;
 	}
 

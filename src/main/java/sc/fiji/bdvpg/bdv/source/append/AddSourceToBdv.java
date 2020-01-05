@@ -4,6 +4,7 @@ import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
 import bdv.viewer.Source;
+import sc.fiji.bdvpg.services.BdvService;
 
 import java.util.function.Consumer;
 
@@ -23,6 +24,6 @@ public class AddSourceToBdv implements Runnable, Consumer<Source> {
 
     @Override
     public void accept(Source source) {
-        BdvFunctions.show(source, BdvOptions.options().addTo(bdvh));
+        BdvService.getSourceDisplayService().show(bdvh, source);
     }
 }

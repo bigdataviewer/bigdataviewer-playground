@@ -1,6 +1,7 @@
 package sc.fiji.bdvpg.bdv.sourceAndConverter;
 
 import bdv.util.BdvHandle;
+import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;
 import com.google.common.collect.Lists;
 import ij.IJ;
@@ -8,10 +9,13 @@ import ij.ImagePlus;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.util.Util;
+import net.imglib2.view.Views;
 import sc.fiji.bdvpg.bdv.BDVSingleton;
 import sc.fiji.bdvpg.bdv.source.append.AddSourceToBdv;
 import sc.fiji.bdvpg.bdv.source.get.GetSourceByIndexFromBdv;
 import sc.fiji.bdvpg.bdv.source.get.GetSourcesByIndexFromBdv;
+import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.source.transform.SourceAffineTransform;
 
 import java.util.List;
@@ -19,12 +23,23 @@ import java.util.List;
 public class AffineTransformSourceAndConverterBatchDemo {
 
     public static void main(String... args) {
-        // Gets blobs
+        // Initializes static SourceService and Display Service
+        BdvService.InitScijavaServices();
+
+        // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
         RandomAccessibleInterval rai = ImageJFunctions.wrapReal(imp);
+        // Adds a third dimension because Bdv needs 3D
+        rai = Views.addDimension( rai, 0, 0 );
 
-        // Open BigDataViewer and show the blobs image
-        BdvHandle bdvHandle = BDVSingleton.getInstance(rai, "Blobs");
+        // Makes Bdv Source
+        Source source = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
+
+        // Creates a BdvHandle
+        BdvHandle bdvHandle = BdvService.getSourceDisplayService().getActiveBdv();
+
+        // Show the source
+        BdvService.getSourceDisplayService().show(bdvHandle, source);
 
         // Make a grid of blobs
         makeGrid(bdvHandle, 0, 5, 3, 400, 400);

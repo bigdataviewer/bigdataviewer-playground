@@ -26,13 +26,11 @@ public class BdvCreator implements Runnable
 		this.name = name;
 	}
 
-
 	@Override
 	public void run()
 	{
 		createEmptyBdv();
 	}
-
 
 	/**
 	 * Hack: add an image and remove it after the

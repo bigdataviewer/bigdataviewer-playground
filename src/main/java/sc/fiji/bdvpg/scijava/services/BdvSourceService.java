@@ -1,9 +1,16 @@
 package sc.fiji.bdvpg.scijava.services;
 
+import bdv.SpimSource;
+import bdv.ViewerImgLoader;
+import bdv.VolatileSpimSource;
 import bdv.viewer.Source;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
+import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
+import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.RealType;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -12,13 +19,16 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.scijava.ui.UIService;
+import sc.fiji.bdvpg.services.IBdvSourceService;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService.VOLATILESOURCE;
 
@@ -38,7 +48,7 @@ import static sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService.VOLATILESOU
  */
 
 @Plugin(type=Service.class)
-public class BdvSourceService extends AbstractService implements SciJavaService {
+public class BdvSourceService extends AbstractService implements SciJavaService, IBdvSourceService {
 
     /**
      * Standard logger
@@ -91,6 +101,15 @@ public class BdvSourceService extends AbstractService implements SciJavaService 
         return data.containsKey(src);
     }
 
+
+    /**
+     * Gets lists of associated objects and data attached to a Bdv Source
+     * @return
+     */
+    public Map<Source, Map<String, Object>> getAttachedSourceData() {
+        return data;
+    }
+
     /**
      * Register a Bdv Source in this Service.
      * Called in the BdvSourcePostProcessor
@@ -106,6 +125,33 @@ public class BdvSourceService extends AbstractService implements SciJavaService 
         data.put(src, sourceData);
         objectService.addObject(src);
         if (uiAvailable) ui.update(src);
+    }
+
+    public void register(AbstractSpimData asd) {
+        final AbstractSequenceDescription< ?, ?, ? > seq = asd.getSequenceDescription();
+        final ViewerImgLoader imgLoader = ( ViewerImgLoader ) seq.getImgLoader();
+        for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() )
+        {
+            final int setupId = setup.getId();
+            final Object type = imgLoader.getSetupImgLoader( setupId ).getImageType();
+            if ( RealType.class.isInstance( type ) ) {
+                final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, "" );
+                final SpimSource s = vs.nonVolatile();
+                register(s,vs);
+                linkToSpimData(s,asd);
+            } else if ( ARGBType.class.isInstance( type ) ) {
+                //TODO
+                errlog.accept("Cannot open Spimdata with Source of Type ARGBType");
+            } else {
+                errlog.accept("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
+            }
+        }
+    }
+
+    @Override
+    public void remove(Source src) {
+        // TODO!
+        errlog.accept("Removal of Source unsupported yet");
     }
 
     /**
@@ -124,6 +170,19 @@ public class BdvSourceService extends AbstractService implements SciJavaService 
         sourceData.put(VOLATILESOURCE, vsrc);
         objectService.addObject(src);
         if (uiAvailable) ui.update(src);
+    }
+
+    @Override
+    public List<Source> getSources() {
+        return objectService.getObjects(Source.class);
+    }
+
+    @Override
+    public List<Source> getSourcesFromSpimdata(AbstractSpimData asd) {
+        return objectService.getObjects(Source.class)
+                .stream()
+                .filter(s -> ((HashSet<AbstractSpimData>)data.get(s).get(SETSPIMDATA)).contains(asd))
+                .collect(Collectors.toList());
     }
 
     public void linkToSpimData(Source src, AbstractSpimData asd) {

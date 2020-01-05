@@ -38,7 +38,8 @@ public class BdvSpimdataPostprocessor extends AbstractPostprocessorPlugin {
 
                log.accept("Spimdata found.");
 
-               final AbstractSequenceDescription< ?, ?, ? > seq = asd.getSequenceDescription();
+               bss.register(asd);
+               /*final AbstractSequenceDescription< ?, ?, ? > seq = asd.getSequenceDescription();
                final ViewerImgLoader imgLoader = ( ViewerImgLoader ) seq.getImgLoader();
                for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() )
                {
@@ -58,7 +59,7 @@ public class BdvSpimdataPostprocessor extends AbstractPostprocessorPlugin {
                    } else {
                        errlog.accept("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
                    }
-               }
+               }*/
 
                module.resolveOutput(name);
            }

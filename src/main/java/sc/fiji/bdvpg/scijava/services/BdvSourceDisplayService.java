@@ -24,6 +24,7 @@ import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import bdv.util.ARGBColorConverterSetup;
+import sc.fiji.bdvpg.services.IBdvSourceDisplayService;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
@@ -46,7 +47,7 @@ import java.util.function.Consumer;
  */
 
 @Plugin(type= Service.class)
-public class BdvSourceDisplayService extends AbstractService implements SciJavaService {
+public class BdvSourceDisplayService extends AbstractService implements SciJavaService, IBdvSourceDisplayService {
 
     /**
      * Standard logger
@@ -57,14 +58,6 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
      * Error logger
      */
     public static Consumer<String> errlog = (str) -> System.err.println(BdvSourceDisplayService.class.getSimpleName()+":"+str);
-
-
-    /**
-     * String keys for data stored in the BdvSourceService
-     **/
-    final public static String  VOLATILESOURCE = "VOLATILESOURCE";
-    final public static String  CONVERTER = "CONVERTER";
-    final public static String  CONVERTERSETUP = "CONVERTERSETUP";
 
     /**
      * Used to add Aliases for BdvHandle objects
@@ -339,7 +332,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
 
     /**
      * Registers a source which has originated from a BdvHandle
-     * Useful for BigWarp where the grid and the deformation magnitude are created
+     * Useful for BigWarp where the grid and the deformation magnitude source are created
      * into bigwarp
      * @param bdvh_in
      * @param index

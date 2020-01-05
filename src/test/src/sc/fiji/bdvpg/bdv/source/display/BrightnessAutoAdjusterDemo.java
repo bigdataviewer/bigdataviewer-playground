@@ -5,6 +5,7 @@ import bdv.viewer.Source;
 import sc.fiji.bdvpg.bdv.BDVSingleton;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.source.append.SourceAdder;
+import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.source.importer.SourceLoader;
 import sc.fiji.bdvpg.source.importer.samples.VoronoiSourceGetter;
 
@@ -12,8 +13,11 @@ public class BrightnessAutoAdjusterDemo
 {
 	public static void main( String[] args )
 	{
-		// Mri stack
-		BdvHandle bdvHandle = BDVSingleton.getInstance();
+		// Initializes static SourceService and Display Service
+		BdvService.InitScijavaServices();
+
+		// Creates a BdvHandle
+		BdvHandle bdvHandle = BdvService.getSourceDisplayService().getActiveBdv();
 
 		final Source source = getMriSource();
 		addSource( bdvHandle, source );

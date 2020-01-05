@@ -19,6 +19,10 @@ public class SpimDataImporterXML implements Runnable, Function<File, AbstractSpi
         this.f = f;
     }
 
+    public SpimDataImporterXML(String filePath) {
+        this.f = new File(filePath);
+    }
+
     @Override
     public void run() {
         // Unnecessary
