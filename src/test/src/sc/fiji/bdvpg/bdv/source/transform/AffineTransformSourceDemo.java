@@ -1,4 +1,4 @@
-package src.sc.fiji.bdvpg.bdv.sourceAndConverter;
+package sc.fiji.bdvpg.bdv.source.transform;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;
@@ -10,7 +10,7 @@ import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.source.importer.SourceLoader;
 import sc.fiji.bdvpg.source.transform.SourceAffineTransform;
 
-public class AffineTransformSourceAndConverterDemo {
+public class AffineTransformSourceDemo {
 
     public static void main(String... args) {
         // Initializes static SourceService and Display Service
@@ -41,6 +41,6 @@ public class AffineTransformSourceAndConverterDemo {
         BdvService.getSourceDisplayService().show(bdvHandle, sat.getSourceOut());
 
         new ViewerTransformAdjuster(bdvHandle, sat.getSourceOut()).run();
-        //new BrightnessAutoAdjuster(bdvHandle, sat.getSourceOut()).run();
+        new BrightnessAutoAdjuster(sat.getSourceOut(), 0).run();
     }
 }

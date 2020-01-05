@@ -183,6 +183,12 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
     }
 
     public ConverterSetup getConverterSetup(Source src) {
+        if (!bss.isRegistered(src)) {
+            bss.register(src);
+        }
+        if (bss.data.get(src).get(CONVERTERSETUP)== null) {
+            createConverterAndConverterSetup(src);
+        }
         return (ConverterSetup)bss.data.get(src).get(CONVERTERSETUP);
     }
 

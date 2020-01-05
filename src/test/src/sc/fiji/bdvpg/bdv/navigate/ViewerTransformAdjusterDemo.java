@@ -2,10 +2,7 @@ package src.sc.fiji.bdvpg.bdv.navigate;
 
 import bdv.util.BdvHandle;
 import mpicbg.spim.data.generic.AbstractSpimData;
-import sc.fiji.bdvpg.bdv.BDVSingleton;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.bdv.source.append.SourcesLoaderAndAdder;
-import sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService;
 import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataImporterXML;
 

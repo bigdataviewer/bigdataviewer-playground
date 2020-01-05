@@ -1,24 +1,27 @@
 package sc.fiji.bdvpg.bdv.source.append;
 
-import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
-import bdv.util.BdvOptions;
 import bdv.viewer.Source;
+import sc.fiji.bdvpg.services.BdvService;
 
-public class SourceAdder implements Runnable
+import java.util.function.Consumer;
+
+public class SourceAdder implements Runnable, Consumer<Source>
 {
-	private final BdvHandle bdvHandle;
-	private final Source source;
+	Source srcIn;
+	BdvHandle bdvh;
 
-	public SourceAdder( BdvHandle bdvHandle, Source source )
-	{
-		this.bdvHandle = bdvHandle;
-		this.source = source;
+	public SourceAdder(BdvHandle bdvh, Source srcIn) {
+		this.srcIn=srcIn;
+		this.bdvh=bdvh;
+	}
+
+	public void run() {
+		accept(srcIn);
 	}
 
 	@Override
-	public void run()
-	{
-		BdvFunctions.show( source, BdvOptions.options().addTo( bdvHandle ) );
+	public void accept(Source source) {
+		BdvService.getSourceDisplayService().show(bdvh, source);
 	}
 }

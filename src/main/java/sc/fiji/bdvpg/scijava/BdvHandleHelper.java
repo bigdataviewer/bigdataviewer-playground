@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.scijava.bdv;
+package sc.fiji.bdvpg.scijava;
 
 import bdv.util.BdvHandle;
 import ij.plugin.frame.Recorder;

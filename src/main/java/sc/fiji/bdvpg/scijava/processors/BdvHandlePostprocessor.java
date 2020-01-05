@@ -7,9 +7,8 @@ import org.scijava.module.process.PostprocessorPlugin;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.scijava.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService;
-import sc.fiji.bdvpg.scijava.services.BdvSourceService;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
 
 import java.util.function.Consumer;

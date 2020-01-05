@@ -11,41 +11,40 @@ import net.imglib2.histogram.Real1dBinMapper;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.view.Views;
 import sc.fiji.bdvpg.bdv.BdvUtils;
+import sc.fiji.bdvpg.services.BdvService;
 
 public class BrightnessAutoAdjuster implements Runnable
 {
-	private final BdvHandle bdvHandle;
 	private final Source< ? > source;
 	private final double cumulativeMinCutoff;
 	private final double cumulativeMaxCutoff;
+	private final int timePoint;
 
 
-	public BrightnessAutoAdjuster( final BdvHandle bdvHandle, final Source< ? > source )
+
+	public BrightnessAutoAdjuster( final Source< ? > source, int timePoint )
 	{
-		this( bdvHandle, source, 0.01, 0.99 );
+		this(source, timePoint, 0.01, 0.99 );
 	}
 
-	public BrightnessAutoAdjuster( final BdvHandle bdvHandle, final Source< ? > source, final double cumulativeMinCutoff, final double cumulativeMaxCutoff )
+	public BrightnessAutoAdjuster( final Source< ? > source, final int timePoint, final double cumulativeMinCutoff, final double cumulativeMaxCutoff )
 	{
-		this.bdvHandle = bdvHandle;
 		this.source = source;
 		this.cumulativeMinCutoff = cumulativeMinCutoff;
 		this.cumulativeMaxCutoff = cumulativeMaxCutoff;
+		this.timePoint = timePoint;
 	}
 
 	@Override
 	public void run()
 	{
-		final ViewerState state = bdvHandle.getViewerPanel().getState();
-		final MinMaxGroup minMaxGroup = BdvUtils.getMinMaxGroup( bdvHandle, source );
 
-		final int timepoint = state.getCurrentTimepoint();
-		if ( !source.isPresent( timepoint ) )
+		if ( !source.isPresent( timePoint ) )
 			return;
 		if ( !UnsignedShortType.class.isInstance( source.getType() ) )
 			return;
 		@SuppressWarnings( "unchecked" )
-		final RandomAccessibleInterval< UnsignedShortType > img = ( RandomAccessibleInterval< UnsignedShortType > ) source.getSource( timepoint, source.getNumMipmapLevels() - 1 );
+		final RandomAccessibleInterval< UnsignedShortType > img = ( RandomAccessibleInterval< UnsignedShortType > ) source.getSource( timePoint, source.getNumMipmapLevels() - 1 );
 		final long z = ( img.min( 2 ) + img.max( 2 ) + 1 ) / 2;
 
 		final int numBins = 6535;
@@ -67,8 +66,9 @@ public class BrightnessAutoAdjuster implements Runnable
 		}
 		final int max = i * 65535 / numBins;
 
-		minMaxGroup.getMinBoundedValue().setCurrentValue( min );
-		minMaxGroup.getMaxBoundedValue().setCurrentValue( max );
+		//minMaxGroup.getMinBoundedValue().setCurrentValue( min );
+		//minMaxGroup.getMaxBoundedValue().setCurrentValue( max );
+		BdvService.getSourceDisplayService().getConverterSetup(source).setDisplayRange(min, max);
 	}
 
 }

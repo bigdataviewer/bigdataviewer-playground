@@ -2,7 +2,6 @@ package sc.fiji.bdvpg.bdv.source.display;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;
-import sc.fiji.bdvpg.bdv.BDVSingleton;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.source.append.SourceAdder;
 import sc.fiji.bdvpg.services.BdvService;
@@ -39,6 +38,6 @@ public class BrightnessAutoAdjusterDemo
 	{
 		new SourceAdder( bdvHandle, source ).run();
 		new ViewerTransformAdjuster( bdvHandle, source ).run();
-		new BrightnessAutoAdjuster( bdvHandle, source ).run();
+		new BrightnessAutoAdjuster( source,0 ).run();
 	}
 }

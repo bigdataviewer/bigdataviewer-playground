@@ -4,10 +4,10 @@ import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
 import bdv.util.BdvStackSource;
-import bdv.viewer.Source;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.realtransform.AffineTransform3D;
+import sc.fiji.bdvpg.services.BdvService;
 
 public class BdvCreator implements Runnable
 {
@@ -50,7 +50,6 @@ public class BdvCreator implements Runnable
 						.sourceTransform(new AffineTransform3D()));
 
 		bdvHandle = bss.getBdvHandle();
-
 		bss.removeFromBdv();
 	}
 

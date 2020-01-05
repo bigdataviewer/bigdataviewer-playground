@@ -1,5 +1,6 @@
 package sc.fiji.bdvpg.services;
 
+import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
@@ -35,7 +36,19 @@ public interface IBdvSourceDisplayService {
      */
     void show(BdvHandle bdvh, Source src);
 
+    /**
+     * Returns SourceAndConverter object
+     * @param src
+     * @return
+     */
     SourceAndConverter getSourceAndConverter(Source src);
+
+    /**
+     * Returns SourceAndConverter object
+     * @param src
+     * @return
+     */
+    ConverterSetup getConverterSetup(Source src);
 
     /**
      * Closes appropriately a BdvHandle which means that it updates

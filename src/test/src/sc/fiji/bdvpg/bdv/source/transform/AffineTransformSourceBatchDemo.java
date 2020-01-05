@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.bdv.sourceAndConverter;
+package sc.fiji.bdvpg.bdv.source.transform;
 
 import bdv.util.BdvHandle;
 import bdv.util.RandomAccessibleIntervalSource;
@@ -11,16 +11,14 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
-import sc.fiji.bdvpg.bdv.BDVSingleton;
-import sc.fiji.bdvpg.bdv.source.append.AddSourceToBdv;
-import sc.fiji.bdvpg.bdv.source.get.GetSourceByIndexFromBdv;
-import sc.fiji.bdvpg.bdv.source.get.GetSourcesByIndexFromBdv;
+import sc.fiji.bdvpg.bdv.source.append.SourceAdder;
 import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.source.transform.SourceAffineTransform;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class AffineTransformSourceAndConverterBatchDemo {
+public class AffineTransformSourceBatchDemo {
 
     public static void main(String... args) {
         // Initializes static SourceService and Display Service
@@ -42,7 +40,7 @@ public class AffineTransformSourceAndConverterBatchDemo {
         BdvService.getSourceDisplayService().show(bdvHandle, source);
 
         // Make a grid of blobs
-        makeGrid(bdvHandle, 0, 5, 3, 400, 400);
+        List<Source> gridSources = makeGrid(bdvHandle, source, 5, 3, 400, 400);
 
         // Creates a transformer ( = an action described as in the readme, but it also implements Function<Source,Source> -> it has a Source input and a Source output
         // This affineTransformer is a function because it takes a Source as an input and outputs a transformed Source as an output
@@ -54,24 +52,17 @@ public class AffineTransformSourceAndConverterBatchDemo {
         // Creates a bdv adder ( = an action described as in the readme but it also implements Consumer<Source> -> it has one Source input and no output
         // This bdvAdder is a Consumer because it takes one Source as an input and do not return anything
         // It is initializes with a null Source -> this source specified in the constructor is only useful for single action
-        AddSourceToBdv bdvAdder = new AddSourceToBdv(bdvHandle, null);
-
-        // Construct source getter based on their indexes and on a BdvHandle
-        GetSourcesByIndexFromBdv srcGetter = new GetSourcesByIndexFromBdv(bdvHandle, 2,4,6,8,10,12);
-        // Actually get the source
-        srcGetter.run();
+        SourceAdder bdvAdder = new SourceAdder(bdvHandle, null);
 
         // Transform all the source, using the affineTransformer
-        List<Source> transformedSources = Lists.transform(srcGetter.getSources(), affineTransformer::apply);
+        List<Source> transformedSources = Lists.transform(gridSources, affineTransformer::apply);
 
         // Display all the transformed source, using the bdvAdder
         transformedSources.forEach(bdvAdder::accept);
     }
 
-    static public void makeGrid(BdvHandle bdvh, int sourceIndex, int nx, int ny, int shiftx, int shifty) {
-        GetSourceByIndexFromBdv gs = new GetSourceByIndexFromBdv(bdvh,sourceIndex);
-        gs.run();
-        Source src = gs.getSource();
+    static public List<Source> makeGrid(BdvHandle bdvh, Source src, int nx, int ny, int shiftx, int shifty) {
+        List<Source> sources = new ArrayList<>();
         AffineTransform3D at3D = new AffineTransform3D();
         for (int px=1;px<nx;px++) {
             for (int py=0;py<ny;py++) {
@@ -79,8 +70,10 @@ public class AffineTransformSourceAndConverterBatchDemo {
                 at3D.translate(px*shiftx, py*shifty, 0);
                 SourceAffineTransform sat = new SourceAffineTransform(src, at3D); // Not necessary to specify a source
                 sat.run();
-                new AddSourceToBdv(bdvh, sat.getSourceOut()).run();
+                new SourceAdder(bdvh, sat.getSourceOut()).run();
+                sources.add(sat.getSourceOut());
             }
         }
+        return sources;
     }
 }
