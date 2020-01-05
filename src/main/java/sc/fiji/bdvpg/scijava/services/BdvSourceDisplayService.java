@@ -3,11 +3,15 @@ package sc.fiji.bdvpg.scijava.services;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.brightness.SetupAssignments;
 import bdv.util.BdvHandle;
+import bdv.util.BdvStackSource;
+import bdv.util.LUTConverterSetup;
 import bdv.viewer.BigWarpConverterSetupWrapper;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
+import edu.mines.jtk.dsp.Conv;
 import net.imglib2.Volatile;
 import net.imglib2.converter.Converter;
+import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.display.RealARGBColorConverter;
 import net.imglib2.type.numeric.ARGBType;
@@ -31,6 +35,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Scijava Service which handles the Display of Bdv Sources in one or multiple Bdv Windows
@@ -182,6 +187,69 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         locationsDisplayingSource.get(src).add(bhr);
     }
 
+    /**
+     * Removes a source from all BdvHandle displaying this source
+     * Updates all references of other Sources present
+     * @param source
+     */
+    public void remove(Source source) {
+        while (locationsDisplayingSource.get(source).size()>0) {
+            remove(locationsDisplayingSource.get(source).get(0).bdvh, source);
+        }
+    }
+
+    /**
+     * Removes a source from a BdvHandle
+     * Updates all references of other Sources present
+     * @param bdvh
+     * @param source
+     */
+    public void remove(BdvHandle bdvh, Source source) {
+        // Needs to remove the source, if present
+        while (locationsDisplayingSource.get(source).stream().anyMatch(
+            bdvHandleRef -> bdvHandleRef.bdvh.equals(bdvh)
+        )) {
+            // It is displayed in this bdv
+            BdvHandleRef bdvhr = locationsDisplayingSource
+                    .get(source).stream().filter(
+                            bdvHandleRef -> bdvHandleRef.bdvh.equals(bdvh)
+                    ).findFirst().get();
+
+            int index = bdvhr.indexInBdv;
+
+            bdvh.getViewerPanel().removeSource(source);
+            if (bss.getAttachedSourceData().get(source).get(CONVERTERSETUP)!=null) {
+                log.accept("Removing converter setup...");
+                //getConverterSetupsViaReflection(bdvh).remove(index);//bss.getAttachedSourceData().get(CONVERTERSETUP));
+                bdvh.getSetupAssignments().removeSetup((ConverterSetup) bss.getAttachedSourceData().get(source).get(CONVERTERSETUP));
+                //bdvh.getSetupAssignments()
+                //        .removeSetup((ConverterSetup) bss.getAttachedSourceData().get(CONVERTERSETUP));
+            }
+
+
+            locationsDisplayingSource.get(source).remove(bdvhr);
+
+            BdvStackSource bss;
+
+
+            // Updates reference of index location
+            locationsDisplayingSource
+                    .keySet()
+                    .stream()
+                    .forEach(src -> {
+                        locationsDisplayingSource.get(src)
+                                .stream()
+                                .filter(ref -> ((ref.bdvh.equals(bdvh))&&(ref.indexInBdv>index)))
+                                .forEach(bdvHandleRef ->
+                                        bdvHandleRef.indexInBdv--);
+                    });
+
+
+
+        }
+        bdvh.getViewerPanel().requestRepaint();
+    }
+
     public ConverterSetup getConverterSetup(Source src) {
         if (!bss.isRegistered(src)) {
             bss.register(src);
@@ -214,6 +282,53 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
 
         SourceAndConverter sac = new SourceAndConverter(src, (Converter) bss.data.get(src).get(CONVERTER));
         return sac;
+    }
+
+    /**
+     * Updates converter and ConverterSetup from a Source
+     * @param source
+     * @param cvt
+     */
+    public void updateConverter(Source source, Converter cvt) {
+        // Precaution : the source should be registered
+        if (!bss.isRegistered(source)) {
+            bss.register(source);
+        }
+        // Step 1 : build the proper objects
+        // Build a new ConverterSetup from the converter
+        ConverterSetup setup;
+        if (cvt instanceof ColorConverter) {
+            setup = new ARGBColorConverterSetup((ColorConverter) cvt);
+        } else if (cvt instanceof RealLUTConverter) {
+            setup = new LUTConverterSetup((RealLUTConverter) cvt);
+        } else {
+            errlog.accept("Cannot build convertersetup with converter of class "+cvt.getClass().getSimpleName());
+            return;
+        }
+
+        // Callback when convertersetup is changed
+        setup.setViewer(() -> {
+            if (locationsDisplayingSource.get(source)!=null) {
+                locationsDisplayingSource.get(source).forEach(bhr -> bhr.bdvh.getViewerPanel().requestRepaint());
+            }
+        });
+
+        // Step 3 : store where the sources were displayed
+        Set<BdvHandle> bdvhDisplayingSource= locationsDisplayingSource.get(source)
+                .stream()
+                .map(bdvHandleRef -> bdvHandleRef.bdvh)
+                .collect(Collectors.toSet());
+
+        // Step 4 : remove where the source was displayed
+        remove(source);
+
+        // Step 5 : update converter and convertersetup and show again the source
+        // Step 2 : remove the prexisting Converters and Converter Setup
+        bss.getAttachedSourceData().get(source).put(CONVERTER, cvt);
+        bss.getAttachedSourceData().get(source).put(CONVERTERSETUP, setup);
+
+        bdvhDisplayingSource.forEach(bdvh -> show(bdvh, source));
+
     }
 
     /**
@@ -401,6 +516,20 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
     }
 
     public List< ConverterSetup > getConverterSetupsViaReflection(BdvHandle bdvh) {
+        try {
+            Field fConverterSetup = SetupAssignments.class.getDeclaredField("setups");
+
+            fConverterSetup.setAccessible(true);
+
+            return (ArrayList< ConverterSetup >) fConverterSetup.get(bdvh.getSetupAssignments());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List< ConverterSetup > getConverterSetupGroupsViaReflection(BdvHandle bdvh) {
         try {
             Field fConverterSetup = SetupAssignments.class.getDeclaredField("setups");
 
