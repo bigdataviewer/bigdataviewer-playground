@@ -1,7 +1,6 @@
 package sc.fiji.bdvpg.scijava.services;
 
 import bdv.tools.brightness.ConverterSetup;
-import bdv.tools.brightness.RealARGBColorConverterSetup;
 import bdv.tools.brightness.SetupAssignments;
 import bdv.util.BdvHandle;
 import bdv.util.LUTConverterSetup;
@@ -254,6 +253,13 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         bdvh.getViewerPanel().requestRepaint();
     }
 
+    /**
+     * Gets or create the associated ConverterSetup of a Source
+     * While several converters can be associated to a Source (volatile and non volatile),
+     * only one ConverterSetup is associated to a Source
+     * @param src
+     * @return
+     */
     public ConverterSetup getConverterSetup(Source src) {
         if (!bss.isRegistered(src)) {
             bss.register(src);
@@ -271,6 +277,12 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         return (ConverterSetup)bss.data.get(src).get(CONVERTERSETUP);
     }
 
+    /**
+     * Returns the SourceAndConverter associated to a Source
+     * Builds it if necessary, or construct it
+     * @param src
+     * @return
+     */
     public SourceAndConverter getSourceAndConverter(Source src) {
         // Does it already have additional objects necessary for display ?
         // - Converter to ARGBType
@@ -462,7 +474,9 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         }
     }
 
-    // Enables closing of BigWarp BdvHandles
+    /**
+     * Enables proper closing of Big Warp paired BdvHandles
+     */
     List<Pair<BdvHandle, BdvHandle>> pairedBdvs = new ArrayList<>();
     public void pairClosing(BdvHandle bdv1, BdvHandle bdv2) {
         pairedBdvs.add(new Pair<BdvHandle, BdvHandle>() {
