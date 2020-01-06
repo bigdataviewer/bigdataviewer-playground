@@ -3,16 +3,19 @@ package sc.fiji.bdvpg.scijava.services;
 import bdv.SpimSource;
 import bdv.ViewerImgLoader;
 import bdv.VolatileSpimSource;
+import bdv.util.BdvFunctions;
 import bdv.viewer.Source;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.sequence.Angle;
 import mpicbg.spim.data.sequence.Channel;
+import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.volatiles.VolatileARGBType;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -143,8 +146,11 @@ public class BdvSourceService extends AbstractService implements SciJavaService,
                 register(s,vs);
                 linkToSpimData(s,asd);
             } else if ( ARGBType.class.isInstance( type ) ) {
-                //TODO
-                errlog.accept("Cannot open Spimdata with Source of Type ARGBType");
+                final String setupName = createSetupName( setup );
+                final VolatileSpimSource< ARGBType, VolatileARGBType> vs = new VolatileSpimSource<>( asd, setupId, setupName );
+                final SpimSource< ARGBType > s = vs.nonVolatile();
+                register(s,vs);
+                linkToSpimData(s,asd);
             } else {
                 errlog.accept("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
             }

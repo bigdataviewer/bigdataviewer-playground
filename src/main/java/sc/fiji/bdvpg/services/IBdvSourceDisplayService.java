@@ -12,6 +12,7 @@ public interface IBdvSourceDisplayService {
      **/
     String VOLATILESOURCE = "VOLATILESOURCE";
     String CONVERTER = "CONVERTER";
+    String VOLATILECONVERTER = "VOLATILECONVERTER";
     String CONVERTERSETUP = "CONVERTERSETUP";
 
     /**

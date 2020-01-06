@@ -1,9 +1,9 @@
 package sc.fiji.bdvpg.scijava.services;
 
 import bdv.tools.brightness.ConverterSetup;
+import bdv.tools.brightness.RealARGBColorConverterSetup;
 import bdv.tools.brightness.SetupAssignments;
 import bdv.util.BdvHandle;
-import bdv.util.BdvStackSource;
 import bdv.util.LUTConverterSetup;
 import bdv.viewer.BigWarpConverterSetupWrapper;
 import bdv.viewer.Source;
@@ -13,6 +13,7 @@ import net.imglib2.converter.Converter;
 import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.display.RealARGBColorConverter;
+import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Pair;
@@ -258,7 +259,14 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
             bss.register(src);
         }
         if (bss.data.get(src).get(CONVERTERSETUP)== null) {
-            createConverterAndConverterSetup(src);
+            if (src.getType() instanceof RealType) {
+                createConverterAndConverterSetupRealType(src);
+            } else if (src.getType() instanceof ARGBType) {
+                createConverterAndConverterSetupARGBType(src);
+            } else {
+                errlog.accept("Cannot create converter setup for source of type "+src.getType());
+                return null;
+            }
         }
         return (ConverterSetup)bss.data.get(src).get(CONVERTERSETUP);
     }
@@ -268,7 +276,14 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         // - Converter to ARGBType
         // - ConverterSetup
         if (!bss.data.get(src).containsKey(CONVERTER)) {
-            createConverterAndConverterSetup(src);
+            if (src.getType() instanceof RealType) {
+                createConverterAndConverterSetupRealType(src);
+            } else if (src.getType() instanceof ARGBType) {
+                createConverterAndConverterSetupARGBType(src);
+            } else {
+                errlog.accept("Cannot create converter setup for source of type "+src.getType());
+                return null;
+            }
         }
 
         // - Volatile view
@@ -280,7 +295,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         SourceAndConverter vsac = null;
         if (bss.data.get(src).get(VOLATILESOURCE)!=null) {
             log.accept("The source has a volatile view!");
-            vsac = new SourceAndConverter((Source)bss.data.get(src).get(VOLATILESOURCE),(Converter) bss.data.get(src).get(CONVERTER));
+            vsac = new SourceAndConverter((Source)bss.data.get(src).get(VOLATILESOURCE),(Converter) bss.data.get(src).get(VOLATILECONVERTER));
         } else {
             log.accept("The source has no volatile view");
         }
@@ -290,7 +305,11 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
     }
 
     /**
-     * Updates converter and ConverterSetup from a Source
+     * Updates converter and ConverterSetup of a Source, + updates display
+     * TODO: This method currently modifies the order of the sources shown in the bdv window
+     * While this is not important for most bdvhandle, this could affect the functionality
+     * of BigWarp
+     * LIMITATION : Cannot use LUT for ARGBType -> TODO check type and send an error
      * @param source
      * @param cvt
      */
@@ -327,22 +346,21 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         // Step 4 : remove where the source was displayed
         removeFromAllBdvs(source);
 
-        // Step 5 : update converter and convertersetup and show again the source
-        // Step 2 : removeFromAllBdvs the prexisting Converters and Converter Setup
+        // Step 5 : updates cached objects
         bss.getAttachedSourceData().get(source).put(CONVERTER, cvt);
+        bss.getAttachedSourceData().get(source).put(VOLATILECONVERTER, cvt);
         bss.getAttachedSourceData().get(source).put(CONVERTERSETUP, setup);
 
+        // Step 6 : restore source display location
         bdvhDisplayingSource.forEach(bdvh -> show(bdvh, source));
-
     }
 
     /**
-     * Creates converters and convertersetup for a source
-     * TODO : release constrains on type
+     * Creates converters and convertersetup for a real typed source
      * @param source
      * @param <T>
      */
-    public < T extends RealType< T >> void createConverterAndConverterSetup(Source<T> source) {
+    public < T extends RealType< T >> void createConverterAndConverterSetupRealType(Source<T> source) {
         log.accept("Real Typed Source Registration...");
         final T type = Util.getTypeFromInterval( source.getSource( 0, 0 ) );
         final double typeMin = Math.max( 0, Math.min( type.getMinValue(), 65535 ) );
@@ -365,13 +383,28 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         });
 
         bss.data.get(source).put(CONVERTER, converter);
+        bss.data.get(source).put(VOLATILECONVERTER, converter);
         bss.data.get(source).put(CONVERTERSETUP, setup);
     }
 
     /**
-     * TODO and also maybe move it to BdvSourceService
+     * Creates converters and convertersetup for a ARGB typed source
      * @param source
+     * @param <T>
      */
+    public < T extends ARGBType> void createConverterAndConverterSetupARGBType(Source<T> source) {
+        final ScaledARGBConverter.VolatileARGB vconverter = new ScaledARGBConverter.VolatileARGB( 0, 255 );
+        final ScaledARGBConverter.ARGB converter = new ScaledARGBConverter.ARGB( 0, 255 );
+
+        bss.data.get(source).put(CONVERTER, converter);
+        bss.data.get(source).put(VOLATILECONVERTER, vconverter);
+        bss.data.get(source).put(CONVERTERSETUP, new ARGBColorConverterSetup( converter, vconverter ));
+    }
+
+        /**
+         * TODO and also maybe move it to BdvSourceService
+         * @param source
+         */
     public void createVolatile(Source source) {
         if (bss.getAttachedSourceData().get(source).get(VOLATILESOURCE)==null) {
             if (source.getType() instanceof Volatile) {
