@@ -3,14 +3,13 @@ package sc.fiji.bdvpg.scijava.services;
 import bdv.SpimSource;
 import bdv.ViewerImgLoader;
 import bdv.VolatileSpimSource;
-import bdv.util.BdvFunctions;
 import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.sequence.Angle;
 import mpicbg.spim.data.sequence.Channel;
-import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
 import net.imglib2.type.numeric.ARGBType;
@@ -24,7 +23,8 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.scijava.ui.UIService;
-import sc.fiji.bdvpg.services.IBdvSourceService;
+import sc.fiji.bdvpg.services.IBdvSourceAndConverterService;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService.VOLATILESOURCE;
 
 /**
  * Scijava Service which centralizes Bdv Sources, independently of their display
@@ -45,7 +44,7 @@ import static sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService.VOLATILESOU
  *
  * It also handles SpimData object, but split all Sources into individual ones
  *
- * The most interesting of these objects are actually created by the BdvSourceDisplayService:
+ * The most interesting of these objects are actually created by the BdvSourceAndConverterDisplayService:
  * - Converter to ARGBType, ConverterSetup, and Volatile view
  *
  * TODO : Think more carefully : maybe the volatile source should be done here...
@@ -53,20 +52,20 @@ import static sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService.VOLATILESOU
  */
 
 @Plugin(type=Service.class)
-public class BdvSourceService extends AbstractService implements SciJavaService, IBdvSourceService {
+public class BdvSourceAndConverterService extends AbstractService implements SciJavaService, IBdvSourceAndConverterService {
 
     /**
      * Standard logger
      */
-    public static Consumer<String> log = (str) -> System.out.println(BdvSourceService.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = (str) -> System.out.println(BdvSourceAndConverterService.class.getSimpleName()+":"+str);
 
     /**
      * Error logger
      */
-    public static Consumer<String> errlog = (str) -> System.err.println(BdvSourceService.class.getSimpleName()+":"+str);
+    public static Consumer<String> errlog = (str) -> System.err.println(BdvSourceAndConverterService.class.getSimpleName()+":"+str);
 
     /**
-     * Scijava Object Service : will contain all the sources
+     * Scijava Object Service : will contain all the sourceAndConverters
      */
     @Parameter
     private ObjectService objectService;
@@ -87,7 +86,7 @@ public class BdvSourceService extends AbstractService implements SciJavaService,
      * Map containing objects that are 1 to 1 linked to a Source
      * TODO : ask if it should contain a WeakReference to Source keys (Potential Memory leak ?)
      */
-    Map<Source, Map<String, Object>> data;
+    Map<SourceAndConverter, Map<String, Object>> data;
 
     /**
      * Reserved key for the data map. data.get(source).get(SETSPIMDATA)
@@ -102,7 +101,7 @@ public class BdvSourceService extends AbstractService implements SciJavaService,
      * @param src
      * @return
      */
-    public boolean isRegistered(Source src) {
+    public boolean isRegistered(SourceAndConverter src) {
         return data.containsKey(src);
     }
 
@@ -111,7 +110,8 @@ public class BdvSourceService extends AbstractService implements SciJavaService,
      * Gets lists of associated objects and data attached to a Bdv Source
      * @return
      */
-    public Map<Source, Map<String, Object>> getAttachedSourceData() {
+    @Override
+    public Map<SourceAndConverter, Map<String, Object>> getAttachedSourceAndConverterData() {
         return data;
     }
 
@@ -120,7 +120,7 @@ public class BdvSourceService extends AbstractService implements SciJavaService,
      * Called in the BdvSourcePostProcessor
      * @param src
      */
-    public void register(Source src) {
+    public void register(SourceAndConverter src) {
         if (data.containsKey(src)) {
             log.accept("Source already registered");
             return;
@@ -130,89 +130,39 @@ public class BdvSourceService extends AbstractService implements SciJavaService,
         data.put(src, sourceData);
         objectService.addObject(src);
         if (uiAvailable) ui.update(src);
+    }
+
+    public void register(List<SourceAndConverter> sources) {
+        for (SourceAndConverter sac:sources) {
+            this.register(sac);
+        }
     }
 
     public void register(AbstractSpimData asd) {
-        final AbstractSequenceDescription< ?, ?, ? > seq = asd.getSequenceDescription();
-        final ViewerImgLoader imgLoader = ( ViewerImgLoader ) seq.getImgLoader();
-        for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() )
-        {
-            final int setupId = setup.getId();
-            final Object type = imgLoader.getSetupImgLoader( setupId ).getImageType();
-            if ( RealType.class.isInstance( type ) ) {
-                String sourceName = createSetupName(setup);
-                final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
-                final SpimSource s = vs.nonVolatile();
-                register(s,vs);
-                linkToSpimData(s,asd);
-            } else if ( ARGBType.class.isInstance( type ) ) {
-                final String setupName = createSetupName( setup );
-                final VolatileSpimSource< ARGBType, VolatileARGBType> vs = new VolatileSpimSource<>( asd, setupId, setupName );
-                final SpimSource< ARGBType > s = vs.nonVolatile();
-                register(s,vs);
-                linkToSpimData(s,asd);
-            } else {
-                errlog.accept("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
-            }
-        }
-    }
-
-    private static String createSetupName( final BasicViewSetup setup )
-    {
-        if ( setup.hasName() )
-            return setup.getName();
-
-        String name = "";
-
-        final Angle angle = setup.getAttribute( Angle.class );
-        if ( angle != null )
-            name += ( name.isEmpty() ? "" : " " ) + "a " + angle.getName();
-
-        final Channel channel = setup.getAttribute( Channel.class );
-        if ( channel != null )
-            name += ( name.isEmpty() ? "" : " " ) + "c " + channel.getName();
-
-        return name;
+       this.register(SourceAndConverterUtils.makeSourceAndConverters(asd));
     }
 
     @Override
-    public void remove(Source src) {
+    public void remove(SourceAndConverter src) {
         // TODO!
-        errlog.accept("Removal of Source unsupported yet");
+        errlog.accept("Removal of SourceAndConverter unsupported yet");
     }
 
-    /**
-     * Register a Bdv Source in this Service.
-     * Called in the BdvSourcePostProcessor
-     * @param src
-     */
-    public void register(Source src, Source vsrc) {
-        if (data.containsKey(src)) {
-            log.accept("Source already registered");
-            return;
-        }
-        final int numTimepoints = 1;
-        Map<String, Object> sourceData = new HashMap<>();
-        data.put(src, sourceData);
-        sourceData.put(VOLATILESOURCE, vsrc);
-        objectService.addObject(src);
-        if (uiAvailable) ui.update(src);
+
+    @Override
+    public List<SourceAndConverter> getSources() {
+        return objectService.getObjects(SourceAndConverter.class);
     }
 
     @Override
-    public List<Source> getSources() {
-        return objectService.getObjects(Source.class);
-    }
-
-    @Override
-    public List<Source> getSourcesFromSpimdata(AbstractSpimData asd) {
-        return objectService.getObjects(Source.class)
+    public List<SourceAndConverter> getSourceAndConverterFromSpimdata(AbstractSpimData asd) {
+        return objectService.getObjects(SourceAndConverter.class)
                 .stream()
                 .filter(s -> ((HashSet<AbstractSpimData>)data.get(s).get(SETSPIMDATA)).contains(asd))
                 .collect(Collectors.toList());
     }
 
-    public void linkToSpimData(Source src, AbstractSpimData asd) {
+    public void linkToSpimData(SourceAndConverter src, AbstractSpimData asd) {
         // TODO
         if (data.get(src).get(SETSPIMDATA)==null) {
             data.get(src).put(SETSPIMDATA, new HashSet<>());
@@ -240,7 +190,7 @@ public class BdvSourceService extends AbstractService implements SciJavaService,
      */
     @Override
     public void initialize() {
-        scriptService.addAlias(Source.class);
+        scriptService.addAlias(SourceAndConverter.class);
         // -- TODO Check whether it's a good idea to add this here
         scriptService.addAlias(RealTransform.class);
         scriptService.addAlias(AffineTransform3D.class);
@@ -249,7 +199,7 @@ public class BdvSourceService extends AbstractService implements SciJavaService,
 
         data = new HashMap<>();
         if (uiService!=null) {
-            log.accept("uiService detected : Constructing JPanel for BdvSourceService");
+            log.accept("uiService detected : Constructing JPanel for BdvSourceAndConverterService");
             ui = new UIBdvSourceService(this);
             uiAvailable = true;
         }
@@ -263,7 +213,7 @@ public class BdvSourceService extends AbstractService implements SciJavaService,
      */
     public class UIBdvSourceService {
 
-        BdvSourceService bss;
+        BdvSourceAndConverterService bss;
         JFrame frame;
         JPanel panel;
         /**
@@ -273,9 +223,9 @@ public class BdvSourceService extends AbstractService implements SciJavaService,
         DefaultMutableTreeNode top;
         JScrollPane treeView;
         DefaultTreeModel model;
-        Set<Source> displayedSource = new HashSet<>();
+        Set<SourceAndConverter> displayedSource = new HashSet<>();
 
-        public UIBdvSourceService(BdvSourceService bss) {
+        public UIBdvSourceService(BdvSourceAndConverterService bss) {
                 this.bss = bss;
                 frame = new JFrame("Bdv Sources");
                 panel = new JPanel(new BorderLayout());
@@ -300,7 +250,7 @@ public class BdvSourceService extends AbstractService implements SciJavaService,
                 frame.setVisible(true);
         }
 
-        public void update(Source src) {
+        public void update(SourceAndConverter src) {
             if (displayedSource.contains(src)) {
                 // No Need to update
             } else {

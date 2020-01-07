@@ -1,6 +1,7 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import net.imagej.display.ColorTables;
 import net.imagej.lut.LUTService;
 import net.imglib2.converter.Converter;
@@ -12,7 +13,7 @@ import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService;
+import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterDisplayService;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -39,16 +40,15 @@ public class SourceConverterCommand extends DynamicCommand {
     private Map<String, URL> luts = null;
 
     @Parameter
-    Source source;
+    SourceAndConverter source;
 
     @Parameter
-    BdvSourceDisplayService bsds;
+    BdvSourceAndConverterDisplayService bsds;
 
     @Override
     public void run() {
         Converter bdvLut = cs.convert(table, Converter.class);
         bsds.updateConverter(source, bdvLut);
-
     }
 
     // -- initializers --

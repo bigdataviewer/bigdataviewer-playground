@@ -1,49 +1,48 @@
 package sc.fiji.bdvpg.scijava.processors;
 
-import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import org.scijava.module.Module;
 import org.scijava.module.process.AbstractPostprocessorPlugin;
 import org.scijava.module.process.PostprocessorPlugin;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService;
-import sc.fiji.bdvpg.scijava.services.BdvSourceService;
+import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService;
 
 import java.util.function.Consumer;
 
 @Plugin(type = PostprocessorPlugin.class)
-public class BdvSourcePostprocessor extends AbstractPostprocessorPlugin {
+public class BdvSourceAndConverterPostprocessor extends AbstractPostprocessorPlugin {
 
     @Parameter
-    BdvSourceService bss;
+    BdvSourceAndConverterService bss;
 
-    public static Consumer<String> log = (str) -> System.out.println(BdvSourcePostprocessor.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = (str) -> System.out.println(BdvSourceAndConverterPostprocessor.class.getSimpleName()+":"+str);
 
     @Override
     public void process(Module module) {
 
        module.getOutputs().forEach((name, object)-> {
            //log.accept("input:\t"+name+"\tclass:\t"+object.getClass().getSimpleName());
-           if (object instanceof Source) {
-               Source src = (Source) object;
+           if (object instanceof SourceAndConverter) {
+               SourceAndConverter sac = (SourceAndConverter) object;
                log.accept("Source found.");
                log.accept("Is it registered ? ");
-               if (!bss.isRegistered(src)) {
+               if (!bss.isRegistered(sac)) {
                    log.accept("No.");
-                   bss.register(src);
+                   bss.register(sac);
                } else {
                    log.accept("Yes.");
                }
                module.resolveOutput(name);
            }
-           if (object instanceof Source[]) {
-               Source[] srcs = (Source[]) object;
-               for (Source src:srcs) {
+           if (object instanceof SourceAndConverter[]) {
+               SourceAndConverter[] sacs = (SourceAndConverter[]) object;
+               for (SourceAndConverter sac:sacs) {
                    log.accept("Source found.");
                    log.accept("Is it registered ? ");
-                   if (!bss.isRegistered(src)) {
+                   if (!bss.isRegistered(sac)) {
                        log.accept("No.");
-                       bss.register(src);
+                       bss.register(sac);
                    } else {
                        log.accept("Yes.");
                    }

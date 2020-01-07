@@ -3,6 +3,7 @@ package sc.fiji.bdvpg.bdv.source.display;
 import bdv.tools.brightness.MinMaxGroup;
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import bdv.viewer.state.ViewerState;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.histogram.DiscreteFrequencyDistribution;
@@ -15,19 +16,19 @@ import sc.fiji.bdvpg.services.BdvService;
 
 public class BrightnessAutoAdjuster implements Runnable
 {
-	private final Source< ? > source;
+	private final SourceAndConverter source;
 	private final double cumulativeMinCutoff;
 	private final double cumulativeMaxCutoff;
 	private final int timePoint;
 
 
 
-	public BrightnessAutoAdjuster( final Source< ? > source, int timePoint )
+	public BrightnessAutoAdjuster( final SourceAndConverter source, int timePoint )
 	{
 		this(source, timePoint, 0.01, 0.99 );
 	}
 
-	public BrightnessAutoAdjuster( final Source< ? > source, final int timePoint, final double cumulativeMinCutoff, final double cumulativeMaxCutoff )
+	public BrightnessAutoAdjuster( final SourceAndConverter source, final int timePoint, final double cumulativeMinCutoff, final double cumulativeMaxCutoff )
 	{
 		this.source = source;
 		this.cumulativeMinCutoff = cumulativeMinCutoff;
@@ -39,12 +40,12 @@ public class BrightnessAutoAdjuster implements Runnable
 	public void run()
 	{
 
-		if ( !source.isPresent( timePoint ) )
+		if ( !source.getSpimSource().isPresent( timePoint ) )
 			return;
-		if ( !UnsignedShortType.class.isInstance( source.getType() ) )
+		if ( !UnsignedShortType.class.isInstance( source.getSpimSource().getType() ) )
 			return;
 		@SuppressWarnings( "unchecked" )
-		final RandomAccessibleInterval< UnsignedShortType > img = ( RandomAccessibleInterval< UnsignedShortType > ) source.getSource( timePoint, source.getNumMipmapLevels() - 1 );
+		final RandomAccessibleInterval< UnsignedShortType > img = ( RandomAccessibleInterval< UnsignedShortType > ) source.getSpimSource().getSource( timePoint, source.getSpimSource().getNumMipmapLevels() - 1 );
 		final long z = ( img.min( 2 ) + img.max( 2 ) + 1 ) / 2;
 
 		final int numBins = 6535;

@@ -7,11 +7,10 @@ import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.services.BdvService;
-import sc.fiji.bdvpg.source.importer.SourceLoader;
-import sc.fiji.bdvpg.source.transform.SourceAffineTransform;
+import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransform;
 
 public class AffineTransformSourceDemo {
-
+/*
     public static void main(String... args) {
         // Initializes static SourceService and Display Service
         BdvService.InitScijavaServices();
@@ -42,5 +41,5 @@ public class AffineTransformSourceDemo {
 
         new ViewerTransformAdjuster(bdvHandle, sat.getSourceOut()).run();
         new BrightnessAutoAdjuster(sat.getSourceOut(), 0).run();
-    }
+    }*/
 }

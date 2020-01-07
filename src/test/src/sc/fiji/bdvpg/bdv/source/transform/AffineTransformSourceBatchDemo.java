@@ -13,13 +13,13 @@ import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import sc.fiji.bdvpg.bdv.source.append.SourceAdder;
 import sc.fiji.bdvpg.services.BdvService;
-import sc.fiji.bdvpg.source.transform.SourceAffineTransform;
+import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransform;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AffineTransformSourceBatchDemo {
-
+/*
     public static void main(String... args) {
         // Initializes static SourceService and Display Service
         BdvService.InitScijavaServices();
@@ -75,5 +75,5 @@ public class AffineTransformSourceBatchDemo {
             }
         }
         return sources;
-    }
+    }*/
 }

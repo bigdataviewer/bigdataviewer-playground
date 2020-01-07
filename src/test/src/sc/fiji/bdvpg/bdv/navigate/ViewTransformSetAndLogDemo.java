@@ -26,6 +26,7 @@ import sc.fiji.bdvpg.services.BdvService;
  */
 public class ViewTransformSetAndLogDemo {
     public static void main(String[] args) {
+        /*
         // Initializes static SourceService and Display Service
         BdvService.InitScijavaServices();
 
@@ -60,7 +61,7 @@ public class ViewTransformSetAndLogDemo {
 
         // log transform
         new ViewerTransformLogger(bdvHandle).run();
-
+        */
 
 
     }

@@ -1,28 +1,23 @@
-package sc.fiji.bdvpg.source.register;
+package sc.fiji.bdvpg.sourceandconverter.register;
 
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
 import bdv.util.ViewerPanelHandle;
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import bigwarp.BigWarp;
-import bigwarp.BigWarpInit;
 import mpicbg.spim.data.SpimDataException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * Can launch BigWarp with:
- * - Two List of Sources
  * - Two lists of SourceAndConverter
  *
  * Output:
  * - The two BdvHandle
  *
  * Limitation :
- * - when using SourceAndConverter, ConverterSetup are not transfered (but that should be doable hopefully
  * - Cache is null in BigWarpInit
  *
  * In order to retrieve the transform, TODO
@@ -50,27 +45,9 @@ public class BigWarpLauncher implements Runnable {
     // Alternative maybe better option :
     // Use array : Source[] or SourceAndConverter[] (and maybe this issue was the reason for BigWarp choosing this in the beginning)
 
-    public BigWarpLauncher(List movingSources, List fixedSources, String bigWarpName, List<ConverterSetup> allConverterSetups) {
+    public BigWarpLauncher(List<SourceAndConverter> movingSources, List<SourceAndConverter> fixedSources, String bigWarpName, List<ConverterSetup> allConverterSetups) {
 
         this.bigWarpName = bigWarpName;
-
-        if (isListMadeOfSource(movingSources)&&(isListMadeOfSource(fixedSources))) {
-
-            // Get names of Sources
-            String[] names = new String[movingSources.size()+fixedSources.size()];
-
-            for (int i=0;i<movingSources.size();i++) {
-                names[i] = ((Source) movingSources.get(i)).getName();
-            }
-
-            for (int i=0;i<fixedSources.size();i++) {
-                names[i+movingSources.size()] = ((Source) fixedSources.get(i)).getName();
-            }
-
-            // Initializes BigWarpData
-            bwData = BigWarpInit.createBigWarpData((Source[]) (movingSources.toArray()), (Source[])(fixedSources.toArray()), names);
-
-        } else if (isListMadeOfSourceAndConverter(movingSources)&&(isListMadeOfSourceAndConverter(movingSources))) {
 
             List<SourceAndConverter> allSources = new ArrayList<>();
             allSources.addAll(movingSources);
@@ -92,24 +69,6 @@ public class BigWarpLauncher implements Runnable {
 
             bwData = new BigWarp.BigWarpData(allSources, allConverterSetups, null, mvSrcIndices, fxSrcIndices);
 
-        } else {
-            System.err.println("Invalid class for BigWarpLauncher initialization");
-        }
-
-    }
-
-    public boolean isListMadeOfSource(List list) {
-        for( Object o : list){
-            if ((o instanceof Source)==false) return false;
-        }
-        return true;
-    }
-
-    public boolean isListMadeOfSourceAndConverter(List list) {
-        for( Object o : list){
-            if ((o instanceof SourceAndConverter)==false) return false;
-        }
-        return true;
     }
 
     @Override

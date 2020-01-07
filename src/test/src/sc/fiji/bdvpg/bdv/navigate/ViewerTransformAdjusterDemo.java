@@ -17,7 +17,7 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataImporterXML;
 public class ViewerTransformAdjusterDemo {
     public static void main(String[] args)
     {
-
+/*
         // Initializes static SourceService and Display Service
         BdvService.InitScijavaServices();
 
@@ -56,5 +56,7 @@ public class ViewerTransformAdjusterDemo {
         //loaderAndAdder.setAutoAdjustViewerTransform( true );
         //loaderAndAdder.setAutoContrast( true );
         //loaderAndAdder.run();
+        */
+
     }
 }

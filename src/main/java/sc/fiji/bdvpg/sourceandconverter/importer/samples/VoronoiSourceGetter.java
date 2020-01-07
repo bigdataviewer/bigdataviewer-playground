@@ -1,8 +1,8 @@
-package sc.fiji.bdvpg.source.importer.samples;
+package sc.fiji.bdvpg.sourceandconverter.importer.samples;
 
 import bdv.util.RandomAccessibleIntervalSource;
-import bdv.util.RealRandomAccessibleSource;
 import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imglib2.*;
 import net.imglib2.algorithm.util.Grids;
@@ -12,15 +12,15 @@ import net.imglib2.neighborsearch.NearestNeighborSearch;
 import net.imglib2.neighborsearch.NearestNeighborSearchOnKDTree;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.Type;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class VoronoiSourceGetter implements Runnable, Supplier<Source> {
+public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverter> {
 
     // Size of the image in pixels
     final long[] imgSize;
@@ -40,7 +40,7 @@ public class VoronoiSourceGetter implements Runnable, Supplier<Source> {
     }
 
     @Override
-    public Source get() {
+    public SourceAndConverter get() {
         RandomAccessibleInterval voronoi = getVoronoiTestLabelImage(imgSize, numPts, copyImg);
         VoxelDimensions voxDimensions = new VoxelDimensions() {
             @Override
@@ -66,7 +66,9 @@ public class VoronoiSourceGetter implements Runnable, Supplier<Source> {
             }
         };
 
-        return  new RandomAccessibleIntervalSource<>( voronoi, new FloatType(), new AffineTransform3D(), "Voronoi_"+numPts+" Pts_["+imgSize[0]+","+imgSize[1]+","+imgSize[2]+"]" );
+        Source s = new RandomAccessibleIntervalSource<>( voronoi, new FloatType(), new AffineTransform3D(), "Voronoi_"+numPts+" Pts_["+imgSize[0]+","+imgSize[1]+","+imgSize[2]+"]" );
+
+        return SourceAndConverterUtils.makeSourceAndConverter(s);
 
     }
 

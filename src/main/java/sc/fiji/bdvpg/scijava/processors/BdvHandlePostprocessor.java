@@ -8,15 +8,15 @@ import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService;
+import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterDisplayService;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
 
 import java.util.function.Consumer;
 
 /**
  * Ensures BdvHandle is stored into ObjectService
- * and all containing Sources as well are stored into the BdvSourceDisplayService and
- * BdvSourceService
+ * and all containing Sources as well are stored into the BdvSourceAndConverterDisplayService and
+ * BdvSourceAndConverterService
  * Also fix Bdv Close operation
  */
 
@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
 
     @Parameter
-    BdvSourceDisplayService bsds;
+    BdvSourceAndConverterDisplayService bsds;
 
     @Parameter
     ObjectService os;

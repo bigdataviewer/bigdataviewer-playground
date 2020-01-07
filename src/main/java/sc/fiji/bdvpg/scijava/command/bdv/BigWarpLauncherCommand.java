@@ -2,7 +2,6 @@ package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import org.scijava.ItemIO;
 import org.scijava.command.Command;
@@ -10,9 +9,8 @@ import org.scijava.convert.ConvertService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService;
-import sc.fiji.bdvpg.scijava.services.BdvSourceService;
-import sc.fiji.bdvpg.source.register.BigWarpLauncher;
+import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterDisplayService;
+import sc.fiji.bdvpg.sourceandconverter.register.BigWarpLauncher;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,10 +24,10 @@ public class BigWarpLauncherCommand implements Command {
     String bigWarpName;
 
     @Parameter
-    Source[] movingSources;
+    SourceAndConverter[] movingSources;
 
     @Parameter
-    Source[] fixedSources;
+    SourceAndConverter[] fixedSources;
 
     @Parameter(type = ItemIO.OUTPUT)
     BdvHandle bdvhQ;
@@ -44,11 +42,11 @@ public class BigWarpLauncherCommand implements Command {
     ConvertService cs;
 
     @Parameter
-    BdvSourceDisplayService bsds;
+    BdvSourceAndConverterDisplayService bsds;
 
     public void run() {
-        List<SourceAndConverter> movingSacs = Arrays.stream(movingSources).map(src -> cs.convert(src, SourceAndConverter.class)).collect(Collectors.toList());
-        List<SourceAndConverter> fixedSacs = Arrays.stream(fixedSources).map(src -> cs.convert(src, SourceAndConverter.class)).collect(Collectors.toList());
+        List<SourceAndConverter> movingSacs = Arrays.stream(movingSources).collect(Collectors.toList());
+        List<SourceAndConverter> fixedSacs = Arrays.stream(fixedSources).collect(Collectors.toList());
 
         List<ConverterSetup> converterSetups = Arrays.stream(movingSources).map(src -> bsds.getConverterSetup(src)).collect(Collectors.toList());
         converterSetups.addAll(Arrays.stream(fixedSources).map(src -> bsds.getConverterSetup(src)).collect(Collectors.toList()));
@@ -63,7 +61,6 @@ public class BigWarpLauncherCommand implements Command {
 
         bsds.pairClosing(bdvhQ,bdvhP);
 
-        // TODO
         warpedSources = new SourceAndConverter[movingSources.length];
 
         for (int i=0;i<warpedSources.length;i++) {

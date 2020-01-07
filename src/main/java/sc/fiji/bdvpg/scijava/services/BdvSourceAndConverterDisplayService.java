@@ -27,7 +27,7 @@ import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import bdv.util.ARGBColorConverterSetup;
-import sc.fiji.bdvpg.services.IBdvSourceDisplayService;
+import sc.fiji.bdvpg.services.IBdvSourceAndConverterDisplayService;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 
 /**
  * Scijava Service which handles the Display of Bdv Sources in one or multiple Bdv Windows
- * Pairs with BdvSourceService, but this ser BdvSourceDisplayService is optional
+ * Pairs with BdvSourceAndConverterService, but this ser BdvSourceAndConverterDisplayService is optional
  *
  * Its functions are:
  * - For each source, creating objects needed for display:
@@ -51,17 +51,17 @@ import java.util.stream.Collectors;
  */
 
 @Plugin(type= Service.class)
-public class BdvSourceDisplayService extends AbstractService implements SciJavaService, IBdvSourceDisplayService {
+public class BdvSourceAndConverterDisplayService extends AbstractService implements SciJavaService, IBdvSourceAndConverterDisplayService {
 
     /**
      * Standard logger
      */
-    public static Consumer<String> log = (str) -> System.out.println(BdvSourceDisplayService.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = (str) -> System.out.println(BdvSourceAndConverterDisplayService.class.getSimpleName()+":"+str);
 
     /**
      * Error logger
      */
-    public static Consumer<String> errlog = (str) -> System.err.println(BdvSourceDisplayService.class.getSimpleName()+":"+str);
+    public static Consumer<String> errlog = (str) -> System.err.println(BdvSourceAndConverterDisplayService.class.getSimpleName()+":"+str);
 
     /**
      * Used to add Aliases for BdvHandle objects
@@ -73,7 +73,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
      * Service containing all registered Bdv Sources
      **/
     @Parameter
-    BdvSourceService bss;
+    BdvSourceAndConverterService bss;
 
     /**
      * Used to create Bdv Windows when necessary
@@ -98,13 +98,13 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
      * Map linking a BdvHandle to the Sources it's been displaying
      * TODO : check whether this is useful
      **/
-    Map<BdvHandle, List<Source>> sourcesDisplayedInBdvWindows;
+    Map<BdvHandle, List<SourceAndConverter>> sourcesDisplayedInBdvWindows;
 
     /**
      * Map linking a Source to the different locations where it's been displayed
      * BdvHandles displaying Source ( also storing the local index of the Source )
      **/
-    Map<Source, List<BdvHandleRef>> locationsDisplayingSource;
+    Map<SourceAndConverter, List<BdvHandleRef>> locationsDisplayingSource;
 
     /**
      * Returns the last active Bdv or create a new one
@@ -148,7 +148,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
      * Displays a Source, the last active bdv is chosen since none is specified in this method
      * @param src
      */
-    public void show(Source src) {
+    public void show(SourceAndConverter src) {
          show(getActiveBdv(), src);
     }
 
@@ -157,33 +157,31 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
      * This function really is the core of this service
      * It mimicks or copies the functions of BdvVisTools because it is responsible to
      * create converter, volatiles, convertersetups and so on
-     * @param src
+     * @param sac
      * @param bdvh
      */
-    public void show(BdvHandle bdvh, Source src) {
+    public void show(BdvHandle bdvh, SourceAndConverter sac) {
         // If the source is not registered, register it
-        if (!bss.isRegistered(src)) {
-            bss.register(src);
+        if (!bss.isRegistered(sac)) {
+            bss.register(sac);
         }
 
         // Stores in which BdvHandle the source will be displayed
         if (!sourcesDisplayedInBdvWindows.containsKey(bdvh)) {
             sourcesDisplayedInBdvWindows.put(bdvh, new ArrayList<>());
         }
-        sourcesDisplayedInBdvWindows.get(bdvh).add(src);
-
-        SourceAndConverter sac = getSourceAndConverter(src);
+        sourcesDisplayedInBdvWindows.get(bdvh).add(sac);
 
         bdvh.getViewerPanel().addSource(sac);
-        bdvh.getSetupAssignments().addSetup((ConverterSetup)bss.data.get(src).get(CONVERTERSETUP));
+        bdvh.getSetupAssignments().addSetup((ConverterSetup)bss.data.get(sac).get(CONVERTERSETUP));
 
         // Stores where the source is displayed (BdvHandle and index)
         BdvHandleRef bhr = new BdvHandleRef(bdvh, bdvh.getViewerPanel().getState().numSources());
-        if (!(locationsDisplayingSource.containsKey(src))) {
-            System.out.println("erase locations display source of "+src.getName());
-            locationsDisplayingSource.put(src, new ArrayList<>());
+        if (!(locationsDisplayingSource.containsKey(sac))) {
+            System.out.println("erase locations display source of "+sac.getSpimSource().getName());
+            locationsDisplayingSource.put(sac, new ArrayList<>());
         }
-        locationsDisplayingSource.get(src).add(bhr);
+        locationsDisplayingSource.get(sac).add(bhr);
     }
 
     /**
@@ -191,7 +189,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
      * Updates all references of other Sources present
      * @param source
      */
-    public void removeFromAllBdvs(Source source) {
+    public void removeFromAllBdvs(SourceAndConverter source) {
         while (locationsDisplayingSource.get(source).size()>0) {
             remove(locationsDisplayingSource.get(source).get(0).bdvh, source);
         }
@@ -202,7 +200,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
      * Updates all references of other Sources present
      * @param source
      */
-    public void removeFromActiveBdv(Source source) {
+    public void removeFromActiveBdv(SourceAndConverter source) {
         // This condition avoids creating a window for nothing
         if (os.getObjects(BdvHandle.class).size()>0) {
             remove(getActiveBdv(), source);
@@ -215,7 +213,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
      * @param bdvh
      * @param source
      */
-    public void remove(BdvHandle bdvh, Source source) {
+    public void remove(BdvHandle bdvh, SourceAndConverter source) {
         // Needs to removeFromAllBdvs the source, if present
         while (locationsDisplayingSource.get(source).stream().anyMatch(
             bdvHandleRef -> bdvHandleRef.bdvh.equals(bdvh)
@@ -228,10 +226,10 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
 
             int index = bdvhr.indexInBdv;
 
-            bdvh.getViewerPanel().removeSource(source);
-            if (bss.getAttachedSourceData().get(source).get(CONVERTERSETUP)!=null) {
+            bdvh.getViewerPanel().removeSource(source.getSpimSource()); // TODO : Check!!
+            if (bss.getAttachedSourceAndConverterData().get(source).get(CONVERTERSETUP)!=null) {
                 log.accept("Removing converter setup...");
-                bdvh.getSetupAssignments().removeSetup((ConverterSetup) bss.getAttachedSourceData().get(source).get(CONVERTERSETUP));
+                bdvh.getSetupAssignments().removeSetup((ConverterSetup) bss.getAttachedSourceAndConverterData().get(source).get(CONVERTERSETUP));
             }
 
             // Removes reference to where the source is located
@@ -260,60 +258,21 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
      * @param src
      * @return
      */
-    public ConverterSetup getConverterSetup(Source src) {
+    public ConverterSetup getConverterSetup(SourceAndConverter src) {
         if (!bss.isRegistered(src)) {
             bss.register(src);
         }
         if (bss.data.get(src).get(CONVERTERSETUP)== null) {
-            if (src.getType() instanceof RealType) {
-                createConverterAndConverterSetupRealType(src);
-            } else if (src.getType() instanceof ARGBType) {
-                createConverterAndConverterSetupARGBType(src);
+            if (src.getSpimSource().getType() instanceof RealType) {
+                createConverterSetupRealType(src);
+            } else if (src.getSpimSource().getType() instanceof ARGBType) {
+                createConverterSetupARGBType(src);
             } else {
-                errlog.accept("Cannot create converter setup for source of type "+src.getType());
+                errlog.accept("Cannot create converter setup for source of type "+src.getSpimSource().getType());
                 return null;
             }
         }
         return (ConverterSetup)bss.data.get(src).get(CONVERTERSETUP);
-    }
-
-    /**
-     * Returns the SourceAndConverter associated to a Source
-     * Builds it if necessary, or construct it
-     * @param src
-     * @return
-     */
-    public SourceAndConverter getSourceAndConverter(Source src) {
-        // Does it already have additional objects necessary for display ?
-        // - Converter to ARGBType
-        // - ConverterSetup
-        if (!bss.data.get(src).containsKey(CONVERTER)) {
-            if (src.getType() instanceof RealType) {
-                createConverterAndConverterSetupRealType(src);
-            } else if (src.getType() instanceof ARGBType) {
-                createConverterAndConverterSetupARGBType(src);
-            } else {
-                errlog.accept("Cannot create converter setup for source of type "+src.getType());
-                return null;
-            }
-        }
-
-        // - Volatile view
-        if (!bss.data.get(src).containsKey(VOLATILESOURCE)) {
-            createVolatile(src);
-        }
-
-        // Construct SourceAndConverter Object
-        SourceAndConverter vsac = null;
-        if (bss.data.get(src).get(VOLATILESOURCE)!=null) {
-            log.accept("The source has a volatile view!");
-            vsac = new SourceAndConverter((Source)bss.data.get(src).get(VOLATILESOURCE),(Converter) bss.data.get(src).get(VOLATILECONVERTER));
-        } else {
-            log.accept("The source has no volatile view");
-        }
-
-        SourceAndConverter sac = new SourceAndConverter(src, (Converter) bss.data.get(src).get(CONVERTER), vsac);
-        return sac;
     }
 
     /**
@@ -325,7 +284,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
      * @param source
      * @param cvt
      */
-    public void updateConverter(Source source, Converter cvt) {
+    public void updateConverter(SourceAndConverter source, Converter cvt) {
         // Precaution : the source should be registered
         if (!bss.isRegistered(source)) {
             bss.register(source);
@@ -359,9 +318,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
         removeFromAllBdvs(source);
 
         // Step 5 : updates cached objects
-        bss.getAttachedSourceData().get(source).put(CONVERTER, cvt);
-        bss.getAttachedSourceData().get(source).put(VOLATILECONVERTER, cvt);
-        bss.getAttachedSourceData().get(source).put(CONVERTERSETUP, setup);
+        bss.getAttachedSourceAndConverterData().get(source).put(CONVERTERSETUP, setup);
 
         // Step 6 : restore source display location
         bdvhDisplayingSource.forEach(bdvh -> show(bdvh, source));
@@ -370,22 +327,10 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
     /**
      * Creates converters and convertersetup for a real typed source
      * @param source
-     * @param <T>
      */
-    public < T extends RealType< T >> void createConverterAndConverterSetupRealType(Source<T> source) {
-        log.accept("Real Typed Source Registration...");
-        final T type = Util.getTypeFromInterval( source.getSource( 0, 0 ) );
-        final double typeMin = Math.max( 0, Math.min( type.getMinValue(), 65535 ) );
-        final double typeMax = Math.max( 0, Math.min( type.getMaxValue(), 65535 ) );
-        final RealARGBColorConverter< T > converter ;
-        if ( source.getType() instanceof Volatile)
-            converter = new RealARGBColorConverter.Imp0<>( typeMin, typeMax );
-        else
-            converter = new RealARGBColorConverter.Imp1<>( typeMin, typeMax );
+    public void createConverterSetupRealType(SourceAndConverter source) {
 
-        converter.setColor( new ARGBType( 0xffffffff ) );
-
-        final ARGBColorConverterSetup setup = new ARGBColorConverterSetup( converter );
+        final ARGBColorConverterSetup setup = new ARGBColorConverterSetup( (ColorConverter) source.getConverter() );
 
         // Callback when convertersetup is changed
         setup.setViewer(() -> {
@@ -394,40 +339,25 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
             }
         });
 
-        bss.data.get(source).put(CONVERTER, converter);
-        bss.data.get(source).put(VOLATILECONVERTER, converter);
         bss.data.get(source).put(CONVERTERSETUP, setup);
     }
 
     /**
      * Creates converters and convertersetup for a ARGB typed source
      * @param source
-     * @param <T>
      */
-    public < T extends ARGBType> void createConverterAndConverterSetupARGBType(Source<T> source) {
-        final ScaledARGBConverter.VolatileARGB vconverter = new ScaledARGBConverter.VolatileARGB( 0, 255 );
-        final ScaledARGBConverter.ARGB converter = new ScaledARGBConverter.ARGB( 0, 255 );
+    public void createConverterSetupARGBType(SourceAndConverter source) {
 
-        bss.data.get(source).put(CONVERTER, converter);
-        bss.data.get(source).put(VOLATILECONVERTER, vconverter);
-        bss.data.get(source).put(CONVERTERSETUP, new ARGBColorConverterSetup( converter, vconverter ));
-    }
+        ConverterSetup setup = new ARGBColorConverterSetup( (ColorConverter) source.getConverter(), (ColorConverter) source.asVolatile().getConverter() );
 
-        /**
-         * TODO and also maybe move it to BdvSourceService
-         * @param source
-         */
-    public void createVolatile(Source source) {
-        if (bss.getAttachedSourceData().get(source).get(VOLATILESOURCE)==null) {
-            if (source.getType() instanceof Volatile) {
-                log.accept("Source is already volatile. No need to create a volatile source");
+        // Callback when convertersetup is changed
+        setup.setViewer(() -> {
+            if (locationsDisplayingSource.get(source)!=null) {
+                locationsDisplayingSource.get(source).forEach(bhr -> bhr.bdvh.getViewerPanel().requestRepaint());
             }
-            // TODO
+        });
 
-
-        } else {
-            log.accept("Source already has a volatile view");
-        }
+        bss.data.get(source).put(CONVERTERSETUP,  setup );
     }
 
     /**
@@ -493,26 +423,6 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
     }
 
     /**
-     * Registers into the BdvSourceService a SourceAndConverter object
-     * @param sac
-     */
-    public void registerSourceAndConverter(SourceAndConverter sac) {
-        if (!bss.isRegistered(sac.getSpimSource())) {
-            log.accept("Unregistered source and converter object");
-            if (sac.asVolatile()==null) {
-                bss.register(sac.getSpimSource());
-                bss.data.get(sac.getSpimSource()).put(CONVERTER, sac.getConverter());
-            } else {
-                bss.register(sac.getSpimSource(), sac.asVolatile().getSpimSource());
-                bss.data.get(sac.getSpimSource()).put(CONVERTER, sac.getConverter());
-            }
-            if (sac.getConverter() instanceof ColorConverter) {
-                log.accept("The converter is a color converter");
-            }
-        }
-    }
-
-    /**
      * Registers a source which has originated from a BdvHandle
      * Useful for BigWarp where the grid and the deformation magnitude source are created
      * into bigwarp
@@ -522,9 +432,9 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
     public void registerBdvSource(BdvHandle bdvh_in, int index) {
         SourceAndConverter sac = bdvh_in.getViewerPanel().getState().getSources().get(index);
 
-        Source key = sac.getSpimSource();
+        SourceAndConverter key = sac;
         //if (
-        registerSourceAndConverter(sac);//) {
+        bss.register(sac);//) {
         // Stores where the source is displayed (BdvHandle and index)
         BdvHandleRef bhr = new BdvHandleRef(bdvh_in, index);
         if (!locationsDisplayingSource.containsKey(key)) {
@@ -556,7 +466,7 @@ public class BdvSourceDisplayService extends AbstractService implements SciJavaS
 
     public void logLocationsDisplayingSource() {
         locationsDisplayingSource.forEach((src, lbdvref) -> {
-            log.accept(src.getName()+":"+src.toString());
+            log.accept(src.getSpimSource().getName()+":"+src.toString());
             lbdvref.forEach(bdvref -> {
                 log.accept("\t bdv = "+bdvref.bdvh.toString()+"\t i = "+bdvref.indexInBdv);
             });

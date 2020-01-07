@@ -1,17 +1,17 @@
 package sc.fiji.bdvpg.bdv.source.append;
 
 import bdv.util.BdvHandle;
-import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import sc.fiji.bdvpg.services.BdvService;
 
 import java.util.function.Consumer;
 
-public class SourceAdder implements Runnable, Consumer<Source>
+public class SourceAdder implements Runnable, Consumer<SourceAndConverter>
 {
-	Source srcIn;
+	SourceAndConverter srcIn;
 	BdvHandle bdvh;
 
-	public SourceAdder(BdvHandle bdvh, Source srcIn) {
+	public SourceAdder(BdvHandle bdvh, SourceAndConverter srcIn) {
 		this.srcIn=srcIn;
 		this.bdvh=bdvh;
 	}
@@ -21,7 +21,7 @@ public class SourceAdder implements Runnable, Consumer<Source>
 	}
 
 	@Override
-	public void accept(Source source) {
+	public void accept(SourceAndConverter source) {
 		BdvService.getSourceDisplayService().show(bdvh, source);
 	}
 }

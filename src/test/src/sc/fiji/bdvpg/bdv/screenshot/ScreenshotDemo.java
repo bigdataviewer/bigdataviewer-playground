@@ -25,6 +25,7 @@ import sc.fiji.bdvpg.services.BdvService;
  */
 public class ScreenshotDemo {
     public static void main(String[] args) {
+        /*
         // Initializes static SourceService and Display Service
         BdvService.InitScijavaServices();
 
@@ -56,5 +57,6 @@ public class ScreenshotDemo {
         screenShotMaker.setPhysicalPixelSpacingInXY(0.5, "micron");
         ImagePlus screenShot = screenShotMaker.getScreenshot();
         screenShot.show();
+        */
     }
 }

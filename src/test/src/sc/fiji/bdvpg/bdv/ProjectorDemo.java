@@ -47,6 +47,7 @@ public class ProjectorDemo
 		// Register to the source service
 		BdvService.getSourceService().register(asd);
 
+		/*
 		BdvService.getSourceService().getSourcesFromSpimdata(asd).forEach(source -> {
 			BdvService.getSourceDisplayService().show(bdvHandle, source);
 
@@ -67,7 +68,7 @@ public class ProjectorDemo
 
 			new ViewerTransformAdjuster(bdvHandle, source).run();
 			new BrightnessAutoAdjuster(source, 0).run();
-		});
+		});*/
 
 
 	}

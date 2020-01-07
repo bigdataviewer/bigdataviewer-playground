@@ -5,14 +5,11 @@ import bdv.util.BdvHandle;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 
-public interface IBdvSourceDisplayService {
+public interface IBdvSourceAndConverterDisplayService {
 
     /**
-     * String keys for data stored in the BdvSourceService
+     * String keys for data stored in the BdvSourceAndConverterService
      **/
-    String VOLATILESOURCE = "VOLATILESOURCE";
-    String CONVERTER = "CONVERTER";
-    String VOLATILECONVERTER = "VOLATILECONVERTER";
     String CONVERTERSETUP = "CONVERTERSETUP";
 
     /**
@@ -20,7 +17,7 @@ public interface IBdvSourceDisplayService {
      * The service should handle internally volatile views and converters
      * @param src
      */
-    void show(Source src);
+    void show(SourceAndConverter src);
 
     /**
      * Returns the last active Bdv or create a new one
@@ -35,21 +32,14 @@ public interface IBdvSourceDisplayService {
      * @param src
      * @param bdvh
      */
-    void show(BdvHandle bdvh, Source src);
+    void show(BdvHandle bdvh, SourceAndConverter src);
 
     /**
      * Returns SourceAndConverter object
      * @param src
      * @return
      */
-    SourceAndConverter getSourceAndConverter(Source src);
-
-    /**
-     * Returns SourceAndConverter object
-     * @param src
-     * @return
-     */
-    ConverterSetup getConverterSetup(Source src);
+    ConverterSetup getConverterSetup(SourceAndConverter src);
 
     /**
      * Closes appropriately a BdvHandle which means that it updates
@@ -57,12 +47,6 @@ public interface IBdvSourceDisplayService {
      * @param bdvh
      */
     void closeBdv(BdvHandle bdvh);
-
-    /**
-     * Registers into the BdvSourceService a SourceAndConverter object
-     * @param sac
-     */
-    void registerSourceAndConverter(SourceAndConverter sac);
 
     /**
      * Registers a source which has originated from a BdvHandle

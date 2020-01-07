@@ -22,6 +22,7 @@ import sc.fiji.bdvpg.services.BdvService;
  */
 public class LogMousePositionDemo {
     public static void main(String... args) {
+        /*
         // Initializes static SourceService and Display Service
         BdvService.InitScijavaServices();
 
@@ -48,6 +49,7 @@ public class LogMousePositionDemo {
 
         // log the current position
         new PositionLogger( bdvHandle ).run();
+        */
 
     }
 }

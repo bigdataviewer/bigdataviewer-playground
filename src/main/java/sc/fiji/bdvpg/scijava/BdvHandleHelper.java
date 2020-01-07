@@ -1,10 +1,9 @@
 package sc.fiji.bdvpg.scijava;
 
 import bdv.util.BdvHandle;
-import ij.plugin.frame.Recorder;
 import org.scijava.cache.CacheService;
 import org.scijava.object.ObjectService;
-import sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService;
+import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterDisplayService;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -14,7 +13,7 @@ import java.util.List;
 
 public class BdvHandleHelper {
 
-    public static void setBdvHandleCloseOperation(BdvHandle bdvh, CacheService cs, BdvSourceDisplayService bdvsds, boolean putWindowOnTop) {
+    public static void setBdvHandleCloseOperation(BdvHandle bdvh, CacheService cs, BdvSourceAndConverterDisplayService bdvsds, boolean putWindowOnTop) {
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bdvh.getViewerPanel());
 
         topFrame.addWindowListener(new WindowAdapter() {

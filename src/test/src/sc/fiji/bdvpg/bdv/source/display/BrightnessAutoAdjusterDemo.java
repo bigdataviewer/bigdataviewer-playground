@@ -5,11 +5,11 @@ import bdv.viewer.Source;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.source.append.SourceAdder;
 import sc.fiji.bdvpg.services.BdvService;
-import sc.fiji.bdvpg.source.importer.SourceLoader;
-import sc.fiji.bdvpg.source.importer.samples.VoronoiSourceGetter;
+import sc.fiji.bdvpg.sourceandconverter.importer.samples.VoronoiSourceGetter;
 
 public class BrightnessAutoAdjusterDemo
 {
+	/*
 	public static void main( String[] args )
 	{
 		// Initializes static SourceService and Display Service
@@ -40,4 +40,5 @@ public class BrightnessAutoAdjusterDemo
 		new ViewerTransformAdjuster( bdvHandle, source ).run();
 		new BrightnessAutoAdjuster( source,0 ).run();
 	}
+	*/
 }

@@ -1,15 +1,16 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import org.scijava.ItemIO;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.log.SystemLogger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.source.importer.samples.MandelbrotSourceGetter;
-import sc.fiji.bdvpg.source.importer.samples.VoronoiSourceGetter;
-import sc.fiji.bdvpg.source.importer.samples.Wave3DSourceGetter;
+import sc.fiji.bdvpg.sourceandconverter.importer.samples.MandelbrotSourceGetter;
+import sc.fiji.bdvpg.sourceandconverter.importer.samples.VoronoiSourceGetter;
+import sc.fiji.bdvpg.sourceandconverter.importer.samples.Wave3DSourceGetter;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>Create Sample Source")
 public class SampleSourceCreatorCommand implements Command {
@@ -18,7 +19,7 @@ public class SampleSourceCreatorCommand implements Command {
     String sampleName;
 
     @Parameter(type = ItemIO.OUTPUT)
-    Source sampleSource;
+    SourceAndConverter sampleSource;
 
     @Override
     public void run() {

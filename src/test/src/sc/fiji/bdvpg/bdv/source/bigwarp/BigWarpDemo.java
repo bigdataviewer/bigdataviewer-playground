@@ -14,18 +14,19 @@ import net.imglib2.view.Views;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.scijava.command.bdv.BigWarpLauncherCommand;
-import sc.fiji.bdvpg.scijava.services.BdvSourceDisplayService;
-import sc.fiji.bdvpg.scijava.services.BdvSourceService;
+import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterDisplayService;
+import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService;
 import sc.fiji.bdvpg.services.BdvService;
-import sc.fiji.bdvpg.source.importer.samples.MandelbrotSourceGetter;
+import sc.fiji.bdvpg.sourceandconverter.importer.samples.MandelbrotSourceGetter;
 
 public class BigWarpDemo {
+    /*
     public static void main(String... args) {
         // Initializes static SourceService and Display Service
         final ImageJ ij = new ImageJ();
         ij.ui().showUI();
-        BdvService.iss = ij.get(BdvSourceService.class);
-        BdvService.isds = ij.get(BdvSourceDisplayService.class);
+        BdvService.iss = ij.get(BdvSourceAndConverterService.class);
+        BdvService.isds = ij.get(BdvSourceAndConverterDisplayService.class);
 
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
@@ -67,5 +68,5 @@ public class BigWarpDemo {
                         "bigWarpName", "Big Warp Demo"
                 );
 
-    }
+    }*/
 }
