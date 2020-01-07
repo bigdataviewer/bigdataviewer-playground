@@ -17,7 +17,7 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataImporterXML;
 public class ViewerTransformAdjusterDemo {
     public static void main(String[] args)
     {
-/*
+
         // Initializes static SourceService and Display Service
         BdvService.InitScijavaServices();
 
@@ -32,7 +32,7 @@ public class ViewerTransformAdjusterDemo {
         // Register to the source service
         BdvService.getSourceService().register(asd);
 
-        BdvService.getSourceService().getSourcesFromSpimdata(asd).forEach(source -> {
+        BdvService.getSourceService().getSourceAndConverterFromSpimdata(asd).forEach(source -> {
             BdvService.getSourceDisplayService().show(bdvHandle, source);
         });
 
@@ -44,19 +44,10 @@ public class ViewerTransformAdjusterDemo {
         // Register to the source service
         BdvService.getSourceService().register(asd);
 
-        BdvService.getSourceService().getSourcesFromSpimdata(asd).forEach(source -> {
+        BdvService.getSourceService().getSourceAndConverterFromSpimdata(asd).forEach(source -> {
             BdvService.getSourceDisplayService().show(bdvHandle, source);
         });
 
-        new ViewerTransformAdjuster(bdvHandle, BdvService.getSourceService().getSourcesFromSpimdata(asd).get(0)).run();
-
-        //new SourcesLoaderAndAdder( bdvHandle, "src/test/resources/mri-stack.xml" ).run();
-
-        //final SourcesLoaderAndAdder loaderAndAdder = new SourcesLoaderAndAdder( bdvHandle, "src/test/resources/mri-stack-shiftedX.xml" );
-        //loaderAndAdder.setAutoAdjustViewerTransform( true );
-        //loaderAndAdder.setAutoContrast( true );
-        //loaderAndAdder.run();
-        */
-
+        new ViewerTransformAdjuster(bdvHandle, BdvService.getSourceService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
     }
 }

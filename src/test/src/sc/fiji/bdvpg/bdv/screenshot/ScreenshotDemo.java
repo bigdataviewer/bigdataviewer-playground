@@ -3,6 +3,7 @@ package src.sc.fiji.bdvpg.bdv.screenshot;
 import bdv.util.BdvHandle;
 import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import ij.IJ;
 import ij.ImagePlus;
 import net.imglib2.RandomAccessibleInterval;
@@ -14,6 +15,7 @@ import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.bdv.MenuAdder;
 import sc.fiji.bdvpg.bdv.source.screenshot.ScreenShotMaker;
 import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 /**
  * ViewTransformSetAndLogDemo
@@ -25,7 +27,7 @@ import sc.fiji.bdvpg.services.BdvService;
  */
 public class ScreenshotDemo {
     public static void main(String[] args) {
-        /*
+
         // Initializes static SourceService and Display Service
         BdvService.InitScijavaServices();
 
@@ -38,13 +40,15 @@ public class ScreenshotDemo {
         // Makes Bdv Source
         Source source = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
 
+        SourceAndConverter sac = SourceAndConverterUtils.makeSourceAndConverter(source);
+
         // Creates a BdvHandle
         BdvHandle bdvHandle = BdvService.getSourceDisplayService().getActiveBdv();
 
         // Show the source
-        BdvService.getSourceDisplayService().show(bdvHandle, source);
+        BdvService.getSourceDisplayService().show(bdvHandle, sac);
 
-        new ViewerTransformAdjuster(bdvHandle, source).run();
+        new ViewerTransformAdjuster(bdvHandle, sac).run();
 
         // add a click behaviour to BDV for making screenshots
         new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new ScreenShotMaker( bdvHandle ).getScreenshot().show() ).install( "Make screenshot", "ctrl D" );
@@ -57,6 +61,6 @@ public class ScreenshotDemo {
         screenShotMaker.setPhysicalPixelSpacingInXY(0.5, "micron");
         ImagePlus screenShot = screenShotMaker.getScreenshot();
         screenShot.show();
-        */
+
     }
 }

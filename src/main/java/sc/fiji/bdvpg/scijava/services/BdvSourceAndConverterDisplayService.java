@@ -333,7 +333,13 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
      */
     public void createConverterSetupRealType(SourceAndConverter source) {
 
-        final ARGBColorConverterSetup setup = new ARGBColorConverterSetup( (ColorConverter) source.getConverter(), (ColorConverter) source.asVolatile().getConverter() );
+        final ARGBColorConverterSetup setup;
+
+        if (source.asVolatile()!=null) {
+            setup = new ARGBColorConverterSetup((ColorConverter) source.getConverter(), (ColorConverter) source.asVolatile().getConverter());
+        } else {
+            setup = new ARGBColorConverterSetup((ColorConverter) source.getConverter());
+        }
 
         // Callback when convertersetup is changed
         setup.setViewer(() -> {
@@ -351,7 +357,13 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
      */
     public void createConverterSetupARGBType(SourceAndConverter source) {
 
-        ConverterSetup setup = new ARGBColorConverterSetup( (ColorConverter) source.getConverter(), (ColorConverter) source.asVolatile().getConverter() );
+        ConverterSetup setup;
+
+        if (source.asVolatile()!=null) {
+            setup = new ARGBColorConverterSetup( (ColorConverter) source.getConverter(), (ColorConverter) source.asVolatile().getConverter() );
+        } else {
+            setup = new ARGBColorConverterSetup((ColorConverter) source.getConverter());
+        }
 
         // Callback when convertersetup is changed
         setup.setViewer(() -> {
