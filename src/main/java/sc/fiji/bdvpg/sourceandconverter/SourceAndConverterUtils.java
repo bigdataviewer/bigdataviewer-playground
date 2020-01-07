@@ -172,6 +172,22 @@ public class SourceAndConverterUtils {
     }
 
     /**
+     * Supports Volatile RealTyped or non volatile
+     * @param source
+     * @return
+     */
+    public static Converter createConverter(Source source) {
+        if (source.getType() instanceof RealType) {
+            return createConverterRealType(source);
+        } else if (source.getType() instanceof ARGBType) {
+            return createConverterARGBType(source);
+        } else {
+            errlog.accept("Cannot create converter for source of type "+source.getType().getClass().getSimpleName());
+            return null;
+        }
+    }
+
+    /**
      * Creates ARGB converter from a RealTyped source. 
      * Supports Volatile RealTyped or non volatile
      * @param source

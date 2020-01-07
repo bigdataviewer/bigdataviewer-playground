@@ -166,6 +166,13 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
             bss.register(sac);
         }
 
+        // Escape if the source is already shown is this BdvHandle
+        if (locationsDisplayingSource.get(sac)!=null) {
+            if (locationsDisplayingSource.get(sac).stream().anyMatch(bdvhr -> bdvhr.bdvh.equals(bdvh))) {
+                return;
+            }
+        }
+
         // Stores in which BdvHandle the source will be displayed
         if (!sourcesDisplayedInBdvWindows.containsKey(bdvh)) {
             sourcesDisplayedInBdvWindows.put(bdvh, new ArrayList<>());

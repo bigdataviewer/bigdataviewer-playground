@@ -4,6 +4,7 @@ import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import java.util.function.Function;
 
@@ -39,10 +40,10 @@ public class SourceAffineTransform implements Runnable, Function<SourceAndConver
         if (in.asVolatile()!=null) {
             TransformedSource vsrc = new TransformedSource(in.asVolatile().getSpimSource());//f.apply(in.asVolatile().getSpimSource());
             vsrc.setFixedTransform(at3D);
-            SourceAndConverter vout = new SourceAndConverter<>(vsrc, in.asVolatile().getConverter());
-            return new SourceAndConverter(src, in.getConverter(), vout);
+            SourceAndConverter vout = new SourceAndConverter<>(vsrc, SourceAndConverterUtils.createConverter(in.asVolatile().getSpimSource()));
+            return new SourceAndConverter(src, SourceAndConverterUtils.createConverter(in.getSpimSource()), vout);
         } else {
-            return new SourceAndConverter(src, in.getConverter());
+            return new SourceAndConverter(src, SourceAndConverterUtils.createConverter(in.getSpimSource()));
         }
     }
 }
