@@ -25,7 +25,7 @@ public interface IBdvSourceAndConverterDisplayService {
     BdvHandle getActiveBdv();
 
     /**
-     * Displays a Bdv source into the specified BdvHandle
+     * Displays a Bdv sourceandconverter into the specified BdvHandle
      * This function really is the core of this service
      * It mimicks or copies the functions of BdvVisTools because it is responsible to
      * create converter, volatiles, convertersetups and so on
@@ -49,8 +49,8 @@ public interface IBdvSourceAndConverterDisplayService {
     void closeBdv(BdvHandle bdvh);
 
     /**
-     * Registers a source which has originated from a BdvHandle
-     * Useful for BigWarp where the grid and the deformation magnitude source are created
+     * Registers a sourceandconverter which has originated from a BdvHandle
+     * Useful for BigWarp where the grid and the deformation magnitude sourceandconverter are created
      * into bigwarp
      * @param bdvh_in
      * @param index

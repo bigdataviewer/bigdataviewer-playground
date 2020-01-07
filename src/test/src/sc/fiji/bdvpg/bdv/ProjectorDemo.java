@@ -1,19 +1,16 @@
 package sc.fiji.bdvpg.bdv;
 
 import bdv.util.BdvHandle;
-import bdv.util.BdvOptions;
 import mpicbg.spim.data.generic.AbstractSpimData;
-import sc.fiji.bdvpg.bdv.BdvCreator;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.bdv.source.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.projector.AccumulateAverageProjectorARGB;
+import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataImporterXML;
 
 /**
  * Demonstrates average projection of two sources.
  *
- * TODO: make projection mode optional or dependent on some source metadata.
+ * TODO: make projection mode optional or dependent on some sourceandconverter metadata.
  */
 public class ProjectorDemo
 {
@@ -30,7 +27,7 @@ public class ProjectorDemo
 
 		AbstractSpimData asd = sdix.get();
 
-		// Register to the source service
+		// Register to the sourceandconverter service
 		BdvService.getSourceService().register(asd);
 
 
@@ -46,7 +43,7 @@ public class ProjectorDemo
 
 		asd = sdix.get();
 
-		// Register to the source service
+		// Register to the sourceandconverter service
 		BdvService.getSourceService().register(asd);
 
 		BdvService.getSourceService().getSourceAndConverterFromSpimdata(asd).forEach(source -> {

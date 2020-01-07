@@ -29,7 +29,7 @@ public class ViewerTransformAdjuster implements Runnable
 
 	/**
 	 * Get a "good" initial viewer transform. The viewer transform is chosen
-	 * such that for the source,
+	 * such that for the sourceandconverter,
 	 * <ul>
 	 * <li>the XY plane is aligned with the screen plane,
 	 * <li>the <em>z = dim_z / 2</em> slice is shown,

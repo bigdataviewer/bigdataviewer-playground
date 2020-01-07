@@ -13,7 +13,7 @@ import net.imglib2.view.Views;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.bdv.MenuAdder;
-import sc.fiji.bdvpg.bdv.source.screenshot.ScreenShotMaker;
+import sc.fiji.bdvpg.bdv.ScreenShotMaker;
 import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
@@ -40,12 +40,12 @@ public class ScreenshotDemo {
         // Makes Bdv Source
         Source source = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
 
-        SourceAndConverter sac = SourceAndConverterUtils.makeSourceAndConverter(source);
+        SourceAndConverter sac = SourceAndConverterUtils.createSourceAndConverter(source);
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = BdvService.getSourceDisplayService().getActiveBdv();
 
-        // Show the source
+        // Show the sourceandconverter
         BdvService.getSourceDisplayService().show(bdvHandle, sac);
 
         new ViewerTransformAdjuster(bdvHandle, sac).run();

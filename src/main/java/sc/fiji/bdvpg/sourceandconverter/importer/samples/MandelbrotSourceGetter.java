@@ -35,6 +35,6 @@ public class MandelbrotSourceGetter implements Runnable, Supplier<SourceAndConve
                     }
                 ).getSource(new FinalInterval(new long[]{ -2, -1, -0}, new long[]{ 1, 1, 0 }), "Mandelbrot Set");
 
-        return SourceAndConverterUtils.makeSourceAndConverter(s);
+        return SourceAndConverterUtils.createSourceAndConverter(s);
     }
 }

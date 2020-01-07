@@ -1,17 +1,12 @@
-package sc.fiji.bdvpg.bdv.source.display;
+package sc.fiji.bdvpg.sourceandconverter.display;
 
-import bdv.tools.brightness.MinMaxGroup;
-import bdv.util.BdvHandle;
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import bdv.viewer.state.ViewerState;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.histogram.DiscreteFrequencyDistribution;
 import net.imglib2.histogram.Histogram1d;
 import net.imglib2.histogram.Real1dBinMapper;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.view.Views;
-import sc.fiji.bdvpg.bdv.BdvUtils;
 import sc.fiji.bdvpg.services.BdvService;
 
 public class BrightnessAutoAdjuster implements Runnable

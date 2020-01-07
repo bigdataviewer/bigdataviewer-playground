@@ -16,11 +16,17 @@ public class LUTConverterSetup implements ConverterSetup
 
     protected RequestRepaint viewer;
 
-    protected RealLUTConverter converter;
+    protected final List<RealLUTConverter> converters;
+    //protected RealLUTConverter converter;
 
-    public LUTConverterSetup(final RealLUTConverter converter )
+    public LUTConverterSetup(final RealLUTConverter ... converters )
     {
-        this.converter = converter;
+        this( Arrays.< RealLUTConverter >asList( converters ) );
+    }
+
+    public LUTConverterSetup(final List< RealLUTConverter > converters  )
+    {
+        this.converters = converters;
         this.viewer = null;
         AbstractLinearRange alr;
     }
@@ -29,8 +35,11 @@ public class LUTConverterSetup implements ConverterSetup
     @Override
     public void setDisplayRange( final double min, final double max )
     {
-        converter.setMin( min );
-        converter.setMax( max );
+
+        for ( final RealLUTConverter converter : converters ) {
+            converter.setMin(min);
+            converter.setMax(max);
+        }
         if ( viewer != null )
             viewer.requestRepaint();
     }
@@ -56,13 +65,13 @@ public class LUTConverterSetup implements ConverterSetup
     @Override
     public double getDisplayRangeMin()
     {
-        return converter.getMin();
+        return converters.get(0).getMin();
     }
 
     @Override
     public double getDisplayRangeMax()
     {
-        return converter.getMax();
+        return converters.get(0).getMax();
     }
 
     @Override

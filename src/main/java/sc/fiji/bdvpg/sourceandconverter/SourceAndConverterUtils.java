@@ -3,6 +3,9 @@ package sc.fiji.bdvpg.sourceandconverter;
 import bdv.SpimSource;
 import bdv.ViewerImgLoader;
 import bdv.VolatileSpimSource;
+import bdv.tools.brightness.ConverterSetup;
+import bdv.util.ARGBColorConverterSetup;
+import bdv.util.LUTConverterSetup;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
@@ -12,6 +15,8 @@ import mpicbg.spim.data.sequence.Angle;
 import mpicbg.spim.data.sequence.Channel;
 import net.imglib2.Volatile;
 import net.imglib2.converter.Converter;
+import net.imglib2.converter.RealLUTConverter;
+import net.imglib2.display.ColorConverter;
 import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
@@ -24,6 +29,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * Following the logic of the repository, i.e. dealing with SourceAndConverter objects only,
+ * This class contains the main functions which allow to convert objects which can be
+ * vizualized in Bdv windows into SourceAndConverters objects
+ * SourceAndConverters objects contains:
+ * - a Source, non volatile, which holds the data
+ * - a converter from the Source type to ARGBType, for display purpose
+ * - (optional) a volatile Source, which can be used for fast display and lazy processing
+ * - a converter from the volatile Source type to VolatileARGBType, fot display purpose
+ *
+ * Mainly thie class supports RealTyped source and ARGBTyped source
+ * It can deal wth conversion of:
+ * - Source to SourceAndConverter
+ * - Spimdata to a List of SourceAndConverter
+ * - TODO : RAI, ImagePLUS, etc... to SourceAndConverter
+ *
+ * Additionally, this class contains default function which allow to create a
+ * ConverterSetup object. These objects can be used to adjust the B&C of the displayed
+ * SourceAndConverter objects.
+ *
+ * Limitations : TODO : think about CacheControls
+ */
 public class SourceAndConverterUtils {
     
     /**
@@ -38,11 +65,11 @@ public class SourceAndConverterUtils {
     
     /**
      * Core function : makes SourceAndConverter object out of a Source
-     * Mainly duplicates functions from BdvVisTools
+     * Mainly duplicated functions from BdvVisTools
      * @param source
      * @return
      */
-    static public SourceAndConverter makeSourceAndConverter(Source source) {
+    public static SourceAndConverter createSourceAndConverter(Source source) {
         Converter nonVolatileConverter;
         SourceAndConverter out;
         if (source.getType() instanceof RealType) {
@@ -87,7 +114,7 @@ public class SourceAndConverterUtils {
 
         } else {
 
-            errlog.accept("Cannot create source and converter for sources of type "+source.getType());
+            errlog.accept("Cannot create sourceandconverter and converter for sources of type "+source.getType());
             return null;
 
         }
@@ -95,7 +122,12 @@ public class SourceAndConverterUtils {
         return out;
     }
 
-    static public List<SourceAndConverter> makeSourceAndConverters(AbstractSpimData asd) {
+    /**
+     *
+     * @param asd
+     * @return
+     */
+    static public List<SourceAndConverter> createSourceAndConverters(AbstractSpimData asd) {
 
         List<SourceAndConverter> out = new ArrayList<>();
 
@@ -143,8 +175,84 @@ public class SourceAndConverterUtils {
         return out;
     }
 
-    private static String createSetupName( final BasicViewSetup setup )
-    {
+    /**
+     * Creates default converters for a Source
+     * Support Volatile or non Volatile
+     * Support RealTyped or ARGBTyped
+     * @param source
+     * @return
+     */
+    public static Converter createConverter(Source source) {
+        if (source.getType() instanceof RealType) {
+            return createConverterRealType(source);
+        } else if (source.getType() instanceof ARGBType) {
+            return createConverterARGBType(source);
+        } else {
+            errlog.accept("Cannot create converter for sourceandconverter of type "+source.getType().getClass().getSimpleName());
+            return null;
+        }
+    }
+
+    public static ConverterSetup createConverterSetup(SourceAndConverter sac, Runnable requestRepaint) {
+        ConverterSetup setup;
+        if (sac.getSpimSource().getType() instanceof RealType) {
+            setup = createConverterSetupRealType(sac);
+        } else if (sac.getSpimSource().getType() instanceof ARGBType) {
+            setup = createConverterSetupARGBType(sac);
+        } else {
+            errlog.accept("Cannot create convertersetup for Source of type "+sac.getSpimSource().getType().getClass().getSimpleName());
+            setup = null;
+        }
+        setup.setViewer(() -> requestRepaint.run());
+        return setup;
+    }
+
+    /**
+     * Creates converters and convertersetup for a ARGB typed sourceandconverter
+     * @param source
+     */
+    static private ConverterSetup createConverterSetupARGBType(SourceAndConverter source) {
+        ConverterSetup setup;
+        if (source.getConverter() instanceof ColorConverter) {
+            if (source.asVolatile()!=null) {
+                setup = new ARGBColorConverterSetup( (ColorConverter) source.getConverter(), (ColorConverter) source.asVolatile().getConverter() );
+            } else {
+                setup = new ARGBColorConverterSetup( (ColorConverter) source.getConverter());
+            }
+        } else {
+            errlog.accept("Cannot build ConverterSetup for Converters of class "+source.getConverter().getClass());
+            setup = null;
+        }
+        return setup;
+    }
+
+    /**
+     * Creates converters and convertersetup for a real typed sourceandconverter
+     * @param source
+     */
+    static private ConverterSetup createConverterSetupRealType(SourceAndConverter source) {
+        final ConverterSetup setup;
+        if (source.getConverter() instanceof ColorConverter) {
+            if (source.asVolatile() != null) {
+                setup = new ARGBColorConverterSetup((ColorConverter) source.getConverter(), (ColorConverter) source.asVolatile().getConverter());
+            } else {
+                setup = new ARGBColorConverterSetup((ColorConverter) source.getConverter());
+            }
+        } else if (source.getConverter() instanceof RealLUTConverter) {
+            if (source.asVolatile() != null) {
+                setup = new LUTConverterSetup((RealLUTConverter) source.getConverter(), (RealLUTConverter) source.asVolatile().getConverter());
+            } else {
+                setup = new LUTConverterSetup((RealLUTConverter) source.getConverter());
+            }
+        } else {
+            // Here different kinds of Converter can be supported
+            errlog.accept("Cannot build ConverterSetup for Converters of class "+source.getConverter().getClass());
+            setup = null;
+        }
+        return setup;
+    }
+
+    private static String createSetupName( final BasicViewSetup setup ) {
         if ( setup.hasName() )
             return setup.getName();
 
@@ -161,40 +269,36 @@ public class SourceAndConverterUtils {
         return name;
     }
 
+    /**
+     * Here should go all the ways to build a Volatile Source
+     * from a non Volatile Source, RealTyped
+     * @param source
+     * @return
+     */
     private static Source createVolatileRealType(Source source) {
         // TODO unsupported yet
         return null;
     }
 
+    /**
+     * Here should go all the ways to build a Volatile Source
+     * from a non Volatile Source, ARGBTyped
+     * @param source
+     * @return
+     */
     private static Source createVolatileARGBType(Source source) {
         // TODO unsupported yet
         return null;
     }
 
     /**
-     * Supports Volatile RealTyped or non volatile
-     * @param source
-     * @return
-     */
-    public static Converter createConverter(Source source) {
-        if (source.getType() instanceof RealType) {
-            return createConverterRealType(source);
-        } else if (source.getType() instanceof ARGBType) {
-            return createConverterARGBType(source);
-        } else {
-            errlog.accept("Cannot create converter for source of type "+source.getType().getClass().getSimpleName());
-            return null;
-        }
-    }
-
-    /**
-     * Creates ARGB converter from a RealTyped source. 
+     * Creates ARGB converter from a RealTyped sourceandconverter.
      * Supports Volatile RealTyped or non volatile
      * @param source
      * @param <T>
      * @return
      */
-    public static< T extends RealType< T >>  Converter createConverterRealType(Source<T> source) {
+    private static< T extends RealType< T >>  Converter createConverterRealType(Source<T> source) {
         final T type = Util.getTypeFromInterval( source.getSource( 0, 0 ) );
         final double typeMin = Math.max( 0, Math.min( type.getMinValue(), 65535 ) );
         final double typeMax = Math.max( 0, Math.min( type.getMaxValue(), 65535 ) );
@@ -210,12 +314,12 @@ public class SourceAndConverterUtils {
     }
 
     /**
-     * Creates ARGB converter from a RealTyped source. 
+     * Creates ARGB converter from a RealTyped sourceandconverter.
      * Supports Volatile ARGBType or non volatile
      * @param source
      * @return
      */
-    public static  Converter createConverterARGBType(Source source) {
+    private static Converter createConverterARGBType(Source source) {
         final Converter converter ;
         if ( source.getType() instanceof Volatile)
             converter = new ScaledARGBConverter.VolatileARGB( 0, 255 );
@@ -226,7 +330,5 @@ public class SourceAndConverterUtils {
         //converter.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
         return converter;
     }
-    
-    
-    
+
 }

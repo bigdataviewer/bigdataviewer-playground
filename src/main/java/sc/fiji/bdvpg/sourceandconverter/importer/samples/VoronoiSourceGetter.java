@@ -68,7 +68,7 @@ public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverte
 
         Source s = new RandomAccessibleIntervalSource<>( voronoi, new FloatType(), new AffineTransform3D(), "Voronoi_"+numPts+" Pts_["+imgSize[0]+","+imgSize[1]+","+imgSize[2]+"]" );
 
-        return SourceAndConverterUtils.makeSourceAndConverter(s);
+        return SourceAndConverterUtils.createSourceAndConverter(s);
 
     }
 
@@ -116,7 +116,7 @@ public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverte
     }
 
     /**
-     * Copy from a source that is just RandomAccessible to an IterableInterval. Latter one defines
+     * Copy from a sourceandconverter that is just RandomAccessible to an IterableInterval. Latter one defines
      * size and location of the copy operation. It will query the same pixel locations of the
      * IterableInterval in the RandomAccessible. It is up to the developer to ensure that these
      * coordinates match.
@@ -124,7 +124,7 @@ public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverte
      * Note that both, input and output could be Views, Img or anything that implements
      * those interfaces.
      *
-     * @param source - a RandomAccess as source that can be infinite
+     * @param source - a RandomAccess as sourceandconverter that can be infinite
      * @param target - an IterableInterval as target
      */
     public static < T extends Type< T >> void copy(final RandomAccessible< T > source,

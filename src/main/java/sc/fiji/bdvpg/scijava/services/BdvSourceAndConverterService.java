@@ -1,20 +1,9 @@
 package sc.fiji.bdvpg.scijava.services;
 
-import bdv.SpimSource;
-import bdv.ViewerImgLoader;
-import bdv.VolatileSpimSource;
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
-import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
-import mpicbg.spim.data.generic.sequence.BasicViewSetup;
-import mpicbg.spim.data.sequence.Angle;
-import mpicbg.spim.data.sequence.Channel;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
-import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.volatiles.VolatileARGBType;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -40,15 +29,15 @@ import java.util.stream.Collectors;
  * Scijava Service which centralizes Bdv Sources, independently of their display
  * Bdv Sources can be registered to this Service.
  * This service adds the Source to the ObjectService, but on top of it,
- * It contains a Map which contains any object which can be linked to the source.
+ * It contains a Map which contains any object which can be linked to the sourceandconverter.
  *
  * It also handles SpimData object, but split all Sources into individual ones
  *
  * The most interesting of these objects are actually created by the BdvSourceAndConverterDisplayService:
  * - Converter to ARGBType, ConverterSetup, and Volatile view
  *
- * TODO : Think more carefully : maybe the volatile source should be done here...
- * Because when multiply wrapped source end up here, it maybe isn't possible to make the volatile view
+ * TODO : Think more carefully : maybe the volatile sourceandconverter should be done here...
+ * Because when multiply wrapped sourceandconverter end up here, it maybe isn't possible to make the volatile view
  */
 
 @Plugin(type=Service.class)
@@ -89,8 +78,8 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     Map<SourceAndConverter, Map<String, Object>> data;
 
     /**
-     * Reserved key for the data map. data.get(source).get(SETSPIMDATA)
-     * is expected to return a List of Spimdata Objects which refer to this source
+     * Reserved key for the data map. data.get(sourceandconverter).get(SETSPIMDATA)
+     * is expected to return a List of Spimdata Objects which refer to this sourceandconverter
      * whether a list of necessary is not obvious at the moment
      * TODO : make an example
      */
@@ -139,7 +128,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     }
 
     public void register(AbstractSpimData asd) {
-        List<SourceAndConverter> sacs = SourceAndConverterUtils.makeSourceAndConverters(asd);
+        List<SourceAndConverter> sacs = SourceAndConverterUtils.createSourceAndConverters(asd);
         this.register(sacs);
         sacs.forEach(sac -> this.linkToSpimData(sac, asd));
     }

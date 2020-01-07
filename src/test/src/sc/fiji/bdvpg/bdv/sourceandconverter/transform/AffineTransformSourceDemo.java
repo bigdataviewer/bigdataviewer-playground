@@ -1,13 +1,4 @@
-package sc.fiji.bdvpg.bdv.source.transform;
-
-import bdv.util.BdvHandle;
-import bdv.viewer.Source;
-import mpicbg.spim.data.SpimData;
-import net.imglib2.realtransform.AffineTransform3D;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.bdv.source.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.services.BdvService;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransform;
+package sc.fiji.bdvpg.bdv.sourceandconverter.transform;
 
 public class AffineTransformSourceDemo {
 /*

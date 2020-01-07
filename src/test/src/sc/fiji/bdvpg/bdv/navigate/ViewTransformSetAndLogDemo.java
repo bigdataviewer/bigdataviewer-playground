@@ -40,15 +40,15 @@ public class ViewTransformSetAndLogDemo {
 
         // Makes Bdv Source
         Source source = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
-        SourceAndConverter sac = SourceAndConverterUtils.makeSourceAndConverter(source);
+        SourceAndConverter sac = SourceAndConverterUtils.createSourceAndConverter(source);
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = BdvService.getSourceDisplayService().getActiveBdv();
 
-        // Show the source
+        // Show the sourceandconverter
         BdvService.getSourceDisplayService().show(bdvHandle, sac);
 
-        // Adjust view on source
+        // Adjust view on sourceandconverter
         new ViewerTransformAdjuster(bdvHandle, sac).run();
 
         // add a click behavior for logging transforms

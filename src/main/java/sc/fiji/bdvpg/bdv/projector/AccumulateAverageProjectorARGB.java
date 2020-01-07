@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.projector;
+package sc.fiji.bdvpg.bdv.projector;
 
 import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.Source;

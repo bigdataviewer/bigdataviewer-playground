@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.bdv.source.screenshot;
+package sc.fiji.bdvpg.bdv;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.Interpolation;
@@ -22,7 +22,7 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.util.Intervals;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
-import sc.fiji.bdvpg.bdv.lut.Luts;
+import sc.fiji.bdvpg.converter.lut.Luts;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -181,9 +181,9 @@ public class ScreenShotMaker {
             /*
         RealRandomAccess< ? extends RealType< ? > > sourceAccess;
         if ( interpolate )
-            sourceAccess = getInterpolatedRealTypeNonVolatileRealRandomAccess( source, t, level, Interpolation.NLINEAR );
+            sourceAccess = getInterpolatedRealTypeNonVolatileRealRandomAccess( sourceandconverter, t, level, Interpolation.NLINEAR );
         else
-            sourceAccess = getInterpolatedRealTypeNonVolatileRealRandomAccess( source, t, level, Interpolation.NEARESTNEIGHBOR );
+            sourceAccess = getInterpolatedRealTypeNonVolatileRealRandomAccess( sourceandconverter, t, level, Interpolation.NEARESTNEIGHBOR );
 
         return sourceAccess;*/
     }

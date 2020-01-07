@@ -9,7 +9,7 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 import java.util.function.Function;
 
 //NOTE:
-// Wrapping the source. If the source is already a transformed source, the transform can be concatenated directly
+// Wrapping the sourceandconverter. If the sourceandconverter is already a transformed sourceandconverter, the transform can be concatenated directly
 // But the choice here is to wrap it again
 // Another information : the transform is duplicated during the call to setFixedTransform ->
 // Transform not passed by reference

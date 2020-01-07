@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.bdv.lut;
+package sc.fiji.bdvpg.converter.lut;
 import ij.process.LUT;
 import net.imglib2.type.numeric.ARGBType;
 
