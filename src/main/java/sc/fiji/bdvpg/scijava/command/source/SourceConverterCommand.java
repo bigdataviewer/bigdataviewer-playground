@@ -1,6 +1,5 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imagej.display.ColorTables;
 import net.imagej.lut.LUTService;
@@ -14,7 +13,6 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterDisplayService;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;

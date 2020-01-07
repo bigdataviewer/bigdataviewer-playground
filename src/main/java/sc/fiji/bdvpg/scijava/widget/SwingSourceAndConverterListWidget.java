@@ -1,6 +1,6 @@
 package sc.fiji.bdvpg.scijava.widget;
 
-import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -12,14 +12,14 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Swing implementation of {@link SourceListWidget}.
+ * Swing implementation of {@link SourceAndConverterListWidget}.
  *
  * @author Nicolas Chiaruttini
  */
 
 @Plugin(type = InputWidget.class)
-public class SwingSourceListWidget extends SwingInputWidget<Source[]> implements
-        SourceListWidget<JPanel> {
+public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAndConverter[]> implements
+        SourceAndConverterListWidget<JPanel> {
 
     /**
      * Scijava Object Service : contains all the sources
@@ -33,24 +33,24 @@ public class SwingSourceListWidget extends SwingInputWidget<Source[]> implements
 
     @Override
     public boolean supports(final WidgetModel model) {
-        return super.supports(model) && model.isType(Source[].class);
+        return super.supports(model) && model.isType(SourceAndConverter[].class);
     }
 
     @Override
-    public Source[] getValue() {
+    public SourceAndConverter[] getValue() {
         if (sources.isSelectionEmpty()) {
             return null;
         } else {
-            return sources.getSelectedValuesList().toArray(new Source[sources.getSelectedValuesList().size()]);
+            return sources.getSelectedValuesList().toArray(new SourceAndConverter[sources.getSelectedValuesList().size()]);
         }
     }
 
-    JList<Source> sources;
+    JList<SourceAndConverter> sources;
 
     @Override
     public void set(final WidgetModel model) {
         super.set(model);
-        sources = new JList<>((objectService.getObjects(Source.class).toArray(new Source[0])));
+        sources = new JList<>((objectService.getObjects(SourceAndConverter.class).toArray(new SourceAndConverter[0])));
         sources.setDragEnabled(true);
         sources.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         JScrollPane scrollPane = new JScrollPane(sources);

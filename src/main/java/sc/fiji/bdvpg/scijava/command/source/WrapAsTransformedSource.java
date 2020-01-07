@@ -1,6 +1,5 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.ItemIO;
