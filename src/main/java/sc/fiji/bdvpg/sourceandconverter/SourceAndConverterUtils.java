@@ -12,12 +12,12 @@ import mpicbg.spim.data.sequence.Angle;
 import mpicbg.spim.data.sequence.Channel;
 import net.imglib2.Volatile;
 import net.imglib2.converter.Converter;
-import net.imglib2.display.RealARGBColorConverter;
 import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.volatiles.VolatileARGBType;
 import net.imglib2.util.Util;
+import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterDisplayService;
 
 import java.util.ArrayList;
@@ -188,6 +188,8 @@ public class SourceAndConverterUtils {
         else
             converter = new RealARGBColorConverter.Imp1<>( typeMin, typeMax );
         converter.setColor( new ARGBType( 0xffffffff ) );
+
+        ((RealARGBColorConverter)converter).getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
         return converter;
     }
 
@@ -203,6 +205,9 @@ public class SourceAndConverterUtils {
             converter = new ScaledARGBConverter.VolatileARGB( 0, 255 );
         else
             converter = new ScaledARGBConverter.ARGB( 0, 255 );
+
+        // Unsupported
+        //converter.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
         return converter;
     }
     

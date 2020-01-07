@@ -19,20 +19,6 @@ public class ProjectorDemo
 {
 	public static void main( String[] args )
 	{
-		//final BdvHandle bdvHandle = createBdv();
-
-		// add 1st source
-		//final SourceAndConverter< ? > sourceAndConverter = new SourceAndConverterLoader( "src/test/resources/mri-stack.xml" ).getSourceAndConverter( 0 );
-		//new SourceAndConverterBdvAdder( bdvHandle, sourceAndConverter ).run();
-		//new ViewerTransformAdjuster( bdvHandle, sourceAndConverter.getSpimSource() ).run();
-		//new BrightnessAdjuster( bdvHandle, sourceAndConverter, 10, 255.0 ).run();
-
-		// add 2nd source
-		//final SourceAndConverter< ? > sourceAndConverter2 = new SourceAndConverterLoader( "src/test/resources/mri-stack-shiftedX.xml" ).getSourceAndConverter( 0 );
-		//new SourceAndConverterBdvAdder( bdvHandle, sourceAndConverter2 ).run();
-		//new BrightnessAdjuster( bdvHandle, sourceAndConverter2, 10, 255.0 ).run();
-
-
 		// Initializes static SourceService and Display Service
 		BdvService.InitScijavaServices();
 
@@ -47,8 +33,8 @@ public class ProjectorDemo
 		// Register to the source service
 		BdvService.getSourceService().register(asd);
 
-		/*
-		BdvService.getSourceService().getSourcesFromSpimdata(asd).forEach(source -> {
+
+		BdvService.getSourceService().getSourceAndConverterFromSpimdata(asd).forEach(source -> {
 			BdvService.getSourceDisplayService().show(bdvHandle, source);
 
 			new ViewerTransformAdjuster(bdvHandle, source).run();
@@ -63,12 +49,12 @@ public class ProjectorDemo
 		// Register to the source service
 		BdvService.getSourceService().register(asd);
 
-		BdvService.getSourceService().getSourcesFromSpimdata(asd).forEach(source -> {
+		BdvService.getSourceService().getSourceAndConverterFromSpimdata(asd).forEach(source -> {
 			BdvService.getSourceDisplayService().show(bdvHandle, source);
 
 			new ViewerTransformAdjuster(bdvHandle, source).run();
 			new BrightnessAutoAdjuster(source, 0).run();
-		});*/
+		});
 
 
 	}

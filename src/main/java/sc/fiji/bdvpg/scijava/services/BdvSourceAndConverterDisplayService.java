@@ -173,7 +173,7 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
         sourcesDisplayedInBdvWindows.get(bdvh).add(sac);
 
         bdvh.getViewerPanel().addSource(sac);
-        bdvh.getSetupAssignments().addSetup((ConverterSetup)bss.data.get(sac).get(CONVERTERSETUP));
+        bdvh.getSetupAssignments().addSetup(getConverterSetup(sac));
 
         // Stores where the source is displayed (BdvHandle and index)
         BdvHandleRef bhr = new BdvHandleRef(bdvh, bdvh.getViewerPanel().getState().numSources());
@@ -285,6 +285,8 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
      * @param cvt
      */
     public void updateConverter(SourceAndConverter source, Converter cvt) {
+        errlog.accept("Unsupported operation : a new SourceAndConverterObject should be built. (TODO) ");
+        /*
         // Precaution : the source should be registered
         if (!bss.isRegistered(source)) {
             bss.register(source);
@@ -322,6 +324,7 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
 
         // Step 6 : restore source display location
         bdvhDisplayingSource.forEach(bdvh -> show(bdvh, source));
+        */
     }
 
     /**
@@ -330,7 +333,7 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
      */
     public void createConverterSetupRealType(SourceAndConverter source) {
 
-        final ARGBColorConverterSetup setup = new ARGBColorConverterSetup( (ColorConverter) source.getConverter() );
+        final ARGBColorConverterSetup setup = new ARGBColorConverterSetup( (ColorConverter) source.getConverter(), (ColorConverter) source.asVolatile().getConverter() );
 
         // Callback when convertersetup is changed
         setup.setViewer(() -> {

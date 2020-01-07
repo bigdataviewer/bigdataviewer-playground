@@ -31,6 +31,7 @@ public abstract class RealARGBColorConverter< R extends RealType< ? > > implemen
 		update();
 	}
 
+
 	protected int black;
 
 	// specify special colors for special values
