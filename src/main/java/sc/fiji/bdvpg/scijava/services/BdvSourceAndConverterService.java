@@ -12,12 +12,14 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.scijava.ui.UIService;
+import sc.fiji.bdvpg.services.IBdvSourceAndConverterDisplayService;
 import sc.fiji.bdvpg.services.IBdvSourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -72,6 +74,11 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     UIService uiService;
 
     /**
+     * Display service : cannot be set through Parameter annotation due to 'circular dependency'
+     */
+    BdvSourceAndConverterDisplayService bsds = null;
+
+    /**
      * Map containing objects that are 1 to 1 linked to a Source
      * TODO : ask if it should contain a WeakReference to Source keys (Potential Memory leak ?)
      */
@@ -94,6 +101,11 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
         return data.containsKey(src);
     }
 
+
+    public void setDisplayService(IBdvSourceAndConverterDisplayService bsds) {
+        assert bsds instanceof BdvSourceAndConverterDisplayService;
+        this.bsds = (BdvSourceAndConverterDisplayService) bsds;
+    }
 
     /**
      * Gets lists of associated objects and data attached to a Bdv Source
@@ -135,8 +147,15 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
 
     @Override
     public void remove(SourceAndConverter src) {
-        // TODO!
-        errlog.accept("Removal of SourceAndConverter unsupported yet");
+        // Remove displays
+        if (bsds!=null) {
+            bsds.removeFromAllBdvs(src);
+        }
+        data.remove(src);
+        objectService.removeObject(src);
+        if (uiAvailable) {
+            ui.remove(src);
+        }
     }
 
 
@@ -252,6 +271,30 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
                 displayedSource.add(src);
             }
         }
+
+        public void remove(SourceAndConverter sac) {
+            if (displayedSource.contains(sac)) {
+                // No Need to update
+                displayedSource.remove(sac);
+                visitAllNodesAndDelete(top, sac);
+            }
+        }
+
+        public void visitAllNodesAndDelete(TreeNode node, SourceAndConverter sac) {
+            if (node.getChildCount() >= 0) {
+                for (Enumeration e = node.children(); e.hasMoreElements();) {
+                    TreeNode n = (TreeNode) e.nextElement();
+                    if (n.isLeaf()) {
+                        if (((DefaultMutableTreeNode) n).getUserObject().equals(sac)) {
+                            model.removeNodeFromParent(((DefaultMutableTreeNode) n));
+                        }
+                    } else {
+                        visitAllNodesAndDelete(n, sac);
+                    }
+                }
+            }
+        }
+
     }
 
 }

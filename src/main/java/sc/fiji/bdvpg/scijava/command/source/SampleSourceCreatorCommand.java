@@ -1,6 +1,5 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import org.scijava.ItemIO;
 import org.scijava.command.Command;

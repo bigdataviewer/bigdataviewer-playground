@@ -335,6 +335,7 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
         scriptService.addAlias(BdvHandle.class);
         sourcesDisplayedInBdvWindows = new HashMap<>();
         locationsDisplayingSource = new HashMap<>();
+        bss.setDisplayService(this);
         log.accept("Service initialized.");
     }
 
