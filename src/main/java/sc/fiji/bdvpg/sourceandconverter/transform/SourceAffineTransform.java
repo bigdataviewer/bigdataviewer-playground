@@ -1,7 +1,6 @@
 package sc.fiji.bdvpg.sourceandconverter.transform;
 
 import bdv.tools.transformation.TransformedSource;
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
@@ -13,6 +12,10 @@ import java.util.function.Function;
 // But the choice here is to wrap it again
 // Another information : the transform is duplicated during the call to setFixedTransform ->
 // Transform not passed by reference
+
+/**
+ * THIS FAILS FOR VOLATILE VIEW AND MANUAL TRANSFORMS! TODO : FIX THAT!
+ */
 
 public class SourceAffineTransform implements Runnable, Function<SourceAndConverter, SourceAndConverter> {
 
@@ -35,15 +38,14 @@ public class SourceAffineTransform implements Runnable, Function<SourceAndConver
     }
 
     public SourceAndConverter apply(SourceAndConverter in) {
-        TransformedSource src = new TransformedSource(in.getSpimSource());//f.apply(in.getSpimSource());
+        TransformedSource src = new TransformedSource(in.getSpimSource());
         src.setFixedTransform(at3D);
         if (in.asVolatile()!=null) {
-            TransformedSource vsrc = new TransformedSource(in.asVolatile().getSpimSource());//f.apply(in.asVolatile().getSpimSource());
-            vsrc.setFixedTransform(at3D);
+            TransformedSource vsrc = new TransformedSource(in.asVolatile().getSpimSource(), src);
             SourceAndConverter vout = new SourceAndConverter<>(vsrc, SourceAndConverterUtils.cloneConverter(in.asVolatile().getConverter()));
-            return new SourceAndConverter(src, SourceAndConverterUtils.cloneConverter(in.getConverter()), vout);
+            return new SourceAndConverter<>(src, SourceAndConverterUtils.cloneConverter(in.getConverter()), vout);
         } else {
-            return new SourceAndConverter(src, SourceAndConverterUtils.cloneConverter(in.getConverter()));
+            return new SourceAndConverter<>(src, SourceAndConverterUtils.cloneConverter(in.getConverter()));
         }
     }
 }

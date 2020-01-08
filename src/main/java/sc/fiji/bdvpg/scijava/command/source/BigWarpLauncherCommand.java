@@ -5,7 +5,6 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import org.scijava.ItemIO;
 import org.scijava.command.Command;
-import org.scijava.convert.ConvertService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -38,8 +37,11 @@ public class BigWarpLauncherCommand implements Command {
     @Parameter(type = ItemIO.OUTPUT)
     SourceAndConverter[] warpedSources;
 
-    @Parameter
-    ConvertService cs;
+    @Parameter(type = ItemIO.OUTPUT)
+    SourceAndConverter gridSource;
+
+    @Parameter(type = ItemIO.OUTPUT)
+    SourceAndConverter warpMagnitudeSource;
 
     @Parameter
     BdvSourceAndConverterDisplayService bsds;
@@ -66,6 +68,10 @@ public class BigWarpLauncherCommand implements Command {
         for (int i=0;i<warpedSources.length;i++) {
             warpedSources[i] = bdvhP.getViewerPanel().getState().getSources().get(i);
         }
+
+        int nSources = bdvhP.getViewerPanel().getState().numSources();
+        gridSource = bdvhP.getViewerPanel().getState().getSources().get(nSources-1);
+        warpMagnitudeSource = bdvhP.getViewerPanel().getState().getSources().get(nSources-2);
     }
 
 }

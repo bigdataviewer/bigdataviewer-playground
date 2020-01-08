@@ -49,9 +49,9 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
                 String windowTitle = BdvHandleHelper.getWindowTitle(bdvh);
                 windowTitle = BdvHandleHelper.getUniqueWindowTitle(os, windowTitle);
                 BdvHandleHelper.setWindowTitle(bdvh, windowTitle);
-                for (int i=0;i<bdvh.getViewerPanel().getState().numSources();i++) {
-                    bsds.registerBdvSource(bdvh,i);
-                }
+                //for (int i=0;i<bdvh.getViewerPanel().getState().numSources();i++) {
+                //    bsds.registerBdvSource(bdvh,i);
+                //}
                 module.resolveOutput(name);
             }
         });
