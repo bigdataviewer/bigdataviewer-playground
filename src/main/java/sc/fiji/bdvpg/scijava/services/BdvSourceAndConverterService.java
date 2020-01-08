@@ -15,6 +15,7 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.scijava.ui.UIService;
+import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
 import sc.fiji.bdvpg.services.IBdvSourceAndConverterDisplayService;
 import sc.fiji.bdvpg.services.IBdvSourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
@@ -354,31 +355,25 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
                 panel.add(treeView, BorderLayout.CENTER);
 
                 // JTree of SpimData
+
                 tree.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         super.mouseClicked(e);
+                        // Right Click -> popup
                         if (SwingUtilities.isRightMouseButton(e)) {
                             popup.show(e.getComponent(), e.getX(), e.getY());
                         }
+                        // Double Click : display source
                         if (e.getClickCount()==2 && !e.isConsumed()) {
-                            // Double Click action
-                            /*e.consume();
-                            Map params = getPreFilledParameters();
-                            if (params.containsKey("sourceIndexString")) {
-                                String sourceIndexes = (String) params.get("sourceIndexString");
-                                if ((sourceIndexes.split(":").length==1)&&(sourceIndexes.split(",").length==1)) {
-                                    int idSelected = Integer.valueOf(sourceIndexes);
-                                    cmds.run(BdvWindowTranslateOnSource.class, true,
-                                            "bdvh", params.get("bdvh"),
-                                            "sourceIndex", idSelected);
-                                }
-                            }*/
+                            commandService.run(BdvSourcesAdderCommand.class, true,
+                                    "srcs_in", getSelectedSourceAndConverters(),
+                                            "autoContrast", true,
+                                            "adjustViewOnSource", true
+                                    );
                         }
                     }
                 });
-
-
 
                 frame.add(panel);
                 frame.pack();
@@ -389,7 +384,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
             if (displayedSource.contains(src)) {
                 // No Need to update
             } else {
-                DefaultMutableTreeNode node = new DefaultMutableTreeNode(src);
+                DefaultMutableTreeNode node = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                 top.add(node);
                 model.reload(top);
                 panel.revalidate();
@@ -410,7 +405,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
                 for (Enumeration e = node.children(); e.hasMoreElements();) {
                     TreeNode n = (TreeNode) e.nextElement();
                     if (n.isLeaf()) {
-                        if (((DefaultMutableTreeNode) n).getUserObject().equals(sac)) {
+                        if (((RenamableSourceAndConverter)((DefaultMutableTreeNode) n).getUserObject()).sac.equals(sac)) {
                             model.removeNodeFromParent(((DefaultMutableTreeNode) n));
                         }
                     } else {
@@ -423,7 +418,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
         public SourceAndConverter[] getSelectedSourceAndConverters() {
             List<SourceAndConverter> sacList = new ArrayList<>();
             for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
-                Object userObj = ((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject();
+                Object userObj = ((RenamableSourceAndConverter)((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject()).sac;
                 sacList.add((SourceAndConverter) userObj);
             }
             return sacList.toArray(new SourceAndConverter[sacList.size()]);
@@ -434,6 +429,16 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
             JMenuItem menuItem = new JMenuItem(actionName);
             menuItem.addActionListener(e -> action.accept(getSelectedSourceAndConverters()));
             popup.add(menuItem);
+        }
+
+        public class RenamableSourceAndConverter {
+            public SourceAndConverter sac;
+            public RenamableSourceAndConverter(SourceAndConverter sac) {
+                this.sac = sac;
+            }
+            public String toString() {
+                return sac.getSpimSource().getName();
+            }
         }
 
     }
