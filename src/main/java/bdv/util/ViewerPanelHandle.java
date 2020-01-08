@@ -1,6 +1,7 @@
 package bdv.util;
 
 import bdv.tools.brightness.ConverterSetup;
+import bdv.tools.brightness.SetupAssignments;
 import bdv.tools.transformation.ManualTransformationEditor;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerPanel;
@@ -22,10 +23,11 @@ public class ViewerPanelHandle extends BdvHandle {
 
     public String name;
 
-    public ViewerPanelHandle(ViewerPanel viewerPanel, String name) {
+    public ViewerPanelHandle(ViewerPanel viewerPanel, SetupAssignments sa, String name) {
         super(BdvOptions.options());
         this.viewer = viewerPanel;
         this.name = name;
+        this.setupAssignments = sa;
     }
 
     @Override

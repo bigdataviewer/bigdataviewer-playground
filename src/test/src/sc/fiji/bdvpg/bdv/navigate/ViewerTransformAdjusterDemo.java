@@ -1,8 +1,10 @@
 package src.sc.fiji.bdvpg.bdv.navigate;
 
 import bdv.util.BdvHandle;
-import sc.fiji.bdvpg.bdv.BDVSingleton;
-import sc.fiji.bdvpg.bdv.source.append.SourcesLoaderAndAdder;
+import mpicbg.spim.data.generic.AbstractSpimData;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.spimdata.importer.SpimDataImporterXML;
 
 /**
  * ViewerTransformAdjusterDemo
@@ -15,13 +17,37 @@ import sc.fiji.bdvpg.bdv.source.append.SourcesLoaderAndAdder;
 public class ViewerTransformAdjusterDemo {
     public static void main(String[] args)
     {
-        BdvHandle bdvHandle = BDVSingleton.getInstance( );
 
-        new SourcesLoaderAndAdder( bdvHandle, "src/test/resources/mri-stack.xml" ).run();
+        // Initializes static SourceService and Display Service
+        BdvService.InitScijavaServices();
 
-        final SourcesLoaderAndAdder loaderAndAdder = new SourcesLoaderAndAdder( bdvHandle, "src/test/resources/mri-stack-shiftedX.xml" );
-        //loaderAndAdder.setAutoAdjustViewerTransform( true );
-        //loaderAndAdder.setAutoContrast( true );
-        loaderAndAdder.run();
+        // Gets active BdvHandle instance
+        BdvHandle bdvHandle = BdvService.getSourceDisplayService().getActiveBdv();
+
+        // Import SpimData object
+        SpimDataImporterXML sdix = new SpimDataImporterXML("src/test/resources/mri-stack.xml");
+
+        AbstractSpimData asd = sdix.get();
+
+        // Register to the sourceandconverter service
+        BdvService.getSourceService().register(asd);
+
+        BdvService.getSourceService().getSourceAndConverterFromSpimdata(asd).forEach(source -> {
+            BdvService.getSourceDisplayService().show(bdvHandle, source);
+        });
+
+        // Import SpimData object
+        sdix = new SpimDataImporterXML("src/test/resources/mri-stack-shiftedX.xml");
+
+        asd = sdix.get();
+
+        // Register to the sourceandconverter service
+        BdvService.getSourceService().register(asd);
+
+        BdvService.getSourceService().getSourceAndConverterFromSpimdata(asd).forEach(source -> {
+            BdvService.getSourceDisplayService().show(bdvHandle, source);
+        });
+
+        new ViewerTransformAdjuster(bdvHandle, BdvService.getSourceService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
     }
 }
