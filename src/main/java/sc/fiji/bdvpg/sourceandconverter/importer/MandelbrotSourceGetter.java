@@ -1,5 +1,6 @@
-package sc.fiji.bdvpg.sourceandconverter.importer.samples;
+package sc.fiji.bdvpg.sourceandconverter.importer;
 
+import bdv.util.Procedural3DImageShort;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.FinalInterval;

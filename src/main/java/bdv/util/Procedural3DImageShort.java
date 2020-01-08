@@ -1,6 +1,5 @@
-package sc.fiji.bdvpg.sourceandconverter.importer.samples;
+package bdv.util;
 
-import bdv.util.RealRandomAccessibleSource;
 import bdv.viewer.Source;
 import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imglib2.*;

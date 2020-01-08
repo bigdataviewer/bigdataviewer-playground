@@ -24,7 +24,7 @@ public class BdvSpimdataPostprocessor extends AbstractPostprocessorPlugin {
     public void process(Module module) {
 
        module.getOutputs().forEach((name, object)-> {
-           log.accept("input:\t"+name+"\tclass:\t"+object.getClass().getSimpleName());
+           //log.accept("input:\t"+name+"\tclass:\t"+object.getClass().getSimpleName());
            if (object instanceof AbstractSpimData) {
                AbstractSpimData asd = (AbstractSpimData) object;
                log.accept("Spimdata found.");

@@ -5,6 +5,7 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Service which centralizes Bdv Sources, independently of their display
@@ -66,4 +67,11 @@ public interface IBdvSourceAndConverterService {
      * @return
      */
     Map<SourceAndConverter, Map<String, Object>> getAttachedSourceAndConverterData();
+
+    /**
+     * If supported, this will allow to display actions in a popup window in a ui
+     * @param action
+     * @param actionName
+     */
+    void registerPopupSourcesAction(Consumer<SourceAndConverter[]> action, String actionName);
 }

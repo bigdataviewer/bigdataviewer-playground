@@ -4,6 +4,9 @@ import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
+import org.scijava.command.CommandService;
+import org.scijava.module.ModuleException;
+import org.scijava.module.ModuleItem;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -20,9 +23,13 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -59,7 +66,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
      * Scijava Object Service : will contain all the sourceAndConverters
      */
     @Parameter
-    private ObjectService objectService;
+    ObjectService objectService;
 
     /**
      * Scriptservice : used for adding Source alias to help for scripting
@@ -158,7 +165,6 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
         }
     }
 
-
     @Override
     public List<SourceAndConverter> getSources() {
         return objectService.getObjects(SourceAndConverter.class);
@@ -205,15 +211,103 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
         scriptService.addAlias(RealTransform.class);
         scriptService.addAlias(AffineTransform3D.class);
         scriptService.addAlias(AbstractSpimData.class);
-        // -- End of to check$
-
+        // -- TODO End of to check
         data = new HashMap<>();
         if (uiService!=null) {
             log.accept("uiService detected : Constructing JPanel for BdvSourceAndConverterService");
             ui = new UIBdvSourceService(this);
             uiAvailable = true;
         }
+        registerPopupActions();
         log.accept("Service initialized.");
+    }
+
+    //Map<String, Consumer<SourceAndConverter[]>> popupactions = new HashMap<>();
+
+    public void registerPopupSourcesAction(Consumer<SourceAndConverter[]> action, String actionName) {
+        if (uiAvailable) {
+            //popupactions.put(actionName, action);
+            ui.addPopupAction(action, actionName);
+        }
+    }
+
+    @Parameter
+    CommandService commandService;
+
+    public void registerPopupActions() {
+        this.registerPopupSourcesAction((srcs) -> {
+            for (SourceAndConverter src:srcs){
+                System.out.println(src.getSpimSource().getName());
+            }}, "Display names");
+
+        /**
+         * Ok, Scijava stuff here -> Automated registration of Command into popup actions
+         */
+        // A there is a single input which is of Type SourceAndConverter or of type SourceAndConverter[],
+        // Then we can automatically register it as a popup action
+        commandService.getCommands().forEach(ci -> {
+            int nCountSourceAndConverter = 0;
+            int nCountSourceAndConverterList = 0;
+            //System.out.println("Command:"+ci.getTitle());
+
+            // I don't know what's wrong with these two commands...
+            // TODO : understand the error to avoid other command failings
+            if (!ci.getTitle().equals("Export Fused Sequence as XML/HDF5"))
+            if (!ci.getTitle().equals("Export Spim Sequence as XML/HDF5"))
+            if (ci.inputs()!=null) {
+                for (ModuleItem input: ci.inputs()) {
+                    if (input.getType().equals(SourceAndConverter.class)) {
+                        nCountSourceAndConverter++;
+                    }
+                    if (input.getType().equals(SourceAndConverter[].class)) {
+                        nCountSourceAndConverterList++;
+                    }
+                }
+                if (nCountSourceAndConverter+nCountSourceAndConverterList==1) {
+                    // Can be automatically mapped to popup action
+                    for (ModuleItem input: ci.inputs()) {
+                        if (input.getType().equals(SourceAndConverter.class)) {
+                            // It's an action which takes a SourceAndConverter
+                            registerPopupSourcesAction(
+                                    (sacs) -> {
+                                            // Todo : improve by sending the parameters all over again
+                                            //try {
+                                                for (SourceAndConverter sac:sacs) {
+                                                    commandService.run(ci, true, input.getName(), sac);//.get(); TODO understand why get is impossible
+                                                }
+                                            /*} catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            } catch (ExecutionException e) {
+                                                e.printStackTrace();
+                                            }*/
+                                    },
+                                    ci.getTitle());
+
+                            log.accept("Registering action entitled "+ci.getTitle()+" from command "+ci.getClassName());
+
+                        }
+                        if (input.getType().equals(SourceAndConverter[].class)) {
+                            // It's an action which takes a SourceAndConverter List
+                            registerPopupSourcesAction(
+                                    (sacs) -> {
+                                        //try {
+                                            commandService.run(ci, true, input.getName(), sacs);//.get();
+                                        /*} catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        } catch (ExecutionException e) {
+                                            e.printStackTrace();
+                                        }*/
+                                    },
+                                    ci.getTitle());
+                            log.accept("Registering action entitled "+ci.getTitle()+" from command "+ci.getClassName());
+                        }
+                    }
+                }
+            }
+        });
+
+
+
     }
 
     /**
@@ -235,6 +329,9 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
         DefaultTreeModel model;
         Set<SourceAndConverter> displayedSource = new HashSet<>();
 
+
+        JPopupMenu popup = new JPopupMenu();
+
         public UIBdvSourceService(BdvSourceAndConverterService bss) {
                 this.bss = bss;
                 frame = new JFrame("Bdv Sources");
@@ -255,6 +352,34 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
                 treeView = new JScrollPane(tree);
 
                 panel.add(treeView, BorderLayout.CENTER);
+
+                // JTree of SpimData
+                tree.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        super.mouseClicked(e);
+                        if (SwingUtilities.isRightMouseButton(e)) {
+                            popup.show(e.getComponent(), e.getX(), e.getY());
+                        }
+                        if (e.getClickCount()==2 && !e.isConsumed()) {
+                            // Double Click action
+                            /*e.consume();
+                            Map params = getPreFilledParameters();
+                            if (params.containsKey("sourceIndexString")) {
+                                String sourceIndexes = (String) params.get("sourceIndexString");
+                                if ((sourceIndexes.split(":").length==1)&&(sourceIndexes.split(",").length==1)) {
+                                    int idSelected = Integer.valueOf(sourceIndexes);
+                                    cmds.run(BdvWindowTranslateOnSource.class, true,
+                                            "bdvh", params.get("bdvh"),
+                                            "sourceIndex", idSelected);
+                                }
+                            }*/
+                        }
+                    }
+                });
+
+
+
                 frame.add(panel);
                 frame.pack();
                 frame.setVisible(true);
@@ -293,6 +418,22 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
                     }
                 }
             }
+        }
+
+        public SourceAndConverter[] getSelectedSourceAndConverters() {
+            List<SourceAndConverter> sacList = new ArrayList<>();
+            for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
+                Object userObj = ((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject();
+                sacList.add((SourceAndConverter) userObj);
+            }
+            return sacList.toArray(new SourceAndConverter[sacList.size()]);
+        }
+
+        public void addPopupAction(Consumer<SourceAndConverter[]> action, String actionName) {
+            // Show
+            JMenuItem menuItem = new JMenuItem(actionName);
+            menuItem.addActionListener(e -> action.accept(getSelectedSourceAndConverters()));
+            popup.add(menuItem);
         }
 
     }

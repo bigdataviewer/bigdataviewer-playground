@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.sourceandconverter.importer.samples;
+package sc.fiji.bdvpg.sourceandconverter.importer;
 
 import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;

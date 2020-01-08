@@ -7,9 +7,9 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.log.SystemLogger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.sourceandconverter.importer.samples.MandelbrotSourceGetter;
-import sc.fiji.bdvpg.sourceandconverter.importer.samples.VoronoiSourceGetter;
-import sc.fiji.bdvpg.sourceandconverter.importer.samples.Wave3DSourceGetter;
+import sc.fiji.bdvpg.sourceandconverter.importer.MandelbrotSourceGetter;
+import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
+import sc.fiji.bdvpg.sourceandconverter.importer.Wave3DSourceGetter;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>Create Sample Source")
 public class SampleSourceCreatorCommand implements Command {
