@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>Set Source Color")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Set Source Color")
 
 public class ColorConverterChangerCommand extends DynamicCommand {
 

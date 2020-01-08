@@ -11,7 +11,7 @@ import sc.fiji.bdvpg.sourceandconverter.importer.MandelbrotSourceGetter;
 import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
 import sc.fiji.bdvpg.sourceandconverter.importer.Wave3DSourceGetter;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>Create Sample Source")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Create Sample Source")
 public class SampleSourceCreatorCommand implements Command {
 
     @Parameter(choices = {"Mandelbrot", "Wave3D", "Voronoi", "Big Voronoi"})

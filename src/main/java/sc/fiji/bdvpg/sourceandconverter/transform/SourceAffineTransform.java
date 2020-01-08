@@ -7,15 +7,18 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import java.util.function.Function;
 
-//NOTE:
-// Wrapping the sourceandconverter. If the sourceandconverter is already a transformed sourceandconverter, the transform can be concatenated directly
-// But the choice here is to wrap it again
-// Another information : the transform is duplicated during the call to setFixedTransform ->
-// Transform not passed by reference
-
 /**
- * THIS FAILS FOR VOLATILE VIEW AND MANUAL TRANSFORMS! TODO : FIX THAT!
+ * This action aaplies an AffineTransform onto a SourceAndConverter
+ * Both the non volatile and the volatile spimsource, if present, are wrapped
+ * Another option could be to check whether the spimsource are already wrapped, and then concatenate the transforms
+ * TODO : write this alternative action, or set a transform in place flag in this action
+ * Limitation : the affine transform is identical for all timepoints
+ *
+ * Note : the converters are cloned during this wrapping
+ * Another option could have been to use the same converters
+ * the transform is passed by value, not by reference, so it cannot be updated later on
  */
+
 
 public class SourceAffineTransform implements Runnable, Function<SourceAndConverter, SourceAndConverter> {
 

@@ -306,9 +306,6 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
                 }
             }
         });
-
-
-
     }
 
     /**
@@ -404,7 +401,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
             if (node.getChildCount() >= 0) {
                 for (Enumeration e = node.children(); e.hasMoreElements();) {
                     TreeNode n = (TreeNode) e.nextElement();
-                    if (n.isLeaf()) {
+                    if (n.isLeaf() && ((DefaultMutableTreeNode) n).getUserObject() instanceof RenamableSourceAndConverter) {
                         if (((RenamableSourceAndConverter)((DefaultMutableTreeNode) n).getUserObject()).sac.equals(sac)) {
                             model.removeNodeFromParent(((DefaultMutableTreeNode) n));
                         }
@@ -418,8 +415,10 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
         public SourceAndConverter[] getSelectedSourceAndConverters() {
             List<SourceAndConverter> sacList = new ArrayList<>();
             for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
-                Object userObj = ((RenamableSourceAndConverter)((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject()).sac;
-                sacList.add((SourceAndConverter) userObj);
+                if (((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject() instanceof RenamableSourceAndConverter) {
+                    Object userObj = ((RenamableSourceAndConverter) ((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject()).sac;
+                    sacList.add((SourceAndConverter) userObj);
+                }
             }
             return sacList.toArray(new SourceAndConverter[sacList.size()]);
         }

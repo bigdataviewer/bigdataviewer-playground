@@ -17,7 +17,7 @@ import sc.fiji.bdvpg.bdv.ScreenShotMaker;
  * 12 2019
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>Screenshot")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bdv>Screenshot")
 public class ScreenShotMakerCommand implements Command {
 
     @Parameter

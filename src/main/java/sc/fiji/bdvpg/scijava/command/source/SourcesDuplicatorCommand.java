@@ -15,9 +15,9 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 import sc.fiji.bdvpg.sourceandconverter.display.ConverterChanger;
 import sc.fiji.bdvpg.sourceandconverter.importer.SourceAndConverterDuplicator;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>Duplicate Sources")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Duplicate Sources")
 
-public class SourceDuplicatorCommand extends DynamicCommand {
+public class SourcesDuplicatorCommand extends DynamicCommand {
 
     @Parameter
     SourceAndConverter[] sources_in;
