@@ -23,7 +23,7 @@ import java.util.Map;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Tools>Set Source LUT", initializer = "init")
 
-public class SourceConverterCommand extends DynamicCommand {
+public class LUTConverterChangerCommand extends DynamicCommand {
 
     @Parameter
     LUTService lutService;
@@ -45,9 +45,6 @@ public class SourceConverterCommand extends DynamicCommand {
 
     @Parameter(type = ItemIO.OUTPUT)
     SourceAndConverter source_out;
-
-    @Parameter
-    BdvSourceAndConverterDisplayService bsds;
 
     @Override
     public void run() {

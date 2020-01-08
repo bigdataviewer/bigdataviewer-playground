@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.scijava.command.bdv;
+package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
