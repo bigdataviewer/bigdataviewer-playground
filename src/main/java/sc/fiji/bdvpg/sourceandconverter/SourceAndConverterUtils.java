@@ -193,6 +193,36 @@ public class SourceAndConverterUtils {
         }
     }
 
+    /**
+     * Clones a converter
+     * TODO :
+     * @return
+     */
+    public static Converter cloneConverter(Converter converter) {
+        if (converter instanceof RealARGBColorConverter.Imp0) {
+            RealARGBColorConverter.Imp0 out = new RealARGBColorConverter.Imp0<>( ((RealARGBColorConverter.Imp0) converter).getMin(), ((RealARGBColorConverter.Imp0) converter).getMax() );
+            out.setColor(((RealARGBColorConverter.Imp0) converter).getColor());
+            // For averaging
+            out.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
+            return out;
+        } else if (converter instanceof RealARGBColorConverter.Imp1) {
+            RealARGBColorConverter.Imp1 out = new RealARGBColorConverter.Imp1<>( ((RealARGBColorConverter.Imp1) converter).getMin(), ((RealARGBColorConverter.Imp1) converter).getMax() );
+            out.setColor(((RealARGBColorConverter.Imp1) converter).getColor());
+            // For averaging
+            out.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
+            return out;
+        } else if (converter instanceof ScaledARGBConverter.VolatileARGB) {
+            return new ScaledARGBConverter.VolatileARGB(((ScaledARGBConverter.VolatileARGB) converter).getMin(), ((ScaledARGBConverter.VolatileARGB) converter).getMax());
+        } else if (converter instanceof ScaledARGBConverter.ARGB) {
+            return new ScaledARGBConverter.ARGB(((ScaledARGBConverter.ARGB) converter).getMin(),((ScaledARGBConverter.ARGB) converter).getMax());
+        } else if (converter instanceof RealLUTConverter) {
+            return new RealLUTConverter(((RealLUTConverter) converter).getMin(),((RealLUTConverter) converter).getMax(),((RealLUTConverter) converter).getLUT());
+        } else {
+            errlog.accept("Could not clone the converter of class " + converter.getClass().getSimpleName());
+            return null;
+        }
+    }
+
     public static ConverterSetup createConverterSetup(SourceAndConverter sac, Runnable requestRepaint) {
         ConverterSetup setup;
         if (sac.getSpimSource().getType() instanceof RealType) {

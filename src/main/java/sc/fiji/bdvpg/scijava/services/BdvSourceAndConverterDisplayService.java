@@ -3,10 +3,14 @@ package sc.fiji.bdvpg.scijava.services;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.brightness.SetupAssignments;
 import bdv.util.BdvHandle;
+import bdv.util.BdvStackSource;
 import bdv.util.LUTConverterSetup;
 import bdv.viewer.BigWarpConverterSetupWrapper;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
+import bdv.viewer.ViewerPanel;
+import bdv.viewer.state.SourceGroup;
+import bdv.viewer.state.ViewerState;
 import net.imglib2.Volatile;
 import net.imglib2.converter.Converter;
 import net.imglib2.converter.RealLUTConverter;
@@ -32,6 +36,7 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -108,7 +113,8 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
                         cs.run(BdvWindowCreatorCommand.class,
                                 true,
                                 "is2D", false,
-                                "windowTitle", "Bdv").get().getOutput("bdvh");//*/
+                                "windowTitle", "Bdv",
+                                "projector", "Sum Projector").get().getOutput("bdvh");//*/
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
@@ -187,8 +193,10 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
      * @param source
      */
     public void removeFromAllBdvs(SourceAndConverter source) {
-        while (locationsDisplayingSource.get(source).size()>0) {
-            remove(locationsDisplayingSource.get(source).get(0).bdvh, source);
+        if (locationsDisplayingSource.get(source)!=null) {
+            while (locationsDisplayingSource.get(source).size() > 0) {
+                remove(locationsDisplayingSource.get(source).get(0).bdvh, source);
+            }
         }
     }
 
@@ -222,8 +230,18 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
                     ).findFirst().get();
 
             int index = bdvhr.indexInBdv;
+            this.logLocationsDisplayingSource();
+            log.accept("Remove source "+source+" indexed "+index+" in BdvHandle "+bdvh.getViewerPanel().getName());
 
-            bdvh.getViewerPanel().removeSource(source.getSpimSource()); // TODO : Check!!
+            /**
+             * A reflection forced access to ViewerState.removeSource(int index)
+             * protected void removeSource( final int index )
+             * is necessary because the SpimSource is not precise enough as a key : it can be displayed multiple times with different converters
+             * all following calls fail:
+             *  bdvh.getViewerPanel().getState().removeSource();//.removeGroup(sg);//remove(index);//.removeSource(source.getSpimSource()); // TODO : Check!!
+             */
+            removeSourceViaReflection(bdvh, index);
+
             if (bss.getAttachedSourceAndConverterData().get(source).get(CONVERTERSETUP)!=null) {
                 log.accept("Removing converter setup...");
                 bdvh.getSetupAssignments().removeSetup((ConverterSetup) bss.getAttachedSourceAndConverterData().get(source).get(CONVERTERSETUP));
@@ -466,6 +484,32 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * A reflection forced access to ViewerState.removeSource(int index)
+     * protected void removeSource( final int index )
+     * is necessary because the SpimSource is not precise enough as a key : it can be displayed multiple times with different converters
+     * all following calls fail:
+     *  bdvh.getViewerPanel().getState().removeSource();//.removeGroup(sg);//remove(index);//.removeSource(source.getSpimSource());
+     *  Small issue : F6 tab is not updated
+     */
+    void removeSourceViaReflection(BdvHandle bdvh, int index) {
+        try {
+            // Two reflections because we need the state, and not its copy
+            Field f = ViewerPanel.class.getDeclaredField("state");
+            f.setAccessible(true);
+
+            ViewerState state = (ViewerState) f.get(bdvh.getViewerPanel());
+
+            Method m = ViewerState.class.getDeclaredMethod("removeSource", int.class);
+            m.setAccessible(true);
+
+            m.invoke(state, index-1); // 1 based index to zero based. don't ask
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

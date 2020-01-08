@@ -9,8 +9,6 @@ public class ConverterChanger implements Runnable, Function<SourceAndConverter, 
 
     SourceAndConverter sac_in;
 
-    SourceAndConverter sac_out;
-
     Converter nonVolatileConverter;
 
     Converter volatileConverter;
