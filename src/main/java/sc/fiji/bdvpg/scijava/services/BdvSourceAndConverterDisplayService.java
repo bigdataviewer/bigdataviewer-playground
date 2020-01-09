@@ -148,6 +148,26 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
          show(getActiveBdv(), src);
     }
 
+
+    /**
+     * Makes visible a source, makes it visible in all bdvs according to BdvhReferences
+     * @param src
+     */
+    public void makeVisible(SourceAndConverter src) {
+        if (locationsDisplayingSource.get(src)!=null)
+        locationsDisplayingSource.get(src).forEach(bdvhr -> bdvhr.bdvh.getViewerPanel().getVisibilityAndGrouping().setSourceActive(bdvhr.indexInBdv-1, true));
+    }
+
+    /**
+     * Makes invisible a source, makes it invisible in all bdvs according to BdvhReferences
+     * @param src
+     */
+    public void makeInvisible(SourceAndConverter src) {
+        if (locationsDisplayingSource.get(src)!=null)
+            locationsDisplayingSource.get(src).forEach(bdvhr -> bdvhr.bdvh.getViewerPanel().getVisibilityAndGrouping().setSourceActive(bdvhr.indexInBdv-1, false));
+
+    }
+
     /**
      * Displays a Bdv sourceandconverter into the specified BdvHandle
      * This function really is the core of this service
