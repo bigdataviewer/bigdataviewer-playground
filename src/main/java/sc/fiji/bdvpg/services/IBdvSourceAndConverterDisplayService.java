@@ -13,18 +13,6 @@ public interface IBdvSourceAndConverterDisplayService {
     String CONVERTERSETUP = "CONVERTERSETUP";
 
     /**
-     * Displays a Source, the last active bdv is chosen since none is specified in this method
-     * The service should handle internally volatile views and converters
-     * @param src
-     */
-    void show(SourceAndConverter src);
-
-    /**
-     * Returns the last active Bdv or create a new one
-     */
-    BdvHandle getActiveBdv();
-
-    /**
      * Displays a Bdv sourceandconverter into the specified BdvHandle
      * This function really is the core of this service
      * It mimicks or copies the functions of BdvVisTools because it is responsible to
@@ -35,11 +23,39 @@ public interface IBdvSourceAndConverterDisplayService {
     void show(BdvHandle bdvh, SourceAndConverter src);
 
     /**
-     * Returns SourceAndConverter object
+     * Displays a Source, the last active bdv is chosen since none is specified in this method
+     * The service should handle internally volatile views and converters
      * @param src
+     */
+    void show(SourceAndConverter src);
+
+    /**
+     * Removes a Source from all locations where it is displayed
+     * , the last active bdv is chosen since none is specified in this method
+     * The service should handle internally volatile views and converters
+     * @param src
+     */
+    void removeFromAllBdvs(SourceAndConverter src);
+
+    /**
+     * Removes a Source from all locations where it is displayed
+     * , the last active bdv is chosen since none is specified in this method
+     * The service should handle internally volatile views and converters
+     * @param src
+     */
+    void remove(BdvHandle bdvh, SourceAndConverter src);
+
+    /**
+     * Returns the last active Bdv or create a new one
+     */
+    BdvHandle getActiveBdv();
+
+    /**
+     * Returns SourceAndConverter object
+     * @param sac
      * @return
      */
-    ConverterSetup getConverterSetup(SourceAndConverter src);
+    ConverterSetup getConverterSetup(SourceAndConverter sac);
 
     /**
      * Closes appropriately a BdvHandle which means that it updates

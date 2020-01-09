@@ -6,6 +6,7 @@ import bdv.util.ViewerPanelHandle;
 import bdv.viewer.SourceAndConverter;
 import bigwarp.BigWarp;
 import mpicbg.spim.data.SpimDataException;
+import sc.fiji.bdvpg.services.BdvService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,13 @@ public class BigWarpLauncher implements Runnable {
     // Alternative maybe better option :
     // Use array : Source[] or SourceAndConverter[] (and maybe this issue was the reason for BigWarp choosing this in the beginning)
 
+    List<SourceAndConverter> movingSources;
+    List<SourceAndConverter> fixedSources;
+
     public BigWarpLauncher(List<SourceAndConverter> movingSources, List<SourceAndConverter> fixedSources, String bigWarpName, List<ConverterSetup> allConverterSetups) {
+
+        this.movingSources = movingSources;
+        this.fixedSources = fixedSources;
 
         this.bigWarpName = bigWarpName;
 
@@ -78,6 +85,23 @@ public class BigWarpLauncher implements Runnable {
             // What does P and Q stand for ? Not sure about who's moving and who's fixed
             bdvHandleP = new ViewerPanelHandle(bigWarp.getViewerFrameP().getViewerPanel(), bigWarp.getSetupAssignments(), bigWarpName+"_Moving");
             bdvHandleQ = new ViewerPanelHandle(bigWarp.getViewerFrameQ().getViewerPanel(), bigWarp.getSetupAssignments(), bigWarpName+"_Fixed");
+
+            SourceAndConverter[] warpedSources = new SourceAndConverter[movingSources.size()];
+
+            for (int i=0;i<warpedSources.length;i++) {
+                warpedSources[i] = bdvHandleP.getViewerPanel().getState().getSources().get(i);
+            }
+
+            int nSources = bdvHandleP.getViewerPanel().getState().numSources();
+            SourceAndConverter gridSource = bdvHandleP.getViewerPanel().getState().getSources().get(nSources-1);
+            SourceAndConverter warpMagnitudeSource = bdvHandleP.getViewerPanel().getState().getSources().get(nSources-2);
+
+            BdvService.getSourceService().register(gridSource);
+            BdvService.getSourceService().register(warpMagnitudeSource);
+            for (SourceAndConverter sac : warpedSources) {
+                BdvService.getSourceService().register(sac);
+            }
+
         } catch (SpimDataException e) {
             e.printStackTrace();
         }

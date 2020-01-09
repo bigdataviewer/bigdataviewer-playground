@@ -35,9 +35,6 @@ public class ColorConverterChangerCommand extends DynamicCommand {
     @Parameter
     SourceAndConverter source_in;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter source_out;
-
     @Override
     public void run() {
 
@@ -55,7 +52,7 @@ public class ColorConverterChangerCommand extends DynamicCommand {
 
         ConverterChanger cc = new ConverterChanger(source_in, c, vc);
         cc.run();
-        source_out = cc.get();
+        cc.get();
     }
 
 }

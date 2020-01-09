@@ -17,12 +17,9 @@ public class TransformedSourceWrapperCommand implements Command {
     @Parameter
     SourceAndConverter[] sources_in;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter[] sources_out;
-
     @Override
     public void run() {
         SourceAffineTransform sat = new SourceAffineTransform(null, new AffineTransform3D());
-        sources_out = Arrays.asList(sources_in).stream().map(sat::apply).collect(Collectors.toList()).toArray(new SourceAndConverter[sources_in.length]);
+        Arrays.asList(sources_in).stream().map(sat::apply).collect(Collectors.toList());
     }
 }
