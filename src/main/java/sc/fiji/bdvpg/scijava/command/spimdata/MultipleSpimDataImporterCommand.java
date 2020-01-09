@@ -13,7 +13,7 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataImporterXML;
 import java.io.File;
 import java.util.ArrayList;
 
-@Plugin( type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"SpimDataset>Open XML/HDF5 File" )
+@Plugin( type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"SpimDataset>Open XML/HDF5 Files" )
 public class MultipleSpimDataImporterCommand implements Command {
 
     /**
@@ -27,16 +27,9 @@ public class MultipleSpimDataImporterCommand implements Command {
     @Parameter
     public File[] files;
 
-    /**
-     * Note: this will trigger this class `BdvSpimDataPostprocessor`
-     */
-    @Parameter(type = ItemIO.OUTPUT)
-    AbstractSpimData[] spimDataList;
-
     public void run() {
-        spimDataList = new AbstractSpimData[files.length];
         for ( int i = 0; i < files.length; ++i ) {
-            spimDataList[i] = new SpimDataImporterXML( files[i] ).get();
+            new SpimDataImporterXML( files[i] ).get();
         }
     }
 

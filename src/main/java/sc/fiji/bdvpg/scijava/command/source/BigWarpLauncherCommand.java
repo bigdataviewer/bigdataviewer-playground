@@ -34,15 +34,6 @@ public class BigWarpLauncherCommand implements Command {
     @Parameter(type = ItemIO.OUTPUT)
     BdvHandle bdvhP;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter[] warpedSources;
-
-    @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter gridSource;
-
-    @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter warpMagnitudeSource;
-
     @Parameter
     BdvSourceAndConverterDisplayService bsds;
 
@@ -63,15 +54,6 @@ public class BigWarpLauncherCommand implements Command {
 
         bsds.pairClosing(bdvhQ,bdvhP);
 
-        warpedSources = new SourceAndConverter[movingSources.length];
-
-        for (int i=0;i<warpedSources.length;i++) {
-            warpedSources[i] = bdvhP.getViewerPanel().getState().getSources().get(i);
-        }
-
-        int nSources = bdvhP.getViewerPanel().getState().numSources();
-        gridSource = bdvhP.getViewerPanel().getState().getSources().get(nSources-1);
-        warpMagnitudeSource = bdvhP.getViewerPanel().getState().getSources().get(nSources-2);
     }
 
 }

@@ -240,50 +240,52 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
      */
     public void remove(BdvHandle bdvh, SourceAndConverter source) {
         // Needs to removeFromAllBdvs the sourceandconverter, if present
-        while (locationsDisplayingSource.get(source).stream().anyMatch(
-            bdvHandleRef -> bdvHandleRef.bdvh.equals(bdvh)
-        )) {
-            // It is displayed in this bdv
-            BdvHandleRef bdvhr = locationsDisplayingSource
-                    .get(source).stream().filter(
-                            bdvHandleRef -> bdvHandleRef.bdvh.equals(bdvh)
-                    ).findFirst().get();
+        if (locationsDisplayingSource.get(source)!=null) {
+            while (locationsDisplayingSource.get(source).stream().anyMatch(
+                    bdvHandleRef -> bdvHandleRef.bdvh.equals(bdvh)
+            )) {
+                // It is displayed in this bdv
+                BdvHandleRef bdvhr = locationsDisplayingSource
+                        .get(source).stream().filter(
+                                bdvHandleRef -> bdvHandleRef.bdvh.equals(bdvh)
+                        ).findFirst().get();
 
-            int index = bdvhr.indexInBdv;
-            this.logLocationsDisplayingSource();
-            log.accept("Remove source "+source+" indexed "+index+" in BdvHandle "+bdvh.getViewerPanel().getName());
+                int index = bdvhr.indexInBdv;
+                this.logLocationsDisplayingSource();
+                log.accept("Remove source " + source + " indexed " + index + " in BdvHandle " + bdvh.getViewerPanel().getName());
 
-            /**
-             * A reflection forced access to ViewerState.removeSource(int index)
-             * protected void removeSource( final int index )
-             * is necessary because the SpimSource is not precise enough as a key : it can be displayed multiple times with different converters
-             * all following calls fail:
-             *  bdvh.getViewerPanel().getState().removeSource();//.removeGroup(sg);//remove(index);//.removeSource(source.getSpimSource()); // TODO : Check!!
-             */
-            removeSourceViaReflection(bdvh, index);
+                /**
+                 * A reflection forced access to ViewerState.removeSource(int index)
+                 * protected void removeSource( final int index )
+                 * is necessary because the SpimSource is not precise enough as a key : it can be displayed multiple times with different converters
+                 * all following calls fail:
+                 *  bdvh.getViewerPanel().getState().removeSource();//.removeGroup(sg);//remove(index);//.removeSource(source.getSpimSource()); // TODO : Check!!
+                 */
+                removeSourceViaReflection(bdvh, index);
 
-            if (bss.getAttachedSourceAndConverterData().get(source).get(CONVERTERSETUP)!=null) {
-                log.accept("Removing converter setup...");
-                bdvh.getSetupAssignments().removeSetup((ConverterSetup) bss.getAttachedSourceAndConverterData().get(source).get(CONVERTERSETUP));
+                if (bss.getAttachedSourceAndConverterData().get(source).get(CONVERTERSETUP) != null) {
+                    log.accept("Removing converter setup...");
+                    bdvh.getSetupAssignments().removeSetup((ConverterSetup) bss.getAttachedSourceAndConverterData().get(source).get(CONVERTERSETUP));
+                }
+
+                // Removes reference to where the sourceandconverter is located
+                locationsDisplayingSource.get(source).remove(bdvhr);
+
+                // Updates reference of index location
+                locationsDisplayingSource
+                        .keySet()
+                        .stream()
+                        .forEach(src -> {
+                            locationsDisplayingSource.get(src)
+                                    .stream()
+                                    .filter(ref -> ((ref.bdvh.equals(bdvh)) && (ref.indexInBdv > index)))
+                                    .forEach(bdvHandleRef ->
+                                            bdvHandleRef.indexInBdv--);
+                        });
+
             }
-
-            // Removes reference to where the sourceandconverter is located
-            locationsDisplayingSource.get(source).remove(bdvhr);
-
-            // Updates reference of index location
-            locationsDisplayingSource
-                    .keySet()
-                    .stream()
-                    .forEach(src -> {
-                        locationsDisplayingSource.get(src)
-                                .stream()
-                                .filter(ref -> ((ref.bdvh.equals(bdvh))&&(ref.indexInBdv>index)))
-                                .forEach(bdvHandleRef ->
-                                        bdvHandleRef.indexInBdv--);
-                    });
-
+            bdvh.getViewerPanel().requestRepaint();
         }
-        bdvh.getViewerPanel().requestRepaint();
     }
 
     /**

@@ -43,17 +43,13 @@ public class LUTConverterChangerCommand extends DynamicCommand {
     @Parameter
     SourceAndConverter source_in;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter source_out;
-
     @Override
     public void run() {
         Converter bdvLut = cs.convert(table, Converter.class);
 
-        //bsds.updateConverter(source, bdvLut);
         ConverterChanger cc = new ConverterChanger(source_in, bdvLut, bdvLut);
         cc.run();
-        source_out = cc.get();
+        cc.get();
     }
 
     // -- initializers --

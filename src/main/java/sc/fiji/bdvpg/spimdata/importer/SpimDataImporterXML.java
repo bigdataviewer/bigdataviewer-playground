@@ -38,6 +38,7 @@ public class SpimDataImporterXML implements Runnable, Function<File, AbstractSpi
         AbstractSpimData sd = null;
         try {
             sd = new XmlIoSpimDataMinimal().load(file.getAbsolutePath());
+            BdvService.getSourceService().register(sd);
         } catch (SpimDataException e) {
             e.printStackTrace();
         }

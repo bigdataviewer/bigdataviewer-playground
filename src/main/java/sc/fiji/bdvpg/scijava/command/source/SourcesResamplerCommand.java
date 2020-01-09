@@ -20,15 +20,11 @@ public class SourcesResamplerCommand implements Command{
     @Parameter
     boolean reuseMipMaps;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter[] sourcesResampled;
-
     @Override
     public void run() {
-        sourcesResampled = new SourceAndConverter[sourcesToResample.length];
 
         for (int i=0;i<sourcesToResample.length;i++) {
-            sourcesResampled[i] = new SourceResampler(sourcesToResample[i], model, reuseMipMaps).get();
+            new SourceResampler(sourcesToResample[i], model, reuseMipMaps).get();
         }
 
     }

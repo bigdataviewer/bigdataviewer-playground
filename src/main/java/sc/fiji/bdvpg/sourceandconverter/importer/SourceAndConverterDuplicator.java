@@ -1,6 +1,7 @@
 package sc.fiji.bdvpg.sourceandconverter.importer;
 
 import bdv.viewer.SourceAndConverter;
+import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import java.util.function.Function;
@@ -24,18 +25,21 @@ public class SourceAndConverterDuplicator implements Runnable, Function<SourceAn
 
     @Override
     public SourceAndConverter apply(SourceAndConverter sourceAndConverter) {
+        SourceAndConverter sac;
         if (sourceAndConverter.asVolatile() != null) {
-            return new SourceAndConverter(
+            sac = new SourceAndConverter(
                     sourceAndConverter.getSpimSource(),
                     SourceAndConverterUtils.cloneConverter(sourceAndConverter.getConverter()),
                     new SourceAndConverter(sourceAndConverter.asVolatile().getSpimSource(),
                             SourceAndConverterUtils.cloneConverter(sourceAndConverter.asVolatile().getConverter()))
             );
         } else {
-            return new SourceAndConverter(
+            sac = new SourceAndConverter(
                     sourceAndConverter.getSpimSource(),
                     SourceAndConverterUtils.cloneConverter(sourceAndConverter.getConverter()));
         }
+        BdvService.getSourceService().register(sac);
+        return sac;
     }
 
 }

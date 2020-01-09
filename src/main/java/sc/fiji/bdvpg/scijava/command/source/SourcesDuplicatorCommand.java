@@ -21,16 +21,11 @@ public class SourcesDuplicatorCommand implements Command {
     @Parameter
     SourceAndConverter[] sources_in;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter[] sources_out;
-
     @Override
     public void run() {
 
-        sources_out = new SourceAndConverter[sources_in.length];
-
         for (int i=0;i<sources_in.length;i++) {
-            sources_out[i] = new SourceAndConverterDuplicator(sources_in[i]).get();
+            new SourceAndConverterDuplicator(sources_in[i]).get();
         }
 
     }
