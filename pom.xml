@@ -81,8 +81,8 @@
 		<license.organizationName>MPI CBG</license.organizationName>
 		<license.copyrightOwners>Robert Haase, MPI CBG</license.copyrightOwners>
 		<imagej.app.directory>C:/Programs/Fiji.app/</imagej.app.directory>
-		<imglib2.version>5.8.0</imglib2.version>
-		<scijava-ui-swing.version>0.13.0</scijava-ui-swing.version>
+		<!--<imglib2.version>5.8.0</imglib2.version>
+		<scijava-ui-swing.version>0.13.0</scijava-ui-swing.version> -->
 		<!-- See Issue https://github.com/saalfeldlab/bigwarp/issues/83
         <bigwarp_fiji.version>5.1.0</bigwarp_fiji.version>-->
 	</properties>
