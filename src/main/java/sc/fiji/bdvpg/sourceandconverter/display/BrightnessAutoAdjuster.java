@@ -11,21 +11,21 @@ import sc.fiji.bdvpg.services.BdvService;
 
 public class BrightnessAutoAdjuster implements Runnable
 {
-	private final SourceAndConverter source;
+	private final SourceAndConverter sac;
 	private final double cumulativeMinCutoff;
 	private final double cumulativeMaxCutoff;
 	private final int timePoint;
 
 
 
-	public BrightnessAutoAdjuster( final SourceAndConverter source, int timePoint )
+	public BrightnessAutoAdjuster( final SourceAndConverter sac, int timePoint )
 	{
-		this(source, timePoint, 0.01, 0.99 );
+		this(sac, timePoint, 0.01, 0.99 );
 	}
 
-	public BrightnessAutoAdjuster( final SourceAndConverter source, final int timePoint, final double cumulativeMinCutoff, final double cumulativeMaxCutoff )
+	public BrightnessAutoAdjuster( final SourceAndConverter sac, final int timePoint, final double cumulativeMinCutoff, final double cumulativeMaxCutoff )
 	{
-		this.source = source;
+		this.sac = sac;
 		this.cumulativeMinCutoff = cumulativeMinCutoff;
 		this.cumulativeMaxCutoff = cumulativeMaxCutoff;
 		this.timePoint = timePoint;
@@ -34,13 +34,13 @@ public class BrightnessAutoAdjuster implements Runnable
 	@Override
 	public void run()
 	{
+		if ( !sac.getSpimSource().isPresent( timePoint ) )
+			return;
+		if ( !UnsignedShortType.class.isInstance( sac.getSpimSource().getType() ) )
+			return;
 
-		if ( !source.getSpimSource().isPresent( timePoint ) )
-			return;
-		if ( !UnsignedShortType.class.isInstance( source.getSpimSource().getType() ) )
-			return;
 		@SuppressWarnings( "unchecked" )
-		final RandomAccessibleInterval< UnsignedShortType > img = ( RandomAccessibleInterval< UnsignedShortType > ) source.getSpimSource().getSource( timePoint, source.getSpimSource().getNumMipmapLevels() - 1 );
+		final RandomAccessibleInterval< UnsignedShortType > img = ( RandomAccessibleInterval< UnsignedShortType > ) sac.getSpimSource().getSource( timePoint, sac.getSpimSource().getNumMipmapLevels() - 1 );
 		final long z = ( img.min( 2 ) + img.max( 2 ) + 1 ) / 2;
 
 		final int numBins = 6535;
@@ -64,7 +64,7 @@ public class BrightnessAutoAdjuster implements Runnable
 
 		//minMaxGroup.getMinBoundedValue().setCurrentValue( min );
 		//minMaxGroup.getMaxBoundedValue().setCurrentValue( max );
-		BdvService.getSourceDisplayService().getConverterSetup(source).setDisplayRange(min, max);
+		BdvService.getSourceDisplayService().getConverterSetup( sac ).setDisplayRange(min, max);
 	}
 
 }

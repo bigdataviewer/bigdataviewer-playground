@@ -10,8 +10,8 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataImporterXML;
 
 import java.io.File;
 
-@Plugin( type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"SpimDataset>Spimdata from XML File" )
-public class SpimdataImporterCommand implements Command {
+@Plugin( type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"SpimDataset>Open XML/HDF5 File" )
+public class SpimDataImporterCommand implements Command {
 
     @Parameter
     File f;

@@ -11,6 +11,7 @@ import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService;
 public class BdvService {
     public static IBdvSourceAndConverterService iss;
     public static IBdvSourceAndConverterDisplayService isds;
+    private static ImageJ ij;
 
     public static IBdvSourceAndConverterService getSourceService() {
         return iss;
@@ -25,7 +26,7 @@ public class BdvService {
      */
     static public void InitScijavaServices() {
         // create the ImageJ application context with all available services
-        final ImageJ ij = new ImageJ();
+        ij = new ImageJ();
         ij.ui().showUI();
         iss = ij.get(BdvSourceAndConverterService.class);
         isds = ij.get(BdvSourceAndConverterDisplayService.class);
@@ -38,5 +39,10 @@ public class BdvService {
         // TODO
         // iss = ...
         // isds = ...
+    }
+
+    public static ImageJ getIJ()
+    {
+        return ij;
     }
 }
