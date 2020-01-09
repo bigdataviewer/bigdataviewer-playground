@@ -36,10 +36,10 @@ public interface IBdvSourceAndConverterDisplayService {
 
     /**
      * Returns SourceAndConverter object
-     * @param src
+     * @param sac
      * @return
      */
-    ConverterSetup getConverterSetup(SourceAndConverter src);
+    ConverterSetup getConverterSetup(SourceAndConverter sac);
 
     /**
      * Closes appropriately a BdvHandle which means that it updates

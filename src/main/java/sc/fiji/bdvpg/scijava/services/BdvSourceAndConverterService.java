@@ -127,18 +127,18 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     /**
      * Register a Bdv Source in this Service.
      * Called in the BdvSourcePostProcessor
-     * @param src
+     * @param sac
      */
-    public void register(SourceAndConverter src) {
-        if (data.containsKey(src)) {
+    public void register(SourceAndConverter sac) {
+        if (data.containsKey(sac)) {
             log.accept("Source already registered");
             return;
         }
         final int numTimepoints = 1;
         Map<String, Object> sourceData = new HashMap<>();
-        data.put(src, sourceData);
-        objectService.addObject(src);
-        if (uiAvailable) ui.update(src);
+        data.put(sac, sourceData);
+        objectService.addObject(sac);
+        if (uiAvailable) ui.update(sac);
     }
 
     public void register(List<SourceAndConverter> sources) {
@@ -364,7 +364,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
                         // Double Click : display source
                         if (e.getClickCount()==2 && !e.isConsumed()) {
                             commandService.run(BdvSourcesAdderCommand.class, true,
-                                    "srcs_in", getSelectedSourceAndConverters(),
+                                    "sacs", getSelectedSourceAndConverters(),
                                             "autoContrast", true,
                                             "adjustViewOnSource", true
                                     );
@@ -374,7 +374,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
 
                 frame.add(panel);
                 frame.pack();
-                frame.setVisible(true);
+                frame.setVisible( false );
         }
 
         public void update(SourceAndConverter src) {
@@ -386,6 +386,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
                 model.reload(top);
                 panel.revalidate();
                 displayedSource.add(src);
+                frame.setVisible( true );
             }
         }
 
