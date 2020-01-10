@@ -28,8 +28,6 @@ public class BdvService {
         // create the ImageJ application context with all available services
         ij = new ImageJ();
         ij.ui().showUI();
-        iss = ij.get(BdvSourceAndConverterService.class);
-        isds = ij.get(BdvSourceAndConverterDisplayService.class);
     }
 
     /**

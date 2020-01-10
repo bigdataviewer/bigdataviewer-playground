@@ -16,6 +16,8 @@ import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.scijava.ui.UIService;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
+import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
+import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.services.IBdvSourceAndConverterDisplayService;
 import sc.fiji.bdvpg.services.IBdvSourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
@@ -189,16 +191,16 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
 
 
     /**
-     * Inner Swing UI for this Service, exists only if an UI is available in the current execution context
+     * Swing UI for this Service, exists only if an UI is available in the current execution context
      */
-    UIBdvSourceService ui;
+    BdvSourceServiceUI ui;
 
     /**
      * Flags if the Inner UI exists
      */
     boolean uiAvailable = false;
 
-    public UIBdvSourceService getUI() {
+    public BdvSourceServiceUI getUI() {
         return ui;
     }
 
@@ -216,10 +218,11 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
         data = new HashMap<>();
         if (uiService!=null) {
             log.accept("uiService detected : Constructing JPanel for BdvSourceAndConverterService");
-            ui = new UIBdvSourceService(this);
+            ui = new BdvSourceServiceUI(this);
             uiAvailable = true;
         }
         registerPopupActions();
+        BdvService.iss = this;
         log.accept("Service initialized.");
     }
 
@@ -313,134 +316,9 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
      * Really really basic at the moment
      * TODO : improve UI
      */
-    public class UIBdvSourceService {
-
-        BdvSourceAndConverterService bss;
-        JFrame frame;
-        JPanel panel;
-        /**
-         * Swing JTree used for displaying Sources object
-         */
-        JTree tree;
-        DefaultMutableTreeNode top;
-        JScrollPane treeView;
-        DefaultTreeModel model;
-        Set<SourceAndConverter> displayedSource = new HashSet<>();
+    /*public class UIBdvSourceService {
 
 
-        JPopupMenu popup = new JPopupMenu();
-
-        public UIBdvSourceService(BdvSourceAndConverterService bss) {
-                this.bss = bss;
-                frame = new JFrame("Bdv Sources");
-                panel = new JPanel(new BorderLayout());
-
-                //textArea = new JTextArea();
-                //textArea.setText("Bdv Sources will be displayed here.");
-                //panel.add(textArea);
-
-
-                // Tree view of Spimdata
-                top = new DefaultMutableTreeNode("Sources");
-                tree = new JTree(top);
-
-                //tree.setRootVisible(false);
-
-                model = (DefaultTreeModel)tree.getModel();
-                treeView = new JScrollPane(tree);
-
-                panel.add(treeView, BorderLayout.CENTER);
-
-                // JTree of SpimData
-
-                tree.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        super.mouseClicked(e);
-                        // Right Click -> popup
-                        if (SwingUtilities.isRightMouseButton(e)) {
-                            popup.show(e.getComponent(), e.getX(), e.getY());
-                        }
-                        // Double Click : display source
-                        if (e.getClickCount()==2 && !e.isConsumed()) {
-                            commandService.run(BdvSourcesAdderCommand.class, true,
-                                    "sacs", getSelectedSourceAndConverters(),
-                                            "autoContrast", true,
-                                            "adjustViewOnSource", true
-                                    );
-                        }
-                    }
-                });
-
-                frame.add(panel);
-                frame.pack();
-                frame.setVisible( false );
-        }
-
-        public void update(SourceAndConverter src) {
-            if (displayedSource.contains(src)) {
-                // No Need to update
-            } else {
-                DefaultMutableTreeNode node = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
-                top.add(node);
-                model.reload(top);
-                panel.revalidate();
-                displayedSource.add(src);
-                frame.setVisible( true );
-            }
-        }
-
-        public void remove(SourceAndConverter sac) {
-            if (displayedSource.contains(sac)) {
-                // No Need to update
-                displayedSource.remove(sac);
-                visitAllNodesAndDelete(top, sac);
-            }
-        }
-
-        public void visitAllNodesAndDelete(TreeNode node, SourceAndConverter sac) {
-            if (node.getChildCount() >= 0) {
-                for (Enumeration e = node.children(); e.hasMoreElements();) {
-                    TreeNode n = (TreeNode) e.nextElement();
-                    if (n.isLeaf() && ((DefaultMutableTreeNode) n).getUserObject() instanceof RenamableSourceAndConverter) {
-                        if (((RenamableSourceAndConverter)((DefaultMutableTreeNode) n).getUserObject()).sac.equals(sac)) {
-                            model.removeNodeFromParent(((DefaultMutableTreeNode) n));
-                        }
-                    } else {
-                        visitAllNodesAndDelete(n, sac);
-                    }
-                }
-            }
-        }
-
-        public SourceAndConverter[] getSelectedSourceAndConverters() {
-            List<SourceAndConverter> sacList = new ArrayList<>();
-            for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
-                if (((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject() instanceof RenamableSourceAndConverter) {
-                    Object userObj = ((RenamableSourceAndConverter) ((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject()).sac;
-                    sacList.add((SourceAndConverter) userObj);
-                }
-            }
-            return sacList.toArray(new SourceAndConverter[sacList.size()]);
-        }
-
-        public void addPopupAction(Consumer<SourceAndConverter[]> action, String actionName) {
-            // Show
-            JMenuItem menuItem = new JMenuItem(actionName);
-            menuItem.addActionListener(e -> action.accept(getSelectedSourceAndConverters()));
-            popup.add(menuItem);
-        }
-
-        public class RenamableSourceAndConverter {
-            public SourceAndConverter sac;
-            public RenamableSourceAndConverter(SourceAndConverter sac) {
-                this.sac = sac;
-            }
-            public String toString() {
-                return sac.getSpimSource().getName();
-            }
-        }
-
-    }
+    }*/
 
 }

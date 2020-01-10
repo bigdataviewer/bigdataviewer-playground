@@ -31,6 +31,7 @@ import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import bdv.util.ARGBColorConverterSetup;
+import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.services.IBdvSourceAndConverterDisplayService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
@@ -376,6 +377,7 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
         sourcesDisplayedInBdvWindows = new HashMap<>();
         locationsDisplayingSource = new HashMap<>();
         bss.setDisplayService(this);
+        BdvService.isds = this;
         log.accept("Service initialized.");
     }
 
