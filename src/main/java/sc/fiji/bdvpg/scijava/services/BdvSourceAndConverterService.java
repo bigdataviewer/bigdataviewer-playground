@@ -4,6 +4,8 @@ import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
+import org.scijava.command.Command;
+import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;
 import org.scijava.module.ModuleException;
 import org.scijava.module.ModuleItem;
@@ -16,11 +18,15 @@ import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.scijava.ui.UIService;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
+import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
+import sc.fiji.bdvpg.scijava.command.source.*;
 import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
 import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.services.IBdvSourceAndConverterDisplayService;
 import sc.fiji.bdvpg.services.IBdvSourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
+import sc.fiji.bdvpg.sourceandconverter.exporter.XmlHDF5SpimdataExporter;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -238,77 +244,89 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     @Parameter
     CommandService commandService;
 
+    public void registerScijavaCommand(Class<? extends Command> commandClass ) {
+        CommandInfo ci =commandService.getCommand(commandClass);
+
+        int nCountSourceAndConverter = 0;
+        int nCountSourceAndConverterList = 0;
+        if (ci.inputs()!=null) {
+            for (ModuleItem input: ci.inputs()) {
+                if (input.getType().equals(SourceAndConverter.class)) {
+                    nCountSourceAndConverter++;
+                }
+                if (input.getType().equals(SourceAndConverter[].class)) {
+                    nCountSourceAndConverterList++;
+                }
+            }
+            if (nCountSourceAndConverter+nCountSourceAndConverterList==1) {
+                // Can be automatically mapped to popup action
+                for (ModuleItem input: ci.inputs()) {
+                    if (input.getType().equals(SourceAndConverter.class)) {
+                        // It's an action which takes a SourceAndConverter
+                        registerPopupSourcesAction(
+                                (sacs) -> {
+                                    // Todo : improve by sending the parameters all over again
+                                    //try {
+                                    for (SourceAndConverter sac:sacs) {
+                                        commandService.run(ci, true, input.getName(), sac);//.get(); TODO understand why get is impossible
+                                    }
+                                    //} catch (InterruptedException e) {
+                                    //    e.printStackTrace();
+                                    //} catch (ExecutionException e) {
+                                    //    e.printStackTrace();
+                                    //}
+                                },
+                                ci.getTitle());
+
+                        log.accept("Registering action entitled "+ci.getTitle()+" from command "+ci.getClassName());
+
+                    }
+                    if (input.getType().equals(SourceAndConverter[].class)) {
+                        // It's an action which takes a SourceAndConverter List
+                        registerPopupSourcesAction(
+                                (sacs) -> {
+                                    //try {
+                                    commandService.run(ci, true, input.getName(), sacs);//.get();
+                                    //} catch (InterruptedException e) {
+                                    //    e.printStackTrace();
+                                    //} catch (ExecutionException e) {
+                                    //    e.printStackTrace();
+                                    //}
+                                },
+                                ci.getTitle());
+                        log.accept("Registering action entitled "+ci.getTitle()+" from command "+ci.getClassName());
+                    }
+                }
+            }
+        }
+
+    }
+
     public void registerPopupActions() {
         this.registerPopupSourcesAction((srcs) -> {
             for (SourceAndConverter src:srcs){
                 System.out.println(src.getSpimSource().getName());
             }}, "Display names");
+        // Bdv add and remove
+        registerScijavaCommand(BdvSourcesAdderCommand.class);
+        registerScijavaCommand(BdvSourcesRemoverCommand.class);
+        this.getUI().addPopupLine();
+        // Display
+        registerScijavaCommand(SourcesInvisibleMakerCommand.class);
+        registerScijavaCommand(SourcesVisibleMakerCommand.class);
+        registerScijavaCommand(BrightnessAdjusterCommand.class);
+        this.getUI().addPopupLine();
+        // Create new sources
+        registerScijavaCommand(SourcesDuplicatorCommand.class);
+        registerScijavaCommand(TransformedSourceWrapperCommand.class);
+        registerScijavaCommand(SourcesResamplerCommand.class);
+        registerScijavaCommand(ColorConverterChangerCommand.class);
+        registerScijavaCommand(LUTConverterChangerCommand.class);
+        this.getUI().addPopupLine();
+        // Export and remove
+        registerScijavaCommand(SourcesRemoverCommand.class);
+        registerScijavaCommand(XmlHDF5ExporterCommand.class);
 
-        /**
-         * Ok, Scijava stuff here -> Automated registration of Command into popup actions
-         */
-        // A there is a single input which is of Type SourceAndConverter or of type SourceAndConverter[],
-        // Then we can automatically register it as a popup action
-        commandService.getCommands().forEach(ci -> {
-            int nCountSourceAndConverter = 0;
-            int nCountSourceAndConverterList = 0;
-            //System.out.println("Command:"+ci.getTitle());
-
-            // I don't know what's wrong with these two commands...
-            // TODO : understand the error to avoid other command failings
-            if (!ci.getTitle().equals("Export Fused Sequence as XML/HDF5"))
-            if (!ci.getTitle().equals("Export Spim Sequence as XML/HDF5"))
-            if (ci.inputs()!=null) {
-                for (ModuleItem input: ci.inputs()) {
-                    if (input.getType().equals(SourceAndConverter.class)) {
-                        nCountSourceAndConverter++;
-                    }
-                    if (input.getType().equals(SourceAndConverter[].class)) {
-                        nCountSourceAndConverterList++;
-                    }
-                }
-                if (nCountSourceAndConverter+nCountSourceAndConverterList==1) {
-                    // Can be automatically mapped to popup action
-                    for (ModuleItem input: ci.inputs()) {
-                        if (input.getType().equals(SourceAndConverter.class)) {
-                            // It's an action which takes a SourceAndConverter
-                            registerPopupSourcesAction(
-                                    (sacs) -> {
-                                            // Todo : improve by sending the parameters all over again
-                                            //try {
-                                                for (SourceAndConverter sac:sacs) {
-                                                    commandService.run(ci, true, input.getName(), sac);//.get(); TODO understand why get is impossible
-                                                }
-                                            /*} catch (InterruptedException e) {
-                                                e.printStackTrace();
-                                            } catch (ExecutionException e) {
-                                                e.printStackTrace();
-                                            }*/
-                                    },
-                                    ci.getTitle());
-
-                            log.accept("Registering action entitled "+ci.getTitle()+" from command "+ci.getClassName());
-
-                        }
-                        if (input.getType().equals(SourceAndConverter[].class)) {
-                            // It's an action which takes a SourceAndConverter List
-                            registerPopupSourcesAction(
-                                    (sacs) -> {
-                                        //try {
-                                            commandService.run(ci, true, input.getName(), sacs);//.get();
-                                        /*} catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        } catch (ExecutionException e) {
-                                            e.printStackTrace();
-                                        }*/
-                                    },
-                                    ci.getTitle());
-                            log.accept("Registering action entitled "+ci.getTitle()+" from command "+ci.getClassName());
-                        }
-                    }
-                }
-            }
-        });
     }
 
     /**

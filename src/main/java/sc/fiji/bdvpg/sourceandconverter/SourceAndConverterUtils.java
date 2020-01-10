@@ -5,6 +5,7 @@ import bdv.ViewerImgLoader;
 import bdv.VolatileSpimSource;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.ARGBColorConverterSetup;
+import bdv.util.BdvFunctions;
 import bdv.util.LUTConverterSetup;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
@@ -140,7 +141,8 @@ public class SourceAndConverterUtils {
             if ( RealType.class.isInstance( type ) ) {
                 String sourceName = createSetupName(setup);
                 final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
-                final SpimSource s = vs.nonVolatile();
+                final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
+                //final SpimSource s = vs.nonVolatile();
 
                 Converter nonVolatileConverter = createConverterRealType(s);
                 assert nonVolatileConverter!=null;
@@ -154,8 +156,9 @@ public class SourceAndConverterUtils {
 
             } else if ( ARGBType.class.isInstance( type ) ) {
                 final String setupName = createSetupName( setup );
-                final VolatileSpimSource< ARGBType, VolatileARGBType> vs = new VolatileSpimSource<>( asd, setupId, setupName );
-                final SpimSource< ARGBType > s = vs.nonVolatile();
+                final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, setupName ); // < ARGBType, VolatileARGBType>
+                final SpimSource s = new SpimSource<>( asd, setupId, setupName );
+                //final SpimSource< ARGBType > s = vs.nonVolatile();
 
                 Converter nonVolatileConverter = createConverterARGBType(s);
                 assert nonVolatileConverter!=null;

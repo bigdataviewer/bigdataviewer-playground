@@ -128,6 +128,10 @@ public class BdvSourceServiceUI {
         popup.add(menuItem);
     }
 
+    public void addPopupLine() {
+        popup.addSeparator();
+    }
+
     public class RenamableSourceAndConverter {
         public SourceAndConverter sac;
         public RenamableSourceAndConverter(SourceAndConverter sac) {
