@@ -142,10 +142,16 @@ public class BdvSourceServiceUI {
         }
     }
 
+    public void buildTree() {
+        //model
+    }
+
     public class SourceFilterNode extends DefaultMutableTreeNode {
         Predicate<SourceAndConverter> filter;
-        public SourceFilterNode(Predicate<SourceAndConverter> filter) {
+        boolean allowDuplicate;
+        public SourceFilterNode(Predicate<SourceAndConverter> filter, boolean allowDuplicate) {
             this.filter = filter;
+            this.allowDuplicate = false;
         }
     }
 }

@@ -42,7 +42,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-
 /**
  * Scijava Service which centralizes Bdv Sources, independently of their display
  * Bdv Sources can be registered to this Service.
