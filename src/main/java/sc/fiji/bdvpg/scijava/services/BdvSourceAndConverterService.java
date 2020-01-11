@@ -157,7 +157,10 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     public void register(AbstractSpimData asd) {
         List<SourceAndConverter> sacs = SourceAndConverterUtils.createSourceAndConverters(asd);
         this.register(sacs);
-        sacs.forEach(sac -> this.linkToSpimData(sac, asd));
+        sacs.forEach(sac -> {
+            this.linkToSpimData(sac, asd);
+            if (uiAvailable) ui.update(sac);
+        });
     }
 
     @Override
