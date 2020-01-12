@@ -1,11 +1,19 @@
 package sc.fiji.bdvpg.scijava.services.ui;
 
+import bdv.img.WarpedSource;
+import bdv.tools.transformation.TransformedSource;
+import bdv.util.ResampledSource;
+import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.base.Entity;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
+import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.realtransform.RealTransform;
 import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService;
+import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -19,6 +27,7 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService.SPIMDATAINFO;
@@ -81,9 +90,142 @@ public class BdvSourceServiceUI {
             }
         });
 
+        this.addPopupAction(this::inspectSources, "Details");
+
         frame.add(panel);
         frame.pack();
         frame.setVisible( false );
+    }
+
+    public void inspectSources(SourceAndConverter[] sacs) {
+        for (SourceAndConverter sac:sacs) {
+            inspectSource(sac);
+        }
+    }
+
+    public void inspectSource(SourceAndConverter sac) {
+        DefaultMutableTreeNode parentNodeInspect = new DefaultMutableTreeNode("Inspect Results ["+sac.getSpimSource().getName()+"]");
+        appendInspectorResult(parentNodeInspect, sac);
+        top.add(parentNodeInspect);
+        model.reload(top);
+    }
+
+
+    public void appendInspectorResult(DefaultMutableTreeNode parent, SourceAndConverter sac) {
+        if (sac.getSpimSource() instanceof TransformedSource) {
+            DefaultMutableTreeNode nodeTransformedSource = new DefaultMutableTreeNode("Transformed Source");
+            parent.add(nodeTransformedSource);
+            TransformedSource source = (TransformedSource) sac.getSpimSource();
+            DefaultMutableTreeNode nodeAffineTransformGetter = new DefaultMutableTreeNode(new Supplier<AffineTransform3D>(){
+                    public AffineTransform3D get() {
+                        AffineTransform3D at3D = new AffineTransform3D();
+                        source.getFixedTransform(at3D);
+                        return at3D;
+                    }
+                    public String toString() {
+                        return "AffineTransform["+source.getName()+"]";
+                    }
+            });
+            nodeTransformedSource.add(nodeAffineTransformGetter);
+            if (getSourceAndConvertersOfSource(source.getWrappedSource()).size()>0) {
+                // at least A sourceandconverteralready exists for this source
+                getSourceAndConvertersOfSource(source.getWrappedSource()).forEach((src) -> {
+                            DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
+                            nodeTransformedSource.add(wrappedSourceNode);
+                            appendInspectorResult(wrappedSourceNode, src);
+                        }
+                );
+            } else {
+                // no source and converter exist for this source : creates it
+                SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getWrappedSource());
+                BdvService.getSourceService().register(src);
+                DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
+                nodeTransformedSource.add(wrappedSourceNode);
+                appendInspectorResult(wrappedSourceNode, src);
+            }
+        }
+
+        if (sac.getSpimSource() instanceof WarpedSource) {
+            DefaultMutableTreeNode nodeWarpedSource = new DefaultMutableTreeNode("Warped Source");
+            parent.add(nodeWarpedSource);
+            WarpedSource source = (WarpedSource) sac.getSpimSource();
+            DefaultMutableTreeNode nodeRealTransformGetter = new DefaultMutableTreeNode(new Supplier<RealTransform>(){
+                public RealTransform get() {
+                    return source.getTransform();
+                }
+                public String toString() {
+                    return "RealTransform["+source.getName()+"]";
+                }
+            });
+            nodeWarpedSource.add(nodeRealTransformGetter);
+            if (getSourceAndConvertersOfSource(source.getWrappedSource()).size()>0) {
+                // at least A sourceandconverteralready exists for this source
+                getSourceAndConvertersOfSource(source.getWrappedSource()).forEach((src) -> {
+                            DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
+                            nodeWarpedSource.add(wrappedSourceNode);
+                            appendInspectorResult(wrappedSourceNode, src);
+                        }
+                );
+            } else {
+                // no source and converter exist for this source : creates it
+                SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getWrappedSource());
+                BdvService.getSourceService().register(src);
+                DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
+                nodeWarpedSource.add(wrappedSourceNode);
+                appendInspectorResult(wrappedSourceNode, src);
+            }
+        }
+
+        if (sac.getSpimSource() instanceof ResampledSource) {
+            DefaultMutableTreeNode nodeResampledSource = new DefaultMutableTreeNode("Resampled Source");
+            parent.add(nodeResampledSource);
+            ResampledSource source = (ResampledSource) sac.getSpimSource();
+
+            DefaultMutableTreeNode nodeOrigin = new DefaultMutableTreeNode("Origin");
+            nodeResampledSource.add(nodeOrigin);
+
+            if (getSourceAndConvertersOfSource(source.getOriginalSource()).size()>0) {
+                // at least A sourceandconverteralready exists for this source
+                getSourceAndConvertersOfSource(source.getOriginalSource()).forEach((src) -> {
+                            DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
+                            nodeOrigin.add(wrappedSourceNode);
+                            appendInspectorResult(wrappedSourceNode, src);
+                        }
+                );
+            } else {
+                // no source and converter exist for this source : creates it
+                SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getOriginalSource());
+                BdvService.getSourceService().register(src);
+                DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
+                nodeOrigin.add(wrappedSourceNode);
+                appendInspectorResult(wrappedSourceNode, src);
+            }
+
+            DefaultMutableTreeNode nodeResampler = new DefaultMutableTreeNode("Sampler Model");
+            nodeResampledSource.add(nodeResampler);
+
+            if (getSourceAndConvertersOfSource(source.getModelResamplerSource()).size()>0) {
+                // at least A sourceandconverteralready exists for this source
+                getSourceAndConvertersOfSource(source.getModelResamplerSource()).forEach((src) -> {
+                            DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
+                            nodeResampler.add(wrappedSourceNode);
+                            appendInspectorResult(wrappedSourceNode, src);
+                        }
+                );
+            } else {
+                // no source and converter exist for this source : creates it
+                SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getModelResamplerSource());
+                BdvService.getSourceService().register(src);
+                DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
+                nodeResampler.add(wrappedSourceNode);
+                appendInspectorResult(wrappedSourceNode, src);
+            }
+
+        }
+    }
+
+    public List<SourceAndConverter> getSourceAndConvertersOfSource(Source src) {
+        return BdvService.getSourceService().getSources().stream().filter(sac -> sac.getSpimSource().equals(src)).collect(Collectors.toList());
     }
 
     public void update(SourceAndConverter sac) {
@@ -220,7 +362,8 @@ public class BdvSourceServiceUI {
         if (node.getChildCount() >= 0) {
             for (Enumeration e = node.children(); e.hasMoreElements();) {
                 TreeNode n = (TreeNode) e.nextElement();
-                if (n.isLeaf() && ((DefaultMutableTreeNode) n).getUserObject() instanceof RenamableSourceAndConverter) {
+                //n.isLeaf() &&
+                if (((DefaultMutableTreeNode) n).getUserObject() instanceof RenamableSourceAndConverter) {
                     if (((RenamableSourceAndConverter)((DefaultMutableTreeNode) n).getUserObject()).sac.equals(sac)) {
                         model.removeNodeFromParent(((DefaultMutableTreeNode) n));
                     }
