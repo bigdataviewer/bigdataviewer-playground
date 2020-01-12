@@ -304,13 +304,14 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
         registerScijavaCommand(SourcesInvisibleMakerCommand.class);
         registerScijavaCommand(SourcesVisibleMakerCommand.class);
         registerScijavaCommand(BrightnessAdjusterCommand.class);
+        registerScijavaCommand(SourceColorChangerCommand.class);
         this.getUI().addPopupLine();
         // Create new sources
         registerScijavaCommand(SourcesDuplicatorCommand.class);
         registerScijavaCommand(TransformedSourceWrapperCommand.class);
         registerScijavaCommand(SourcesResamplerCommand.class);
-        registerScijavaCommand(ColorConverterChangerCommand.class);
-        registerScijavaCommand(LUTConverterChangerCommand.class);
+        registerScijavaCommand(ColorSourceCreatorCommand.class);
+        registerScijavaCommand(LUTSourceCreatorCommand.class);
         this.getUI().addPopupLine();
         // Export and remove
         registerScijavaCommand(SourcesRemoverCommand.class);
