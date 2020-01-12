@@ -2,6 +2,9 @@ package sc.fiji.bdvpg.scijava.services.ui;
 
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import mpicbg.spim.data.generic.base.Entity;
+import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
+import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService;
 
 import javax.swing.*;
@@ -16,8 +19,9 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-import static sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService.SETSPIMDATA;
+import static sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService.SPIMDATAINFO;
 
 public class BdvSourceServiceUI {
 
@@ -45,11 +49,11 @@ public class BdvSourceServiceUI {
         // Tree view of Spimdata
         top = new SourceFilterNode("Sources", (sac) -> true, true);
         tree = new JTree(top);
-        tree.setRootVisible(false);
+        //tree.setRootVisible(false);
         allSourcesNode = new SourceFilterNode("All Sources", (sac) -> true, false);
         top.add(allSourcesNode);
 
-        SourceFilterNode spimDataSources = new SourceFilterNode("In SpimData", (sac) -> bss.getAttachedSourceAndConverterData().get(sac).containsKey(SETSPIMDATA), false);
+        SourceFilterNode spimDataSources = new SourceFilterNode("In SpimData", (sac) -> bss.getAttachedSourceAndConverterData().get(sac).containsKey(SPIMDATAINFO), false);
         allSourcesNode.add(spimDataSources);
 
         model = (DefaultTreeModel)tree.getModel();
@@ -66,14 +70,14 @@ public class BdvSourceServiceUI {
                 if (SwingUtilities.isRightMouseButton(e)) {
                     popup.show(e.getComponent(), e.getX(), e.getY());
                 }
-                // Double Click : display source
-                if (e.getClickCount()==2 && !e.isConsumed()) {
-                    /*commandService.run(BdvSourcesAdderCommand.class, true,
-                            "sacs", getSelectedSourceAndConverters(),
-                            "autoContrast", true,
-                            "adjustViewOnSource", true
-                    );*/
-                }
+                // Double Click : display source, if possible
+                /*if (e.getClickCount()==2 && !e.isConsumed()) {
+                    if (BdvService.getSourceDisplayService()!=null) {
+                        for (SourceAndConverter sac: getSelectedSourceAndConverters()) {
+                            BdvService.getSourceDisplayService().show(sac);
+                        }
+                    }
+                }*/
             }
         });
 
@@ -90,12 +94,10 @@ public class BdvSourceServiceUI {
             insertIntoTree(sac);
             //model.reload();
         } else {
-            System.out.println("Adding "+sac.getSpimSource().getName());
+            //System.out.println("Adding "+sac.getSpimSource().getName());
             displayedSource.add(sac);
             updateSpimDataFilterNodes();
-            //model.reload();
             insertIntoTree(sac);
-            //model.reload();
             panel.revalidate();
             frame.setVisible( true );
         }
@@ -107,10 +109,8 @@ public class BdvSourceServiceUI {
         // Fetch All Spimdatas from all Sources
         Set<AbstractSpimData> currentSpimdatas = new HashSet<>();
         displayedSource.forEach(sac -> {
-            if (bss.getAttachedSourceAndConverterData().get(sac).containsKey(SETSPIMDATA)) {
-                Set<AbstractSpimData> set = (Set<AbstractSpimData>)(bss.getAttachedSourceAndConverterData().get(sac).get(SETSPIMDATA));
-                currentSpimdatas.addAll(set);
-
+            if (bss.getAttachedSourceAndConverterData().get(sac).containsKey(SPIMDATAINFO)) {
+                currentSpimdatas.add(((BdvSourceAndConverterService.SpimDataInfo)bss.getAttachedSourceAndConverterData().get(sac).get(SPIMDATAINFO)).asd);
             }
         });
 
@@ -122,17 +122,62 @@ public class BdvSourceServiceUI {
         });
 
         // Check for new spimdata
-        currentSpimdatas.forEach(asdtest -> {
-                System.out.println("Test "+asdtest.toString());
-                if ((spimdataFilterNodes.size()==0)||(spimdataFilterNodes.stream().noneMatch(fnode -> fnode.asd.equals(asdtest)))) {
-                    SpimDataFilterNode newNode = new SpimDataFilterNode("SpimData "+spimdataFilterNodes.size(), asdtest);
+        currentSpimdatas.forEach(asd -> {
+                //System.out.println("Test "+sdi.toString());
+                if ((spimdataFilterNodes.size()==0)||(spimdataFilterNodes.stream().noneMatch(fnode -> fnode.asd.equals(asd)))) {
+                    SpimDataFilterNode newNode = new SpimDataFilterNode("SpimData "+spimdataFilterNodes.size(), asd);
                     spimdataFilterNodes.add(newNode);
+                    addEntityFilterNodes(newNode, asd);
                     top.insert(newNode, 0);
                     model.reload(top);
-                    System.out.println("Adding");
+                    //System.out.println("Adding");
                 }
             }
         );
+
+    }
+
+    private void addEntityFilterNodes(SpimDataFilterNode nodeSpimData, AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd) {
+        // Gets all entities by class
+        //if (asd instanceof SpimDataMinimal) {
+        //    SpimDataMinimal sdm = (SpimDataMinimal) asd;
+            Map<Class, List<Entity>> entitiesByClass = asd.getSequenceDescription()
+                    .getViewDescriptions()
+                    // Streams viewSetups
+                    .values().stream()
+                    // Filters if view is present
+                    .filter(v -> v.isPresent())
+                    // Gets Entities associated to ViewSetup
+                    .map(v -> v.getViewSetup().getAttributes().values())
+                    // Reduce into a single list and stream
+                    .reduce(new ArrayList<>(), (a, b) -> {
+                        a.addAll(b);
+                        return a;
+                    }).stream()
+                    // Collected and sorted by class
+                    .collect(Collectors.groupingBy(e -> e.getClass(), Collectors.toList()));
+
+            Map<Class, SourceFilterNode> classNodes = new HashMap<>();
+            entitiesByClass.keySet().forEach((c)-> {
+                classNodes.put(c, new SourceFilterNode(c.getSimpleName(),(sac)-> true, true));
+            });
+
+            classNodes.values().forEach((f) -> nodeSpimData.add(f));
+
+            Set<Entity> entitiesAlreadyRegistered = new HashSet<>();
+            entitiesByClass.forEach((c,el) -> {
+                el.forEach(entity -> {
+                    if (!entitiesAlreadyRegistered.contains(entity)) {
+                        classNodes.get(c).add(new SpimDataElementFilter(c.getSimpleName()+" "+entity.getId(),entity));
+                        entitiesAlreadyRegistered.add(entity);
+                    }
+                });
+            });
+
+
+        //} else {
+        //    System.out.println("Cannot sort by entities with spimdata of class "+asd.getClass().getSimpleName());
+        //}
 
     }
 
@@ -263,7 +308,8 @@ public class BdvSourceServiceUI {
             Map<String, Object> props = bss.getAttachedSourceAndConverterData().get(sac);
             assert props!=null;
             //System.out.println("Testing "+sac.getSpimSource().getName()+" vs "+asd.toString());
-            return (props.containsKey(SETSPIMDATA))&&((Set<AbstractSpimData>)props.get(SETSPIMDATA)).contains(asd);
+            //assert props.get(SPIMDATAINFO) instanceof Set<BdvSourceAndConverterService.SpimDataInfo>;
+            return (props.containsKey(SPIMDATAINFO))&&((BdvSourceAndConverterService.SpimDataInfo)props.get(SPIMDATAINFO)).asd.equals(asd);
         }
 
         public SpimDataFilterNode(String name, AbstractSpimData spimdata) {
@@ -279,6 +325,31 @@ public class BdvSourceServiceUI {
         public void setName(String name) {
             this.name = name;
         }
+    }
+
+    public class SpimDataElementFilter extends SourceFilterNode {
+
+        Entity e;
+
+        public SpimDataElementFilter(String name, Entity e) {
+            super(name, null, false);
+            this.filter = this::filter;
+            this.e = e;
+        }
+
+        public boolean filter(SourceAndConverter sac) {
+            Map<String, Object> props = bss.getAttachedSourceAndConverterData().get(sac);
+            assert props!=null;
+            assert props.containsKey(SPIMDATAINFO);
+            //System.out.println("Testing "+sac.getSpimSource().getName()+" vs "+asd.toString());
+            //assert props.get(SPIMDATAINFO) instanceof Set<BdvSourceAndConverterService.SpimDataInfo>;
+
+            AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd = ( AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) ((BdvSourceAndConverterService.SpimDataInfo)props.get(SPIMDATAINFO)).asd;
+            Integer idx = ((BdvSourceAndConverterService.SpimDataInfo)props.get(SPIMDATAINFO)).setupId;
+
+            return asd.getSequenceDescription().getViewSetups().get(idx).getAttributes().values().contains(e);
+        }
+
     }
 
 }

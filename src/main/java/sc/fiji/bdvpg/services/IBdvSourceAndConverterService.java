@@ -60,7 +60,7 @@ public interface IBdvSourceAndConverterService {
     void remove(SourceAndConverter src);
 
 
-    void linkToSpimData(SourceAndConverter src, AbstractSpimData asd);
+    void linkToSpimData(SourceAndConverter src, AbstractSpimData asd, int idSetup);
 
     /**
      * Gets lists of associated objects and data attached to a Bdv Source

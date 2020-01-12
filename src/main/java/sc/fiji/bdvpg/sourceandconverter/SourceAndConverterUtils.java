@@ -27,7 +27,9 @@ import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterDisplayService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -128,9 +130,9 @@ public class SourceAndConverterUtils {
      * @param asd
      * @return
      */
-    static public List<SourceAndConverter> createSourceAndConverters(AbstractSpimData asd) {
+    static public Map<Integer, SourceAndConverter> createSourceAndConverters(AbstractSpimData asd) {
 
-        List<SourceAndConverter> out = new ArrayList<>();
+        Map<Integer, SourceAndConverter> out = new HashMap<>();
 
         final AbstractSequenceDescription< ?, ?, ? > seq = asd.getSequenceDescription();
         final ViewerImgLoader imgLoader = ( ViewerImgLoader ) seq.getImgLoader();
@@ -148,10 +150,10 @@ public class SourceAndConverterUtils {
                 assert nonVolatileConverter!=null;
                 if (vs!=null) {
                     Converter volatileConverter = createConverterRealType(vs);
-                    out.add(new SourceAndConverter(s, nonVolatileConverter,
+                    out.put(setupId, new SourceAndConverter(s, nonVolatileConverter,
                             new SourceAndConverter<>(vs, volatileConverter)));
                 } else {
-                    out.add(new SourceAndConverter(s, nonVolatileConverter));
+                    out.put(setupId, new SourceAndConverter(s, nonVolatileConverter));
                 }
 
             } else if ( ARGBType.class.isInstance( type ) ) {
@@ -164,10 +166,10 @@ public class SourceAndConverterUtils {
                 assert nonVolatileConverter!=null;
                 if (vs!=null) {
                     Converter volatileConverter = createConverterARGBType(vs);
-                    out.add(new SourceAndConverter(s, nonVolatileConverter,
+                    out.put(setupId, new SourceAndConverter(s, nonVolatileConverter,
                             new SourceAndConverter<>(vs, volatileConverter)));
                 } else {
-                    out.add(new SourceAndConverter(s, nonVolatileConverter));
+                    out.put(setupId, new SourceAndConverter(s, nonVolatileConverter));
                 }
 
             } else {
