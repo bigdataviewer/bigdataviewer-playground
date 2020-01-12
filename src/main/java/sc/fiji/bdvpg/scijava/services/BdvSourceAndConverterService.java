@@ -7,7 +7,6 @@ import net.imglib2.realtransform.RealTransform;
 import org.scijava.command.Command;
 import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;
-import org.scijava.module.ModuleException;
 import org.scijava.module.ModuleItem;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
@@ -25,20 +24,9 @@ import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.services.IBdvSourceAndConverterDisplayService;
 import sc.fiji.bdvpg.services.IBdvSourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.exporter.XmlHDF5SpimdataExporter;
 
-import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -314,13 +302,14 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
         registerScijavaCommand(SourcesInvisibleMakerCommand.class);
         registerScijavaCommand(SourcesVisibleMakerCommand.class);
         registerScijavaCommand(BrightnessAdjusterCommand.class);
+        registerScijavaCommand(SourceColorChangerCommand.class);
         this.getUI().addPopupLine();
         // Create new sources
         registerScijavaCommand(SourcesDuplicatorCommand.class);
         registerScijavaCommand(TransformedSourceWrapperCommand.class);
         registerScijavaCommand(SourcesResamplerCommand.class);
-        registerScijavaCommand(ColorConverterChangerCommand.class);
-        registerScijavaCommand(LUTConverterChangerCommand.class);
+        registerScijavaCommand(ColorSourceCreatorCommand.class);
+        registerScijavaCommand(LUTSourceCreatorCommand.class);
         this.getUI().addPopupLine();
         // Export and remove
         registerScijavaCommand(SourcesRemoverCommand.class);
