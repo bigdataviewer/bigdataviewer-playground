@@ -90,7 +90,19 @@ public class BdvSourceServiceUI {
             }
         });
 
-        this.addPopupAction(this::inspectSources, "Details");
+        this.addPopupAction(this::inspectSources, "Inspect Sources");
+
+        // Delete node for inspection result only
+        JMenuItem menuItem = new JMenuItem("Delete Inspect Node");
+        menuItem.addActionListener(e -> {
+                for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
+                    if ((tp.getLastPathComponent()).toString().startsWith("Inspect Results [")) {
+                        model.removeNodeFromParent((DefaultMutableTreeNode)tp.getLastPathComponent());
+                    }
+                }
+            }
+        );
+        popup.add(menuItem);
 
         frame.add(panel);
         frame.pack();
@@ -305,6 +317,8 @@ public class BdvSourceServiceUI {
             });
 
             classNodes.values().forEach((f) -> nodeSpimData.add(f));
+
+            nodeSpimData.add(new SourceFilterNode("All Sources", (sac)->true, false));
 
             Set<Entity> entitiesAlreadyRegistered = new HashSet<>();
             entitiesByClass.forEach((c,el) -> {
