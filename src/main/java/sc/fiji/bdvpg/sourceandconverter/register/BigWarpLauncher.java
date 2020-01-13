@@ -96,10 +96,10 @@ public class BigWarpLauncher implements Runnable {
             SourceAndConverter gridSource = bdvHandleP.getViewerPanel().getState().getSources().get(nSources-1);
             SourceAndConverter warpMagnitudeSource = bdvHandleP.getViewerPanel().getState().getSources().get(nSources-2);
 
-            BdvService.getSourceService().register(gridSource);
-            BdvService.getSourceService().register(warpMagnitudeSource);
+            BdvService.getSourceAndConverterService().register(gridSource);
+            BdvService.getSourceAndConverterService().register(warpMagnitudeSource);
             for (SourceAndConverter sac : warpedSources) {
-                BdvService.getSourceService().register(sac);
+                BdvService.getSourceAndConverterService().register(sac);
             }
 
         } catch (SpimDataException e) {

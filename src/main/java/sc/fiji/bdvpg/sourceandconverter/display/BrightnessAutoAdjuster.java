@@ -64,7 +64,7 @@ public class BrightnessAutoAdjuster implements Runnable
 
 		//minMaxGroup.getMinBoundedValue().setCurrentValue( min );
 		//minMaxGroup.getMaxBoundedValue().setCurrentValue( max );
-		BdvService.getSourceDisplayService().getConverterSetup( sac ).setDisplayRange(min, max);
+		BdvService.getSourceAndConverterDisplayService().getConverterSetup( sac ).setDisplayRange(min, max);
 	}
 
 }

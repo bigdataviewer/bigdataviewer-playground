@@ -19,7 +19,6 @@ import java.util.function.Predicate;
 
 public class BdvSourceServiceUI {
 
-
     BdvSourceAndConverterService bss;
     JFrame frame;
     JPanel panel;

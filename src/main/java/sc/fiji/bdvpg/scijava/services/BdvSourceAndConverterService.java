@@ -85,7 +85,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
      * Map containing objects that are 1 to 1 linked to a Source
      * TODO : ask if it should contain a WeakReference to Source keys (Potential Memory leak ?)
      */
-    Map<SourceAndConverter, Map<String, Object>> data;
+    Map<SourceAndConverter, Map<String, Object>> sourceAndConverterToMetadata;
 
     /**
      * Reserved key for the data map. data.get(sourceandconverter).get(SETSPIMDATA)
@@ -93,7 +93,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
      * whether a list of necessary is not obvious at the moment
      * TODO : make an example
      */
-    final public static String SETSPIMDATA = "SETSPIMDATA";
+    final public static String SPIM_DATA = "SPIMDATA";
 
     /**
      * Test if a Source is already registered in the Service
@@ -101,11 +101,10 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
      * @return
      */
     public boolean isRegistered(SourceAndConverter src) {
-        return data.containsKey(src);
+        return sourceAndConverterToMetadata.containsKey(src);
     }
 
-
-    public void setDisplayService(IBdvSourceAndConverterDisplayService bsds) {
+    public void setDisplayService( IBdvSourceAndConverterDisplayService bsds) {
         assert bsds instanceof BdvSourceAndConverterDisplayService;
         this.bsds = (BdvSourceAndConverterDisplayService) bsds;
     }
@@ -115,8 +114,8 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
      * @return
      */
     @Override
-    public Map<SourceAndConverter, Map<String, Object>> getAttachedSourceAndConverterData() {
-        return data;
+    public Map<SourceAndConverter, Map<String, Object>> getSourceAndConverterToMetadata() {
+        return sourceAndConverterToMetadata;
     }
 
     /**
@@ -125,13 +124,13 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
      * @param sac
      */
     public void register(SourceAndConverter sac) {
-        if (data.containsKey(sac)) {
+        if ( sourceAndConverterToMetadata.containsKey(sac)) {
             log.accept("Source already registered");
             return;
         }
         final int numTimepoints = 1;
         Map<String, Object> sourceData = new HashMap<>();
-        data.put(sac, sourceData);
+        sourceAndConverterToMetadata.put(sac, sourceData);
         objectService.addObject(sac);
         if (uiAvailable) ui.update(sac);
     }
@@ -154,7 +153,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
         if (bsds!=null) {
             bsds.removeFromAllBdvs(src);
         }
-        data.remove(src);
+        sourceAndConverterToMetadata.remove(src);
         objectService.removeObject(src);
         if (uiAvailable) {
             ui.remove(src);
@@ -162,7 +161,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     }
 
     @Override
-    public List<SourceAndConverter> getSources() {
+    public List<SourceAndConverter> getSourceAndConverters() {
         return objectService.getObjects(SourceAndConverter.class);
     }
 
@@ -170,16 +169,16 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     public List<SourceAndConverter> getSourceAndConverterFromSpimdata(AbstractSpimData asd) {
         return objectService.getObjects(SourceAndConverter.class)
                 .stream()
-                .filter(s -> ((HashSet<AbstractSpimData>)data.get(s).get(SETSPIMDATA)).contains(asd))
+                .filter(s -> ((HashSet<AbstractSpimData>) sourceAndConverterToMetadata.get(s).get( SPIM_DATA )).contains(asd))
                 .collect(Collectors.toList());
     }
 
     public void linkToSpimData(SourceAndConverter src, AbstractSpimData asd) {
         // TODO
-        if (data.get(src).get(SETSPIMDATA)==null) {
-            data.get(src).put(SETSPIMDATA, new HashSet<>());
+        if ( sourceAndConverterToMetadata.get(src).get( SPIM_DATA )==null) {
+            sourceAndConverterToMetadata.get(src).put( SPIM_DATA, new HashSet<>());
         }
-        ((Set)data.get(src).get(SETSPIMDATA)).add(asd);
+        ((Set) sourceAndConverterToMetadata.get(src).get( SPIM_DATA )).add(asd);
     }
 
 
@@ -208,7 +207,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
         scriptService.addAlias(AffineTransform3D.class);
         scriptService.addAlias(AbstractSpimData.class);
         // -- TODO End of to check
-        data = new HashMap<>();
+        sourceAndConverterToMetadata = new HashMap<>();
         if (uiService!=null) {
             log.accept("uiService detected : Constructing JPanel for BdvSourceAndConverterService");
             ui = new BdvSourceServiceUI(this);
