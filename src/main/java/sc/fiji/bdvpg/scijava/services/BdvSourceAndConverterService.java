@@ -88,7 +88,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     Map<SourceAndConverter, Map<String, Object>> sourceAndConverterToMetadata;
 
     /**
-     * Reserved key for the data map. data.get(sourceandconverter).get(SPIMDATAINFO)
+     * Reserved key for the data map. data.get(sourceandconverter).get(SPIM_DATA)
      * is expected to return a List of Spimdata Objects which refer to this sourceandconverter
      * whether a list of necessary is not obvious at the moment
      * TODO : make an example
@@ -178,10 +178,10 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
 
     public void linkToSpimData(SourceAndConverter src, AbstractSpimData asd, int idSetup) {
 
-        //if (data.get(src).get(SPIMDATAINFO)==null) {
+        //if (data.get(src).get(SPIM_DATA)==null) {
         sourceAndConverterToMetadata.get(src).put(SPIM_DATA, new SpimDataInfo(asd,idSetup));
         //}
-        //((Set)data.get(src).get(SPIMDATAINFO)).add();
+        //((Set)data.get(src).get(SPIM_DATA)).add();
     }
 
 

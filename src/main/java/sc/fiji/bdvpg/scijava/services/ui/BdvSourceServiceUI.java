@@ -19,14 +19,14 @@ import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService.SPIMDATAINFO;
+import static sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService.SPIM_DATA;
 
 /**
  * Swing UI for Scijava BdvSourceAndConverterService
@@ -53,7 +53,6 @@ public class BdvSourceServiceUI {
     /**
      * Linked SourceAndConverter Scijava service
      */
->>>>>>> master
     BdvSourceAndConverterService bss;
 
     /**
@@ -121,7 +120,7 @@ public class BdvSourceServiceUI {
         allSourcesNode = new SourceFilterNode("All Sources", (sac) -> true, false);
         top.add(allSourcesNode);
 
-        SourceFilterNode spimDataSources = new SourceFilterNode("In SpimData", (sac) -> bss.getAttachedSourceAndConverterData().get(sac).containsKey(SPIMDATAINFO), false);
+        SourceFilterNode spimDataSources = new SourceFilterNode("In SpimData", (sac) -> bss.getSourceAndConverterToMetadata().get(sac).containsKey(SPIM_DATA), false);
         allSourcesNode.add(spimDataSources);
 
         model = (DefaultTreeModel)tree.getModel();
@@ -295,7 +294,7 @@ public class BdvSourceServiceUI {
     }
 
     public List<SourceAndConverter> getSourceAndConvertersOfSource(Source src) {
-        return bss.getSources().stream().filter(sac -> sac.getSpimSource().equals(src)).collect(Collectors.toList());
+        return bss.getSourceAndConverters().stream().filter(sac -> sac.getSpimSource().equals(src)).collect(Collectors.toList());
     }
 
     public void update(SourceAndConverter sac) {
@@ -319,8 +318,8 @@ public class BdvSourceServiceUI {
         // Fetch All Spimdatas from all Sources
         Set<AbstractSpimData> currentSpimdatas = new HashSet<>();
         displayedSource.forEach(sac -> {
-            if (bss.getAttachedSourceAndConverterData().get(sac).containsKey(SPIMDATAINFO)) {
-                currentSpimdatas.add(((BdvSourceAndConverterService.SpimDataInfo)bss.getAttachedSourceAndConverterData().get(sac).get(SPIMDATAINFO)).asd);
+            if (bss.getSourceAndConverterToMetadata().get(sac).containsKey(SPIM_DATA)) {
+                currentSpimdatas.add(((BdvSourceAndConverterService.SpimDataInfo)bss.getSourceAndConverterToMetadata().get(sac).get(SPIM_DATA)).asd);
             }
         });
 
@@ -538,11 +537,11 @@ public class BdvSourceServiceUI {
         public AbstractSpimData asd;
 
         public boolean filter(SourceAndConverter sac) {
-            Map<String, Object> props = bss.getAttachedSourceAndConverterData().get(sac);
+            Map<String, Object> props = bss.getSourceAndConverterToMetadata().get(sac);
             assert props!=null;
             //System.out.println("Testing "+sac.getSpimSource().getName()+" vs "+asd.toString());
-            //assert props.get(SPIMDATAINFO) instanceof Set<BdvSourceAndConverterService.SpimDataInfo>;
-            return (props.containsKey(SPIMDATAINFO))&&((BdvSourceAndConverterService.SpimDataInfo)props.get(SPIMDATAINFO)).asd.equals(asd);
+            //assert props.get(SPIM_DATA) instanceof Set<BdvSourceAndConverterService.SpimDataInfo>;
+            return (props.containsKey(SPIM_DATA))&&((BdvSourceAndConverterService.SpimDataInfo)props.get(SPIM_DATA)).asd.equals(asd);
         }
 
         public SpimDataFilterNode(String name, AbstractSpimData spimdata) {
@@ -575,14 +574,14 @@ public class BdvSourceServiceUI {
         }
 
         public boolean filter(SourceAndConverter sac) {
-            Map<String, Object> props = bss.getAttachedSourceAndConverterData().get(sac);
+            Map<String, Object> props = bss.getSourceAndConverterToMetadata().get(sac);
             assert props!=null;
-            assert props.containsKey(SPIMDATAINFO);
+            assert props.containsKey(SPIM_DATA);
             //System.out.println("Testing "+sac.getSpimSource().getName()+" vs "+asd.toString());
-            //assert props.get(SPIMDATAINFO) instanceof Set<BdvSourceAndConverterService.SpimDataInfo>;
+            //assert props.get(SPIM_DATA) instanceof Set<BdvSourceAndConverterService.SpimDataInfo>;
 
-            AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd = ( AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) ((BdvSourceAndConverterService.SpimDataInfo)props.get(SPIMDATAINFO)).asd;
-            Integer idx = ((BdvSourceAndConverterService.SpimDataInfo)props.get(SPIMDATAINFO)).setupId;
+            AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd = ( AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) ((BdvSourceAndConverterService.SpimDataInfo)props.get(SPIM_DATA)).asd;
+            Integer idx = ((BdvSourceAndConverterService.SpimDataInfo)props.get(SPIM_DATA)).setupId;
 
             return asd.getSequenceDescription().getViewSetups().get(idx).getAttributes().values().contains(e);
         }
