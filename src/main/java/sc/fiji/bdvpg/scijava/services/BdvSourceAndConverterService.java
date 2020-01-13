@@ -88,12 +88,12 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     Map<SourceAndConverter, Map<String, Object>> data;
 
     /**
-     * Reserved key for the data map. data.get(sourceandconverter).get(SETSPIMDATA)
+     * Reserved key for the data map. data.get(sourceandconverter).get(SPIMDATAINFO)
      * is expected to return a List of Spimdata Objects which refer to this sourceandconverter
      * whether a list of necessary is not obvious at the moment
      * TODO : make an example
      */
-    final public static String SETSPIMDATA = "SETSPIMDATA";
+    final public static String SPIMDATAINFO = "SPIMDATAINFO";
 
     /**
      * Test if a Source is already registered in the Service
@@ -103,7 +103,6 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     public boolean isRegistered(SourceAndConverter src) {
         return data.containsKey(src);
     }
-
 
     public void setDisplayService(IBdvSourceAndConverterDisplayService bsds) {
         assert bsds instanceof BdvSourceAndConverterDisplayService;
@@ -136,16 +135,19 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
         if (uiAvailable) ui.update(sac);
     }
 
-    public void register(List<SourceAndConverter> sources) {
+    public void register(Collection<SourceAndConverter> sources) {
         for (SourceAndConverter sac:sources) {
             this.register(sac);
         }
     }
 
     public void register(AbstractSpimData asd) {
-        List<SourceAndConverter> sacs = SourceAndConverterUtils.createSourceAndConverters(asd);
-        this.register(sacs);
-        sacs.forEach(sac -> this.linkToSpimData(sac, asd));
+        Map<Integer, SourceAndConverter> sacs = SourceAndConverterUtils.createSourceAndConverters(asd);
+        this.register(sacs.values());
+        sacs.forEach((id,sac) -> {
+            this.linkToSpimData(sac, asd, id);
+            if (uiAvailable) ui.update(sac);
+        });
     }
 
     @Override
@@ -170,16 +172,16 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     public List<SourceAndConverter> getSourceAndConverterFromSpimdata(AbstractSpimData asd) {
         return objectService.getObjects(SourceAndConverter.class)
                 .stream()
-                .filter(s -> ((HashSet<AbstractSpimData>)data.get(s).get(SETSPIMDATA)).contains(asd))
+                .filter(s -> ((HashSet<AbstractSpimData>)data.get(s).get(SPIMDATAINFO)).contains(asd))
                 .collect(Collectors.toList());
     }
 
-    public void linkToSpimData(SourceAndConverter src, AbstractSpimData asd) {
-        // TODO
-        if (data.get(src).get(SETSPIMDATA)==null) {
-            data.get(src).put(SETSPIMDATA, new HashSet<>());
-        }
-        ((Set)data.get(src).get(SETSPIMDATA)).add(asd);
+    public void linkToSpimData(SourceAndConverter src, AbstractSpimData asd, int idSetup) {
+
+        //if (data.get(src).get(SPIMDATAINFO)==null) {
+            data.get(src).put(SPIMDATAINFO, new SpimDataInfo(asd,idSetup));
+        //}
+        //((Set)data.get(src).get(SPIMDATAINFO)).add();
     }
 
 
@@ -317,14 +319,15 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
 
     }
 
-    /**
-     * Inner Swing UI for Bdv Source
-     * Really really basic at the moment
-     * TODO : improve UI
-     */
-    /*public class UIBdvSourceService {
+   public class SpimDataInfo {
 
+        public AbstractSpimData asd;
+        public int setupId;
 
-    }*/
+        public SpimDataInfo(AbstractSpimData asd, int setupId) {
+            this.asd = asd;
+            this.setupId =setupId;
+        }
+   }
 
 }
