@@ -35,6 +35,14 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         this.reuseMipMaps=reuseMipMaps;
     }
 
+    public Source getOriginalSource() {
+        return origin;
+    }
+
+    public Source getModelResamplerSource() {
+        return srcResamplingModel;
+    }
+
     @Override
     public boolean isPresent(int t) {
         return origin.isPresent(t)&&srcResamplingModel.isPresent(t);
