@@ -24,7 +24,7 @@ public class MultipleSpimDataImporterCommand implements Command {
     @Parameter ( visibility = ItemVisibility.MESSAGE  )
     private String message = "Please choose XML/HDF5 files:";
 
-    @Parameter
+    @Parameter(style="extensions:xml")
     public File[] files;
 
     public void run() {
