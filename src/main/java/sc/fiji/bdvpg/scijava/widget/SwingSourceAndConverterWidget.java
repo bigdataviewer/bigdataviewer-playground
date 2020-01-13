@@ -1,6 +1,7 @@
 package sc.fiji.bdvpg.scijava.widget;
 
 import bdv.viewer.SourceAndConverter;
+import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.swing.widget.SwingInputWidget;
@@ -11,20 +12,23 @@ import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Swing implementation of {@link SourceAndConverterListWidget}.
+ * Swing implementation of {@link SourceAndConverterWidget}.
  *
  * @author Nicolas Chiaruttini
  */
 
-@Plugin(type = InputWidget.class)
-public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAndConverter[]> implements
-        SourceAndConverterListWidget<JPanel> {
+@Plugin(type = InputWidget.class, priority = Priority.EXTREMELY_HIGH)
+public class SwingSourceAndConverterWidget extends SwingInputWidget<SourceAndConverter> implements
+        SourceAndConverterWidget<JPanel> {
 
     @Override
     protected void doRefresh() {
@@ -32,12 +36,12 @@ public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAn
 
     @Override
     public boolean supports(final WidgetModel model) {
-        return super.supports(model) && model.isType(SourceAndConverter[].class);
+        return super.supports(model) && model.isType(SourceAndConverter.class);
     }
 
     @Override
-    public SourceAndConverter[] getValue() {
-        return getSelectedSourceAndConverters();
+    public SourceAndConverter getValue() {
+        return getSelectedSourceAndConverter();
     }
 
     @Parameter
@@ -45,8 +49,8 @@ public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAn
 
     JTree tree;
 
-    public SourceAndConverter[] getSelectedSourceAndConverters() {
-        Set<SourceAndConverter> sacList = new HashSet<>(); // A set avoids duplicate SourceAndConverter
+    public SourceAndConverter getSelectedSourceAndConverter() {
+        ArrayList<SourceAndConverter> sacList = new ArrayList<>(); // A set avoids duplicate SourceAndConverter
         for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
             if (((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject() instanceof BdvSourceServiceUI.RenamableSourceAndConverter) {
                 Object userObj = ((BdvSourceServiceUI.RenamableSourceAndConverter) ((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject()).sac;
@@ -55,7 +59,11 @@ public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAn
                 sacList.addAll(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) tp.getLastPathComponent()));
             }
         }
-        return sacList.toArray(new SourceAndConverter[sacList.size()]);
+        if (sacList.size()>0) {
+            return sacList.get(0);
+        } else {
+            return null;
+        }
     }
 
     private Set<SourceAndConverter> getSourceAndConvertersFromChildrenOf(DefaultMutableTreeNode node) {
@@ -75,13 +83,27 @@ public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAn
     @Override
     public void set(final WidgetModel model) {
         super.set(model);
-        tree = new JTree(bss.getUI().getTreeModel());
+        tree = new JTreeLeavesOnlySelectable(bss.getUI().getTreeModel());
+        // Only one node selected (needs to be a leaf
+        tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(tree);
         scrollPane.setPreferredSize(new Dimension(350, 200));
         getComponent().add(scrollPane);
         refreshWidget();
         model.setValue(null);
         tree.addTreeSelectionListener((e)-> model.setValue(getValue()));
+    }
+
+    public class JTreeLeavesOnlySelectable extends JTree {
+
+        JTreeLeavesOnlySelectable(TreeModel model) {
+            super(model);
+        }
+
+        public boolean isPathSelected( TreePath path )
+        {
+            return ((DefaultMutableTreeNode )path.getLastPathComponent()).isLeaf();
+        }
     }
 
 }

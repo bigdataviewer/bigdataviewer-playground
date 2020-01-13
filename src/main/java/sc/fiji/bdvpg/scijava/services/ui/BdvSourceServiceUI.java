@@ -12,14 +12,10 @@ import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
 import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService;
-import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -32,22 +28,84 @@ import java.util.stream.Collectors;
 
 import static sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService.SPIMDATAINFO;
 
+/**
+ * Swing UI for Scijava BdvSourceAndConverterService
+ *
+ * All the SourceAndConverter are inserted into the tree potentially multiple times,
+ * in order to allow for multiple useful hierarchy to appear. Most basic example is a
+ * SourceAndConverter which is part of a SpimData object. This source will be caught by
+ * the appropriate Spimdata Filter Node in which it will appear again multiple times, sorted
+ * by Entity class found in the spimdata object
+ *
+ *
+ * Nodes are DefaultTreeMutableNode containing potentially:
+ * - RenamableSourceAndConverter (SourceAndConverter with an overriden toString method)
+ * - Filtering nodes : nodes that can filter SourceAndConverters,
+ * they contain a Predicate<SourceAndConverter> that decides whether a source and converter
+ * object should be included in the node; they allow contain a boolean flag which sets whether the
+ * SourceAndConverter should be passed to the current remaining branch in the tree
+ * - Getter Node for Source properties. For instance in the inspect method, a Transformed Source will
+ * create a Node for the wrapped source and another node which holds a getter for the fixedAffineTransform
+ *
+ */
 public class BdvSourceServiceUI {
 
+    /**
+     * Linked SourceAndConverter Scijava service
+     */
     BdvSourceAndConverterService bss;
+
+    /**
+     * JFrame container
+     */
     JFrame frame;
+
+    /**
+     * JPanel container
+     */
     JPanel panel;
+
     /**
      * Swing JTree used for displaying Sources object
      */
     JTree tree;
+
+    /**
+     * Tree root note
+     */
     SourceFilterNode top;
+
+    /**
+     * Scrollpane to display the JTree, if too big
+     */
     JScrollPane treeView;
+
+    /**
+     * Tree model
+     */
     DefaultTreeModel model;
+
+    /**
+     * SourceAndConverter currently displayed in the JTree
+     */
     Set<SourceAndConverter> displayedSource = new HashSet<>();
 
+    /**
+     * Popup menu containing user actions (triggered on right click)
+     */
     JPopupMenu popup = new JPopupMenu();
+
+    /**
+     * Node holding all Sources just below the root node,
+     * Should be kept as last index in this branch. Nothing below except
+     * results of inspection should go there.
+     */
     SourceFilterNode allSourcesNode;
+
+    /**
+     * Spimdata Filter nodes currently present in the tree
+     */
+    List<SpimDataFilterNode> spimdataFilterNodes = new ArrayList<>();
 
     public BdvSourceServiceUI(BdvSourceAndConverterService bss) {
         this.bss = bss;
@@ -122,7 +180,6 @@ public class BdvSourceServiceUI {
         model.reload(top);
     }
 
-
     public void appendInspectorResult(DefaultMutableTreeNode parent, SourceAndConverter sac) {
         if (sac.getSpimSource() instanceof TransformedSource) {
             DefaultMutableTreeNode nodeTransformedSource = new DefaultMutableTreeNode("Transformed Source");
@@ -150,7 +207,7 @@ public class BdvSourceServiceUI {
             } else {
                 // no source and converter exist for this source : creates it
                 SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getWrappedSource());
-                BdvService.getSourceService().register(src);
+                bss.register(src);
                 DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                 nodeTransformedSource.add(wrappedSourceNode);
                 appendInspectorResult(wrappedSourceNode, src);
@@ -181,7 +238,7 @@ public class BdvSourceServiceUI {
             } else {
                 // no source and converter exist for this source : creates it
                 SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getWrappedSource());
-                BdvService.getSourceService().register(src);
+                bss.register(src);
                 DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                 nodeWarpedSource.add(wrappedSourceNode);
                 appendInspectorResult(wrappedSourceNode, src);
@@ -207,7 +264,7 @@ public class BdvSourceServiceUI {
             } else {
                 // no source and converter exist for this source : creates it
                 SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getOriginalSource());
-                BdvService.getSourceService().register(src);
+                bss.register(src);
                 DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                 nodeOrigin.add(wrappedSourceNode);
                 appendInspectorResult(wrappedSourceNode, src);
@@ -227,7 +284,7 @@ public class BdvSourceServiceUI {
             } else {
                 // no source and converter exist for this source : creates it
                 SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getModelResamplerSource());
-                BdvService.getSourceService().register(src);
+                bss.register(src);
                 DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                 nodeResampler.add(wrappedSourceNode);
                 appendInspectorResult(wrappedSourceNode, src);
@@ -237,7 +294,7 @@ public class BdvSourceServiceUI {
     }
 
     public List<SourceAndConverter> getSourceAndConvertersOfSource(Source src) {
-        return BdvService.getSourceService().getSources().stream().filter(sac -> sac.getSpimSource().equals(src)).collect(Collectors.toList());
+        return bss.getSources().stream().filter(sac -> sac.getSpimSource().equals(src)).collect(Collectors.toList());
     }
 
     public void update(SourceAndConverter sac) {
@@ -256,8 +313,6 @@ public class BdvSourceServiceUI {
             frame.setVisible( true );
         }
     }
-
-    List<SpimDataFilterNode> spimdataFilterNodes = new ArrayList<>();
 
     private void updateSpimDataFilterNodes() {
         // Fetch All Spimdatas from all Sources
@@ -288,52 +343,44 @@ public class BdvSourceServiceUI {
                 }
             }
         );
-
     }
 
     private void addEntityFilterNodes(SpimDataFilterNode nodeSpimData, AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd) {
         // Gets all entities by class
-        //if (asd instanceof SpimDataMinimal) {
-        //    SpimDataMinimal sdm = (SpimDataMinimal) asd;
-            Map<Class, List<Entity>> entitiesByClass = asd.getSequenceDescription()
-                    .getViewDescriptions()
-                    // Streams viewSetups
-                    .values().stream()
-                    // Filters if view is present
-                    .filter(v -> v.isPresent())
-                    // Gets Entities associated to ViewSetup
-                    .map(v -> v.getViewSetup().getAttributes().values())
-                    // Reduce into a single list and stream
-                    .reduce(new ArrayList<>(), (a, b) -> {
-                        a.addAll(b);
-                        return a;
-                    }).stream()
-                    // Collected and sorted by class
-                    .collect(Collectors.groupingBy(e -> e.getClass(), Collectors.toList()));
+        Map<Class, List<Entity>> entitiesByClass = asd.getSequenceDescription()
+                .getViewDescriptions()
+                // Streams viewSetups
+                .values().stream()
+                // Filters if view is present
+                .filter(v -> v.isPresent())
+                // Gets Entities associated to ViewSetup
+                .map(v -> v.getViewSetup().getAttributes().values())
+                // Reduce into a single list and stream
+                .reduce(new ArrayList<>(), (a, b) -> {
+                    a.addAll(b);
+                    return a;
+                }).stream()
+                // Collected and sorted by class
+                .collect(Collectors.groupingBy(e -> e.getClass(), Collectors.toList()));
 
-            Map<Class, SourceFilterNode> classNodes = new HashMap<>();
-            entitiesByClass.keySet().forEach((c)-> {
-                classNodes.put(c, new SourceFilterNode(c.getSimpleName(),(sac)-> true, true));
+        Map<Class, SourceFilterNode> classNodes = new HashMap<>();
+        entitiesByClass.keySet().forEach((c)-> {
+            classNodes.put(c, new SourceFilterNode(c.getSimpleName(),(sac)-> true, true));
+        });
+
+        classNodes.values().forEach((f) -> nodeSpimData.add(f));
+
+        nodeSpimData.add(new SourceFilterNode("All Sources", (sac)->true, false));
+
+        Set<Entity> entitiesAlreadyRegistered = new HashSet<>();
+        entitiesByClass.forEach((c,el) -> {
+            el.forEach(entity -> {
+                if (!entitiesAlreadyRegistered.contains(entity)) {
+                    classNodes.get(c).add(new SpimDataElementFilter(c.getSimpleName()+" "+entity.getId(),entity));
+                    entitiesAlreadyRegistered.add(entity);
+                }
             });
-
-            classNodes.values().forEach((f) -> nodeSpimData.add(f));
-
-            nodeSpimData.add(new SourceFilterNode("All Sources", (sac)->true, false));
-
-            Set<Entity> entitiesAlreadyRegistered = new HashSet<>();
-            entitiesByClass.forEach((c,el) -> {
-                el.forEach(entity -> {
-                    if (!entitiesAlreadyRegistered.contains(entity)) {
-                        classNodes.get(c).add(new SpimDataElementFilter(c.getSimpleName()+" "+entity.getId(),entity));
-                        entitiesAlreadyRegistered.add(entity);
-                    }
-                });
-            });
-
-
-        //} else {
-        //    System.out.println("Cannot sort by entities with spimdata of class "+asd.getClass().getSimpleName());
-        //}
+        });
 
     }
 
@@ -415,6 +462,12 @@ public class BdvSourceServiceUI {
         return sacs;
     }
 
+    /**
+     * Adds a line and an action which consumes all the selected SourceAndConverter objects
+     * in the popup Menu
+     * @param action
+     * @param actionName
+     */
     public void addPopupAction(Consumer<SourceAndConverter[]> action, String actionName) {
         // Show
         JMenuItem menuItem = new JMenuItem(actionName);
@@ -422,10 +475,26 @@ public class BdvSourceServiceUI {
         popup.add(menuItem);
     }
 
+    /**
+     * Adds a separator in the popup menu
+     */
     public void addPopupLine() {
         popup.addSeparator();
     }
 
+    public JPanel getPanel() {
+        return panel;
+    }
+
+    public TreeModel getTreeModel() {
+        return model;
+    }
+
+    // --------------------- INNER CLASSES
+
+    /**
+     * Wraps a SourceAndConverter and allow to change its name
+     */
     public class RenamableSourceAndConverter {
         public SourceAndConverter sac;
         public RenamableSourceAndConverter(SourceAndConverter sac) {
@@ -436,6 +505,9 @@ public class BdvSourceServiceUI {
         }
     }
 
+    /**
+     * SourceAndConverter filter node : generic
+     */
     public class SourceFilterNode extends DefaultMutableTreeNode {
         Predicate<SourceAndConverter> filter;
         boolean allowDuplicate;
@@ -457,6 +529,9 @@ public class BdvSourceServiceUI {
         }
     }
 
+    /**
+     * SourceAndConverter filter node : Selects SpimData and allow for duplicate
+     */
     public class SpimDataFilterNode extends SourceFilterNode {
 
         public AbstractSpimData asd;
@@ -484,6 +559,10 @@ public class BdvSourceServiceUI {
         }
     }
 
+    /**
+     * SourceAndConverter filter node : Selected a SourceAndConverter which is linked
+     * to a particular Entity
+     */
     public class SpimDataElementFilter extends SourceFilterNode {
 
         Entity e;
