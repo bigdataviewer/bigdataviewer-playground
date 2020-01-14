@@ -33,26 +33,27 @@ public class ColorSourceCreatorCommand implements Command {
     ColorRGB color;
 
     @Parameter
-    SourceAndConverter source_in;
+    SourceAndConverter[] sources_in;
 
     @Override
     public void run() {
+        for (SourceAndConverter source_in : sources_in) {
+            ARGBType imglib2color = new ARGBType(ARGBType.rgba(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
 
-        ARGBType imglib2color = new ARGBType(ARGBType.rgba(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
+            Converter c = SourceAndConverterUtils.createConverter(source_in.getSpimSource());
+            assert c instanceof ColorConverter;
+            ((ColorConverter) c).setColor(imglib2color);
 
-        Converter c = SourceAndConverterUtils.createConverter(source_in.getSpimSource());
-        assert c instanceof ColorConverter;
-        ((ColorConverter) c).setColor(imglib2color);
+            Converter vc = null;
+            if (source_in.asVolatile() != null) {
+                vc = SourceAndConverterUtils.createConverter(source_in.asVolatile().getSpimSource());
+                ((ColorConverter) vc).setColor(imglib2color);
+            }
 
-        Converter vc =null;
-        if (source_in.asVolatile()!=null) {
-            vc = SourceAndConverterUtils.createConverter(source_in.asVolatile().getSpimSource());
-            ((ColorConverter) vc).setColor(imglib2color);
+            ConverterChanger cc = new ConverterChanger(source_in, c, vc);
+            cc.run();
+            cc.get();
         }
-
-        ConverterChanger cc = new ConverterChanger(source_in, c, vc);
-        cc.run();
-        cc.get();
     }
 
 }
