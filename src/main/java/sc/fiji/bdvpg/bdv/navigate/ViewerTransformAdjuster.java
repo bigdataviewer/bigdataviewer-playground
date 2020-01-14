@@ -3,6 +3,7 @@ package sc.fiji.bdvpg.bdv.navigate;
 import bdv.util.Affine3DHelpers;
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import bdv.viewer.state.ViewerState;
 import net.imglib2.Interval;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -11,10 +12,10 @@ import net.imglib2.util.LinAlgHelpers;
 public class ViewerTransformAdjuster implements Runnable
 {
 	private final BdvHandle bdvHandle;
-	private final Source< ? > source;
+	private final SourceAndConverter source;
 	private boolean zoomedIn = false; // TODO: what's the point of this?
 
-	public ViewerTransformAdjuster( BdvHandle bdvHandle, Source< ? > source )
+	public ViewerTransformAdjuster( BdvHandle bdvHandle, SourceAndConverter source )
 	{
 		this.bdvHandle = bdvHandle;
 		this.source = source;
@@ -28,7 +29,7 @@ public class ViewerTransformAdjuster implements Runnable
 
 	/**
 	 * Get a "good" initial viewer transform. The viewer transform is chosen
-	 * such that for the source,
+	 * such that for the sourceandconverter,
 	 * <ul>
 	 * <li>the XY plane is aligned with the screen plane,
 	 * <li>the <em>z = dim_z / 2</em> slice is shown,
@@ -47,13 +48,13 @@ public class ViewerTransformAdjuster implements Runnable
 		final double cY = viewerHeight / 2.0;
 
 		final int timepoint = state.getCurrentTimepoint();
-		if ( !source.isPresent( timepoint ) )
+		if ( !source.getSpimSource().isPresent( timepoint ) )
 			return new AffineTransform3D();
 
 		final AffineTransform3D sourceTransform = new AffineTransform3D();
-		source.getSourceTransform( timepoint, 0, sourceTransform );
+		source.getSpimSource().getSourceTransform( timepoint, 0, sourceTransform );
 
-		final Interval sourceInterval = source.getSource( timepoint, 0 );
+		final Interval sourceInterval = source.getSpimSource().getSource( timepoint, 0 );
 		final double sX0 = sourceInterval.min( 0 );
 		final double sX1 = sourceInterval.max( 0 );
 		final double sY0 = sourceInterval.min( 1 );
