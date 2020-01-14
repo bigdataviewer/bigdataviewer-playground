@@ -5,7 +5,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporterAndRegisterer;
+import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.io.File;
 
@@ -25,7 +25,7 @@ public class MultipleSpimDataImporterCommand implements Command {
 
     public void run() {
         for ( int i = 0; i < files.length; ++i ) {
-            new SpimDataFromXmlImporterAndRegisterer( files[i] ).get();
+            new SpimDataFromXmlImporter( files[i] ).get();
         }
     }
 

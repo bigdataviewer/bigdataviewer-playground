@@ -8,27 +8,27 @@ import sc.fiji.bdvpg.services.BdvService;
 import java.io.File;
 import java.util.function.Function;
 
-public class SpimDataFromXmlImporterAndRegisterer implements Runnable, Function<File, AbstractSpimData> {
+public class SpimDataFromXmlImporter implements Runnable, Function<File, AbstractSpimData> {
 
     AbstractSpimData spimData;
 
     File file;
 
-    public SpimDataFromXmlImporterAndRegisterer( File file) {
+    public SpimDataFromXmlImporter( File file) {
         this.file = file;
     }
 
-    public SpimDataFromXmlImporterAndRegisterer( String filePath) {
+    public SpimDataFromXmlImporter( String filePath) {
         this.file = new File(filePath);
     }
 
     @Override
     public void run() {
-        apply( file );
+        apply(file);
     }
 
     public AbstractSpimData get() {
-        return apply( file );
+        return apply(file);
     }
 
     @Override
