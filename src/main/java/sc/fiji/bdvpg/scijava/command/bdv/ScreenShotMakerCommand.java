@@ -5,9 +5,8 @@ import ij.ImagePlus;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.bdv.ScreenShotMaker;
-
+import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 /**
  * ScreenShotMakerCommand
  * <p>
