@@ -93,7 +93,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
      * whether a list of necessary is not obvious at the moment
      * TODO : make an example
      */
-    final public static String SPIM_DATA = "SPIMDATA";
+    final public static String SPIM_DATA_INFO = "SPIMDATA";
 
     /**
      * Test if a Source is already registered in the Service
@@ -172,16 +172,12 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     public List<SourceAndConverter> getSourceAndConverterFromSpimdata(AbstractSpimData asd) {
         return objectService.getObjects(SourceAndConverter.class)
                 .stream()
-                .filter(s -> ((HashSet<AbstractSpimData>)sourceAndConverterToMetadata.get(s).get(SPIM_DATA)).contains(asd))
+                .filter(s -> ((HashSet<AbstractSpimData>)sourceAndConverterToMetadata.get(s).get(SPIM_DATA_INFO)).contains(asd))
                 .collect(Collectors.toList());
     }
 
     public void linkToSpimData(SourceAndConverter src, AbstractSpimData asd, int idSetup) {
-
-        //if (data.get(src).get(SPIM_DATA)==null) {
-        sourceAndConverterToMetadata.get(src).put(SPIM_DATA, new SpimDataInfo(asd,idSetup));
-        //}
-        //((Set)data.get(src).get(SPIM_DATA)).add();
+        sourceAndConverterToMetadata.get(src).put( SPIM_DATA_INFO, new SpimDataInfo(asd,idSetup));
     }
 
 
