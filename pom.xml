@@ -13,13 +13,13 @@
 	<artifactId>bigdataviewer-playground</artifactId>
 	<version>0.1.0</version>
 
-	<name>bigdataviewer-pluginservice</name>
-	<description>BigDataViewer</description>
-	<url>https://github.com/SpimCat/bigdataviewer-pluginservice</url>
+	<name>bigdataviewer-playground</name>
+	<description>BigDataViewer Actions and GUI</description>
+	<url>https://github.com/bigdataviewer/bigdataviewer-playground/</url>
 	<inceptionYear>2019</inceptionYear>
 	<organization>
-		<name>MPI-CBG</name>
-		<url>http://www.mpi-cbg.de/</url>
+		<name>MPI-CBG / EMBL / EPFL</name>
+		<url></url>
 	</organization>
 	<licenses>
 		<license>
@@ -46,6 +46,29 @@
 				<role>maintainer</role>
 			</roles>
 		</developer>
+		<developer>
+			<id>nicokiaru</id>
+			<name>Nicolas Chiaruttini</name>
+			<url>http://imagej.net/User:NicoKiaru</url>
+			<roles>
+				<role>developer</role>
+				<role>debugger</role>
+				<role>reviewer</role>
+				<role>support</role>
+				<role>maintainer</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>tischi</id>
+			<name>Christian Tischer</name>
+			<roles>
+				<role>developer</role>
+				<role>debugger</role>
+				<role>reviewer</role>
+				<role>support</role>
+				<role>maintainer</role>
+			</roles>
+		</developer>
 	</developers>
 	<contributors>
 		<contributor>
@@ -54,22 +77,29 @@
 	</contributors>
 
 	<repositories>
-		<repository>
+		<!--<repository>
 			<id>imagej.public</id>
 			<url>http://maven.imagej.net/content/groups/public</url>
+		</repository>-->
+		<repository>
+			<id>scijava.public</id>
+			<url>https://maven.scijava.org/content/groups/public</url>
 		</repository>
 	</repositories>
 
+	<!-- TODO -->
 	<scm>
-		<connection>scm:git:git://github.com/SpimCat/bigdataviewer-pluginservice</connection>
-		<developerConnection>scm:git:git@github.com/SpimCat/bigdataviewer-pluginservice</developerConnection>
+		<connection>scm:git:git://github.com/</connection>
+		<developerConnection>scm:git:git@github.com:</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/SpimCat/bigdataviewer-pluginservice</url>
+		<url>https://github.com/</url>
 	</scm>
+
 	<issueManagement>
-		<system>GitHub</system>
-		<url>https://github.com/SpimCat/bigdataviewer-pluginservice/issues</url>
+		<system>GitHub Issues</system>
+		<url></url>
 	</issueManagement>
+
 	<ciManagement>
 		<system>None</system>
 	</ciManagement>
@@ -78,10 +108,13 @@
 		<package-name>sc.fiji.bdvpg.bdv</package-name>
 		<license.licenseName>bsd_2</license.licenseName>
 		<license.projectName>ImgLib2: a general-purpose, multidimensional image processing library.</license.projectName>
-		<license.organizationName>MPI CBG</license.organizationName>
+		<license.organizationName>MPI CBG / EMBL / EPFL </license.organizationName>
 		<license.copyrightOwners>Robert Haase, MPI CBG</license.copyrightOwners>
+		<license.copyrightOwners>Nicolas Chiaruttini, EPFL</license.copyrightOwners>
+		<license.copyrightOwners>Christian Tischer, EMBL</license.copyrightOwners>
 
-		<imagej.app.directory>C:/Programs/Fiji.app/</imagej.app.directory>
+		<!-- <imagej.app.directory>C:/Users/chiarutt/Desktop/fiji-bdv-playground/Fiji.app/</imagej.app.directory>  Please keep this line if you want to remove the one below (Nico) ! -->
+		<imagej.app.directory>C:/Users/chiarutt/Desktop/fiji-bdv-playground/Fiji.app/</imagej.app.directory>
 		<!--<imglib2.version>5.8.0</imglib2.version>
 		<scijava-ui-swing.version>0.13.0</scijava-ui-swing.version>
 		<imagej.app.directory>C:/Programs/Fiji.app/</imagej.app.directory>
@@ -90,6 +123,7 @@
 
 		<bigdataviewer-core.version>7.0.0</bigdataviewer-core.version>
 		<bigdataviewer-vistools.version>1.0.0-beta-15</bigdataviewer-vistools.version>
+		<bigwarp_fiji.version>5.0.0</bigwarp_fiji.version>
 	</properties>
 
 	<dependencies>
@@ -112,7 +146,7 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-core</artifactId>
-			<version>7.0.0</version>
+			<!--<version>7.0.0</version> -->
 		</dependency>
 
 		<dependency>
@@ -128,7 +162,7 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigwarp_fiji</artifactId>
-			<version>5.0.0</version>
+			<!--<version>5.0.0</version>-->
 		</dependency>
 
 		<dependency>
