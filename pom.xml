@@ -113,8 +113,9 @@
 		<license.copyrightOwners>Nicolas Chiaruttini, EPFL</license.copyrightOwners>
 		<license.copyrightOwners>Christian Tischer, EMBL</license.copyrightOwners>
 
-		<!-- <imagej.app.directory>C:/Users/chiarutt/Desktop/fiji-bdv-playground/Fiji.app/</imagej.app.directory>  Please keep this line if you want to remove the one below (Nico) ! -->
-		<imagej.app.directory>C:/Users/chiarutt/Desktop/fiji-bdv-playground/Fiji.app/</imagej.app.directory>
+		<!-- <scijava.app.directory>C:/Users/chiarutt/Desktop/fiji-bdv-playground/Fiji.app/</scijava.app.directory>  Please keep this line if you want to remove the one below (Nico) ! -->
+		<scijava.app.directory>C:/Users/chiarutt/Desktop/fiji-bdv-playground/Fiji.app/</scijava.app.directory>
+		<scijava.deleteOtherVersions>true</scijava.deleteOtherVersions>
 		<!--<imglib2.version>5.8.0</imglib2.version>
 		<scijava-ui-swing.version>0.13.0</scijava-ui-swing.version>
 		<imagej.app.directory>C:/Programs/Fiji.app/</imagej.app.directory>

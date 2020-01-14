@@ -41,15 +41,17 @@ public class LUTSourceCreatorCommand extends DynamicCommand {
     private Map<String, URL> luts = null;
 
     @Parameter
-    SourceAndConverter source_in;
+    SourceAndConverter[] sources_in;
 
     @Override
     public void run() {
         Converter bdvLut = cs.convert(table, Converter.class);
 
-        ConverterChanger cc = new ConverterChanger(source_in, bdvLut, bdvLut);
-        cc.run();
-        cc.get();
+        for (SourceAndConverter sac:sources_in) {
+            ConverterChanger cc = new ConverterChanger(sac, bdvLut, bdvLut);
+            cc.run();
+            cc.get();
+        }
     }
 
     // -- initializers --
