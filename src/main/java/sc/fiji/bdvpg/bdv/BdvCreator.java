@@ -14,16 +14,25 @@ import java.util.function.Supplier;
 public class BdvCreator implements Runnable, Supplier<BdvHandle>
 {
 	private BdvOptions bdvOptions;
+	private boolean interpolate;
 	private BdvHandle bdvHandle;
 
 	public BdvCreator( )
 	{
 		this.bdvOptions = BdvOptions.options();
+		this.interpolate = false;
 	}
 
 	public BdvCreator( BdvOptions bdvOptions  )
 	{
 		this.bdvOptions = bdvOptions;
+		this.interpolate = false;
+	}
+
+	public BdvCreator( BdvOptions bdvOptions, boolean interpolate )
+	{
+		this.bdvOptions = bdvOptions;
+		this.interpolate = interpolate;
 	}
 
 	@Override
@@ -46,7 +55,7 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 
 		bdvHandle = bss.getBdvHandle();
 
-		bdvHandle.getViewerPanel().setInterpolation( Interpolation.NLINEAR );
+		if ( interpolate ) bdvHandle.getViewerPanel().setInterpolation( Interpolation.NLINEAR );
 
 		bss.removeFromBdv();
 	}

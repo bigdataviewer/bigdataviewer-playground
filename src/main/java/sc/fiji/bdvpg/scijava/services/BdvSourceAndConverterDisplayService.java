@@ -102,7 +102,8 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
                                 true,
                                 "is2D", false,
                                 "windowTitle", "Bdv",
-                                "projector", ProjectionTypes.MIXED_PROJECTOR ).get().getOutput("bdvh");
+                                "projector", ProjectionTypes.MIXED_PROJECTOR,
+                                "interpolate", false).get().getOutput("bdvh");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {

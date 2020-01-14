@@ -21,6 +21,9 @@ public class BdvWindowCreatorCommand implements Command {
     @Parameter(label = "Title of the new Bdv window")
     public String windowTitle = "Bdv";
 
+    @Parameter(label = "Interpolate")
+    public boolean interpolate = false;
+
     /**
      * This triggers: BdvHandlePostprocessor
      */
@@ -48,7 +51,7 @@ public class BdvWindowCreatorCommand implements Command {
             default:
         }
 
-        BdvCreator creator = new BdvCreator(opts);
+        BdvCreator creator = new BdvCreator(opts, interpolate);
         creator.run();
         bdvh = creator.get();
     }
