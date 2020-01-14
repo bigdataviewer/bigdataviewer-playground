@@ -45,7 +45,7 @@ public interface IBdvSourceAndConverterService {
     /**
      * @return list of all registered sources
      */
-    List<SourceAndConverter> getSources();
+    List<SourceAndConverter> getSourceAndConverters();
 
     /**
      * Return sources assigned to a SpimDataObject
@@ -66,7 +66,7 @@ public interface IBdvSourceAndConverterService {
      * Gets lists of associated objects and data attached to a Bdv Source
      * @return
      */
-    Map<SourceAndConverter, Map<String, Object>> getAttachedSourceAndConverterData();
+    Map<SourceAndConverter, Map<String, Object>> getSourceAndConverterToMetadata();
 
     /**
      * If supported, this will allow to display actions in a popup window in a ui

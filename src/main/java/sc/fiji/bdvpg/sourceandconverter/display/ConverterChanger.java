@@ -43,7 +43,7 @@ public class ConverterChanger implements Runnable, Function<SourceAndConverter, 
                     sourceAndConverter.getSpimSource(),
                     nonVolatileConverter);
         }
-        BdvService.getSourceService().register(sac);
+        BdvService.getSourceAndConverterService().register(sac);
         return sac;
     }
 }

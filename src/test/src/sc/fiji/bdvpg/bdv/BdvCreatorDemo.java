@@ -10,6 +10,7 @@ public class BdvCreatorDemo
 		// Initializes static SourceService and Display Service
 		BdvService.InitScijavaServices();
 
-		final BdvHandle bdvHandle = BdvService.getSourceDisplayService().getActiveBdv();
+		// Creates a Bdv since none exists yet
+		BdvService.getSourceAndConverterDisplayService().getActiveBdv();
 	}
 }

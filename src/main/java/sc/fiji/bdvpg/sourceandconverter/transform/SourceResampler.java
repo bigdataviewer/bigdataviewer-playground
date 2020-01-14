@@ -56,7 +56,7 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
                     SourceAndConverterUtils.cloneConverter(src.getConverter()));
         }
 
-        BdvService.getSourceService().register(sac);
+        BdvService.getSourceAndConverterService().register(sac);
 
         return sac;
     }

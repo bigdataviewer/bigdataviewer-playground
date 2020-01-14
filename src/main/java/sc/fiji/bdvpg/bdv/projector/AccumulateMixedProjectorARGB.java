@@ -2,6 +2,7 @@ package sc.fiji.bdvpg.bdv.projector;
 
 import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import bdv.viewer.render.AccumulateProjector;
 import bdv.viewer.render.AccumulateProjectorFactory;
 import bdv.viewer.render.VolatileProjector;
@@ -9,16 +10,20 @@ import net.imglib2.Cursor;
 import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.ARGBType;
+import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService;
+import sc.fiji.bdvpg.services.BdvService;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
-public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBType, ARGBType >
+public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType, ARGBType >
 {
 	public static AccumulateProjectorFactory< ARGBType > factory = new AccumulateProjectorFactory< ARGBType >()
 	{
 		@Override
-		public AccumulateAverageProjectorARGB createAccumulateProjector(
+		public AccumulateMixedProjectorARGB createAccumulateProjector(
 				final ArrayList< VolatileProjector > sourceProjectors,
 				final ArrayList< Source< ? > > sources,
 				final ArrayList< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
@@ -26,7 +31,7 @@ public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBTyp
 				final int numThreads,
 				final ExecutorService executorService )
 		{
-			return new AccumulateAverageProjectorARGB(
+			return new AccumulateMixedProjectorARGB(
 					sourceProjectors,
 					sources,
 					sourceScreenImages,
@@ -36,7 +41,9 @@ public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBTyp
 		}
 	};
 
-	public AccumulateAverageProjectorARGB(
+	private final ArrayList< Source< ? > > sourceList;
+
+	public AccumulateMixedProjectorARGB(
 			final ArrayList< VolatileProjector > sourceProjectors,
 			final ArrayList< Source< ? > > sources,
 			final ArrayList< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
@@ -45,6 +52,7 @@ public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBTyp
 			final ExecutorService executorService )
 	{
 		super( sourceProjectors, sourceScreenImages, target, numThreads, executorService );
+		this.sourceList = sources;
 	}
 
 	@Override
@@ -56,6 +64,8 @@ public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBTyp
 		int aAccu = 0, rAccu = 0, gAccu = 0, bAccu = 0;
 
 		int sourceIndex = 0;
+
+		final Map< SourceAndConverter, Map< String, Object > > sourceAndConverterToMetadata = BdvService.getSourceAndConverterService().getSourceAndConverterToMetadata();
 
 		for ( final Cursor< ? extends ARGBType > access : accesses )
 		{
@@ -70,11 +80,25 @@ public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBTyp
 				continue;
 			}
 
-			aAvg += a;
-			rAvg += r;
-			gAvg += g;
-			bAvg += b;
-			n++;
+			String projectionMode = getProjectionMode( sourceIndex, sourceAndConverterToMetadata );
+
+			if ( projectionMode.equals( "Sum" ) )
+			{
+				aAccu += a;
+				rAccu += r;
+				gAccu += g;
+				bAccu += b;
+			}
+			else if ( projectionMode.equals( "Avg" ))
+			{
+				aAvg += a;
+				rAvg += r;
+				gAvg += g;
+				bAvg += b;
+				n++;
+			}
+
+			sourceIndex++;
 		}
 
 		if ( n > 0 )
@@ -100,6 +124,29 @@ public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBTyp
 			bAccu = 255;
 
 		target.set( ARGBType.rgba( rAccu, gAccu, bAccu, aAccu ) );
+
+	}
+
+	private String getProjectionMode( int sourceIndex, Map< SourceAndConverter, Map< String, Object > > sourceAndConverterToMetadata )
+	{
+		Source< ? > source = sourceList.get( sourceIndex );
+		if ( source instanceof TransformedSource )
+			source = (( TransformedSource )source).getWrappedSource();
+
+		String projectionMode = "Sum";
+
+		for ( SourceAndConverter sac : sourceAndConverterToMetadata.keySet() )
+		{
+			if ( sac.getSpimSource().equals( source ) )
+			{
+				final Set< String > metadata = sourceAndConverterToMetadata.get( sac ).keySet();
+				if ( metadata.contains( "ProjectionMode" ) )
+				{
+					projectionMode = (String) sourceAndConverterToMetadata.get( sac ).get( "ProjectionMode" );
+				}
+			}
+		}
+		return projectionMode;
 	}
 
 }

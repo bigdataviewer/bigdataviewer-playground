@@ -13,11 +13,11 @@ public class BdvService {
     public static IBdvSourceAndConverterDisplayService isds;
     private static ImageJ ij;
 
-    public static IBdvSourceAndConverterService getSourceService() {
+    public static IBdvSourceAndConverterService getSourceAndConverterService() {
         return iss;
     }
 
-    public static IBdvSourceAndConverterDisplayService getSourceDisplayService() {
+    public static IBdvSourceAndConverterDisplayService getSourceAndConverterDisplayService() {
         return isds;
     }
 

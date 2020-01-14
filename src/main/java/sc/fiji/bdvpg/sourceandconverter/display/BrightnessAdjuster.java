@@ -19,7 +19,7 @@ public class BrightnessAdjuster implements Runnable
 	@Override
 	public void run()
 	{
-		BdvService.getSourceDisplayService().getConverterSetup( sac ).setDisplayRange(min, max);
+		BdvService.getSourceAndConverterDisplayService().getConverterSetup( sac ).setDisplayRange(min, max);
 	}
 
 }

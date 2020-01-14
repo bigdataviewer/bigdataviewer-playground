@@ -52,7 +52,7 @@ public class SourceAffineTransform implements Runnable, Function<SourceAndConver
         } else {
             sac = new SourceAndConverter<>(src, SourceAndConverterUtils.cloneConverter(in.getConverter()));
         }
-        BdvService.getSourceService().register(sac);
+        BdvService.getSourceAndConverterService().register(sac);
         return sac;
     }
 }
