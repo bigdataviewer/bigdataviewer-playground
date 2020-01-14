@@ -30,7 +30,7 @@ import java.util.Map;
 public class ColorSourceCreatorCommand implements Command {
 
     @Parameter
-    ColorRGB color;
+    ColorRGB color = new ColorRGB(255,255,255);
 
     @Parameter
     SourceAndConverter[] sources_in;
