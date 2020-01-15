@@ -51,6 +51,11 @@ public interface IBdvSourceAndConverterDisplayService {
     BdvHandle getActiveBdv();
 
     /**
+     * Returns a new Bdv window
+     */
+    BdvHandle getNewBdv();
+
+    /**
      * Returns SourceAndConverter object
      * @param sac
      * @return
