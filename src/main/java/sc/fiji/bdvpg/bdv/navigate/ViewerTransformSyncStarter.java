@@ -15,76 +15,127 @@ import java.util.Map;
  *
  * See also ViewTransformSynchronizationDemo
  *
- * author Nicolas Chiaruttini, BIOP EPFL, nicolas.chiaruttini@epfl.ch
+ * Principle : for every changed view transform of a specific BdvHandle,
+ * the view transform change is triggered to the following BdvHandle in a closed loop manner
  *
+ * To avoid inifinite loop, the stop condition is : if the view transform is unnecessary (between
+ * the view target is equal to the source), then there's no need to trigger a view transform change
+ * to the next BdvHandle
+ *
+ * author Nicolas Chiaruttini, BIOP EPFL, nicolas.chiaruttini@epfl.ch
  */
 
 public class ViewerTransformSyncStarter implements Runnable {
 
-    BdvHandle[] bdvhs;
+    /**
+     * Array of BdvHandles to synchronize
+     */
+    BdvHandle[] bdvHandles;
 
-    BdvHandle originatingBdvHandle = null;
+    /**
+     * Reference to the BdvHandle which will serve as a reference for the
+     * first synchronization. Most of the time this has to be the BdvHandle
+     * currently used by the user. If not set, the first synchronization
+     * will look like it's a random BdvHandle which is used (one not in focus)
+     */
+    BdvHandle bdvHandleInitialReference = null;
 
-    Map<BdvHandle, TransformListener<AffineTransform3D>> bdvToTransformListener = new HashMap<>();
+    /**
+     * Map which links each BdvHandle to the TransformListener which has been added
+     * for synchronization purpose. This object contains all what's neede to stop
+     * the synchronization
+     */
+    Map<BdvHandle, TransformListener<AffineTransform3D>> bdvHandleToTransformListener = new HashMap<>();
 
-    public ViewerTransformSyncStarter(BdvHandle[] bdvhs) {
-       this.bdvhs = bdvhs;
+    public ViewerTransformSyncStarter(BdvHandle[] bdvHandles) {
+       this.bdvHandles = bdvHandles;
     }
 
-    public void setOriginatingBdvHandle(BdvHandle bdvh) {
-        originatingBdvHandle = bdvh;
+    public void setBdvHandleInitialReference(BdvHandle bdvHandle) {
+        bdvHandleInitialReference = bdvHandle;
     }
 
     @Override
     public void run() {
 
-        // Building circularly linked listeners with stop condition when all transforms are equal
+        // Getting transform for initial sync
+        AffineTransform3D at3Dorigin = getViewTransformForInitialSynchronization();
 
-        AffineTransform3D at3Dorigin = null;
+        // Building circularly linked listeners with stop condition when all transforms are equal,
+        // cf documentation
 
-        for (int i=0;i<bdvhs.length;i++) {
-            BdvHandle bdvhi = bdvhs[i];
-            if (bdvhi.equals(originatingBdvHandle)) {
-                //System.out.println("Catching origin transform");
-                at3Dorigin = new AffineTransform3D();
-                bdvhi.getViewerPanel().getState().getViewerTransform(at3Dorigin);
-            }
-        }
+        for (int i = 0; i< bdvHandles.length; i++) {
 
-        for (int i=0;i<bdvhs.length;i++) {
+            // The idea is that bdvHandles[i], when it has a view transform,
+            // triggers an identical ViewTransform to the next bdvHandle in the array
+            // (called nextBdvHandle). nextBdvHandle is bdvHandles[i+1] in most cases,
+            // unless it's the end of the array,
+            // where in this case nextBdvHandle is bdvHandles[0]
+            BdvHandle currentBdvHandle = bdvHandles[i];
+            BdvHandle nextBdvHandle;
 
-            BdvHandle bdvhip1;
-            if (i == bdvhs.length-1) {
-                bdvhip1 = bdvhs[0];
+            // Identifying nextBdvHandle
+            if (i == bdvHandles.length-1) {
+                nextBdvHandle = bdvHandles[0];
             } else {
-                bdvhip1 = bdvhs[i+1];
+                nextBdvHandle = bdvHandles[i+1];
             }
 
-            final int ifinal = i;
+            // Building the TransformListener of currentBdvHandle
             TransformListener<AffineTransform3D> listener =
                     (at3D) -> {
-                        //System.out.println("listener index "+ifinal+" called");
+                        // Is the transform necessary ? That's the stop condition
                         AffineTransform3D ati = new AffineTransform3D();
-                        bdvhip1.getViewerPanel().getState().getViewerTransform(ati);
+                        nextBdvHandle.getViewerPanel().getState().getViewerTransform(ati);
                         if (!Arrays.equals(at3D.getRowPackedCopy(), ati.getRowPackedCopy())) {
-                            bdvhip1.getViewerPanel().setCurrentViewerTransform(at3D.copy());
-                            bdvhip1.getViewerPanel().requestRepaint();
+                            // Yes -> triggers a transform change to the nextBdvHandle
+                            nextBdvHandle.getViewerPanel().setCurrentViewerTransform(at3D.copy());
+                            nextBdvHandle.getViewerPanel().requestRepaint();
                         }
                     };
-            bdvhs[i].getViewerPanel().addTransformListener(listener);
-            bdvToTransformListener.put(bdvhs[i], listener);
+
+            // Adding this transform listener to the currenBdvHandle
+            currentBdvHandle.getViewerPanel().addTransformListener(listener);
+
+            // Storing the transform listener -> needed to remove them in order to stop synchronization when needed
+            bdvHandleToTransformListener.put(bdvHandles[i], listener);
         }
 
-         if ((originatingBdvHandle!=null)&&(at3Dorigin!=null)) {
-             //System.out.println("Fixing origin to proper location");
-             for (BdvHandle bdvh:bdvhs) {
+        // Setting first transform for initial synchronization,
+        // but only if the two necessary objects are present (the origin BdvHandle and the transform
+         if ((bdvHandleInitialReference !=null)&&(at3Dorigin!=null)) {
+             for (BdvHandle bdvh: bdvHandles) {
                  bdvh.getViewerPanel().setCurrentViewerTransform(at3Dorigin.copy());
                  bdvh.getViewerPanel().requestRepaint();
              }
          }
     }
 
+    /**
+     * A simple search to identify the view transform of the BdvHandle that will be used
+     * for the initial synchronization (first reference)
+     * @return
+     */
+    private AffineTransform3D getViewTransformForInitialSynchronization() {
+        AffineTransform3D at3Dorigin = null;
+        for (int i = 0; i< bdvHandles.length; i++) {
+            BdvHandle bdvHandle = bdvHandles[i];
+            // if the BdvHandle is the one that should be used for initial synchronization
+            if (bdvHandle.equals(bdvHandleInitialReference)) {
+                // Storing the transform that will be used for first synchronization
+                at3Dorigin = new AffineTransform3D();
+                bdvHandle.getViewerPanel().getState().getViewerTransform(at3Dorigin);
+            }
+        }
+        return at3Dorigin;
+    }
+
+    /**
+     * output of this action : this map can be used to stop the synchronization
+     * see ViewerTransformSyncStopper
+     * @return
+     */
     public Map<BdvHandle, TransformListener<AffineTransform3D>> getSynchronizers() {
-        return bdvToTransformListener;
+        return bdvHandleToTransformListener;
     }
 }

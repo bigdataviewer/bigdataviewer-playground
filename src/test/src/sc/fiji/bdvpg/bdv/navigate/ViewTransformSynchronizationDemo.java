@@ -8,10 +8,8 @@ import ij.IJ;
 import ij.ImagePlus;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
-import org.scijava.ui.behaviour.ClickBehaviour;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
@@ -70,7 +68,7 @@ public class ViewTransformSynchronizationDemo {
                 if (isSynchronizing) {
                     syncstop.run();
                 } else {
-                    syncstart.setOriginatingBdvHandle(bdvHandle);
+                    syncstart.setBdvHandleInitialReference(bdvHandle);
                     syncstart.run();
                 }
                 isSynchronizing = !isSynchronizing;
