@@ -89,24 +89,29 @@ public class BdvSourceAndConverterDisplayService extends AbstractService impleme
      **/
     Map<SourceAndConverter, List<BdvHandleRef>> sacToBdvHandleRefs;
 
+    public BdvHandle getNewBdv() {
+        try
+        {
+            return (BdvHandle)
+                    cs.run(BdvWindowCreatorCommand.class,
+                            true,
+                            "is2D", false,
+                            "windowTitle", "Bdv").get().getOutput("bdvh");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /**
      * Returns the last active Bdv or create a new one
      */
     public BdvHandle getActiveBdv() {
         List<BdvHandle> bdvhs = os.getObjects(BdvHandle.class);
         if ((bdvhs == null)||(bdvhs.size()==0)) {
-            try
-            {
-                return (BdvHandle)
-                        cs.run(BdvWindowCreatorCommand.class,
-                                true,
-                                "is2D", false,
-                                "windowTitle", "Bdv").get().getOutput("bdvh");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+            return getNewBdv();
         }
 
         if (bdvhs.size()==1) {
