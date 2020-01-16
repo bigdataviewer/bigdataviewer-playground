@@ -38,7 +38,7 @@ public class SourceAffineTransform implements Runnable, Function<SourceAndConver
     }
 
     public SourceAndConverter getSourceOut() {
-        return sourceOut;
+        return apply(sourceIn);//sourceOut;
     }
 
     public SourceAndConverter apply(SourceAndConverter in) {
