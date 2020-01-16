@@ -6,7 +6,7 @@ import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
 import sc.fiji.bdvpg.services.BdvService;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransform;
+import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
 public class ManualRegistrationStarter implements Runnable {
 
@@ -29,7 +29,7 @@ public class ManualRegistrationStarter implements Runnable {
         wrappedSacs = new SourceAndConverter[sacs.length];
         for (int i=0;i<sacs.length;i++) {
             // Wraps into a Transformed Source
-            wrappedSacs[i] = new SourceAffineTransform(sacs[i], new AffineTransform3D()).getSourceOut();
+            wrappedSacs[i] = new SourceAffineTransformer(sacs[i], new AffineTransform3D()).getSourceOut();
             // Remove initial source from current display
             BdvService.getSourceAndConverterDisplayService().remove(bdvHandle, sacs[i]);
             // Put the wrapped Source

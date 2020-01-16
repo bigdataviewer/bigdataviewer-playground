@@ -29,7 +29,7 @@ public class AffineTransformSourceBatchDemo {
         AffineTransform3D at3d = new AffineTransform3D();
         at3d.rotate(2,1);
         at3d.scale(1,2,1);
-        SourceAffineTransform affineTransformer = new SourceAffineTransform(null, at3d); // Not necessary to specify a sourceandconverter
+        SourceAffineTransformer affineTransformer = new SourceAffineTransformer(null, at3d); // Not necessary to specify a sourceandconverter
 
         // Creates a bdv adder ( = an action described as in the readme but it also implements Consumer<Source> -> it has one Source input and no output
         // This bdvAdder is a Consumer because it takes one Source as an input and do not return anything
@@ -50,7 +50,7 @@ public class AffineTransformSourceBatchDemo {
             for (int py=0;py<ny;py++) {
                 at3D.identity();
                 at3D.translate(px*shiftx, py*shifty, 0);
-                SourceAffineTransform sat = new SourceAffineTransform(src, at3D); // Not necessary to specify a sourceandconverter
+                SourceAffineTransformer sat = new SourceAffineTransformer(src, at3D); // Not necessary to specify a sourceandconverter
                 sat.run();
                 new SourceAdder(bdvh, sat.getSourceOut()).run();
                 sources.add(sat.getSourceOut());

@@ -25,7 +25,7 @@ public class AffineTransformSourceDemo {
         at3d.rotate(2,1);
         at3d.scale(1,2,1);
 
-        SourceAffineTransform sat = new SourceAffineTransform(src, at3d);
+        SourceAffineTransformer sat = new SourceAffineTransformer(src, at3d);
         sat.run();
 
         BdvService.getSourceDisplayService().show(bdvHandle, sat.getSourceOut());

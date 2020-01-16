@@ -8,6 +8,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
@@ -16,6 +17,7 @@ import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
+import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
 /**
  * Manual Registration Demo
@@ -23,6 +25,11 @@ import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
  * 01 2020
  */
 public class ManualRegistrationDemo {
+
+    final public static int OutputNewTransformedSourceAndConverter = 0;
+    final public static int MutateTransformedSourceAndConverter = 1;
+
+    public static boolean isTransforming = false;
 
     public static void main(String[] args) {
 
@@ -37,40 +44,74 @@ public class ManualRegistrationDemo {
 
         // Makes Bdv Source
         Source source = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
-        SourceAndConverter sac1 = SourceAndConverterUtils.createSourceAndConverter(source);
-        SourceAndConverter sac2 = SourceAndConverterUtils.createSourceAndConverter(source);
-        new ColorChanger(sac2, new ARGBType(ARGBType.rgba(255,0,0,0))).run();
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = BdvService.getSourceAndConverterDisplayService().getNewBdv();
 
-        // Adjust view on sourceandconverter
-        new ViewerTransformAdjuster(bdvHandle, sac1).run();
+        // Creates SourceAndConverter Reference
+        SourceAndConverter sacReference = SourceAndConverterUtils.createSourceAndConverter(source);
 
-        BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sac1);
-        BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sac2);
+        //int demoMode = OutputNewTransformedSourceAndConverter;
+        int demoMode = MutateTransformedSourceAndConverter;
 
-        ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sac1);
-        ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+
+        if (demoMode == OutputNewTransformedSourceAndConverter) {
+
+            SourceAndConverter sacToTransform;
+            sacToTransform = SourceAndConverterUtils.createSourceAndConverter(source);
+            new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 0))).run();
+
+            BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
+            BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sacToTransform);
+
+            // Adjust view on sourceandconverter
+            new ViewerTransformAdjuster(bdvHandle, sacReference).run();
+
+            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacToTransform);
+            ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
                     ManualRegistrationStopper::createNewTransformedSourceAndConverter
-                    //ManualRegistrationStopper::mutateTransformedSource,
-                    //ManualRegistrationStopper::spimdataCreateNewTransformation,
-                    //ManualRegistrationStopper::spimdataMutateLastTransformation,
-                );
+            );
 
-        manualRegistrationStarter.run();
+            manualRegistrationStarter.run();
 
-        new ClickBehaviourInstaller(bdvHandle, (x,y) -> {
+            new ClickBehaviourInstaller(bdvHandle, (x, y) -> {
                 manualRegistrationStopper.run();
-        }).install("Stop Synchronization", "ctrl S");
+            }).install("Stop Transformation", "ctrl M");
 
+        } else if (demoMode == MutateTransformedSourceAndConverter) {
 
+            SourceAndConverter sacToTransform;
+            sacToTransform = SourceAndConverterUtils.createSourceAndConverter(source);
+            sacToTransform = new SourceAffineTransformer(sacToTransform, new AffineTransform3D()).getSourceOut();
+            new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 0))).run();
 
-        new ClickBehaviourInstaller(bdvHandle, (x,y) -> {
-            System.out.println("Do Nothing");
-        }).install("Stop Synchronization", "ctrl S");
+            BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
+            BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sacToTransform);
+
+            // Adjust view on sourceandconverter
+            new ViewerTransformAdjuster(bdvHandle, sacReference).run();
+
+            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacToTransform);
+            ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                    // What to do with the new registration:
+                    //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
+                    ManualRegistrationStopper::mutateTransformedSourceAndConverter
+            );
+
+            isTransforming = false;
+
+            new ClickBehaviourInstaller(bdvHandle, (x,y) -> {
+                if (isTransforming) {
+                    manualRegistrationStopper.run();
+                } else {
+                    manualRegistrationStarter.run();
+                }
+                isTransforming = !isTransforming;
+            }).install("Toggle Transformation", "ctrl M");
+        }
+
 
     }
 }

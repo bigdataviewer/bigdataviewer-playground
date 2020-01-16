@@ -21,13 +21,13 @@ import java.util.function.Function;
  */
 
 
-public class SourceAffineTransform implements Runnable, Function<SourceAndConverter, SourceAndConverter> {
+public class SourceAffineTransformer implements Runnable, Function<SourceAndConverter, SourceAndConverter> {
 
     SourceAndConverter sourceIn;
     AffineTransform3D at3D;
     SourceAndConverter sourceOut;
 
-    public SourceAffineTransform(SourceAndConverter src, AffineTransform3D at3D) {
+    public SourceAffineTransformer(SourceAndConverter src, AffineTransform3D at3D) {
         this.sourceIn = src;
         this.at3D = at3D;
     }

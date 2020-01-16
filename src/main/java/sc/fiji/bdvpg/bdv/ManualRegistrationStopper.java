@@ -1,9 +1,11 @@
 package sc.fiji.bdvpg.bdv;
 
+import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.services.BdvService;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransform;
+import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
+
 import java.util.function.BiFunction;
 
 public class ManualRegistrationStopper implements Runnable {
@@ -15,10 +17,20 @@ public class ManualRegistrationStopper implements Runnable {
     SourceAndConverter[] transformedSources;
 
     public static SourceAndConverter createNewTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
-        SourceAndConverter transformedSac = new SourceAffineTransform(sac, affineTransform3D).getSourceOut();
+        SourceAndConverter transformedSac = new SourceAffineTransformer(sac, affineTransform3D).getSourceOut();
         // Not completely safe : we assume the active bdv is the one selected
         BdvService.getSourceAndConverterDisplayService().show(transformedSac);
         return transformedSac;
+    }
+
+    public static SourceAndConverter mutateTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
+        assert sac.getSpimSource() instanceof TransformedSource;
+        AffineTransform3D at3D = new AffineTransform3D();
+        ((TransformedSource)sac.getSpimSource()).getFixedTransform(at3D);
+        ((TransformedSource)sac.getSpimSource()).setFixedTransform(at3D.preConcatenate(affineTransform3D));
+        // Not completely safe : we assume the active bdv is the one selected
+        BdvService.getSourceAndConverterDisplayService().show(sac);
+        return sac;
     }
 
     public ManualRegistrationStopper(ManualRegistrationStarter starter, BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter> registrationPolicy) {
