@@ -6,6 +6,7 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import ij.IJ;
 import ij.ImagePlus;
+import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -16,8 +17,12 @@ import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
+import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+
+import java.util.List;
 
 /**
  * Manual Registration Demo
@@ -26,8 +31,12 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
  */
 public class ManualRegistrationDemo {
 
-    final public static int OutputNewTransformedSourceAndConverter = 0;
+    final public static int CreateNewTransformedSourceAndConverter = 0;
     final public static int MutateTransformedSourceAndConverter = 1;
+
+    final public static int AppendNewSpimdataTransformation = 2;
+    final public static int MutateLastSpimdataTransformation = 3;
+
 
     public static boolean isTransforming = false;
 
@@ -51,11 +60,13 @@ public class ManualRegistrationDemo {
         // Creates SourceAndConverter Reference
         SourceAndConverter sacReference = SourceAndConverterUtils.createSourceAndConverter(source);
 
-        //int demoMode = OutputNewTransformedSourceAndConverter;
-        int demoMode = MutateTransformedSourceAndConverter;
+        //int demoMode = CreateNewTransformedSourceAndConverter;
+        //int demoMode = MutateTransformedSourceAndConverter;
+
+        int demoMode = AppendNewSpimdataTransformation;
 
 
-        if (demoMode == OutputNewTransformedSourceAndConverter) {
+        if (demoMode == CreateNewTransformedSourceAndConverter) {
 
             SourceAndConverter sacToTransform;
             sacToTransform = SourceAndConverterUtils.createSourceAndConverter(source);
@@ -110,8 +121,76 @@ public class ManualRegistrationDemo {
                 }
                 isTransforming = !isTransforming;
             }).install("Toggle Transformation", "ctrl M");
-        }
+        } else if (demoMode == MutateLastSpimdataTransformation) {
+            AbstractSpimData asd =  new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
 
+            // Show all SourceAndConverter associated with above SpimData
+            BdvService.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
+                BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+                new BrightnessAutoAdjuster(sac, 0).run();
+            });
+
+            BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
+            new ViewerTransformAdjuster(bdvHandle, sacReference).run();
+
+            List<SourceAndConverter> sacList = BdvService.getSourceAndConverterService()
+                    .getSourceAndConverterFromSpimdata(asd);
+
+            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacList.toArray(new SourceAndConverter[sacList.size()]));
+            ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                    // What to do with the new registration:
+                    //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
+                    ManualRegistrationStopper::mutateLastSpimdataTransformation
+            );
+
+            isTransforming = false;
+
+            new ClickBehaviourInstaller(bdvHandle, (x,y) -> {
+                if (isTransforming) {
+                    manualRegistrationStopper.run();
+                } else {
+                    manualRegistrationStarter.run();
+                }
+                isTransforming = !isTransforming;
+            }).install("Toggle Transformation", "ctrl M");
+
+        }else if (demoMode == AppendNewSpimdataTransformation) {
+            // TO complete
+            // Import SpimData
+            AbstractSpimData asd =  new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
+
+            // Show all SourceAndConverter associated with above SpimData
+            BdvService.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
+                BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+                new BrightnessAutoAdjuster(sac, 0).run();
+            });
+
+            BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
+            new ViewerTransformAdjuster(bdvHandle, sacReference).run();
+
+            List<SourceAndConverter> sacList = BdvService.getSourceAndConverterService()
+                    .getSourceAndConverterFromSpimdata(asd);
+
+
+            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacList.toArray(new SourceAndConverter[sacList.size()]));
+            ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                    // What to do with the new registration:
+                    //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
+                    ManualRegistrationStopper::appendNewSpimdataTransformation
+            );
+
+            isTransforming = false;
+
+            new ClickBehaviourInstaller(bdvHandle, (x,y) -> {
+                if (isTransforming) {
+                    manualRegistrationStopper.run();
+                } else {
+                    manualRegistrationStarter.run();
+                }
+                isTransforming = !isTransforming;
+            }).install("Toggle Transformation", "ctrl M");
+
+        }
 
     }
 }

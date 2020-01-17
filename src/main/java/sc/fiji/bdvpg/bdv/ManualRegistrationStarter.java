@@ -43,12 +43,12 @@ public class ManualRegistrationStarter implements Runnable {
         manualRegistrationListener = (newView) -> {
                 // Fetch ViewTransformDifference
 
-                // Keeps the final AffineTransform orthonormal
-
                 // Global difference of transform is
                 diff = newView.copy();
                 diff = diff.inverse();
                 diff = diff.concatenate(originalViewTransform);
+
+                // TODO check orthonormality !
 
                 for (int i=0;i<sacs.length;i++) {
                     ((TransformedSource) wrappedSacs[i].getSpimSource())
@@ -56,6 +56,7 @@ public class ManualRegistrationStarter implements Runnable {
 
                 }
         };
+
         bdvHandle.getViewerPanel().addTransformListener(manualRegistrationListener);
     }
 

@@ -1,12 +1,23 @@
 package sc.fiji.bdvpg.bdv;
 
+import bdv.AbstractSpimSource;
 import bdv.tools.transformation.TransformedSource;
+import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import mpicbg.spim.data.registration.ViewRegistration;
+import mpicbg.spim.data.registration.ViewTransform;
+import mpicbg.spim.data.registration.ViewTransformAffine;
 import net.imglib2.realtransform.AffineTransform3D;
+import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService;
 import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
+import java.lang.reflect.Method;
 import java.util.function.BiFunction;
+
+import static sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService.SPIM_DATA_INFO;
+
+// TODO : Ensure volatile is working with source which are not AbstractSpimSource
 
 public class ManualRegistrationStopper implements Runnable {
 
@@ -18,7 +29,8 @@ public class ManualRegistrationStopper implements Runnable {
 
     public static SourceAndConverter createNewTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
         SourceAndConverter transformedSac = new SourceAffineTransformer(sac, affineTransform3D).getSourceOut();
-        // Not completely safe : we assume the active bdv is the one selected
+        // TODO  Not completely safe : we assume the active bdv is the one selected
+        // TODO : find a ref to starter
         BdvService.getSourceAndConverterDisplayService().show(transformedSac);
         return transformedSac;
     }
@@ -30,6 +42,113 @@ public class ManualRegistrationStopper implements Runnable {
         ((TransformedSource)sac.getSpimSource()).setFixedTransform(at3D.preConcatenate(affineTransform3D));
         // Not completely safe : we assume the active bdv is the one selected
         BdvService.getSourceAndConverterDisplayService().show(sac);
+        return sac;
+    }
+
+    public static SourceAndConverter mutateLastSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
+        assert BdvService
+                .getSourceAndConverterService()
+                .getSourceAndConverterToMetadata().get(sac).containsKey(SPIM_DATA_INFO);
+        assert BdvService
+                .getSourceAndConverterService()
+                .getSourceAndConverterToMetadata().get(sac).get(SPIM_DATA_INFO) instanceof BdvSourceAndConverterService.SpimDataInfo;
+
+        BdvSourceAndConverterService.SpimDataInfo sdi = ((BdvSourceAndConverterService.SpimDataInfo)
+                BdvService.getSourceAndConverterService()
+                        .getSourceAndConverterToMetadata().get(sac).get(SPIM_DATA_INFO));
+
+        // TODO : find a ref to starter
+        BdvHandle bdvHandle = BdvService.getSourceAndConverterDisplayService().getActiveBdv();
+
+        int timePoint = bdvHandle.getViewerPanel().getState().getCurrentTimepoint();
+
+        ViewRegistration vr = sdi.asd.getViewRegistrations().getViewRegistration(timePoint,sdi.setupId);
+
+        ViewTransform vt = vr.getTransformList().get(vr.getTransformList().size()-1);
+
+        ViewTransform newvt = new ViewTransformAffine(vt.getName(), affineTransform3D);
+
+        vr.getTransformList().remove(vt);
+        vr.getTransformList().add(newvt);
+        vr.updateModel();
+
+
+        try {
+            Method updateBdvSource = Class.forName("bdv.AbstractSpimSource").getDeclaredMethod("loadTimepoint", int.class);
+            updateBdvSource.setAccessible(true);
+            AbstractSpimSource ass = (AbstractSpimSource) sac.getSpimSource();
+            updateBdvSource.invoke(ass, timePoint);
+
+            if (sac.asVolatile() != null) {
+                ass = (AbstractSpimSource) sac.asVolatile().getSpimSource();
+                updateBdvSource.invoke(ass, timePoint);
+            }
+
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Update display of the Source
+
+        BdvService.getSourceAndConverterDisplayService().removeFromAllBdvs(sac);
+
+        // TODO : keep better track of BdvHandle locations
+
+        BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+
+        return sac;
+    }
+
+
+    public static SourceAndConverter appendNewSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
+        assert BdvService
+                .getSourceAndConverterService()
+                .getSourceAndConverterToMetadata().get(sac).containsKey(SPIM_DATA_INFO);
+        assert BdvService
+                .getSourceAndConverterService()
+                .getSourceAndConverterToMetadata().get(sac).get(SPIM_DATA_INFO) instanceof BdvSourceAndConverterService.SpimDataInfo;
+
+        BdvSourceAndConverterService.SpimDataInfo sdi = ((BdvSourceAndConverterService.SpimDataInfo)
+                BdvService.getSourceAndConverterService()
+                        .getSourceAndConverterToMetadata().get(sac).get(SPIM_DATA_INFO));
+
+        // TODO : find a ref to starter
+        BdvHandle bdvHandle = BdvService.getSourceAndConverterDisplayService().getActiveBdv();
+
+        int timePoint = bdvHandle.getViewerPanel().getState().getCurrentTimepoint();
+
+        ViewTransform newvt = new ViewTransformAffine("Manual transform", affineTransform3D);
+
+        sdi.asd.getViewRegistrations().getViewRegistration(timePoint,sdi.setupId).preconcatenateTransform(newvt);
+        sdi.asd.getViewRegistrations().getViewRegistration(timePoint,sdi.setupId).updateModel();
+
+        try {
+            Method updateBdvSource = Class.forName("bdv.AbstractSpimSource").getDeclaredMethod("loadTimepoint", int.class);
+            updateBdvSource.setAccessible(true);
+            AbstractSpimSource ass = (AbstractSpimSource) sac.getSpimSource();
+            updateBdvSource.invoke(ass, timePoint);
+
+            if (sac.asVolatile() != null) {
+                ass = (AbstractSpimSource) sac.asVolatile().getSpimSource();
+                updateBdvSource.invoke(ass, timePoint);
+            }
+
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Update display of the Source
+
+        BdvService.getSourceAndConverterDisplayService().removeFromAllBdvs(sac);
+
+        // TODO : keep better track of BdvHandle locations
+
+        BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+
         return sac;
     }
 

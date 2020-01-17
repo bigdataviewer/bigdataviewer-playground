@@ -172,7 +172,8 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     public List<SourceAndConverter> getSourceAndConverterFromSpimdata(AbstractSpimData asd) {
         return objectService.getObjects(SourceAndConverter.class)
                 .stream()
-                .filter(s -> ((HashSet<AbstractSpimData>)sourceAndConverterToMetadata.get(s).get(SPIM_DATA_INFO)).contains(asd))
+                .filter(s -> ((SpimDataInfo)sourceAndConverterToMetadata.get(s).get(SPIM_DATA_INFO)!=null))
+                .filter(s -> ((SpimDataInfo)sourceAndConverterToMetadata.get(s).get(SPIM_DATA_INFO)).asd.equals(asd))
                 .collect(Collectors.toList());
     }
 
