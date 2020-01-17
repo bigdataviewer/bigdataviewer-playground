@@ -305,6 +305,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
         this.getUI().addPopupLine();
         // Create new sources
         registerScijavaCommand(SourcesDuplicatorCommand.class);
+        registerScijavaCommand(ManualTransformCommand.class);
         registerScijavaCommand(TransformedSourceWrapperCommand.class);
         registerScijavaCommand(SourcesResamplerCommand.class);
         registerScijavaCommand(ColorSourceCreatorCommand.class);

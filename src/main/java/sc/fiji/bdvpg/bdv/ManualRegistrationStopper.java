@@ -66,7 +66,11 @@ public class ManualRegistrationStopper implements Runnable {
 
         ViewTransform vt = vr.getTransformList().get(vr.getTransformList().size()-1);
 
-        ViewTransform newvt = new ViewTransformAffine(vt.getName(), affineTransform3D);
+        AffineTransform3D at3D = new AffineTransform3D();
+        at3D.concatenate(vt.asAffine3D());
+        at3D.concatenate(affineTransform3D);
+
+        ViewTransform newvt = new ViewTransformAffine(vt.getName(), at3D);
 
         vr.getTransformList().remove(vt);
         vr.getTransformList().add(newvt);
@@ -155,6 +159,24 @@ public class ManualRegistrationStopper implements Runnable {
     public ManualRegistrationStopper(ManualRegistrationStarter starter, BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter> registrationPolicy) {
         this.starter = starter;
         this.registrationPolicy = registrationPolicy;
+    }
+
+    public static SourceAndConverter mutate(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
+        if (sac.getSpimSource() instanceof AbstractSpimSource) {
+            return mutateLastSpimdataTransformation(affineTransform3D, sac);
+        } else if (sac.getSpimSource() instanceof TransformedSource) {
+            return mutateTransformedSourceAndConverter(affineTransform3D,sac);
+        } else {
+            return createNewTransformedSourceAndConverter(affineTransform3D,sac);
+        }
+    }
+
+    public static SourceAndConverter append(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
+        if (sac.getSpimSource() instanceof AbstractSpimSource) {
+            return appendNewSpimdataTransformation(affineTransform3D, sac);
+        } else {
+            return createNewTransformedSourceAndConverter(affineTransform3D,sac);
+        }
     }
 
     @Override
