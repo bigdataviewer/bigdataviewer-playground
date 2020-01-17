@@ -21,7 +21,6 @@ import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
 import sc.fiji.bdvpg.scijava.command.source.*;
 import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
 import sc.fiji.bdvpg.services.BdvService;
-import sc.fiji.bdvpg.services.IBdvSourceAndConverterDisplayService;
 import sc.fiji.bdvpg.services.IBdvSourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
@@ -104,7 +103,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
         return sourceAndConverterToMetadata.containsKey(src);
     }
 
-    public void setDisplayService(IBdvSourceAndConverterDisplayService bsds) {
+    public void setDisplayService(BdvSourceAndConverterDisplayService bsds) {
         assert bsds instanceof BdvSourceAndConverterDisplayService;
         this.bsds = (BdvSourceAndConverterDisplayService) bsds;
     }
@@ -213,7 +212,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
             uiAvailable = true;
         }
         registerPopupActions();
-        BdvService.iss = this;
+        BdvService.bdvSourceAndConverterService = this;
         log.accept("Service initialized.");
     }
 
