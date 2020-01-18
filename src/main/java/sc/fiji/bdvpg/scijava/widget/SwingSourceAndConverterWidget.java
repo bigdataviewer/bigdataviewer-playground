@@ -7,7 +7,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
-import sc.fiji.bdvpg.scijava.services.SacService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
 
 import javax.swing.*;
@@ -45,7 +45,7 @@ public class SwingSourceAndConverterWidget extends SwingInputWidget<SourceAndCon
     }
 
     @Parameter
-	SacService bss;
+	SourceAndConverterService bss;
 
     JTree tree;
 
