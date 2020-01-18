@@ -2,7 +2,7 @@ package sc.fiji.bdvpg.bdv.sourceandconverter;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import sc.fiji.bdvpg.services.SacServices;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.function.Consumer;
 
@@ -22,6 +22,6 @@ public class SourceAdder implements Runnable, Consumer<SourceAndConverter>
 
 	@Override
 	public void accept(SourceAndConverter source) {
-		SacServices.getSourceAndConverterDisplayService().show(bdvh, source);
+		SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvh, source);
 	}
 }

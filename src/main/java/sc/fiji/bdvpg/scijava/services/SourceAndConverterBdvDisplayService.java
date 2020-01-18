@@ -18,7 +18,7 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
-import sc.fiji.bdvpg.services.SacServices;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import java.lang.ref.WeakReference;
@@ -369,7 +369,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         bdvHandleToSacs = new HashMap<>();
         sacToBdvRefs = new HashMap<>();
         bdvSourceAndConverterService.setDisplayService(this);
-        SacServices.sourceAndConverterBdvDisplayService = this;
+        SourceAndConverterServices.sourceAndConverterBdvDisplayService = this;
         log.accept("Service initialized.");
     }
 

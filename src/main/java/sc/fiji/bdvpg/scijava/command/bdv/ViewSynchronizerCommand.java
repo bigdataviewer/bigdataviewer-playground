@@ -8,7 +8,7 @@ import sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStarter;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStopper;
 import sc.fiji.bdvpg.scijava.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.services.SacServices;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,7 +36,7 @@ public class ViewSynchronizerCommand implements Command {
     public void run() {
         // Starting synchronnization of selected bdvhandles
         sync = new ViewerTransformSyncStarter(bdvhs);
-        sync.setBdvHandleInitialReference( SacServices.getSourceAndConverterDisplayService().getActiveBdv());
+        sync.setBdvHandleInitialReference( SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv());
         sync.run();
 
         // JFrame serving the purpose of stopping synchronization when it is being closed

@@ -7,13 +7,13 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
  * Static methods to access BdvSourceAndConverterService and BdvSourceAndConverterDisplayService
  */
 
-public class SacServices
+public class SourceAndConverterServices
 {
     public static ISourceAndConverterService sourceAndConverterService;
     public static SourceAndConverterBdvDisplayService sourceAndConverterBdvDisplayService;
     private static ImageJ ij;
 
-    public static ISourceAndConverterService getSacService() {
+    public static ISourceAndConverterService getSourceAndConverterService() {
         return sourceAndConverterService;
     }
 

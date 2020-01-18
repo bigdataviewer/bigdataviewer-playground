@@ -96,6 +96,6 @@ public interface ISourceAndConverterService
     /**
      * Finds the corresponding registered sac for a source.
      */
-    SourceAndConverter getSourceAndConverter( Source source );
+    SourceAndConverter getSourceAndConverterFromSource( Source source );
 
 }

@@ -293,7 +293,7 @@ public class BdvSourceServiceUI {
         }
     }
 
-    // TODO: put this method somewhere more central?!
+    // TODO:
     public List<SourceAndConverter> getSourceAndConvertersOfSource(Source src) {
         return sourceAndConverterService.getSourceAndConverters().stream().filter( sac -> sac.getSpimSource().equals(src)).collect(Collectors.toList());
     }

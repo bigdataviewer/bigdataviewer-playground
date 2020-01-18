@@ -3,7 +3,7 @@ package sc.fiji.bdvpg.sourceandconverter.transform;
 import bdv.util.ResampledSource;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import sc.fiji.bdvpg.services.SacServices;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import java.util.function.Function;
@@ -56,7 +56,7 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
                     SourceAndConverterUtils.cloneConverter(src.getConverter()));
         }
 
-        SacServices.getSacService().register(sac);
+        SourceAndConverterServices.getSourceAndConverterService().register(sac);
 
         return sac;
     }

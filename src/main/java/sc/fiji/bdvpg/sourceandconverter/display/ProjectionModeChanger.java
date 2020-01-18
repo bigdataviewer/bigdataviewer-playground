@@ -1,7 +1,7 @@
 package sc.fiji.bdvpg.sourceandconverter.display;
 
 import bdv.viewer.SourceAndConverter;
-import sc.fiji.bdvpg.services.SacServices;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.function.Consumer;
 
@@ -31,13 +31,13 @@ public class ProjectionModeChanger implements Runnable, Consumer< SourceAndConve
 
     private void updateDisplays()
     {
-        if ( SacServices.getSourceAndConverterDisplayService()!=null)
-            SacServices.getSourceAndConverterDisplayService().updateDisplays( sacs );
+        if ( SourceAndConverterServices.getSourceAndConverterDisplayService()!=null)
+            SourceAndConverterServices.getSourceAndConverterDisplayService().updateDisplays( sacs );
     }
 
     private void changeProjectionMode()
     {
         for ( SourceAndConverter sac : sacs )
-            SacServices.getSacService().setMetadata( sac, PROJECTION_MODE, projectionMode );
+            SourceAndConverterServices.getSourceAndConverterService().setMetadata( sac, PROJECTION_MODE, projectionMode );
     }
 }

@@ -3,7 +3,7 @@ package src.sc.fiji.bdvpg.bdv.navigate;
 import bdv.util.BdvHandle;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.services.SacServices;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 /**
@@ -19,10 +19,10 @@ public class ViewerTransformAdjusterDemo {
     {
 
         // Initializes static SourceService and Display Service
-        SacServices.InitScijavaServices();
+        SourceAndConverterServices.InitScijavaServices();
 
         // Gets active BdvHandle instance
-        BdvHandle bdvHandle = SacServices.getSourceAndConverterDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
 
         // Import SpimData object
         SpimDataFromXmlImporter sdix = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml");
@@ -30,10 +30,10 @@ public class ViewerTransformAdjusterDemo {
         AbstractSpimData asd = sdix.get();
 
         // Register to the sourceandconverter service
-        SacServices.getSacService().register(asd);
+        SourceAndConverterServices.getSourceAndConverterService().register(asd);
 
-        SacServices.getSacService().getSourceAndConverterFromSpimdata(asd).forEach( source -> {
-            SacServices.getSourceAndConverterDisplayService().show(bdvHandle, source);
+        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source -> {
+            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, source);
         });
 
         // Import SpimData object
@@ -42,12 +42,12 @@ public class ViewerTransformAdjusterDemo {
         asd = sdix.get();
 
         // Register to the sourceandconverter service
-        SacServices.getSacService().register(asd);
+        SourceAndConverterServices.getSourceAndConverterService().register(asd);
 
-        SacServices.getSacService().getSourceAndConverterFromSpimdata(asd).forEach( source -> {
-            SacServices.getSourceAndConverterDisplayService().show(bdvHandle, source);
+        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source -> {
+            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, source);
         });
 
-        new ViewerTransformAdjuster(bdvHandle, SacServices.getSacService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
+        new ViewerTransformAdjuster(bdvHandle, SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
     }
 }

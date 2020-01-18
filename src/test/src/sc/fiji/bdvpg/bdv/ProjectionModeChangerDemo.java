@@ -4,7 +4,7 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.projector.Projection;
-import sc.fiji.bdvpg.services.SacServices;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.display.ProjectionModeChanger;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
@@ -16,21 +16,21 @@ public class ProjectionModeChangerDemo
 	public static void main( String[] args )
 	{
 		// Initializes static SourceService and Display Service
-		SacServices.InitScijavaServices();
+		SourceAndConverterServices.InitScijavaServices();
 
 		// Gets active BdvHandle instance
-		BdvHandle bdv = SacServices.getSourceAndConverterDisplayService().getActiveBdv();
+		BdvHandle bdv = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
 
 		// Import SpimData
 		new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").run();
 		new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
 		new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedY.xml").run();
 
-		final List< SourceAndConverter > sourceAndConverters = SacServices.getSacService().getSourceAndConverters();
+		final List< SourceAndConverter > sourceAndConverters = SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();
 
 		// Show all three sacs
 		sourceAndConverters.forEach( sac -> {
-			SacServices.getSourceAndConverterDisplayService().show(bdv, sac);
+			SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdv, sac);
 			new ViewerTransformAdjuster(bdv, sac).run();
 			new BrightnessAutoAdjuster(sac, 0).run();
 		});

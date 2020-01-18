@@ -22,7 +22,7 @@ import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
 import sc.fiji.bdvpg.scijava.command.source.*;
 import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
-import sc.fiji.bdvpg.services.SacServices;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
@@ -227,7 +227,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             uiAvailable = true;
         }
         registerPopupActions();
-        SacServices.sourceAndConverterService = this;
+        SourceAndConverterServices.sourceAndConverterService = this;
         log.accept("Service initialized.");
     }
 
@@ -241,7 +241,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public SourceAndConverter getSourceAndConverter( Source source )
+    public SourceAndConverter getSourceAndConverterFromSource( Source source )
     {
         final List< SourceAndConverter > sacs = getSourceAndConverters();
 
@@ -249,9 +249,10 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             if ( sac.getSpimSource().equals( source ) )
                 return sac;
 
-        // Try again, with unwrapping; (TODO)
+        // Try again, with unwrapping; (TODO: do we need this?)
         if ( source instanceof TransformedSource )
             source = ( ( TransformedSource ) source ).getWrappedSource();
+
 
         for ( SourceAndConverter sac : sacs )
             if ( sac.getSpimSource().equals( source ) )

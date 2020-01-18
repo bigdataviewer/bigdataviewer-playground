@@ -11,7 +11,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.services.SacServices;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 /**
@@ -29,7 +29,7 @@ public class ViewTransformSynchronizationDemo {
     public static void main(String[] args) {
 
         // Initializes static SourceService and Display Service
-        SacServices.InitScijavaServices();
+        SourceAndConverterServices.InitScijavaServices();
 
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
@@ -42,11 +42,11 @@ public class ViewTransformSynchronizationDemo {
         SourceAndConverter sac = SourceAndConverterUtils.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle1 = SacServices.getSourceAndConverterDisplayService().getNewBdv();
+        BdvHandle bdvHandle1 = SourceAndConverterServices.getSourceAndConverterDisplayService().getNewBdv();
         // Creates a BdvHandle
-        BdvHandle bdvHandle2 = SacServices.getSourceAndConverterDisplayService().getNewBdv();
+        BdvHandle bdvHandle2 = SourceAndConverterServices.getSourceAndConverterDisplayService().getNewBdv();
         // Creates a BdvHandles
-        BdvHandle bdvHandle3 = SacServices.getSourceAndConverterDisplayService().getNewBdv();
+        BdvHandle bdvHandle3 = SourceAndConverterServices.getSourceAndConverterDisplayService().getNewBdv();
 
         BdvHandle[] bdvhs = new BdvHandle[]{bdvHandle1,bdvHandle2,bdvHandle3};
 
@@ -58,7 +58,7 @@ public class ViewTransformSynchronizationDemo {
 
         for (BdvHandle bdvHandle:bdvhs) {
             // Show the sourceandconverter
-            SacServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
 
             // Adjust view on sourceandconverter
             new ViewerTransformAdjuster(bdvHandle, sac).run();

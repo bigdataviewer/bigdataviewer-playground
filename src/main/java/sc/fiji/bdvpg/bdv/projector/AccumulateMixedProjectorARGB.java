@@ -10,7 +10,7 @@ import net.imglib2.Cursor;
 import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.ARGBType;
-import sc.fiji.bdvpg.services.SacServices;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +126,7 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 	private String[] getProjectionModes( ArrayList< Source< ? > > sources )
 	{
-		final List< SourceAndConverter > sacs = SacServices.getSacService().getSourceAndConverters();
+		final List< SourceAndConverter > sacs = SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();
 		final String[] projectionModes = new String[ sources.size() ];
 
 		int sourceIndex = 0;
@@ -136,9 +136,9 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 			if ( source instanceof TransformedSource )
 				source = ( ( TransformedSource ) source ).getWrappedSource();
 
-			SourceAndConverter sac = getSourceAndConverter( sacs, source );
+			SourceAndConverter sac = SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSource( source );
 
-			final String projectionMode = (String) SacServices.getSacService().getMetadata( sac, PROJECTION_MODE );
+			final String projectionMode = (String) SourceAndConverterServices.getSourceAndConverterService().getMetadata( sac, PROJECTION_MODE );
 
 			if ( projectionMode == null )
 				projectionModes[sourceIndex++] = PROJECTION_MODE_SUM;
