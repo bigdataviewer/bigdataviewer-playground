@@ -22,6 +22,6 @@ public class SourceAdder implements Runnable, Consumer<SourceAndConverter>
 
 	@Override
 	public void accept(SourceAndConverter source) {
-		SacServices.getSacDisplayService().show(bdvh, source);
+		SacServices.getSourceAndConverterDisplayService().show(bdvh, source);
 	}
 }

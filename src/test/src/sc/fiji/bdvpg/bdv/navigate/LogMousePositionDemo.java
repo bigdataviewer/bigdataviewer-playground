@@ -39,10 +39,10 @@ public class LogMousePositionDemo {
         SourceAndConverter sac = SourceAndConverterUtils.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle = SacServices.getSacDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SacServices.getSourceAndConverterDisplayService().getActiveBdv();
 
         // Show the sourceandconverter
-        SacServices.getSacDisplayService().show(bdvHandle, sac);
+        SacServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
 
         // Adjust Bdv View on the sourceandconverter
         new ViewerTransformAdjuster(bdvHandle, sac).run();

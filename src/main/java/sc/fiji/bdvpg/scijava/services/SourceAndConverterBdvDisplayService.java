@@ -62,7 +62,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * Service containing all registered Bdv Sources
      **/
     @Parameter
-    SourceAndConverterService bdvSacService;
+    SacService bdvSacService;
 
     /**
      * Used to create Bdv Windows when necessary

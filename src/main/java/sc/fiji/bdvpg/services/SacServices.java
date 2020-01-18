@@ -17,7 +17,7 @@ public class SacServices
         return sourceAndConverterService;
     }
 
-    public static SourceAndConverterBdvDisplayService getSacDisplayService() {
+    public static SourceAndConverterBdvDisplayService getSourceAndConverterDisplayService() {
         return sourceAndConverterBdvDisplayService;
     }
 

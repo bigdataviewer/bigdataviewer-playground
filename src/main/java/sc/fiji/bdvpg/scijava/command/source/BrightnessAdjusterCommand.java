@@ -66,8 +66,8 @@ public class BrightnessAdjusterCommand extends InteractiveCommand {
 
     public void init() {
         if (sources.length>0) {
-            double minSource = SacServices.getSacDisplayService().getConverterSetup(sources[0]).getDisplayRangeMin();
-            double maxSource = SacServices.getSacDisplayService().getConverterSetup(sources[0]).getDisplayRangeMax();
+            double minSource = SacServices.getSourceAndConverterDisplayService().getConverterSetup(sources[0]).getDisplayRangeMin();
+            double maxSource = SacServices.getSourceAndConverterDisplayService().getConverterSetup(sources[0]).getDisplayRangeMax();
 
             if (minSource>=0) {
                 min = 0;

@@ -10,6 +10,6 @@ public class BdvCreatorDemo
 		SacServices.InitScijavaServices();
 
 		// Creates a Bdv since none exists yet
-		SacServices.getSacDisplayService().getActiveBdv();
+		SacServices.getSourceAndConverterDisplayService().getActiveBdv();
 	}
 }

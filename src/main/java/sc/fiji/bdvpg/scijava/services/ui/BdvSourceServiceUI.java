@@ -11,7 +11,7 @@ import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SacService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import javax.swing.*;
@@ -26,7 +26,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
+import static sc.fiji.bdvpg.scijava.services.SacService.SPIM_DATA_INFO;
 
 /**
  * Swing UI for Scijava BdvSourceAndConverterService
@@ -53,7 +53,7 @@ public class BdvSourceServiceUI {
     /**
      * Linked SourceAndConverter Scijava service
      */
-    SourceAndConverterService sacService;
+    SacService sacService;
 
     /**
      * JFrame container
@@ -107,7 +107,7 @@ public class BdvSourceServiceUI {
      */
     List<SpimDataFilterNode> spimdataFilterNodes = new ArrayList<>();
 
-    public BdvSourceServiceUI( SourceAndConverterService sacService ) {
+    public BdvSourceServiceUI( SacService sacService ) {
         this.sacService = sacService;
 
         frame = new JFrame("Bdv Sources");
@@ -139,9 +139,9 @@ public class BdvSourceServiceUI {
                 }
                 // Double Click : display source, if possible
                 /*if (e.getClickCount()==2 && !e.isConsumed()) {
-                    if (BdvService.getSourceDisplayService()!=null) {
+                    if (SacServies.getSourceDisplayService()!=null) {
                         for (SourceAndConverter sac: getSelectedSourceAndConverters()) {
-                            BdvService.getSourceDisplayService().show(sac);
+                            SacServies.getSourceDisplayService().show(sac);
                         }
                     }
                 }*/
@@ -320,7 +320,7 @@ public class BdvSourceServiceUI {
         Set<AbstractSpimData> currentSpimdatas = new HashSet<>();
         displayedSource.forEach(sac -> {
             if ( sacService.getSacToMetadata().get(sac).containsKey( SPIM_DATA_INFO )) {
-                currentSpimdatas.add((( SourceAndConverterService.SpimDataInfo) sacService.getSacToMetadata().get(sac).get( SPIM_DATA_INFO )).asd);
+                currentSpimdatas.add((( SacService.SpimDataInfo) sacService.getSacToMetadata().get(sac).get( SPIM_DATA_INFO )).asd);
             }
         });
 
@@ -542,7 +542,7 @@ public class BdvSourceServiceUI {
             assert props!=null;
             //System.out.println("Testing "+sac.getSpimSource().getName()+" vs "+asd.toString());
             //assert props.get(SPIM_DATA) instanceof Set<BdvSourceAndConverterService.SpimDataInfo>;
-            return (props.containsKey( SPIM_DATA_INFO ))&&(( SourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).asd.equals(asd);
+            return (props.containsKey( SPIM_DATA_INFO ))&&(( SacService.SpimDataInfo)props.get( SPIM_DATA_INFO )).asd.equals(asd);
         }
 
         public SpimDataFilterNode(String name, AbstractSpimData spimdata) {
@@ -581,8 +581,8 @@ public class BdvSourceServiceUI {
             //System.out.println("Testing "+sac.getSpimSource().getName()+" vs "+asd.toString());
             //assert props.get(SPIM_DATA) instanceof Set<BdvSourceAndConverterService.SpimDataInfo>;
 
-            AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd = ( AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) (( SourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).asd;
-            Integer idx = (( SourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).setupId;
+            AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd = ( AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) (( SacService.SpimDataInfo)props.get( SPIM_DATA_INFO )).asd;
+            Integer idx = (( SacService.SpimDataInfo)props.get( SPIM_DATA_INFO )).setupId;
 
             return asd.getSequenceDescription().getViewSetups().get(idx).getAttributes().values().contains(e);
         }

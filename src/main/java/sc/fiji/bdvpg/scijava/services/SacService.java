@@ -47,18 +47,18 @@ import java.util.stream.Collectors;
  */
 
 @Plugin(type=Service.class)
-public class SourceAndConverterService extends AbstractService implements SciJavaService, ISourceAndConverterService
+public class SacService extends AbstractService implements SciJavaService, ISourceAndConverterService
 {
 
     /**
      * Standard logger
      */
-    public static Consumer<String> log = (str) -> System.out.println( SourceAndConverterService.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = (str) -> System.out.println( SacService.class.getSimpleName()+":"+str);
 
     /**
      * Error logger
      */
-    public static Consumer<String> errlog = (str) -> System.err.println( SourceAndConverterService.class.getSimpleName()+":"+str);
+    public static Consumer<String> errlog = (str) -> System.err.println( SacService.class.getSimpleName()+":"+str);
 
     /**
      * Scijava Object Service : will contain all the sourceAndConverters

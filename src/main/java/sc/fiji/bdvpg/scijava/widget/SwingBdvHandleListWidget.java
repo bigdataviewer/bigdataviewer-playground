@@ -9,7 +9,6 @@ import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.scijava.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService;
 
 import javax.swing.*;
 import java.awt.*;

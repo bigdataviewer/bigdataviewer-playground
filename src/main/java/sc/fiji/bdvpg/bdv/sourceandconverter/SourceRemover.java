@@ -34,10 +34,10 @@ public class SourceRemover implements Runnable, Consumer<SourceAndConverter>
 	public void accept(SourceAndConverter source) {
 		if (bdvh==null) {
 			// Remove from all displays
-			SacServices.getSacDisplayService().removeFromAllBdvs(source);
+			SacServices.getSourceAndConverterDisplayService().removeFromAllBdvs(source);
 		} else {
 			// Remove from a specific bdvHandle
-			SacServices.getSacDisplayService().remove(bdvh, source);
+			SacServices.getSourceAndConverterDisplayService().remove(bdvh, source);
 		}
 	}
 }

@@ -19,7 +19,7 @@ public class ProjectionModeChangerDemo
 		SacServices.InitScijavaServices();
 
 		// Gets active BdvHandle instance
-		BdvHandle bdv = SacServices.getSacDisplayService().getActiveBdv();
+		BdvHandle bdv = SacServices.getSourceAndConverterDisplayService().getActiveBdv();
 
 		// Import SpimData
 		new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").run();
@@ -30,7 +30,7 @@ public class ProjectionModeChangerDemo
 
 		// Show all three sacs
 		sourceAndConverters.forEach( sac -> {
-			SacServices.getSacDisplayService().show(bdv, sac);
+			SacServices.getSourceAndConverterDisplayService().show(bdv, sac);
 			new ViewerTransformAdjuster(bdv, sac).run();
 			new BrightnessAutoAdjuster(sac, 0).run();
 		});

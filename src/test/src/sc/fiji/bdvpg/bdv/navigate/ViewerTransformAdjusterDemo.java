@@ -22,7 +22,7 @@ public class ViewerTransformAdjusterDemo {
         SacServices.InitScijavaServices();
 
         // Gets active BdvHandle instance
-        BdvHandle bdvHandle = SacServices.getSacDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SacServices.getSourceAndConverterDisplayService().getActiveBdv();
 
         // Import SpimData object
         SpimDataFromXmlImporter sdix = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml");
@@ -33,7 +33,7 @@ public class ViewerTransformAdjusterDemo {
         SacServices.getSacService().register(asd);
 
         SacServices.getSacService().getSourceAndConverterFromSpimdata(asd).forEach( source -> {
-            SacServices.getSacDisplayService().show(bdvHandle, source);
+            SacServices.getSourceAndConverterDisplayService().show(bdvHandle, source);
         });
 
         // Import SpimData object
@@ -45,7 +45,7 @@ public class ViewerTransformAdjusterDemo {
         SacServices.getSacService().register(asd);
 
         SacServices.getSacService().getSourceAndConverterFromSpimdata(asd).forEach( source -> {
-            SacServices.getSacDisplayService().show(bdvHandle, source);
+            SacServices.getSourceAndConverterDisplayService().show(bdvHandle, source);
         });
 
         new ViewerTransformAdjuster(bdvHandle, SacServices.getSacService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
