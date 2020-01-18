@@ -8,7 +8,7 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.BdvCreator;
 import sc.fiji.bdvpg.bdv.projector.AccumulateAverageProjectorARGB;
 import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGB;
-import sc.fiji.bdvpg.bdv.projector.ProjectionTypes;
+import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bdv>Create Empty BDV Frame",
@@ -30,7 +30,7 @@ public class BdvWindowCreatorCommand implements Command {
     @Parameter(type = ItemIO.OUTPUT)
     public BdvHandle bdvh;
 
-    @Parameter(choices = { ProjectionTypes.MIXED_PROJECTOR, ProjectionTypes.SUM_PROJECTOR, ProjectionTypes.AVERAGE_PROJECTOR})
+    @Parameter(choices = { Projection.MIXED_PROJECTOR, Projection.SUM_PROJECTOR, Projection.AVERAGE_PROJECTOR})
     public String projector;
 
     @Override
@@ -40,12 +40,12 @@ public class BdvWindowCreatorCommand implements Command {
         if (is2D) opts = opts.is2D();
 
         switch (projector) {
-            case ProjectionTypes.MIXED_PROJECTOR:
+            case Projection.MIXED_PROJECTOR:
                 opts = opts.accumulateProjectorFactory(AccumulateMixedProjectorARGB.factory);
-            case ProjectionTypes.SUM_PROJECTOR:
+            case Projection.SUM_PROJECTOR:
                 // Default projector
                 break;
-            case ProjectionTypes.AVERAGE_PROJECTOR:
+            case Projection.AVERAGE_PROJECTOR:
                 opts = opts.accumulateProjectorFactory(AccumulateAverageProjectorARGB.factory);
                 break;
             default:

@@ -31,45 +31,43 @@ public class ManualTransformCommand implements Command {
         ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacs);
         ManualRegistrationStopper manualRegistrationStopper;
 
-        // Show sources in BdvHandle
-        for (SourceAndConverter sac : sacs) {
-            BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sac);
-        }
-
         if (mode.equals("Mutate")) {
             manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                // What to do with the new registration:
-                //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
                 ManualRegistrationStopper::mutate
             );
         } else {
             manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                    // What to do with the new registration:
-                    //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
                     ManualRegistrationStopper::append
             );
         }
 
         manualRegistrationStarter.run();
 
-        // JFrame serving the purpose of stopping synchronization when it is being closed
+        // JFrame holding apply and cancel button
         JFrame frameStopManualTransformation = new JFrame();
-        frameStopManualTransformation.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                super.windowClosing(e);
-                manualRegistrationStopper.run();
-                e.getWindow().dispose();
-            }
+        JPanel pane = new JPanel();
+
+        JButton buttonApply = new JButton("Apply And Finish");
+        buttonApply.addActionListener((e) -> {
+            manualRegistrationStopper.run();
+            frameStopManualTransformation.dispatchEvent(new WindowEvent(frameStopManualTransformation, WindowEvent.WINDOW_CLOSING));
         });
 
-        JPanel pane = new JPanel();
-        JTextArea textArea = new JTextArea("Manual Transform In progress...");
-        textArea.setEditable(false);
-        pane.add(textArea);
+        JButton buttonCancel = new JButton("Cancel");
+        buttonCancel.addActionListener((e) -> {
+            new ManualRegistrationStopper(manualRegistrationStarter,
+                    // What to do with the new registration:
+                    //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
+                    ManualRegistrationStopper::cancel
+            ).run();
+            frameStopManualTransformation.dispatchEvent(new WindowEvent(frameStopManualTransformation, WindowEvent.WINDOW_CLOSING));
+        });
+
+        pane.add(buttonApply);
+        pane.add(buttonCancel);
         frameStopManualTransformation.add(pane);
 
-        frameStopManualTransformation.setTitle("Close window to stop transformation");
+        frameStopManualTransformation.setTitle("Registration");
         frameStopManualTransformation.pack();
         frameStopManualTransformation.setVisible(true);
 

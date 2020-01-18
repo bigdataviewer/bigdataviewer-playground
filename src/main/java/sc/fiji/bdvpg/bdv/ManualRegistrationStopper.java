@@ -13,11 +13,47 @@ import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
 
 import static sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService.SPIM_DATA_INFO;
 
 // TODO : Ensure volatile is working with source which are not AbstractSpimSource
+
+/**
+ * Action which stops the manual registration of n SourceAndConverters
+ * Works in coordination with ManualRegistrationStarter
+ *
+ * Works with a single BdvHandle (TODO : synchronizes with multiple BdvHandle)
+ *
+ * Working principle ( read ManualRegistrationStarter first ) :
+ * - Stops listener of manual registration
+ * - Removes transiently wrapped sources from display, and from BdvSourceAndCOnverterService
+ *
+ * - Transform all the sources that needed to be transformed, according to the registrationPolicy (see details below)
+ *
+ * - Restores the initially displays sources, but trasnformed according to the choosen registrationpolicy
+ *
+ * a registrationPolicy is a function that performes outputs a registered source, with inputs being the initial source
+ * and an affine transform, thus it's BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>
+ *
+ * This modularity allows for different ways to store the registration depending on the source.
+ *
+ * A few policies are implemented in this action:
+ * * createNewTransformedSourceAndConverter: Wraps into transformed sources the registered sources
+ * * mutateTransformedSourceAndConverter: provided a source was already a trasnformed source, updates the inner affineTransform3D
+ * * appendNewSpimdataTransformation: if a source has a linked spimdata, appends a new transformation in the registration model
+ * * mutateLastSpimdataTransformation: if a source has a linked spimdata, mutates the last registration to account for changes
+ * * cancel : ignore registration - returns original source
+ *
+ * * mutate : branch between mutateTransformedSourceAndConverter and mutateLastSpimdataTransformation depending  on the source class
+ * * append : branch between createNewTransformedSourceAndConverter and appendNewSpimdataTransformation depending on the source class
+ *
+ * Any other policy can be used since it is a parameter of this action
+ *
+ *
+ */
 
 public class ManualRegistrationStopper implements Runnable {
 
@@ -27,24 +63,37 @@ public class ManualRegistrationStopper implements Runnable {
 
     SourceAndConverter[] transformedSources;
 
+    /**
+     * Wraps into transformed sources the registered sources
+     * @param affineTransform3D
+     * @param sac
+     * @return
+     */
     public static SourceAndConverter createNewTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
         SourceAndConverter transformedSac = new SourceAffineTransformer(sac, affineTransform3D).getSourceOut();
-        // TODO  Not completely safe : we assume the active bdv is the one selected
-        // TODO : find a ref to starter
-        BdvService.getSourceAndConverterDisplayService().show(transformedSac);
         return transformedSac;
     }
 
+    /**
+     * provided a source was already a trasnformed source, updates the inner affineTransform3D
+     * @param affineTransform3D
+     * @param sac
+     * @return
+     */
     public static SourceAndConverter mutateTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
         assert sac.getSpimSource() instanceof TransformedSource;
         AffineTransform3D at3D = new AffineTransform3D();
         ((TransformedSource)sac.getSpimSource()).getFixedTransform(at3D);
         ((TransformedSource)sac.getSpimSource()).setFixedTransform(at3D.preConcatenate(affineTransform3D));
-        // Not completely safe : we assume the active bdv is the one selected
-        BdvService.getSourceAndConverterDisplayService().show(sac);
         return sac;
     }
 
+    /**
+     * if a source has a linked spimdata, mutates the last registration to account for changes
+     * @param affineTransform3D
+     * @param sac
+     * @return
+     */
     public static SourceAndConverter mutateLastSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
         assert BdvService
                 .getSourceAndConverterService()
@@ -57,7 +106,7 @@ public class ManualRegistrationStopper implements Runnable {
                 BdvService.getSourceAndConverterService()
                         .getSourceAndConverterToMetadata().get(sac).get(SPIM_DATA_INFO));
 
-        // TODO : find a ref to starter
+        // TODO : find a way to pass the ref of starter into this function ? but static looks great...
         BdvHandle bdvHandle = BdvService.getSourceAndConverterDisplayService().getActiveBdv();
 
         int timePoint = bdvHandle.getViewerPanel().getState().getCurrentTimepoint();
@@ -94,18 +143,15 @@ public class ManualRegistrationStopper implements Runnable {
             e.printStackTrace();
         }
 
-        // Update display of the Source
-
-        BdvService.getSourceAndConverterDisplayService().removeFromAllBdvs(sac);
-
-        // TODO : keep better track of BdvHandle locations
-
-        BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sac);
-
         return sac;
     }
 
-
+    /**
+     * if a source has a linked spimdata, appends a new transformation in the registration model
+     * @param affineTransform3D
+     * @param sac
+     * @return
+     */
     public static SourceAndConverter appendNewSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
         assert BdvService
                 .getSourceAndConverterService()
@@ -145,22 +191,17 @@ public class ManualRegistrationStopper implements Runnable {
             e.printStackTrace();
         }
 
-        // Update display of the Source
-
-        BdvService.getSourceAndConverterDisplayService().removeFromAllBdvs(sac);
-
-        // TODO : keep better track of BdvHandle locations
-
-        BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sac);
-
         return sac;
     }
 
-    public ManualRegistrationStopper(ManualRegistrationStarter starter, BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter> registrationPolicy) {
-        this.starter = starter;
-        this.registrationPolicy = registrationPolicy;
-    }
-
+    /**
+     *
+     * branch between mutateTransformedSourceAndConverter and mutateLastSpimdataTransformation depending  on the source class
+     *
+     * @param affineTransform3D
+     * @param sac
+     * @return
+     */
     public static SourceAndConverter mutate(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
         if (sac.getSpimSource() instanceof AbstractSpimSource) {
             return mutateLastSpimdataTransformation(affineTransform3D, sac);
@@ -171,12 +212,34 @@ public class ManualRegistrationStopper implements Runnable {
         }
     }
 
+    /**
+     *  branch between createNewTransformedSourceAndConverter and appendNewSpimdataTransformation depending on the source class
+     *
+     * @param affineTransform3D
+     * @param sac
+     * @return
+     */
     public static SourceAndConverter append(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
         if (sac.getSpimSource() instanceof AbstractSpimSource) {
             return appendNewSpimdataTransformation(affineTransform3D, sac);
         } else {
             return createNewTransformedSourceAndConverter(affineTransform3D,sac);
         }
+    }
+
+    /**
+     * Ignores registration
+     * @param affineTransform3D
+     * @param sac
+     * @return
+     */
+    public static SourceAndConverter cancel(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
+        return sac;
+    }
+
+    public ManualRegistrationStopper(ManualRegistrationStarter starter, BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter> registrationPolicy) {
+        this.starter = starter;
+        this.registrationPolicy = registrationPolicy;
     }
 
     @Override
@@ -188,19 +251,31 @@ public class ManualRegistrationStopper implements Runnable {
         // Stops BdvHandle listener
         this.starter.getBdvHandle().getViewerPanel().removeTransformListener(starter.getListener());
 
-        // Removes temporary TransformedSourceAndConverter
-        for (SourceAndConverter sac : this.starter.getTransformedSourceAndConverter()) {
+        // Removes temporary TransformedSourceAndConverter - in two times for performance issue
+        List<SourceAndConverter> tempSacs = starter.getTransformedSourceAndConverterDisplayed();
+        BdvService.getSourceAndConverterDisplayService().remove(starter.bdvHandle,tempSacs.toArray(new SourceAndConverter[tempSacs.size()]));
+
+        for (SourceAndConverter sac: tempSacs) {
             BdvService.getSourceAndConverterService().remove(sac);
         }
 
         int nSources = starter.getOriginalSourceAndConverter().length;
         transformedSources = new SourceAndConverter[nSources];
 
+        List<SourceAndConverter> transformedSacsToDisplay = new ArrayList<>();
         // Applies the policy
         for (int i=0;i<nSources;i++) {
             SourceAndConverter sac  = this.starter.getOriginalSourceAndConverter()[i];
             transformedSources[i] = registrationPolicy.apply(transform3D, sac);
+            if (starter.getOriginallyDisplayedSourceAndConverter().contains(sac)) {
+                transformedSacsToDisplay.add(transformedSources[i]);
+            }
         }
+
+        // Calls display ( array for performance issue )
+        BdvService.getSourceAndConverterDisplayService().show(starter.getBdvHandle(),
+                transformedSacsToDisplay.toArray(new SourceAndConverter[transformedSacsToDisplay.size()]));
+
     }
 
     public SourceAndConverter[] getTransformedSources() {

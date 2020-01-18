@@ -22,7 +22,6 @@ public class ColorChanger implements Runnable, Consumer<SourceAndConverter> {
     public ColorChanger(SourceAndConverter sac, ARGBType color) {
         this.sac = sac;
         this.color = color;
-
     }
 
     @Override
