@@ -8,7 +8,7 @@ import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
 
 import java.util.function.Consumer;
@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
 
     @Parameter
-    BdvSourceAndConverterDisplayService bsds;
+    SourceAndConverterBdvDisplayService bsds;
 
     @Parameter
     ObjectService os;

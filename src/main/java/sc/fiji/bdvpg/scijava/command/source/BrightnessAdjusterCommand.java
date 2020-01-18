@@ -6,7 +6,7 @@ import org.scijava.command.InteractiveCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.services.SacServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
 
 import java.text.DecimalFormat;
@@ -66,8 +66,8 @@ public class BrightnessAdjusterCommand extends InteractiveCommand {
 
     public void init() {
         if (sources.length>0) {
-            double minSource = BdvService.getSourceAndConverterDisplayService().getConverterSetup(sources[0]).getDisplayRangeMin();
-            double maxSource = BdvService.getSourceAndConverterDisplayService().getConverterSetup(sources[0]).getDisplayRangeMax();
+            double minSource = SacServices.getSacDisplayService().getConverterSetup(sources[0]).getDisplayRangeMin();
+            double maxSource = SacServices.getSacDisplayService().getConverterSetup(sources[0]).getDisplayRangeMax();
 
             if (minSource>=0) {
                 min = 0;

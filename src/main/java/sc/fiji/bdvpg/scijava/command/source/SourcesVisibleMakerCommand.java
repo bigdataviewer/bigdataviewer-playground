@@ -5,8 +5,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterDisplayService;
-import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Make Sources Visible")
@@ -16,7 +15,7 @@ public class SourcesVisibleMakerCommand implements Command {
     SourceAndConverter[] sacs;
 
     @Parameter
-    BdvSourceAndConverterDisplayService bsds;
+    SourceAndConverterBdvDisplayService bsds;
 
     @Override
     public void run() {

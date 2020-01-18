@@ -1,5 +1,7 @@
 package sc.fiji.bdvpg.scijava.services;
 
+import bdv.tools.transformation.TransformedSource;
+import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -20,8 +22,8 @@ import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
 import sc.fiji.bdvpg.scijava.command.source.*;
 import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
-import sc.fiji.bdvpg.services.BdvService;
-import sc.fiji.bdvpg.services.IBdvSourceAndConverterService;
+import sc.fiji.bdvpg.services.SacServices;
+import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import java.util.*;
@@ -45,17 +47,18 @@ import java.util.stream.Collectors;
  */
 
 @Plugin(type=Service.class)
-public class BdvSourceAndConverterService extends AbstractService implements SciJavaService, IBdvSourceAndConverterService {
+public class SourceAndConverterService extends AbstractService implements SciJavaService, ISourceAndConverterService
+{
 
     /**
      * Standard logger
      */
-    public static Consumer<String> log = (str) -> System.out.println(BdvSourceAndConverterService.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = (str) -> System.out.println( SourceAndConverterService.class.getSimpleName()+":"+str);
 
     /**
      * Error logger
      */
-    public static Consumer<String> errlog = (str) -> System.err.println(BdvSourceAndConverterService.class.getSimpleName()+":"+str);
+    public static Consumer<String> errlog = (str) -> System.err.println( SourceAndConverterService.class.getSimpleName()+":"+str);
 
     /**
      * Scijava Object Service : will contain all the sourceAndConverters
@@ -78,13 +81,13 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     /**
      * Display service : cannot be set through Parameter annotation due to 'circular dependency'
      */
-    BdvSourceAndConverterDisplayService bsds = null;
+    SourceAndConverterBdvDisplayService bsds = null;
 
     /**
      * Map containing objects that are 1 to 1 linked to a Source
      * TODO : ask if it should contain a WeakReference to Source keys (Potential Memory leak ?)
      */
-    Map<SourceAndConverter, Map<String, Object>> sourceAndConverterToMetadata;
+    Map<SourceAndConverter, Map<String, Object>> sacToMetadata;
 
     /**
      * Reserved key for the data map. data.get(sourceandconverter).get(SPIM_DATA)
@@ -100,12 +103,12 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
      * @return
      */
     public boolean isRegistered(SourceAndConverter src) {
-        return sourceAndConverterToMetadata.containsKey(src);
+        return sacToMetadata.containsKey(src);
     }
 
-    public void setDisplayService(BdvSourceAndConverterDisplayService bsds) {
-        assert bsds instanceof BdvSourceAndConverterDisplayService;
-        this.bsds = (BdvSourceAndConverterDisplayService) bsds;
+    public void setDisplayService( SourceAndConverterBdvDisplayService bsds) {
+        assert bsds instanceof SourceAndConverterBdvDisplayService;
+        this.bsds = ( SourceAndConverterBdvDisplayService ) bsds;
     }
 
     /**
@@ -113,8 +116,20 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
      * @return
      */
     @Override
-    public Map<SourceAndConverter, Map<String, Object>> getSourceAndConverterToMetadata() {
-        return sourceAndConverterToMetadata;
+    public Map<SourceAndConverter, Map<String, Object>> getSacToMetadata() {
+        return sacToMetadata;
+    }
+
+    @Override
+    public void setMetadata( SourceAndConverter sac, String key, Object data )
+    {
+        sacToMetadata.get( sac ).put( key, data );
+    }
+
+    @Override
+    public Object getMetadata( SourceAndConverter sac, String key )
+    {
+        return sacToMetadata.get( sac ).get( key );
     }
 
     /**
@@ -123,13 +138,13 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
      * @param sac
      */
     public void register(SourceAndConverter sac) {
-        if ( sourceAndConverterToMetadata.containsKey(sac)) {
+        if ( sacToMetadata.containsKey(sac)) {
             log.accept("Source already registered");
             return;
         }
         final int numTimepoints = 1;
         Map<String, Object> sourceData = new HashMap<>();
-        sourceAndConverterToMetadata.put(sac, sourceData);
+        sacToMetadata.put(sac, sourceData);
         objectService.addObject(sac);
         if (uiAvailable) ui.update(sac);
     }
@@ -150,15 +165,15 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     }
 
     @Override
-    public void remove(SourceAndConverter src) {
+    public void remove(SourceAndConverter sac ) {
         // Remove displays
         if (bsds!=null) {
-            bsds.removeFromAllBdvs(src);
+            bsds.removeFromAllBdvs( sac );
         }
-        sourceAndConverterToMetadata.remove(src);
-        objectService.removeObject(src);
+        sacToMetadata.remove( sac );
+        objectService.removeObject( sac );
         if (uiAvailable) {
-            ui.remove(src);
+            ui.remove( sac );
         }
     }
 
@@ -171,12 +186,12 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
     public List<SourceAndConverter> getSourceAndConverterFromSpimdata(AbstractSpimData asd) {
         return objectService.getObjects(SourceAndConverter.class)
                 .stream()
-                .filter(s -> ((HashSet<AbstractSpimData>)sourceAndConverterToMetadata.get(s).get(SPIM_DATA_INFO)).contains(asd))
+                .filter(s -> ((HashSet<AbstractSpimData>) sacToMetadata.get(s).get(SPIM_DATA_INFO)).contains(asd))
                 .collect(Collectors.toList());
     }
 
-    public void linkToSpimData(SourceAndConverter src, AbstractSpimData asd, int idSetup) {
-        sourceAndConverterToMetadata.get(src).put( SPIM_DATA_INFO, new SpimDataInfo(asd,idSetup));
+    public void linkToSpimData( SourceAndConverter sac, AbstractSpimData asd, int idSetup) {
+        sacToMetadata.get( sac ).put( SPIM_DATA_INFO, new SpimDataInfo(asd,idSetup));
     }
 
 
@@ -205,14 +220,14 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
         scriptService.addAlias(AffineTransform3D.class);
         scriptService.addAlias(AbstractSpimData.class);
         // -- TODO End of to check
-        sourceAndConverterToMetadata = new HashMap<>();
+        sacToMetadata = new HashMap<>();
         if (uiService!=null) {
             log.accept("uiService detected : Constructing JPanel for BdvSourceAndConverterService");
             ui = new BdvSourceServiceUI(this);
             uiAvailable = true;
         }
         registerPopupActions();
-        BdvService.bdvSourceAndConverterService = this;
+        SacServices.sourceAndConverterService = this;
         log.accept("Service initialized.");
     }
 
@@ -223,6 +238,26 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
             //popupactions.put(actionName, action);
             ui.addPopupAction(action, actionName);
         }
+    }
+
+    @Override
+    public SourceAndConverter getSourceAndConverter( Source source )
+    {
+        final List< SourceAndConverter > sacs = getSourceAndConverters();
+
+        for ( SourceAndConverter sac : sacs )
+            if ( sac.getSpimSource().equals( source ) )
+                return sac;
+
+        // Try again, with unwrapping; (TODO)
+        if ( source instanceof TransformedSource )
+            source = ( ( TransformedSource ) source ).getWrappedSource();
+
+        for ( SourceAndConverter sac : sacs )
+            if ( sac.getSpimSource().equals( source ) )
+                return sac;
+
+        return null;
     }
 
     @Parameter
@@ -300,6 +335,7 @@ public class BdvSourceAndConverterService extends AbstractService implements Sci
         registerScijavaCommand(SourcesVisibleMakerCommand.class);
         registerScijavaCommand(BrightnessAdjusterCommand.class);
         registerScijavaCommand(SourceColorChangerCommand.class);
+        registerScijavaCommand(SacProjectionModeChangerCommand.class);
         this.getUI().addPopupLine();
         // Create new sources
         registerScijavaCommand(SourcesDuplicatorCommand.class);

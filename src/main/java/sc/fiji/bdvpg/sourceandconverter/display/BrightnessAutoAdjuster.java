@@ -7,7 +7,7 @@ import net.imglib2.histogram.Histogram1d;
 import net.imglib2.histogram.Real1dBinMapper;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.view.Views;
-import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.services.SacServices;
 
 public class BrightnessAutoAdjuster implements Runnable
 {
@@ -64,7 +64,7 @@ public class BrightnessAutoAdjuster implements Runnable
 
 		//minMaxGroup.getMinBoundedValue().setCurrentValue( min );
 		//minMaxGroup.getMaxBoundedValue().setCurrentValue( max );
-		BdvService.getSourceAndConverterDisplayService().getConverterSetup( sac ).setDisplayRange(min, max);
+		SacServices.getSacDisplayService().getConverterSetup( sac ).setDisplayRange(min, max);
 	}
 
 }

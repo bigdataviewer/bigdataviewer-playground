@@ -3,7 +3,7 @@ package sc.fiji.bdvpg.spimdata.importer;
 import bdv.spimdata.XmlIoSpimDataMinimal;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.generic.AbstractSpimData;
-import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.services.SacServices;
 
 import java.io.File;
 import java.util.function.Function;
@@ -36,7 +36,7 @@ public class SpimDataFromXmlImporter implements Runnable, Function<File, Abstrac
         AbstractSpimData sd = null;
         try {
             sd = new XmlIoSpimDataMinimal().load(file.getAbsolutePath());
-            BdvService.getSourceAndConverterService().register(sd);
+            SacServices.getSacService().register(sd);
         } catch (SpimDataException e) {
             e.printStackTrace();
         }

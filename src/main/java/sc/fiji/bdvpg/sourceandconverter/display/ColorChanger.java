@@ -4,7 +4,7 @@ import bdv.viewer.SourceAndConverter;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.type.numeric.ARGBType;
 import sc.fiji.bdvpg.log.SystemLogger;
-import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.services.SacServices;
 
 import java.util.function.Consumer;
 
@@ -37,8 +37,8 @@ public class ColorChanger implements Runnable, Consumer<SourceAndConverter> {
                 ((ColorConverter) sourceAndConverter.asVolatile().getConverter()).setColor(color);
             }
             // Updates display, if any
-            if (BdvService.getSourceAndConverterDisplayService()!=null)
-                BdvService.getSourceAndConverterDisplayService().getConverterSetup(sourceAndConverter).setColor(color);
+            if ( SacServices.getSacDisplayService()!=null)
+                SacServices.getSacDisplayService().getConverterSetup(sourceAndConverter).setColor(color);
         } else {
             new SystemLogger().err("sourceAndConverter Converter is not an instance of Color Converter");
         }

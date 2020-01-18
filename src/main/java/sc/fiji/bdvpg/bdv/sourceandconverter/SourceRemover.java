@@ -2,7 +2,7 @@ package sc.fiji.bdvpg.bdv.sourceandconverter;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.services.SacServices;
 
 import java.util.function.Consumer;
 
@@ -34,10 +34,10 @@ public class SourceRemover implements Runnable, Consumer<SourceAndConverter>
 	public void accept(SourceAndConverter source) {
 		if (bdvh==null) {
 			// Remove from all displays
-			BdvService.getSourceAndConverterDisplayService().removeFromAllBdvs(source);
+			SacServices.getSacDisplayService().removeFromAllBdvs(source);
 		} else {
 			// Remove from a specific bdvHandle
-			BdvService.getSourceAndConverterDisplayService().remove(bdvh, source);
+			SacServices.getSacDisplayService().remove(bdvh, source);
 		}
 	}
 }

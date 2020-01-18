@@ -1,5 +1,6 @@
 package sc.fiji.bdvpg.services;
 
+import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 
@@ -20,7 +21,8 @@ import java.util.function.Consumer;
  * Because when multiply wrapped sourceandconverter end up here, it maybe isn't possible to make the volatile view
  */
 
-public interface IBdvSourceAndConverterService {
+public interface ISourceAndConverterService
+{
 
     /**
      * Test if a Source is already registered in the Service
@@ -55,18 +57,34 @@ public interface IBdvSourceAndConverterService {
     /**
      * Removes a Bdv Source in this Service.
      * Called in the BdvSourcePostProcessor
-     * @param src
+     * @param sac
      */
-    void remove(SourceAndConverter src);
+    void remove(SourceAndConverter sac);
 
 
-    void linkToSpimData(SourceAndConverter src, AbstractSpimData asd, int idSetup);
+    void linkToSpimData(SourceAndConverter sac, AbstractSpimData asd, int idSetup);
 
     /**
+     * TODO: maybe remove this?
      * Gets lists of associated objects and data attached to a Bdv Source
      * @return
      */
-    Map<SourceAndConverter, Map<String, Object>> getSourceAndConverterToMetadata();
+    Map<SourceAndConverter, Map<String, Object>> getSacToMetadata();
+
+    /**
+     * Adds metadata for a sac
+     * @return
+     */
+    void setMetadata(SourceAndConverter sac, String key, Object data);
+
+
+    /**
+     * Adds metadata for a sac
+     *
+     * @return
+     */
+    Object getMetadata(SourceAndConverter sac, String key);
+
 
     /**
      * If supported, this will allow to display actions in a popup window in a ui
@@ -74,4 +92,10 @@ public interface IBdvSourceAndConverterService {
      * @param actionName
      */
     void registerPopupSourcesAction(Consumer<SourceAndConverter[]> action, String actionName);
+
+    /**
+     * Finds the corresponding registered sac for a source.
+     */
+    SourceAndConverter getSourceAndConverter( Source source );
+
 }

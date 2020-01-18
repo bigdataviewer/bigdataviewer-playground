@@ -1,16 +1,15 @@
 package sc.fiji.bdvpg.bdv;
 
-import bdv.util.BdvHandle;
-import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.services.SacServices;
 
 public class BdvCreatorDemo
 {
 	public static void main( String[] args )
 	{
 		// Initializes static SourceService and Display Service
-		BdvService.InitScijavaServices();
+		SacServices.InitScijavaServices();
 
 		// Creates a Bdv since none exists yet
-		BdvService.getSourceAndConverterDisplayService().getActiveBdv();
+		SacServices.getSacDisplayService().getActiveBdv();
 	}
 }

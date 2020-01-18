@@ -1,23 +1,24 @@
 package sc.fiji.bdvpg.services;
 
 import net.imagej.ImageJ;
-import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 /**
  * Static methods to access BdvSourceAndConverterService and BdvSourceAndConverterDisplayService
  */
 
-public class BdvService {
-    public static IBdvSourceAndConverterService bdvSourceAndConverterService;
-    public static BdvSourceAndConverterDisplayService bdvSourceAndConverterDisplayService;
+public class SacServices
+{
+    public static ISourceAndConverterService sourceAndConverterService;
+    public static SourceAndConverterBdvDisplayService sourceAndConverterBdvDisplayService;
     private static ImageJ ij;
 
-    public static IBdvSourceAndConverterService getSourceAndConverterService() {
-        return bdvSourceAndConverterService;
+    public static ISourceAndConverterService getSacService() {
+        return sourceAndConverterService;
     }
 
-    public static BdvSourceAndConverterDisplayService getSourceAndConverterDisplayService() {
-        return bdvSourceAndConverterDisplayService;
+    public static SourceAndConverterBdvDisplayService getSacDisplayService() {
+        return sourceAndConverterBdvDisplayService;
     }
 
     /**

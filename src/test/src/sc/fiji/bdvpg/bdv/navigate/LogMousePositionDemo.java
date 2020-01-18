@@ -11,7 +11,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.services.SacServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 /**
@@ -26,7 +26,7 @@ public class LogMousePositionDemo {
     public static void main(String... args) {
 
         // Initializes static SourceService and Display Service
-        BdvService.InitScijavaServices();
+        SacServices.InitScijavaServices();
 
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
@@ -39,10 +39,10 @@ public class LogMousePositionDemo {
         SourceAndConverter sac = SourceAndConverterUtils.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle = BdvService.getSourceAndConverterDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SacServices.getSacDisplayService().getActiveBdv();
 
         // Show the sourceandconverter
-        BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+        SacServices.getSacDisplayService().show(bdvHandle, sac);
 
         // Adjust Bdv View on the sourceandconverter
         new ViewerTransformAdjuster(bdvHandle, sac).run();

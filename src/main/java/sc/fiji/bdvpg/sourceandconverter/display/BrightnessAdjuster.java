@@ -1,7 +1,7 @@
 package sc.fiji.bdvpg.sourceandconverter.display;
 
 import bdv.viewer.SourceAndConverter;
-import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.services.SacServices;
 
 public class BrightnessAdjuster implements Runnable
 {
@@ -19,7 +19,7 @@ public class BrightnessAdjuster implements Runnable
 	@Override
 	public void run()
 	{
-		BdvService.getSourceAndConverterDisplayService().getConverterSetup( sac ).setDisplayRange(min, max);
+		SacServices.getSacDisplayService().getConverterSetup( sac ).setDisplayRange(min, max);
 	}
 
 }
