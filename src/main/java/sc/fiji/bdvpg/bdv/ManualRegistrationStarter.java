@@ -8,10 +8,15 @@ import net.imglib2.ui.TransformListener;
 import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class ManualRegistrationStarter implements Runnable {
 
     SourceAndConverter[] sacs;
-    SourceAndConverter[] wrappedSacs;
+    List<SourceAndConverter> originallyDisplayedSacs = new ArrayList<>();
+    List<SourceAndConverter> displayedSacsWrapped = new ArrayList<>();
 
     BdvHandle bdvHandle;
 
@@ -26,15 +31,23 @@ public class ManualRegistrationStarter implements Runnable {
 
     @Override
     public void run() {
-        wrappedSacs = new SourceAndConverter[sacs.length];
+        //wrappedSacs = new SourceAndConverter[sacs.length];
+
+        //int numberOfSourcesToDisplay = 0;
+        BdvService.getSourceAndConverterDisplayService().logLocationsDisplayingSource();
         for (int i=0;i<sacs.length;i++) {
+            System.out.println("i = "+i);
             // Wraps into a Transformed Source
-            wrappedSacs[i] = new SourceAffineTransformer(sacs[i], new AffineTransform3D()).getSourceOut();
-            // Remove initial source from current display
-            BdvService.getSourceAndConverterDisplayService().remove(bdvHandle, sacs[i]);
-            // Put the wrapped Source
-            BdvService.getSourceAndConverterDisplayService().show(bdvHandle, wrappedSacs[i]);
+            if (BdvService.getSourceAndConverterDisplayService().getDisplaysOf(sacs[i]).contains(bdvHandle)) {
+                displayedSacsWrapped.add(new SourceAffineTransformer(sacs[i], new AffineTransform3D()).getSourceOut());
+                originallyDisplayedSacs.add(sacs[i]);
+                System.out.println("is displayed");
+            }
         }
+
+        BdvService.getSourceAndConverterDisplayService().remove(bdvHandle, originallyDisplayedSacs.toArray(new SourceAndConverter[originallyDisplayedSacs.size()]));
+        // Put the displayed wrapped Source
+        BdvService.getSourceAndConverterDisplayService().show(bdvHandle, displayedSacsWrapped.toArray(new SourceAndConverter[displayedSacsWrapped.size()]));
 
         // View of the BdvHandle before starting the registration
         AffineTransform3D originalViewTransform = new AffineTransform3D();
@@ -50,11 +63,7 @@ public class ManualRegistrationStarter implements Runnable {
 
                 // TODO check orthonormality !
 
-                for (int i=0;i<sacs.length;i++) {
-                    ((TransformedSource) wrappedSacs[i].getSpimSource())
-                            .setFixedTransform(diff);
-
-                }
+                displayedSacsWrapped.forEach(sac -> ((TransformedSource) sac.getSpimSource()).setFixedTransform(diff));
         };
 
         bdvHandle.getViewerPanel().addTransformListener(manualRegistrationListener);
@@ -68,12 +77,16 @@ public class ManualRegistrationStarter implements Runnable {
         return manualRegistrationListener;
     }
 
-    public SourceAndConverter[] getTransformedSourceAndConverter() {
-        return wrappedSacs;
+    public List<SourceAndConverter> getTransformedSourceAndConverterDisplayed() {
+        return displayedSacsWrapped;
     }
 
     public SourceAndConverter[] getOriginalSourceAndConverter() {
         return sacs;
+    }
+
+    public List<SourceAndConverter> getOriginallyDisplayedSourceAndConverter() {
+        return originallyDisplayedSacs;
     }
 
     public AffineTransform3D getCurrentTransform() {

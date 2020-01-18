@@ -32,9 +32,9 @@ public class ManualTransformCommand implements Command {
         ManualRegistrationStopper manualRegistrationStopper;
 
         // Show sources in BdvHandle
-        for (SourceAndConverter sac : sacs) {
+        /*for (SourceAndConverter sac : sacs) {
             BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sac);
-        }
+        }*/
 
         if (mode.equals("Mutate")) {
             manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,

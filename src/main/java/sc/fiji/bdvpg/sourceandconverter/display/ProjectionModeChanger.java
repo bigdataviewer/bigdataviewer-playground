@@ -38,7 +38,7 @@ public class ProjectionModeChanger implements Runnable, Consumer<SourceAndConver
     public void updateDisplays()
     {
         if ( BdvService.getSourceAndConverterDisplayService()!=null)
-                BdvService.getSourceAndConverterDisplayService().updateDisplays( Arrays.asList( sac ) );
+                BdvService.getSourceAndConverterDisplayService().updateDisplays( sac );
     }
 
     public void changeProjectionMode()

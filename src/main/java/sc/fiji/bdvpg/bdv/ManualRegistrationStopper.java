@@ -13,6 +13,8 @@ import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
 
 import static sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService.SPIM_DATA_INFO;
@@ -168,19 +170,31 @@ public class ManualRegistrationStopper implements Runnable {
         // Stops BdvHandle listener
         this.starter.getBdvHandle().getViewerPanel().removeTransformListener(starter.getListener());
 
-        // Removes temporary TransformedSourceAndConverter
-        for (SourceAndConverter sac : this.starter.getTransformedSourceAndConverter()) {
+        // Removes temporary TransformedSourceAndConverter - in two times for performance issue
+        List<SourceAndConverter> tempSacs = starter.getTransformedSourceAndConverterDisplayed();
+        BdvService.getSourceAndConverterDisplayService().remove(starter.bdvHandle,tempSacs.toArray(new SourceAndConverter[tempSacs.size()]));
+
+        for (SourceAndConverter sac: tempSacs) {
             BdvService.getSourceAndConverterService().remove(sac);
         }
 
         int nSources = starter.getOriginalSourceAndConverter().length;
         transformedSources = new SourceAndConverter[nSources];
 
+        List<SourceAndConverter> transformedSacsToDisplay = new ArrayList<>();
         // Applies the policy
         for (int i=0;i<nSources;i++) {
             SourceAndConverter sac  = this.starter.getOriginalSourceAndConverter()[i];
             transformedSources[i] = registrationPolicy.apply(transform3D, sac);
+            if (starter.getOriginallyDisplayedSourceAndConverter().contains(sac)) {
+                transformedSacsToDisplay.add(transformedSources[i]);
+            }
         }
+
+        // Calls display ( array for performance issue )
+        BdvService.getSourceAndConverterDisplayService().show(starter.getBdvHandle(),
+                transformedSacsToDisplay.toArray(new SourceAndConverter[transformedSacsToDisplay.size()]));
+
     }
 
     public SourceAndConverter[] getTransformedSources() {
