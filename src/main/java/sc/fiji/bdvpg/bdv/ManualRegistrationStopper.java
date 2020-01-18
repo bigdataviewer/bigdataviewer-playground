@@ -29,9 +29,6 @@ public class ManualRegistrationStopper implements Runnable {
 
     public static SourceAndConverter createNewTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
         SourceAndConverter transformedSac = new SourceAffineTransformer(sac, affineTransform3D).getSourceOut();
-        // TODO  Not completely safe : we assume the active bdv is the one selected
-        // TODO : find a ref to starter
-        BdvService.getSourceAndConverterDisplayService().show(transformedSac);
         return transformedSac;
     }
 
@@ -41,7 +38,6 @@ public class ManualRegistrationStopper implements Runnable {
         ((TransformedSource)sac.getSpimSource()).getFixedTransform(at3D);
         ((TransformedSource)sac.getSpimSource()).setFixedTransform(at3D.preConcatenate(affineTransform3D));
         // Not completely safe : we assume the active bdv is the one selected
-        BdvService.getSourceAndConverterDisplayService().show(sac);
         return sac;
     }
 
@@ -94,14 +90,6 @@ public class ManualRegistrationStopper implements Runnable {
             e.printStackTrace();
         }
 
-        // Update display of the Source
-
-        BdvService.getSourceAndConverterDisplayService().removeFromAllBdvs(sac);
-
-        // TODO : keep better track of BdvHandle locations
-
-        BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sac);
-
         return sac;
     }
 
@@ -144,14 +132,6 @@ public class ManualRegistrationStopper implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        // Update display of the Source
-
-        BdvService.getSourceAndConverterDisplayService().removeFromAllBdvs(sac);
-
-        // TODO : keep better track of BdvHandle locations
-
-        BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sac);
 
         return sac;
     }

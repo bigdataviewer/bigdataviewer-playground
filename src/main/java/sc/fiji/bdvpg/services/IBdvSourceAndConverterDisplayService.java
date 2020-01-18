@@ -20,14 +20,14 @@ public interface IBdvSourceAndConverterDisplayService {
      * @param src
      * @param bdvh
      */
-    void show(BdvHandle bdvh, SourceAndConverter src);
+    void show(BdvHandle bdvh, SourceAndConverter... src);
 
     /**
      * Displays a Source, the last active bdv is chosen since none is specified in this method
      * The service should handle internally volatile views and converters
      * @param src
      */
-    void show(SourceAndConverter src);
+    void show(SourceAndConverter... src);
 
     /**
      * Removes a Source from all locations where it is displayed
@@ -35,7 +35,7 @@ public interface IBdvSourceAndConverterDisplayService {
      * The service should handle internally volatile views and converters
      * @param src
      */
-    void removeFromAllBdvs(SourceAndConverter src);
+    void removeFromAllBdvs(SourceAndConverter... src);
 
     /**
      * Removes a Source from all locations where it is displayed
@@ -43,7 +43,7 @@ public interface IBdvSourceAndConverterDisplayService {
      * The service should handle internally volatile views and converters
      * @param src
      */
-    void remove(BdvHandle bdvh, SourceAndConverter src);
+    void remove(BdvHandle bdvh, SourceAndConverter... src);
 
     /**
      * Returns the last active Bdv or create a new one
