@@ -6,7 +6,7 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import java.util.function.Function;
 
-public class SourceAndConverterDuplicator implements Runnable, Function<SourceAndConverter, SourceAndConverter> {
+    public class SourceAndConverterDuplicator implements Runnable, Function<SourceAndConverter, SourceAndConverter> {
 
     SourceAndConverter sac_in;
 

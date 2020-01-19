@@ -1,6 +1,7 @@
 package sc.fiji.bdvpg.sourceandconverter.display;
 
 import bdv.viewer.SourceAndConverter;
+import bdv.viewer.state.SourceState;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.function.Consumer;

@@ -23,7 +23,7 @@ public class ClickBehaviourInstaller
 	 * @param name
 	 * @param trigger
 	 */
-	public void install( String name , String trigger )
+	public void install( String name, String trigger )
 	{
 		Behaviours behaviours = new Behaviours( new InputTriggerConfig() );
 		behaviours.install( bdvHandle.getTriggerbindings(), name );
