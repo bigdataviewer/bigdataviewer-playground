@@ -29,8 +29,6 @@ public class SourceAndConverterPopupMenu
 		createPopupMenu();
 	}
 
-
-
 	private JPopupMenu createPopupMenu()
 	{
 		popup = new JPopupMenu();

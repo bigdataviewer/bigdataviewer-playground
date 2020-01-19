@@ -82,7 +82,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * Map linking a BdvHandle to the Sources it's been displaying
      * TODO : check whether this is useful
      **/
-    Map<BdvHandle, List<SourceAndConverter>> bdvHandleToSacs;
+    Map<BdvHandle, List<SourceAndConverter>> bdvToSacs;
 
     /**
      * Map linking a Source to the different locations where it's been displayed
@@ -183,10 +183,10 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         }
 
         // Stores in which BdvHandle the sourceandconverter will be displayed
-        if (!bdvHandleToSacs.containsKey(bdvHandle)) {
-            bdvHandleToSacs.put(bdvHandle, new ArrayList<>());
+        if (!bdvToSacs.containsKey(bdvHandle)) {
+            bdvToSacs.put(bdvHandle, new ArrayList<>());
         }
-        bdvHandleToSacs.get(bdvHandle).add(sac);
+        bdvToSacs.get(bdvHandle).add(sac);
 
         bdvHandle.getViewerPanel().addSource(sac);
         bdvHandle.getSetupAssignments().addSetup(getConverterSetup(sac));
@@ -366,7 +366,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     @Override
     public void initialize() {
         scriptService.addAlias(BdvHandle.class);
-        bdvHandleToSacs = new HashMap<>();
+        bdvToSacs = new HashMap<>();
         sacToBdvRefs = new HashMap<>();
         bdvSourceAndConverterService.setDisplayService(this);
         SourceAndConverterServices.sourceAndConverterBdvDisplayService = this;
@@ -382,7 +382,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         // Programmatically or User action
         // Before closing the Bdv Handle, we need to keep up to date all objects:
         // 1 sourcesDisplayedInBdvWindows
-        bdvHandleToSacs.remove(bdvh);
+        bdvToSacs.remove(bdvh);
         // 2 locationsDisplayingSource
         sacToBdvRefs.values().forEach( list ->
             list.removeIf(bdvhr -> bdvhr.bdv.equals(bdvh))
@@ -539,6 +539,11 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public List< SourceAndConverter > getSourceAndConverters( BdvHandle bdv )
+    {
+        return bdvToSacs.get( bdv );
     }
 
 }

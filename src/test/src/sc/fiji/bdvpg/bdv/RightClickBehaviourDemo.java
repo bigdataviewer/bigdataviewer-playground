@@ -2,21 +2,18 @@ package sc.fiji.bdvpg.bdv;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.ui.InteractiveDisplayCanvasComponent;
-import org.scijava.command.CommandService;
+import net.imglib2.RealPoint;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterPopupMenu;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.source.PhysicalPositionWithinSourceDeterminer;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
-import javax.swing.*;
-import java.awt.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Demonstrates visualisation of two spimData sources.
@@ -59,17 +56,24 @@ public class RightClickBehaviourDemo
 
 	private static void showPopUp( BdvHandle bdv, int x, int y )
 	{
-		final List< SourceAndConverter > sourceAndConverters = SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();
+		final List< SourceAndConverter > sacs = getSacsAtMousePosition( bdv );
 
-		// TODO: have a convenience for returning an array in SourceAndConverterService?
-		// TODO: make issue about using List or [] !
-		SourceAndConverter[] sacs = new SourceAndConverter[sourceAndConverters.size()];
-		sacs = sourceAndConverters.toArray(sacs);
+		SourceAndConverter[] sacArray = new SourceAndConverter[sacs.size()];
+		sacArray = sacs.toArray(sacArray);
 
-		final SourceAndConverterPopupMenu popupMenu = new SourceAndConverterPopupMenu( sacs );
-
+		final SourceAndConverterPopupMenu popupMenu = new SourceAndConverterPopupMenu( sacArray );
 		popupMenu.getPopup().show( bdv.getViewerPanel().getDisplay(), x, y );
+	}
 
+	private static List< SourceAndConverter > getSacsAtMousePosition( BdvHandle bdv )
+	{
+		final List< SourceAndConverter > sacs = SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverters( bdv );
+
+		final RealPoint physicalCoordinates = BdvUtils.getPhysicalMouseCoordinates( bdv );
+
+		final PhysicalPositionWithinSourceDeterminer determiner = new PhysicalPositionWithinSourceDeterminer( physicalCoordinates );
+
+		return sacs.stream().filter( sac -> determiner.apply( sac.getSpimSource() ) ).collect( Collectors.toList() );
 	}
 
 
