@@ -8,6 +8,8 @@ import bdv.viewer.Interpolation;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.realtransform.AffineTransform3D;
+import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
+import sc.fiji.bdvpg.behaviour.SourceAndConverterContextMenuClickBehaviour;
 
 import java.util.function.Supplier;
 
@@ -15,7 +17,7 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 {
 	private BdvOptions bdvOptions;
 	private boolean interpolate;
-	private BdvHandle bdvHandle;
+	private BdvHandle bdv;
 
 	public BdvCreator( )
 	{
@@ -53,17 +55,32 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 
 		BdvStackSource bss = BdvFunctions.show( dummyImg, "dummy", bdvOptions );
 
-		bdvHandle = bss.getBdvHandle();
+		bdv = bss.getBdvHandle();
 
-		if ( interpolate ) bdvHandle.getViewerPanel().setInterpolation( Interpolation.NLINEAR );
+		if ( interpolate ) bdv.getViewerPanel().setInterpolation( Interpolation.NLINEAR );
 
 		bss.removeFromBdv();
+
+		addBehaviours();
+	}
+
+	private void addBehaviours()
+	{
+		addSourceAndConverterContextMenuBehaviour();
+	}
+
+	private void addSourceAndConverterContextMenuBehaviour()
+	{
+		final ClickBehaviourInstaller installer = new ClickBehaviourInstaller( bdv, new SourceAndConverterContextMenuClickBehaviour( bdv ) );
+
+		installer.install( "Sources context menu - C", "C" );
+		installer.install( "Sources context menu - Right mouse button", "button3" );
 	}
 
 	public BdvHandle get()
 	{
-		if ( bdvHandle == null ) run();
+		if ( bdv == null ) run();
 
-		return bdvHandle;
+		return bdv;
 	}
 }

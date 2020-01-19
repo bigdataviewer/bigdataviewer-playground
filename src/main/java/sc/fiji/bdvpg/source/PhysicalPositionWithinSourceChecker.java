@@ -9,11 +9,11 @@ import sc.fiji.bdvpg.bdv.BdvUtils;
 
 import java.util.function.Function;
 
-public class PhysicalPositionWithinSourceDeterminer implements Function<Source,Boolean>
+public class PhysicalPositionWithinSourceChecker implements Function<Source,Boolean>
 {
 	private final RealPoint realPointPhyiscalUnits;
 
-	public PhysicalPositionWithinSourceDeterminer( RealPoint realPointPhysicalUnits )
+	public PhysicalPositionWithinSourceChecker( RealPoint realPointPhysicalUnits )
 	{
 		this.realPointPhyiscalUnits = realPointPhysicalUnits;
 	}

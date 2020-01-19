@@ -5,14 +5,10 @@ import org.scijava.command.Command;
 import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;
 import org.scijava.module.ModuleItem;
-import sc.fiji.bdvpg.scijava.command.source.BrightnessAdjusterCommand;
-import sc.fiji.bdvpg.scijava.command.source.SourceColorChangerCommand;
-import sc.fiji.bdvpg.scijava.command.source.SourcesInvisibleMakerCommand;
-import sc.fiji.bdvpg.scijava.command.source.SourcesVisibleMakerCommand;
+import sc.fiji.bdvpg.scijava.command.source.*;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.*;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class SourceAndConverterPopupMenu
@@ -33,10 +29,10 @@ public class SourceAndConverterPopupMenu
 	{
 		popup = new JPopupMenu();
 
-		addCommand( SourcesInvisibleMakerCommand.class );
-		addCommand( SourcesVisibleMakerCommand.class);
-		addCommand( BrightnessAdjusterCommand.class);
-		addCommand( SourceColorChangerCommand.class);
+		addCommand(BrightnessAdjusterCommand.class);
+		addCommand(SourceColorChangerCommand.class);
+		addCommand(SourceAndConverterProjectionModeChangerCommand.class);
+		// TODO: Add more
 
 		return popup;
 	}

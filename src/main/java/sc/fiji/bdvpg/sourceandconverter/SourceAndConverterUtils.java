@@ -5,6 +5,7 @@ import bdv.ViewerImgLoader;
 import bdv.VolatileSpimSource;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.ARGBColorConverterSetup;
+import bdv.util.BdvHandle;
 import bdv.util.LUTConverterSetup;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
@@ -13,6 +14,7 @@ import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.sequence.Angle;
 import mpicbg.spim.data.sequence.Channel;
+import net.imglib2.RealPoint;
 import net.imglib2.Volatile;
 import net.imglib2.converter.Converter;
 import net.imglib2.converter.RealLUTConverter;
@@ -21,12 +23,17 @@ import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Util;
+import sc.fiji.bdvpg.bdv.BdvUtils;
 import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.source.PhysicalPositionWithinSourceChecker;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Following the logic of the repository, i.e. dealing with SourceAndConverter objects only,
@@ -362,4 +369,16 @@ public class SourceAndConverterUtils {
         return converter;
     }
 
+    public static List< SourceAndConverter > getSacsAtMousePosition( BdvHandle bdv )
+    {
+        final List< SourceAndConverter > sacs = SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverters( bdv );
+
+        final RealPoint physicalCoordinates = BdvUtils.getPhysicalMouseCoordinates( bdv );
+
+        final PhysicalPositionWithinSourceChecker determiner = new PhysicalPositionWithinSourceChecker( physicalCoordinates );
+
+        final List< SourceAndConverter > sacsContainingCoordinate = sacs.stream().filter( sac -> determiner.apply( sac.getSpimSource() ) ).collect( Collectors.toList() );
+
+        return sacsContainingCoordinate;
+    }
 }

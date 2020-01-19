@@ -338,7 +338,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         registerScijavaCommand(SourcesVisibleMakerCommand.class);
         registerScijavaCommand(BrightnessAdjusterCommand.class);
         registerScijavaCommand(SourceColorChangerCommand.class);
-        registerScijavaCommand(SacProjectionModeChangerCommand.class);
+        registerScijavaCommand( SourceAndConverterProjectionModeChangerCommand.class);
         this.getUI().addPopupLine();
         // Create new sources
         registerScijavaCommand(SourcesDuplicatorCommand.class);
