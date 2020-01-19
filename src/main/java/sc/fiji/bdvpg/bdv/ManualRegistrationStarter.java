@@ -5,6 +5,7 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
+import org.scijava.vecmath.Point3d;
 import sc.fiji.bdvpg.services.BdvService;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
@@ -100,7 +101,6 @@ public class ManualRegistrationStarter implements Runnable {
                 currentRegistration = currentRegistration.inverse();
                 currentRegistration = currentRegistration.concatenate(originalViewTransform);
 
-                // TODO check orthonormality !
                 // Sets view transform fo transiently wrapped soure to maintain relative position
                 displayedSacsWrapped.forEach(sac -> ((TransformedSource) sac.getSpimSource()).setFixedTransform(currentRegistration));
         };
@@ -151,7 +151,73 @@ public class ManualRegistrationStarter implements Runnable {
      * @return
      */
     public AffineTransform3D getCurrentTransform() {
-        return currentRegistration;
+        // TODO : check orthonormality
+        return ensureOrthoNormalTransform(currentRegistration);
+    }
+
+    // Maybe unnecessary : makes sure the transformation is orthonormal
+    AffineTransform3D ensureOrthoNormalTransform(AffineTransform3D at3D) {
+        AffineTransform3D correctedAffineTransform = new AffineTransform3D();
+        correctedAffineTransform.set(at3D);
+
+        // Gets three vectors
+        Point3d v1 = new Point3d(at3D.get(0,0), at3D.get(0,1), at3D.get(0,2));
+        Point3d v2 = new Point3d(at3D.get(1,0), at3D.get(1,1), at3D.get(1,2));
+
+        // 0 - Ensure v1 and v2 have the same norm
+        double normv1 = Math.sqrt(v1.x*v1.x+v1.y*v1.y+v1.z*v1.z);
+        double normv2 = Math.sqrt(v2.x*v2.x+v2.y*v2.y+v2.z*v2.z);
+
+        // If v1 and v2 do not have the same norm
+        if (Math.abs(normv1-normv2)/normv1>1e-10) {
+            // We make v2 having the norm of v1
+            v2.x = v2.x/normv2*normv1;
+            v2.y = v2.y/normv2*normv1;
+            v2.z = v2.z/normv2*normv1;
+
+            correctedAffineTransform.set(v2.x, 1,0);
+            correctedAffineTransform.set(v2.y, 1,1);
+            correctedAffineTransform.set(v2.z, 1,2);
+        }
+
+        // 1 - Ensure v1 and v2 are perpendicular
+
+        if (Math.abs(v1.x*v2.x+v1.y*v2.y+v1.z*v2.z)/(normv1*normv2)>(1e-10)) {
+            // v1 and v2 not perpendicular enough
+            // Compute the projection of v1 onto v2
+            Point3d u1 = new Point3d(v1.x/normv1, v1.y/normv1, v1.z/normv1);
+            double dotProductNormalized = (u1.x*v2.x+u1.y*v2.y+u1.z*v2.z);
+            v2.x = v2.x-dotProductNormalized*u1.x;
+            v2.y = v2.y-dotProductNormalized*u1.y;
+            v2.z = v2.z-dotProductNormalized*u1.z;
+
+            normv2 = Math.sqrt(v2.x*v2.x+v2.y*v2.y+v2.z*v2.z);
+            v2.x = v2.x/normv2*normv1;
+            v2.y = v2.y/normv2*normv1;
+            v2.z = v2.z/normv2*normv1;
+
+            correctedAffineTransform.set(v2.x, 1,0);
+            correctedAffineTransform.set(v2.y, 1,1);
+            correctedAffineTransform.set(v2.z, 1,2);
+        }
+
+        // 2 - We now set v3 as the cross product of v1 and v2, no matter what
+        double xr = (v1.y*v2.z-v1.z*v2.y)/normv1;
+        double yr = (v1.z*v2.x-v1.x*v2.z)/normv1;
+        double zr = (v1.x*v2.y-v1.y*v2.x)/normv1;
+
+        Point3d v3orthonormal = new Point3d(xr,yr,zr);
+
+        correctedAffineTransform.set(v3orthonormal.x,2,0);
+        correctedAffineTransform.set(v3orthonormal.y,2,1);
+        correctedAffineTransform.set(v3orthonormal.z,2,2);
+
+        return correctedAffineTransform;
+
+    }
+
+    void printPoint3d(String name, Point3d p) {
+        System.out.println(name+"["+p.x+", "+p.y+", "+p.z+"]");
     }
 
 }

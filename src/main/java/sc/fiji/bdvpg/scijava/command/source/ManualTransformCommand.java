@@ -7,12 +7,9 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStarter;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStopper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStopper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.services.BdvService;
 
 import javax.swing.*;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Manual Sources Transformation")
