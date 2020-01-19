@@ -205,6 +205,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      */
     boolean uiAvailable = false;
 
+    @Override
     public BdvSourceServiceUI getUI() {
         return ui;
     }
@@ -327,6 +328,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             for (SourceAndConverter src:srcs){
                 System.out.println(src.getSpimSource().getName());
             }}, "Display names");
+
         // Bdv add and remove
         registerScijavaCommand(BdvSourcesAdderCommand.class);
         registerScijavaCommand(BdvSourcesRemoverCommand.class);

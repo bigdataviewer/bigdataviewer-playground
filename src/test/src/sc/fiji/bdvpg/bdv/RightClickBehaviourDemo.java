@@ -1,17 +1,22 @@
 package sc.fiji.bdvpg.bdv;
 
 import bdv.util.BdvHandle;
+import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.InteractiveDisplayCanvasComponent;
+import org.scijava.command.CommandService;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
+import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
+import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterPopupMenu;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 /**
  * Demonstrates visualisation of two spimData sources.
@@ -38,6 +43,8 @@ public class RightClickBehaviourDemo
 			new BrightnessAutoAdjuster(sac, 0).run();
 		});
 
+
+		// Add context menu to bdv, with trigger "C"
 		final ClickBehaviourInstaller installer = new ClickBehaviourInstaller( bdvHandle, new ClickBehaviour()
 		{
 			@Override
@@ -52,14 +59,16 @@ public class RightClickBehaviourDemo
 
 	private static void showPopUp( BdvHandle bdv, int x, int y )
 	{
-		final JPopupMenu popup = new JPopupMenu();
+		final List< SourceAndConverter > sourceAndConverters = SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();
 
-		final JMenuItem hello = new JMenuItem( "Hello" );
-		popup.add( hello );
+		// TODO: have a convenience for returning an array in SourceAndConverterService?
+		// TODO: make issue about using List or [] !
+		SourceAndConverter[] sacs = new SourceAndConverter[sourceAndConverters.size()];
+		sacs = sourceAndConverters.toArray(sacs);
 
-		popup.show(
-				bdv.getBdvHandle().getViewerPanel().getDisplay(),
-				x, y);
+		final SourceAndConverterPopupMenu popupMenu = new SourceAndConverterPopupMenu( sacs );
+
+		popupMenu.getPopup().show( bdv.getViewerPanel().getDisplay(), x, y );
 
 	}
 

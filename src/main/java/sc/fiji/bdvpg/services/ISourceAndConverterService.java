@@ -3,6 +3,7 @@ package sc.fiji.bdvpg.services;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
 
 import java.util.List;
 import java.util.Map;
@@ -97,5 +98,7 @@ public interface ISourceAndConverterService
      * Finds the corresponding registered sac for a source.
      */
     SourceAndConverter getSourceAndConverterFromSource( Source source );
+
+    BdvSourceServiceUI getUI();
 
 }

@@ -469,10 +469,10 @@ public class BdvSourceServiceUI {
      * @param action
      * @param actionName
      */
-    public void addPopupAction(Consumer<SourceAndConverter[]> action, String actionName) {
+    public void addPopupAction( Consumer< SourceAndConverter[] > action, String actionName ) {
         // Show
         JMenuItem menuItem = new JMenuItem(actionName);
-        menuItem.addActionListener(e -> action.accept(getSelectedSourceAndConverters()));
+        menuItem.addActionListener(e -> action.accept( getSelectedSourceAndConverters() ));
         popup.add(menuItem);
     }
 
@@ -588,5 +588,7 @@ public class BdvSourceServiceUI {
         }
 
     }
+
+
 
 }
