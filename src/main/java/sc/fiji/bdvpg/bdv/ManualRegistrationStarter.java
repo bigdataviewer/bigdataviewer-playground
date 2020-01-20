@@ -151,7 +151,6 @@ public class ManualRegistrationStarter implements Runnable {
      * @return
      */
     public AffineTransform3D getCurrentTransform() {
-        // TODO : check orthonormality
         return ensureOrthoNormalTransform(currentRegistration);
     }
 
@@ -214,10 +213,6 @@ public class ManualRegistrationStarter implements Runnable {
 
         return correctedAffineTransform;
 
-    }
-
-    void printPoint3d(String name, Point3d p) {
-        System.out.println(name+"["+p.x+", "+p.y+", "+p.z+"]");
     }
 
 }
