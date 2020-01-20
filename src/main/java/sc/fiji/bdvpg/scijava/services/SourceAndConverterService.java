@@ -249,15 +249,6 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             if ( sac.getSpimSource().equals( source ) )
                 return sac;
 
-        // Try again, with unwrapping; (TODO: do we need this?)
-        if ( source instanceof TransformedSource )
-            source = ( ( TransformedSource ) source ).getWrappedSource();
-
-
-        for ( SourceAndConverter sac : sacs )
-            if ( sac.getSpimSource().equals( source ) )
-                return sac;
-
         return null;
     }
 

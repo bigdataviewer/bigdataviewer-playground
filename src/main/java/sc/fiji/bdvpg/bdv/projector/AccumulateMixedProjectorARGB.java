@@ -133,9 +133,6 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 		for ( Source<?> source : sources )
 		{
-			if ( source instanceof TransformedSource )
-				source = ( ( TransformedSource ) source ).getWrappedSource();
-
 			SourceAndConverter sac = SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSource( source );
 
 			final String projectionMode = (String) SourceAndConverterServices.getSourceAndConverterService().getMetadata( sac, PROJECTION_MODE );
