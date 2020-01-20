@@ -6,6 +6,7 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import ij.IJ;
 import ij.ImagePlus;
+import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -29,8 +30,9 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 public class ViewTransformSetAndLogDemo {
     public static void main(String[] args) {
 
-        // Initializes static SourceService and Display Service
-        SourceAndConverterServices.InitScijavaServices();
+        // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
+        ImageJ ij = new ImageJ();
+        ij.ui().showUI();
 
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");

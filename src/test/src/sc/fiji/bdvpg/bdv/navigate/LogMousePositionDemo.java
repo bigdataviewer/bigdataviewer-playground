@@ -5,6 +5,7 @@ import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import ij.IJ;
+import net.imagej.ImageJ;
 import ij.ImagePlus;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
@@ -25,8 +26,9 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 public class LogMousePositionDemo {
     public static void main(String... args) {
 
-        // Initializes static SourceService and Display Service
-        SourceAndConverterServices.InitScijavaServices();
+        // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
+        ImageJ ij = new ImageJ();
+        ij.ui().showUI();
 
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
@@ -53,6 +55,6 @@ public class LogMousePositionDemo {
         // log the current position
         new PositionLogger( bdvHandle ).run();
 
-
     }
+
 }

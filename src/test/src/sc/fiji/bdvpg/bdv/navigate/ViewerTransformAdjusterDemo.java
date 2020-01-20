@@ -2,6 +2,7 @@ package src.sc.fiji.bdvpg.bdv.navigate;
 
 import bdv.util.BdvHandle;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import net.imagej.ImageJ;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
@@ -18,8 +19,9 @@ public class ViewerTransformAdjusterDemo {
     public static void main(String[] args)
     {
 
-        // Initializes static SourceService and Display Service
-        SourceAndConverterServices.InitScijavaServices();
+        // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
+        ImageJ ij = new ImageJ();
+        ij.ui().showUI();
 
         // Gets active BdvHandle instance
         BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();

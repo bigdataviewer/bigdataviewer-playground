@@ -404,7 +404,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         bdvHandleToSacs = new HashMap<>();
         sacToBdvHandleRefs = new HashMap<>();
         bdvSourceAndConverterService.setDisplayService(this);
-        SourceAndConverterServices.sourceAndConverterBdvDisplayService = this;
+        SourceAndConverterServices.setSourceAndConverterDisplayService(this);
         log.accept("Service initialized.");
     }
 

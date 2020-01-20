@@ -228,7 +228,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             uiAvailable = true;
         }
         registerPopupActions();
-        SourceAndConverterServices.sourceAndConverterService = this;
+        SourceAndConverterServices.setSourceAndConverterService(this);
         log.accept("Service initialized.");
     }
 
