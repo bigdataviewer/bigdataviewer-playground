@@ -4,10 +4,10 @@ In this repository, we collect useful additions for the [BigDataViewer](https://
 ## List of actions
 * Read a source from disc
 * Add a source to a BDV
-* [Log the current mouse position](https://github.com/haesleinhuepf/bigdataviewer-playground/blob/master/src/test/src/sc/fiji/bdv/navigate/LogMousePositionDemo.java#L33)
-* [Log the current viewer transform](https://github.com/haesleinhuepf/bigdataviewer-playground/blob/master/src/test/src/sc/fiji/bdv/navigate/ViewTransformSetAndLogDemo.java#L35)
-* [Change the current viewer transform](https://github.com/haesleinhuepf/bigdataviewer-playground/blob/master/src/test/src/sc/fiji/bdv/navigate/ViewTransformSetAndLogDemo.java#L37-L40)
-* [Take a screenshot](https://github.com/haesleinhuepf/bigdataviewer-playground/blob/master/src/test/src/sc/fiji/bdv/screenshot/ScreenshotDemo.java)
+* [Log the current mouse position](https://github.com/haesleinhuepf/bigdataviewer-playground/blob/master/src/test/src/sc/fiji/bdvh/navigate/LogMousePositionDemo.java#L33)
+* [Log the current viewer transform](https://github.com/haesleinhuepf/bigdataviewer-playground/blob/master/src/test/src/sc/fiji/bdvh/navigate/ViewTransformSetAndLogDemo.java#L35)
+* [Change the current viewer transform](https://github.com/haesleinhuepf/bigdataviewer-playground/blob/master/src/test/src/sc/fiji/bdvh/navigate/ViewTransformSetAndLogDemo.java#L37-L40)
+* [Take a screenshot](https://github.com/haesleinhuepf/bigdataviewer-playground/blob/master/src/test/src/sc/fiji/bdvh/screenshot/ScreenshotDemo.java)
 
 ## Wishlist of actions
 Here we document actions we would like to have. If you know similar functionality in other repositories, feel free to contribute it here or send us a link where we can adopt code! Thanks :-)
@@ -19,7 +19,7 @@ Here we document actions we would like to have. If you know similar functionalit
 ## Coding guides
 We tried to follow these general guide lines:
 * Specific (atomic) functionality lives in a class implementing [Runnable](https://docs.oracle.com/javase/7/docs/api/java/lang/Runnable.html)
-  * The constructor takes a [BdvHandle](https://github.com/bigdataviewer/bigdataviewer-vistools/blob/master/src/main/java/bdv/util/BdvHandle.java) as parameter.
+  * The constructor takes a [BdvHandle](https://github.com/bigdataviewer/bigdataviewer-vistools/blob/master/src/main/java/bdvh/util/BdvHandle.java) as parameter.
   * More mandatory parameters for the functionality are handed over as additional constructor parameters.
   * Optional parameters are set with setter methods.
   * The `run()` method executes the concreate action.
@@ -35,7 +35,7 @@ Pseudo code example:
   }
 ```
   
-* Furthermore, [Demo code](https://github.com/haesleinhuepf/bigdataviewer-playground/tree/master/src/test/src/sc/fiji/bdv) in the test sources directory should demonstrate 
+* Furthermore, [Demo code](https://github.com/haesleinhuepf/bigdataviewer-playground/tree/master/src/test/src/sc/fiji/bdvh) in the test sources directory should demonstrate
   * the individual functionality, 
   * how to add it as key listeners to the BigDataViewer,
   * how to add it to the right-click menu of the BigDataViewer 

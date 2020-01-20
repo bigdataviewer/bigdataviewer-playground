@@ -186,7 +186,8 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     public List<SourceAndConverter> getSourceAndConverterFromSpimdata(AbstractSpimData asd) {
         return objectService.getObjects(SourceAndConverter.class)
                 .stream()
-                .filter(s -> ((HashSet<AbstractSpimData>) sacToMetadata.get(s).get(SPIM_DATA_INFO)).contains(asd))
+                .filter(s -> ((SpimDataInfo)sacToMetadata.get(s).get(SPIM_DATA_INFO)!=null))
+                .filter(s -> ((SpimDataInfo)sacToMetadata.get(s).get(SPIM_DATA_INFO)).asd.equals(asd))
                 .collect(Collectors.toList());
     }
 
@@ -331,6 +332,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         this.getUI().addPopupLine();
         // Create new sources
         registerScijavaCommand(SourcesDuplicatorCommand.class);
+        registerScijavaCommand(ManualTransformCommand.class);
         registerScijavaCommand(TransformedSourceWrapperCommand.class);
         registerScijavaCommand(SourcesResamplerCommand.class);
         registerScijavaCommand(ColorSourceCreatorCommand.class);

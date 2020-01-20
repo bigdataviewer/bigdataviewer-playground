@@ -33,6 +33,7 @@ public class ProjectionModeChanger implements Runnable, Consumer< SourceAndConve
     {
         if ( SourceAndConverterServices.getSourceAndConverterDisplayService()!=null)
             SourceAndConverterServices.getSourceAndConverterDisplayService().updateDisplays( sacs );
+
     }
 
     private void changeProjectionMode()
