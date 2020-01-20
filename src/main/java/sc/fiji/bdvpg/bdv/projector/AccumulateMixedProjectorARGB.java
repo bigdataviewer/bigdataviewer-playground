@@ -1,6 +1,6 @@
 package sc.fiji.bdvpg.bdv.projector;
 
-import bdv.tools.transformation.TransformedSource;
+import bdv.util.BdvHandle;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.render.AccumulateProjector;
@@ -21,30 +21,10 @@ import static sc.fiji.bdvpg.bdv.projector.Projection.PROJECTION_MODE_SUM;
 
 public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType, ARGBType >
 {
-	public static AccumulateProjectorFactory< ARGBType > factory = new AccumulateProjectorFactory< ARGBType >()
-	{
-		@Override
-		public AccumulateMixedProjectorARGB createAccumulateProjector(
-				final ArrayList< VolatileProjector > sourceProjectors,
-				final ArrayList< Source< ? > > sources,
-				final ArrayList< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
-				final RandomAccessibleInterval< ARGBType > targetScreenImage,
-				final int numThreads,
-				final ExecutorService executorService )
-		{
-			return new AccumulateMixedProjectorARGB(
-					sourceProjectors,
-					sources,
-					sourceScreenImages,
-					targetScreenImage,
-					numThreads,
-					executorService );
-		}
-	};
-
 	private final String[] projectionModes;
 
 	public AccumulateMixedProjectorARGB(
+			BdvHandle bdvHandle,
 			final ArrayList< VolatileProjector > sourceProjectors,
 			final ArrayList< Source< ? > > sources,
 			final ArrayList< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
@@ -53,7 +33,7 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 			final ExecutorService executorService )
 	{
 		super( sourceProjectors, sourceScreenImages, target, numThreads, executorService );
-		projectionModes = getProjectionModes( sources );
+		this.projectionModes = getProjectionModes( bdvHandle, sources );
 	}
 
 	@Override
@@ -124,8 +104,10 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 	}
 
-	private String[] getProjectionModes( ArrayList< Source< ? > > sources )
+	private String[] getProjectionModes( BdvHandle bdvHandle, ArrayList< Source< ? > > sources )
 	{
+		// TODO: use bdvHandle to fetch projectionModes of proper sacs
+
 		final List< SourceAndConverter > sacs = SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();
 		final String[] projectionModes = new String[ sources.size() ];
 
