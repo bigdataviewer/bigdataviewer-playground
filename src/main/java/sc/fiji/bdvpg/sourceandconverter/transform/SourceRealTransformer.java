@@ -13,13 +13,13 @@ import java.util.function.Function;
 // Another information : the transform is duplicated during the call to setFixedTransform ->
 // Transform not passed by reference
 
-public class SourceRealTransform implements Runnable, Function<SourceAndConverter,SourceAndConverter> {
+public class SourceRealTransformer implements Runnable, Function<SourceAndConverter,SourceAndConverter> {
 
     SourceAndConverter sourceIn;
     RealTransform rt;
     SourceAndConverter sourceOut;
 
-    public SourceRealTransform(SourceAndConverter src, RealTransform rt) {
+    public SourceRealTransformer(SourceAndConverter src, RealTransform rt) {
         this.sourceIn = src;
         this.rt = rt;
     }

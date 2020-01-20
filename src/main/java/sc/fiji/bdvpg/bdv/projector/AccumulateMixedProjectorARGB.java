@@ -10,7 +10,6 @@ import net.imglib2.Cursor;
 import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.ARGBType;
-import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService;
 import sc.fiji.bdvpg.services.BdvService;
 
 import java.util.ArrayList;
@@ -82,14 +81,14 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 			String projectionMode = getProjectionMode( sourceIndex, sourceAndConverterToMetadata );
 
-			if ( projectionMode.equals( "Sum" ) )
+			if ( projectionMode.equals( Projection.PROJECTION_MODE_SUM ) )
 			{
 				aAccu += a;
 				rAccu += r;
 				gAccu += g;
 				bAccu += b;
 			}
-			else if ( projectionMode.equals( "Avg" ))
+			else if ( projectionMode.equals( Projection.PROJECTION_MODE_AVG ))
 			{
 				aAvg += a;
 				rAvg += r;
@@ -140,9 +139,9 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 			if ( sac.getSpimSource().equals( source ) )
 			{
 				final Set< String > metadata = sourceAndConverterToMetadata.get( sac ).keySet();
-				if ( metadata.contains( "ProjectionMode" ) )
+				if ( metadata.contains( Projection.PROJECTION_MODE ) )
 				{
-					projectionMode = (String) sourceAndConverterToMetadata.get( sac ).get( "ProjectionMode" );
+					projectionMode = (String) sourceAndConverterToMetadata.get( sac ).get( Projection.PROJECTION_MODE );
 				}
 			}
 		}

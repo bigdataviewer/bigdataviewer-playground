@@ -13,7 +13,7 @@ import java.util.function.Consumer;
  * This service stores Sources but on top of it,
  * It contains a Map which contains any object which can be linked to the sourceandconverter.
  *
- * Objects needed for display should be created by a  IBdvSourceAndConverterDisplayService
+ * Objects needed for display should be created by a  BdvSourceAndConverterDisplayService
  * - Converter to ARGBType, ConverterSetup, and Volatile view
  *
  * TODO : Think more carefully : maybe the volatile sourceandconverter should be done here...
