@@ -7,6 +7,7 @@ import bdv.viewer.SourceAndConverter;
 import ij.IJ;
 import ij.ImagePlus;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -15,7 +16,7 @@ import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
@@ -42,8 +43,9 @@ public class ManualRegistrationDemo {
 
     public static void main(String[] args) {
 
-        // Initializes static SourceService and Display Service
-        BdvService.InitScijavaServices();
+        // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
+        ImageJ ij = new ImageJ();
+        ij.ui().showUI();
 
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
@@ -55,7 +57,7 @@ public class ManualRegistrationDemo {
         Source source = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle = BdvService.getSourceAndConverterDisplayService().getNewBdv();
+        BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getNewBdv();
 
         // Creates SourceAndConverter Reference
         SourceAndConverter sacReference = SourceAndConverterUtils.createSourceAndConverter(source);
@@ -72,8 +74,8 @@ public class ManualRegistrationDemo {
             sacToTransform = SourceAndConverterUtils.createSourceAndConverter(source);
             new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 0))).run();
 
-            BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
-            BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sacToTransform);
+            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
+            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacToTransform);
 
             // Adjust view on sourceandconverter
             new ViewerTransformAdjuster(bdvHandle, sacReference).run();
@@ -98,8 +100,8 @@ public class ManualRegistrationDemo {
             sacToTransform = new SourceAffineTransformer(sacToTransform, new AffineTransform3D()).getSourceOut();
             new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 0))).run();
 
-            BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
-            BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sacToTransform);
+            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
+            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacToTransform);
 
             // Adjust view on sourceandconverter
             new ViewerTransformAdjuster(bdvHandle, sacReference).run();
@@ -125,15 +127,15 @@ public class ManualRegistrationDemo {
             AbstractSpimData asd =  new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
 
             // Show all SourceAndConverter associated with above SpimData
-            BdvService.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
-                BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+            SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
+                SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
                 new BrightnessAutoAdjuster(sac, 0).run();
             });
 
-            BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
+            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
             new ViewerTransformAdjuster(bdvHandle, sacReference).run();
 
-            List<SourceAndConverter> sacList = BdvService.getSourceAndConverterService()
+            List<SourceAndConverter> sacList = SourceAndConverterServices.getSourceAndConverterService()
                     .getSourceAndConverterFromSpimdata(asd);
 
             ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacList.toArray(new SourceAndConverter[sacList.size()]));
@@ -160,15 +162,15 @@ public class ManualRegistrationDemo {
             AbstractSpimData asd =  new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
 
             // Show all SourceAndConverter associated with above SpimData
-            BdvService.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
-                BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+            SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
+                SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
                 new BrightnessAutoAdjuster(sac, 0).run();
             });
 
-            BdvService.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
+            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
             new ViewerTransformAdjuster(bdvHandle, sacReference).run();
 
-            List<SourceAndConverter> sacList = BdvService.getSourceAndConverterService()
+            List<SourceAndConverter> sacList = SourceAndConverterServices.getSourceAndConverterService()
                     .getSourceAndConverterFromSpimdata(asd);
 
 

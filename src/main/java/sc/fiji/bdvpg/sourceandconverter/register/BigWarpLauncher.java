@@ -6,7 +6,7 @@ import bdv.util.ViewerPanelHandle;
 import bdv.viewer.SourceAndConverter;
 import bigwarp.BigWarp;
 import mpicbg.spim.data.SpimDataException;
-import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,10 +96,10 @@ public class BigWarpLauncher implements Runnable {
             SourceAndConverter gridSource = bdvHandleP.getViewerPanel().getState().getSources().get(nSources-1);
             SourceAndConverter warpMagnitudeSource = bdvHandleP.getViewerPanel().getState().getSources().get(nSources-2);
 
-            BdvService.getSourceAndConverterService().register(gridSource);
-            BdvService.getSourceAndConverterService().register(warpMagnitudeSource);
+            SourceAndConverterServices.getSourceAndConverterService().register(gridSource);
+            SourceAndConverterServices.getSourceAndConverterService().register(warpMagnitudeSource);
             for (SourceAndConverter sac : warpedSources) {
-                BdvService.getSourceAndConverterService().register(sac);
+                SourceAndConverterServices.getSourceAndConverterService().register(sac);
             }
 
         } catch (SpimDataException e) {

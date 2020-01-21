@@ -5,7 +5,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Make Sources Invisible")
@@ -15,7 +15,7 @@ public class SourcesInvisibleMakerCommand implements Command {
     SourceAndConverter[] sacs;
 
     @Parameter
-    BdvSourceAndConverterDisplayService bsds;
+    SourceAndConverterBdvDisplayService bsds;
 
     @Override
     public void run() {

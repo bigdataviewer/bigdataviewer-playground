@@ -11,7 +11,7 @@ import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
-import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import javax.swing.*;
@@ -26,7 +26,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService.SPIM_DATA_INFO;
+import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
 
 /**
  * Swing UI for Scijava BdvSourceAndConverterService
@@ -53,7 +53,7 @@ public class BdvSourceServiceUI {
     /**
      * Linked SourceAndConverter Scijava service
      */
-    BdvSourceAndConverterService bss;
+    SourceAndConverterService sourceAndConverterService;
 
     /**
      * JFrame container
@@ -107,8 +107,8 @@ public class BdvSourceServiceUI {
      */
     List<SpimDataFilterNode> spimdataFilterNodes = new ArrayList<>();
 
-    public BdvSourceServiceUI(BdvSourceAndConverterService bss) {
-        this.bss = bss;
+    public BdvSourceServiceUI( SourceAndConverterService sourceAndConverterService ) {
+        this.sourceAndConverterService = sourceAndConverterService;
 
         frame = new JFrame("Bdv Sources");
         panel = new JPanel(new BorderLayout());
@@ -120,7 +120,7 @@ public class BdvSourceServiceUI {
         allSourcesNode = new SourceFilterNode("All Sources", (sac) -> true, false);
         top.add(allSourcesNode);
 
-        SourceFilterNode spimDataSources = new SourceFilterNode("In SpimData", (sac) -> bss.getSourceAndConverterToMetadata().get(sac).containsKey( SPIM_DATA_INFO ), false);
+        SourceFilterNode spimDataSources = new SourceFilterNode("In SpimData", (sac) -> sourceAndConverterService.getSacToMetadata().get(sac).containsKey( SPIM_DATA_INFO ), false);
         allSourcesNode.add(spimDataSources);
 
         model = (DefaultTreeModel)tree.getModel();
@@ -139,9 +139,9 @@ public class BdvSourceServiceUI {
                 }
                 // Double Click : display source, if possible
                 /*if (e.getClickCount()==2 && !e.isConsumed()) {
-                    if (BdvService.getSourceDisplayService()!=null) {
+                    if (SacServies.getSourceDisplayService()!=null) {
                         for (SourceAndConverter sac: getSelectedSourceAndConverters()) {
-                            BdvService.getSourceDisplayService().show(sac);
+                            SacServies.getSourceDisplayService().show(sac);
                         }
                     }
                 }*/
@@ -196,9 +196,9 @@ public class BdvSourceServiceUI {
                     }
             });
             nodeTransformedSource.add(nodeAffineTransformGetter);
-            if (getSourceAndConvertersOfSource(source.getWrappedSource()).size()>0) {
+            if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).size()>0) {
                 // at least A sourceandconverteralready exists for this source
-                getSourceAndConvertersOfSource(source.getWrappedSource()).forEach((src) -> {
+                sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeTransformedSource.add(wrappedSourceNode);
                             appendInspectorResult(wrappedSourceNode, src);
@@ -207,7 +207,7 @@ public class BdvSourceServiceUI {
             } else {
                 // no source and converter exist for this source : creates it
                 SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getWrappedSource());
-                bss.register(src);
+                sourceAndConverterService.register(src);
                 DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                 nodeTransformedSource.add(wrappedSourceNode);
                 appendInspectorResult(wrappedSourceNode, src);
@@ -227,9 +227,9 @@ public class BdvSourceServiceUI {
                 }
             });
             nodeWarpedSource.add(nodeRealTransformGetter);
-            if (getSourceAndConvertersOfSource(source.getWrappedSource()).size()>0) {
+            if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).size()>0) {
                 // at least A sourceandconverteralready exists for this source
-                getSourceAndConvertersOfSource(source.getWrappedSource()).forEach((src) -> {
+                sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeWarpedSource.add(wrappedSourceNode);
                             appendInspectorResult(wrappedSourceNode, src);
@@ -238,7 +238,7 @@ public class BdvSourceServiceUI {
             } else {
                 // no source and converter exist for this source : creates it
                 SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getWrappedSource());
-                bss.register(src);
+                sourceAndConverterService.register(src);
                 DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                 nodeWarpedSource.add(wrappedSourceNode);
                 appendInspectorResult(wrappedSourceNode, src);
@@ -253,9 +253,9 @@ public class BdvSourceServiceUI {
             DefaultMutableTreeNode nodeOrigin = new DefaultMutableTreeNode("Origin");
             nodeResampledSource.add(nodeOrigin);
 
-            if (getSourceAndConvertersOfSource(source.getOriginalSource()).size()>0) {
+            if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getOriginalSource()).size()>0) {
                 // at least A sourceandconverteralready exists for this source
-                getSourceAndConvertersOfSource(source.getOriginalSource()).forEach((src) -> {
+                sourceAndConverterService.getSourceAndConvertersFromSource(source.getOriginalSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeOrigin.add(wrappedSourceNode);
                             appendInspectorResult(wrappedSourceNode, src);
@@ -264,7 +264,7 @@ public class BdvSourceServiceUI {
             } else {
                 // no source and converter exist for this source : creates it
                 SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getOriginalSource());
-                bss.register(src);
+                sourceAndConverterService.register(src);
                 DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                 nodeOrigin.add(wrappedSourceNode);
                 appendInspectorResult(wrappedSourceNode, src);
@@ -273,9 +273,9 @@ public class BdvSourceServiceUI {
             DefaultMutableTreeNode nodeResampler = new DefaultMutableTreeNode("Sampler Model");
             nodeResampledSource.add(nodeResampler);
 
-            if (getSourceAndConvertersOfSource(source.getModelResamplerSource()).size()>0) {
+            if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getModelResamplerSource()).size()>0) {
                 // at least A sourceandconverteralready exists for this source
-                getSourceAndConvertersOfSource(source.getModelResamplerSource()).forEach((src) -> {
+                sourceAndConverterService.getSourceAndConvertersFromSource(source.getModelResamplerSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeResampler.add(wrappedSourceNode);
                             appendInspectorResult(wrappedSourceNode, src);
@@ -284,7 +284,7 @@ public class BdvSourceServiceUI {
             } else {
                 // no source and converter exist for this source : creates it
                 SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getModelResamplerSource());
-                bss.register(src);
+                sourceAndConverterService.register(src);
                 DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                 nodeResampler.add(wrappedSourceNode);
                 appendInspectorResult(wrappedSourceNode, src);
@@ -293,9 +293,7 @@ public class BdvSourceServiceUI {
         }
     }
 
-    public List<SourceAndConverter> getSourceAndConvertersOfSource(Source src) {
-        return bss.getSourceAndConverters().stream().filter(sac -> sac.getSpimSource().equals(src)).collect(Collectors.toList());
-    }
+
 
     public void update(SourceAndConverter sac) {
         if (displayedSource.contains(sac)) {
@@ -318,8 +316,8 @@ public class BdvSourceServiceUI {
         // Fetch All Spimdatas from all Sources
         Set<AbstractSpimData> currentSpimdatas = new HashSet<>();
         displayedSource.forEach(sac -> {
-            if (bss.getSourceAndConverterToMetadata().get(sac).containsKey( SPIM_DATA_INFO )) {
-                currentSpimdatas.add(((BdvSourceAndConverterService.SpimDataInfo)bss.getSourceAndConverterToMetadata().get(sac).get( SPIM_DATA_INFO )).asd);
+            if ( sourceAndConverterService.getSacToMetadata().get(sac).containsKey( SPIM_DATA_INFO )) {
+                currentSpimdatas.add((( SourceAndConverterService.SpimDataInfo) sourceAndConverterService.getSacToMetadata().get(sac).get( SPIM_DATA_INFO )).asd);
             }
         });
 
@@ -537,11 +535,11 @@ public class BdvSourceServiceUI {
         public AbstractSpimData asd;
 
         public boolean filter(SourceAndConverter sac) {
-            Map<String, Object> props = bss.getSourceAndConverterToMetadata().get(sac);
+            Map<String, Object> props = sourceAndConverterService.getSacToMetadata().get(sac);
             assert props!=null;
             //System.out.println("Testing "+sac.getSpimSource().getName()+" vs "+asd.toString());
             //assert props.get(SPIM_DATA) instanceof Set<BdvSourceAndConverterService.SpimDataInfo>;
-            return (props.containsKey( SPIM_DATA_INFO ))&&((BdvSourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).asd.equals(asd);
+            return (props.containsKey( SPIM_DATA_INFO ))&&(( SourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).asd.equals(asd);
         }
 
         public SpimDataFilterNode(String name, AbstractSpimData spimdata) {
@@ -574,14 +572,14 @@ public class BdvSourceServiceUI {
         }
 
         public boolean filter(SourceAndConverter sac) {
-            Map<String, Object> props = bss.getSourceAndConverterToMetadata().get(sac);
+            Map<String, Object> props = sourceAndConverterService.getSacToMetadata().get(sac);
             assert props!=null;
             assert props.containsKey( SPIM_DATA_INFO );
             //System.out.println("Testing "+sac.getSpimSource().getName()+" vs "+asd.toString());
             //assert props.get(SPIM_DATA) instanceof Set<BdvSourceAndConverterService.SpimDataInfo>;
 
-            AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd = ( AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) ((BdvSourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).asd;
-            Integer idx = ((BdvSourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).setupId;
+            AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd = ( AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) (( SourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).asd;
+            Integer idx = (( SourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).setupId;
 
             return asd.getSequenceDescription().getViewSetups().get(idx).getAttributes().values().contains(e);
         }

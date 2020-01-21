@@ -5,7 +5,6 @@ import bdv.ViewerImgLoader;
 import bdv.VolatileSpimSource;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.ARGBColorConverterSetup;
-import bdv.util.BdvFunctions;
 import bdv.util.LUTConverterSetup;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
@@ -21,14 +20,11 @@ import net.imglib2.display.ColorConverter;
 import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.volatiles.VolatileARGBType;
 import net.imglib2.util.Util;
 import sc.fiji.bdvpg.converter.RealARGBColorConverter;
-import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -59,12 +55,12 @@ public class SourceAndConverterUtils {
     /**
      * Standard logger
      */
-    public static Consumer<String> log = (str) -> System.out.println(BdvSourceAndConverterDisplayService.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = (str) -> System.out.println( SourceAndConverterBdvDisplayService.class.getSimpleName()+":"+str);
 
     /**
      * Error logger
      */
-    public static Consumer<String> errlog = (str) -> System.err.println(BdvSourceAndConverterDisplayService.class.getSimpleName()+":"+str);
+    public static Consumer<String> errlog = (str) -> System.err.println( SourceAndConverterBdvDisplayService.class.getSimpleName()+":"+str);
     
     /**
      * Core function : makes SourceAndConverter object out of a Source

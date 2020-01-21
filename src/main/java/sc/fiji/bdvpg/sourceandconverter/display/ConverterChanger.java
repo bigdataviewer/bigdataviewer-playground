@@ -2,7 +2,7 @@ package sc.fiji.bdvpg.sourceandconverter.display;
 
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.converter.Converter;
-import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.function.Function;
 
@@ -43,7 +43,7 @@ public class ConverterChanger implements Runnable, Function<SourceAndConverter, 
                     sourceAndConverter.getSpimSource(),
                     nonVolatileConverter);
         }
-        BdvService.getSourceAndConverterService().register(sac);
+        SourceAndConverterServices.getSourceAndConverterService().register(sac);
         return sac;
     }
 }

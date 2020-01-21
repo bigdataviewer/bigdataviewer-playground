@@ -2,8 +2,9 @@ package src.sc.fiji.bdvpg.bdv.navigate;
 
 import bdv.util.BdvHandle;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import net.imagej.ImageJ;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 /**
@@ -18,11 +19,12 @@ public class ViewerTransformAdjusterDemo {
     public static void main(String[] args)
     {
 
-        // Initializes static SourceService and Display Service
-        BdvService.InitScijavaServices();
+        // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
+        ImageJ ij = new ImageJ();
+        ij.ui().showUI();
 
         // Gets active BdvHandle instance
-        BdvHandle bdvHandle = BdvService.getSourceAndConverterDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
 
         // Import SpimData object
         SpimDataFromXmlImporter sdix = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml");
@@ -30,10 +32,10 @@ public class ViewerTransformAdjusterDemo {
         AbstractSpimData asd = sdix.get();
 
         // Register to the sourceandconverter service
-        BdvService.getSourceAndConverterService().register(asd);
+        SourceAndConverterServices.getSourceAndConverterService().register(asd);
 
-        BdvService.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source -> {
-            BdvService.getSourceAndConverterDisplayService().show(bdvHandle, source);
+        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source -> {
+            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, source);
         });
 
         // Import SpimData object
@@ -42,12 +44,12 @@ public class ViewerTransformAdjusterDemo {
         asd = sdix.get();
 
         // Register to the sourceandconverter service
-        BdvService.getSourceAndConverterService().register(asd);
+        SourceAndConverterServices.getSourceAndConverterService().register(asd);
 
-        BdvService.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source -> {
-            BdvService.getSourceAndConverterDisplayService().show(bdvHandle, source);
+        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source -> {
+            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, source);
         });
 
-        new ViewerTransformAdjuster(bdvHandle, BdvService.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
+        new ViewerTransformAdjuster(bdvHandle, SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
     }
 }

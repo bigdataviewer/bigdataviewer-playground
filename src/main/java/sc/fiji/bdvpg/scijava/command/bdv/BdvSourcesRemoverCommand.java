@@ -5,11 +5,8 @@ import bdv.viewer.SourceAndConverter;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterDisplayService;
-import sc.fiji.bdvpg.services.BdvService;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bdv>Remove Sources From Bdv")
 public class BdvSourcesRemoverCommand implements Command {
@@ -23,7 +20,7 @@ public class BdvSourcesRemoverCommand implements Command {
     @Override
     public void run() {
         for (SourceAndConverter src:srcs_in) {
-            BdvService.getSourceAndConverterDisplayService().remove(bdvh, src);
+            SourceAndConverterServices.getSourceAndConverterDisplayService().remove(bdvh, src);
         }
     }
 }
