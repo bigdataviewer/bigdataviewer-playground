@@ -541,7 +541,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
                 sacToBdvHandleRefs.get(sac).forEach(bdvhr -> {
                     if (bdvhr.bdvh.equals(bdvHandle)) {
                         sacArray[bdvhr.indexInBdv-1] = sac;
-                        //System.out.println("Sac "+sac.getSpimSource().getName()+" is at index "+(bdvhr.indexInBdv-1));
+                        //log.accept("Sac "+sac.getSpimSource().getName()+" is at index "+(bdvhr.indexInBdv-1));
                     }
                 });
             });

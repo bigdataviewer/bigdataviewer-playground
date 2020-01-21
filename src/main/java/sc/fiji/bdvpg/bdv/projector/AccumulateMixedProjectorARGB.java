@@ -61,14 +61,14 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 				continue;
 			}
 
-			if ( projectionModes[sourceIndex] == ( Projection.PROJECTION_MODE_SUM ) )
+			if ( projectionModes[sourceIndex].equals( Projection.PROJECTION_MODE_SUM ) )
 			{
 				aAccu += a;
 				rAccu += r;
 				gAccu += g;
 				bAccu += b;
 			}
-			else if ( projectionModes[sourceIndex] == ( Projection.PROJECTION_MODE_AVG ))
+			else if ( projectionModes[sourceIndex].equals( Projection.PROJECTION_MODE_AVG ))
 			{
 				aAvg += a;
 				rAvg += r;
@@ -136,10 +136,11 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 			final String projectionMode = (String) SourceAndConverterServices.getSourceAndConverterService().getMetadata( sac, PROJECTION_MODE );
 
-			if ( projectionMode == null )
+			if ( projectionMode == null ) {
 				projectionModes[sourceIndex++] = PROJECTION_MODE_SUM;
-			else
+			} else {
 				projectionModes[sourceIndex++] = projectionMode;
+			}
 
 		}
 
