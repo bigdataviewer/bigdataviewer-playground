@@ -1,13 +1,12 @@
 package sc.fiji.bdvpg.scijava.processors;
 
-import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.module.Module;
 import org.scijava.module.process.AbstractPostprocessorPlugin;
 import org.scijava.module.process.PostprocessorPlugin;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import java.util.function.Consumer;
 
@@ -15,7 +14,7 @@ import java.util.function.Consumer;
 public class BdvSpimDataPostprocessor extends AbstractPostprocessorPlugin {
 
     @Parameter
-    BdvSourceAndConverterService bss;
+	SourceAndConverterService bss;
 
     public static Consumer<String> log = (str) -> System.out.println( BdvSpimDataPostprocessor.class.getSimpleName()+":"+str);
 

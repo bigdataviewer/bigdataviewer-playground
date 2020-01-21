@@ -6,7 +6,7 @@ import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
 import org.scijava.vecmath.Point3d;
-import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
 import java.util.ArrayList;
@@ -77,17 +77,17 @@ public class ManualRegistrationStarter implements Runnable {
         for (int i=0;i<sacs.length;i++) {
 
             // Wraps into a Transformed Source, if the source was displayed originally
-            if (BdvService.getSourceAndConverterDisplayService().getDisplaysOf(sacs[i]).contains(bdvHandle)) {
+            if (SourceAndConverterServices.getSourceAndConverterDisplayService().getDisplaysOf(sacs[i]).contains(bdvHandle)) {
                 displayedSacsWrapped.add(new SourceAffineTransformer(sacs[i], new AffineTransform3D()).getSourceOut());
                 originallyDisplayedSacs.add(sacs[i]);
             }
         }
 
         // Remove from display the originally dispalyed sources
-        BdvService.getSourceAndConverterDisplayService().remove(bdvHandle, originallyDisplayedSacs.toArray(new SourceAndConverter[originallyDisplayedSacs.size()]));
+        SourceAndConverterServices.getSourceAndConverterDisplayService().remove(bdvHandle, originallyDisplayedSacs.toArray(new SourceAndConverter[originallyDisplayedSacs.size()]));
 
         // Shows the displayed wrapped Source
-        BdvService.getSourceAndConverterDisplayService().show(bdvHandle, displayedSacsWrapped.toArray(new SourceAndConverter[displayedSacsWrapped.size()]));
+        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, displayedSacsWrapped.toArray(new SourceAndConverter[displayedSacsWrapped.size()]));
 
         // View of the BdvHandle before starting the registration
         AffineTransform3D originalViewTransform = new AffineTransform3D();

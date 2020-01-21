@@ -8,7 +8,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.sourceandconverter.register.BigWarpLauncher;
 
 import java.util.Arrays;
@@ -35,7 +35,7 @@ public class BigWarpLauncherCommand implements Command {
     BdvHandle bdvhP;
 
     @Parameter
-    BdvSourceAndConverterDisplayService bsds;
+	SourceAndConverterBdvDisplayService bsds;
 
     public void run() {
         List<SourceAndConverter> movingSacs = Arrays.stream(movingSources).collect(Collectors.toList());

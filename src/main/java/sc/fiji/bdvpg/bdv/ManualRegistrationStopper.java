@@ -8,8 +8,9 @@ import mpicbg.spim.data.registration.ViewRegistration;
 import mpicbg.spim.data.registration.ViewTransform;
 import mpicbg.spim.data.registration.ViewTransformAffine;
 import net.imglib2.realtransform.AffineTransform3D;
-import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService;
-import sc.fiji.bdvpg.services.BdvService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
 import java.lang.reflect.Method;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import static sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService.SPIM_DATA_INFO;
+import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
 
 // TODO : Ensure volatile is working with source which are not AbstractSpimSource
 
@@ -95,19 +96,19 @@ public class ManualRegistrationStopper implements Runnable {
      * @return
      */
     public static SourceAndConverter mutateLastSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
-        assert BdvService
+        assert SourceAndConverterServices
                 .getSourceAndConverterService()
-                .getSourceAndConverterToMetadata().get(sac).containsKey(SPIM_DATA_INFO);
-        assert BdvService
+                .getSacToMetadata().get(sac).containsKey(SPIM_DATA_INFO);
+        assert SourceAndConverterServices
                 .getSourceAndConverterService()
-                .getSourceAndConverterToMetadata().get(sac).get(SPIM_DATA_INFO) instanceof BdvSourceAndConverterService.SpimDataInfo;
+                .getSacToMetadata().get(sac).get(SPIM_DATA_INFO) instanceof SourceAndConverterService.SpimDataInfo;
 
-        BdvSourceAndConverterService.SpimDataInfo sdi = ((BdvSourceAndConverterService.SpimDataInfo)
-                BdvService.getSourceAndConverterService()
-                        .getSourceAndConverterToMetadata().get(sac).get(SPIM_DATA_INFO));
+        SourceAndConverterService.SpimDataInfo sdi = ((SourceAndConverterService.SpimDataInfo)
+                SourceAndConverterServices.getSourceAndConverterService()
+                        .getSacToMetadata().get(sac).get(SPIM_DATA_INFO));
 
         // TODO : find a way to pass the ref of starter into this function ? but static looks great...
-        BdvHandle bdvHandle = BdvService.getSourceAndConverterDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
 
         int timePoint = bdvHandle.getViewerPanel().getState().getCurrentTimepoint();
 
@@ -153,19 +154,19 @@ public class ManualRegistrationStopper implements Runnable {
      * @return
      */
     public static SourceAndConverter appendNewSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
-        assert BdvService
+        assert SourceAndConverterServices
                 .getSourceAndConverterService()
-                .getSourceAndConverterToMetadata().get(sac).containsKey(SPIM_DATA_INFO);
-        assert BdvService
+                .getSacToMetadata().get(sac).containsKey(SPIM_DATA_INFO);
+        assert SourceAndConverterServices
                 .getSourceAndConverterService()
-                .getSourceAndConverterToMetadata().get(sac).get(SPIM_DATA_INFO) instanceof BdvSourceAndConverterService.SpimDataInfo;
+                .getSacToMetadata().get(sac).get(SPIM_DATA_INFO) instanceof SourceAndConverterService.SpimDataInfo;
 
-        BdvSourceAndConverterService.SpimDataInfo sdi = ((BdvSourceAndConverterService.SpimDataInfo)
-                BdvService.getSourceAndConverterService()
-                        .getSourceAndConverterToMetadata().get(sac).get(SPIM_DATA_INFO));
+        SourceAndConverterService.SpimDataInfo sdi = ((SourceAndConverterService.SpimDataInfo)
+                SourceAndConverterServices.getSourceAndConverterService()
+                        .getSacToMetadata().get(sac).get(SPIM_DATA_INFO));
 
-        // TODO : find a ref to starter
-        BdvHandle bdvHandle = BdvService.getSourceAndConverterDisplayService().getActiveBdv();
+        // TODO : find a way to pass the ref of starter into this function ? but static looks great...
+        BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
 
         int timePoint = bdvHandle.getViewerPanel().getState().getCurrentTimepoint();
 
@@ -253,10 +254,10 @@ public class ManualRegistrationStopper implements Runnable {
 
         // Removes temporary TransformedSourceAndConverter - in two times for performance issue
         List<SourceAndConverter> tempSacs = starter.getTransformedSourceAndConverterDisplayed();
-        BdvService.getSourceAndConverterDisplayService().remove(starter.bdvHandle,tempSacs.toArray(new SourceAndConverter[tempSacs.size()]));
+        SourceAndConverterServices.getSourceAndConverterDisplayService().remove(starter.bdvHandle,tempSacs.toArray(new SourceAndConverter[tempSacs.size()]));
 
         for (SourceAndConverter sac: tempSacs) {
-            BdvService.getSourceAndConverterService().remove(sac);
+            SourceAndConverterServices.getSourceAndConverterService().remove(sac);
         }
 
         int nSources = starter.getOriginalSourceAndConverter().length;
@@ -273,7 +274,7 @@ public class ManualRegistrationStopper implements Runnable {
         }
 
         // Calls display ( array for performance issue )
-        BdvService.getSourceAndConverterDisplayService().show(starter.getBdvHandle(),
+        SourceAndConverterServices.getSourceAndConverterDisplayService().show(starter.getBdvHandle(),
                 transformedSacsToDisplay.toArray(new SourceAndConverter[transformedSacsToDisplay.size()]));
 
     }

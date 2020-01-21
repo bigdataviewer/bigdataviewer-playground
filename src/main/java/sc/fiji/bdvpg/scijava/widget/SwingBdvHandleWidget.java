@@ -1,7 +1,6 @@
 package sc.fiji.bdvpg.scijava.widget;
 
 import bdv.util.BdvHandle;
-import bdv.viewer.SourceAndConverter;
 import org.scijava.Priority;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
@@ -10,17 +9,10 @@ import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.scijava.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.services.BdvSourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +41,7 @@ public class SwingBdvHandleWidget extends SwingInputWidget<BdvHandle> implements
     }
 
     @Parameter
-    BdvSourceAndConverterService bss;
+    SourceAndConverterService sourceAndConverterService;
 
     JList list;
 
