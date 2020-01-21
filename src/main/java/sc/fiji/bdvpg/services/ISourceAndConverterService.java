@@ -94,8 +94,8 @@ public interface ISourceAndConverterService
     void registerPopupSourcesAction(Consumer<SourceAndConverter[]> action, String actionName);
 
     /**
-     * Finds the corresponding registered sac for a source.
+     * Finds the list of corresponding registered sac for a source.
      */
-    SourceAndConverter getSourceAndConverterFromSource( Source source );
+    List<SourceAndConverter> getSourceAndConvertersFromSource( Source source );
 
 }

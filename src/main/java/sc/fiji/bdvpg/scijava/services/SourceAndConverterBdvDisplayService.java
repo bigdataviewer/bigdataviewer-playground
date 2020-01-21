@@ -527,13 +527,28 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
     /**
      * Returns the list of sacs held within a BdvHandle ( whether they are visible or not )
+     * List is ordered by index in the BdvHandle -> complexification to implement
+     * the mixed projector
      * @param bdvHandle
      * @return
      */
     public List<SourceAndConverter> getSourceAndConverterOf(BdvHandle bdvHandle) {
-        // Otherwise this needs to be created ? How ?
-        assert bdvHandleToSacs.get(bdvHandle)!=null;
-        return bdvHandleToSacs.get(bdvHandle);
+        if (bdvHandleToSacs.get(bdvHandle)!=null) {
+            int nSources = bdvHandleToSacs.get(bdvHandle).size();
+            assert nSources == bdvHandle.getViewerPanel().getState().numSources();
+            SourceAndConverter[] sacArray = new SourceAndConverter[nSources];
+            bdvHandleToSacs.get(bdvHandle).forEach(sac -> {
+                sacToBdvHandleRefs.get(sac).forEach(bdvhr -> {
+                    if (bdvhr.bdvh.equals(bdvHandle)) {
+                        sacArray[bdvhr.indexInBdv-1] = sac;
+                        //System.out.println("Sac "+sac.getSpimSource().getName()+" is at index "+(bdvhr.indexInBdv-1));
+                    }
+                });
+            });
+            return bdvHandleToSacs.get(bdvHandle);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     /**

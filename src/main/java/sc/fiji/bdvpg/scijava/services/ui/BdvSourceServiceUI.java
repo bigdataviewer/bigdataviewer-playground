@@ -196,9 +196,9 @@ public class BdvSourceServiceUI {
                     }
             });
             nodeTransformedSource.add(nodeAffineTransformGetter);
-            if (getSourceAndConvertersOfSource(source.getWrappedSource()).size()>0) {
+            if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).size()>0) {
                 // at least A sourceandconverteralready exists for this source
-                getSourceAndConvertersOfSource(source.getWrappedSource()).forEach((src) -> {
+                sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeTransformedSource.add(wrappedSourceNode);
                             appendInspectorResult(wrappedSourceNode, src);
@@ -227,9 +227,9 @@ public class BdvSourceServiceUI {
                 }
             });
             nodeWarpedSource.add(nodeRealTransformGetter);
-            if (getSourceAndConvertersOfSource(source.getWrappedSource()).size()>0) {
+            if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).size()>0) {
                 // at least A sourceandconverteralready exists for this source
-                getSourceAndConvertersOfSource(source.getWrappedSource()).forEach((src) -> {
+                sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeWarpedSource.add(wrappedSourceNode);
                             appendInspectorResult(wrappedSourceNode, src);
@@ -253,9 +253,9 @@ public class BdvSourceServiceUI {
             DefaultMutableTreeNode nodeOrigin = new DefaultMutableTreeNode("Origin");
             nodeResampledSource.add(nodeOrigin);
 
-            if (getSourceAndConvertersOfSource(source.getOriginalSource()).size()>0) {
+            if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getOriginalSource()).size()>0) {
                 // at least A sourceandconverteralready exists for this source
-                getSourceAndConvertersOfSource(source.getOriginalSource()).forEach((src) -> {
+                sourceAndConverterService.getSourceAndConvertersFromSource(source.getOriginalSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeOrigin.add(wrappedSourceNode);
                             appendInspectorResult(wrappedSourceNode, src);
@@ -273,9 +273,9 @@ public class BdvSourceServiceUI {
             DefaultMutableTreeNode nodeResampler = new DefaultMutableTreeNode("Sampler Model");
             nodeResampledSource.add(nodeResampler);
 
-            if (getSourceAndConvertersOfSource(source.getModelResamplerSource()).size()>0) {
+            if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getModelResamplerSource()).size()>0) {
                 // at least A sourceandconverteralready exists for this source
-                getSourceAndConvertersOfSource(source.getModelResamplerSource()).forEach((src) -> {
+                sourceAndConverterService.getSourceAndConvertersFromSource(source.getModelResamplerSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeResampler.add(wrappedSourceNode);
                             appendInspectorResult(wrappedSourceNode, src);
@@ -293,10 +293,7 @@ public class BdvSourceServiceUI {
         }
     }
 
-    // TODO:
-    public List<SourceAndConverter> getSourceAndConvertersOfSource(Source src) {
-        return sourceAndConverterService.getSourceAndConverters().stream().filter( sac -> sac.getSpimSource().equals(src)).collect(Collectors.toList());
-    }
+
 
     public void update(SourceAndConverter sac) {
         if (displayedSource.contains(sac)) {

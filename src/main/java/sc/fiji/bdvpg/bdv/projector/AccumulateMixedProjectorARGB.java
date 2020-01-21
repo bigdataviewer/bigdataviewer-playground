@@ -13,6 +13,8 @@ import net.imglib2.type.numeric.ARGBType;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -106,16 +108,31 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 	private String[] getProjectionModes( BdvHandle bdvHandle, ArrayList< Source< ? > > sources )
 	{
-		// TODO: use bdvHandle to fetch projectionModes of proper sacs
+		// We need to reconstitute the sequence of action that lead to the current indexes
 
-		final List< SourceAndConverter > sacs = SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();
+		// Getting the sources present in the BdvHandle
+		List<SourceAndConverter> sacsInBdvHandle = SourceAndConverterServices
+				.getSourceAndConverterDisplayService()
+				.getSourceAndConverterOf(bdvHandle);
+
+		// Fetching the indexes of visible sources in the BdvHandle
+		List<Integer> visibleIndexes = bdvHandle.getViewerPanel().getState().getVisibleSourceIndices();
+		// In ascending order
+		Collections.sort(visibleIndexes);
+
+		SourceAndConverter[] sacArray = new SourceAndConverter[visibleIndexes.size()];
+
+		for (int idx = 0; idx<visibleIndexes.size(); idx++) {
+			sacArray[idx] = sacsInBdvHandle.get(visibleIndexes.get(idx));
+		}
+
+		final List< SourceAndConverter > sacs = Arrays.asList(sacArray);//SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();
 		final String[] projectionModes = new String[ sources.size() ];
 
 		int sourceIndex = 0;
 
-		for ( Source<?> source : sources )
+		for ( SourceAndConverter<?> sac : sacs )
 		{
-			SourceAndConverter sac = SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSource( source );
 
 			final String projectionMode = (String) SourceAndConverterServices.getSourceAndConverterService().getMetadata( sac, PROJECTION_MODE );
 
@@ -129,12 +146,4 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 		return projectionModes;
 	}
 
-	private SourceAndConverter getSourceAndConverter( List< SourceAndConverter > sacs, Source< ? > source )
-	{
-		for ( SourceAndConverter sac : sacs )
-			if ( sac.getSpimSource().equals( source ) )
-				return sac;
-
-		return null;
-	}
 }

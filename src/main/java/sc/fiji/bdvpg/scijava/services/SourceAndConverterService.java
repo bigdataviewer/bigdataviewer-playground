@@ -241,16 +241,8 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         }
     }
 
-    @Override
-    public SourceAndConverter getSourceAndConverterFromSource( Source source )
-    {
-        final List< SourceAndConverter > sacs = getSourceAndConverters();
-
-        for ( SourceAndConverter sac : sacs )
-            if ( sac.getSpimSource().equals( source ) )
-                return sac;
-
-        return null;
+    public List<SourceAndConverter> getSourceAndConvertersFromSource(Source src) {
+        return getSourceAndConverters().stream().filter( sac -> sac.getSpimSource().equals(src)).collect(Collectors.toList());
     }
 
     @Parameter
