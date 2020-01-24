@@ -27,6 +27,9 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 	{
 		final List< SourceAndConverter > sacs = SourceAndConverterUtils.getSacsAtMousePosition( bdv );
 
+		if ( sacs.size() == 0 )
+			return;
+
 		SourceAndConverter[] sacArray = new SourceAndConverter[sacs.size()];
 		sacArray = sacs.toArray(sacArray);
 
