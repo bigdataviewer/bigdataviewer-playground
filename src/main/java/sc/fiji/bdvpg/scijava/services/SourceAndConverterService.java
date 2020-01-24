@@ -129,7 +129,11 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     @Override
     public Object getMetadata( SourceAndConverter sac, String key )
     {
-        return sacToMetadata.get( sac ).get( key );
+        if (sacToMetadata.containsKey(sac)) {
+            return sacToMetadata.get(sac).get(key);
+        } else {
+            return null;
+        }
     }
 
     /**
