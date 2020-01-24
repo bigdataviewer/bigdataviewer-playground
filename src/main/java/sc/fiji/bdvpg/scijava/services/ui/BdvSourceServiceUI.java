@@ -1,9 +1,9 @@
 package sc.fiji.bdvpg.scijava.services.ui;
 
+import bdv.AbstractSpimSource;
 import bdv.img.WarpedSource;
 import bdv.tools.transformation.TransformedSource;
 import bdv.util.ResampledSource;
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.base.Entity;
@@ -12,6 +12,7 @@ import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import javax.swing.*;
@@ -153,12 +154,12 @@ public class BdvSourceServiceUI {
         // Delete node for inspection result only
         JMenuItem menuItem = new JMenuItem("Delete Inspect Node");
         menuItem.addActionListener(e -> {
-                for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
-                    if ((tp.getLastPathComponent()).toString().startsWith("Inspect Results [")) {
-                        model.removeNodeFromParent((DefaultMutableTreeNode)tp.getLastPathComponent());
+                    for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
+                        if ((tp.getLastPathComponent()).toString().startsWith("Inspect Results [")) {
+                            model.removeNodeFromParent((DefaultMutableTreeNode)tp.getLastPathComponent());
+                        }
                     }
                 }
-            }
         );
         popup.add(menuItem);
 
@@ -180,25 +181,35 @@ public class BdvSourceServiceUI {
         model.reload(top);
     }
 
+    public void appendMetadata(DefaultMutableTreeNode parent, SourceAndConverter sac) {
+        Map<String, Object> metadata = SourceAndConverterServices.getSourceAndConverterService().getSacToMetadata().get(sac);
+        metadata.keySet().forEach(k -> {
+            DefaultMutableTreeNode nodeMetaKey = new DefaultMutableTreeNode(k);
+            parent.add(nodeMetaKey);
+            DefaultMutableTreeNode nodeMetaValue = new DefaultMutableTreeNode(metadata.get(k));
+            nodeMetaKey.add(nodeMetaValue);
+        });
+    }
+
     public void appendInspectorResult(DefaultMutableTreeNode parent, SourceAndConverter sac) {
         if (sac.getSpimSource() instanceof TransformedSource) {
             DefaultMutableTreeNode nodeTransformedSource = new DefaultMutableTreeNode("Transformed Source");
             parent.add(nodeTransformedSource);
             TransformedSource source = (TransformedSource) sac.getSpimSource();
             DefaultMutableTreeNode nodeAffineTransformGetter = new DefaultMutableTreeNode(new Supplier<AffineTransform3D>(){
-                    public AffineTransform3D get() {
-                        AffineTransform3D at3D = new AffineTransform3D();
-                        source.getFixedTransform(at3D);
-                        return at3D;
-                    }
-                    public String toString() {
-                        return "AffineTransform["+source.getName()+"]";
-                    }
+                public AffineTransform3D get() {
+                    AffineTransform3D at3D = new AffineTransform3D();
+                    source.getFixedTransform(at3D);
+                    return at3D;
+                }
+                public String toString() {
+                    return "AffineTransform["+source.getName()+"]";
+                }
             });
             nodeTransformedSource.add(nodeAffineTransformGetter);
-            if (getSourceAndConvertersOfSource(source.getWrappedSource()).size()>0) {
+            if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).size()>0) {
                 // at least A sourceandconverteralready exists for this source
-                getSourceAndConvertersOfSource(source.getWrappedSource()).forEach((src) -> {
+                sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeTransformedSource.add(wrappedSourceNode);
                             appendInspectorResult(wrappedSourceNode, src);
@@ -212,6 +223,7 @@ public class BdvSourceServiceUI {
                 nodeTransformedSource.add(wrappedSourceNode);
                 appendInspectorResult(wrappedSourceNode, src);
             }
+            appendMetadata(nodeTransformedSource,sac);
         }
 
         if (sac.getSpimSource() instanceof WarpedSource) {
@@ -227,9 +239,9 @@ public class BdvSourceServiceUI {
                 }
             });
             nodeWarpedSource.add(nodeRealTransformGetter);
-            if (getSourceAndConvertersOfSource(source.getWrappedSource()).size()>0) {
+            if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).size()>0) {
                 // at least A sourceandconverteralready exists for this source
-                getSourceAndConvertersOfSource(source.getWrappedSource()).forEach((src) -> {
+                sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeWarpedSource.add(wrappedSourceNode);
                             appendInspectorResult(wrappedSourceNode, src);
@@ -243,6 +255,7 @@ public class BdvSourceServiceUI {
                 nodeWarpedSource.add(wrappedSourceNode);
                 appendInspectorResult(wrappedSourceNode, src);
             }
+            appendMetadata(nodeWarpedSource,sac);
         }
 
         if (sac.getSpimSource() instanceof ResampledSource) {
@@ -253,9 +266,9 @@ public class BdvSourceServiceUI {
             DefaultMutableTreeNode nodeOrigin = new DefaultMutableTreeNode("Origin");
             nodeResampledSource.add(nodeOrigin);
 
-            if (getSourceAndConvertersOfSource(source.getOriginalSource()).size()>0) {
+            if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getOriginalSource()).size()>0) {
                 // at least A sourceandconverteralready exists for this source
-                getSourceAndConvertersOfSource(source.getOriginalSource()).forEach((src) -> {
+                sourceAndConverterService.getSourceAndConvertersFromSource(source.getOriginalSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeOrigin.add(wrappedSourceNode);
                             appendInspectorResult(wrappedSourceNode, src);
@@ -273,9 +286,9 @@ public class BdvSourceServiceUI {
             DefaultMutableTreeNode nodeResampler = new DefaultMutableTreeNode("Sampler Model");
             nodeResampledSource.add(nodeResampler);
 
-            if (getSourceAndConvertersOfSource(source.getModelResamplerSource()).size()>0) {
+            if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getModelResamplerSource()).size()>0) {
                 // at least A sourceandconverteralready exists for this source
-                getSourceAndConvertersOfSource(source.getModelResamplerSource()).forEach((src) -> {
+                sourceAndConverterService.getSourceAndConvertersFromSource(source.getModelResamplerSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeResampler.add(wrappedSourceNode);
                             appendInspectorResult(wrappedSourceNode, src);
@@ -289,14 +302,17 @@ public class BdvSourceServiceUI {
                 nodeResampler.add(wrappedSourceNode);
                 appendInspectorResult(wrappedSourceNode, src);
             }
+            appendMetadata(nodeResampledSource,sac);
+        }
 
+        if (sac.getSpimSource() instanceof AbstractSpimSource) {
+            DefaultMutableTreeNode nodeSpimSource = new DefaultMutableTreeNode("Spim Source");
+            parent.add(nodeSpimSource);
+            appendMetadata(nodeSpimSource,sac);
         }
     }
 
-    // TODO:
-    public List<SourceAndConverter> getSourceAndConvertersOfSource(Source src) {
-        return sourceAndConverterService.getSourceAndConverters().stream().filter( sac -> sac.getSpimSource().equals(src)).collect(Collectors.toList());
-    }
+
 
     public void update(SourceAndConverter sac) {
         if (displayedSource.contains(sac)) {
@@ -327,22 +343,22 @@ public class BdvSourceServiceUI {
         // Check for obsolete spimdatafilternodes
         spimdataFilterNodes.forEach(fnode -> {
             if (!currentSpimdatas.contains(fnode.asd)) {
-                 model.removeNodeFromParent(fnode);
+                model.removeNodeFromParent(fnode);
             }
         });
 
         // Check for new spimdata
         currentSpimdatas.forEach(asd -> {
-                //System.out.println("Test "+sdi.toString());
-                if ((spimdataFilterNodes.size()==0)||(spimdataFilterNodes.stream().noneMatch(fnode -> fnode.asd.equals(asd)))) {
-                    SpimDataFilterNode newNode = new SpimDataFilterNode("SpimData "+spimdataFilterNodes.size(), asd);
-                    spimdataFilterNodes.add(newNode);
-                    addEntityFilterNodes(newNode, asd);
-                    top.insert(newNode, 0);
-                    model.reload(top);
-                    //System.out.println("Adding");
+                    //System.out.println("Test "+sdi.toString());
+                    if ((spimdataFilterNodes.size()==0)||(spimdataFilterNodes.stream().noneMatch(fnode -> fnode.asd.equals(asd)))) {
+                        SpimDataFilterNode newNode = new SpimDataFilterNode("SpimData "+spimdataFilterNodes.size(), asd);
+                        spimdataFilterNodes.add(newNode);
+                        addEntityFilterNodes(newNode, asd);
+                        top.insert(newNode, 0);
+                        model.reload(top);
+                        //System.out.println("Adding");
+                    }
                 }
-            }
         );
     }
 

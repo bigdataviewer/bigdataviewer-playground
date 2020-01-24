@@ -55,8 +55,6 @@ public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBTyp
 		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, n = 0;
 		int aAccu = 0, rAccu = 0, gAccu = 0, bAccu = 0;
 
-		int sourceIndex = 0;
-
 		for ( final Cursor< ? extends ARGBType > access : accesses )
 		{
 			final int value = access.get().get();

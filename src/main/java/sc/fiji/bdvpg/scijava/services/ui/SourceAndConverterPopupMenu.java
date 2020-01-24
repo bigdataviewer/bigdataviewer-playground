@@ -19,7 +19,8 @@ public class SourceAndConverterPopupMenu
 
 	public SourceAndConverterPopupMenu( SourceAndConverter[] sacs )
 	{
-		this.commandService = SourceAndConverterServices.getIJ().command();;
+		// TODO: Is this the best way to get the CommandService?
+		this.commandService = SourceAndConverterServices.getSourceAndConverterDisplayService().getCommandService();
 		this.sacs = sacs;
 
 		createPopupMenu();

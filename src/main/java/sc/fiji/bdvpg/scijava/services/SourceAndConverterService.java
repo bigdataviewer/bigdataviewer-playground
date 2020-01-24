@@ -129,7 +129,11 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     @Override
     public Object getMetadata( SourceAndConverter sac, String key )
     {
-        return sacToMetadata.get( sac ).get( key );
+        if (sacToMetadata.containsKey(sac)) {
+            return sacToMetadata.get(sac).get(key);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -186,7 +190,8 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     public List<SourceAndConverter> getSourceAndConverterFromSpimdata(AbstractSpimData asd) {
         return objectService.getObjects(SourceAndConverter.class)
                 .stream()
-                .filter(s -> ((HashSet<AbstractSpimData>) sacToMetadata.get(s).get(SPIM_DATA_INFO)).contains(asd))
+                .filter(s -> ((SpimDataInfo)sacToMetadata.get(s).get(SPIM_DATA_INFO)!=null))
+                .filter(s -> ((SpimDataInfo)sacToMetadata.get(s).get(SPIM_DATA_INFO)).asd.equals(asd))
                 .collect(Collectors.toList());
     }
 
@@ -228,7 +233,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             uiAvailable = true;
         }
         registerPopupActions();
-        SourceAndConverterServices.sourceAndConverterService = this;
+        SourceAndConverterServices.setSourceAndConverterService(this);
         log.accept("Service initialized.");
     }
 
@@ -241,25 +246,8 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         }
     }
 
-    @Override
-    public SourceAndConverter getSourceAndConverterFromSource( Source source )
-    {
-        final List< SourceAndConverter > sacs = getSourceAndConverters();
-
-        for ( SourceAndConverter sac : sacs )
-            if ( sac.getSpimSource().equals( source ) )
-                return sac;
-
-        // Try again, with unwrapping; (TODO: do we need this?)
-        if ( source instanceof TransformedSource )
-            source = ( ( TransformedSource ) source ).getWrappedSource();
-
-
-        for ( SourceAndConverter sac : sacs )
-            if ( sac.getSpimSource().equals( source ) )
-                return sac;
-
-        return null;
+    public List<SourceAndConverter> getSourceAndConvertersFromSource(Source src) {
+        return getSourceAndConverters().stream().filter( sac -> sac.getSpimSource().equals(src)).collect(Collectors.toList());
     }
 
     @Parameter
@@ -342,6 +330,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         this.getUI().addPopupLine();
         // Create new sources
         registerScijavaCommand(SourcesDuplicatorCommand.class);
+        registerScijavaCommand(ManualTransformCommand.class);
         registerScijavaCommand(TransformedSourceWrapperCommand.class);
         registerScijavaCommand(SourcesResamplerCommand.class);
         registerScijavaCommand(ColorSourceCreatorCommand.class);
