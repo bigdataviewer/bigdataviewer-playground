@@ -1,6 +1,5 @@
 package sc.fiji.bdvpg.scijava.services;
 
-import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
@@ -28,6 +27,7 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -226,27 +226,86 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         scriptService.addAlias(AbstractSpimData.class);
         // -- TODO End of to check
         sacToMetadata = new HashMap<>();
+
+        registerDefaultActions();
         if (uiService!=null) {
             log.accept("uiService detected : Constructing JPanel for BdvSourceAndConverterService");
             ui = new BdvSourceServiceUI(this);
             uiAvailable = true;
         }
-        registerPopupActions();
+
         SourceAndConverterServices.setSourceAndConverterService(this);
         log.accept("Service initialized.");
     }
 
-    //Map<String, Consumer<SourceAndConverter[]>> popupactions = new HashMap<>();
-
-    public void registerPopupSourcesAction(Consumer<SourceAndConverter[]> action, String actionName) {
-        if (uiAvailable) {
-            //popupactions.put(actionName, action);
-            ui.addPopupAction(action, actionName);
-        }
-    }
-
     public List<SourceAndConverter> getSourceAndConvertersFromSource(Source src) {
         return getSourceAndConverters().stream().filter( sac -> sac.getSpimSource().equals(src)).collect(Collectors.toList());
+    }
+
+
+    Map<String, Consumer<SourceAndConverter[]>> actionMap = new ConcurrentHashMap<>();
+
+    public void registerAction(String actionName, Consumer<SourceAndConverter[]> action) {
+        if (actionMap.containsKey(actionName)) {
+            System.err.println("Overriding action "+actionName);
+        }
+        actionMap.put(actionName, action);
+    }
+
+    public void removeAction(String actionName) {
+        actionMap.remove(actionName);
+    }
+
+    public Consumer<SourceAndConverter[]> getAction(String actionName) {
+        return actionMap.get(actionName);
+    }
+
+    /**
+     *
+     * @return a list of of action name / keys / identifiers
+     */
+    public Set<String> getActionsKeys() {
+        return actionMap.keySet();
+    }
+
+    final public static String getCommandName(Class<? extends Command> c) {
+        String menuPath = c.getDeclaredAnnotation(Plugin.class).menuPath();
+        return menuPath.substring(menuPath.lastIndexOf(">")+1);
+    }
+
+    void registerDefaultActions() {
+        this.registerAction("Display names", (srcs) -> {
+            for (SourceAndConverter src:srcs){
+                System.out.println(src.getSpimSource().getName());
+            }});
+        // Bdv add and remove
+        registerScijavaCommand(BdvSourcesAdderCommand.class);
+        registerScijavaCommand(BdvSourcesRemoverCommand.class);
+        registerScijavaCommand(SourcesInvisibleMakerCommand.class);
+        registerScijavaCommand(SourcesVisibleMakerCommand.class);
+        registerScijavaCommand(BrightnessAdjusterCommand.class);
+        registerScijavaCommand(SourceColorChangerCommand.class);
+        registerScijavaCommand(SacProjectionModeChangerCommand.class);
+        registerScijavaCommand(SourcesDuplicatorCommand.class);
+        registerScijavaCommand(ManualTransformCommand.class);
+        registerScijavaCommand(TransformedSourceWrapperCommand.class);
+        registerScijavaCommand(ColorSourceCreatorCommand.class);
+        registerScijavaCommand(LUTSourceCreatorCommand.class);
+        registerScijavaCommand(SourcesRemoverCommand.class);
+        registerScijavaCommand(XmlHDF5ExporterCommand.class);
+
+        // registerScijavaCommand(SourcesResamplerCommand.class); Too many arguments -> need to define which one is used
+        registerAction(getCommandName(SourcesResamplerCommand.class),
+                (sacs) -> {
+                    //try {
+                    commandService.run(SourcesResamplerCommand.class, true, "sourcesToResample", sacs);//.get();
+                    //} catch (InterruptedException e) {
+                    //    e.printStackTrace();
+                    //} catch (ExecutionException e) {
+                    //    e.printStackTrace();
+                    //}
+                });
+
     }
 
     @Parameter
@@ -271,11 +330,11 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                 for (ModuleItem input: ci.inputs()) {
                     if (input.getType().equals(SourceAndConverter.class)) {
                         // It's an action which takes a SourceAndConverter
-                        registerPopupSourcesAction(
+                        registerAction(ci.getTitle(),
                                 (sacs) -> {
                                     // Todo : improve by sending the parameters all over again
                                     //try {
-                                    for (SourceAndConverter sac:sacs) {
+                                    for (SourceAndConverter sac : sacs) {
                                         commandService.run(ci, true, input.getName(), sac);//.get(); TODO understand why get is impossible
                                     }
                                     //} catch (InterruptedException e) {
@@ -283,15 +342,14 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                                     //} catch (ExecutionException e) {
                                     //    e.printStackTrace();
                                     //}
-                                },
-                                ci.getTitle());
+                                });
 
                         log.accept("Registering action entitled "+ci.getTitle()+" from command "+ci.getClassName());
 
                     }
                     if (input.getType().equals(SourceAndConverter[].class)) {
                         // It's an action which takes a SourceAndConverter List
-                        registerPopupSourcesAction(
+                        registerAction(ci.getTitle(),
                                 (sacs) -> {
                                     //try {
                                     commandService.run(ci, true, input.getName(), sacs);//.get();
@@ -300,8 +358,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                                     //} catch (ExecutionException e) {
                                     //    e.printStackTrace();
                                     //}
-                                },
-                                ci.getTitle());
+                                });
                         log.accept("Registering action entitled "+ci.getTitle()+" from command "+ci.getClassName());
                     }
                 }
@@ -310,39 +367,9 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
     }
 
-    public void registerPopupActions() {
-        this.registerPopupSourcesAction((srcs) -> {
-            for (SourceAndConverter src:srcs){
-                System.out.println(src.getSpimSource().getName());
-            }}, "Display names");
-        // Bdv add and remove
-        registerScijavaCommand(BdvSourcesAdderCommand.class);
-        registerScijavaCommand(BdvSourcesRemoverCommand.class);
-        this.getUI().addPopupLine();
-        // Display
-        registerScijavaCommand(SourcesInvisibleMakerCommand.class);
-        registerScijavaCommand(SourcesVisibleMakerCommand.class);
-        registerScijavaCommand(BrightnessAdjusterCommand.class);
-        registerScijavaCommand(SourceColorChangerCommand.class);
-        registerScijavaCommand(SacProjectionModeChangerCommand.class);
-        this.getUI().addPopupLine();
-        // Create new sources
-        registerScijavaCommand(SourcesDuplicatorCommand.class);
-        registerScijavaCommand(ManualTransformCommand.class);
-        registerScijavaCommand(TransformedSourceWrapperCommand.class);
-        registerScijavaCommand(SourcesResamplerCommand.class);
-        registerScijavaCommand(ColorSourceCreatorCommand.class);
-        registerScijavaCommand(LUTSourceCreatorCommand.class);
-        this.getUI().addPopupLine();
-        // Export and remove
-        registerScijavaCommand(SourcesRemoverCommand.class);
-        registerScijavaCommand(XmlHDF5ExporterCommand.class);
-
-    }
-
    public class SpimDataInfo {
 
-        public AbstractSpimData asd;
+        public final AbstractSpimData asd;
         public int setupId;
 
         public SpimDataInfo(AbstractSpimData asd, int setupId) {

@@ -6,6 +6,7 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -85,17 +86,36 @@ public interface ISourceAndConverterService
      */
     Object getMetadata(SourceAndConverter sac, String key);
 
-
-    /**
-     * If supported, this will allow to display actions in a popup window in a ui
-     * @param action
-     * @param actionName
-     */
-    void registerPopupSourcesAction(Consumer<SourceAndConverter[]> action, String actionName);
-
     /**
      * Finds the list of corresponding registered sac for a source.
      */
     List<SourceAndConverter> getSourceAndConvertersFromSource( Source source );
+
+    /**
+     * Register an action ( a consumer of sourceandconverter array)
+     * @param actionName
+     * @param action
+     * TODO : link a description ?
+     */
+    void registerAction(String actionName, Consumer<SourceAndConverter[]> action);
+
+    /**
+     * Removes an action from the registration
+     * @param actionName
+     */
+    void removeAction(String actionName);
+
+    /**
+     *
+     * @return a list of of action name / keys / identifiers
+     */
+    Set<String> getActionsKeys();
+
+    /**
+     * Gets an action from its identifier
+     * @param actionName
+     * @return
+     */
+    Consumer<SourceAndConverter[]> getAction(String actionName);
 
 }

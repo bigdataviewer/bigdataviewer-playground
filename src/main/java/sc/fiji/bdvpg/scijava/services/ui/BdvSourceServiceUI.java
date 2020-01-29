@@ -11,6 +11,11 @@ import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
+import org.scijava.command.Command;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
+import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
+import sc.fiji.bdvpg.scijava.command.source.*;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
@@ -28,6 +33,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
+import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getCommandName;
 
 /**
  * Swing UI for Scijava BdvSourceAndConverterService
@@ -108,6 +114,27 @@ public class BdvSourceServiceUI {
      */
     List<SpimDataFilterNode> spimdataFilterNodes = new ArrayList<>();
 
+    static String[] popupActions = {
+            getCommandName(BdvSourcesAdderCommand.class),
+            getCommandName(BdvSourcesRemoverCommand.class),
+            "PopupLine",
+            getCommandName(SourcesInvisibleMakerCommand.class),
+            getCommandName(SourcesVisibleMakerCommand.class),
+            getCommandName(BrightnessAdjusterCommand.class),
+            getCommandName(SourceColorChangerCommand.class),
+            getCommandName(SacProjectionModeChangerCommand.class),
+            "PopupLine",
+            getCommandName(SourcesDuplicatorCommand.class),
+            getCommandName(ManualTransformCommand.class),
+            getCommandName(TransformedSourceWrapperCommand.class),
+            getCommandName(SourcesResamplerCommand.class),
+            getCommandName(ColorSourceCreatorCommand.class),
+            getCommandName(LUTSourceCreatorCommand.class),
+            "PopupLine",
+            getCommandName(SourcesRemoverCommand.class),
+            getCommandName(XmlHDF5ExporterCommand.class),
+    };
+
     public BdvSourceServiceUI( SourceAndConverterService sourceAndConverterService ) {
         this.sourceAndConverterService = sourceAndConverterService;
 
@@ -149,7 +176,7 @@ public class BdvSourceServiceUI {
             }
         });
 
-        this.addPopupAction(this::inspectSources, "Inspect Sources");
+        this.sourceAndConverterService.registerAction("Inspect Sources", this::inspectSources);
 
         // Delete node for inspection result only
         JMenuItem menuItem = new JMenuItem("Delete Inspect Node");
@@ -162,6 +189,14 @@ public class BdvSourceServiceUI {
                 }
         );
         popup.add(menuItem);
+
+        for (String actionName:popupActions){
+            if (actionName.equals("PopupLine")) {
+                this.addPopupLine();
+            } else{
+                this.addPopupAction(actionName, sourceAndConverterService.getAction(actionName));
+            }
+        }
 
         frame.add(panel);
         frame.pack();
@@ -311,8 +346,6 @@ public class BdvSourceServiceUI {
             appendMetadata(nodeSpimSource,sac);
         }
     }
-
-
 
     public void update(SourceAndConverter sac) {
         if (displayedSource.contains(sac)) {
@@ -485,10 +518,14 @@ public class BdvSourceServiceUI {
      * @param action
      * @param actionName
      */
-    public void addPopupAction(Consumer<SourceAndConverter[]> action, String actionName) {
-        // Show
+    public void addPopupAction( String actionName, Consumer<SourceAndConverter[]> action ) {
+        if (action==null) {
+            System.err.println("No action defined for action named "+actionName);
+        }
         JMenuItem menuItem = new JMenuItem(actionName);
-        menuItem.addActionListener(e -> action.accept(getSelectedSourceAndConverters()));
+        menuItem.addActionListener(e -> action.accept(
+                getSelectedSourceAndConverters()
+        ));
         popup.add(menuItem);
     }
 
