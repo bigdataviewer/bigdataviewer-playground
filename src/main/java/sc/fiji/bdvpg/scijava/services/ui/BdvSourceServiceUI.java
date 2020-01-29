@@ -377,7 +377,9 @@ public class BdvSourceServiceUI {
         // Check for obsolete spimdatafilternodes
         spimdataFilterNodes.forEach(fnode -> {
             if (!currentSpimdatas.contains(fnode.asd)) {
-                model.removeNodeFromParent(fnode);
+                if (fnode.getParent()!=null) {
+                    model.removeNodeFromParent(fnode);
+                }
             }
         });
 
