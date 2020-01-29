@@ -376,6 +376,10 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             this.asd = asd;
             this.setupId =setupId;
         }
+
+        public String toString() {
+            return asd.toString()+": setupId = "+setupId;
+        }
    }
 
 }

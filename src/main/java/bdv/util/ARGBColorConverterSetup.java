@@ -82,4 +82,8 @@ public class ARGBColorConverterSetup implements ConverterSetup
     {
         this.viewer = viewer;
     }
+
+    public String toString() {
+        return this.getClass().getSimpleName()+" : "+converters.get( 0 ).getColor().toString();
+    }
 }

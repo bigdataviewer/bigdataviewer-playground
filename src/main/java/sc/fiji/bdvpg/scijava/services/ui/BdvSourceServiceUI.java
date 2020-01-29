@@ -117,6 +117,7 @@ public class BdvSourceServiceUI {
     static String[] popupActions = {
             getCommandName(BdvSourcesAdderCommand.class),
             getCommandName(BdvSourcesRemoverCommand.class),
+            "Inspect Sources",
             "PopupLine",
             getCommandName(SourcesInvisibleMakerCommand.class),
             getCommandName(SourcesVisibleMakerCommand.class),
