@@ -91,7 +91,7 @@ public class BdvUtils
             intersects = !Intervals.isEmpty(
                     intersect2D(interval, viewerInterval));
         } else {
-            intersects = ! Intervals.isEmpty(
+            intersects = !Intervals.isEmpty(
                     Intervals.intersect( interval, viewerInterval ) );
         }
         return intersects;
@@ -111,7 +111,7 @@ public class BdvUtils
         return new FinalInterval( min, max );
     }
 
-    public static FinalRealInterval getViewerGlobalBoundingInterval(BdvHandle bdvHandle )
+    public static FinalRealInterval getViewerGlobalBoundingInterval(BdvHandle bdvHandle)
     {
         AffineTransform3D viewerTransform = new AffineTransform3D();
         bdvHandle.getViewerPanel().getState().getViewerTransform( viewerTransform );
@@ -135,6 +135,9 @@ public class BdvUtils
                 Intervals.smallestContainingInterval( sourceTransform.estimateBounds( rai ) );
         return interval;
     }
+
+
+
 
     public static AffineTransform3D getSourceTransform( BdvHandle bdvHandle, int sourceId )
     {
@@ -292,6 +295,15 @@ public class BdvUtils
 
         return new double[]{ displayRangeMin, displayRangeMax };
     }
+
+    public static RealPoint getPhysicalMouseCoordinates( BdvHandle bdv )
+    {
+        final RealPoint posInBdvInMicrometer = new RealPoint( 3 );
+        bdv.getBdvHandle().getViewerPanel()
+                .getGlobalMouseCoordinates( posInBdvInMicrometer );
+        return posInBdvInMicrometer;
+    }
+
 
 
 }

@@ -210,6 +210,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      */
     boolean uiAvailable = false;
 
+    @Override
     public BdvSourceServiceUI getUI() {
         return ui;
     }
@@ -285,7 +286,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         registerScijavaCommand(SourcesVisibleMakerCommand.class);
         registerScijavaCommand(BrightnessAdjusterCommand.class);
         registerScijavaCommand(SourceColorChangerCommand.class);
-        registerScijavaCommand(SacProjectionModeChangerCommand.class);
+        registerScijavaCommand(SourceAndConverterProjectionModeChangerCommand.class);
         registerScijavaCommand(SourcesDuplicatorCommand.class);
         registerScijavaCommand(ManualTransformCommand.class);
         registerScijavaCommand(TransformedSourceWrapperCommand.class);

@@ -123,7 +123,7 @@ public class BdvSourceServiceUI {
             getCommandName(SourcesVisibleMakerCommand.class),
             getCommandName(BrightnessAdjusterCommand.class),
             getCommandName(SourceColorChangerCommand.class),
-            getCommandName(SacProjectionModeChangerCommand.class),
+            getCommandName(SourceAndConverterProjectionModeChangerCommand.class),
             "PopupLine",
             getCommandName(SourcesDuplicatorCommand.class),
             getCommandName(ManualTransformCommand.class),
@@ -644,5 +644,7 @@ public class BdvSourceServiceUI {
         }
 
     }
+
+
 
 }
