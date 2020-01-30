@@ -5,72 +5,97 @@ import org.scijava.command.Command;
 import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;
 import org.scijava.module.ModuleItem;
+import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
+import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
 import sc.fiji.bdvpg.scijava.command.source.*;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.*;
+import java.util.List;
 import java.util.function.Consumer;
+
+import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getCommandName;
 
 public class SourceAndConverterPopupMenu
 {
 	private JPopupMenu popup;
-	private final CommandService commandService;
 	private final SourceAndConverter[] sacs;
+
+	 public static String[] defaultPopupActions = {
+			getCommandName(BdvSourcesAdderCommand.class),
+			getCommandName(BdvSourcesRemoverCommand.class),
+			"Inspect Sources",
+			"PopupLine",
+			getCommandName(SourcesInvisibleMakerCommand.class),
+			getCommandName(SourcesVisibleMakerCommand.class),
+			getCommandName(BrightnessAdjusterCommand.class),
+			getCommandName(SourceColorChangerCommand.class),
+			getCommandName(SourceAndConverterProjectionModeChangerCommand.class),
+			"PopupLine",
+			getCommandName(SourcesDuplicatorCommand.class),
+			getCommandName(ManualTransformCommand.class),
+			getCommandName(TransformedSourceWrapperCommand.class),
+			getCommandName(SourcesResamplerCommand.class),
+			getCommandName(ColorSourceCreatorCommand.class),
+			getCommandName(LUTSourceCreatorCommand.class),
+			"PopupLine",
+			getCommandName(SourcesRemoverCommand.class),
+			getCommandName(XmlHDF5ExporterCommand.class),
+	};
+
+	 String[] popupActions;
 
 	public SourceAndConverterPopupMenu( SourceAndConverter[] sacs )
 	{
-		// TODO: Is this the best way to get the CommandService?
-		this.commandService = SourceAndConverterServices.getSourceAndConverterDisplayService().getCommandService();
+		this(sacs, defaultPopupActions);
+	}
+
+	public SourceAndConverterPopupMenu( SourceAndConverter[] sacs, String[] actions )
+	{
 		this.sacs = sacs;
+		this.popupActions = actions;
 
 		createPopupMenu();
 	}
+
 
 	private JPopupMenu createPopupMenu()
 	{
 		popup = new JPopupMenu();
 
-		addCommand(BrightnessAdjusterCommand.class);
-		addCommand(SourceColorChangerCommand.class);
-		addCommand(SourceAndConverterProjectionModeChangerCommand.class);
-		// TODO: Add more
+		for (String actionName:popupActions){
+			if (actionName.equals("PopupLine")) {
+				this.addPopupLine();
+			} else{
+				this.addPopupAction(actionName, SourceAndConverterServices.getSourceAndConverterService().getAction(actionName));
+			}
+		}
 
 		return popup;
 	}
 
-	private void addCommand( Class< ? extends Command > commandClass )
-	{
-		addSacCommandToJComponent( commandClass, commandService, sacs, popup );
+	/**
+	 * Adds a separator in the popup menu
+	 */
+	public void addPopupLine() {
+		popup.addSeparator();
 	}
 
-
-	public static void addSacActionToJComponent( final Consumer< SourceAndConverter[] > action, final String actionName, final SourceAndConverter[] sourceAndConverters, final JComponent component ) {
-		JMenuItem menuItem = new JMenuItem(actionName);
-		menuItem.addActionListener(e -> action.accept( sourceAndConverters ));
-		component.add(menuItem);
-	}
-
-	public static void addSacCommandToJComponent( Class<? extends Command > commandClass, CommandService commandService, SourceAndConverter[] sourceAndConverters, JPopupMenu component ) {
-
-		final CommandInfo commandInfo = commandService.getCommand( commandClass );
-
-		for (ModuleItem input : commandInfo.inputs()) {
-			if (input.getType().equals(SourceAndConverter.class)) {
-				// Single Sac Command
-				addSacActionToJComponent(
-						(sacs) -> {
-							for (SourceAndConverter sac:sacs)
-								commandService.run( commandInfo, true, input.getName(), sac );
-						}, commandInfo.getTitle(), sourceAndConverters, component );
-			}
-			if (input.getType().equals(SourceAndConverter[].class)) {
-				// Multiple Sac Command
-				addSacActionToJComponent(
-						(sacs) -> {
-							commandService.run( commandInfo, true, input.getName(), sacs);
-						}, commandInfo.getTitle(), sourceAndConverters, component );
-			}
+	/**
+	 * Adds a line and an action which consumes all the selected SourceAndConverter objects
+	 * in the popup Menu
+	 * @param action
+	 * @param actionName
+	 */
+	public void addPopupAction( String actionName, Consumer<SourceAndConverter[]> action ) {
+		if (action==null) {
+			System.err.println("No action defined for action named "+actionName);
 		}
+		JMenuItem menuItem = new JMenuItem(actionName);
+		menuItem.addActionListener(e -> action.accept(
+				sacs
+		));
+		popup.add(menuItem);
 	}
 
 	public JPopupMenu getPopup()

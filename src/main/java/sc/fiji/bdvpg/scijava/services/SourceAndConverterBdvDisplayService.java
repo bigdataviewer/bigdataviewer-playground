@@ -630,8 +630,4 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         return bdvHandleToSacs.get( bdv );
     }
 
-    public CommandService getCommandService()
-    {
-        return cs;
-    }
 }
