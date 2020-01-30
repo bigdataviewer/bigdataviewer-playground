@@ -119,6 +119,4 @@ public interface ISourceAndConverterService
      */
     Consumer<SourceAndConverter[]> getAction(String actionName);
 
-    BdvSourceServiceUI getUI();
-
 }

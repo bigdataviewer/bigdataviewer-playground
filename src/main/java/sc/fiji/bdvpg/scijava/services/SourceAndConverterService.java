@@ -210,7 +210,6 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      */
     boolean uiAvailable = false;
 
-    @Override
     public BdvSourceServiceUI getUI() {
         return ui;
     }
