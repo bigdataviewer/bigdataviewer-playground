@@ -11,11 +11,6 @@ import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
-import org.scijava.command.Command;
-import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
-import sc.fiji.bdvpg.scijava.command.source.*;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
@@ -27,29 +22,27 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
-import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getCommandName;
 
 /**
  * Swing UI for Scijava BdvSourceAndConverterService
  *
  * All the SourceAndConverter are inserted into the tree potentially multiple times,
- * in order to allow for multiple useful hierarchy to appear. Most basic example is a
+ * in order to allow for multiple useful hierarchy to appear. The most basic example is a
  * SourceAndConverter which is part of a SpimData object. This source will be caught by
  * the appropriate Spimdata Filter Node in which it will appear again multiple times, sorted
- * by Entity class found in the spimdata object
+ * by Entity class found in the spimdata object (Illumination, Angle, Channel ...)
  *
  *
  * Nodes are DefaultTreeMutableNode containing potentially:
  * - RenamableSourceAndConverter (SourceAndConverter with an overriden toString method)
  * - Filtering nodes : nodes that can filter SourceAndConverters,
  * they contain a Predicate<SourceAndConverter> that decides whether a source and converter
- * object should be included in the node; they allow contain a boolean flag which sets whether the
+ * object should be included in the node; they also contain a boolean flag which sets whether the
  * SourceAndConverter should be passed to the current remaining branch in the tree
  * - Getter Node for Source properties. For instance in the inspect method, a Transformed Source will
  * create a Node for the wrapped source and another node which holds a getter for the fixedAffineTransform
@@ -98,11 +91,6 @@ public class BdvSourceServiceUI {
     Set<SourceAndConverter> displayedSource = new HashSet<>();
 
     /**
-     * Popup menu containing user actions (triggered on right click)
-     */
-    JPopupMenu popup = new JPopupMenu();
-
-    /**
      * Node holding all Sources just below the root node,
      * Should be kept as last index in this branch. Nothing below except
      * results of inspection should go there.
@@ -113,28 +101,6 @@ public class BdvSourceServiceUI {
      * Spimdata Filter nodes currently present in the tree
      */
     List<SpimDataFilterNode> spimdataFilterNodes = new ArrayList<>();
-
-    static String[] popupActions = {
-            getCommandName(BdvSourcesAdderCommand.class),
-            getCommandName(BdvSourcesRemoverCommand.class),
-            "Inspect Sources",
-            "PopupLine",
-            getCommandName(SourcesInvisibleMakerCommand.class),
-            getCommandName(SourcesVisibleMakerCommand.class),
-            getCommandName(BrightnessAdjusterCommand.class),
-            getCommandName(SourceColorChangerCommand.class),
-            getCommandName(SourceAndConverterProjectionModeChangerCommand.class),
-            "PopupLine",
-            getCommandName(SourcesDuplicatorCommand.class),
-            getCommandName(ManualTransformCommand.class),
-            getCommandName(TransformedSourceWrapperCommand.class),
-            getCommandName(SourcesResamplerCommand.class),
-            getCommandName(ColorSourceCreatorCommand.class),
-            getCommandName(LUTSourceCreatorCommand.class),
-            "PopupLine",
-            getCommandName(SourcesRemoverCommand.class),
-            getCommandName(XmlHDF5ExporterCommand.class),
-    };
 
     public BdvSourceServiceUI( SourceAndConverterService sourceAndConverterService ) {
         this.sourceAndConverterService = sourceAndConverterService;
@@ -164,7 +130,9 @@ public class BdvSourceServiceUI {
                 super.mouseClicked(e);
                 // Right Click -> popup
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    popup.show(e.getComponent(), e.getX(), e.getY());
+                    new SourceAndConverterPopupMenu(getSelectedSourceAndConverters())
+                            .getPopup()
+                            .show(e.getComponent(), e.getX(), e.getY());
                 }
                 // Double Click : display source, if possible
                 /*if (e.getClickCount()==2 && !e.isConsumed()) {
@@ -189,15 +157,6 @@ public class BdvSourceServiceUI {
                     }
                 }
         );
-        popup.add(menuItem);
-
-        for (String actionName:popupActions){
-            if (actionName.equals("PopupLine")) {
-                this.addPopupLine();
-            } else{
-                this.addPopupAction(actionName, sourceAndConverterService.getAction(actionName));
-            }
-        }
 
         frame.add(panel);
         frame.pack();
@@ -515,34 +474,6 @@ public class BdvSourceServiceUI {
         return sacs;
     }
 
-    /**
-     * Adds a line and an action which consumes all the selected SourceAndConverter objects
-     * in the popup Menu
-     * @param action
-     * @param actionName
-     */
-    public void addPopupAction( String actionName, Consumer<SourceAndConverter[]> action ) {
-        if (action==null) {
-            System.err.println("No action defined for action named "+actionName);
-        }
-        JMenuItem menuItem = new JMenuItem(actionName);
-        menuItem.addActionListener(e -> action.accept(
-                getSelectedSourceAndConverters()
-        ));
-        popup.add(menuItem);
-    }
-
-    /**
-     * Adds a separator in the popup menu
-     */
-    public void addPopupLine() {
-        popup.addSeparator();
-    }
-
-    public JPanel getPanel() {
-        return panel;
-    }
-
     public TreeModel getTreeModel() {
         return model;
     }
@@ -634,8 +565,6 @@ public class BdvSourceServiceUI {
             Map<String, Object> props = sourceAndConverterService.getSacToMetadata().get(sac);
             assert props!=null;
             assert props.containsKey( SPIM_DATA_INFO );
-            //System.out.println("Testing "+sac.getSpimSource().getName()+" vs "+asd.toString());
-            //assert props.get(SPIM_DATA) instanceof Set<BdvSourceAndConverterService.SpimDataInfo>;
 
             AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd = ( AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) (( SourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).asd;
             Integer idx = (( SourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).setupId;
@@ -644,7 +573,5 @@ public class BdvSourceServiceUI {
         }
 
     }
-
-
 
 }
