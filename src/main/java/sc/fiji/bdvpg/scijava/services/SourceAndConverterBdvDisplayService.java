@@ -529,6 +529,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * Returns the list of sacs held within a BdvHandle ( whether they are visible or not )
      * List is ordered by index in the BdvHandle -> complexification to implement
      * the mixed projector
+     * TODO : Avoid duplicates by returning a Set
      * @param bdvHandle
      * @return
      */

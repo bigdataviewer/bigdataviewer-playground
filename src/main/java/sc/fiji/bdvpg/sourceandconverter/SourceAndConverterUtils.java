@@ -1,5 +1,6 @@
 package sc.fiji.bdvpg.sourceandconverter;
 
+import bdv.AbstractSpimSource;
 import bdv.SpimSource;
 import bdv.ViewerImgLoader;
 import bdv.VolatileSpimSource;
@@ -7,6 +8,7 @@ import bdv.tools.brightness.ConverterSetup;
 import bdv.util.ARGBColorConverterSetup;
 import bdv.util.BdvHandle;
 import bdv.util.LUTConverterSetup;
+import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
@@ -15,13 +17,17 @@ import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.sequence.Angle;
 import mpicbg.spim.data.sequence.Channel;
 import net.imglib2.RealPoint;
+import net.imglib2.RealRandomAccess;
+import net.imglib2.RealRandomAccessible;
 import net.imglib2.Volatile;
 import net.imglib2.converter.Converter;
 import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.display.ScaledARGBConverter;
+import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.util.Util;
 import sc.fiji.bdvpg.bdv.BdvUtils;
 import sc.fiji.bdvpg.converter.RealARGBColorConverter;
@@ -380,5 +386,43 @@ public class SourceAndConverterUtils {
         final List< SourceAndConverter > sacsContainingCoordinate = sacs.stream().filter( sac -> determiner.apply( sac.getSpimSource() ) ).collect( Collectors.toList() );
 
         return sacsContainingCoordinate;
+    }
+
+    /**
+     * Is the point pt located inside the source ?
+     * Looks at highest resolution whether the alpha value of the displayed pixel is zero
+     * Another option : if the display RGB value is zero, then consider it's not displayed and thus not selected
+     * -> Convenient way to adjust whether a source should be selected or not ?
+     * TODO : Time out if too long to access the data
+     * @param sac
+     * @param pt
+     * @return
+     */
+    public static boolean isSourcePresentAt(SourceAndConverter sac, int timePoint, RealPoint pt) {
+
+        RealRandomAccessible rra_ible = sac.getSpimSource().getInterpolatedSource(timePoint, 0, Interpolation.NEARESTNEIGHBOR);
+
+        // Get transformation of the source
+        final AffineTransform3D sourceTransform = new AffineTransform3D();
+        sac.getSpimSource().getSourceTransform(timePoint, 0, sourceTransform);
+
+        // Get a access to the source at the pointer location
+        RealRandomAccess rra = rra_ible.realRandomAccess();
+        RealPoint iPt = new RealPoint(3);
+        sourceTransform.inverse().apply(pt,iPt);
+        rra.setPosition(iPt);
+
+        // Gets converter -> will decide based on ARGB value whether the source is present or not
+        Converter<Object, ARGBType> cvt = sac.getConverter();
+        ARGBType colorOut = new ARGBType();
+        cvt.convert(rra.get(), colorOut);
+
+        // Gets ARGB int value
+        int cValue = colorOut.get();
+
+        // Alpha == 0 -> not present, otherwise it is present
+        boolean ans = ARGBType.alpha(cValue) != 0;
+
+        return ans;
     }
 }

@@ -4,10 +4,12 @@ import bdv.tools.brightness.MinMaxGroup;
 import bdv.tools.transformation.TransformedSource;
 import bdv.util.Bdv;
 import bdv.util.BdvHandle;
+import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import bdv.viewer.state.SourceState;
-import ij.IJ;
 import net.imglib2.*;
+import net.imglib2.converter.Converter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.util.Intervals;
@@ -303,7 +305,5 @@ public class BdvUtils
                 .getGlobalMouseCoordinates( posInBdvInMicrometer );
         return posInBdvInMicrometer;
     }
-
-
 
 }
