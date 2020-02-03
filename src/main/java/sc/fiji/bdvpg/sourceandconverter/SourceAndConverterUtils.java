@@ -1,11 +1,14 @@
 package sc.fiji.bdvpg.sourceandconverter;
 
+import bdv.AbstractSpimSource;
 import bdv.SpimSource;
 import bdv.ViewerImgLoader;
 import bdv.VolatileSpimSource;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.ARGBColorConverterSetup;
+import bdv.util.BdvHandle;
 import bdv.util.LUTConverterSetup;
+import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
@@ -13,11 +16,15 @@ import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.sequence.Angle;
 import mpicbg.spim.data.sequence.Channel;
+import net.imglib2.RealPoint;
+import net.imglib2.RealRandomAccess;
+import net.imglib2.RealRandomAccessible;
 import net.imglib2.Volatile;
 import net.imglib2.converter.Converter;
 import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.display.ScaledARGBConverter;
+import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Util;
@@ -204,12 +211,14 @@ public class SourceAndConverterUtils {
             RealARGBColorConverter.Imp0 out = new RealARGBColorConverter.Imp0<>( ((RealARGBColorConverter.Imp0) converter).getMin(), ((RealARGBColorConverter.Imp0) converter).getMax() );
             out.setColor(((RealARGBColorConverter.Imp0) converter).getColor());
             // For averaging
+            // TODO : modularizes this / set as optional
             out.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
             return out;
         } else if (converter instanceof RealARGBColorConverter.Imp1) {
             RealARGBColorConverter.Imp1 out = new RealARGBColorConverter.Imp1<>( ((RealARGBColorConverter.Imp1) converter).getMin(), ((RealARGBColorConverter.Imp1) converter).getMax() );
             out.setColor(((RealARGBColorConverter.Imp1) converter).getColor());
             // For averaging
+            // TODO : modularizes this / set as optional
             out.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
             return out;
         } else if (converter instanceof ScaledARGBConverter.VolatileARGB) {
@@ -224,6 +233,13 @@ public class SourceAndConverterUtils {
         }
     }
 
+    /**
+     * Creates a standard convertersetup for a source and converter
+     * Switch based on pixel type (ARGBType and RealType supported)
+     * @param sac
+     * @param requestRepaint
+     * @return
+     */
     public static ConverterSetup createConverterSetup(SourceAndConverter sac, Runnable requestRepaint) {
         ConverterSetup setup;
         if (sac.getSpimSource().getType() instanceof RealType) {
@@ -362,4 +378,42 @@ public class SourceAndConverterUtils {
         return converter;
     }
 
+    /**
+     * Is the point pt located inside the source  at a particular timepoint ?
+     * Looks at highest resolution whether the alpha value of the displayed pixel is zero
+     * TODO TO think Alternative : looks whether R, G and B values equal zero -> source not present
+     * Another option : if the display RGB value is zero, then consider it's not displayed and thus not selected
+     * -> Convenient way to adjust whether a source should be selected or not ?
+     * TODO : Time out if too long to access the data
+     * @param sac
+     * @param pt
+     * @return
+     */
+    public static boolean isSourcePresentAt(SourceAndConverter sac, int timePoint, RealPoint pt) {
+
+        RealRandomAccessible rra_ible = sac.getSpimSource().getInterpolatedSource(timePoint, 0, Interpolation.NEARESTNEIGHBOR);
+
+        // Get transformation of the source
+        final AffineTransform3D sourceTransform = new AffineTransform3D();
+        sac.getSpimSource().getSourceTransform(timePoint, 0, sourceTransform);
+
+        // Get a access to the source at the pointer location
+        RealRandomAccess rra = rra_ible.realRandomAccess();
+        RealPoint iPt = new RealPoint(3);
+        sourceTransform.inverse().apply(pt,iPt);
+        rra.setPosition(iPt);
+
+        // Gets converter -> will decide based on ARGB value whether the source is present or not
+        Converter<Object, ARGBType> cvt = sac.getConverter();
+        ARGBType colorOut = new ARGBType();
+        cvt.convert(rra.get(), colorOut);
+
+        // Gets ARGB int value
+        int cValue = colorOut.get();
+
+        // Alpha == 0 -> not present, otherwise it is present
+        boolean ans = ARGBType.alpha(cValue) != 0;
+
+        return ans;
+    }
 }

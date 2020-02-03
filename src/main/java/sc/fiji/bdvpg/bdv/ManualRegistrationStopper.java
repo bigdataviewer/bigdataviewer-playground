@@ -118,7 +118,7 @@ public class ManualRegistrationStopper implements Runnable {
 
         AffineTransform3D at3D = new AffineTransform3D();
         at3D.concatenate(vt.asAffine3D());
-        at3D.concatenate(affineTransform3D);
+        at3D.preConcatenate(affineTransform3D);
 
         ViewTransform newvt = new ViewTransformAffine(vt.getName(), at3D);
 

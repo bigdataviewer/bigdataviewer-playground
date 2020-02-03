@@ -4,10 +4,12 @@ import bdv.tools.brightness.MinMaxGroup;
 import bdv.tools.transformation.TransformedSource;
 import bdv.util.Bdv;
 import bdv.util.BdvHandle;
+import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import bdv.viewer.state.SourceState;
-import ij.IJ;
 import net.imglib2.*;
+import net.imglib2.converter.Converter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.util.Intervals;
@@ -91,7 +93,7 @@ public class BdvUtils
             intersects = !Intervals.isEmpty(
                     intersect2D(interval, viewerInterval));
         } else {
-            intersects = ! Intervals.isEmpty(
+            intersects = !Intervals.isEmpty(
                     Intervals.intersect( interval, viewerInterval ) );
         }
         return intersects;
@@ -111,7 +113,7 @@ public class BdvUtils
         return new FinalInterval( min, max );
     }
 
-    public static FinalRealInterval getViewerGlobalBoundingInterval(BdvHandle bdvHandle )
+    public static FinalRealInterval getViewerGlobalBoundingInterval(BdvHandle bdvHandle)
     {
         AffineTransform3D viewerTransform = new AffineTransform3D();
         bdvHandle.getViewerPanel().getState().getViewerTransform( viewerTransform );
@@ -135,6 +137,9 @@ public class BdvUtils
                 Intervals.smallestContainingInterval( sourceTransform.estimateBounds( rai ) );
         return interval;
     }
+
+
+
 
     public static AffineTransform3D getSourceTransform( BdvHandle bdvHandle, int sourceId )
     {
@@ -292,6 +297,5 @@ public class BdvUtils
 
         return new double[]{ displayRangeMin, displayRangeMax };
     }
-
 
 }

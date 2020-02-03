@@ -85,4 +85,8 @@ public class LUTConverterSetup implements ConverterSetup
     {
         this.viewer = viewer;
     }
+
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }
