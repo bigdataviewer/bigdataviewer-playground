@@ -626,9 +626,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         }
     }
 
-    public List< SourceAndConverter > getSourceAndConverters( BdvHandle bdv )
+    public Set< SourceAndConverter > getSourceAndConverters( BdvHandle bdv )
     {
-        return bdvHandleToSacs.get( bdv );
+        return bdvHandleToSacs.get( bdv ).stream().collect(Collectors.toSet());
     }
 
 }

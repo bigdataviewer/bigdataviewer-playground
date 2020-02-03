@@ -27,19 +27,13 @@ import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.util.Util;
-import sc.fiji.bdvpg.bdv.BdvUtils;
 import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.source.PhysicalPositionWithinSourceChecker;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * Following the logic of the repository, i.e. dealing with SourceAndConverter objects only,
@@ -217,12 +211,14 @@ public class SourceAndConverterUtils {
             RealARGBColorConverter.Imp0 out = new RealARGBColorConverter.Imp0<>( ((RealARGBColorConverter.Imp0) converter).getMin(), ((RealARGBColorConverter.Imp0) converter).getMax() );
             out.setColor(((RealARGBColorConverter.Imp0) converter).getColor());
             // For averaging
+            // TODO : modularizes this / set as optional
             out.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
             return out;
         } else if (converter instanceof RealARGBColorConverter.Imp1) {
             RealARGBColorConverter.Imp1 out = new RealARGBColorConverter.Imp1<>( ((RealARGBColorConverter.Imp1) converter).getMin(), ((RealARGBColorConverter.Imp1) converter).getMax() );
             out.setColor(((RealARGBColorConverter.Imp1) converter).getColor());
             // For averaging
+            // TODO : modularizes this / set as optional
             out.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
             return out;
         } else if (converter instanceof ScaledARGBConverter.VolatileARGB) {
@@ -237,6 +233,13 @@ public class SourceAndConverterUtils {
         }
     }
 
+    /**
+     * Creates a standard convertersetup for a source and converter
+     * Switch based on pixel type (ARGBType and RealType supported)
+     * @param sac
+     * @param requestRepaint
+     * @return
+     */
     public static ConverterSetup createConverterSetup(SourceAndConverter sac, Runnable requestRepaint) {
         ConverterSetup setup;
         if (sac.getSpimSource().getType() instanceof RealType) {
@@ -375,22 +378,10 @@ public class SourceAndConverterUtils {
         return converter;
     }
 
-    public static List< SourceAndConverter > getSacsAtMousePosition( BdvHandle bdv )
-    {
-        final List< SourceAndConverter > sacs = SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverters( bdv );
-
-        final RealPoint physicalCoordinates = BdvUtils.getPhysicalMouseCoordinates( bdv );
-
-        final PhysicalPositionWithinSourceChecker determiner = new PhysicalPositionWithinSourceChecker( physicalCoordinates );
-
-        final List< SourceAndConverter > sacsContainingCoordinate = sacs.stream().filter( sac -> determiner.apply( sac.getSpimSource() ) ).collect( Collectors.toList() );
-
-        return sacsContainingCoordinate;
-    }
-
     /**
-     * Is the point pt located inside the source ?
+     * Is the point pt located inside the source  at a particular timepoint ?
      * Looks at highest resolution whether the alpha value of the displayed pixel is zero
+     * TODO TO think Alternative : looks whether R, G and B values equal zero -> source not present
      * Another option : if the display RGB value is zero, then consider it's not displayed and thus not selected
      * -> Convenient way to adjust whether a source should be selected or not ?
      * TODO : Time out if too long to access the data

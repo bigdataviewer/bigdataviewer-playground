@@ -298,12 +298,4 @@ public class BdvUtils
         return new double[]{ displayRangeMin, displayRangeMax };
     }
 
-    public static RealPoint getPhysicalMouseCoordinates( BdvHandle bdv )
-    {
-        final RealPoint posInBdvInMicrometer = new RealPoint( 3 );
-        bdv.getBdvHandle().getViewerPanel()
-                .getGlobalMouseCoordinates( posInBdvInMicrometer );
-        return posInBdvInMicrometer;
-    }
-
 }

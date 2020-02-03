@@ -4,7 +4,6 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.RealPoint;
 import org.scijava.ui.behaviour.ClickBehaviour;
-import sc.fiji.bdvpg.bdv.BdvUtils;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterPopupMenu;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
@@ -29,12 +28,14 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 
 	private static void showPopupMenu( BdvHandle bdv, int x, int y )
 	{
-		RealPoint bdvMouseLocation = BdvUtils.getPhysicalMouseCoordinates(bdv);
+		// Gets mouse location in space (global 3D coordinates) and time
+		final RealPoint mousePosInBdv = new RealPoint( 3 );
+		bdv.getBdvHandle().getViewerPanel().getGlobalMouseCoordinates( mousePosInBdv );
 		int timePoint = bdv.getViewerPanel().getState().getCurrentTimepoint();
 
-		final List< SourceAndConverter > sacs = //SourceAndConverterUtils.getSacsAtMousePosition( bdv );
-		SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverterOf(bdv)
-				.stream().filter(sac -> SourceAndConverterUtils.isSourcePresentAt(sac,timePoint, bdvMouseLocation))
+		final List< SourceAndConverter > sacs =
+		SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverters(bdv)
+				.stream().filter(sac -> SourceAndConverterUtils.isSourcePresentAt(sac,timePoint, mousePosInBdv))
 				.collect(Collectors.toList());
 
 		if ( sacs.size() == 0 )
