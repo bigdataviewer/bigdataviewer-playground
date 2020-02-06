@@ -8,15 +8,25 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+
 /**
- * Action which synchronizes the display location of n BdvHandle
+ * Action which synchronizes the display location of 3 BdvHandle
  *
- * Works in combination with the action ViewerTransformSyncStopper
+ * TODO : Works in combination with the action ViewerOrthoSyncStopper
  *
- * See also ViewTransformSynchronizationDemo
+ * TODO See also ViewOrthoSynchronizationDemo
  *
  * Principle : for every changed view transform of a specific BdvHandle,
  * the view transform change is triggered to the following BdvHandle in a closed loop manner
+ *
+ * Each transform is passed to next one by rolling the axes so that 3 swaps lead to an identical transform:
+ *
+ // For ortho view : switches axis:
+ // X --> Y
+ // Y --> Z
+ // Z --> X
+ *
+ * TODO : Issue : the center is at the top left corner of the bdv window, instead of being at the center
  *
  * To avoid inifinite loop, the stop condition is : if the view transform is unnecessary (between
  * the view target is equal to the source), then there's no need to trigger a view transform change
@@ -25,12 +35,12 @@ import java.util.Map;
  * author Nicolas Chiaruttini, BIOP EPFL, nicolas.chiaruttini@epfl.ch
  */
 
-public class ViewerTransformSyncStarter implements Runnable {
+public class ViewerOrthoSyncStarter implements Runnable {
 
     /**
      * Array of BdvHandles to synchronize
      */
-    BdvHandle[] bdvHandles;
+    BdvHandle[] bdvHandles = new BdvHandle[3]; // X Y Z
 
     /**
      * Reference to the BdvHandle which will serve as a reference for the
@@ -47,8 +57,10 @@ public class ViewerTransformSyncStarter implements Runnable {
      */
     Map<BdvHandle, TransformListener<AffineTransform3D>> bdvHandleToTransformListener = new HashMap<>();
 
-    public ViewerTransformSyncStarter(BdvHandle[] bdvHandles) {
-       this.bdvHandles = bdvHandles;
+    public ViewerOrthoSyncStarter(BdvHandle bdvHandleX, BdvHandle bdvHandleY, BdvHandle bdvHandleZ) {
+        this.bdvHandles[0] = bdvHandleX;
+        this.bdvHandles[1] = bdvHandleY;
+        this.bdvHandles[2] = bdvHandleZ;
     }
 
     public void setBdvHandleInitialReference(BdvHandle bdvHandle) {
@@ -87,9 +99,17 @@ public class ViewerTransformSyncStarter implements Runnable {
                         // Is the transform necessary ? That's the stop condition
                         AffineTransform3D ati = new AffineTransform3D();
                         nextBdvHandle.getViewerPanel().getState().getViewerTransform(ati);
-                        if (!Arrays.equals(at3D.getRowPackedCopy(), ati.getRowPackedCopy())) {
+
+                        if (!Arrays.equals(getRotatedView(at3D.getRowPackedCopy()), ati.getRowPackedCopy())) {
                             // Yes -> triggers a transform change to the nextBdvHandle
-                            nextBdvHandle.getViewerPanel().setCurrentViewerTransform(at3D.copy());
+                            // For ortho view : switches axis:
+                            // X --> Y
+                            // Y --> Z
+                            // Z --> X
+                            // Calling it three times leads to an identical transform, hence the stopping condition is triggered
+                            AffineTransform3D nextAt3D = at3D.copy();
+                            nextAt3D.set(getRotatedView(at3D.getRowPackedCopy()));
+                            nextBdvHandle.getViewerPanel().setCurrentViewerTransform(nextAt3D);
                             nextBdvHandle.getViewerPanel().requestRepaint();
                         }
                     };
@@ -103,13 +123,29 @@ public class ViewerTransformSyncStarter implements Runnable {
 
         // Setting first transform for initial synchronization,
         // but only if the two necessary objects are present (the origin BdvHandle and the transform
-         if ((bdvHandleInitialReference !=null)&&(at3Dorigin!=null)) {
-             for (BdvHandle bdvh: bdvHandles) {
-                 bdvh.getViewerPanel().setCurrentViewerTransform(at3Dorigin.copy());
-                 bdvh.getViewerPanel().requestRepaint();
-             }
-         }
+        if ((bdvHandleInitialReference !=null)&&(at3Dorigin!=null)) {
+            for (BdvHandle bdvh: bdvHandles) {
+                bdvh.getViewerPanel().setCurrentViewerTransform(at3Dorigin.copy());
+                bdvh.getViewerPanel().requestRepaint();
+            }
+        }
     }
+
+    public double[] getRotatedView(double[] m) {
+        return new double[] {
+                m[1], m[2], m[0], m[3],
+                m[5], m[6], m[4], m[7],
+                m[9], m[10], m[8], m[11],
+        };
+        /*
+        return new double[] {
+				a.m00, a.m01, a.m02, a.m03,
+				a.m10, a.m11, a.m12, a.m13,
+				a.m20, a.m21, a.m22, a.m23
+		};
+         */
+    }
+
 
     /**
      * A simple search to identify the view transform of the BdvHandle that will be used
