@@ -233,12 +233,14 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         Map<BdvHandle, List<SourceAndConverter>> sourcesToRemovePerBdvHandle = new HashMap<>();
 
         for (SourceAndConverter sac:sacs) {
-            sacToBdvHandleRefs.get(sac).forEach(bdvHandleRef -> {
-                if (!sourcesToRemovePerBdvHandle.containsKey(bdvHandleRef.bdvh)) {
-                    sourcesToRemovePerBdvHandle.put(bdvHandleRef.bdvh, new ArrayList<>());
-                }
-                sourcesToRemovePerBdvHandle.get(bdvHandleRef.bdvh).add(sac);
-            });
+            if (sacToBdvHandleRefs.containsKey(sac)) {
+                sacToBdvHandleRefs.get(sac).forEach(bdvHandleRef -> {
+                    if (!sourcesToRemovePerBdvHandle.containsKey(bdvHandleRef.bdvh)) {
+                        sourcesToRemovePerBdvHandle.put(bdvHandleRef.bdvh, new ArrayList<>());
+                    }
+                    sourcesToRemovePerBdvHandle.get(bdvHandleRef.bdvh).add(sac);
+                });
+            }
         }
 
         // Only one call per bdvh
