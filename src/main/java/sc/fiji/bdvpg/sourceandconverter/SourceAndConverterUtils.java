@@ -1,12 +1,10 @@
 package sc.fiji.bdvpg.sourceandconverter;
 
-import bdv.AbstractSpimSource;
 import bdv.SpimSource;
 import bdv.ViewerImgLoader;
 import bdv.VolatileSpimSource;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.ARGBColorConverterSetup;
-import bdv.util.BdvHandle;
 import bdv.util.LUTConverterSetup;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
@@ -30,6 +28,7 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Util;
 import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import spimdata.util.DisplaySettings;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -147,7 +146,6 @@ public class SourceAndConverterUtils {
                 String sourceName = createSetupName(setup);
                 final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
                 final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
-                //final SpimSource s = vs.nonVolatile();
 
                 Converter nonVolatileConverter = createConverterRealType(s);
                 assert nonVolatileConverter!=null;
@@ -157,6 +155,11 @@ public class SourceAndConverterUtils {
                             new SourceAndConverter<>(vs, volatileConverter)));
                 } else {
                     out.put(setupId, new SourceAndConverter(s, nonVolatileConverter));
+                }
+
+                // Applying display settings if some have been set
+                if (setup.getAttribute(DisplaySettings.class)!=null) {
+                    DisplaySettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(DisplaySettings.class));
                 }
 
             } else if ( ARGBType.class.isInstance( type ) ) {
@@ -173,6 +176,11 @@ public class SourceAndConverterUtils {
                             new SourceAndConverter<>(vs, volatileConverter)));
                 } else {
                     out.put(setupId, new SourceAndConverter(s, nonVolatileConverter));
+                }
+
+                // Applying display settings if some have been set
+                if (setup.getAttribute(DisplaySettings.class)!=null) {
+                    DisplaySettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(DisplaySettings.class));
                 }
 
             } else {
