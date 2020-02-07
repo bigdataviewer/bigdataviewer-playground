@@ -33,7 +33,7 @@ public class XmlFromSpimDataExporter implements Runnable {
                     .getSourceAndConverterService()
                     .getSourceAndConverterFromSpimdata(spimData).forEach(sac -> DisplaySettings.PushDisplaySettings(sac));
 
-            (new XmlIoSpimDataMinimal()).save((SpimDataMinimal) spimData, filePath);
+            (new XmlIoSpimData()).save((SpimData) spimData, filePath);
         } catch (SpimDataException e) {
             e.printStackTrace();
         }
