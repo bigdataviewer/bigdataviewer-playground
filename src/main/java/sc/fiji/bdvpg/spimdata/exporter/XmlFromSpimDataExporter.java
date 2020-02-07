@@ -1,43 +1,42 @@
 package sc.fiji.bdvpg.spimdata.exporter;
 
+import bdv.spimdata.SpimDataMinimal;
 import bdv.spimdata.XmlIoSpimDataMinimal;
+import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
+import mpicbg.spim.data.XmlIoSpimData;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import mpicbg.spim.data.generic.sequence.BasicViewSetup;
+import mpicbg.spim.data.sequence.ViewSetup;
+import net.imglib2.display.ColorConverter;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import spimdata.util.DisplaySettings;
 
-import java.io.File;
-import java.util.function.Function;
-
-public class XmlFromSpimDataExporter implements Runnable, Function<AbstractSpimData, File> {
+public class XmlFromSpimDataExporter implements Runnable {
 
     AbstractSpimData spimData;
 
-    File file;
+    String filePath;
 
-    public XmlFromSpimDataExporter ( AbstractSpimData spimData) {
+    public XmlFromSpimDataExporter ( AbstractSpimData spimData, String filePath) {
         this.spimData = spimData;
+        this.filePath = filePath;
     }
 
     @Override
     public void run() {
-    }
-
-    public File get() {
-        return apply(spimData);
-    }
-
-    @Override
-    public File apply(AbstractSpimData spimData) {
-        /*AbstractSpimData sd = null;
         try {
-            sd = new XmlIoSpimDataMinimal().load(file.getAbsolutePath());
-            SourceAndConverterServices.getSourceAndConverterService().register(sd);
+            // Loops through all sources in order to push display settings
+            SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getSourceAndConverterFromSpimdata(spimData).forEach(sac -> DisplaySettings.PushDisplaySettings(sac));
+
+            (new XmlIoSpimDataMinimal()).save((SpimDataMinimal) spimData, filePath);
         } catch (SpimDataException e) {
             e.printStackTrace();
-        }*/
-        return null; //sd;
+        }
     }
-
 
 }

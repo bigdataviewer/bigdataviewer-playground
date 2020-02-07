@@ -311,26 +311,34 @@ public class BdvSourceServiceUI {
         if (displayedSource.contains(sac)) {
             // No Need to update
             visitAllNodesAndDelete(top, sac);
-            updateSpimDataFilterNodes();
-            insertIntoTree(sac);
+            SwingUtilities.invokeLater(() -> {
+                        updateSpimDataFilterNodes();
+                        insertIntoTree(sac);
+                    });
             //model.reload();
         } else {
             //System.out.println("Adding "+sac.getSpimSource().getName());
             displayedSource.add(sac);
-            updateSpimDataFilterNodes();
-            insertIntoTree(sac);
-            panel.revalidate();
-            frame.setVisible( true );
+
+            SwingUtilities.invokeLater(() -> {
+                updateSpimDataFilterNodes();
+                insertIntoTree(sac);
+                panel.revalidate();
+                frame.setVisible( true );
+            });
         }
     }
 
     private void updateSpimDataFilterNodes() {
         // Fetch All Spimdatas from all Sources
         Set<AbstractSpimData> currentSpimdatas = new HashSet<>();
+
         displayedSource.forEach(sac -> {
-            if ( sourceAndConverterService.getSacToMetadata().get(sac).containsKey( SPIM_DATA_INFO )) {
-                currentSpimdatas.add((( SourceAndConverterService.SpimDataInfo) sourceAndConverterService.getSacToMetadata().get(sac).get( SPIM_DATA_INFO )).asd);
-            }
+            if (sourceAndConverterService.getSacToMetadata().get(sac)!=null) {
+                if (sourceAndConverterService.getSacToMetadata().get(sac).containsKey(SPIM_DATA_INFO)) {
+                    currentSpimdatas.add(((SourceAndConverterService.SpimDataInfo) sourceAndConverterService.getSacToMetadata().get(sac).get(SPIM_DATA_INFO)).asd);
+                }
+            };
         });
 
         // Check for obsolete spimdatafilternodes
@@ -427,7 +435,9 @@ public class BdvSourceServiceUI {
             // No Need to update
             displayedSource.remove(sac);
             visitAllNodesAndDelete(top, sac);
-            updateSpimDataFilterNodes();
+            SwingUtilities.invokeLater(() -> {
+                updateSpimDataFilterNodes();
+            });
         }
     }
 
