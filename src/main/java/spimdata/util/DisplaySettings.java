@@ -1,6 +1,7 @@
 package spimdata.util;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.base.NamedEntity;
+import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.type.numeric.ARGBType;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
@@ -13,6 +14,8 @@ public class DisplaySettings extends NamedEntity implements Comparable< DisplayS
     public double min;
 
     public double max;
+
+    public boolean isSet = false;
 
     public DisplaySettings( final int id, final String name)
     {
@@ -74,7 +77,7 @@ public class DisplaySettings extends NamedEntity implements Comparable< DisplayS
         if (SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)==null) {
-            System.err.println("No Linked SpimDataObject -> Display settings cannot be stored.");
+            System.err.println("No Linked SpimData Object -> Display settings cannot be stored.");
             return;
         }
 
@@ -83,33 +86,47 @@ public class DisplaySettings extends NamedEntity implements Comparable< DisplayS
                         .getSourceAndConverterService()
                         .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)).setupId;
 
+        SourceAndConverterService.SpimDataInfo sdi = (SourceAndConverterService.SpimDataInfo) SourceAndConverterServices
+                .getSourceAndConverterService()
+                .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO);
+
+
+        DisplaySettings ds = new DisplaySettings(viewSetup);
+
         // Color + min max
         if (sac.getConverter() instanceof ColorConverter) {
             ColorConverter cc = (ColorConverter) sac.getConverter();
-            DisplaySettings ds = new DisplaySettings(viewSetup);
             ds.setName("vs:" + viewSetup);
             ds.color = cc.getColor().get();
             ds.min = cc.getMin();
             ds.max = cc.getMax();
+            ds.isSet = true;
+
         } else {
             System.err.println("Converter is of class :"+sac.getConverter().getClass().getSimpleName()+" -> Display settings cannot be stored.");
         }
+
+        ((BasicViewSetup)sdi.asd.getSequenceDescription().getViewSetups().get(viewSetup)).setAttribute(ds);
+
+
     }
 
     public static void PullDisplaySettings(SourceAndConverter sac, DisplaySettings ds) {
-        if (sac.getConverter() instanceof ColorConverter) {
-            ColorConverter cc = (ColorConverter) sac.getConverter();
-            cc.setColor(new ARGBType(ds.color));
-            cc.setMin(ds.min);
-            cc.setMax(ds.max);
-            if (sac.asVolatile()!=null) {
-                cc = (ColorConverter) sac.asVolatile().getConverter();
+        if (ds.isSet) {
+            if (sac.getConverter() instanceof ColorConverter) {
+                ColorConverter cc = (ColorConverter) sac.getConverter();
                 cc.setColor(new ARGBType(ds.color));
                 cc.setMin(ds.min);
                 cc.setMax(ds.max);
+                if (sac.asVolatile() != null) {
+                    cc = (ColorConverter) sac.asVolatile().getConverter();
+                    cc.setColor(new ARGBType(ds.color));
+                    cc.setMin(ds.min);
+                    cc.setMax(ds.max);
+                }
+            } else {
+                System.err.println("Converter is of class :" + sac.getConverter().getClass().getSimpleName() + " -> Display settings cannot be reapplied.");
             }
-        } else {
-            System.err.println("Converter is of class :"+sac.getConverter().getClass().getSimpleName()+" -> Display settings cannot be reapplied.");
         }
     }
 

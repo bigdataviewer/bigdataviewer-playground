@@ -19,6 +19,8 @@ public class XmlIoDisplaySettings extends XmlIoEntity< DisplaySettings >
     public Element toXml( final DisplaySettings ds )
     {
         final Element elem = super.toXml( ds );
+
+        elem.addContent(XmlHelpers.booleanElement("isset", ds.isSet));
         elem.addContent(XmlHelpers.intElement("color", ds.color));
         elem.addContent(XmlHelpers.doubleElement("min", ds.min));
         elem.addContent(XmlHelpers.doubleElement("max", ds.max));
@@ -29,6 +31,7 @@ public class XmlIoDisplaySettings extends XmlIoEntity< DisplaySettings >
     public DisplaySettings fromXml( final Element elem ) throws SpimDataException
     {
         final DisplaySettings ds = super.fromXml( elem );
+        ds.isSet = XmlHelpers.getBoolean(elem, "isset");
         ds.color = XmlHelpers.getInt(elem, "color");
         ds.min = XmlHelpers.getDouble(elem, "min");
         ds.max = XmlHelpers.getDouble(elem, "max");

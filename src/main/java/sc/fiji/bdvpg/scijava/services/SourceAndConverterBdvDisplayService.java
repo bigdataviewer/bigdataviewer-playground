@@ -21,6 +21,7 @@ import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
+import javax.swing.*;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -269,10 +270,11 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * @param sacs Array of SourceAndConverter
      */
     public void remove(BdvHandle bdvh, SourceAndConverter... sacs) {
+
         // Needs to removeFromAllBdvs the sourceandconverter, if present
-        for (SourceAndConverter source:sacs) {
-            if ( sacToBdvHandleRefs.get(source)!=null) {
-                while ( sacToBdvHandleRefs.get(source).stream().anyMatch(
+        for (SourceAndConverter source : sacs) {
+            if (sacToBdvHandleRefs.get(source) != null) {
+                while (sacToBdvHandleRefs.get(source).stream().anyMatch(
                         bdvHandleRef -> bdvHandleRef.bdvh.equals(bdvh)
                 )) {
                     // It is displayed in this bdvh
@@ -295,8 +297,14 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
                     removeSourceViaReflection(bdvh, index);
 
                     if (bdvSourceAndConverterService.getSacToMetadata().get(source).get(CONVERTER_SETUP) != null) {
-                        log.accept("Removing converter setup ...");
-                        bdvh.getSetupAssignments().removeSetup((ConverterSetup) bdvSourceAndConverterService.getSacToMetadata().get(source).get(CONVERTER_SETUP));
+
+                        SwingUtilities.invokeLater(() -> {
+                            log.accept("Removing converter setup ...");
+                            Map<String, Object> map = bdvSourceAndConverterService.getSacToMetadata().get(source);
+                            if (map!=null) {
+                                bdvh.getSetupAssignments().removeSetup((ConverterSetup) map.get(CONVERTER_SETUP));
+                            }
+                        });
                     }
                     // Removes reference to where the sourceandconverter is located
                     sacToBdvHandleRefs.get(source).remove(bdvhr);
