@@ -27,7 +27,7 @@ public class XmlFromSpimDataExporter implements Runnable {
             // Loops through all sources in order to push display settings
             SourceAndConverterServices
                     .getSourceAndConverterService()
-                    .getSourceAndConverterFromSpimdata(spimData).forEach(sac -> DisplaySettings.PushDisplaySettings(sac));
+                    .getSourceAndConverterFromSpimdata(spimData).forEach(sac -> DisplaySettings.PushDisplaySettingsFromCurrentConverter(sac));
 
             (new XmlIoSpimData()).save((SpimData) spimData, filePath);
         } catch (SpimDataException e) {
