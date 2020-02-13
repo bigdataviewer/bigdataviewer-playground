@@ -7,14 +7,24 @@ import net.imglib2.type.numeric.ARGBType;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
+/**
+ * Entity which stores the display settings of a view setup
+ *
+ * limited to simple colored LUT + min max display
+ *
+ */
 public class DisplaySettings extends NamedEntity implements Comparable< DisplaySettings >
 {
+    // RGBA value
     public int[] color;
 
+    // min display value
     public double min;
 
+    // max display value
     public double max;
 
+    // if isset is false, the display value is discarded
     public boolean isSet = false;
 
     public DisplaySettings( final int id, final String name)
@@ -37,7 +47,7 @@ public class DisplaySettings extends NamedEntity implements Comparable< DisplayS
     }
 
     /**
-     * Get the name of this tile.
+     * Get the name of this Display Settings Entity.
      *
      * The name is used for example to replace it in filenames when
      * opening individual 3d-stacks (e.g. SPIM_TL20_Tile1_Angle45.tif)
