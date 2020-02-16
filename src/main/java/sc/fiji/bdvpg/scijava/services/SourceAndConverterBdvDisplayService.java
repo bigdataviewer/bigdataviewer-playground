@@ -524,12 +524,14 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         // Two step process : first detect which BdvHandles need to be updated
         Map<BdvHandle, List<SourceAndConverter>> sourcesToUpdatePerBdvHandle = new HashMap<>();
         for (SourceAndConverter sac:sacs) {
-            sacToBdvHandleRefs.get(sac).forEach(bdvHandleRef -> {
-                if (!sourcesToUpdatePerBdvHandle.containsKey(bdvHandleRef.bdvh)) {
-                    sourcesToUpdatePerBdvHandle.put(bdvHandleRef.bdvh, new ArrayList<>());
-                }
-                sourcesToUpdatePerBdvHandle.get(bdvHandleRef.bdvh).add(sac);
-            });
+            if (sacToBdvHandleRefs.containsKey(sac)) {
+                sacToBdvHandleRefs.get(sac).forEach(bdvHandleRef -> {
+                    if (!sourcesToUpdatePerBdvHandle.containsKey(bdvHandleRef.bdvh)) {
+                        sourcesToUpdatePerBdvHandle.put(bdvHandleRef.bdvh, new ArrayList<>());
+                    }
+                    sourcesToUpdatePerBdvHandle.get(bdvHandleRef.bdvh).add(sac);
+                });
+            }
         }
         // Then update them : there is only one requestRepaint call per bdvh
         sourcesToUpdatePerBdvHandle.keySet().forEach(bdvHandle -> bdvHandle.getViewerPanel().requestRepaint());

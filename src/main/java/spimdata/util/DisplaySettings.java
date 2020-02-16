@@ -16,7 +16,7 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 public class DisplaySettings extends NamedEntity implements Comparable< DisplaySettings >
 {
     // RGBA value
-    public int[] color;
+    public int[] color = new int[] {255,255,255,0}; // Initialization avoids null pointer exception
 
     // min display value
     public double min;
