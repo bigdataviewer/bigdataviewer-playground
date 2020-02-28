@@ -43,5 +43,6 @@ public class ProjectionModeChangerDemo
 		sacs[ 1 ] = sourceAndConverters.get( 1 );
 
 		new ProjectionModeChanger( sacs, Projection.PROJECTION_MODE_AVG ).run();
+
 	}
 }

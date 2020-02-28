@@ -79,7 +79,6 @@ public class BdvUtils
         return bdvHandle.getViewerPanel().getState().getVisibleSourceIndices();
     }
 
-
     public static boolean isSourceIntersectingCurrentView( BdvHandle bdv, int sourceIndex, boolean is2D )
     {
         final Interval interval = getSourceGlobalBoundingInterval( bdv, sourceIndex );
@@ -298,4 +297,11 @@ public class BdvUtils
         return new double[]{ displayRangeMin, displayRangeMax };
     }
 
+	public static Converter< ?, ARGBType > getConverter( Bdv bdv, int sourceIndex )
+	{
+		final List< SourceState< ? > > sources =
+				bdv.getBdvHandle().getViewerPanel().getState().getSources();
+
+		return sources.get( sourceIndex ).getConverter();
+	}
 }

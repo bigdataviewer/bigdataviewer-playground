@@ -28,11 +28,14 @@ public class ScreenShotMakerCommand implements Command {
     @Parameter
     public String targetPixelUnit = "Pixels";
 
+    @Parameter
+    public boolean showRawData = false;
+
     @Override
     public void run() {
         ScreenShotMaker screenShotMaker = new ScreenShotMaker(bdvh);
         screenShotMaker.setPhysicalPixelSpacingInXY(targetPixelSizeInXY, targetPixelUnit);
-        ImagePlus image = screenShotMaker.getScreenshot();
-        image.show();
+        screenShotMaker.getRgbScreenShot().show();
+        if(showRawData) screenShotMaker.getRawScreenShot().show();
     }
 }
