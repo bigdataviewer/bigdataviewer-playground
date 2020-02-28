@@ -6,6 +6,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.ColorRGB;
+import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
 import sc.fiji.bdvpg.sourceandconverter.display.ProjectionModeChanger;
@@ -22,8 +23,14 @@ public class SourceAndConverterProjectionModeChangerCommand implements Command {
     @Parameter
     SourceAndConverter[] sacs;
 
+    @Parameter
+    boolean showSourcesExclusively = false;
+
     @Override
     public void run() {
+
+        if ( showSourcesExclusively )
+            projectionMode += Projection.PROJECTION_MODE_EXCLUSIVE;
 
         new ProjectionModeChanger( sacs, projectionMode ).run();
     }
