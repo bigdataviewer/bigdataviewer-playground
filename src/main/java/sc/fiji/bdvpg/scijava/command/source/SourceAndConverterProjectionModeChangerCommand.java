@@ -28,11 +28,7 @@ public class SourceAndConverterProjectionModeChangerCommand implements Command {
 
     @Override
     public void run() {
-
-        if ( showSourcesExclusively )
-            projectionMode += Projection.PROJECTION_MODE_EXCLUSIVE;
-
-        new ProjectionModeChanger( sacs, projectionMode ).run();
+        new ProjectionModeChanger( sacs, projectionMode, showSourcesExclusively ).run();
     }
 
 }
