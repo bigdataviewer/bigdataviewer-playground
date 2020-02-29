@@ -46,36 +46,35 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, n = 0;
 		int aAccu = 0, rAccu = 0, gAccu = 0, bAccu = 0;
 
-		int sourceIndex = 0;
-
-		for ( final Cursor< ? extends ARGBType > access : accesses )
+		final int numCursors = accesses.length;
+		for ( int sourceIndex = 0; sourceIndex < numCursors; sourceIndex++ )
 		{
-			final int value = access.get().get();
-			final int a = ARGBType.alpha( value );
-			final int r = ARGBType.red( value );
-			final int g = ARGBType.green( value );
-			final int b = ARGBType.blue( value );
+			final int argb = accesses[ sourceIndex ].get().get();
+			final int a = ARGBType.alpha( argb );
+			final int r = ARGBType.red( argb );
+			final int g = ARGBType.green( argb );
+			final int b = ARGBType.blue( argb );
 
 			if ( a == 0 )
 			{
 				continue;
 			}
 
-			if ( projectionModes[sourceIndex].equals( Projection.PROJECTION_MODE_SUM ) )
+			if ( projectionModes[ sourceIndex ].equals( Projection.PROJECTION_MODE_SUM ) )
 			{
 				aAccu += a;
 				rAccu += r;
 				gAccu += g;
 				bAccu += b;
-			} else if ( projectionModes[sourceIndex].equals( Projection.PROJECTION_MODE_AVG )) {
+			}
+			else if ( projectionModes[ sourceIndex ].equals( Projection.PROJECTION_MODE_AVG ) )
+			{
 				aAvg += a;
 				rAvg += r;
 				gAvg += g;
 				bAvg += b;
 				n++;
 			}
-
-			sourceIndex++;
 		}
 
 		if ( n > 0 )
@@ -101,7 +100,6 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 			bAccu = 255;
 
 		target.set( ARGBType.rgba( rAccu, gAccu, bAccu, aAccu ) );
-
 	}
 
 	private String[] getProjectionModes( BdvHandle bdvHandle, ArrayList< Source< ? > > sources )

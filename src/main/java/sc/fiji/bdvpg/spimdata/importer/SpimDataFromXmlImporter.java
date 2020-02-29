@@ -12,7 +12,7 @@ public class SpimDataFromXmlImporter implements Runnable, Function<File, Abstrac
 
     File file;
 
-    public SpimDataFromXmlImporter( File file) {
+    public SpimDataFromXmlImporter( File file ) {
         this.file = file;
     }
 
