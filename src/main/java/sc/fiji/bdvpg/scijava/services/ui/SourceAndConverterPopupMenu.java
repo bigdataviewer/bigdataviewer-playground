@@ -7,6 +7,7 @@ import org.scijava.command.CommandService;
 import org.scijava.module.ModuleItem;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
+import sc.fiji.bdvpg.scijava.command.bdv.ScreenShotMakerCommand;
 import sc.fiji.bdvpg.scijava.command.source.*;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
@@ -40,8 +41,8 @@ public class SourceAndConverterPopupMenu
 			getCommandName(LUTSourceCreatorCommand.class),
 			"PopupLine",
 			getCommandName(SourcesRemoverCommand.class),
-			getCommandName(XmlHDF5ExporterCommand.class),
-	};
+			getCommandName(XmlHDF5ExporterCommand.class)
+	 };
 
 	 String[] popupActions;
 

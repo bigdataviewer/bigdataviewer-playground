@@ -1,12 +1,11 @@
 package sc.fiji.bdvpg.bdv;
 
+import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.brightness.MinMaxGroup;
 import bdv.tools.transformation.TransformedSource;
 import bdv.util.Bdv;
 import bdv.util.BdvHandle;
-import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
-import bdv.viewer.SourceAndConverter;
 import bdv.viewer.state.SourceState;
 import net.imglib2.*;
 import net.imglib2.converter.Converter;
@@ -79,9 +78,9 @@ public class BdvUtils
         return bdvHandle.getViewerPanel().getState().getVisibleSourceIndices();
     }
 
-    public static boolean isSourceIntersectingCurrentView( BdvHandle bdv, int sourceIndex, boolean is2D )
+    public static boolean isSourceIntersectingCurrentView( BdvHandle bdv, Source source, boolean is2D )
     {
-        final Interval interval = getSourceGlobalBoundingInterval( bdv, sourceIndex );
+        final Interval interval = getSourceGlobalBoundingInterval( bdv, source );
 
         final Interval viewerInterval =
                 Intervals.smallestContainingInterval(
@@ -126,6 +125,15 @@ public class BdvUtils
         return realInterval;
     }
 
+    public static Interval getSourceGlobalBoundingInterval( BdvHandle bdvHandle, Source< ? > source)
+    {
+        final AffineTransform3D sourceTransform = getSourceTransform( source );
+        final RandomAccessibleInterval< ? > rai = getRandomAccessibleInterval( source );
+        final Interval interval =
+                Intervals.smallestContainingInterval( sourceTransform.estimateBounds( rai ) );
+        return interval;
+    }
+
     public static Interval getSourceGlobalBoundingInterval( BdvHandle bdvHandle, int sourceId )
     {
         final AffineTransform3D sourceTransform =
@@ -137,19 +145,27 @@ public class BdvUtils
         return interval;
     }
 
-
-
-
     public static AffineTransform3D getSourceTransform( BdvHandle bdvHandle, int sourceId )
     {
+        final AffineTransform3D sourceTransform = getSourceTransform( bdvHandle.getViewerPanel().getState().getSources().get( sourceId ).getSpimSource() );
+        return sourceTransform;
+    }
+
+    public static AffineTransform3D getSourceTransform( Source< ? > source )
+    {
         final AffineTransform3D sourceTransform = new AffineTransform3D();
-        bdvHandle.getViewerPanel().getState().getSources().get( sourceId ).getSpimSource().getSourceTransform( 0, 0, sourceTransform );
+        source.getSourceTransform( 0, 0, sourceTransform );
         return sourceTransform;
     }
 
     public static RandomAccessibleInterval< ? > getRandomAccessibleInterval( BdvHandle bdvHandle, int sourceId )
     {
-        return bdvHandle.getViewerPanel().getState().getSources().get( sourceId ).getSpimSource().getSource( 0, 0 );
+        return getRandomAccessibleInterval( bdvHandle.getViewerPanel().getState().getSources().get( sourceId ).getSpimSource() );
+    }
+
+    public static RandomAccessibleInterval< ? > getRandomAccessibleInterval( Source< ? > source )
+    {
+        return source.getSource( 0, 0 );
     }
 
     public static Source< ? > getSource( BdvHandle bdvHandle, int sourceIndex )
@@ -158,8 +174,6 @@ public class BdvUtils
 
         return sources.get( sourceIndex ).getSpimSource();
     }
-
-
 
     /**
      * Returns the highest level where the sourceandconverter voxel spacings are <= the requested ones.
@@ -289,10 +303,17 @@ public class BdvUtils
 
     public static double[] getDisplayRange( BdvHandle bdvHandle, int sourceId )
     {
-        final double displayRangeMin = bdvHandle.getSetupAssignments()
-                .getConverterSetups().get( sourceId ).getDisplayRangeMin();
-        final double displayRangeMax = bdvHandle.getSetupAssignments()
-                .getConverterSetups().get( sourceId ).getDisplayRangeMax();
+        final ConverterSetup converterSetup = bdvHandle.getSetupAssignments()
+                .getConverterSetups().get( sourceId );
+
+        return getDisplayRange( converterSetup );
+    }
+
+
+    public static double[] getDisplayRange( ConverterSetup converterSetup )
+    {
+        final double displayRangeMin = converterSetup.getDisplayRangeMin();
+        final double displayRangeMax = converterSetup.getDisplayRangeMax();
 
         return new double[]{ displayRangeMin, displayRangeMax };
     }

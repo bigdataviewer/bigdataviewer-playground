@@ -15,6 +15,8 @@ import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.ScreenShotMaker;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 /**
  * ViewTransformSetAndLogDemo
@@ -32,28 +34,23 @@ public class ScreenshotDemo
         ImageJ ij = new ImageJ();
         ij.ui().showUI();
 
-        // Load and convert an image
-        ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
-        RandomAccessibleInterval rai = ImageJFunctions.wrapReal(imp);
-        // Adds a third dimension because Bdv needs 3D
-        rai = Views.addDimension( rai, 0, 0 );
-
-        // Make Source
-        Source source = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
-
-        SourceAndConverter sac = SourceAndConverterUtils.createSourceAndConverter(source);
-
-        // Create BdvHandle
+        // Gets active BdvHandle instance
         BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
 
-        // Show the sourceandconverter
-        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+        // Import SpimData
+        new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").run();
+        new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
 
-        new ViewerTransformAdjuster(bdvHandle, sac).run();
+        // Show all sacs
+        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
+                SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, sac );
+                new ViewerTransformAdjuster( bdvHandle, sac ).run();
+                new BrightnessAutoAdjuster( sac, 0 ).run();
+        } );
 
         // Retrieve screenshot from BDV
-        ScreenShotMaker screenShotMaker = new ScreenShotMaker(bdvHandle);
-        screenShotMaker.setPhysicalPixelSpacingInXY(0.5, "micron");
+        ScreenShotMaker screenShotMaker = new ScreenShotMaker( bdvHandle );
+        screenShotMaker.setPhysicalPixelSpacingInXY( 0.5, "micron" );
         screenShotMaker.getRgbScreenShot().show();
         screenShotMaker.getRawScreenShot().show();
     }

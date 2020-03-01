@@ -3,6 +3,7 @@ package sc.fiji.bdvpg.bdv;
 import bdv.util.BdvHandle;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import ij.CompositeImage;
 import ij.IJ;
 import ij.ImagePlus;
@@ -23,6 +24,8 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.util.Intervals;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -101,22 +104,26 @@ public class ScreenShotMaker {
         final ArrayList< RandomAccessibleInterval< UnsignedShortType > > captures = new ArrayList<>();
         final ArrayList< ARGBType > colors = new ArrayList<>();
         final ArrayList< double[] > displayRanges = new ArrayList<>();
-        final List< Integer > sourceIndices = getVisibleSourceIndices( bdv );
+
+        final List< SourceAndConverter > visibleSacs = getVisibleSacs( bdv );
+        if ( visibleSacs.size() == 0 ) return;
 
         final int t = bdv.getViewerPanel().getState().getCurrentTimepoint();
 
         final RandomAccessibleInterval< ARGBType > argbCapture
                 = ArrayImgs.argbs( captureWidth, captureHeight );
 
-        for ( int sourceIndex : sourceIndices )
+        final SourceAndConverterBdvDisplayService displayService = SourceAndConverterServices.getSourceAndConverterDisplayService();
+
+        for ( SourceAndConverter sac : visibleSacs )
         {
-            if ( ! isSourceIntersectingCurrentView( bdv, sourceIndex, checkSourceIntersectionWithViewerPlaneOnlyIn2D ) ) continue;
+            if ( ! isSourceIntersectingCurrentView( bdv, sac.getSpimSource(), checkSourceIntersectionWithViewerPlaneOnlyIn2D ) ) continue;
 
             final RandomAccessibleInterval< UnsignedShortType > realCapture
                     = ArrayImgs.unsignedShorts( captureWidth, captureHeight );
 
-            Source< ? > source = getSource( bdv, sourceIndex );
-            final Converter converter = getConverter( bdv, sourceIndex );
+            Source< ? > source = sac.getSpimSource();
+            final Converter converter = sac.getConverter();
 
             final int level = getLevel( source, pixelSpacing );
             final AffineTransform3D sourceTransform =
@@ -126,8 +133,7 @@ public class ScreenShotMaker {
             viewerToSourceTransform.preConcatenate( viewerTransform.inverse() );
             viewerToSourceTransform.preConcatenate( sourceTransform.inverse() );
 
-            // TODO: Once we have a logic for segmentation images,
-            // make this choice depend on this
+            // TODO: Once we have a logic for segmentation images, make this choice depend on this
             boolean interpolate = true;
 
             Grids.collectAllContainedIntervals(
@@ -175,7 +181,7 @@ public class ScreenShotMaker {
 
             captures.add( realCapture );
             // colors.add( getSourceColor( bdv, sourceIndex ) ); Not used, show GrayScale
-            displayRanges.add( BdvUtils.getDisplayRange( bdv, sourceIndex) );
+            displayRanges.add( BdvUtils.getDisplayRange( displayService.getConverterSetup( sac ) ) );
         }
 
         final double[] voxelSpacing = new double[ 3 ];
@@ -191,6 +197,23 @@ public class ScreenShotMaker {
             rawImageData  = createCompositeImage(
                     voxelSpacing, voxelUnit, captures, colors, displayRanges );
         }
+    }
+
+    private List< SourceAndConverter > getVisibleSacs( BdvHandle bdv )
+    {
+        final SourceAndConverterBdvDisplayService displayService = SourceAndConverterServices.getSourceAndConverterDisplayService();
+
+        final List< SourceAndConverter > sacs = displayService.getSourceAndConverterOf( bdvHandle );
+        List< SourceAndConverter > visibleSacs = new ArrayList<>(  );
+        for ( SourceAndConverter sac : sacs )
+        {
+            if ( displayService.isVisible( sac, bdv ) )
+            {
+                visibleSacs.add( sac );
+            }
+        }
+
+        return visibleSacs;
     }
 
     private void setArgbTypeVoxel( Converter converter, RealRandomAccess< ? > access, RandomAccess< ARGBType > argbCaptureAccess, double[] sourceRealPosition, ARGBType argbType )
