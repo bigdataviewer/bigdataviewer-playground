@@ -8,7 +8,7 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Make Sources Invisible")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Make Sources Invisible")
 public class SourcesInvisibleMakerCommand implements Command {
 
     @Parameter

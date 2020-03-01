@@ -1,18 +1,13 @@
 package sc.fiji.bdvpg.spimdata.exporter;
 
-import bdv.spimdata.SpimDataMinimal;
-import bdv.spimdata.XmlIoSpimDataMinimal;
-import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
 import mpicbg.spim.data.generic.AbstractSpimData;
-import mpicbg.spim.data.generic.sequence.BasicViewSetup;
-import mpicbg.spim.data.sequence.ViewSetup;
-import net.imglib2.display.ColorConverter;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import spimdata.util.DisplaySettings;
+
+import java.io.File;
 
 public class XmlFromSpimDataExporter implements Runnable {
 
@@ -22,6 +17,7 @@ public class XmlFromSpimDataExporter implements Runnable {
 
     public XmlFromSpimDataExporter ( AbstractSpimData spimData, String filePath) {
         this.spimData = spimData;
+        spimData.setBasePath(new File(filePath));
         this.filePath = filePath;
     }
 
@@ -31,9 +27,9 @@ public class XmlFromSpimDataExporter implements Runnable {
             // Loops through all sources in order to push display settings
             SourceAndConverterServices
                     .getSourceAndConverterService()
-                    .getSourceAndConverterFromSpimdata(spimData).forEach(sac -> DisplaySettings.PushDisplaySettings(sac));
+                    .getSourceAndConverterFromSpimdata(spimData).forEach(sac -> DisplaySettings.PushDisplaySettingsFromCurrentConverter(sac));
 
-            (new XmlIoSpimDataMinimal()).save((SpimDataMinimal) spimData, filePath);
+            (new XmlIoSpimData()).save((SpimData) spimData, filePath);
         } catch (SpimDataException e) {
             e.printStackTrace();
         }

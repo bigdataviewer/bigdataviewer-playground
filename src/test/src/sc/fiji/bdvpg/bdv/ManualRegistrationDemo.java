@@ -84,7 +84,7 @@ public class ManualRegistrationDemo {
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
-                    ManualRegistrationStopper::createNewTransformedSourceAndConverter
+                    SourceAndConverterUtils::createNewTransformedSourceAndConverter
             );
 
             manualRegistrationStarter.run();
@@ -110,7 +110,7 @@ public class ManualRegistrationDemo {
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
-                    ManualRegistrationStopper::mutateTransformedSourceAndConverter
+                    SourceAndConverterUtils::mutateTransformedSourceAndConverter
             );
 
             isTransforming = false;
@@ -142,7 +142,7 @@ public class ManualRegistrationDemo {
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
-                    ManualRegistrationStopper::mutateLastSpimdataTransformation
+                    SourceAndConverterUtils::mutateLastSpimdataTransformation
             );
 
             isTransforming = false;
@@ -178,7 +178,7 @@ public class ManualRegistrationDemo {
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
-                    ManualRegistrationStopper::appendNewSpimdataTransformation
+                    SourceAndConverterUtils::appendNewSpimdataTransformation
             );
 
             isTransforming = false;

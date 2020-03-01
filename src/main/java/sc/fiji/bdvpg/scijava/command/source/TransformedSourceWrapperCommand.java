@@ -11,7 +11,7 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Wrap as Transformed Source")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Wrap as Transformed Source")
 public class TransformedSourceWrapperCommand implements Command {
     @Parameter
     SourceAndConverter[] sources_in;

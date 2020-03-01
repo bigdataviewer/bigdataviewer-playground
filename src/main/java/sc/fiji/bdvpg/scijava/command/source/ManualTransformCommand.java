@@ -8,11 +8,12 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStarter;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStopper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import javax.swing.*;
 import java.awt.event.WindowEvent;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Manual Sources Transformation")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Manual Sources Transformation")
 public class ManualTransformCommand implements Command {
 
     @Parameter(choices = {"Mutate", "Append"})
@@ -30,11 +31,11 @@ public class ManualTransformCommand implements Command {
 
         if (mode.equals("Mutate")) {
             manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                ManualRegistrationStopper::mutate
+                SourceAndConverterUtils::mutate
             );
         } else {
             manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                    ManualRegistrationStopper::append
+                    SourceAndConverterUtils::append
             );
         }
 
@@ -55,7 +56,7 @@ public class ManualTransformCommand implements Command {
             new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
-                    ManualRegistrationStopper::cancel
+                    SourceAndConverterUtils::cancel
             ).run();
             frameStopManualTransformation.dispatchEvent(new WindowEvent(frameStopManualTransformation, WindowEvent.WINDOW_CLOSING));
         });

@@ -19,7 +19,6 @@ import net.imglib2.view.Views;
  * @param <T>
  */
 
-
 public class ResampledSource< T extends NumericType<T> & NativeType<T>> implements Source<T> {
     Source<T> origin;
 

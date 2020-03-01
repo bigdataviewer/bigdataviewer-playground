@@ -4,6 +4,7 @@ import bdv.viewer.Source;
 import bdv.img.WarpedSource;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.RealTransform;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import java.util.function.Function;
 
@@ -41,10 +42,10 @@ public class SourceRealTransformer implements Runnable, Function<SourceAndConver
             WarpedSource vsrc = new WarpedSource(in.asVolatile().getSpimSource(), "Transformed_"+in.asVolatile().getSpimSource().getName());//f.apply(in.asVolatile().getSpimSource());
             vsrc.updateTransform(rt);
             vsrc.setIsTransformed(true);
-            SourceAndConverter vout = new SourceAndConverter<>(vsrc, in.asVolatile().getConverter());
-            return new SourceAndConverter(src, in.getConverter(), vout);
+            SourceAndConverter vout = new SourceAndConverter<>(vsrc, SourceAndConverterUtils.cloneConverter(in.asVolatile().getConverter()));
+            return new SourceAndConverter(src, SourceAndConverterUtils.cloneConverter(in.getConverter()), vout);
         } else {
-            return new SourceAndConverter(src, in.getConverter());
+            return new SourceAndConverter(src, SourceAndConverterUtils.cloneConverter(in.getConverter()));
         }
     }
 }

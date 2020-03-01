@@ -157,10 +157,9 @@ public class BdvSourceServiceUI {
                     }
                 }
         );
-
         frame.add(panel);
         frame.pack();
-        frame.setVisible( false );
+        frame.setVisible(false);
     }
 
     public void inspectSources(SourceAndConverter[] sacs) {
@@ -311,21 +310,17 @@ public class BdvSourceServiceUI {
         if (displayedSource.contains(sac)) {
             // No Need to update
             visitAllNodesAndDelete(top, sac);
-            SwingUtilities.invokeLater(() -> {
-                        updateSpimDataFilterNodes();
-                        insertIntoTree(sac);
-                    });
+            updateSpimDataFilterNodes();
+            insertIntoTree(sac);
             //model.reload();
         } else {
             //System.out.println("Adding "+sac.getSpimSource().getName());
             displayedSource.add(sac);
 
-            SwingUtilities.invokeLater(() -> {
-                updateSpimDataFilterNodes();
-                insertIntoTree(sac);
-                panel.revalidate();
-                frame.setVisible( true );
-            });
+            updateSpimDataFilterNodes();
+            insertIntoTree(sac);
+            panel.revalidate();
+            frame.setVisible( true );
         }
     }
 
@@ -435,9 +430,7 @@ public class BdvSourceServiceUI {
             // No Need to update
             displayedSource.remove(sac);
             visitAllNodesAndDelete(top, sac);
-            SwingUtilities.invokeLater(() -> {
-                updateSpimDataFilterNodes();
-            });
+            updateSpimDataFilterNodes();
         }
     }
 

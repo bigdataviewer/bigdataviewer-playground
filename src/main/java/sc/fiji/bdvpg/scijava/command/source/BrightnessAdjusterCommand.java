@@ -13,7 +13,7 @@ import java.text.DecimalFormat;
 
 import static org.scijava.ItemVisibility.MESSAGE;
 
-@Plugin(type = Command.class, initializer = "init",  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Set Sources Brightness")
+@Plugin(type = Command.class, initializer = "init",  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Brightness")
 public class BrightnessAdjusterCommand extends InteractiveCommand {
 
     @Parameter

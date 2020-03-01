@@ -17,10 +17,12 @@ import org.scijava.script.ScriptService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
+import sc.fiji.bdvpg.bdv.BdvUtils;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
+import javax.swing.*;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -152,6 +154,27 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
+     * Makes visible a source, makes it visible in all bdvs according to BdvhReferences
+     * @param sac
+     */
+    public boolean isVisible(SourceAndConverter sac, BdvHandle bdvh) {
+        if ( sacToBdvHandleRefs.get(sac)!=null ) {
+            Optional<BdvHandleRef> oBdvhr = sacToBdvHandleRefs.get(sac).stream().filter(bdvhr -> bdvhr.bdvh.equals(bdvh)).findFirst();
+            //.forEach(bdvhr -> bdvhr.bdvh.getViewerPanel().getVisibilityAndGrouping().setSourceActive(bdvhr.indexInBdv-1, true));
+            if (oBdvhr.isPresent()) {
+                BdvHandleRef bdvhr = oBdvhr.get();
+                return bdvh.getViewerPanel()
+                           .getVisibilityAndGrouping()
+                           .isSourceActive(bdvhr.indexInBdv);
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Makes invisible a source, makes it invisible in all bdvs according to BdvhReferences
      * @param sac
      */
@@ -269,10 +292,13 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * @param sacs Array of SourceAndConverter
      */
     public void remove(BdvHandle bdvh, SourceAndConverter... sacs) {
+        //List<Runnable> toExecute = new ArrayList<>();
+        List<ConverterSetup> converterSetupsToRemove = new ArrayList<>();
+
         // Needs to removeFromAllBdvs the sourceandconverter, if present
-        for (SourceAndConverter source:sacs) {
-            if ( sacToBdvHandleRefs.get(source)!=null) {
-                while ( sacToBdvHandleRefs.get(source).stream().anyMatch(
+        for (SourceAndConverter source : sacs) {
+            if (sacToBdvHandleRefs.get(source) != null) {
+                while (sacToBdvHandleRefs.get(source).stream().anyMatch(
                         bdvHandleRef -> bdvHandleRef.bdvh.equals(bdvh)
                 )) {
                     // It is displayed in this bdvh
@@ -295,9 +321,12 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
                     removeSourceViaReflection(bdvh, index);
 
                     if (bdvSourceAndConverterService.getSacToMetadata().get(source).get(CONVERTER_SETUP) != null) {
-                        log.accept("Removing converter setup ...");
-                        bdvh.getSetupAssignments().removeSetup((ConverterSetup) bdvSourceAndConverterService.getSacToMetadata().get(source).get(CONVERTER_SETUP));
+                        converterSetupsToRemove.add(
+                                        (ConverterSetup) bdvSourceAndConverterService
+                                        .getSacToMetadata().get(source).get(CONVERTER_SETUP));
                     }
+
+
                     // Removes reference to where the sourceandconverter is located
                     sacToBdvHandleRefs.get(source).remove(bdvhr);
 
@@ -315,6 +344,21 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
                 }
             }
         }
+
+        //SwingUtilities.invokeLater(() -> {
+            converterSetupsToRemove.forEach(cs -> {
+                // Dirty Hack needed
+                bdvh.getSetupAssignments().removeSetup(cs);
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+        //});
+
+        //removeSetupsWithReflection(bdvh, converterSetupsToRemove);
+
         bdvh.getViewerPanel().requestRepaint();
     }
 
@@ -516,12 +560,14 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         // Two step process : first detect which BdvHandles need to be updated
         Map<BdvHandle, List<SourceAndConverter>> sourcesToUpdatePerBdvHandle = new HashMap<>();
         for (SourceAndConverter sac:sacs) {
-            sacToBdvHandleRefs.get(sac).forEach(bdvHandleRef -> {
-                if (!sourcesToUpdatePerBdvHandle.containsKey(bdvHandleRef.bdvh)) {
-                    sourcesToUpdatePerBdvHandle.put(bdvHandleRef.bdvh, new ArrayList<>());
-                }
-                sourcesToUpdatePerBdvHandle.get(bdvHandleRef.bdvh).add(sac);
-            });
+            if (sacToBdvHandleRefs.containsKey(sac)) {
+                sacToBdvHandleRefs.get(sac).forEach(bdvHandleRef -> {
+                    if (!sourcesToUpdatePerBdvHandle.containsKey(bdvHandleRef.bdvh)) {
+                        sourcesToUpdatePerBdvHandle.put(bdvHandleRef.bdvh, new ArrayList<>());
+                    }
+                    sourcesToUpdatePerBdvHandle.get(bdvHandleRef.bdvh).add(sac);
+                });
+            }
         }
         // Then update them : there is only one requestRepaint call per bdvh
         sourcesToUpdatePerBdvHandle.keySet().forEach(bdvHandle -> bdvHandle.getViewerPanel().requestRepaint());
@@ -627,6 +673,34 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
             e.printStackTrace();
         }
     }
+
+
+    /*
+     /**
+     * Removes a list of converter setups and avoids concurrent exception
+     * @param bdvh
+     * @param converterSetupsToRemove
+     *  TODO : MinMaxGroup, if really needed
+
+    private void removeSetupsWithReflection(BdvHandle bdvh, List<ConverterSetup> converterSetupsToRemove) {
+        try {
+            Field f = SetupAssignments.class.getDeclaredField("setups");
+            f.setAccessible(true);
+            ((ArrayList< ConverterSetup >) (f.get(bdvh.getSetupAssignments()))).removeAll(converterSetupsToRemove);
+            Field ulf = SetupAssignments.class.getDeclaredField("updateListener");
+            ulf.setAccessible(true);
+            SetupAssignments.UpdateListener ul = ((SetupAssignments.UpdateListener) ulf.get(bdvh.getSetupAssignments()));
+            if (ul!=null) {
+                ul.update();
+            }
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+    */
+
 
     public Set< SourceAndConverter > getSourceAndConverters( BdvHandle bdv )
     {
