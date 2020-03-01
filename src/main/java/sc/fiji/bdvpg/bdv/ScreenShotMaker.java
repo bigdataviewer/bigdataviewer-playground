@@ -207,6 +207,7 @@ public class ScreenShotMaker {
         List< SourceAndConverter > visibleSacs = new ArrayList<>(  );
         for ( SourceAndConverter sac : sacs )
         {
+            // TODO: this does not evaluate to true for all visible sources
             if ( displayService.isVisible( sac, bdv ) )
             {
                 visibleSacs.add( sac );
