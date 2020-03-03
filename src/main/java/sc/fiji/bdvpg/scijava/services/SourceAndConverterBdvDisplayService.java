@@ -165,7 +165,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
                 BdvHandleRef bdvhr = oBdvhr.get();
                 return bdvh.getViewerPanel()
                            .getVisibilityAndGrouping()
-                           .isSourceActive(bdvhr.indexInBdv);
+                           .isSourceActive(bdvhr.indexInBdv-1);
             } else {
                 return false;
             }
@@ -621,7 +621,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      */
     class BdvHandleRef {
         BdvHandle bdvh;
-        int indexInBdv;
+        int indexInBdv; // Take care!! 1-based index !! Remember to remove 1 when needed
 
         public BdvHandleRef(BdvHandle bdvh, int idx) {
             this.bdvh = bdvh;
