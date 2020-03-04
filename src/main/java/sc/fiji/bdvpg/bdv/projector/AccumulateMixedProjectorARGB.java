@@ -43,7 +43,7 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 		boolean containsExclusiveProjectionMode = false;
 		for ( String projectionMode : projectionModes )
 		{
-			if ( projectionMode.contains( Projection.PROJECTION_MODE_EXCLUSIVE ) )
+			if ( projectionMode.contains( Projection.PROJECTION_MODE_OCCLUDING ) )
 			{
 				containsExclusiveProjectionMode = true;
 				break;
@@ -59,12 +59,12 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 			// first the exclusive ones
 			for ( int i = 0; i < numSources; i++ )
-				if ( projectionModes[ i ].contains( Projection.PROJECTION_MODE_EXCLUSIVE ) )
+				if ( projectionModes[ i ].contains( Projection.PROJECTION_MODE_OCCLUDING ) )
 					sourceOrder[ j++ ] = i;
 
 			// then the others
 			for ( int i = 0; i < numSources; i++ )
-				if ( ! projectionModes[ i ].contains( Projection.PROJECTION_MODE_EXCLUSIVE ) )
+				if ( ! projectionModes[ i ].contains( Projection.PROJECTION_MODE_OCCLUDING ) )
 					sourceOrder[ j++ ] = i;
 		}
 		else
@@ -94,7 +94,7 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 			if ( a == 0 ) continue;
 
-			final boolean isExclusive = projectionModes[ sourceIndex ].contains( PROJECTION_MODE_EXCLUSIVE );
+			final boolean isExclusive = projectionModes[ sourceIndex ].contains( PROJECTION_MODE_OCCLUDING );
 
 			if ( a != 0 && isExclusive ) skipNonExclusiveSources = true;
 

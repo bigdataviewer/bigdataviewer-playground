@@ -44,7 +44,7 @@ public class ProjectionModeChanger implements Runnable, Consumer< SourceAndConve
         for ( SourceAndConverter sac : sacs )
         {
             if ( showSourcesExclusively )
-                projectionMode += Projection.PROJECTION_MODE_EXCLUSIVE;
+                projectionMode += Projection.PROJECTION_MODE_OCCLUDING;
 
             SourceAndConverterServices.getSourceAndConverterService().setMetadata( sac, PROJECTION_MODE, projectionMode );
         }
