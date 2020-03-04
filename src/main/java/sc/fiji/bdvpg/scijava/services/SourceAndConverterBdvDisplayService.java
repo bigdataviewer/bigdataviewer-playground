@@ -309,7 +309,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
                     int index = bdvhr.indexInBdv;
                     //this.logLocationsDisplayingSource();
-                    log.accept("Remove source " + source + " indexed " + index + " in BdvHandle " + bdvh.getViewerPanel().getName());
+                    log.accept("Remove source " + source + " indexed " + index + " in BdvHandle " + SwingUtilities.getWindowAncestor(bdvh.getViewerPanel()).getName());
 
                     /**
                      * A reflection forced access to ViewerState.removeSource(int index)
@@ -326,6 +326,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
                                         .getSacToMetadata().get(source).get(CONVERTER_SETUP));
                     }
 
+                    // Remove from BdvHandleToSacs
+                    bdvHandleToSacs.get(bdvh).remove(source);
 
                     // Removes reference to where the sourceandconverter is located
                     sacToBdvHandleRefs.get(source).remove(bdvhr);
@@ -518,7 +520,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         }
         sacToBdvHandleRefs.get(sac).add(bhr);
 
-        ConverterSetup cs = getConverterSetupsViaReflection(bdvh_in).get(index);
+        ConverterSetup cs = getConverterSetupsViaReflection(bdvh_in).get(index-1);
 
         // BigWarp Hack
         if (cs instanceof BigWarpConverterSetupWrapper) {

@@ -125,12 +125,13 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     {
         if (sac == null) {
             System.err.println("Error : sac is null in setMetadata function! ");
-            return;
+            //return;
         }
         if (sacToMetadata.get( sac ) == null) {
             System.err.println("Error : sac has no associated metadata ! This should not happen. ");
             System.err.println("Sac : "+sac.getSpimSource().getName());
-            return;
+            System.err.println("SpimSource class: "+sac.getSpimSource().getClass().getSimpleName());
+            //return;
         }
         sacToMetadata.get( sac ).put( key, data );
     }
