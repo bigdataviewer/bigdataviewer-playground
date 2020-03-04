@@ -2,7 +2,6 @@ package sc.fiji.bdvpg.bdv;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import net.imglib2.type.numeric.ARGBType;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
@@ -48,6 +47,8 @@ public class ProjectionModeChangerDemo
 		final SourceAndConverter[] averageProjectionSacs = new SourceAndConverter[ 2 ];
 		averageProjectionSacs[ 0 ] = sacs.get( 0 );
 		averageProjectionSacs[ 1 ] = sacs.get( 1 );
-		new ProjectionModeChanger( averageProjectionSacs, Projection.PROJECTION_MODE_AVG ).run();
+
+		new ProjectionModeChanger( averageProjectionSacs, Projection.PROJECTION_MODE_AVG, false ).run();
+
 	}
 }
