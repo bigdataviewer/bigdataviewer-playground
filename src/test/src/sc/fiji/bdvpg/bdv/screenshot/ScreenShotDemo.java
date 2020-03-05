@@ -16,7 +16,7 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
  * Author: @haesleinhuepf
  * 12 2019
  */
-public class ScreenshotDemo
+public class ScreenShotDemo
 {
     public static void main(String[] args)
     {

@@ -35,11 +35,24 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 
 		final List< SourceAndConverter > sacs =
 		SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverters(bdv)
-				.stream().filter(sac -> SourceAndConverterUtils.isSourcePresentAt(sac,timePoint, mousePosInBdv))
+				.stream()
+				.filter(sac -> SourceAndConverterUtils.isSourcePresentAt(sac,timePoint, mousePosInBdv))
+				.filter(sac -> SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible(sac,bdv))
 				.collect(Collectors.toList());
 
 		if ( sacs.size() == 0 )
 			return;
+
+		String message = "";
+		if (sacs.size()>1) {
+			message +=  sacs.size()+" sources selected";
+		} else {
+			for (SourceAndConverter sac:sacs) {
+				message += sac.getSpimSource().getName(); //"["+sac.getSpimSource().getClass().getSimpleName()+"]");
+			}
+		}
+
+		bdv.getViewerPanel().showMessage(message);
 
 		SourceAndConverter[] sacArray = new SourceAndConverter[sacs.size()];
 		sacArray = sacs.toArray(sacArray);

@@ -101,7 +101,7 @@ public class ScreenShotMaker {
         final long captureWidth = ( long ) Math.ceil( w / dxy );
         final long captureHeight = ( long ) Math.ceil( h / dxy );
 
-        final ArrayList< RandomAccessibleInterval< UnsignedShortType > > captures = new ArrayList<>();
+        final ArrayList< RandomAccessibleInterval< UnsignedShortType > > rawCaptures = new ArrayList<>();
         final ArrayList< ARGBType > colors = new ArrayList<>();
         final ArrayList< double[] > displayRanges = new ArrayList<>();
 
@@ -119,7 +119,7 @@ public class ScreenShotMaker {
         {
             if ( ! isSourceIntersectingCurrentView( bdv, sac.getSpimSource(), checkSourceIntersectionWithViewerPlaneOnlyIn2D ) ) continue;
 
-            final RandomAccessibleInterval< UnsignedShortType > realCapture
+            final RandomAccessibleInterval< UnsignedShortType > rawCapture
                     = ArrayImgs.unsignedShorts( captureWidth, captureHeight );
 
             Source< ? > source = sac.getSpimSource();
@@ -146,9 +146,9 @@ public class ScreenShotMaker {
                         getRealRandomAccess( t, source, level, interpolate );
 
                 // to collect raw data
-                final IntervalView< UnsignedShortType > realCrop = Views.interval( realCapture, interval );
-                final Cursor< UnsignedShortType > realCaptureCursor = Views.iterable( realCrop ).localizingCursor();
-                final RandomAccess< UnsignedShortType > realCaptureAccess = realCrop.randomAccess();
+                final IntervalView< UnsignedShortType > rawCrop = Views.interval( rawCapture, interval );
+                final Cursor< UnsignedShortType > rawCaptureCursor = Views.iterable( rawCrop ).localizingCursor();
+                final RandomAccess< UnsignedShortType > rawCaptureAccess = rawCrop.randomAccess();
 
                 // to collect coloured data
                 final IntervalView< ARGBType > argbCrop = Views.interval( argbCapture, interval );
@@ -159,12 +159,12 @@ public class ScreenShotMaker {
 
                 final ARGBType argbType = new ARGBType();
 
-                while ( realCaptureCursor.hasNext() )
+                while ( rawCaptureCursor.hasNext() )
                 {
-                    realCaptureCursor.fwd();
-                    realCaptureCursor.localize( canvasPosition );
-                    realCaptureAccess.setPosition( realCaptureCursor );
-                    argbCaptureAccess.setPosition( realCaptureCursor );
+                    rawCaptureCursor.fwd();
+                    rawCaptureCursor.localize( canvasPosition );
+                    rawCaptureAccess.setPosition( rawCaptureCursor );
+                    argbCaptureAccess.setPosition( rawCaptureCursor );
 
                     // canvasPosition is the position on the canvas, in calibrated units
                     // dxy is the step size that is needed to get the desired resolution in the
@@ -174,12 +174,12 @@ public class ScreenShotMaker {
 
                     viewerToSourceTransform.apply( canvasPosition, sourceRealPosition );
 
-                    setRealTypeVoxel( realTypeAccess, realCaptureAccess, sourceRealPosition );
-                    setArgbTypeVoxel( converter, access, argbCaptureAccess, sourceRealPosition, argbType );
+                    setRealTypeVoxel( realTypeAccess, rawCaptureAccess, sourceRealPosition );
+                    updateArgbCapture( converter, access, argbCaptureAccess, sourceRealPosition, argbType );
                 }
             });
 
-            captures.add( realCapture );
+            rawCaptures.add( rawCapture );
             // colors.add( getSourceColor( bdv, sourceIndex ) ); Not used, show GrayScale
             displayRanges.add( BdvUtils.getDisplayRange( displayService.getConverterSetup( sac ) ) );
         }
@@ -190,12 +190,12 @@ public class ScreenShotMaker {
 
         voxelSpacing[ 2 ] = viewerVoxelSpacing; // TODO: What to put here?
 
-        if ( captures.size() > 0 )
+        if ( rawCaptures.size() > 0 )
         {
             screenShot = createRgbImage(
                     voxelUnit, argbCapture, voxelSpacing );
             rawImageData  = createCompositeImage(
-                    voxelSpacing, voxelUnit, captures, colors, displayRanges );
+                    voxelSpacing, voxelUnit, rawCaptures, colors, displayRanges );
         }
     }
 
@@ -217,17 +217,19 @@ public class ScreenShotMaker {
         return visibleSacs;
     }
 
-    private void setArgbTypeVoxel( Converter converter, RealRandomAccess< ? > access, RandomAccess< ARGBType > argbCaptureAccess, double[] sourceRealPosition, ARGBType argbType )
+    private void updateArgbCapture( Converter converter, RealRandomAccess< ? > access, RandomAccess< ARGBType > argbCaptureAccess, double[] sourceRealPosition, ARGBType argbType )
     {
         access.setPosition( sourceRealPosition );
-        final Object pixel = access.get();
-        if ( pixel instanceof ARGBType )
-            argbType.set( ( ARGBType ) pixel );
+        final Object pixelValue = access.get();
+        if ( pixelValue instanceof ARGBType )
+            argbType.set( ( ARGBType ) pixelValue );
         else
-            converter.convert( pixel, argbType );
+            converter.convert( pixelValue, argbType );
 
         final int sourceARGBIndex = argbType.get();
         final int captureARGBIndex = argbCaptureAccess.get().get();
+
+        // here the projection happens
         int a = ARGBType.alpha( sourceARGBIndex ) + ARGBType.alpha( captureARGBIndex );
         int r = ARGBType.red( sourceARGBIndex ) + ARGBType.red( captureARGBIndex );
         int g = ARGBType.green( sourceARGBIndex )+ ARGBType.green( captureARGBIndex );
