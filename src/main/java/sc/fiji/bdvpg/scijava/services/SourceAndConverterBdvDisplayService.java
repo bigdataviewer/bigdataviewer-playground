@@ -451,6 +451,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         scriptService.addAlias(BdvHandle.class);
         bdvHandleToSacs = new HashMap<>();
         sacToBdvHandleRefs = new HashMap<>();
+        displayToMetadata = new HashMap<>();
         bdvSourceAndConverterService.setDisplayService(this);
         SourceAndConverterServices.setSourceAndConverterDisplayService(this);
         log.accept("Service initialized.");
@@ -707,6 +708,34 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     public Set< SourceAndConverter > getSourceAndConverters( BdvHandle bdv )
     {
         return bdvHandleToSacs.get( bdv ).stream().collect(Collectors.toSet());
+    }
+
+    /**
+     * Map containing objects that are 1 to 1 linked to a Display ( a BdvHandle object )
+     * TODO : ask if it should contain a WeakReference to BdvHandle keys (Potential Memory leak ?)
+     */
+    Map<BdvHandle, Map<String, Object>> displayToMetadata;
+
+    public void setDisplayMetadata( BdvHandle bdvh, String key, Object data )
+    {
+        if (bdvh == null) {
+            System.err.println("Error : bdvh is null in setMetadata function! ");
+            //return;
+        }
+        if (displayToMetadata.get( bdvh ) == null) {
+            // Create Metadata
+            displayToMetadata.put(bdvh, new HashMap<>());
+        }
+        displayToMetadata.get( bdvh ).put( key, data );
+    }
+
+    public Object getDisplayMetadata( BdvHandle bdvh, String key )
+    {
+        if (displayToMetadata.containsKey(bdvh)) {
+            return displayToMetadata.get(bdvh).get(key);
+        } else {
+            return null;
+        }
     }
 
 }
