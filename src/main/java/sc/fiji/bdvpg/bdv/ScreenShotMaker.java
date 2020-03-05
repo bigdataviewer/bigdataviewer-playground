@@ -24,7 +24,10 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.util.Intervals;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGB;
+import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.awt.*;
@@ -49,19 +52,25 @@ public class ScreenShotMaker {
     private boolean sourceInteractionWithViewerPlaneOnly2D = false; // TODO: maybe remove in the future
     ImagePlus screenShot = null;
     private CompositeImage rawImageData = null;
+    private final SourceAndConverterBdvDisplayService displayService;
+    private final ISourceAndConverterService sacService;
+    private long captureWidth;
+    private long captureHeight;
 
     public ScreenShotMaker(BdvHandle bdvHandle) {
         this.bdvHandle = bdvHandle;
+        this.displayService = SourceAndConverterServices.getSourceAndConverterDisplayService();
+        this.sacService = SourceAndConverterServices.getSourceAndConverterService();
     }
 
     public void setPhysicalPixelSpacingInXY(double spacing, String unit) {
-        screenShot = null;
+        this.screenShot = null;
         this.physicalPixelSpacingInXY = spacing;
         this.physicalUnit = unit;
     }
 
     public void setSourceInteractionWithViewerPlaneOnly2D(boolean sourceInteractionWithViewerPlaneOnly2D) {
-        screenShot = null;
+        this.screenShot = null;
         this.sourceInteractionWithViewerPlaneOnly2D = sourceInteractionWithViewerPlaneOnly2D;
     }
 
@@ -69,7 +78,7 @@ public class ScreenShotMaker {
         if (screenShot != null) {
             return;
         }
-        createScreenshot(bdvHandle, physicalPixelSpacingInXY, physicalUnit, sourceInteractionWithViewerPlaneOnly2D);
+        createScreenShot();
     }
 
     public ImagePlus getRgbScreenShot() {
@@ -83,49 +92,44 @@ public class ScreenShotMaker {
         return rawImageData;
     }
 
-    private void createScreenshot(
-            BdvHandle bdv,
-            double pixelSpacing,
-            String voxelUnit,
-            boolean checkSourceIntersectionWithViewerPlaneOnlyIn2D )
+    private void createScreenShot()
     {
         final AffineTransform3D viewerTransform = new AffineTransform3D();
-        bdv.getViewerPanel().getState().getViewerTransform( viewerTransform );
+        bdvHandle.getViewerPanel().getState().getViewerTransform( viewerTransform );
 
-        final double viewerVoxelSpacing = getViewerVoxelSpacing( bdv );
-        double dxy = pixelSpacing / viewerVoxelSpacing;
+        final double viewerVoxelSpacing = getViewerVoxelSpacing( bdvHandle );
+        double dxy = physicalPixelSpacingInXY / viewerVoxelSpacing;
 
-        final int w = getBdvWindowWidth( bdv );
-        final int h = getBdvWindowHeight( bdv );
+        final int w = getBdvWindowWidth( bdvHandle );
+        final int h = getBdvWindowHeight( bdvHandle );
 
-        final long captureWidth = ( long ) Math.ceil( w / dxy );
-        final long captureHeight = ( long ) Math.ceil( h / dxy );
+        captureWidth = ( long ) Math.ceil( w / dxy );
+        captureHeight = ( long ) Math.ceil( h / dxy );
 
         final ArrayList< RandomAccessibleInterval< UnsignedShortType > > rawCaptures = new ArrayList<>();
+        final ArrayList< RandomAccessibleInterval< ARGBType > > argbCaptures = new ArrayList<>();
         final ArrayList< ARGBType > colors = new ArrayList<>();
+
         final ArrayList< double[] > displayRanges = new ArrayList<>();
 
-        final List< SourceAndConverter > visibleSacs = getVisibleSacs( bdv );
+        final List< SourceAndConverter > visibleSacs = getVisibleSacs( bdvHandle );
         if ( visibleSacs.size() == 0 ) return;
 
-        final int t = bdv.getViewerPanel().getState().getCurrentTimepoint();
-
-        final RandomAccessibleInterval< ARGBType > argbCapture
-                = ArrayImgs.argbs( captureWidth, captureHeight );
-
-        final SourceAndConverterBdvDisplayService displayService = SourceAndConverterServices.getSourceAndConverterDisplayService();
+        final int t = bdvHandle.getViewerPanel().getState().getCurrentTimepoint();
 
         for ( SourceAndConverter sac : visibleSacs )
         {
-            if ( ! isSourceIntersectingCurrentView( bdv, sac.getSpimSource(), checkSourceIntersectionWithViewerPlaneOnlyIn2D ) ) continue;
+            if ( ! isSourceIntersectingCurrentView( bdvHandle, sac.getSpimSource(), sourceInteractionWithViewerPlaneOnly2D ) ) continue;
 
             final RandomAccessibleInterval< UnsignedShortType > rawCapture
                     = ArrayImgs.unsignedShorts( captureWidth, captureHeight );
+            final RandomAccessibleInterval< ARGBType > argbCapture
+                    = ArrayImgs.argbs( captureWidth, captureHeight );
 
             Source< ? > source = sac.getSpimSource();
             final Converter converter = sac.getConverter();
 
-            final int level = getLevel( source, pixelSpacing );
+            final int level = getLevel( source, physicalPixelSpacingInXY );
             final AffineTransform3D sourceTransform =
                     BdvUtils.getSourceTransform( source, t, level );
 
@@ -174,8 +178,8 @@ public class ScreenShotMaker {
 
                     viewerToSourceTransform.apply( canvasPosition, sourceRealPosition );
 
-                    setRealTypeVoxel( realTypeAccess, rawCaptureAccess, sourceRealPosition );
-                    updateArgbCapture( converter, access, argbCaptureAccess, sourceRealPosition, argbType );
+                    setRawCapturePixelValue( realTypeAccess, rawCaptureAccess, sourceRealPosition );
+                    setArgbCapturePixelValue( converter, access, argbCaptureAccess, sourceRealPosition, argbType );
                 }
             });
 
@@ -186,16 +190,17 @@ public class ScreenShotMaker {
 
         final double[] voxelSpacing = new double[ 3 ];
         for ( int d = 0; d < 2; d++ )
-            voxelSpacing[ d ] = pixelSpacing;
+            voxelSpacing[ d ] = physicalPixelSpacingInXY;
 
         voxelSpacing[ 2 ] = viewerVoxelSpacing; // TODO: What to put here?
 
         if ( rawCaptures.size() > 0 )
         {
-            screenShot = createRgbImage(
-                    voxelUnit, argbCapture, voxelSpacing );
+            final String[] projectionModes = AccumulateMixedProjectorARGB.getProjectionModes( visibleSacs );
+            final String projector = ( String ) displayService.getDisplayMetadata( bdvHandle, Projection.PROJECTOR );
+            screenShot = createRgbImage( physicalUnit, argbCaptures, voxelSpacing, projectionModes, projector );
             rawImageData  = createCompositeImage(
-                    voxelSpacing, voxelUnit, rawCaptures, colors, displayRanges );
+                    voxelSpacing, physicalUnit, rawCaptures, colors, displayRanges );
         }
     }
 
@@ -217,7 +222,7 @@ public class ScreenShotMaker {
         return visibleSacs;
     }
 
-    private void updateArgbCapture( Converter converter, RealRandomAccess< ? > access, RandomAccess< ARGBType > argbCaptureAccess, double[] sourceRealPosition, ARGBType argbType )
+    private void setArgbCapturePixelValue( Converter converter, RealRandomAccess< ? > access, RandomAccess< ARGBType > argbCaptureAccess, double[] sourceRealPosition, ARGBType argbType )
     {
         access.setPosition( sourceRealPosition );
         final Object pixelValue = access.get();
@@ -247,7 +252,7 @@ public class ScreenShotMaker {
         argbCaptureAccess.get().set( ARGBType.rgba( r, g, b, a ) );
     }
 
-    private void setRealTypeVoxel( RealRandomAccess< ? extends RealType< ? > > realTypeAccess, RandomAccess< UnsignedShortType > realCaptureAccess, double[] sourceRealPosition )
+    private void setRawCapturePixelValue( RealRandomAccess< ? extends RealType< ? > > realTypeAccess, RandomAccess< UnsignedShortType > realCaptureAccess, double[] sourceRealPosition )
     {
         realTypeAccess.setPosition( sourceRealPosition );
         final RealType< ? > realType = realTypeAccess.get();
@@ -264,14 +269,62 @@ public class ScreenShotMaker {
         return access;
     }
 
-    private static ImagePlus createRgbImage( String voxelUnit, RandomAccessibleInterval< ARGBType > argbCapture, double[] voxelSpacing )
+    private ImagePlus createRgbImage(
+            String physicalUnit,
+            ArrayList< RandomAccessibleInterval< ARGBType > > argbCaptures,
+            double[] voxelSpacing,
+            String[] projectionModes,
+            String projector )
+    {
+        final RandomAccessibleInterval< ARGBType > argbCapture = ArrayImgs.argbs( captureWidth, captureHeight );
+
+        switch ( projector )
+        {
+            case Projection.MIXED_PROJECTOR:
+            case Projection.SUM_PROJECTOR:
+            case Projection.AVERAGE_PROJECTOR:
+                projectUsingMixedProjector( argbCaptures, argbCapture, projectionModes );
+                break;
+            default:
+                break;
+        }
+
+        final ImagePlus rgbImage = asImagePlus( argbCapture, physicalUnit, voxelSpacing );
+
+        return rgbImage;
+    }
+
+    private void projectUsingMixedProjector( ArrayList< RandomAccessibleInterval< ARGBType > > argbCaptures, RandomAccessibleInterval< ARGBType > argbCapture, String[] projectionModes )
+    {
+        final int[] sourcesOrder = AccumulateMixedProjectorARGB.getSourcesOrder( projectionModes );
+
+        final Cursor< ARGBType > argbCursor = Views.iterable( argbCapture ).localizingCursor();
+
+        final int numVisibleSources = argbCaptures.size();
+
+        Cursor< ARGBType >[] cursors = new Cursor[ numVisibleSources ];
+        for ( int i = 0; i < numVisibleSources; i++ )
+            cursors[ i ] = Views.iterable( argbCaptures.get( i ) ).cursor();
+
+        while ( argbCursor.hasNext() )
+        {
+            argbCursor.fwd();
+            for ( int i = 0; i < numVisibleSources; i++ )
+                cursors[ i ].fwd();
+
+            final int argbIndex = AccumulateMixedProjectorARGB.getArgbIndex( cursors, sourcesOrder, projectionModes );
+            argbCursor.get().set( argbIndex );
+        }
+    }
+
+    private ImagePlus asImagePlus( RandomAccessibleInterval< ARGBType > argbCapture, String physicalUnit, double[] voxelSpacing )
     {
         final ImagePlus rgbImage = ImageJFunctions.wrap( argbCapture, "View Capture RGB" );
 
         IJ.run( rgbImage,
                 "Properties...",
                 "channels=" + 1
-                        +" slices=1 frames=1 unit=" + voxelUnit
+                        +" slices=1 frames=1 unit=" + physicalUnit
                         +" pixel_width=" + voxelSpacing[ 0 ]
                         +" pixel_height=" + voxelSpacing[ 1 ]
                         +" voxel_depth=" + voxelSpacing[ 2 ] );
