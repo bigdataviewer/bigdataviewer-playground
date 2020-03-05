@@ -24,8 +24,8 @@ public class SourcesDuplicatorCommand implements Command {
     @Override
     public void run() {
 
-        for (int i=0;i<sources_in.length;i++) {
-            new SourceAndConverterDuplicator(sources_in[i]).get();
+        for (SourceAndConverter sac : sources_in) {
+            new SourceAndConverterDuplicator(sac).get();
         }
 
     }
