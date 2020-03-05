@@ -24,7 +24,9 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.util.Intervals;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import sc.fiji.bdvpg.bdv.projector.AccumulateAverageProjectorARGB;
 import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGB;
+import sc.fiji.bdvpg.bdv.projector.AccumulateSumProjectorARGB;
 import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
@@ -184,6 +186,7 @@ public class ScreenShotMaker {
             });
 
             rawCaptures.add( rawCapture );
+            argbCaptures.add( argbCapture );
             // colors.add( getSourceColor( bdv, sourceIndex ) ); Not used, show GrayScale
             displayRanges.add( BdvUtils.getDisplayRange( displayService.getConverterSetup( sac ) ) );
         }
@@ -198,7 +201,7 @@ public class ScreenShotMaker {
         {
             final String[] projectionModes = AccumulateMixedProjectorARGB.getProjectionModes( visibleSacs );
             final String projector = ( String ) displayService.getDisplayMetadata( bdvHandle, Projection.PROJECTOR );
-            screenShot = createRgbImage( physicalUnit, argbCaptures, voxelSpacing, projectionModes, projector );
+            screenShot = createImagePlus( physicalUnit, argbCaptures, voxelSpacing, projectionModes, projector );
             rawImageData  = createCompositeImage(
                     voxelSpacing, physicalUnit, rawCaptures, colors, displayRanges );
         }
@@ -269,7 +272,7 @@ public class ScreenShotMaker {
         return access;
     }
 
-    private ImagePlus createRgbImage(
+    private ImagePlus createImagePlus(
             String physicalUnit,
             ArrayList< RandomAccessibleInterval< ARGBType > > argbCaptures,
             double[] voxelSpacing,
@@ -281,9 +284,13 @@ public class ScreenShotMaker {
         switch ( projector )
         {
             case Projection.MIXED_PROJECTOR:
-            case Projection.SUM_PROJECTOR:
-            case Projection.AVERAGE_PROJECTOR:
                 projectUsingMixedProjector( argbCaptures, argbCapture, projectionModes );
+                break;
+            case Projection.SUM_PROJECTOR:
+                projectUsingSumProjector( argbCaptures, argbCapture );
+                break;
+            case Projection.AVERAGE_PROJECTOR:
+                projectUsingAverageProjector( argbCaptures, argbCapture );
                 break;
             default:
                 break;
@@ -299,12 +306,8 @@ public class ScreenShotMaker {
         final int[] sourcesOrder = AccumulateMixedProjectorARGB.getSourcesOrder( projectionModes );
 
         final Cursor< ARGBType > argbCursor = Views.iterable( argbCapture ).localizingCursor();
-
         final int numVisibleSources = argbCaptures.size();
-
-        Cursor< ARGBType >[] cursors = new Cursor[ numVisibleSources ];
-        for ( int i = 0; i < numVisibleSources; i++ )
-            cursors[ i ] = Views.iterable( argbCaptures.get( i ) ).cursor();
+        Cursor< ARGBType >[] cursors = getCursors( argbCaptures, numVisibleSources );
 
         while ( argbCursor.hasNext() )
         {
@@ -315,6 +318,50 @@ public class ScreenShotMaker {
             final int argbIndex = AccumulateMixedProjectorARGB.getArgbIndex( cursors, sourcesOrder, projectionModes );
             argbCursor.get().set( argbIndex );
         }
+    }
+
+    private void projectUsingSumProjector( ArrayList< RandomAccessibleInterval< ARGBType > > argbCaptures, RandomAccessibleInterval< ARGBType > argbCapture )
+    {
+        final Cursor< ARGBType > argbCursor = Views.iterable( argbCapture ).localizingCursor();
+        final int numVisibleSources = argbCaptures.size();
+
+        Cursor< ARGBType >[] cursors = getCursors( argbCaptures, numVisibleSources );
+
+        while ( argbCursor.hasNext() )
+        {
+            argbCursor.fwd();
+            for ( int i = 0; i < numVisibleSources; i++ )
+                cursors[ i ].fwd();
+
+            final int argbIndex = AccumulateSumProjectorARGB.getArgbIndex( cursors );
+            argbCursor.get().set( argbIndex );
+        }
+    }
+
+    private void projectUsingAverageProjector( ArrayList< RandomAccessibleInterval< ARGBType > > argbCaptures, RandomAccessibleInterval< ARGBType > argbCapture )
+    {
+        final Cursor< ARGBType > argbCursor = Views.iterable( argbCapture ).localizingCursor();
+        final int numVisibleSources = argbCaptures.size();
+
+        Cursor< ARGBType >[] cursors = getCursors( argbCaptures, numVisibleSources );
+
+        while ( argbCursor.hasNext() )
+        {
+            argbCursor.fwd();
+            for ( int i = 0; i < numVisibleSources; i++ )
+                cursors[ i ].fwd();
+
+            final int argbIndex = AccumulateAverageProjectorARGB.getArgbIndex( cursors );
+            argbCursor.get().set( argbIndex );
+        }
+    }
+
+    private Cursor< ARGBType >[] getCursors( ArrayList< RandomAccessibleInterval< ARGBType > > argbCaptures, int numVisibleSources )
+    {
+        Cursor< ARGBType >[] cursors = new Cursor[ numVisibleSources ];
+        for ( int i = 0; i < numVisibleSources; i++ )
+            cursors[ i ] = Views.iterable( argbCaptures.get( i ) ).cursor();
+        return cursors;
     }
 
     private ImagePlus asImagePlus( RandomAccessibleInterval< ARGBType > argbCapture, String physicalUnit, double[] voxelSpacing )
