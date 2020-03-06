@@ -9,6 +9,7 @@ import net.imglib2.Cursor;
 import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.ARGBType;
+import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.ArrayList;
@@ -35,10 +36,10 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 	{
 		super( sourceProjectors, sourceScreenImages, target, numThreads, executorService );
 		this.projectionModes = getProjectionModes( bdvHandle, sources );
-		setSourceOrderAccordingToExclusiveness();
+		sourceOrder = getSourcesOrder( projectionModes );
 	}
 
-	public void setSourceOrderAccordingToExclusiveness()
+	public static int[] getSourcesOrder( String[] projectionModes )
 	{
 		boolean containsExclusiveProjectionMode = false;
 		for ( String projectionMode : projectionModes )
@@ -52,7 +53,7 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 		final int numSources = projectionModes.length;
 
-		sourceOrder = new int[ numSources ];
+		int[] sourceOrder = new int[ numSources ];
 		if ( containsExclusiveProjectionMode )
 		{
 			int j = 0;
@@ -72,12 +73,20 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 			for ( int i = 0; i < numSources; i++ )
 				sourceOrder[ i ] = i;
 		}
+
+		return sourceOrder;
 	}
 
 	@Override
 	protected void accumulate(
 			final Cursor< ? extends ARGBType >[] accesses,
 			final ARGBType target )
+	{
+		final int argbIndex = getArgbIndex( accesses, sourceOrder, projectionModes );
+		target.set( argbIndex );
+	}
+
+	public static int getArgbIndex( Cursor< ? extends ARGBType >[] accesses, int[] sourceOrder, String[] projectionModes )
 	{
 		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, n = 0;
 		int aAccu = 0, rAccu = 0, gAccu = 0, bAccu = 0;
@@ -140,10 +149,10 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 		if ( bAccu > 255 )
 			bAccu = 255;
 
-		target.set( ARGBType.rgba( rAccu, gAccu, bAccu, aAccu ) );
+		return ARGBType.rgba( rAccu, gAccu, bAccu, aAccu );
 	}
 
-	private String[] getProjectionModes( BdvHandle bdvHandle, ArrayList< Source< ? > > sources )
+	public static String[] getProjectionModes( BdvHandle bdvHandle, ArrayList< Source< ? > > sources )
 	{
 		// We need to reconstitute the sequence of action that lead to the current indexes
 
@@ -157,30 +166,39 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 		// In ascending order
 		Collections.sort(visibleIndexes);
 
-		SourceAndConverter[] sacArray = new SourceAndConverter[visibleIndexes.size()];
+		SourceAndConverter[] visibleSacArray = new SourceAndConverter[visibleIndexes.size()];
 
 		for (int idx = 0; idx<visibleIndexes.size(); idx++) {
-			sacArray[idx] = sacsInBdvHandle.get(visibleIndexes.get(idx));
+			visibleSacArray[idx] = sacsInBdvHandle.get(visibleIndexes.get(idx));
 		}
 
-		final List< SourceAndConverter > sacs = Arrays.asList(sacArray);//SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();
-		final String[] projectionModes = new String[ sources.size() ];
+		final List< SourceAndConverter > visibleSacs = Arrays.asList(visibleSacArray);//SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();
+		final String[] projectionModes = getProjectionModes( visibleSacs );
 
-		int sourceIndex = 0;
+		return projectionModes;
+	}
 
-		for ( SourceAndConverter<?> sac : sacs )
+	public static String[] getProjectionModes( List< SourceAndConverter > visibleSacs )
+	{
+		final int numSources = visibleSacs.size();
+
+		final String[] projectionModes = new String[ numSources ];
+
+		final ISourceAndConverterService sacService = SourceAndConverterServices.getSourceAndConverterService();
+
+		for ( int sourceIndex = 0; sourceIndex < numSources; sourceIndex++ )
 		{
+			final SourceAndConverter sac = visibleSacs.get( sourceIndex );
 
-			final String projectionMode = (String) SourceAndConverterServices.getSourceAndConverterService().getMetadata( sac, PROJECTION_MODE );
+			final String projectionMode = (String) sacService.getMetadata( sac, PROJECTION_MODE );
 
 			if ( projectionMode == null ) {
-				projectionModes[sourceIndex++] = PROJECTION_MODE_SUM;
+				projectionModes[ sourceIndex ] = PROJECTION_MODE_SUM;
 			} else {
-				projectionModes[sourceIndex++] = projectionMode;
+				projectionModes[ sourceIndex ] = projectionMode;
 			}
 
 		}
-
 		return projectionModes;
 	}
 

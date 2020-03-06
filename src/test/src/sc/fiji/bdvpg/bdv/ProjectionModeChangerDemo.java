@@ -47,8 +47,6 @@ public class ProjectionModeChangerDemo
 		final SourceAndConverter[] averageProjectionSacs = new SourceAndConverter[ 2 ];
 		averageProjectionSacs[ 0 ] = sacs.get( 0 );
 		averageProjectionSacs[ 1 ] = sacs.get( 1 );
-
 		new ProjectionModeChanger( averageProjectionSacs, Projection.PROJECTION_MODE_AVG, false ).run();
-
 	}
 }

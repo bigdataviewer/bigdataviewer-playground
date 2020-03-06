@@ -10,6 +10,9 @@ import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.behaviour.SourceAndConverterContextMenuClickBehaviour;
+import sc.fiji.bdvpg.scijava.command.bdv.ScreenShotMakerCommand;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.function.Supplier;
 
@@ -71,10 +74,18 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 
 	private void addSourceAndConverterContextMenuBehaviour()
 	{
-		final ClickBehaviourInstaller installer = new ClickBehaviourInstaller( bdv, new SourceAndConverterContextMenuClickBehaviour( bdv ) );
+		final ClickBehaviourInstaller installerPopup = new ClickBehaviourInstaller( bdv, new SourceAndConverterContextMenuClickBehaviour( bdv ) );
 
-		installer.install( "Sources context menu - C", "C" );
-		installer.install( "Sources context menu - Right mouse button", "button3" );
+		installerPopup.install( "Sources context menu - C", "C" );
+		installerPopup.install( "Sources context menu - Right mouse button", "button3" );
+
+		String actionScreenshotName = SourceAndConverterService.getCommandName(ScreenShotMakerCommand.class);
+		final ClickBehaviourInstaller installerScreenshot = new ClickBehaviourInstaller( bdv, (x,y) -> {
+			SourceAndConverterServices.getSourceAndConverterService().getAction(actionScreenshotName).accept(null);
+		} );
+
+		installerScreenshot.install("Screenshot", "D" );
+
 	}
 
 	public BdvHandle get()

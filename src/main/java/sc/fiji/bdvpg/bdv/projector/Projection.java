@@ -29,6 +29,7 @@ public class Projection
 	public static final String PROJECTION_MODE_AVG = "Average";
 	public static final String PROJECTION_MODE_OCCLUDING = "Occluding";
 
+	public static final String PROJECTOR = "Projector";
 	public static final String MIXED_PROJECTOR = "Mixed Projector";
 	public static final String SUM_PROJECTOR = "Sum Projector";
 	public static final String AVERAGE_PROJECTOR = "Average Projector";
