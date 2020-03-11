@@ -24,14 +24,21 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     Source<?> srcResamplingModel;
 
+    Interpolation interpolation;
+
     protected final DefaultInterpolators< T > interpolators = new DefaultInterpolators<>();
 
     boolean reuseMipMaps;
 
-    public ResampledSource(Source<T> source, Source<T> srcResamplingModel, boolean reuseMipMaps) {
+    public ResampledSource(Source<T> source, Source<T> srcResamplingModel, boolean reuseMipMaps, boolean interpolate) {
         this.origin=source;
         this.srcResamplingModel=srcResamplingModel;
         this.reuseMipMaps=reuseMipMaps;
+        if (interpolate) {
+            interpolation = Interpolation.NLINEAR;
+        } else {
+            interpolation = Interpolation.NEARESTNEIGHBOR;
+        }
     }
 
     public Source getOriginalSource() {
@@ -55,7 +62,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
         at = at.inverse();
 
-        final RealRandomAccessible<T> ipimg = origin.getInterpolatedSource(t, reuseMipMaps?level:0, Interpolation.NEARESTNEIGHBOR);
+        final RealRandomAccessible<T> ipimg = origin.getInterpolatedSource(t, reuseMipMaps?level:0, interpolation);
 
         // Gets randomAccessible view ...
         AffineTransform3D atOrigin = new AffineTransform3D();
