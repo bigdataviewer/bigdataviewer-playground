@@ -15,7 +15,7 @@ import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
 import sc.fiji.bdvpg.sourceandconverter.importer.MandelbrotSourceGetter;
-import sc.fiji.bdvpg.sourceandconverter.importer.NewSourceAndConverterGetter;
+import sc.fiji.bdvpg.sourceandconverter.importer.EmptySourceAndConverterCreator;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
@@ -95,7 +95,7 @@ public class ResamplingDemo {
         final DiskCachedCellImgFactory<UnsignedShortType> factory = new DiskCachedCellImgFactory<>( new UnsignedShortType(), factoryOptions );
 
         // DOWNSAMPLING
-        NewSourceAndConverterGetter downSampledModel = new NewSourceAndConverterGetter("DownSampled",sac,0,4,4,4, factory);
+        EmptySourceAndConverterCreator downSampledModel = new EmptySourceAndConverterCreator("DownSampled",sac,0,4,4,4, factory);
 
         sr = new SourceResampler(sac, downSampledModel.get(),false,true);
         SourceAndConverter downsampledSource = sr.get();
@@ -105,7 +105,7 @@ public class ResamplingDemo {
         new ColorChanger( downsampledSource, new ARGBType(ARGBType.rgba(255, 0,0,0))).run();
 
         // UPSAMPLING
-        NewSourceAndConverterGetter upSampledModel = new NewSourceAndConverterGetter("UpSampled",sac,0,0.2,0.2,0.2, factory);
+        EmptySourceAndConverterCreator upSampledModel = new EmptySourceAndConverterCreator("UpSampled",sac,0,0.2,0.2,0.2, factory);
 
         sr = new SourceResampler(sac, upSampledModel.get(),false,true);
         SourceAndConverter upsampledSource = sr.get();
