@@ -12,6 +12,16 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import java.util.function.Supplier;
 
+/**
+ * Action which generates a new Source which samples and spans a space region
+ * defined by either :
+ * - an affine transform and a number of voxels
+ * - or a model source and voxel sizes
+ *
+ * Mipmap unsupported
+ * TimePoint 0 supported only TODO : improve timepoint support
+ */
+
 public class NewSourceAndConverterGetter implements Runnable, Supplier<SourceAndConverter> {
 
     AffineTransform3D at3D = new AffineTransform3D();
@@ -22,6 +32,15 @@ public class NewSourceAndConverterGetter implements Runnable, Supplier<SourceAnd
 
     ImgFactory imgfactory;
 
+    /**
+     * Simple constructor
+     * @param name
+     * @param at3D
+     * @param nx
+     * @param ny
+     * @param nz
+     * @param imgfactory
+     */
     public NewSourceAndConverterGetter(
             String name,
             AffineTransform3D at3D,
@@ -36,6 +55,18 @@ public class NewSourceAndConverterGetter implements Runnable, Supplier<SourceAnd
         this.imgfactory = imgfactory;
     }
 
+    /**
+     * Constructor where the region and sampling is defined by a model source
+     * This constructor translates information from the model source into
+     * an affine transform and a number of voxels
+     * @param name
+     * @param model
+     * @param timePoint
+     * @param voxSizeX
+     * @param voxSizeY
+     * @param voxSizeZ
+     * @param imgfactory
+     */
     public NewSourceAndConverterGetter(
             String name,
             SourceAndConverter model,
@@ -43,17 +74,20 @@ public class NewSourceAndConverterGetter implements Runnable, Supplier<SourceAnd
             double voxSizeX, double voxSizeY, double voxSizeZ,
             ImgFactory imgfactory
     ) {
-
+        // Gets model RAI
         RandomAccessibleInterval rai = model.getSpimSource().getSource(timePoint,0);
 
         long nPixModelX = rai.dimension(0);
         long nPixModelY = rai.dimension(1);
         long nPixModelZ = rai.dimension(2);
 
+        // Gets transform of model RAI
         AffineTransform3D at3Dorigin = new AffineTransform3D();
 
         model.getSpimSource().getSourceTransform(timePoint,0,at3Dorigin);
 
+        // Computes Voxel Size of model source (x, y, z)
+        // And how it should be resampled to match the specified voxsize into the constructor
         // Origin
         double[] x0 = new double[3];
         at3Dorigin.apply(new double[]{0,0,0}, x0);
@@ -96,6 +130,7 @@ public class NewSourceAndConverterGetter implements Runnable, Supplier<SourceAnd
         dist = Math.sqrt(dist)*nPixModelZ;
         double nPixZ = dist/voxSizeZ;
 
+        // Gets original affine transform and rescales it accordingly
         double[] m = at3Dorigin.getRowPackedCopy();
 
         m[0] = m[0]/distx * voxSizeX;
