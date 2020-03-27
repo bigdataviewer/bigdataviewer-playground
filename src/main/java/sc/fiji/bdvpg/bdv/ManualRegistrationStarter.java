@@ -157,7 +157,7 @@ public class ManualRegistrationStarter implements Runnable {
     }
 
     // Maybe unnecessary : makes sure the transformation is orthonormal
-    AffineTransform3D ensureOrthoNormalTransform(AffineTransform3D at3D) {
+    public static AffineTransform3D ensureOrthoNormalTransform(AffineTransform3D at3D) {
         AffineTransform3D correctedAffineTransform = new AffineTransform3D();
         correctedAffineTransform.set(at3D);
 
