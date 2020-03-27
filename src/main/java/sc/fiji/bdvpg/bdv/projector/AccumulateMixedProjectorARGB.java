@@ -157,7 +157,7 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 		// We need to reconstitute the sequence of action that lead to the current indexes
 
 		// Getting the sources present in the BdvHandle
-		List<SourceAndConverter> sacsInBdvHandle = SourceAndConverterServices
+		List<SourceAndConverter<?>> sacsInBdvHandle = SourceAndConverterServices
 				.getSourceAndConverterDisplayService()
 				.getSourceAndConverterOf(bdvHandle);
 

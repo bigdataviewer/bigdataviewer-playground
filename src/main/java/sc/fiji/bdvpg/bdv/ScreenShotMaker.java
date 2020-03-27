@@ -211,7 +211,7 @@ public class ScreenShotMaker {
     {
         final SourceAndConverterBdvDisplayService displayService = SourceAndConverterServices.getSourceAndConverterDisplayService();
 
-        final List< SourceAndConverter > sacs = displayService.getSourceAndConverterOf( bdvHandle );
+        final List< SourceAndConverter<?> > sacs = displayService.getSourceAndConverterOf( bdvHandle );
         List< SourceAndConverter > visibleSacs = new ArrayList<>(  );
         for ( SourceAndConverter sac : sacs )
         {
