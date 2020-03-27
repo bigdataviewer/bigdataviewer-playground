@@ -262,14 +262,13 @@ public class SourceAndConverterUtils {
         }
     }
 
-    /**
-     * Creates a standard convertersetup for a source and converter
-     * Switch based on pixel type (ARGBType and RealType supported)
-     * @param sac
-     * @param requestRepaint
-     * @return
-     */
-    public static ConverterSetup createConverterSetup(SourceAndConverter sac, Runnable requestRepaint) {
+
+    public static ConverterSetup createConverterSetup(SourceAndConverter sac) {
+        return  createConverterSetup(sac,-1);
+    }
+
+    public static ConverterSetup createConverterSetup(SourceAndConverter sac, int legacyId) {
+        //return BigDataViewer.createConverterSetup(sac, legacyId);
         ConverterSetup setup;
         if (sac.getSpimSource().getType() instanceof RealType) {
             setup = createConverterSetupRealType(sac);
@@ -279,7 +278,7 @@ public class SourceAndConverterUtils {
             errlog.accept("Cannot create convertersetup for Source of type "+sac.getSpimSource().getType().getClass().getSimpleName());
             setup = null;
         }
-        setup.setViewer(() -> requestRepaint.run());
+        //setup.setViewer(() -> requestRepaint.run());
         return setup;
     }
 

@@ -1,9 +1,9 @@
 package bdv.util;
 
 import bdv.tools.brightness.ConverterSetup;
-import bdv.viewer.RequestRepaint;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.type.numeric.ARGBType;
+import org.scijava.listeners.Listeners;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,7 +13,7 @@ public class ARGBColorConverterSetup implements ConverterSetup
 
     protected final List<ColorConverter> converters;
 
-    protected RequestRepaint viewer;
+    private final Listeners.List< SetupChangeListener > listeners = new Listeners.SynchronizedList<>();
 
     public ARGBColorConverterSetup( final ColorConverter ... converters )
     {
@@ -23,7 +23,6 @@ public class ARGBColorConverterSetup implements ConverterSetup
     public ARGBColorConverterSetup( final List< ColorConverter > converters )
     {
         this.converters = converters;
-        this.viewer = null;
     }
 
     @Override
@@ -34,8 +33,8 @@ public class ARGBColorConverterSetup implements ConverterSetup
             converter.setMin( min );
             converter.setMax( max );
         }
-        if ( viewer != null )
-            viewer.requestRepaint();
+
+        listeners.list.forEach(scl -> scl.setupParametersChanged(this));
     }
 
     @Override
@@ -43,8 +42,8 @@ public class ARGBColorConverterSetup implements ConverterSetup
     {
         for ( final ColorConverter converter : converters )
             converter.setColor( color );
-        if ( viewer != null )
-            viewer.requestRepaint();
+
+        listeners.list.forEach(scl -> scl.setupParametersChanged(this));
     }
 
     @Override
@@ -78,12 +77,7 @@ public class ARGBColorConverterSetup implements ConverterSetup
     }
 
     @Override
-    public void setViewer( final RequestRepaint viewer )
-    {
-        this.viewer = viewer;
-    }
-
-    public String toString() {
-        return this.getClass().getSimpleName()+" : "+converters.get( 0 ).getColor().toString();
+    public Listeners<SetupChangeListener> setupChangeListeners() {
+        return listeners;
     }
 }
