@@ -1,9 +1,7 @@
 package sc.fiji.bdvpg.sourceandconverter;
 
-import bdv.AbstractSpimSource;
-import bdv.SpimSource;
-import bdv.ViewerImgLoader;
-import bdv.VolatileSpimSource;
+import bdv.*;
+import bdv.spimdata.WrapBasicImgLoader;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.transformation.TransformedSource;
 import bdv.util.ARGBColorConverterSetup;
@@ -14,6 +12,7 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
+import mpicbg.spim.data.generic.sequence.BasicImgLoader;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.registration.ViewRegistration;
 import mpicbg.spim.data.registration.ViewTransform;
@@ -91,7 +90,7 @@ public class SourceAndConverterUtils {
         SourceAndConverter out;
         if (source.getType() instanceof RealType) {
 
-            nonVolatileConverter = createConverterRealType(source);
+            nonVolatileConverter = createConverterRealType((RealType) source.getType());
 
             assert nonVolatileConverter!=null;
 
@@ -99,7 +98,7 @@ public class SourceAndConverterUtils {
 
             if (volatileSource!=null) {
 
-                Converter volatileConverter = createConverterRealType(volatileSource);
+                Converter volatileConverter = createConverterRealType((RealType) volatileSource.getType());
                 out = new SourceAndConverter(source, nonVolatileConverter,
                         new SourceAndConverter<>(volatileSource, volatileConverter));
 
@@ -148,57 +147,67 @@ public class SourceAndConverterUtils {
 
         Map<Integer, SourceAndConverter> out = new HashMap<>();
 
-        final AbstractSequenceDescription< ?, ?, ? > seq = asd.getSequenceDescription();
-        final ViewerImgLoader imgLoader = ( ViewerImgLoader ) seq.getImgLoader();
-        for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() )
+        boolean nonVolatile = WrapBasicImgLoader.wrapImgLoaderIfNecessary( asd );
+
+        if ( nonVolatile )
         {
-            final int setupId = setup.getId();
-            final Object type = imgLoader.getSetupImgLoader( setupId ).getImageType();
-            if ( RealType.class.isInstance( type ) ) {
-                String sourceName = createSetupName(setup);
-                final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
-                final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
-
-                Converter nonVolatileConverter = createConverterRealType(s);
-                assert nonVolatileConverter!=null;
-                if (vs!=null) {
-                    Converter volatileConverter = createConverterRealType(vs);
-                    out.put(setupId, new SourceAndConverter(s, nonVolatileConverter,
-                            new SourceAndConverter<>(vs, volatileConverter)));
-                } else {
-                    out.put(setupId, new SourceAndConverter(s, nonVolatileConverter));
-                }
-
-                // Applying display settings if some have been set
-                if (setup.getAttribute(DisplaySettings.class)!=null) {
-                    DisplaySettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(DisplaySettings.class));
-                }
-
-            } else if ( ARGBType.class.isInstance( type ) ) {
-                final String setupName = createSetupName( setup );
-                final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, setupName ); // < ARGBType, VolatileARGBType>
-                final SpimSource s = new SpimSource<>( asd, setupId, setupName );
-                //final SpimSource< ARGBType > s = vs.nonVolatile();
-
-                Converter nonVolatileConverter = createConverterARGBType(s);
-                assert nonVolatileConverter!=null;
-                if (vs!=null) {
-                    Converter volatileConverter = createConverterARGBType(vs);
-                    out.put(setupId, new SourceAndConverter(s, nonVolatileConverter,
-                            new SourceAndConverter<>(vs, volatileConverter)));
-                } else {
-                    out.put(setupId, new SourceAndConverter(s, nonVolatileConverter));
-                }
-
-                // Applying display settings if some have been set
-                if (setup.getAttribute(DisplaySettings.class)!=null) {
-                    DisplaySettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(DisplaySettings.class));
-                }
-
-            } else {
-                errlog.accept("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
-            }
+            System.err.println( "WARNING:\nOpening <SpimData> dataset that is not suited for interactive browsing.\nConsider resaving as HDF5 for better performance." );
         }
+
+        final AbstractSequenceDescription< ?, ?, ? > seq = asd.getSequenceDescription();
+
+            final ViewerImgLoader imgLoader = ( ViewerImgLoader ) seq.getImgLoader();
+            for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() ) {
+                final int setupId = setup.getId();
+                final Object type = imgLoader.getSetupImgLoader( setupId ).getImageType();
+                if ( RealType.class.isInstance( type ) ) {
+                    String sourceName = createSetupName(setup);
+
+                    final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
+
+                    Converter nonVolatileConverter = createConverterRealType((RealType)s.getType());
+
+                    assert nonVolatileConverter!=null;
+                    if (!nonVolatile) {
+                        final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
+                        Converter volatileConverter = createConverterRealType((RealType)vs.getType());
+                        out.put(setupId, new SourceAndConverter(s, nonVolatileConverter,
+                                new SourceAndConverter<>(vs, volatileConverter)));
+                    } else {
+                        out.put(setupId, new SourceAndConverter(s, nonVolatileConverter));
+                    }
+
+                    // Applying display settings if some have been set
+                    if (setup.getAttribute(DisplaySettings.class)!=null) {
+                        DisplaySettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(DisplaySettings.class));
+                    }
+
+                } else if ( ARGBType.class.isInstance( type ) ) {
+                    final String setupName = createSetupName( setup );
+                    final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, setupName );
+                    final SpimSource s = new SpimSource<>( asd, setupId, setupName );
+
+                    Converter nonVolatileConverter = createConverterARGBType(s);
+                    assert nonVolatileConverter!=null;
+                    if (vs!=null) {
+                        Converter volatileConverter = createConverterARGBType(vs);
+                        out.put(setupId, new SourceAndConverter(s, nonVolatileConverter,
+                                new SourceAndConverter<>(vs, volatileConverter)));
+                    } else {
+                        out.put(setupId, new SourceAndConverter(s, nonVolatileConverter));
+                    }
+
+                    // Applying display settings if some have been set
+                    if (setup.getAttribute(DisplaySettings.class)!=null) {
+                        DisplaySettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(DisplaySettings.class));
+                    }
+
+                } else {
+                    errlog.accept("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
+                }
+            }
+
+        WrapBasicImgLoader.removeWrapperIfPresent( asd );
 
         return out;
     }
@@ -212,7 +221,7 @@ public class SourceAndConverterUtils {
      */
     public static Converter createConverter(Source source) {
         if (source.getType() instanceof RealType) {
-            return createConverterRealType(source);
+            return createConverterRealType((RealType)source.getType());//source);
         } else if (source.getType() instanceof ARGBType) {
             return createConverterARGBType(source);
         } else {
@@ -361,16 +370,15 @@ public class SourceAndConverterUtils {
     /**
      * Creates ARGB converter from a RealTyped sourceandconverter.
      * Supports Volatile RealTyped or non volatile
-     * @param source
      * @param <T>
      * @return
      */
-    private static< T extends RealType< T >>  Converter createConverterRealType(Source<T> source) {
-        final T type = Util.getTypeFromInterval( source.getSource( 0, 0 ) );
+    private static< T extends RealType< T >>  Converter createConverterRealType(final T type) { //Source<T> source) {
+        //final T type = source.getType();//Util.getTypeFromInterval( source.getSource( 0, 0 ) );
         final double typeMin = Math.max( 0, Math.min( type.getMinValue(), 65535 ) );
         final double typeMax = Math.max( 0, Math.min( type.getMaxValue(), 65535 ) );
         final RealARGBColorConverter< T > converter ;
-        if ( source.getType() instanceof Volatile)
+        if ( type instanceof Volatile)
             converter = new RealARGBColorConverter.Imp0<>( typeMin, typeMax );
         else
             converter = new RealARGBColorConverter.Imp1<>( typeMin, typeMax );

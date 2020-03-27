@@ -165,7 +165,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
                 BdvHandleRef bdvhr = oBdvhr.get();
                 return bdvh.getViewerPanel()
                            .getVisibilityAndGrouping()
-                           .isSourceActive(bdvhr.indexInBdv);
+                           .isSourceActive(bdvhr.indexInBdv-1);
             } else {
                 return false;
             }
@@ -309,7 +309,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
                     int index = bdvhr.indexInBdv;
                     //this.logLocationsDisplayingSource();
-                    log.accept("Remove source " + source + " indexed " + index + " in BdvHandle " + bdvh.getViewerPanel().getName());
+                    log.accept("Remove source " + source + " indexed " + index + " in BdvHandle " + SwingUtilities.getWindowAncestor(bdvh.getViewerPanel()).getName());
 
                     /**
                      * A reflection forced access to ViewerState.removeSource(int index)
@@ -326,6 +326,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
                                         .getSacToMetadata().get(source).get(CONVERTER_SETUP));
                     }
 
+                    // Remove from BdvHandleToSacs
+                    bdvHandleToSacs.get(bdvh).remove(source);
 
                     // Removes reference to where the sourceandconverter is located
                     sacToBdvHandleRefs.get(source).remove(bdvhr);
@@ -349,11 +351,11 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
             converterSetupsToRemove.forEach(cs -> {
                 // Dirty Hack needed
                 bdvh.getSetupAssignments().removeSetup(cs);
-                try {
+                /*try {
                     Thread.sleep(5);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             });
         //});
 
@@ -449,6 +451,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         scriptService.addAlias(BdvHandle.class);
         bdvHandleToSacs = new HashMap<>();
         sacToBdvHandleRefs = new HashMap<>();
+        displayToMetadata = new HashMap<>();
         bdvSourceAndConverterService.setDisplayService(this);
         SourceAndConverterServices.setSourceAndConverterDisplayService(this);
         log.accept("Service initialized.");
@@ -518,7 +521,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         }
         sacToBdvHandleRefs.get(sac).add(bhr);
 
-        ConverterSetup cs = getConverterSetupsViaReflection(bdvh_in).get(index);
+        ConverterSetup cs = getConverterSetupsViaReflection(bdvh_in).get(index-1);
 
         // BigWarp Hack
         if (cs instanceof BigWarpConverterSetupWrapper) {
@@ -621,7 +624,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      */
     class BdvHandleRef {
         BdvHandle bdvh;
-        int indexInBdv;
+        int indexInBdv; // Take care!! 1-based index !! Remember to remove 1 when needed
 
         public BdvHandleRef(BdvHandle bdvh, int idx) {
             this.bdvh = bdvh;
@@ -705,6 +708,34 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     public Set< SourceAndConverter > getSourceAndConverters( BdvHandle bdv )
     {
         return bdvHandleToSacs.get( bdv ).stream().collect(Collectors.toSet());
+    }
+
+    /**
+     * Map containing objects that are 1 to 1 linked to a Display ( a BdvHandle object )
+     * TODO : ask if it should contain a WeakReference to BdvHandle keys (Potential Memory leak ?)
+     */
+    Map<BdvHandle, Map<String, Object>> displayToMetadata;
+
+    public void setDisplayMetadata( BdvHandle bdvh, String key, Object data )
+    {
+        if (bdvh == null) {
+            System.err.println("Error : bdvh is null in setMetadata function! ");
+            //return;
+        }
+        if (displayToMetadata.get( bdvh ) == null) {
+            // Create Metadata
+            displayToMetadata.put(bdvh, new HashMap<>());
+        }
+        displayToMetadata.get( bdvh ).put( key, data );
+    }
+
+    public Object getDisplayMetadata( BdvHandle bdvh, String key )
+    {
+        if (displayToMetadata.containsKey(bdvh)) {
+            return displayToMetadata.get(bdvh).get(key);
+        } else {
+            return null;
+        }
     }
 
 }

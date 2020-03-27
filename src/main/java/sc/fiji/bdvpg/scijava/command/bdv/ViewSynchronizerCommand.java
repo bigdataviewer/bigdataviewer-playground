@@ -34,6 +34,11 @@ public class ViewSynchronizerCommand implements Command {
     ViewerTransformSyncStarter sync;
 
     public void run() {
+        if (bdvhs.length<2) {
+            System.err.println("You should select at least 2 bdv windows!");
+            return;
+        }
+
         // Starting synchronnization of selected bdvhandles
         sync = new ViewerTransformSyncStarter(bdvhs);
         sync.setBdvHandleInitialReference( SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv());

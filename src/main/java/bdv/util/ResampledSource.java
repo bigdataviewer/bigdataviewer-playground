@@ -15,23 +15,56 @@ import net.imglib2.view.Views;
 
 /**
  * Resamples on the fly a source based on another source
+ * The origin source is accessed through its RealRandomAccessible representation :
+ * - It can be accessed at any 3d point in space, with real valued coordinates : it's a scalar field
+ *
+ * The srcResamplingModel is there to define a portion of space and how it is sampled :
+ * - through its RandomAccessibleInterval bounds
+ * - and the Source affine transform
+ *
+ * The returned resampled is a source which is:
+ * - the sampling of the scalar field
+ * - at the points which are defined by the model source
+ *
+ * Options:
+ * - reuseMipmaps allows to reuse mipmaps of both the origin and the model source in the resampling
+ * - interpolate specifies whether the origin source should be interpolated of not in the resampling process
+ *
+ * Note:
+ * - To be present at a certain timepoint, both the origin and the model source need to exist
+ * - There is no duplication of data
+ *
  * @author Nicolas Chiaruttini, BIOP EPFL
  * @param <T>
  */
 
 public class ResampledSource< T extends NumericType<T> & NativeType<T>> implements Source<T> {
+
+    /**
+     * Origin source
+     */
     Source<T> origin;
 
-    Source<?> srcResamplingModel;
+    /**
+     * Model source
+     */
+    Source<?> resamplingModel;
+
+    Interpolation originInterpolation;
 
     protected final DefaultInterpolators< T > interpolators = new DefaultInterpolators<>();
 
     boolean reuseMipMaps;
 
-    public ResampledSource(Source<T> source, Source<T> srcResamplingModel, boolean reuseMipMaps) {
+    public ResampledSource(Source<T> source, Source<T> resamplingModel, boolean reuseMipMaps, boolean originInterpolation) {
         this.origin=source;
-        this.srcResamplingModel=srcResamplingModel;
+        this.resamplingModel=resamplingModel;
         this.reuseMipMaps=reuseMipMaps;
+        if (originInterpolation) {
+            this.originInterpolation = Interpolation.NLINEAR;
+        } else {
+            this.originInterpolation = Interpolation.NEARESTNEIGHBOR;
+        }
     }
 
     public Source getOriginalSource() {
@@ -39,37 +72,36 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
     }
 
     public Source getModelResamplerSource() {
-        return srcResamplingModel;
+        return resamplingModel;
     }
 
     @Override
     public boolean isPresent(int t) {
-        return origin.isPresent(t)&&srcResamplingModel.isPresent(t);
+        return origin.isPresent(t)&&resamplingModel.isPresent(t);
     }
 
     @Override
     public RandomAccessibleInterval<T> getSource(int t, int level) {
-        // Get current big dataviewer transformation : source transform and viewer transform
-        AffineTransform3D at = new AffineTransform3D(); // Empty Transform
-        srcResamplingModel.getSourceTransform(t,reuseMipMaps?level:0,at);
+        // Get current model source transformation
+        AffineTransform3D at = new AffineTransform3D();
+        resamplingModel.getSourceTransform(t,reuseMipMaps?level:0,at);
 
+        // Get bounds of model source RAI
+        // TODO check if -1 is necessary
+        long sx = resamplingModel.getSource(t,reuseMipMaps?level:0).dimension(0)-1;
+        long sy = resamplingModel.getSource(t,reuseMipMaps?level:0).dimension(1)-1;
+        long sz = resamplingModel.getSource(t,reuseMipMaps?level:0).dimension(2)-1;
+
+
+        // Get scalar field of origin source
+        final RealRandomAccessible<T> ipimg = origin.getInterpolatedSource(t, reuseMipMaps?level:0, originInterpolation);
+
+        // Gets randomAccessible... ( with appropriate transform )
         at = at.inverse();
-
-        final RealRandomAccessible<T> ipimg = origin.getInterpolatedSource(t, reuseMipMaps?level:0, Interpolation.NEARESTNEIGHBOR);
-
-        // Gets randomAccessible view ...
         AffineTransform3D atOrigin = new AffineTransform3D();
         origin.getSourceTransform(t, reuseMipMaps?level:0, atOrigin);
         at.concatenate(atOrigin);
         RandomAccessible<T> ra = RealViews.affine(ipimg, at); // Gets the view
-
-        // TODO check if -1 is necessary
-
-        long sx = srcResamplingModel.getSource(t,reuseMipMaps?level:0).dimension(0)-1;
-
-        long sy = srcResamplingModel.getSource(t,reuseMipMaps?level:0).dimension(1)-1;
-
-        long sz = srcResamplingModel.getSource(t,reuseMipMaps?level:0).dimension(2)-1;
 
         // ... interval
         RandomAccessibleInterval<T> view =
@@ -90,7 +122,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     @Override
     public void getSourceTransform(int t, int level, AffineTransform3D transform) {
-        srcResamplingModel.getSourceTransform(t,reuseMipMaps?level:0,transform);
+        resamplingModel.getSourceTransform(t,reuseMipMaps?level:0,transform);
     }
 
     @Override
@@ -100,12 +132,12 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     @Override
     public String getName() {
-        return origin.getName()+"_ResampledLike_"+srcResamplingModel.getName();
+        return origin.getName()+"_ResampledLike_"+resamplingModel.getName();
     }
 
     @Override
     public VoxelDimensions getVoxelDimensions() {
-        return srcResamplingModel.getVoxelDimensions();
+        return resamplingModel.getVoxelDimensions();
     }
 
     @Override

@@ -19,6 +19,7 @@ import org.scijava.service.Service;
 import org.scijava.ui.UIService;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
+import sc.fiji.bdvpg.scijava.command.bdv.ScreenShotMakerCommand;
 import sc.fiji.bdvpg.scijava.command.source.*;
 import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -123,6 +124,16 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     @Override
     public void setMetadata( SourceAndConverter sac, String key, Object data )
     {
+        if (sac == null) {
+            System.err.println("Error : sac is null in setMetadata function! ");
+            //return;
+        }
+        if (sacToMetadata.get( sac ) == null) {
+            System.err.println("Error : sac has no associated metadata ! This should not happen. ");
+            System.err.println("Sac : "+sac.getSpimSource().getName());
+            System.err.println("SpimSource class: "+sac.getSpimSource().getClass().getSimpleName());
+            //return;
+        }
         sacToMetadata.get( sac ).put( key, data );
     }
 
@@ -293,6 +304,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         registerScijavaCommand(LUTSourceCreatorCommand.class);
         registerScijavaCommand(SourcesRemoverCommand.class);
         registerScijavaCommand(XmlHDF5ExporterCommand.class);
+        registerScijavaCommand(ScreenShotMakerCommand.class);
 
         // registerScijavaCommand(SourcesResamplerCommand.class); Too many arguments -> need to define which one is used
         registerAction(getCommandName(SourcesResamplerCommand.class),
@@ -362,6 +374,18 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                         log.accept("Registering action entitled "+ci.getTitle()+" from command "+ci.getClassName());
                     }
                 }
+            } else {
+                registerAction(ci.getTitle(),
+                        (sacs) -> {
+                            //try {
+                            commandService.run(ci, true);//.get();
+                            //} catch (InterruptedException e) {
+                            //    e.printStackTrace();
+                            //} catch (ExecutionException e) {
+                            //    e.printStackTrace();
+                            //}
+                        });
+                log.accept("Registering action entitled "+ci.getTitle()+" from command "+ci.getClassName()+" sacs ignored");
             }
         }
 

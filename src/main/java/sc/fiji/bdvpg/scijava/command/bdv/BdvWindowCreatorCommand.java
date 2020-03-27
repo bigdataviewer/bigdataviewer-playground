@@ -13,6 +13,8 @@ import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGB;
 import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGBFactory;
 import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bdv>Create Empty BDV Frame",
     label = "Creates an empty Bdv window")
@@ -62,13 +64,18 @@ public class BdvWindowCreatorCommand implements Command {
         creator.run();
         bdvh = creator.get();
 
-        // Now we can add the bdvHandle to the projector factory
+        final SourceAndConverterBdvDisplayService displayService = SourceAndConverterServices.getSourceAndConverterDisplayService();
+
         switch (projector) {
             case Projection.MIXED_PROJECTOR:
                 ((AccumulateMixedProjectorARGBFactory) factory).setBdvHandle( bdvh );
+                displayService.setDisplayMetadata( bdvh, Projection.PROJECTOR, Projection.MIXED_PROJECTOR );
+                break;
             case Projection.SUM_PROJECTOR:
+                displayService.setDisplayMetadata( bdvh, Projection.PROJECTOR, Projection.SUM_PROJECTOR );
                 break;
             case Projection.AVERAGE_PROJECTOR:
+                displayService.setDisplayMetadata( bdvh, Projection.PROJECTOR, Projection.AVERAGE_PROJECTOR );
                 break;
             default:
         }

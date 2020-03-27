@@ -12,12 +12,12 @@ import net.imglib2.type.numeric.ARGBType;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 
-public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBType, ARGBType >
+public class AccumulateSumProjectorARGB extends AccumulateProjector< ARGBType, ARGBType >
 {
 	public static AccumulateProjectorFactory< ARGBType > factory = new AccumulateProjectorFactory< ARGBType >()
 	{
 		@Override
-		public AccumulateAverageProjectorARGB createAccumulateProjector(
+		public AccumulateSumProjectorARGB createAccumulateProjector(
 				final ArrayList< VolatileProjector > sourceProjectors,
 				final ArrayList< Source< ? > > sources,
 				final ArrayList< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
@@ -25,7 +25,7 @@ public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBTyp
 				final int numThreads,
 				final ExecutorService executorService )
 		{
-			return new AccumulateAverageProjectorARGB(
+			return new AccumulateSumProjectorARGB(
 					sourceProjectors,
 					sources,
 					sourceScreenImages,
@@ -35,7 +35,7 @@ public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBTyp
 		}
 	};
 
-	public AccumulateAverageProjectorARGB(
+	public AccumulateSumProjectorARGB(
 			final ArrayList< VolatileProjector > sourceProjectors,
 			final ArrayList< Source< ? > > sources,
 			final ArrayList< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
@@ -58,7 +58,6 @@ public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBTyp
 
 	public static int getArgbIndex( Cursor< ? extends ARGBType >[] accesses )
 	{
-		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, n = 0;
 		int aAccu = 0, rAccu = 0, gAccu = 0, bAccu = 0;
 
 		for ( final Cursor< ? extends ARGBType > access : accesses )
@@ -74,25 +73,11 @@ public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBTyp
 				continue;
 			}
 
-			aAvg += a;
-			rAvg += r;
-			gAvg += g;
-			bAvg += b;
-			n++;
+			aAccu += a;
+			rAccu += r;
+			gAccu += g;
+			bAccu += b;
 		}
-
-		if ( n > 0 )
-		{
-			aAvg /= n;
-			rAvg /= n;
-			gAvg /= n;
-			bAvg /= n;
-		}
-
-		aAccu += aAvg;
-		rAccu += rAvg;
-		gAccu += gAvg;
-		bAccu += bAvg;
 
 		if ( aAccu > 255 )
 			aAccu = 255;

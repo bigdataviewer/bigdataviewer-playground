@@ -16,10 +16,13 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
 
     boolean reuseMipMaps;
 
-    public SourceResampler(SourceAndConverter sac_in, SourceAndConverter model, boolean reuseMipmaps) {
+    boolean interpolate;
+
+    public SourceResampler(SourceAndConverter sac_in, SourceAndConverter model, boolean reuseMipmaps, boolean interpolate) {
         this.reuseMipMaps = reuseMipmaps;
         this.model = model;
         this.sac_in = sac_in;
+        this.interpolate = interpolate;
     }
 
     @Override
@@ -37,7 +40,8 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
                 new ResampledSource(
                         src.getSpimSource(),
                         model.getSpimSource(),
-                        reuseMipMaps);
+                        reuseMipMaps,
+                        interpolate);
 
         SourceAndConverter sac;
         if (src.asVolatile()!=null) {
@@ -46,7 +50,8 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
                     new ResampledSource(
                             src.asVolatile().getSpimSource(),
                             model.getSpimSource(),
-                            reuseMipMaps);
+                            reuseMipMaps,
+                            interpolate);
             vsac = new SourceAndConverter(vsrcRsampled,
                     SourceAndConverterUtils.cloneConverter(src.asVolatile().getConverter()));
             sac = new SourceAndConverter<>(srcRsampled,

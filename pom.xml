@@ -11,7 +11,7 @@
 
 	<groupId>sc.fiji</groupId>
 	<artifactId>bigdataviewer-playground</artifactId>
-	<version>0.1.4</version>
+	<version>0.1.6-SNAPSHOT</version>
 
 	<name>bigdataviewer-playground</name>
 	<description>BigDataViewer Actions and GUI</description>
@@ -77,10 +77,6 @@
 	</contributors>
 
 	<repositories>
-		<!--<repository>
-			<id>imagej.public</id>
-			<url>http://maven.imagej.net/content/groups/public</url>
-		</repository>-->
 		<repository>
 			<id>scijava.public</id>
 			<url>https://maven.scijava.org/content/groups/public</url>
@@ -114,17 +110,15 @@
 		<license.copyrightOwners>Christian Tischer, EMBL</license.copyrightOwners>
 
 		<!-- <scijava.app.directory>C:/Users/chiarutt/Desktop/fiji-bdv-playground/Fiji.app/</scijava.app.directory>  Please keep this line if you want to remove the one below (Nico) ! -->
-		<scijava.app.directory>C:/Users/chiarutt/Desktop/fiji-bdv-playground/Fiji.app/</scijava.app.directory>
+
+		<scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory>
 		<scijava.deleteOtherVersions>true</scijava.deleteOtherVersions>
-		<!--<imglib2.version>5.8.0</imglib2.version>
+		<!--
 		<scijava-ui-swing.version>0.13.0</scijava-ui-swing.version>
 		<imagej.app.directory>C:/Programs/Fiji.app/</imagej.app.directory>
 		See Issue https://github.com/saalfeldlab/bigwarp/issues/83
         <bigwarp_fiji.version>5.1.0</bigwarp_fiji.version>-->
 
-		<bigdataviewer-core.version>7.0.0</bigdataviewer-core.version>
-		<bigdataviewer-vistools.version>1.0.0-beta-15</bigdataviewer-vistools.version>
-		<bigwarp_fiji.version>5.0.0</bigwarp_fiji.version>
 	</properties>
 
 	<dependencies>
@@ -132,54 +126,63 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-legacy</artifactId>
+			<!-- Try removing after pom-scijava 29.x.x -->
 		</dependency>
 
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej</artifactId>
+			<!-- Try removing after pom-scijava 29.x.x -->
 		</dependency>
 
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-vistools</artifactId>
+			<!-- Try removing after pom-scijava 29.x.x -->
 		</dependency>
 
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-core</artifactId>
-			<!--<version>7.0.0</version> -->
+			<!-- Try removing after pom-scijava 29.x.x -->
 		</dependency>
 
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>ij</artifactId>
+			<!-- Try removing after pom-scijava 29.x.x -->
 		</dependency>
 
 		<dependency>
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2-ij</artifactId>
+			<!-- Try removing after pom-scijava 29.x.x -->
 		</dependency>
 
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigwarp_fiji</artifactId>
-			<!--<version>5.0.0</version>-->
+			<!-- Try removing after pom-scijava 29.x.x -->
 		</dependency>
 
 		<dependency>
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
+			<!-- Try removing after pom-scijava 29.x.x -->
 		</dependency>
-
-		<!--<dependency>
-			<groupId>org.scijava</groupId>
-			<artifactId>scijava-ui-swing</artifactId>
-		</dependency>-->
 
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
+			<!-- Try removing after pom-scijava 29.x.x -->
+		</dependency>
+
+		<dependency>
+			<groupId>net.preibisch</groupId>
+			<artifactId>BigStitcher</artifactId>
+			<version>0.4.1</version>
 			<scope>test</scope>
 		</dependency>
 
