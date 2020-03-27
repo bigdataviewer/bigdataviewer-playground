@@ -11,7 +11,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.sourceandconverter.importer.NewSourceAndConverterGetter;
+import sc.fiji.bdvpg.sourceandconverter.importer.EmptySourceAndConverterCreator;
 
 import static net.imglib2.cache.img.DiskCachedCellImgOptions.options;
 
@@ -60,6 +60,6 @@ public class NewSourceCommand implements Command {
         // Creates cached image factory of Type UnsignedShort
         final DiskCachedCellImgFactory<UnsignedShortType> factory = new DiskCachedCellImgFactory<>( new UnsignedShortType(), factoryOptions );
 
-        newsource = new NewSourceAndConverterGetter(name, model, timePoint, voxSizeX, voxSizeY, voxSizeZ, factory).get();
+        newsource = new EmptySourceAndConverterCreator(name, model, timePoint, voxSizeX, voxSizeY, voxSizeZ, factory).get();
     }
 }

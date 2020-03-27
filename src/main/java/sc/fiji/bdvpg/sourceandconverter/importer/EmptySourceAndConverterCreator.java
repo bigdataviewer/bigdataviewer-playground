@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  * TimePoint 0 supported only TODO : improve timepoint support
  */
 
-public class NewSourceAndConverterGetter implements Runnable, Supplier<SourceAndConverter> {
+public class EmptySourceAndConverterCreator implements Runnable, Supplier<SourceAndConverter> {
 
     AffineTransform3D at3D = new AffineTransform3D();
 
@@ -41,7 +41,7 @@ public class NewSourceAndConverterGetter implements Runnable, Supplier<SourceAnd
      * @param nz
      * @param imgfactory
      */
-    public NewSourceAndConverterGetter(
+    public EmptySourceAndConverterCreator(
             String name,
             AffineTransform3D at3D,
             long nx, long ny, long nz,
@@ -67,7 +67,7 @@ public class NewSourceAndConverterGetter implements Runnable, Supplier<SourceAnd
      * @param voxSizeZ
      * @param imgfactory
      */
-    public NewSourceAndConverterGetter(
+    public EmptySourceAndConverterCreator(
             String name,
             SourceAndConverter model,
             int timePoint,
