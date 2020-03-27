@@ -1,12 +1,8 @@
 package sc.fiji.bdvpg.scijava.services;
 
 import bdv.tools.brightness.ConverterSetup;
-import bdv.tools.brightness.SetupAssignments;
 import bdv.util.BdvHandle;
-import bdv.viewer.BigWarpConverterSetupWrapper;
 import bdv.viewer.SourceAndConverter;
-import bdv.viewer.ViewerPanel;
-import bdv.viewer.state.ViewerState;
 import net.imglib2.converter.Converter;
 import net.imglib2.util.Pair;
 import org.scijava.command.CommandService;
@@ -17,15 +13,11 @@ import org.scijava.script.ScriptService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
-import sc.fiji.bdvpg.bdv.BdvUtils;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
-import javax.swing.*;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -247,23 +239,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         }
 
         return (ConverterSetup) bdvSourceAndConverterService.sacToMetadata.get(sac).get( CONVERTER_SETUP );
-        /*if (!bdvSourceAndConverterService.isRegistered(sac)) {
-            bdvSourceAndConverterService.register(sac);
-        }
-
-        // If no ConverterSetup is built then build it
-        if ( bdvSourceAndConverterService.sacToMetadata.get(sac).get( CONVERTER_SETUP )== null) {
-            Runnable converterSetupCallBack = () -> {
-                if ( sacToBdvHandleRefs.get(sac)!=null) {
-                    sacToBdvHandleRefs.get(sac).forEach(bhr -> bhr.bdvh.getViewerPanel().requestRepaint());
-                }
-            };
-
-            ConverterSetup setup = SourceAndConverterUtils.createConverterSetup(sac,converterSetupCallBack);
-            bdvSourceAndConverterService.sacToMetadata.get(sac).put( CONVERTER_SETUP,  setup );
-        }
-
-        return (ConverterSetup) bdvSourceAndConverterService.sacToMetadata.get(sac).get( CONVERTER_SETUP );*/
     }
 
     /**
@@ -277,45 +252,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      */
     public void updateConverter(SourceAndConverter source, Converter cvt) {
         errlog.accept("Unsupported operation : a new SourceAndConverterObject should be built. (TODO) ");
-        /*
-        // Precaution : the sourceandconverter should be registered
-        if (!bss.isRegistered(sourceandconverter)) {
-            bss.register(sourceandconverter);
-        }
-        // Step 1 : build the proper objects
-        // Build a new ConverterSetup from the converter
-        ConverterSetup setup;
-        if (cvt instanceof ColorConverter) {
-            setup = new ARGBColorConverterSetup((ColorConverter) cvt);
-        } else if (cvt instanceof RealLUTConverter) {
-            setup = new LUTConverterSetup((RealLUTConverter) cvt);
-        } else {
-            errlog.accept("Cannot build convertersetup with converter of class "+cvt.getClass().getSimpleName());
-            return;
-        }
-
-        // Callback when convertersetup is changed
-        setup.setViewer(() -> {
-            if (locationsDisplayingSource.get(sourceandconverter)!=null) {
-                locationsDisplayingSource.get(sourceandconverter).forEach(bhr -> bhr.bdvh.getViewerPanel().requestRepaint());
-            }
-        });
-
-        // Step 3 : store where the sources were displayed
-        Set<BdvHandle> bdvhDisplayingSource= locationsDisplayingSource.get(sourceandconverter)
-                .stream()
-                .map(bdvHandleRef -> bdvHandleRef.bdvh)
-                .collect(Collectors.toSet());
-
-        // Step 4 : remove where the sourceandconverter was displayed
-        removeFromAllBdvs(sourceandconverter);
-
-        // Step 5 : updates cached objects
-        bss.getAttachedSourceAndConverterData().get(sourceandconverter).put(CONVERTERSETUP, setup);
-
-        // Step 6 : restore sourceandconverter display location
-        bdvhDisplayingSource.forEach(bdvh -> show(bdvh, sourceandconverter));
-        */
     }
 
     /**
@@ -324,8 +260,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     @Override
     public void initialize() {
         scriptService.addAlias(BdvHandle.class);
-        //bdvHandleToSacs = new HashMap<>();
-        //sacToBdvHandleRefs = new HashMap<>();
         displayToMetadata = new HashMap<>();
         bdvSourceAndConverterService.setDisplayService(this);
         SourceAndConverterServices.setSourceAndConverterDisplayService(this);
@@ -338,31 +272,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * @param bdvh
      */
     public void closeBdv(BdvHandle bdvh) {
-        /*// Programmatically or User action
-        // Before closing the Bdv Handle, we need to keep up to date all objects:
-        // 1 sourcesDisplayedInBdvWindows
-        bdvHandleToSacs.remove(bdvh);
-        // 2 locationsDisplayingSource
-        sacToBdvHandleRefs.values().forEach(list ->
-            list.removeIf(bdvhr -> bdvhr.bdvh.equals(bdvh))
-        );
-        os.removeObject(bdvh);
-
-        // Fix BigWarp closing issue
-        boolean isPaired = pairedBdvs.stream().filter(p -> (p.getA()==bdvh)||(p.getB()==bdvh)).findFirst().isPresent();
-        if (isPaired) {
-            Pair<BdvHandle, BdvHandle> pair = pairedBdvs.stream().filter(p -> (p.getA()==bdvh)||(p.getB()==bdvh)).findFirst().get();
-            pairedBdvs.remove(pair);
-            if (pair.getA()==bdvh) {
-                closeBdv(pair.getB());
-            } else {
-                closeBdv(pair.getA());
-            }
-        }*/
-        // Programmatically or User action
-        // Before closing the Bdv Handle, we need to keep up to date all objects:
-        // 1 sourcesDisplayedInBdvWindows
-        // 2 locationsDisplayingSource
         os.removeObject(bdvh);
 
         // Fix BigWarp closing issue
@@ -403,34 +312,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * @param bdvh_in
      * @param index
      */
-    public void registerBdvSource(BdvHandle bdvh_in, int index) {
-       /* SourceAndConverter sac = bdvh_in.getViewerPanel().getState().getSources().get(index);
-        bdvSourceAndConverterService.register(sac);
-        // Stores where the sourceandconverter is displayed (BdvHandle and index)
-        BdvHandleRef bhr = new BdvHandleRef(bdvh_in, index);
-        if (!sacToBdvHandleRefs.containsKey(sac)) {
-            sacToBdvHandleRefs.put(sac, new ArrayList<>());
-        }
-        sacToBdvHandleRefs.get(sac).add(bhr);
-
-        ConverterSetup cs = getConverterSetupsViaReflection(bdvh_in).get(index-1);
-
-        // BigWarp Hack
-        if (cs instanceof BigWarpConverterSetupWrapper) {
-            BigWarpConverterSetupWrapper wcs = (BigWarpConverterSetupWrapper) cs;
-            wcs.getSourceConverterSetup().setViewer(() -> {
-                if ( sacToBdvHandleRefs.get(sac) != null) {
-                    sacToBdvHandleRefs.get(sac).forEach(bhref -> bhref.bdvh.getViewerPanel().requestRepaint());
-                }
-            });
-        } else {
-            cs.setViewer(() -> {
-                if ( sacToBdvHandleRefs.get(sac) != null) {
-                    sacToBdvHandleRefs.get(sac).forEach(bhref -> bhref.bdvh.getViewerPanel().requestRepaint());
-                }
-            });
-        }
-        bdvSourceAndConverterService.sacToMetadata.get(sac).put( CONVERTER_SETUP, cs);*/
+    public void registerBdvSource(BdvHandle bdvh_in) {
         bdvh_in.getViewerPanel().state().getSources().forEach(sac -> {
             if (!bdvSourceAndConverterService.isRegistered(sac)) {
                 bdvSourceAndConverterService.register(sac);
@@ -442,38 +324,12 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * For debug purposes, check that all is in sync
-     */
-    /*public void logLocationsDisplayingSource() {
-        sacToBdvHandleRefs.forEach((sac, bdvHandleRefs) -> {
-            log.accept(sac.getSpimSource().getName()+":"+sac.toString());
-            bdvHandleRefs.forEach(bdvref -> {
-                log.accept("\t bdvh = "+bdvref.bdvh.toString()+"\t i = "+bdvref.indexInBdv);
-            });
-        });
-    }*/
-
-    /**
      * Updates bdvHandles which are displaying at least one of this sacs
      * Potentially improvement is to check whether the timepoint need an update ?
      * @param sacs
      */
     public void updateDisplays(SourceAndConverter... sacs)
     {
-        /*// Two step process : first detect which BdvHandles need to be updated
-        Map<BdvHandle, List<SourceAndConverter>> sourcesToUpdatePerBdvHandle = new HashMap<>();
-        for (SourceAndConverter sac:sacs) {
-            if (sacToBdvHandleRefs.containsKey(sac)) {
-                sacToBdvHandleRefs.get(sac).forEach(bdvHandleRef -> {
-                    if (!sourcesToUpdatePerBdvHandle.containsKey(bdvHandleRef.bdvh)) {
-                        sourcesToUpdatePerBdvHandle.put(bdvHandleRef.bdvh, new ArrayList<>());
-                    }
-                    sourcesToUpdatePerBdvHandle.get(bdvHandleRef.bdvh).add(sac);
-                });
-            }
-        }
-        // Then update them : there is only one requestRepaint call per bdvh
-        sourcesToUpdatePerBdvHandle.keySet().forEach(bdvHandle -> bdvHandle.getViewerPanel().requestRepaint());*/
         getDisplaysOf(sacs).forEach(bdvHandle -> bdvHandle.getViewerPanel().requestRepaint());
     }
 
@@ -486,22 +342,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * @return
      */
     public List<SourceAndConverter<?>> getSourceAndConverterOf(BdvHandle bdvHandle) {
-        /*if (bdvHandleToSacs.get(bdvHandle)!=null) {
-            int nSources = bdvHandleToSacs.get(bdvHandle).size();
-            assert nSources == bdvHandle.getViewerPanel().getState().numSources();
-            SourceAndConverter[] sacArray = new SourceAndConverter[nSources];
-            bdvHandleToSacs.get(bdvHandle).forEach(sac -> {
-                sacToBdvHandleRefs.get(sac).forEach(bdvhr -> {
-                    if (bdvhr.bdvh.equals(bdvHandle)) {
-                        sacArray[bdvhr.indexInBdv-1] = sac;
-                        //log.accept("Sac "+sac.getSpimSource().getName()+" is at index "+(bdvhr.indexInBdv-1));
-                    }
-                });
-            });
-            return bdvHandleToSacs.get(bdvHandle);
-        } else {
-            return new ArrayList<>();
-        }*/
         return bdvHandle.getViewerPanel().state().getSources();
     }
 

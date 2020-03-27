@@ -93,7 +93,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
     AbstractSpimData spimData;
 
     public void run() {
-        /*
+
         // Gets Concrete SpimSource
         List<Source> srcs = sources.stream().map(sac -> sac.getSpimSource()).collect(Collectors.toList());
 
@@ -216,24 +216,9 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
         final int numCellCreatorThreads = Math.max( 1, nThreads - 1 );
 
-        final WriteSequenceToHdf5.LoopbackHeuristic loopbackHeuristic =
-                ( originalImg,
-                  factorsToOriginalImg,
-                  previousLevel,
-                  factorsToPreviousLevel,
-                  chunkSize ) ->
-                {
-                    if ( previousLevel < 0 )
-                        return false;
+        final ExportScalePyramid.LoopbackHeuristic loopbackHeuristic = new ExportScalePyramid.DefaultLoopbackHeuristic();
 
-                    if ( WriteSequenceToHdf5.numElements( factorsToOriginalImg )
-                            / WriteSequenceToHdf5.numElements( factorsToPreviousLevel ) >= 8 )
-                        return true;
-
-                    return false;
-                };
-
-        final WriteSequenceToHdf5.AfterEachPlane afterEachPlane = usedLoopBack -> { };
+        final ExportScalePyramid.AfterEachPlane afterEachPlane = usedLoopBack -> { };
 
         final ArrayList<Partition> partitions;
         partitions = null;
@@ -282,8 +267,6 @@ public class XmlHDF5SpimdataExporter implements Runnable {
         }
 
         System.out.println( "Done!" );
-        */
-
 
     }
 
