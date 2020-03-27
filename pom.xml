@@ -77,10 +77,6 @@
 	</contributors>
 
 	<repositories>
-		<!--<repository>
-			<id>imagej.public</id>
-			<url>http://maven.imagej.net/content/groups/public</url>
-		</repository>-->
 		<repository>
 			<id>scijava.public</id>
 			<url>https://maven.scijava.org/content/groups/public</url>
@@ -114,7 +110,8 @@
 		<license.copyrightOwners>Christian Tischer, EMBL</license.copyrightOwners>
 
 		<!-- <scijava.app.directory>C:/Users/chiarutt/Desktop/fiji-bdv-playground/Fiji.app/</scijava.app.directory>  Please keep this line if you want to remove the one below (Nico) ! -->
-		<scijava.app.directory>C:/Users/chiarutt/Desktop/fiji-bdv-playground/Fiji.app/</scijava.app.directory>
+
+		<scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory>
 		<scijava.deleteOtherVersions>true</scijava.deleteOtherVersions>
 		<!--
 		<scijava-ui-swing.version>0.13.0</scijava-ui-swing.version>
@@ -180,6 +177,13 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 			<!-- Try removing after pom-scijava 29.x.x -->
+		</dependency>
+
+		<dependency>
+			<groupId>net.preibisch</groupId>
+			<artifactId>BigStitcher</artifactId>
+			<version>0.4.1</version>
+			<scope>test</scope>
 		</dependency>
 
     </dependencies>
