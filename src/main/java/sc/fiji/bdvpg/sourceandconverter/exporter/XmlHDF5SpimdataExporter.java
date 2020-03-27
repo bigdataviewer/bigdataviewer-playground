@@ -93,6 +93,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
     AbstractSpimData spimData;
 
     public void run() {
+        /*
         // Gets Concrete SpimSource
         List<Source> srcs = sources.stream().map(sac -> sac.getSpimSource()).collect(Collectors.toList());
 
@@ -281,6 +282,8 @@ public class XmlHDF5SpimdataExporter implements Runnable {
         }
 
         System.out.println( "Done!" );
+        */
+
 
     }
 
