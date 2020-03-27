@@ -96,22 +96,7 @@ public class ViewerOrthoSyncStarter implements Runnable {
             // Building the TransformListener of currentBdvHandle
             TransformListener<AffineTransform3D> listener =
                     (at3D) -> {
-                        // Is the transform necessary ? That's the stop condition
-                        AffineTransform3D ati = new AffineTransform3D();
-                        nextBdvHandle.getViewerPanel().getState().getViewerTransform(ati);
-
-                        if (!Arrays.equals(getRotatedView(at3D.getRowPackedCopy()), ati.getRowPackedCopy())) {
-                            // Yes -> triggers a transform change to the nextBdvHandle
-                            // For ortho view : switches axis:
-                            // X --> Y
-                            // Y --> Z
-                            // Z --> X
-                            // Calling it three times leads to an identical transform, hence the stopping condition is triggered
-                            AffineTransform3D nextAt3D = at3D.copy();
-                            nextAt3D.set(getRotatedView(at3D.getRowPackedCopy()));
-                            nextBdvHandle.getViewerPanel().setCurrentViewerTransform(nextAt3D);
-                            nextBdvHandle.getViewerPanel().requestRepaint();
-                        }
+                        propagateTransformIfNecessary(at3D, currentBdvHandle, nextBdvHandle);
                     };
 
             // Adding this transform listener to the currenBdvHandle
@@ -130,6 +115,26 @@ public class ViewerOrthoSyncStarter implements Runnable {
             }
         }
     }
+
+    void propagateTransformIfNecessary(AffineTransform3D at3D, BdvHandle currentBdvHandle, BdvHandle nextBdvHandle) {
+        // Is the transform necessary ? That's the stop condition
+        AffineTransform3D ati = new AffineTransform3D();
+        nextBdvHandle.getViewerPanel().getState().getViewerTransform(ati);
+
+        if (!Arrays.equals(getRotatedView(at3D.getRowPackedCopy()), ati.getRowPackedCopy())) {
+            // Yes -> triggers a transform change to the nextBdvHandle
+            // For ortho view : switches axis:
+            // X --> Y
+            // Y --> Z
+            // Z --> X
+            // Calling it three times leads to an identical transform, hence the stopping condition is triggered
+            AffineTransform3D nextAt3D = at3D.copy();
+            nextAt3D.set(getRotatedView(at3D.getRowPackedCopy()));
+            nextBdvHandle.getViewerPanel().setCurrentViewerTransform(nextAt3D);
+            nextBdvHandle.getViewerPanel().requestRepaint();
+        }
+    }
+
 
     public double[] getRotatedView(double[] m) {
         return new double[] {
