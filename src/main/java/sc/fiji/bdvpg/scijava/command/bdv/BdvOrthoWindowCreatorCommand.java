@@ -1,7 +1,9 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
+import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
+import bdv.util.BdvOverlay;
 import bdv.viewer.render.AccumulateProjectorFactory;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.ItemIO;
@@ -46,6 +48,9 @@ public class BdvOrthoWindowCreatorCommand implements Command {
     public String projector;
 
     @Parameter
+    public boolean drawCrosses;
+
+    @Parameter
     int screen;
 
     @Parameter
@@ -71,6 +76,11 @@ public class BdvOrthoWindowCreatorCommand implements Command {
 
         new ViewerOrthoSyncStarter(bdvhX, bdvhZ, bdvhY).run();
 
+       if (drawCrosses) {
+           addCross(bdvhX);
+           addCross(bdvhY);
+           addCross(bdvhZ);
+       }
     }
 
     BdvHandle createBdv(String suffix, double locX, double locY) {
@@ -125,6 +135,41 @@ public class BdvOrthoWindowCreatorCommand implements Command {
         //.setLocation(, );
 
         return bdvh;
+    }
+
+
+    void addCross(BdvHandle bdvh) {
+        final BdvOverlay overlay = new BdvOverlay()
+        {
+            @Override
+            protected void draw( final Graphics2D g )
+            {
+                /*final AffineTransform3D t = new AffineTransform3D();
+                getCurrentTransform3D( t );
+
+                final double[] lPos = new double[ 3 ];
+                final double[] gPos = new double[ 3 ];
+                for ( final RealPoint p : points )
+                {
+                    p.localize( lPos );
+                    t.apply( lPos, gPos );
+                    final int size = getSize( gPos[ 2 ] );
+                    final int x = ( int ) ( gPos[ 0 ] - 0.5 * size );
+                    final int y = ( int ) ( gPos[ 1 ] - 0.5 * size );
+                    g.setColor( getColor( gPos[ 2 ] ) );
+                    g.fillOval( x, y, size, size );
+                }*/
+                int w = bdvh.getViewerPanel().getWidth();
+                int h = bdvh.getViewerPanel().getHeight();
+                g.setColor(new Color( 255 , 0, 0, 64 ));
+                g.drawLine(w/2, h/2-h/4,w/2, h/2+h/4 );
+                g.drawLine(w/2-w/4, h/2,w/2+w/4, h/2 );
+
+            }
+
+        };
+
+        BdvFunctions.showOverlay( overlay, "overlay", BdvOptions.options().addTo( bdvh ) );
     }
 
 }
