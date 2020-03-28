@@ -13,7 +13,12 @@ import sc.fiji.bdvpg.bdv.navigate.ViewerOrthoSyncStarter;
 import sc.fiji.bdvpg.bdv.projector.AccumulateAverageProjectorARGB;
 import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGBFactory;
 import sc.fiji.bdvpg.bdv.projector.Projection;
+import sc.fiji.bdvpg.scijava.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
+
+import javax.swing.*;
+import java.awt.*;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bdv>Create Ortho BDV Frames",
         label = "Creates a Bdvs window with orthogonal views")
@@ -40,23 +45,38 @@ public class BdvOrthoWindowCreatorCommand implements Command {
     @Parameter(choices = { Projection.MIXED_PROJECTOR, Projection.SUM_PROJECTOR, Projection.AVERAGE_PROJECTOR})
     public String projector;
 
+    @Parameter
+    int screen;
+
+    @Parameter
+    int locationX;
+
+    @Parameter
+    int locationY;
+
+    @Parameter
+    int sizeX;
+
+    @Parameter
+    int sizeY;
+
     @Override
     public void run() {
 
-        bdvhX = createBdv();
+        bdvhX = createBdv("-Front", locationX, locationY);
 
-        bdvhY = createBdv();
+        bdvhY = createBdv("-Right", locationX+sizeX+10, locationY);
 
-        bdvhZ = createBdv();
+        bdvhZ = createBdv("-Bottom", locationX, locationY+sizeY+40);
 
-        new ViewerOrthoSyncStarter(bdvhX, bdvhY, bdvhZ).run();
+        new ViewerOrthoSyncStarter(bdvhX, bdvhZ, bdvhY).run();
 
     }
 
-    BdvHandle createBdv() {
+    BdvHandle createBdv(String suffix, double locX, double locY) {
 
         //------------ BdvHandleFrame
-        BdvOptions opts = BdvOptions.options().frameTitle(windowTitle);
+        BdvOptions opts = BdvOptions.options().frameTitle(windowTitle+suffix).preferredSize(sizeX,sizeY);
 
         // Create accumulate projector factory
         AccumulateProjectorFactory<ARGBType> factory = null;
@@ -88,6 +108,21 @@ public class BdvOrthoWindowCreatorCommand implements Command {
                 break;
             default:
         }
+
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice[] gd = ge.getScreenDevices();
+        JFrame frame = BdvHandleHelper.getJFrame(bdvh);
+        if( screen > -1 && screen < gd.length ) {
+            frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);//frame.getY());
+        } else if( gd.length > 0 ) {
+            frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);//frame.getY());
+
+            //frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x, frame.getY());
+        } else {
+            throw new RuntimeException( "No Screens Found" );
+        }
+
+        //.setLocation(, );
 
         return bdvh;
     }

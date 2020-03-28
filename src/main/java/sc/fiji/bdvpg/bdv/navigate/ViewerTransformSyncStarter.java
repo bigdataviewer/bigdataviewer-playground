@@ -1,12 +1,18 @@
 package sc.fiji.bdvpg.bdv.navigate;
 
 import bdv.util.BdvHandle;
+import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
+import net.imglib2.util.LinAlgHelpers;
+import sc.fiji.bdvpg.bdv.BdvUtils;
+import sc.fiji.bdvpg.scijava.BdvHandleHelper;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import static sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStopper.MatrixApproxEquals;
 
 /**
  * Action which synchronizes the display location of n BdvHandle
@@ -18,7 +24,7 @@ import java.util.Map;
  * Principle : for every changed view transform of a specific BdvHandle,
  * the view transform change is triggered to the following BdvHandle in a closed loop manner
  *
- * To avoid inifinite loop, the stop condition is : if the view transform is unnecessary (between
+ * To avoid infinite loop, the stop condition is : if the view transform is unnecessary (between
  * the view target is equal to the source), then there's no need to trigger a view transform change
  * to the next BdvHandle
  *
@@ -82,17 +88,7 @@ public class ViewerTransformSyncStarter implements Runnable {
             }
 
             // Building the TransformListener of currentBdvHandle
-            TransformListener<AffineTransform3D> listener =
-                    (at3D) -> {
-                        // Is the transform necessary ? That's the stop condition
-                        AffineTransform3D ati = new AffineTransform3D();
-                        nextBdvHandle.getViewerPanel().getState().getViewerTransform(ati);
-                        if (!Arrays.equals(at3D.getRowPackedCopy(), ati.getRowPackedCopy())) {
-                            // Yes -> triggers a transform change to the nextBdvHandle
-                            nextBdvHandle.getViewerPanel().setCurrentViewerTransform(at3D.copy());
-                            nextBdvHandle.getViewerPanel().requestRepaint();
-                        }
-                    };
+            TransformListener<AffineTransform3D> listener = (at3D) -> propagateTransformIfNecessary(at3D, currentBdvHandle, nextBdvHandle);
 
             // Adding this transform listener to the currenBdvHandle
             currentBdvHandle.getViewerPanel().addTransformListener(listener);
@@ -111,6 +107,72 @@ public class ViewerTransformSyncStarter implements Runnable {
          }
     }
 
+    void propagateTransformIfNecessary(AffineTransform3D at3D, BdvHandle currentBdvHandle, BdvHandle nextBdvHandle) {
+        // We need to transfer the transform - but while keeping the center of the window constant
+        double cur_wcx = currentBdvHandle.getViewerPanel().getWidth()/2.0; // Current Window Center X
+        double cur_wcy = currentBdvHandle.getViewerPanel().getHeight()/2.0; // Current Window Center Y
+
+        RealPoint centerScreenCurrentBdv = new RealPoint(new double[]{cur_wcx, cur_wcy, 0});
+        RealPoint centerScreenGlobalCoord = new RealPoint(3);
+
+        at3D.inverse().apply(centerScreenCurrentBdv, centerScreenGlobalCoord);
+        //System.out.println("centerScreenGlobalCoord"+centerScreenGlobalCoord);
+
+        // Now compute what should be the matrix in the next bdv frame:
+        AffineTransform3D nextAffineTransform = new AffineTransform3D();
+
+        // It should have the same scaling and rotation than the current view
+        nextAffineTransform.set(at3D);
+        /*System.out.println("sx = "+nextAffineTransform.get(0,3));
+        System.out.println("sy = "+nextAffineTransform.get(1,3));
+        System.out.println("sz = "+nextAffineTransform.get(2,3));*/
+        // No Shift
+        nextAffineTransform.set(0,0,3);
+        nextAffineTransform.set(0,1,3);
+        nextAffineTransform.set(0,2,3);
+
+        // But the center of the window should be centerScreenGlobalCoord
+        // Let's compute the shift
+        double next_wcx = nextBdvHandle.getViewerPanel().getWidth()/2.0; // Next Window Center X
+        double next_wcy = nextBdvHandle.getViewerPanel().getHeight()/2.0; // Next Window Center Y
+
+        RealPoint centerScreenNextBdv = new RealPoint(new double[]{next_wcx, next_wcy, 0});
+        RealPoint shiftNextBdv = new RealPoint(3);
+
+        nextAffineTransform.inverse().apply(centerScreenNextBdv, shiftNextBdv);
+        //System.out.println( "shiftNextBdv:"+shiftNextBdv);
+        double sx = -centerScreenGlobalCoord.getDoublePosition(0)+shiftNextBdv.getDoublePosition(0);
+        double sy = -centerScreenGlobalCoord.getDoublePosition(1)+shiftNextBdv.getDoublePosition(1);
+        double sz = -centerScreenGlobalCoord.getDoublePosition(2)+shiftNextBdv.getDoublePosition(2);
+
+        RealPoint shiftWindow = new RealPoint(new double[]{sx, sy, sz});
+        RealPoint shiftMatrix = new RealPoint(3);
+        nextAffineTransform.apply(shiftWindow, shiftMatrix);
+
+        //System.out.println("shiftMatrix:"+shiftMatrix);
+
+        nextAffineTransform.set(shiftMatrix.getDoublePosition(0),0,3);
+        nextAffineTransform.set(shiftMatrix.getDoublePosition(1),1,3);
+        nextAffineTransform.set(shiftMatrix.getDoublePosition(2),2,3);
+
+        // Is the transform necessary ? That's the stop condition
+        AffineTransform3D ati = new AffineTransform3D();
+        nextBdvHandle.getViewerPanel().state().getViewerTransform(ati);
+
+        if (!MatrixApproxEquals(nextAffineTransform.getRowPackedCopy(), ati.getRowPackedCopy())) {
+            // Yes -> triggers a transform change to the nextBdvHandle
+            // For ortho view : switches axis:
+            // X --> Y
+            // Y --> Z
+            // Z --> X
+            // Calling it three times leads to an identical transform, hence the stopping condition is triggered
+            AffineTransform3D nextAt3D = nextAffineTransform.copy();
+            nextAt3D.set(nextAffineTransform.getRowPackedCopy());
+            nextBdvHandle.getViewerPanel().setCurrentViewerTransform(nextAt3D);
+            nextBdvHandle.getViewerPanel().requestRepaint();
+        }
+    }
+
     /**
      * A simple search to identify the view transform of the BdvHandle that will be used
      * for the initial synchronization (first reference)
@@ -124,7 +186,7 @@ public class ViewerTransformSyncStarter implements Runnable {
             if (bdvHandle.equals(bdvHandleInitialReference)) {
                 // Storing the transform that will be used for first synchronization
                 at3Dorigin = new AffineTransform3D();
-                bdvHandle.getViewerPanel().getState().getViewerTransform(at3Dorigin);
+                bdvHandle.getViewerPanel().state().getViewerTransform(at3Dorigin);
             }
         }
         return at3Dorigin;

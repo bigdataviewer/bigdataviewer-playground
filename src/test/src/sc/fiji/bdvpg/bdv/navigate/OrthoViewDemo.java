@@ -37,12 +37,6 @@ public class OrthoViewDemo {
         ImageJ ij = new ImageJ();
         ij.ui().showUI();
 
-        // load and convert an image
-        //ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
-        //RandomAccessibleInterval rai = ImageJFunctions.wrapReal(imp);
-        // Adds a third dimension because Bdv needs 3D
-        //rai = Views.addDimension( rai, 0, 0 );
-
         // Makes Bdv Source
 
         new SpimDataFromXmlImporter( "src/test/resources/mri-stack.xml" ).run();
@@ -86,9 +80,6 @@ public class OrthoViewDemo {
                 isSynchronizing = !isSynchronizing;
             }).install("Toggle Synchronization", "ctrl S");
         }
-
-
-
 
     }
 }
