@@ -1,9 +1,6 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
-import bdv.util.BdvFunctions;
-import bdv.util.BdvHandle;
-import bdv.util.BdvOptions;
-import bdv.util.BdvOverlay;
+import bdv.util.*;
 import bdv.viewer.render.AccumulateProjectorFactory;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.ItemIO;
@@ -144,27 +141,12 @@ public class BdvOrthoWindowCreatorCommand implements Command {
             @Override
             protected void draw( final Graphics2D g )
             {
-                /*final AffineTransform3D t = new AffineTransform3D();
-                getCurrentTransform3D( t );
-
-                final double[] lPos = new double[ 3 ];
-                final double[] gPos = new double[ 3 ];
-                for ( final RealPoint p : points )
-                {
-                    p.localize( lPos );
-                    t.apply( lPos, gPos );
-                    final int size = getSize( gPos[ 2 ] );
-                    final int x = ( int ) ( gPos[ 0 ] - 0.5 * size );
-                    final int y = ( int ) ( gPos[ 1 ] - 0.5 * size );
-                    g.setColor( getColor( gPos[ 2 ] ) );
-                    g.fillOval( x, y, size, size );
-                }*/
+                int colorCode = this.info.getColor().get();
                 int w = bdvh.getViewerPanel().getWidth();
                 int h = bdvh.getViewerPanel().getHeight();
-                g.setColor(new Color( 255 , 0, 0, 64 ));
+                g.setColor(new Color(ARGBType.red(colorCode) , ARGBType.green(colorCode), ARGBType.blue(colorCode), ARGBType.alpha(colorCode) ));
                 g.drawLine(w/2, h/2-h/4,w/2, h/2+h/4 );
                 g.drawLine(w/2-w/4, h/2,w/2+w/4, h/2 );
-
             }
 
         };
