@@ -8,32 +8,32 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import java.io.File;
 import java.util.function.Function;
 
-public class SpimDataFromXmlImporter implements Runnable, Function<File, AbstractSpimData> {
+public class SpimDataFromXmlImporter implements Runnable, Function<String, AbstractSpimData> {
 
-    File file;
+    String dataLocation;
 
     public SpimDataFromXmlImporter( File file ) {
-        this.file = file;
+        this.dataLocation = file.getAbsolutePath();
     }
 
-    public SpimDataFromXmlImporter( String filePath) {
-        this.file = new File(filePath);
+    public SpimDataFromXmlImporter( String dataLocation) {
+        this.dataLocation = dataLocation;
     }
 
     @Override
     public void run() {
-        apply(file);
+        apply(dataLocation);
     }
 
     public AbstractSpimData get() {
-        return apply(file);
+        return apply(dataLocation);
     }
 
     @Override
-    public AbstractSpimData apply(File file) {
+    public AbstractSpimData apply(String dataLocation) {
         AbstractSpimData sd = null;
         try {
-            sd = new XmlIoSpimData().load(file.getAbsolutePath());
+            sd = new XmlIoSpimData().load(dataLocation);
             SourceAndConverterServices.getSourceAndConverterService().register(sd);
         } catch (SpimDataException e) {
             e.printStackTrace();
