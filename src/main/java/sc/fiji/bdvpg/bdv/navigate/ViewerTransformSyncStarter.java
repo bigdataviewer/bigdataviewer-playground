@@ -1,6 +1,7 @@
 package sc.fiji.bdvpg.bdv.navigate;
 
 import bdv.util.BdvHandle;
+import bdv.viewer.TimePointListener;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
 
@@ -47,8 +48,23 @@ public class ViewerTransformSyncStarter implements Runnable {
      */
     Map<BdvHandle, TransformListener<AffineTransform3D>> bdvHandleToTransformListener = new HashMap<>();
 
-    public ViewerTransformSyncStarter(BdvHandle[] bdvHandles) {
+
+    /** Optional time synchronization
+     *
+     */
+    boolean synchronizeTime;
+
+    /**
+     * Map which links each BdvHandle to the TransformListener which has been added
+     * for synchronization purpose. This object contains all what's neede to stop
+     * the synchronization
+     */
+    Map<BdvHandle, TimePointListener> bdvHandleToTimeListener = new HashMap<>();
+
+
+    public ViewerTransformSyncStarter(BdvHandle[] bdvHandles, boolean synchronizeTime) {
        this.bdvHandles = bdvHandles;
+       this.synchronizeTime = synchronizeTime;
     }
 
     public void setBdvHandleInitialReference(BdvHandle bdvHandle) {
@@ -99,6 +115,16 @@ public class ViewerTransformSyncStarter implements Runnable {
 
             // Storing the transform listener -> needed to remove them in order to stop synchronization when needed
             bdvHandleToTransformListener.put(bdvHandles[i], listener);
+
+            if (synchronizeTime) {
+                TimePointListener timeListener = (timepoint) -> {
+                    if (nextBdvHandle.getViewerPanel().getState().getCurrentTimepoint()!=timepoint)
+                        nextBdvHandle.getViewerPanel().setTimepoint(timepoint);
+                };
+
+                currentBdvHandle.getViewerPanel().addTimePointListener(timeListener);
+                bdvHandleToTimeListener.put(bdvHandles[i], timeListener);
+            }
         }
 
         // Setting first transform for initial synchronization,
@@ -137,5 +163,18 @@ public class ViewerTransformSyncStarter implements Runnable {
      */
     public Map<BdvHandle, TransformListener<AffineTransform3D>> getSynchronizers() {
         return bdvHandleToTransformListener;
+    }
+
+    public boolean isSynchronizingTime() {
+        return synchronizeTime;
+    }
+
+    /**
+     * output of this action : this map can be used to stop the synchronization
+     * see ViewerTransformSyncStopper
+     * @return
+     */
+    public Map<BdvHandle, TimePointListener> getTimeSynchronizers() {
+        return bdvHandleToTimeListener;
     }
 }

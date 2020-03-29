@@ -31,6 +31,9 @@ public class ViewSynchronizerCommand implements Command {
     @Parameter(label = "Select Windows to synchronize")
     BdvHandle[] bdvhs;
 
+    @Parameter(label = "Synchronize timepoints")
+    boolean synchronizeTime;
+
     ViewerTransformSyncStarter sync;
 
     public void run() {
@@ -40,7 +43,7 @@ public class ViewSynchronizerCommand implements Command {
         }
 
         // Starting synchronnization of selected bdvhandles
-        sync = new ViewerTransformSyncStarter(bdvhs);
+        sync = new ViewerTransformSyncStarter(bdvhs, synchronizeTime);
         sync.setBdvHandleInitialReference( SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv());
         sync.run();
 
@@ -50,7 +53,7 @@ public class ViewSynchronizerCommand implements Command {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
-                new ViewerTransformSyncStopper(sync.getSynchronizers()).run();
+                new ViewerTransformSyncStopper(sync.getSynchronizers(), sync.getTimeSynchronizers()).run();
                 e.getWindow().dispose();
             }
         });
