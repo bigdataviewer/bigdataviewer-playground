@@ -80,6 +80,11 @@ public class BdvUtils
 
     public static boolean isSourceIntersectingCurrentView( BdvHandle bdv, Source source, boolean is2D )
     {
+        if (source.getSource(0,0) == null) {
+            // Overlays have no RAI -> discard them
+            return false;
+        }
+
         final Interval interval = getSourceGlobalBoundingInterval( bdv, source );
 
         final Interval viewerInterval =

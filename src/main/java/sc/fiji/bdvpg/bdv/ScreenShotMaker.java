@@ -218,7 +218,8 @@ public class ScreenShotMaker {
             // TODO: this does not evaluate to true for all visible sources
             if ( displayService.isVisible( sac, bdv ) )
             {
-                visibleSacs.add( sac );
+                if (sac.getSpimSource().getSource(0,0)!=null) // TODO improve this hack that allows to discard overlays source from screenshot
+                    visibleSacs.add( sac );
             }
         }
 

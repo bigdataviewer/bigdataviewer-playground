@@ -29,6 +29,9 @@ public class BdvOrthoWindowCreatorCommand implements Command {
     @Parameter(label = "Interpolate")
     public boolean interpolate = false;
 
+    @Parameter(label = "Number of timepoints (1 for a single timepoint)")
+    public int nTimepoints = 1;
+
     @Parameter(label = "Synchronize time")
     public boolean syncTime;
 
@@ -104,7 +107,7 @@ public class BdvOrthoWindowCreatorCommand implements Command {
             default:
         }
 
-        BdvCreator creator = new BdvCreator(opts, interpolate);
+        BdvCreator creator = new BdvCreator(opts, interpolate, nTimepoints);
         creator.run();
         BdvHandle bdvh = creator.get();
 
@@ -155,6 +158,7 @@ public class BdvOrthoWindowCreatorCommand implements Command {
         };
 
         BdvFunctions.showOverlay( overlay, "overlay", BdvOptions.options().addTo( bdvh ) );
+        bdvh.getViewerPanel().setTimepoint(nTimepoints);
     }
 
 }
