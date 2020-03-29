@@ -21,23 +21,34 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 	private BdvOptions bdvOptions;
 	private boolean interpolate;
 	private BdvHandle bdv;
+	private int numTimePoints;
 
 	public BdvCreator( )
 	{
 		this.bdvOptions = BdvOptions.options();
 		this.interpolate = false;
+		this.numTimePoints = 1;
 	}
 
 	public BdvCreator( BdvOptions bdvOptions  )
 	{
 		this.bdvOptions = bdvOptions;
 		this.interpolate = false;
+		this.numTimePoints = 1;
 	}
 
 	public BdvCreator( BdvOptions bdvOptions, boolean interpolate )
 	{
 		this.bdvOptions = bdvOptions;
 		this.interpolate = interpolate;
+		this.numTimePoints = 1;
+	}
+
+	public BdvCreator( BdvOptions bdvOptions, boolean interpolate, int numTimePoints )
+	{
+		this.bdvOptions = bdvOptions;
+		this.interpolate = interpolate;
+		this.numTimePoints = numTimePoints;
 	}
 
 	@Override
@@ -63,6 +74,8 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 		if ( interpolate ) bdv.getViewerPanel().setInterpolation( Interpolation.NLINEAR );
 
 		bss.removeFromBdv();
+
+		bdv.getViewerPanel().setNumTimepoints(numTimePoints);
 
 		addBehaviours();
 	}
