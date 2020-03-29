@@ -61,7 +61,7 @@ public class ViewerTransformSyncStarter implements Runnable {
     boolean synchronizeTime;
 
     /**
-     * Map which links each BdvHandle to the TransformListener which has been added
+     * Map which links each BdvHandle to the TimePointListener which has been added
      * for synchronization purpose. This object contains all what's neede to stop
      * the synchronization
      */
@@ -114,7 +114,7 @@ public class ViewerTransformSyncStarter implements Runnable {
 
             if (synchronizeTime) {
                 TimePointListener timeListener = (timepoint) -> {
-                    if (nextBdvHandle.getViewerPanel().getState().getCurrentTimepoint()!=timepoint)
+                    if (nextBdvHandle.getViewerPanel().state().getCurrentTimepoint()!=timepoint)
                         nextBdvHandle.getViewerPanel().setTimepoint(timepoint);
                 };
 
@@ -129,6 +129,11 @@ public class ViewerTransformSyncStarter implements Runnable {
              for (BdvHandle bdvh: bdvHandles) {
                  bdvh.getViewerPanel().setCurrentViewerTransform(at3Dorigin.copy());
                  bdvh.getViewerPanel().requestRepaint();
+                 if (synchronizeTime) {
+                     bdvh.getViewerPanel().state().setCurrentTimepoint(
+                             bdvHandleInitialReference.getViewerPanel().state().getCurrentTimepoint()
+                     );
+                 }
              }
          }
     }

@@ -1,6 +1,7 @@
 package sc.fiji.bdvpg.bdv.navigate;
 
 import bdv.util.BdvHandle;
+import bdv.viewer.TimePointListener;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
@@ -61,10 +62,24 @@ public class ViewerOrthoSyncStarter implements Runnable {
      */
     Map<BdvHandle, TransformListener<AffineTransform3D>> bdvHandleToTransformListener = new HashMap<>();
 
-    public ViewerOrthoSyncStarter(BdvHandle bdvHandleX, BdvHandle bdvHandleY, BdvHandle bdvHandleZ) {
+    /** Optional time synchronization
+     *
+     */
+    boolean synchronizeTime;
+
+    /**
+     * Map which links each BdvHandle to the TimePointListener which has been added
+     * for synchronization purpose. This object contains all what's neede to stop
+     * the synchronization
+     */
+    Map<BdvHandle, TimePointListener> bdvHandleToTimeListener = new HashMap<>();
+
+
+    public ViewerOrthoSyncStarter(BdvHandle bdvHandleX, BdvHandle bdvHandleY, BdvHandle bdvHandleZ, boolean syncTime) {
         this.bdvHandles[0] = bdvHandleX;
         this.bdvHandles[1] = bdvHandleY;
         this.bdvHandles[2] = bdvHandleZ;
+        this.synchronizeTime = syncTime;
     }
 
     public void setBdvHandleInitialReference(BdvHandle bdvHandle) {
@@ -110,12 +125,47 @@ public class ViewerOrthoSyncStarter implements Runnable {
                 .addTransformListener(listener);
         bdvHandleToTransformListener.put(bdvHandles[2], listener);
 
+
+        if (synchronizeTime) {
+            TimePointListener timeListener;
+            timeListener = (timepoint) -> {
+                if (bdvHandles[1].getViewerPanel().state().getCurrentTimepoint()!=timepoint)
+                    bdvHandles[1].getViewerPanel().setTimepoint(timepoint);
+            };
+
+            bdvHandles[0].getViewerPanel().addTimePointListener(timeListener);
+            bdvHandleToTimeListener.put(bdvHandles[0], timeListener);
+
+            timeListener = (timepoint) -> {
+                if (bdvHandles[2].getViewerPanel().state().getCurrentTimepoint()!=timepoint)
+                    bdvHandles[2].getViewerPanel().setTimepoint(timepoint);
+            };
+
+            bdvHandles[1].getViewerPanel().addTimePointListener(timeListener);
+            bdvHandleToTimeListener.put(bdvHandles[1], timeListener);
+
+
+            timeListener = (timepoint) -> {
+                if (bdvHandles[0].getViewerPanel().state().getCurrentTimepoint()!=timepoint)
+                    bdvHandles[0].getViewerPanel().setTimepoint(timepoint);
+            };
+
+            bdvHandles[2].getViewerPanel().addTimePointListener(timeListener);
+            bdvHandleToTimeListener.put(bdvHandles[2], timeListener);
+        }
+
+
         // Setting first transform for initial synchronization,
         // but only if the two necessary objects are present (the origin BdvHandle and the transform
         if ((bdvHandleInitialReference !=null)&&(at3Dorigin!=null)) {
             for (BdvHandle bdvh: bdvHandles) {
                 bdvh.getViewerPanel().setCurrentViewerTransform(at3Dorigin.copy());
                 bdvh.getViewerPanel().requestRepaint();
+                if (synchronizeTime) {
+                    bdvh.getViewerPanel().state().setCurrentTimepoint(
+                            bdvHandleInitialReference.getViewerPanel().state().getCurrentTimepoint()
+                    );
+                }
             }
         }
     }
@@ -254,5 +304,18 @@ public class ViewerOrthoSyncStarter implements Runnable {
      */
     public Map<BdvHandle, TransformListener<AffineTransform3D>> getSynchronizers() {
         return bdvHandleToTransformListener;
+    }
+
+    public boolean isSynchronizingTime() {
+        return synchronizeTime;
+    }
+
+    /**
+     * output of this action : this map can be used to stop the synchronization
+     * see ViewerTransformSyncStopper
+     * @return
+     */
+    public Map<BdvHandle, TimePointListener> getTimeSynchronizers() {
+        return bdvHandleToTimeListener;
     }
 }

@@ -29,6 +29,9 @@ public class BdvOrthoWindowCreatorCommand implements Command {
     @Parameter(label = "Interpolate")
     public boolean interpolate = false;
 
+    @Parameter(label = "Synchronize time")
+    public boolean syncTime;
+
     /**
      * This triggers: BdvHandlePostprocessor
      */
@@ -71,7 +74,7 @@ public class BdvOrthoWindowCreatorCommand implements Command {
 
         bdvhZ = createBdv("-Bottom", locationX, locationY+sizeY+40);
 
-        new ViewerOrthoSyncStarter(bdvhX, bdvhZ, bdvhY).run();
+        new ViewerOrthoSyncStarter(bdvhX, bdvhZ, bdvhY, syncTime).run();
 
        if (drawCrosses) {
            addCross(bdvhX);
