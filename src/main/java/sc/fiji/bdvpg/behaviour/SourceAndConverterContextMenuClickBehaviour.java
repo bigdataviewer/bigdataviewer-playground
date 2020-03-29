@@ -34,7 +34,7 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 		int timePoint = bdv.getViewerPanel().getState().getCurrentTimepoint();
 
 		final List< SourceAndConverter > sacs =
-		SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverters(bdv)
+		SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverterOf(bdv)
 				.stream()
 				.filter(sac -> SourceAndConverterUtils.isSourcePresentAt(sac,timePoint, mousePosInBdv))
 				.filter(sac -> SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible(sac,bdv))
