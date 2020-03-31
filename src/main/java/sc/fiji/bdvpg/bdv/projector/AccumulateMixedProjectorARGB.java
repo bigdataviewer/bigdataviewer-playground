@@ -13,10 +13,9 @@ import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 import static sc.fiji.bdvpg.bdv.projector.Projection.*;
 
@@ -156,23 +155,12 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 	{
 		// We need to reconstitute the sequence of action that lead to the current indexes
 
-		// Getting the sources present in the BdvHandle
-		List<SourceAndConverter<?>> sacsInBdvHandle = SourceAndConverterServices
-				.getSourceAndConverterDisplayService()
-				.getSourceAndConverterOf(bdvHandle);
+		// Getting the sources present and visible in the BdvHandle
 
-		// Fetching the indexes of visible sources in the BdvHandle
-		List<Integer> visibleIndexes = bdvHandle.getViewerPanel().getState().getVisibleSourceIndices();
-		// In ascending order
-		Collections.sort(visibleIndexes);
+		bdvHandle.getViewerPanel().state().getVisibleAndPresentSources().stream().collect(Collectors.toList());
 
-		SourceAndConverter[] visibleSacArray = new SourceAndConverter[visibleIndexes.size()];
+		final List< SourceAndConverter > visibleSacs = bdvHandle.getViewerPanel().state().getVisibleAndPresentSources().stream().collect(Collectors.toList());
 
-		for (int idx = 0; idx<visibleIndexes.size(); idx++) {
-			visibleSacArray[idx] = sacsInBdvHandle.get(visibleIndexes.get(idx));
-		}
-
-		final List< SourceAndConverter > visibleSacs = Arrays.asList(visibleSacArray);//SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();
 		final String[] projectionModes = getProjectionModes( visibleSacs );
 
 		return projectionModes;
