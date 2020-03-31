@@ -5,7 +5,6 @@ import bdv.tools.brightness.SetupAssignments;
 import bdv.tools.transformation.ManualTransformationEditor;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerPanel;
-import bigwarp.BigWarp;
 import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 

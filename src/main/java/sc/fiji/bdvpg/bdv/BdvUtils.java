@@ -32,7 +32,7 @@ public class BdvUtils
         final int windowHeight = getBdvWindowHeight( bdv );
 
         final AffineTransform3D viewerTransform = new AffineTransform3D();
-        bdv.getViewerPanel().getState().getViewerTransform( viewerTransform );
+        bdv.getViewerPanel().state().getViewerTransform( viewerTransform );
 
         final double[] physicalA = new double[ 3 ];
         final double[] physicalB = new double[ 3 ];

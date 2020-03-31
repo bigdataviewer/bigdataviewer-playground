@@ -5,11 +5,6 @@ import bdv.viewer.TimePointListener;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
-import net.imglib2.util.LinAlgHelpers;
-import sc.fiji.bdvpg.bdv.BdvUtils;
-import sc.fiji.bdvpg.scijava.BdvHandleHelper;
-
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 

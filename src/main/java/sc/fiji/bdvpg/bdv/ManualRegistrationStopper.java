@@ -1,24 +1,13 @@
 package sc.fiji.bdvpg.bdv;
 
-import bdv.AbstractSpimSource;
-import bdv.tools.transformation.TransformedSource;
-import bdv.BigDataViewer;
-import bdv.util.BdvHandle;
-import bdv.viewer.SourceAndConverter;
-import mpicbg.spim.data.registration.ViewRegistration;
-import mpicbg.spim.data.registration.ViewTransform;
-import mpicbg.spim.data.registration.ViewTransformAffine;
-import net.imglib2.realtransform.AffineTransform3D;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
-import java.lang.reflect.Method;
+import bdv.viewer.SourceAndConverter;
+import net.imglib2.realtransform.AffineTransform3D;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
 
 // TODO : Ensure volatile is working with source which are not AbstractSpimSource
 
