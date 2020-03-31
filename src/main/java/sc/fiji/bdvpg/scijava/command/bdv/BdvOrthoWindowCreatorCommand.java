@@ -111,17 +111,6 @@ public class BdvOrthoWindowCreatorCommand implements Command {
         creator.run();
         BdvHandle bdvh = creator.get();
 
-        // Now we can add the bdvHandle to the projector factory
-        switch (projector) {
-            case Projection.MIXED_PROJECTOR:
-                ((AccumulateMixedProjectorARGBFactory) factory).setBdvHandle( bdvh );
-            case Projection.SUM_PROJECTOR:
-                break;
-            case Projection.AVERAGE_PROJECTOR:
-                break;
-            default:
-        }
-
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice[] gd = ge.getScreenDevices();
         JFrame frame = BdvHandleHelper.getJFrame(bdvh);

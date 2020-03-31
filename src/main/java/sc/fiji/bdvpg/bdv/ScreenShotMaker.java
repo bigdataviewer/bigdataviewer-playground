@@ -114,7 +114,7 @@ public class ScreenShotMaker {
 
         final ArrayList< double[] > displayRanges = new ArrayList<>();
 
-        final List< SourceAndConverter > visibleSacs = getVisibleSacs( bdvHandle );
+        final List< SourceAndConverter <?> > visibleSacs = getVisibleSacs( bdvHandle );
         if ( visibleSacs.size() == 0 ) return;
 
         final int t = bdvHandle.getViewerPanel().getState().getCurrentTimepoint();
@@ -207,12 +207,12 @@ public class ScreenShotMaker {
         }
     }
 
-    private List< SourceAndConverter > getVisibleSacs( BdvHandle bdv )
+    private List< SourceAndConverter<?> > getVisibleSacs( BdvHandle bdv )
     {
         final SourceAndConverterBdvDisplayService displayService = SourceAndConverterServices.getSourceAndConverterDisplayService();
 
         final List< SourceAndConverter<?> > sacs = displayService.getSourceAndConverterOf( bdvHandle );
-        List< SourceAndConverter > visibleSacs = new ArrayList<>(  );
+        List< SourceAndConverter<?> > visibleSacs = new ArrayList<>(  );
         for ( SourceAndConverter sac : sacs )
         {
             // TODO: this does not evaluate to true for all visible sources
