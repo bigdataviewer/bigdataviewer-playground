@@ -117,8 +117,8 @@
 		<!--
 		<scijava-ui-swing.version>0.13.0</scijava-ui-swing.version>
 		<imagej.app.directory>C:/Programs/Fiji.app/</imagej.app.directory>
-		See Issue https://github.com/saalfeldlab/bigwarp/issues/83
-        <bigwarp_fiji.version>5.1.0</bigwarp_fiji.version>-->
+		See Issue https://github.com/saalfeldlab/bigwarp/issues/83 -->
+        <bigwarp_fiji.version>5.1.0</bigwarp_fiji.version>
 
 		<bigdataviewer-core.version>9.0.0</bigdataviewer-core.version>
 		<imglib2.version>5.9.0</imglib2.version>

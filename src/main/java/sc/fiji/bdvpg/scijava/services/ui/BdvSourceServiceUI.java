@@ -3,6 +3,7 @@ package sc.fiji.bdvpg.scijava.services.ui;
 import bdv.AbstractSpimSource;
 import bdv.img.WarpedSource;
 import bdv.tools.transformation.TransformedSource;
+import bdv.util.BdvHandle;
 import bdv.util.ResampledSource;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
@@ -43,9 +44,18 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  * - Filtering nodes : nodes that can filter SourceAndConverters,
  * they contain a Predicate<SourceAndConverter> that decides whether a source and converter
  * object should be included in the node; they also contain a boolean flag which sets whether the
- * SourceAndConverter should be passed to the current remaining branch in the tree
+ * SourceAndConverter should be passed to the current remaining branch in the tree. In short the sourceandconverter
+ * is either captured, or captured and duplicated
  * - Getter Node for Source properties. For instance in the inspect method, a Transformed Source will
  * create a Node for the wrapped source and another node which holds a getter for the fixedAffineTransform
+ *
+ * For Spimdata synchronization : TODO
+ *
+ * Added 2020.04.12 : a BdvHandle filtering node (which is a filtering node), allows to sort sourceandconverters
+ * based on whether they are displayed or not within a BdvHandle
+ *
+ * For BdvHandle synchronization :
+ *
  *
  */
 public class BdvSourceServiceUI {
@@ -496,29 +506,7 @@ public class BdvSourceServiceUI {
         }
     }
 
-    /**
-     * SourceAndConverter filter node : generic
-     */
-    public class SourceFilterNode extends DefaultMutableTreeNode {
-        Predicate<SourceAndConverter> filter;
-        boolean allowDuplicate;
-        String name;
 
-        public SourceFilterNode(String name, Predicate<SourceAndConverter> filter, boolean allowDuplicate) {
-            super(name);
-            this.name = name;
-            this.filter = filter;
-            this.allowDuplicate = allowDuplicate;
-        }
-
-        public String toString() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-    }
 
     /**
      * SourceAndConverter filter node : Selects SpimData and allow for duplicate

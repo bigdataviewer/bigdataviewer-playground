@@ -15,6 +15,8 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
+import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
+import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
@@ -47,7 +49,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     public static Consumer<String> errlog = (str) -> System.err.println( SourceAndConverterBdvDisplayService.class.getSimpleName()+":"+str);
 
     public static String CONVERTER_SETUP = "ConverterSetup";
-
 
     /**
      * Used to add Aliases for BdvHandle objects
@@ -312,7 +313,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * Useful for BigWarp where the grid and the deformation magnitude sourceandconverter are created
      * into bigwarp
      * @param bdvh_in
-     * @param index
      */
     public void registerBdvSource(BdvHandle bdvh_in) {
         bdvh_in.getViewerPanel().state().getSources().forEach(sac -> {
@@ -391,6 +391,33 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
             return displayToMetadata.get(bdvh).get(key);
         } else {
             return null;
+        }
+    }
+
+    /**
+     * SourceAndConverter filter node : Selects SpimData and allow for duplicate
+     */
+
+    public static class BdvHandleFilterNode extends SourceFilterNode {
+
+        public BdvHandle bdvh;
+
+        public boolean filter(SourceAndConverter sac) {
+            return bdvh.getViewerPanel().state().getSources().contains(sac);
+        }
+
+        public BdvHandleFilterNode(String name, BdvHandle bdvh) {
+            super(name,null, true);
+            this.filter = this::filter;
+            this.bdvh = bdvh;
+        }
+
+        public String toString() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
     }
 

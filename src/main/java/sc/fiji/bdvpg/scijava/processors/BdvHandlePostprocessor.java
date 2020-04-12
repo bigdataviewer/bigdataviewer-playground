@@ -10,6 +10,8 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 
 import java.util.function.Consumer;
 
@@ -25,6 +27,9 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
 
     @Parameter
     SourceAndConverterBdvDisplayService bsds;
+
+    @Parameter
+    SourceAndConverterService sacsService;
 
     @Parameter
     ObjectService os;
@@ -52,6 +57,11 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
                 //for (int i=0;i<bdvh.getViewerPanel().getState().numSources();i++) {
                 //    bsds.registerBdvSource(bdvh,i);
                 //}
+                SourceAndConverterBdvDisplayService.BdvHandleFilterNode
+                        node = new SourceAndConverterBdvDisplayService.BdvHandleFilterNode(windowTitle, bdvh);
+
+                ((SourceFilterNode)sacsService.getUI().getTreeModel().getRoot()).insert(node,0);
+
                 module.resolveOutput(name);
             }
         });
