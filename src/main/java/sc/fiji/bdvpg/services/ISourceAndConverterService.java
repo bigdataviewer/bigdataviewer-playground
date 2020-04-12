@@ -60,7 +60,7 @@ public interface ISourceAndConverterService
      * Called in the BdvSourcePostProcessor
      * @param sac
      */
-    void remove(SourceAndConverter sac);
+    void remove(SourceAndConverter... sac);
 
 
     void linkToSpimData(SourceAndConverter sac, AbstractSpimData asd, int idSetup);
