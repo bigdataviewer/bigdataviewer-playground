@@ -160,8 +160,9 @@ public class SourceAndConverterUtils {
             for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() ) {
                 final int setupId = setup.getId();
                 final Object type = imgLoader.getSetupImgLoader( setupId ).getImageType();
+                String sourceName = createSetupName(setup);
                 if ( RealType.class.isInstance( type ) ) {
-                    String sourceName = createSetupName(setup);
+
 
                     final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
 
@@ -183,9 +184,9 @@ public class SourceAndConverterUtils {
                     }
 
                 } else if ( ARGBType.class.isInstance( type ) ) {
-                    final String setupName = createSetupName( setup );
-                    final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, setupName );
-                    final SpimSource s = new SpimSource<>( asd, setupId, setupName );
+
+                    final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
+                    final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
 
                     Converter nonVolatileConverter = createConverterARGBType(s);
                     assert nonVolatileConverter!=null;
@@ -328,8 +329,12 @@ public class SourceAndConverterUtils {
     }
 
     private static String createSetupName( final BasicViewSetup setup ) {
-        if ( setup.hasName() )
-            return setup.getName();
+        if ( setup.hasName() ) {
+            if (!setup.getName().trim().equals("")) {
+                System.out.println("Baaah" + setup.getName());
+                return setup.getName();
+            }
+        }
 
         String name = "";
 
@@ -340,6 +345,10 @@ public class SourceAndConverterUtils {
         final Channel channel = setup.getAttribute( Channel.class );
         if ( channel != null )
             name += ( name.isEmpty() ? "" : " " ) + "c " + channel.getName();
+
+        if ((channel == null)&&(angle == null)) {
+            name += "id "+setup.getId();
+        }
 
         return name;
     }
