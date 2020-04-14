@@ -331,7 +331,6 @@ public class SourceAndConverterUtils {
     private static String createSetupName( final BasicViewSetup setup ) {
         if ( setup.hasName() ) {
             if (!setup.getName().trim().equals("")) {
-                System.out.println("Baaah" + setup.getName());
                 return setup.getName();
             }
         }
