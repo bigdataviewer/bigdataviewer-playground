@@ -52,8 +52,8 @@ public class ViewTransformSynchronizationDemo {
 
         BdvHandle[] bdvhs = new BdvHandle[]{bdvHandle1,bdvHandle2,bdvHandle3};
 
-        ViewerTransformSyncStarter syncstart = new ViewerTransformSyncStarter(bdvhs);
-        ViewerTransformSyncStopper syncstop = new ViewerTransformSyncStopper(syncstart.getSynchronizers());
+        ViewerTransformSyncStarter syncstart = new ViewerTransformSyncStarter(bdvhs, false);
+        ViewerTransformSyncStopper syncstop = new ViewerTransformSyncStopper(syncstart.getSynchronizers(), null);
 
         syncstart.run();
         isSynchronizing = true;

@@ -9,7 +9,6 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.BdvCreator;
 import sc.fiji.bdvpg.bdv.projector.AccumulateAverageProjectorARGB;
-import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGB;
 import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGBFactory;
 import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -28,6 +27,9 @@ public class BdvWindowCreatorCommand implements Command {
 
     @Parameter(label = "Interpolate")
     public boolean interpolate = false;
+
+    @Parameter(label = "Number of timepoints (1 for a single timepoint)")
+    public int nTimepoints = 1;
 
     /**
      * This triggers: BdvHandlePostprocessor
@@ -60,7 +62,7 @@ public class BdvWindowCreatorCommand implements Command {
             default:
         }
 
-        BdvCreator creator = new BdvCreator(opts, interpolate);
+        BdvCreator creator = new BdvCreator(opts, interpolate, nTimepoints);
         creator.run();
         bdvh = creator.get();
 
