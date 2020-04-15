@@ -180,15 +180,17 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public void remove(SourceAndConverter sac ) {
+    public void remove(SourceAndConverter... sacs ) {
         // Remove displays
         if (bsds!=null) {
-            bsds.removeFromAllBdvs( sac );
+            bsds.removeFromAllBdvs( sacs );
         }
-        sacToMetadata.remove( sac );
-        objectService.removeObject( sac );
-        if (uiAvailable) {
-            ui.remove( sac );
+        for (SourceAndConverter sac : sacs) {
+            sacToMetadata.remove(sac);
+            objectService.removeObject(sac);
+            if (uiAvailable) {
+                ui.remove(sac);
+            }
         }
     }
 

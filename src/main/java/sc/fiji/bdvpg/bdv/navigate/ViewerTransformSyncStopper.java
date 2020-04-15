@@ -40,5 +40,19 @@ public class ViewerTransformSyncStopper implements Runnable {
         }
     }
 
+    public static boolean MatrixApproxEquals(double[] m1, double[] m2) {
+        assert m1.length == m2.length;
+        boolean ans = true;
+        for (int i=0;i<m1.length;i++) {
+            //System.out.println("Math.abs(m1["+i+"]-m2["+i+"]) = "+(Math.abs(m1[i]-m2[i])));
+            //System.out.println("Math.ulp(Math.min(Math.abs(m1[i]), Math.abs(m2[i]))) = "+(Math.ulp(Math.min(Math.abs(m1[i]), Math.abs(m2[i])))));
+
+            if (Math.abs(m1[i]-m2[i])>1e6*Math.ulp(Math.min(Math.abs(m1[i]), Math.abs(m2[i])))) {
+                ans = false;
+                break;
+            }
+        }
+        return ans;
+    }
 
 }

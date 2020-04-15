@@ -5,34 +5,46 @@ import bdv.viewer.TimePointListener;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.ui.TransformListener;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import static sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStopper.MatrixApproxEquals;
 
+
 /**
- * Action which synchronizes the display location of n BdvHandle
+ * Action which synchronizes the display location of 3 BdvHandle
  *
- * Works in combination with the action ViewerTransformSyncStopper
+ * TODO : Works in combination with the action ViewerOrthoSyncStopper
  *
- * See also ViewTransformSynchronizationDemo
+ * TODO See also ViewOrthoSynchronizationDemo
  *
  * Principle : for every changed view transform of a specific BdvHandle,
  * the view transform change is triggered to the following BdvHandle in a closed loop manner
  *
- * To avoid infinite loop, the stop condition is : if the view transform is unnecessary (between
+ * Each transform is passed to next one by rolling the axes so that 3 swaps lead to an identical transform:
+ *
+ // For ortho view : switches axis:
+ //  X, Y, Z (bdvHandle[0])
+ //  X,-Z, Y (bdvHandle[1]) Right View
+ // -Z, Y, X (bdvHandle[2]) Bottom View
+ *
+ * TODO : Issue : the center is at the top left corner of the bdv window, instead of being at the center
+ *
+ * To avoid inifinite loop, the stop condition is : if the view transform is unnecessary (between
  * the view target is equal to the source), then there's no need to trigger a view transform change
  * to the next BdvHandle
  *
  * author Nicolas Chiaruttini, BIOP EPFL, nicolas.chiaruttini@epfl.ch
  */
 
-public class ViewerTransformSyncStarter implements Runnable {
+public class ViewerOrthoSyncStarter implements Runnable {
 
     /**
      * Array of BdvHandles to synchronize
      */
-    BdvHandle[] bdvHandles;
+    BdvHandle[] bdvHandles = new BdvHandle[3]; // X Y Z
 
     /**
      * Reference to the BdvHandle which will serve as a reference for the
@@ -49,7 +61,6 @@ public class ViewerTransformSyncStarter implements Runnable {
      */
     Map<BdvHandle, TransformListener<AffineTransform3D>> bdvHandleToTransformListener = new HashMap<>();
 
-
     /** Optional time synchronization
      *
      */
@@ -63,9 +74,11 @@ public class ViewerTransformSyncStarter implements Runnable {
     Map<BdvHandle, TimePointListener> bdvHandleToTimeListener = new HashMap<>();
 
 
-    public ViewerTransformSyncStarter(BdvHandle[] bdvHandles, boolean synchronizeTime) {
-       this.bdvHandles = bdvHandles;
-       this.synchronizeTime = synchronizeTime;
+    public ViewerOrthoSyncStarter(BdvHandle bdvHandleX, BdvHandle bdvHandleY, BdvHandle bdvHandleZ, boolean syncTime) {
+        this.bdvHandles[0] = bdvHandleX;
+        this.bdvHandles[1] = bdvHandleY;
+        this.bdvHandles[2] = bdvHandleZ;
+        this.synchronizeTime = syncTime;
     }
 
     public void setBdvHandleInitialReference(BdvHandle bdvHandle) {
@@ -80,61 +93,86 @@ public class ViewerTransformSyncStarter implements Runnable {
 
         // Building circularly linked listeners with stop condition when all transforms are equal,
         // cf documentation
+        // Building the TransformListener of currentBdvHandle
+        TransformListener<AffineTransform3D> listener;
 
-        for (int i = 0; i< bdvHandles.length; i++) {
 
-            // The idea is that bdvHandles[i], when it has a view transform,
-            // triggers an identical ViewTransform to the next bdvHandle in the array
-            // (called nextBdvHandle). nextBdvHandle is bdvHandles[i+1] in most cases,
-            // unless it's the end of the array,
-            // where in this case nextBdvHandle is bdvHandles[0]
-            BdvHandle currentBdvHandle = bdvHandles[i];
-            BdvHandle nextBdvHandle;
+        // Adding this transform listener to the currenBdvHandle
+        listener = (at3D) -> propagateTransformIfNecessary(at3D,
+                bdvHandles[0],
+                bdvHandles[1],
+                this::getRotatedView0);
 
-            // Identifying nextBdvHandle
-            if (i == bdvHandles.length-1) {
-                nextBdvHandle = bdvHandles[0];
-            } else {
-                nextBdvHandle = bdvHandles[i+1];
-            }
+        bdvHandles[0].getViewerPanel()
+                     .addTransformListener(listener);
+        bdvHandleToTransformListener.put(bdvHandles[0], listener);
 
-            // Building the TransformListener of currentBdvHandle
-            TransformListener<AffineTransform3D> listener = (at3D) -> propagateTransformIfNecessary(at3D, currentBdvHandle, nextBdvHandle);
+        listener = (at3D) -> propagateTransformIfNecessary(at3D,
+                bdvHandles[1],
+                bdvHandles[2],
+                this::getRotatedView1);
 
-            // Adding this transform listener to the currenBdvHandle
-            currentBdvHandle.getViewerPanel().addTransformListener(listener);
+        bdvHandles[1].getViewerPanel()
+                .addTransformListener(listener);
+        bdvHandleToTransformListener.put(bdvHandles[1], listener);
 
-            // Storing the transform listener -> needed to remove them in order to stop synchronization when needed
-            bdvHandleToTransformListener.put(bdvHandles[i], listener);
+        listener = (at3D) -> propagateTransformIfNecessary(at3D,
+                        bdvHandles[2],
+                        bdvHandles[0],
+                        this::getRotatedView2);
+        bdvHandles[2].getViewerPanel()
+                .addTransformListener(listener);
+        bdvHandleToTransformListener.put(bdvHandles[2], listener);
 
-            if (synchronizeTime) {
-                TimePointListener timeListener = (timepoint) -> {
-                    if (nextBdvHandle.getViewerPanel().state().getCurrentTimepoint()!=timepoint)
-                        nextBdvHandle.getViewerPanel().setTimepoint(timepoint);
-                };
 
-                currentBdvHandle.getViewerPanel().addTimePointListener(timeListener);
-                bdvHandleToTimeListener.put(bdvHandles[i], timeListener);
-            }
+        if (synchronizeTime) {
+            TimePointListener timeListener;
+            timeListener = (timepoint) -> {
+                if (bdvHandles[1].getViewerPanel().state().getCurrentTimepoint()!=timepoint)
+                    bdvHandles[1].getViewerPanel().setTimepoint(timepoint);
+            };
+
+            bdvHandles[0].getViewerPanel().addTimePointListener(timeListener);
+            bdvHandleToTimeListener.put(bdvHandles[0], timeListener);
+
+            timeListener = (timepoint) -> {
+                if (bdvHandles[2].getViewerPanel().state().getCurrentTimepoint()!=timepoint)
+                    bdvHandles[2].getViewerPanel().setTimepoint(timepoint);
+            };
+
+            bdvHandles[1].getViewerPanel().addTimePointListener(timeListener);
+            bdvHandleToTimeListener.put(bdvHandles[1], timeListener);
+
+
+            timeListener = (timepoint) -> {
+                if (bdvHandles[0].getViewerPanel().state().getCurrentTimepoint()!=timepoint)
+                    bdvHandles[0].getViewerPanel().setTimepoint(timepoint);
+            };
+
+            bdvHandles[2].getViewerPanel().addTimePointListener(timeListener);
+            bdvHandleToTimeListener.put(bdvHandles[2], timeListener);
         }
+
 
         // Setting first transform for initial synchronization,
         // but only if the two necessary objects are present (the origin BdvHandle and the transform
-         if ((bdvHandleInitialReference !=null)&&(at3Dorigin!=null)) {
-             for (BdvHandle bdvh: bdvHandles) {
-                 bdvh.getViewerPanel().setCurrentViewerTransform(at3Dorigin.copy());
-                 bdvh.getViewerPanel().requestRepaint();
-                 if (synchronizeTime) {
-                     bdvh.getViewerPanel().state().setCurrentTimepoint(
-                             bdvHandleInitialReference.getViewerPanel().state().getCurrentTimepoint()
-                     );
-                 }
-             }
-         }
+        if ((bdvHandleInitialReference !=null)&&(at3Dorigin!=null)) {
+            for (BdvHandle bdvh: bdvHandles) {
+                bdvh.getViewerPanel().setCurrentViewerTransform(at3Dorigin.copy());
+                bdvh.getViewerPanel().requestRepaint();
+                if (synchronizeTime) {
+                    bdvh.getViewerPanel().state().setCurrentTimepoint(
+                            bdvHandleInitialReference.getViewerPanel().state().getCurrentTimepoint()
+                    );
+                }
+            }
+        }
     }
 
-    void propagateTransformIfNecessary(AffineTransform3D at3D, BdvHandle currentBdvHandle, BdvHandle nextBdvHandle) {
-        // We need to transfer the transform - but while keeping the center of the window constant
+    void propagateTransformIfNecessary(AffineTransform3D at3D, BdvHandle currentBdvHandle, BdvHandle nextBdvHandle, Function<double[], double[]> rotator) {
+
+        // Is the transform necessary ? That's the stop condition
+
         double cur_wcx = currentBdvHandle.getViewerPanel().getWidth()/2.0; // Current Window Center X
         double cur_wcy = currentBdvHandle.getViewerPanel().getHeight()/2.0; // Current Window Center Y
 
@@ -156,6 +194,8 @@ public class ViewerTransformSyncStarter implements Runnable {
         nextAffineTransform.set(0,0,3);
         nextAffineTransform.set(0,1,3);
         nextAffineTransform.set(0,2,3);
+
+        nextAffineTransform.set(rotator.apply(nextAffineTransform.getRowPackedCopy()));
 
         // But the center of the window should be centerScreenGlobalCoord
         // Let's compute the shift
@@ -197,6 +237,44 @@ public class ViewerTransformSyncStarter implements Runnable {
             nextBdvHandle.getViewerPanel().setCurrentViewerTransform(nextAt3D);
             nextBdvHandle.getViewerPanel().requestRepaint();
         }
+
+    }
+
+
+    public double[] getRotatedView0(double[] m) {
+        return new double[] {
+                m[0], m[1], m[2],
+                m[3],
+                -m[8], -m[9], -m[10],
+                m[7],
+                m[4], m[5], m[6],
+                m[11],
+
+        };
+    }
+
+    public double[] getRotatedView1(double[] m) {
+        return new double[] {
+
+                m[4], m[5], m[6],
+                m[3],
+                m[8], m[9], m[10],
+                m[7],
+                m[0], m[1], m[2],
+                m[11],
+
+        };
+    }
+
+    public double[] getRotatedView2(double[] m) {
+        return new double[] {
+                m[8], m[9], m[10],
+                m[3],
+                m[4], m[5], m[6],
+                m[7],
+                -m[0], -m[1], -m[2],
+                m[11],
+        };
     }
 
     /**

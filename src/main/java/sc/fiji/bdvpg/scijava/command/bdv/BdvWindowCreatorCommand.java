@@ -70,7 +70,6 @@ public class BdvWindowCreatorCommand implements Command {
 
         switch (projector) {
             case Projection.MIXED_PROJECTOR:
-                ((AccumulateMixedProjectorARGBFactory) factory).setBdvHandle( bdvh );
                 displayService.setDisplayMetadata( bdvh, Projection.PROJECTOR, Projection.MIXED_PROJECTOR );
                 break;
             case Projection.SUM_PROJECTOR:

@@ -1,6 +1,6 @@
 package sc.fiji.bdvpg.bdv.projector;
 
-import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import bdv.viewer.render.AccumulateProjector;
 import bdv.viewer.render.AccumulateProjectorFactory;
 import bdv.viewer.render.VolatileProjector;
@@ -17,9 +17,9 @@ public class AccumulateSumProjectorARGB extends AccumulateProjector< ARGBType, A
 	public static AccumulateProjectorFactory< ARGBType > factory = new AccumulateProjectorFactory< ARGBType >()
 	{
 		@Override
-		public AccumulateSumProjectorARGB createAccumulateProjector(
+		public AccumulateSumProjectorARGB createProjector(
 				final ArrayList< VolatileProjector > sourceProjectors,
-				final ArrayList< Source< ? > > sources,
+				final ArrayList<SourceAndConverter< ? >> sources,
 				final ArrayList< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
 				final RandomAccessibleInterval< ARGBType > targetScreenImage,
 				final int numThreads,
@@ -37,7 +37,7 @@ public class AccumulateSumProjectorARGB extends AccumulateProjector< ARGBType, A
 
 	public AccumulateSumProjectorARGB(
 			final ArrayList< VolatileProjector > sourceProjectors,
-			final ArrayList< Source< ? > > sources,
+			final ArrayList< SourceAndConverter< ? > > sources,
 			final ArrayList< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
 			final RandomAccessibleInterval< ARGBType > target,
 			final int numThreads,

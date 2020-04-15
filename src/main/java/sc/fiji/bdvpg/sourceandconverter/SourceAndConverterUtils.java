@@ -160,8 +160,9 @@ public class SourceAndConverterUtils {
             for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() ) {
                 final int setupId = setup.getId();
                 final Object type = imgLoader.getSetupImgLoader( setupId ).getImageType();
+                String sourceName = createSetupName(setup);
                 if ( RealType.class.isInstance( type ) ) {
-                    String sourceName = createSetupName(setup);
+
 
                     final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
 
@@ -183,9 +184,9 @@ public class SourceAndConverterUtils {
                     }
 
                 } else if ( ARGBType.class.isInstance( type ) ) {
-                    final String setupName = createSetupName( setup );
-                    final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, setupName );
-                    final SpimSource s = new SpimSource<>( asd, setupId, setupName );
+
+                    final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
+                    final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
 
                     Converter nonVolatileConverter = createConverterARGBType(s);
                     assert nonVolatileConverter!=null;
@@ -262,14 +263,13 @@ public class SourceAndConverterUtils {
         }
     }
 
-    /**
-     * Creates a standard convertersetup for a source and converter
-     * Switch based on pixel type (ARGBType and RealType supported)
-     * @param sac
-     * @param requestRepaint
-     * @return
-     */
-    public static ConverterSetup createConverterSetup(SourceAndConverter sac, Runnable requestRepaint) {
+
+    public static ConverterSetup createConverterSetup(SourceAndConverter sac) {
+        return  createConverterSetup(sac,-1);
+    }
+
+    public static ConverterSetup createConverterSetup(SourceAndConverter sac, int legacyId) {
+        //return BigDataViewer.createConverterSetup(sac, legacyId);
         ConverterSetup setup;
         if (sac.getSpimSource().getType() instanceof RealType) {
             setup = createConverterSetupRealType(sac);
@@ -279,7 +279,7 @@ public class SourceAndConverterUtils {
             errlog.accept("Cannot create convertersetup for Source of type "+sac.getSpimSource().getType().getClass().getSimpleName());
             setup = null;
         }
-        setup.setViewer(() -> requestRepaint.run());
+        //setup.setViewer(() -> requestRepaint.run());
         return setup;
     }
 
@@ -329,8 +329,11 @@ public class SourceAndConverterUtils {
     }
 
     private static String createSetupName( final BasicViewSetup setup ) {
-        if ( setup.hasName() )
-            return setup.getName();
+        if ( setup.hasName() ) {
+            if (!setup.getName().trim().equals("")) {
+                return setup.getName();
+            }
+        }
 
         String name = "";
 
@@ -341,6 +344,10 @@ public class SourceAndConverterUtils {
         final Channel channel = setup.getAttribute( Channel.class );
         if ( channel != null )
             name += ( name.isEmpty() ? "" : " " ) + "c " + channel.getName();
+
+        if ((channel == null)&&(angle == null)) {
+            name += "id "+setup.getId();
+        }
 
         return name;
     }
@@ -421,28 +428,32 @@ public class SourceAndConverterUtils {
 
         RealRandomAccessible rra_ible = sac.getSpimSource().getInterpolatedSource(timePoint, 0, Interpolation.NEARESTNEIGHBOR);
 
-        // Get transformation of the source
-        final AffineTransform3D sourceTransform = new AffineTransform3D();
-        sac.getSpimSource().getSourceTransform(timePoint, 0, sourceTransform);
+        if (rra_ible!=null) {
+            // Get transformation of the source
+            final AffineTransform3D sourceTransform = new AffineTransform3D();
+            sac.getSpimSource().getSourceTransform(timePoint, 0, sourceTransform);
 
-        // Get a access to the source at the pointer location
-        RealRandomAccess rra = rra_ible.realRandomAccess();
-        RealPoint iPt = new RealPoint(3);
-        sourceTransform.inverse().apply(pt,iPt);
-        rra.setPosition(iPt);
+            // Get a access to the source at the pointer location
+            RealRandomAccess rra = rra_ible.realRandomAccess();
+            RealPoint iPt = new RealPoint(3);
+            sourceTransform.inverse().apply(pt, iPt);
+            rra.setPosition(iPt);
 
-        // Gets converter -> will decide based on ARGB value whether the source is present or not
-        Converter<Object, ARGBType> cvt = sac.getConverter();
-        ARGBType colorOut = new ARGBType();
-        cvt.convert(rra.get(), colorOut);
+            // Gets converter -> will decide based on ARGB value whether the source is present or not
+            Converter<Object, ARGBType> cvt = sac.getConverter();
+            ARGBType colorOut = new ARGBType();
+            cvt.convert(rra.get(), colorOut);
 
-        // Gets ARGB int value
-        int cValue = colorOut.get();
+            // Gets ARGB int value
+            int cValue = colorOut.get();
 
-        // Alpha == 0 -> not present, otherwise it is present
-        boolean ans = ARGBType.alpha(cValue) != 0;
+            // Alpha == 0 -> not present, otherwise it is present
+            boolean ans = ARGBType.alpha(cValue) != 0;
 
-        return ans;
+            return ans;
+        } else {
+            return false;
+        }
     }
 
 

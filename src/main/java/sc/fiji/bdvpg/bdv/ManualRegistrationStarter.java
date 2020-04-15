@@ -93,7 +93,7 @@ public class ManualRegistrationStarter implements Runnable {
 
         // View of the BdvHandle before starting the registration
         AffineTransform3D originalViewTransform = new AffineTransform3D();
-        bdvHandle.getViewerPanel().getState().getViewerTransform(originalViewTransform);
+        bdvHandle.getViewerPanel().state().getViewerTransform(originalViewTransform);
 
         manualRegistrationListener = (newView) -> {
                 // Compute "difference" of ViewTransform beteween the original state and the current state
