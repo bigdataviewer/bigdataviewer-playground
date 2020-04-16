@@ -3,7 +3,6 @@ package sc.fiji.bdvpg.services;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
-import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
 
 import java.util.List;
 import java.util.Map;
@@ -61,7 +60,7 @@ public interface ISourceAndConverterService
      * Called in the BdvSourcePostProcessor
      * @param sac
      */
-    void remove(SourceAndConverter sac);
+    void remove(SourceAndConverter... sac);
 
 
     void linkToSpimData(SourceAndConverter sac, AbstractSpimData asd, int idSetup);
@@ -78,7 +77,6 @@ public interface ISourceAndConverterService
      * @return
      */
     void setMetadata(SourceAndConverter sac, String key, Object data);
-
 
     /**
      * Adds metadata for a sac

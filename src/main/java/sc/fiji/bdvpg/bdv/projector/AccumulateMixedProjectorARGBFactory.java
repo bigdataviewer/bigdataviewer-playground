@@ -1,8 +1,6 @@
 package sc.fiji.bdvpg.bdv.projector;
 
-import bdv.util.Bdv;
-import bdv.util.BdvHandle;
-import bdv.viewer.Source;
+import bdv.viewer.SourceAndConverter;
 import bdv.viewer.render.AccumulateProjectorFactory;
 import bdv.viewer.render.VolatileProjector;
 import net.imglib2.RandomAccessible;
@@ -14,28 +12,22 @@ import java.util.concurrent.ExecutorService;
 
 public class AccumulateMixedProjectorARGBFactory implements AccumulateProjectorFactory< ARGBType >
 {
-	private BdvHandle bdvHandle;
 
 	public AccumulateMixedProjectorARGBFactory()
 	{
 	}
 
-	public void setBdvHandle( BdvHandle bdvHandle )
-	{
-		this.bdvHandle = bdvHandle;
-	}
 
 	@Override
-	public VolatileProjector createAccumulateProjector(
+	public VolatileProjector createProjector(
 			ArrayList< VolatileProjector > sourceProjectors,
-			ArrayList< Source< ? > > sources,
+			ArrayList<SourceAndConverter< ? >> sources,
 			ArrayList< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
 			RandomAccessibleInterval< ARGBType > targetScreenImage,
 			int numThreads,
 			ExecutorService executorService )
 	{
 		return new AccumulateMixedProjectorARGB(
-						bdvHandle,
 						sourceProjectors,
 						sources,
 						sourceScreenImages,

@@ -1,5 +1,7 @@
 package sc.fiji.bdvpg.spimdata.exporter;
 
+import bdv.spimdata.SpimDataMinimal;
+import bdv.spimdata.XmlIoSpimDataMinimal;
 import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
@@ -29,7 +31,11 @@ public class XmlFromSpimDataExporter implements Runnable {
                     .getSourceAndConverterService()
                     .getSourceAndConverterFromSpimdata(spimData).forEach(sac -> DisplaySettings.PushDisplaySettingsFromCurrentConverter(sac));
 
-            (new XmlIoSpimData()).save((SpimData) spimData, filePath);
+            if (spimData instanceof SpimData) {
+                (new XmlIoSpimData()).save((SpimData) spimData, filePath);
+            } else if (spimData instanceof SpimDataMinimal) {
+                (new XmlIoSpimDataMinimal()).save((SpimDataMinimal) spimData, filePath);
+            }
         } catch (SpimDataException e) {
             e.printStackTrace();
         }

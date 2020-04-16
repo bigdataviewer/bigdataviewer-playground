@@ -21,7 +21,11 @@ import mpicbg.spim.data.sequence.TimePoints;
 import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imglib2.FinalDimensions;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.display.ColorConverter;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.type.numeric.ARGBType;
+import org.omg.CORBA.INTERNAL;
+import spimdata.util.DisplaySettings;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -93,11 +97,17 @@ public class XmlHDF5SpimdataExporter implements Runnable {
     AbstractSpimData spimData;
 
     public void run() {
+
         // Gets Concrete SpimSource
         List<Source> srcs = sources.stream().map(sac -> sac.getSpimSource()).collect(Collectors.toList());
+        Map<Source, Integer> idxSourceToSac = new HashMap<>();
 
         // Convert To UnsignedShortType (limitation of current xml/hdf5 implementation)
         srcs.replaceAll(src -> SourceToUnsignedShortConverter.convertSource(src));
+
+        for (int i=0;i<srcs.size();i++) {
+            idxSourceToSac.put(srcs.get(i), i);
+        }
 
         ImgLoaderFromSources<?> imgLoader = new ImgLoaderFromSources(srcs);
 
@@ -198,6 +208,27 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
                 basicviewsetup.setAttribute(new Channel(1));
 
+                DisplaySettings ds = new DisplaySettings(idx_current_src);
+                SourceAndConverter sac = sources.get(idxSourceToSac.get(src));
+                // Color + min max
+                if (sac.getConverter() instanceof ColorConverter) {
+                    ColorConverter cc = (ColorConverter) sac.getConverter();
+                    ds.setName("vs:" + idx_current_src);
+                    int colorCode = cc.getColor().get();
+                    ds.color = new int[]{
+                            ARGBType.red(colorCode),
+                            ARGBType.green(colorCode),
+                            ARGBType.blue(colorCode),
+                            ARGBType.alpha(colorCode)};
+                    ds.min = cc.getMin();
+                    ds.max = cc.getMax();
+                    ds.isSet = true;
+                } else {
+                    System.err.println("Converter is of class :"+sac.getConverter().getClass().getSimpleName()+" -> Display settings cannot be stored.");
+                }
+
+                basicviewsetup.setAttribute(ds);
+
                 setups.put(idx_current_src, basicviewsetup); // Hum hum, order according to hashmap size TODO check
 
                 final ExportMipmapInfo mipmapInfo =
@@ -215,24 +246,9 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
         final int numCellCreatorThreads = Math.max( 1, nThreads - 1 );
 
-        final WriteSequenceToHdf5.LoopbackHeuristic loopbackHeuristic =
-                ( originalImg,
-                  factorsToOriginalImg,
-                  previousLevel,
-                  factorsToPreviousLevel,
-                  chunkSize ) ->
-                {
-                    if ( previousLevel < 0 )
-                        return false;
+        final ExportScalePyramid.LoopbackHeuristic loopbackHeuristic = new ExportScalePyramid.DefaultLoopbackHeuristic();
 
-                    if ( WriteSequenceToHdf5.numElements( factorsToOriginalImg )
-                            / WriteSequenceToHdf5.numElements( factorsToPreviousLevel ) >= 8 )
-                        return true;
-
-                    return false;
-                };
-
-        final WriteSequenceToHdf5.AfterEachPlane afterEachPlane = usedLoopBack -> { };
+        final ExportScalePyramid.AfterEachPlane afterEachPlane = usedLoopBack -> { };
 
         final ArrayList<Partition> partitions;
         partitions = null;

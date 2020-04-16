@@ -19,8 +19,8 @@ public class SourcesRemoverCommand implements Command {
 
     @Override
     public void run() {
-        for (SourceAndConverter sac:sacs) {
-            bss.remove(sac);
-        }
+        //for (SourceAndConverter sac:sacs) {
+        bss.remove(sacs);
+        //}
     }
 }

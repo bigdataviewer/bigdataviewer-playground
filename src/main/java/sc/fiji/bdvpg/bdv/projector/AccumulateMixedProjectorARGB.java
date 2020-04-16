@@ -1,7 +1,5 @@
 package sc.fiji.bdvpg.bdv.projector;
 
-import bdv.util.BdvHandle;
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.render.AccumulateProjector;
 import bdv.viewer.render.VolatileProjector;
@@ -13,8 +11,6 @@ import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -26,17 +22,25 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 	private int[] sourceOrder;
 
 	public AccumulateMixedProjectorARGB(
-			BdvHandle bdvHandle,
 			final ArrayList< VolatileProjector > sourceProjectors,
-			final ArrayList< Source< ? > > sources,
+			final ArrayList< SourceAndConverter< ? > > sources,
 			final ArrayList< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
 			final RandomAccessibleInterval< ARGBType > target,
 			final int numThreads,
 			final ExecutorService executorService )
 	{
 		super( sourceProjectors, sourceScreenImages, target, numThreads, executorService );
-		this.projectionModes = getProjectionModes( bdvHandle, sources );
+		this.projectionModes = getProjectionModes( sources );
 		sourceOrder = getSourcesOrder( projectionModes );
+	}
+
+	public static String[] getProjectionModes( List< SourceAndConverter<?> > visibleSacs )
+	{
+		final ISourceAndConverterService sacService = SourceAndConverterServices.getSourceAndConverterService();
+		return visibleSacs.stream()
+				.map(sac ->(String) sacService.getMetadata( sac, PROJECTION_MODE ))
+				.map(it -> it==null?Projection.PROJECTION_MODE_SUM:it)
+				.toArray(String[]::new);
 	}
 
 	public static int[] getSourcesOrder( String[] projectionModes )
@@ -150,56 +154,6 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 			bAccu = 255;
 
 		return ARGBType.rgba( rAccu, gAccu, bAccu, aAccu );
-	}
-
-	public static String[] getProjectionModes( BdvHandle bdvHandle, ArrayList< Source< ? > > sources )
-	{
-		// We need to reconstitute the sequence of action that lead to the current indexes
-
-		// Getting the sources present in the BdvHandle
-		List<SourceAndConverter> sacsInBdvHandle = SourceAndConverterServices
-				.getSourceAndConverterDisplayService()
-				.getSourceAndConverterOf(bdvHandle);
-
-		// Fetching the indexes of visible sources in the BdvHandle
-		List<Integer> visibleIndexes = bdvHandle.getViewerPanel().getState().getVisibleSourceIndices();
-		// In ascending order
-		Collections.sort(visibleIndexes);
-
-		SourceAndConverter[] visibleSacArray = new SourceAndConverter[visibleIndexes.size()];
-
-		for (int idx = 0; idx<visibleIndexes.size(); idx++) {
-			visibleSacArray[idx] = sacsInBdvHandle.get(visibleIndexes.get(idx));
-		}
-
-		final List< SourceAndConverter > visibleSacs = Arrays.asList(visibleSacArray);//SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();
-		final String[] projectionModes = getProjectionModes( visibleSacs );
-
-		return projectionModes;
-	}
-
-	public static String[] getProjectionModes( List< SourceAndConverter > visibleSacs )
-	{
-		final int numSources = visibleSacs.size();
-
-		final String[] projectionModes = new String[ numSources ];
-
-		final ISourceAndConverterService sacService = SourceAndConverterServices.getSourceAndConverterService();
-
-		for ( int sourceIndex = 0; sourceIndex < numSources; sourceIndex++ )
-		{
-			final SourceAndConverter sac = visibleSacs.get( sourceIndex );
-
-			final String projectionMode = (String) sacService.getMetadata( sac, PROJECTION_MODE );
-
-			if ( projectionMode == null ) {
-				projectionModes[ sourceIndex ] = PROJECTION_MODE_SUM;
-			} else {
-				projectionModes[ sourceIndex ] = projectionMode;
-			}
-
-		}
-		return projectionModes;
 	}
 
 }

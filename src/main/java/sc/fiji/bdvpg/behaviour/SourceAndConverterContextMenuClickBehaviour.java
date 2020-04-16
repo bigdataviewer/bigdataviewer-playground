@@ -31,10 +31,10 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 		// Gets mouse location in space (global 3D coordinates) and time
 		final RealPoint mousePosInBdv = new RealPoint( 3 );
 		bdv.getBdvHandle().getViewerPanel().getGlobalMouseCoordinates( mousePosInBdv );
-		int timePoint = bdv.getViewerPanel().getState().getCurrentTimepoint();
+		int timePoint = bdv.getViewerPanel().state().getCurrentTimepoint();
 
 		final List< SourceAndConverter > sacs =
-		SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverters(bdv)
+		SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverterOf(bdv)
 				.stream()
 				.filter(sac -> SourceAndConverterUtils.isSourcePresentAt(sac,timePoint, mousePosInBdv))
 				.filter(sac -> SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible(sac,bdv))

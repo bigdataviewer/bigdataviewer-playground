@@ -13,6 +13,10 @@ import java.util.List;
 
 public class BdvHandleHelper {
 
+    public static JFrame getJFrame(BdvHandle bdvh) {
+        return (JFrame) SwingUtilities.getWindowAncestor(bdvh.getViewerPanel());
+    }
+
     public static void setBdvHandleCloseOperation( BdvHandle bdvh, CacheService cs, SourceAndConverterBdvDisplayService bdvsds, boolean putWindowOnTop) {
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bdvh.getViewerPanel());
 
