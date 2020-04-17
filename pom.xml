@@ -138,7 +138,8 @@
 		<!--<sciview.version>443ad5f</sciview.version>
 		<scenery.version>2d3b088</scenery.version>-->
 
-		<sciview.version>443ad5f</sciview.version>
+		<sciview.version>443ad5ff1</sciview.version>
+		<!--<sciview.version>2a0b85e</sciview.version>-->
 		<scenery.version>8f443064</scenery.version>
 
 		<kotlin.version>1.4-M1</kotlin.version>

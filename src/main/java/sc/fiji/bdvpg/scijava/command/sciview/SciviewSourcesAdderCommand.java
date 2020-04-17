@@ -28,7 +28,8 @@ public class SciviewSourcesAdderCommand implements Command {
     @Override
     public void run() {
         for (SourceAndConverter sac : sacs) {
-            sciView.addVolume(sac.getSpimSource().getSource(timePoint, mipmapLevel), sac.getSpimSource().getName(), "");
+            sciView.addVolume(sac,sac.getSpimSource().getName());
+            //sciView.addVolume(sac.getSpimSource().getSource(timePoint, mipmapLevel), sac.getSpimSource().getName(), "");
         }
     }
 
