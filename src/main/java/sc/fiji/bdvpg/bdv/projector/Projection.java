@@ -24,7 +24,8 @@ package sc.fiji.bdvpg.bdv.projector;
  */
 public class Projection
 {
-	public static final String PROJECTION_MODE = "Projection Mode";
+	public static final String PROJECTION_MODE = "Projection Mode"; // underscore necessary for valid xml element to store in @see DisplaySettings
+	public static final String PROJECTION_MODE_XML = "Projection_Mode";// underscore necessary for valid xml element to store in @see DisplaySettings
 	public static final String PROJECTION_MODE_SUM = "Sum";
 	public static final String PROJECTION_MODE_AVG = "Average";
 	public static final String PROJECTION_MODE_OCCLUDING = "Occluding";

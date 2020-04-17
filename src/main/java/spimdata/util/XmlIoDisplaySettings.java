@@ -6,6 +6,7 @@ import org.jdom2.Element;
 
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.generic.base.ViewSetupAttributeIo;
+import sc.fiji.bdvpg.bdv.projector.Projection;
 
 @ViewSetupAttributeIo( name = "displaysettings", type = DisplaySettings.class )
 public class XmlIoDisplaySettings extends XmlIoEntity< DisplaySettings >
@@ -24,6 +25,7 @@ public class XmlIoDisplaySettings extends XmlIoEntity< DisplaySettings >
         elem.addContent(XmlHelpers.intArrayElement("color", ds.color));
         elem.addContent(XmlHelpers.doubleElement("min", ds.min));
         elem.addContent(XmlHelpers.doubleElement("max", ds.max));
+        elem.addContent(XmlHelpers.textElement(Projection.PROJECTION_MODE_XML, ds.projectionMode));
         return elem;
     }
 
@@ -35,6 +37,7 @@ public class XmlIoDisplaySettings extends XmlIoEntity< DisplaySettings >
         ds.color = XmlHelpers.getIntArray(elem, "color");
         ds.min = XmlHelpers.getDouble(elem, "min");
         ds.max = XmlHelpers.getDouble(elem, "max");
+        ds.projectionMode = XmlHelpers.getText(elem, Projection.PROJECTION_MODE_XML);
         return ds;
     }
 }

@@ -153,13 +153,14 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      * @param sac
      */
     public void register(SourceAndConverter sac) {
-        if ( sacToMetadata.containsKey(sac)) {
+        if (objectService.getObjects(SourceAndConverter.class).contains(sac)) {
             log.accept("Source already registered");
             return;
         }
-        final int numTimepoints = 1;
-        Map<String, Object> sourceData = new HashMap<>();
-        sacToMetadata.put(sac, sourceData);
+        if (!(sacToMetadata.containsKey(sac))) {
+            Map<String, Object> sourceData = new HashMap<>();
+            sacToMetadata.put(sac, sourceData);
+        }
         objectService.addObject(sac);
         if (uiAvailable) ui.update(sac);
     }
