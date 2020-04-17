@@ -4,6 +4,7 @@ import mpicbg.spim.data.generic.base.NamedEntity;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.type.numeric.ARGBType;
+import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
@@ -26,6 +27,9 @@ public class DisplaySettings extends NamedEntity implements Comparable< DisplayS
 
     // if isset is false, the display value is discarded
     public boolean isSet = false;
+
+    // stores projection mode
+    public String projectionMode = Projection.PROJECTION_MODE_SUM; // Default mode
 
     public DisplaySettings( final int id, final String name)
     {
@@ -120,11 +124,21 @@ public class DisplaySettings extends NamedEntity implements Comparable< DisplayS
             System.err.println("Converter is of class :"+sac.getConverter().getClass().getSimpleName()+" -> Display settings cannot be stored.");
         }
 
+        if (SourceAndConverterServices
+                .getSourceAndConverterService()
+                .getMetadata(sac, Projection.PROJECTION_MODE)!=null) {
+            // A projection mode is set
+            ds.projectionMode = (String) (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(sac, Projection.PROJECTION_MODE));
+        }
+
         ((BasicViewSetup)sdi.asd.getSequenceDescription().getViewSetups().get(viewSetup)).setAttribute(ds);
 
     }
 
     public static void PullDisplaySettings(SourceAndConverter sac, DisplaySettings ds) {
+
         if (ds.isSet) {
             if (sac.getConverter() instanceof ColorConverter) {
                 ColorConverter cc = (ColorConverter) sac.getConverter();
@@ -140,6 +154,11 @@ public class DisplaySettings extends NamedEntity implements Comparable< DisplayS
             } else {
                 System.err.println("Converter is of class :" + sac.getConverter().getClass().getSimpleName() + " -> Display settings cannot be reapplied.");
             }
+
+            SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .setMetadata(sac, Projection.PROJECTION_MODE, ds.projectionMode);
+
         }
     }
 

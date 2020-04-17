@@ -177,7 +177,8 @@ public class SourceAndConverterUtils {
                     } else {
                         out.put(setupId, new SourceAndConverter(s, nonVolatileConverter));
                     }
-
+                    // Metadata need to exist before the display settings (projection mode) are set
+                    SourceAndConverterServices.getSourceAndConverterService().register(out.get(setupId));
                     // Applying display settings if some have been set
                     if (setup.getAttribute(DisplaySettings.class)!=null) {
                         DisplaySettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(DisplaySettings.class));
@@ -197,7 +198,8 @@ public class SourceAndConverterUtils {
                     } else {
                         out.put(setupId, new SourceAndConverter(s, nonVolatileConverter));
                     }
-
+                    // Metadata need to exist before the display settings (projection mode) are set
+                    SourceAndConverterServices.getSourceAndConverterService().register(out.get(setupId));
                     // Applying display settings if some have been set
                     if (setup.getAttribute(DisplaySettings.class)!=null) {
                         DisplaySettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(DisplaySettings.class));
