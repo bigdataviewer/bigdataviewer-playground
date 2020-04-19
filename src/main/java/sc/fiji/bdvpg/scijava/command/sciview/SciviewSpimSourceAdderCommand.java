@@ -11,7 +11,7 @@ import sc.iview.SciView;
 import java.util.HashMap;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"SciView>Add Sources")
-public class SciviewSourcesAdderCommand implements Command {
+public class SciviewSpimSourceAdderCommand implements Command {
 
     @Parameter
     SciView sciView;
@@ -28,8 +28,7 @@ public class SciviewSourcesAdderCommand implements Command {
     @Override
     public void run() {
         for (SourceAndConverter sac : sacs) {
-            sciView.addVolume(sac,sac.getSpimSource().getName());
-            //sciView.addVolume(sac.getSpimSource().getSource(timePoint, mipmapLevel), sac.getSpimSource().getName(), "");
+            sciView.addVolume(sac.getSpimSource().getSource(timePoint, mipmapLevel), sac.getSpimSource().getName(), "");
         }
     }
 
@@ -45,6 +44,6 @@ public class SciviewSourcesAdderCommand implements Command {
 
         HashMap<String, Object> argmap = new HashMap<>();
 
-        imagej.command().run(SciviewSourcesAdderCommand.class, true, argmap);
+        imagej.command().run(SciviewSpimSourceAdderCommand.class, true, argmap);
     }
 }
