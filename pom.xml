@@ -175,6 +175,12 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>bigvolumeviewer</artifactId>
+			<version>0.1.8-SNAPSHOT</version>
+		</dependency>
+
     </dependencies>
 
 </project>
