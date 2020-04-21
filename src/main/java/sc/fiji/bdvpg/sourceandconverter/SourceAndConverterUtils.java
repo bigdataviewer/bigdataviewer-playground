@@ -12,7 +12,6 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
-import mpicbg.spim.data.generic.sequence.BasicImgLoader;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.registration.ViewRegistration;
 import mpicbg.spim.data.registration.ViewTransform;
@@ -30,13 +29,12 @@ import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.util.Util;
 import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
-import spimdata.util.DisplaySettings;
+import spimdata.util.Displaysettings;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -180,8 +178,8 @@ public class SourceAndConverterUtils {
                     // Metadata need to exist before the display settings (projection mode) are set
                     SourceAndConverterServices.getSourceAndConverterService().register(out.get(setupId));
                     // Applying display settings if some have been set
-                    if (setup.getAttribute(DisplaySettings.class)!=null) {
-                        DisplaySettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(DisplaySettings.class));
+                    if (setup.getAttribute(Displaysettings.class)!=null) {
+                        Displaysettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(Displaysettings.class));
                     }
 
                 } else if ( ARGBType.class.isInstance( type ) ) {
@@ -201,8 +199,8 @@ public class SourceAndConverterUtils {
                     // Metadata need to exist before the display settings (projection mode) are set
                     SourceAndConverterServices.getSourceAndConverterService().register(out.get(setupId));
                     // Applying display settings if some have been set
-                    if (setup.getAttribute(DisplaySettings.class)!=null) {
-                        DisplaySettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(DisplaySettings.class));
+                    if (setup.getAttribute(Displaysettings.class)!=null) {
+                        Displaysettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(Displaysettings.class));
                     }
 
                 } else {
