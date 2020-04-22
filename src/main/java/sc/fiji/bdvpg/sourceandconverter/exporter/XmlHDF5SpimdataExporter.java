@@ -24,8 +24,8 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
-import org.omg.CORBA.INTERNAL;
-import spimdata.util.DisplaySettings;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import spimdata.util.Displaysettings;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -208,24 +208,11 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
                 basicviewsetup.setAttribute(new Channel(1));
 
-                DisplaySettings ds = new DisplaySettings(idx_current_src);
                 SourceAndConverter sac = sources.get(idxSourceToSac.get(src));
-                // Color + min max
-                if (sac.getConverter() instanceof ColorConverter) {
-                    ColorConverter cc = (ColorConverter) sac.getConverter();
-                    ds.setName("vs:" + idx_current_src);
-                    int colorCode = cc.getColor().get();
-                    ds.color = new int[]{
-                            ARGBType.red(colorCode),
-                            ARGBType.green(colorCode),
-                            ARGBType.blue(colorCode),
-                            ARGBType.alpha(colorCode)};
-                    ds.min = cc.getMin();
-                    ds.max = cc.getMax();
-                    ds.isSet = true;
-                } else {
-                    System.err.println("Converter is of class :"+sac.getConverter().getClass().getSimpleName()+" -> Display settings cannot be stored.");
-                }
+
+                Displaysettings ds = new Displaysettings(idx_current_src);
+
+                Displaysettings.GetDisplaySettingsFromCurrentConverter(sac, ds);
 
                 basicviewsetup.setAttribute(ds);
 

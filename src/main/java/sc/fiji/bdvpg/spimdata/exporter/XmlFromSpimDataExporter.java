@@ -7,7 +7,7 @@ import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import spimdata.util.DisplaySettings;
+import spimdata.util.Displaysettings;
 
 import java.io.File;
 
@@ -29,7 +29,7 @@ public class XmlFromSpimDataExporter implements Runnable {
             // Loops through all sources in order to push display settings
             SourceAndConverterServices
                     .getSourceAndConverterService()
-                    .getSourceAndConverterFromSpimdata(spimData).forEach(sac -> DisplaySettings.PushDisplaySettingsFromCurrentConverter(sac));
+                    .getSourceAndConverterFromSpimdata(spimData).forEach(sac -> Displaysettings.PushDisplaySettingsFromCurrentConverter(sac));
 
             if (spimData instanceof SpimData) {
                 (new XmlIoSpimData()).save((SpimData) spimData, filePath);
