@@ -61,7 +61,7 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
                     SourceAndConverterUtils.cloneConverter(src.getConverter()));
         }
 
-        SourceAndConverterServices.getSourceAndConverterService().register(sac);
+        //SourceAndConverterServices.getSourceAndConverterService().register(sac);
 
         return sac;
     }
