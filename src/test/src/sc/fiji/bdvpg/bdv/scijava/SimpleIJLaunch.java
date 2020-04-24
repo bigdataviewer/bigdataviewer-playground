@@ -1,6 +1,5 @@
 package sc.fiji.bdvpg.bdv.scijava;
 
-import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
 
 public class SimpleIJLaunch {
@@ -10,8 +9,6 @@ public class SimpleIJLaunch {
         // create the ImageJ application context with all available services
         final ImageJ ij = new ImageJ();
         ij.ui().showUI();
-
-        BdvHandle bdvh;
 
     }
 }

@@ -161,7 +161,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             Map<String, Object> sourceData = new HashMap<>();
             sacToMetadata.put(sac, sourceData);
         }
-        objectService.addObject(sac);
+        objectService.addObject(sac, sac.getSpimSource().getName());
         if (uiAvailable) ui.update(sac);
     }
 
