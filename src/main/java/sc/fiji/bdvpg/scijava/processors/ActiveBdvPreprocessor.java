@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutionException;
  *
  * @author Curtis Rueden, Nicolas Chiaruttini
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_HIGH)
+@Plugin(type = PreprocessorPlugin.class)
 public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle>  {
 
     @Parameter
@@ -42,6 +42,7 @@ public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle>  {
 
     @Override
     public BdvHandle getValue() {
+        System.out.println("ActiveBdvPreprocessor called");
 
         List<BdvHandle> bdvhs = os.getObjects(BdvHandle.class);
 

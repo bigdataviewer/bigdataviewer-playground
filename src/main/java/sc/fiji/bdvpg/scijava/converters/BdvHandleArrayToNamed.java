@@ -2,6 +2,7 @@ package sc.fiji.bdvpg.scijava.converters;
 
 import bdv.util.BdvHandle;
 import com.google.gson.Gson;
+import org.scijava.Named;
 import org.scijava.convert.AbstractConverter;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
@@ -13,7 +14,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Plugin(type = org.scijava.convert.Converter.class)
-public class BdvHandleArrayToString extends AbstractConverter<BdvHandle[], String> {
+public class BdvHandleArrayToNamed extends AbstractConverter<BdvHandle[], Named> {
 
     @Override
     public <T> T convert(Object o, Class<T> aClass) {
@@ -24,14 +25,27 @@ public class BdvHandleArrayToString extends AbstractConverter<BdvHandle[], Strin
             }
             // Honestly annoying and not efficient, but hopefully escaped character safe
             String[] bdvhsNames = Stream.of(bdvhs).map(BdvHandleHelper::getWindowTitle).toArray(String[]::new);
-            Gson g = new Gson();
-            return (T) g.toJson(bdvhsNames);
+            final String name = new Gson().toJson(bdvhsNames);
+
+            Named boxedNamedObject = new Named() {
+                @Override
+                public String getName() {
+                    return name;
+                }
+
+                @Override
+                public void setName(String name) {
+                    throw new UnsupportedOperationException();
+                }
+            };
+
+            return (T) boxedNamedObject;
         } else return null;
     }
 
     @Override
-    public Class<String> getOutputType() {
-        return String.class;
+    public Class<Named> getOutputType() {
+        return Named.class;
     }
 
     @Override
