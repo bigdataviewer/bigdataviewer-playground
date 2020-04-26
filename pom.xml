@@ -125,7 +125,7 @@
 		<bigvolumeviewer.version>0.1.8-SNAPSHOT</bigvolumeviewer.version>
 
 		<!--<imglib2-cache.version>1.0.0-beta-13</imglib2-cache.version>-->
-		<!--<scijava-common.version>2.83.1-SNAPSHOT</scijava-common.version>-->
+		<scijava-common.version>2.83.1-SNAPSHOT</scijava-common.version>
 	</properties>
 
 	<dependencies>
@@ -133,7 +133,7 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-legacy</artifactId>
-			<!--<version>0.37.3-SNAPSHOT</version>-->
+			<version>0.37.3-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
