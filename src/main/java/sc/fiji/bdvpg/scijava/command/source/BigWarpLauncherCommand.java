@@ -34,6 +34,15 @@ public class BigWarpLauncherCommand implements Command {
     @Parameter(type = ItemIO.OUTPUT)
     BdvHandle bdvhP;
 
+    @Parameter(type = ItemIO.OUTPUT)
+    SourceAndConverter[] warpedSources;
+
+    @Parameter(type = ItemIO.OUTPUT)
+    SourceAndConverter gridSource;
+
+    @Parameter(type = ItemIO.OUTPUT)
+    SourceAndConverter warpMagnitudeSource;
+
     @Parameter
 	SourceAndConverterBdvDisplayService bsds;
 
@@ -53,6 +62,10 @@ public class BigWarpLauncherCommand implements Command {
         bdvhP = bwl.getBdvHandleP();
 
         bsds.pairClosing(bdvhQ,bdvhP);
+
+        gridSource = bwl.getGridSource();
+        warpMagnitudeSource = bwl.getWarpMagnitudeSource();
+        warpedSources = bwl.getWarpedSources();
 
     }
 
