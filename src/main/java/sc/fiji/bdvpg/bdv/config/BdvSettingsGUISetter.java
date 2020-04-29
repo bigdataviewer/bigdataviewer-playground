@@ -106,8 +106,9 @@ public class BdvSettingsGUISetter implements Runnable {
             final VisualEditorPanel keyconfEditor = new VisualEditorPanel( conf );
             keyconfEditor.setButtonPanelVisible( false );
             settings.addPage( new DefaultSettingsPage( "keymap", keyconfEditor ) );
+            final BdvPrefsSettingsPage bdvPrefsEditor = new BdvPrefsSettingsPage( "bdv prefs" );
+            settings.addPage( bdvPrefsEditor );
 
-            settings.addPage( new BdvPrefsSettingsPage( "bdv prefs" ) );
             //settings.addPage( new DummySettingsPage( "other" ) );
             //settings.addPage( new DummySettingsPage( "views > bdv" ) );
             settings.addPage( new DummySettingsPage( "views > trackscheme" ) );

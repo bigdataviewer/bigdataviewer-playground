@@ -7,7 +7,15 @@ import org.scijava.listeners.Listeners;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.*;
 import java.util.Properties;
+
+/**
+ * Settings Page to open, edit and resave the Bigdataviewer Preferences stored
+ * within the bigdataviewer.properties file
+ *
+ * @author Nicolas Chiaruttini, EPFL 2020
+ */
 
 public class BdvPrefsSettingsPage implements SettingsPage {
 
@@ -17,15 +25,19 @@ public class BdvPrefsSettingsPage implements SettingsPage {
 
     private final Listeners.List<ModificationListener> modificationListeners;
 
+    // TODO make these field public in bdv.util.Prefs ? Or a Map ?
+    private static final String SHOW_SCALE_BAR = "show-scale-bar";
+    private static final String SHOW_MULTIBOX_OVERLAY = "show-multibox-overlay";
+    private static final String SHOW_TEXT_OVERLAY = "show-text-overlay";
+    private static final String SHOW_SCALE_BAR_IN_MOVIE = "show-scale-bar-in-movie";
+    private static final String SCALE_BAR_COLOR = "scale-bar-color";
+    private static final String SCALE_BAR_BG_COLOR = "scale-bar-bg-color";
+
     public BdvPrefsSettingsPage( final String treePath )
     {
         this.treePath = treePath;
-        panel = new BdvPrefsEditorPanel();//JPanel( new BorderLayout() );
+        panel = new BdvPrefsEditorPanel();
         modificationListeners = new Listeners.SynchronizedList<>();
-
-        final JButton button = new JButton( treePath );
-        button.setEnabled( false );
-        panel.add( button, BorderLayout.CENTER );
     }
 
     @Override
@@ -43,48 +55,133 @@ public class BdvPrefsSettingsPage implements SettingsPage {
         return modificationListeners;
     }
 
+    /**
+     * Restores current panel settings with the one present in bigdataviewer.properties file
+     */
     @Override
     public void cancel() {
-        // Do something ?
+        ((BdvPrefsEditorPanel) panel).reinit();
     }
 
+    /**
+     * Stores current panel settings in bigdataviewer.properties file if it exists,
+     * to default ones otherwise
+     */
     @Override
     public void apply() {
-        // save to default place
+        try {
+            File f = new File( "bigdataviewer.properties" );
+            final OutputStream stream;
+            stream = new FileOutputStream(f);
+            final Properties config = ((BdvPrefsEditorPanel) panel).getAndSetCurrentProperties();
+            config.store(stream,"");
+        } catch (IOException e) {
+            System.err.println("Could not create bigdataviewer.properties file");
+        }
     }
 
+    /**
+     * Inner panel containing checkboxes and colorchoosers
+     */
     class BdvPrefsEditorPanel extends JPanel {
 
-        Prefs prefs;
+        JButton chooseScaleBarColor, chooseScaleBarBGColor;
 
-        final Properties props;
+        JCheckBox showScaleBar,showMultiboxOverlay, showTextOverlay, showScaleBarInMovie;
 
-        final JComponent[] components = {
-                new JLabel("show-scale-bar"),
-                new JLabel("show-multibox-overlay"),
-                new JLabel("show-text-overlay"),
-                new JLabel("show-scale-bar-in-movie"),
-                new JLabel("scale-bar-color"),
-                new JLabel("scale-bar-bg-color"),
-                new JLabel(""),
-                new JLabel(""),
-                new JLabel(""),
-                new JLabel(""),
-                new JLabel(""),
-                new JLabel("")};
+        Color scaleBarColor, scaleBarBGColor;
 
         public BdvPrefsEditorPanel() {
 
-            Prefs.scaleBarBgColor(78);
+            setLayout(new GridLayout(0,2));
 
-            props = Prefs.getDefaultProperties();
+            // Show Scale Bar
+            add(new JLabel(SHOW_SCALE_BAR));
+            showScaleBar = new JCheckBox("",Prefs.showScaleBar());
+            add(showScaleBar);
 
-            this.setLayout(new GridLayout(components.length/2,2));
+            // Show Multibox Overlay
+            add(new JLabel(SHOW_MULTIBOX_OVERLAY));
+            showMultiboxOverlay = new JCheckBox("", Prefs.showMultibox());
+            add(showMultiboxOverlay);
 
-            for (Component c : components) {
-                this.add(c);
-            }
+            add(new JLabel(SHOW_TEXT_OVERLAY));
+            showTextOverlay = new JCheckBox("", Prefs.showTextOverlay());
+            add(showTextOverlay);
 
+            add(new JLabel(SHOW_SCALE_BAR_IN_MOVIE));
+            showScaleBarInMovie = new JCheckBox("", Prefs.showScaleBarInMovie());
+            add(showScaleBarInMovie);
+
+            add(new JLabel(SCALE_BAR_COLOR));
+            chooseScaleBarColor = new JButton("Set Scale Bar Color");
+            chooseScaleBarColor.setForeground(new Color(Prefs.scaleBarColor()));
+            chooseScaleBarColor.setBackground(new Color(Prefs.scaleBarColor()));
+            chooseScaleBarColor.addActionListener(e -> {
+                scaleBarColor = JColorChooser.showDialog(
+                        this,
+                        "Choose Scale Bar Color",
+                        new Color(Prefs.scaleBarColor()));
+                if (scaleBarColor==null) {
+                    scaleBarColor = new Color(Prefs.scaleBarColor());
+                }
+                chooseScaleBarColor.setForeground(scaleBarColor);
+                chooseScaleBarColor.setBackground(scaleBarColor);
+            });
+            add(chooseScaleBarColor);
+
+            add(new JLabel(SCALE_BAR_BG_COLOR));
+            chooseScaleBarBGColor = new JButton("Set Scale Bar Background Color");
+            chooseScaleBarBGColor.setForeground(new Color(Prefs.scaleBarBgColor()));
+            chooseScaleBarBGColor.setBackground(new Color(Prefs.scaleBarBgColor()));
+            chooseScaleBarBGColor.addActionListener(e -> {
+                scaleBarBGColor = JColorChooser.showDialog(
+                        this,
+                        "Choose Scale Bar Background Color",
+                        new Color(Prefs.scaleBarBgColor()));
+                if (scaleBarBGColor==null) {
+                    scaleBarBGColor = new Color(Prefs.scaleBarBgColor());
+                }
+                chooseScaleBarBGColor.setForeground(scaleBarBGColor);
+                chooseScaleBarBGColor.setBackground(scaleBarBGColor);
+
+            });
+            add(chooseScaleBarBGColor);
+            // Set the initial state and put it into the GUI
+            reinit();
+        }
+
+        void reinit() {
+            showScaleBar.setSelected(Prefs.showScaleBar());
+            showMultiboxOverlay.setSelected(Prefs.showMultibox());
+            showTextOverlay.setSelected(Prefs.showTextOverlay());
+            showScaleBarInMovie.setSelected(Prefs.showScaleBarInMovie());
+            scaleBarColor = new Color(Prefs.scaleBarColor());
+            chooseScaleBarColor.setForeground(scaleBarColor);
+            chooseScaleBarColor.setBackground(scaleBarColor);
+            scaleBarBGColor = new Color(Prefs.scaleBarBgColor());
+            chooseScaleBarBGColor.setForeground(scaleBarBGColor);
+            chooseScaleBarBGColor.setBackground(scaleBarBGColor);
+        }
+
+        Properties getAndSetCurrentProperties() {
+
+            // Updates prefs with new values (if not Prefs is never updated)
+            Prefs.showScaleBar(showScaleBar.isSelected());
+            Prefs.showMultibox(showMultiboxOverlay.isSelected());
+            Prefs.showTextOverlay(showTextOverlay.isSelected());
+            Prefs.showScaleBarInMovie(showScaleBarInMovie.isSelected());
+            Prefs.scaleBarColor(scaleBarColor.getRGB());
+            Prefs.scaleBarBgColor(scaleBarBGColor.getRGB());
+
+            Properties props = new Properties();
+            props.setProperty(SHOW_SCALE_BAR, Boolean.toString(Prefs.showScaleBar()));
+            props.setProperty(SHOW_MULTIBOX_OVERLAY, Boolean.toString(Prefs.showMultibox()));
+            props.setProperty(SHOW_TEXT_OVERLAY, Boolean.toString(Prefs.showTextOverlay()));
+            props.setProperty(SHOW_SCALE_BAR_IN_MOVIE, Boolean.toString(Prefs.showScaleBarInMovie()));
+            props.setProperty(SCALE_BAR_COLOR, Integer.toString(Prefs.scaleBarColor()));
+            props.setProperty(SCALE_BAR_BG_COLOR, Integer.toString(Prefs.scaleBarBgColor()));
+            return props;
         }
     }
 }
