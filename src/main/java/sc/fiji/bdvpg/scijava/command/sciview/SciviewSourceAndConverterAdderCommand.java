@@ -22,7 +22,7 @@ public class SciviewSourceAndConverterAdderCommand implements Command {
     @Override
     public void run() {
         for (SourceAndConverter sac : sacs) {
-            sciView.addVolume(sac,sac.getSpimSource().getName(),1,1,1);
+            sciView.addVolume(sac,sac.getSpimSource().getName());
         }
     }
 

@@ -128,17 +128,18 @@
 		<ui-behaviour.version>2.0.1</ui-behaviour.version>
 
 
-		<!-- Locally built version -->
+		<!-- Locally built version
 		<sciview.version>0.2.0-beta-5-SAC-SNAPSHOT</sciview.version>
 		<scenery.version>0.7.0-beta-8-SAC-SNAPSHOT</scenery.version>
+-->
+		<!-- Remote version-->
+		<sciview.version>f9f2f45</sciview.version>
+		<scenery.version>f4417b7</scenery.version>
 
-		<!-- Remote version
-		<sciview.version>443ad5ff1</sciview.version>
-		<scenery.version>8f443064</scenery.version>
-		-->
 
-		<kotlin.version>1.4-M1</kotlin.version>
 		<joml.version>1.9.22</joml.version>
+		<kotlin.version>1.4-M1</kotlin.version>
+
 		<cleargl.version>2.2.10</cleargl.version>
 		<bigvolumeviewer.version>0.1.8-SNAPSHOT</bigvolumeviewer.version>
 

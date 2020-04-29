@@ -9,7 +9,7 @@ public class SimpleIJLaunch {
 
         SciView sciview = null;
         try {
-            sciview = SciView.createSciView();
+            sciview = SciView.create();
         } catch (Exception e) {
             e.printStackTrace();
         }
