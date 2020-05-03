@@ -1,18 +1,29 @@
 package sc.fiji.bdvpg.bdv.config;
 
+import bdv.BehaviourTransformEventHandler3D;
+import bdv.BigDataViewerActions;
+import bdv.util.BdvHandle;
+import bdv.util.BehaviourTransformEventHandlerPlanar;
+import bdv.viewer.NavigationActions;
 import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SettingsPage;
 import org.mastodon.app.ui.settings.SettingsPanel;
 import org.scijava.listeners.Listeners;
+import org.scijava.ui.behaviour.InputTrigger;
+import org.scijava.ui.behaviour.KeyStrokeAdder;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.io.InputTriggerConfigHelper;
 import org.scijava.ui.behaviour.io.InputTriggerDescription;
+import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
 import org.scijava.ui.behaviour.io.gui.Command;
 import org.scijava.ui.behaviour.io.gui.CommandDescriptionBuilder;
 import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
+import sc.fiji.bdvpg.bdv.BdvCreator;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
@@ -26,12 +37,16 @@ import java.util.Map;
  * And Bdv Settings
  *
  * Needs a linked yaml file
+ *
+ *
+ * TODO : have a look at https://github.com/bigdataviewer/bigdataviewer-vistools/blob/master/src/main/java/bdv/util/BehaviourTransformEventHandlerPlanar.java
  */
 
 public class BdvSettingsGUISetter implements Runnable {
 
     String yamlDataLocation;
     String editorWindowName = "Behaviour Key bindings editor";
+    InputTriggerConfig yamlConf;
 
     public BdvSettingsGUISetter(String yamlDataLocation, String editorWindowName) {
         this.yamlDataLocation = yamlDataLocation;
@@ -89,38 +104,99 @@ public class BdvSettingsGUISetter implements Runnable {
 
     @Override
     public void run() {
+
         try {
             UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-
-            InputTriggerConfig conf = new InputTriggerConfig( YamlConfigIO.read( yamlDataLocation ) );
-
-            /*final JFrame frame = new JFrame( "Behaviour Key bindings editor" );
-            final VisualEditorPanel editorPanel = new VisualEditorPanel( conf ); //getDemoConfig(), getDemoCommands() );
-            editorPanel.addConfigChangeListener( () -> System.out.println( "Config changed @ " + new java.util.Date().toString() ) );
-            //SwingUtilities.updateComponentTreeUI( VisualEditorPanel.fileChooser );
-            frame.getContentPane().add( editorPanel );
-            frame.pack();
-            frame.setVisible( true );*/
-
-            final SettingsPanel settings = new SettingsPanel();
-            final VisualEditorPanel keyconfEditor = new VisualEditorPanel( conf );
-            keyconfEditor.setButtonPanelVisible( false );
-            settings.addPage( new DefaultSettingsPage( "keymap", keyconfEditor ) );
-            final BdvPrefsSettingsPage bdvPrefsEditor = new BdvPrefsSettingsPage( "bdv prefs" );
-            settings.addPage( bdvPrefsEditor );
-
-            //settings.addPage( new DummySettingsPage( "other" ) );
-            //settings.addPage( new DummySettingsPage( "views > bdv" ) );
-            settings.addPage( new DummySettingsPage( "views > trackscheme" ) );
-
-            final JDialog dialog = new JDialog( (Frame) null, "Settings" );
-            dialog.getContentPane().add( settings, BorderLayout.CENTER );
-            dialog.pack();
-            dialog.setVisible( true );
-
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
+        /*final JFrame frame = new JFrame( "Behaviour Key bindings editor" );
+        final VisualEditorPanel editorPanel = new VisualEditorPanel( conf ); //getDemoConfig(), getDemoCommands() );
+        editorPanel.addConfigChangeListener( () -> System.out.println( "Config changed @ " + new java.util.Date().toString() ) );
+        //SwingUtilities.updateComponentTreeUI( VisualEditorPanel.fileChooser );
+        frame.getContentPane().add( editorPanel );
+        frame.pack();
+        frame.setVisible( true );*/
+
+
+        final SettingsPanel settings = new SettingsPanel();
+
+        // ---- BdvPrefs
+        final BdvPrefsSettingsPage bdvPrefsEditor = new BdvPrefsSettingsPage( "bdv prefs" );
+        settings.addPage( bdvPrefsEditor );
+
+        // ---- Default 2D Bindings "transform"
+        InputTriggerConfig itc_default_2D = new InputTriggerConfig();
+        new BehaviourTransformEventHandlerPlanar(null, itc_default_2D);
+        final VisualEditorPanel default2d_keyconfEditor = new VisualEditorPanel( itc_default_2D );
+        default2d_keyconfEditor.setButtonPanelVisible( false );
+        settings.addPage( new DefaultSettingsPage( "2D defaults (uneditable)", default2d_keyconfEditor ) );
+
+        // ---- Default 3D Bindings "transform"
+        InputTriggerConfig itc_default_3D = new InputTriggerConfig();
+        new BehaviourTransformEventHandler3D(null, itc_default_3D);
+        final VisualEditorPanel default3d_keyconfEditor = new VisualEditorPanel( itc_default_3D );
+        default3d_keyconfEditor.setButtonPanelVisible( false );
+        settings.addPage( new DefaultSettingsPage( "3D defaults (uneditable)", default3d_keyconfEditor ) );
+
+        // ---- Current YAML bindings "transform"
+        try {
+            yamlConf = new InputTriggerConfig( YamlConfigIO.read( yamlDataLocation ) );
+        } catch (final Exception e) {
+            System.err.println("Could not find "+yamlDataLocation+" file. Create it.");
+            try {
+                // Initialise it with the default transforms bindings for 2d and 3d transformatino handlers
+                InputTriggerDescriptionsBuilder builder = new InputTriggerDescriptionsBuilder();
+                builder.addMap(InputTriggerConfigHelper.getInputTriggerMap(itc_default_2D),"transform_bdv_2D");
+                builder.addMap(InputTriggerConfigHelper.getInputTriggerMap(itc_default_3D),"transform_bdv_3D");
+                YamlConfigIO.write(builder.getDescriptions(), yamlDataLocation);
+                yamlConf = new InputTriggerConfig( YamlConfigIO.read( yamlDataLocation ) );
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                System.err.println("Could not create yaml file : settings will not be saved.");
+                yamlConf = new InputTriggerConfig();
+            }
+        }
+
+        final VisualEditorPanel yaml_keyconfEditor = new VisualEditorPanel( yamlConf );
+        yaml_keyconfEditor.setButtonPanelVisible( false );
+        settings.addPage( new DefaultSettingsPage( "default settings", yaml_keyconfEditor ) );
+
+        yaml_keyconfEditor.addConfigChangeListener( () -> {
+            yaml_keyconfEditor.modelToConfig();
+            try {
+                /*System.out.println("On sauve le yaml");
+                new InputTriggerDescriptionsBuilder(yamlConf).getDescriptions().forEach(itd -> {
+                    System.out.println(itd.getAction()+":");
+                    for (String trigger: itd.getTriggers())
+                        System.out.println("\t trigger:"+trigger);
+                    for (String context: itd.getContexts())
+                        System.out.println("\t context:"+context);
+                });*/
+                YamlConfigIO.write(new InputTriggerDescriptionsBuilder(yamlConf).getDescriptions(), yamlDataLocation);
+            } catch (Exception e) {
+                System.err.println("Could not create yaml file : settings will not be saved.");
+            }
+        } );
+
+        // ----------------------- TODO the key bindings...
+        /*BigDataViewerActions bdvActions; // input actions "bdv"
+        NavigationActions navigationActions; // input actions "navigation"
+        InputTriggerConfig itc_keybindings = new InputTriggerConfig();
+        itc_keybindings.inputTriggerAdder();
+        final VisualEditorPanel default_keyBindings = new VisualEditorPanel();*/
+
+
+        //settings.addPage( new DummySettingsPage( "other" ) );
+        //settings.addPage( new DummySettingsPage( "views > bdv" ) );
+        //settings.addPage( new DummySettingsPage( "views > trackscheme" ) );
+
+        final JDialog dialog = new JDialog( (Frame) null, "Settings" );
+        dialog.getContentPane().add( settings, BorderLayout.CENTER );
+        dialog.pack();
+        dialog.setVisible( true );
+
 
     }
 

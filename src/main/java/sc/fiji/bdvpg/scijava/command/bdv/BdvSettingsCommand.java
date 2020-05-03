@@ -11,11 +11,12 @@ import java.util.Properties;
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bdv>Set Bindings",
         label = "Set actions linked to key / mouse event")
 public class BdvSettingsCommand implements Command {
+
+
     @Override
     public void run() {
-        String yamlLocation = "C:\\Users\\nicol\\Desktop\\bdvkeyconfig.yaml";
-        Properties props = Prefs.getDefaultProperties();
-
+        String yamlLocation = "bdvkeyconfig.yaml";
         new BdvSettingsGUISetter(yamlLocation, "Behaviour Key bindings editor").run();
     }
+
 }
