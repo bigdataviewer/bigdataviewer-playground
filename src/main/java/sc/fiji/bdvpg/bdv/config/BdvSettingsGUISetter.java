@@ -187,10 +187,17 @@ public class BdvSettingsGUISetter implements Runnable {
         itc_keybindings.inputTriggerAdder();
         final VisualEditorPanel default_keyBindings = new VisualEditorPanel();*/
 
-
         //settings.addPage( new DummySettingsPage( "other" ) );
         //settings.addPage( new DummySettingsPage( "views > bdv" ) );
         //settings.addPage( new DummySettingsPage( "views > trackscheme" ) );
+
+        // ------------------------ Contextual Menu Settings
+        final BdvPlaygroundContextualMenuSettingsPage bdvPgContextTreeMenuEditor = new BdvPlaygroundContextualMenuSettingsPage( "context menu" );
+        settings.addPage( bdvPgContextTreeMenuEditor );
+
+        //final BdvPlaygroundContextualMenuSettingsPage bdvPgContextBdvMenuEditor = new BdvPlaygroundContextualMenuSettingsPage( "context menu > bdv" );
+        //settings.addPage( bdvPgContextBdvMenuEditor );
+
 
         final JDialog dialog = new JDialog( (Frame) null, "Settings" );
         dialog.getContentPane().add( settings, BorderLayout.CENTER );
