@@ -61,7 +61,7 @@ public class BdvSettingsGUISetter implements Runnable {
     final String rootPath;
 
     public final static String defaultYamlFileName = "bdvkeyconfig.yaml";
-
+    public final static String defaultContextMenuFileName = "contextmenu.txt";
 
     public final static String defaultBdvPgSettingsRootPath = "bdvpgsettings";
 
@@ -141,7 +141,17 @@ public class BdvSettingsGUISetter implements Runnable {
 
         recursivelySearchAndAppend("bdvpg", settings, pathDirDefaultSettings);
 
+
         // ----------------------- TODO the key bindings...
+
+
+
+        // Is there a sourceandconverter context menu file ?
+        String pathDefaultContextMenuSettings = dirDefaultSettings.getAbsolutePath()+File.separator+defaultContextMenuFileName;
+        File defaultContextMenuConfig = new File(pathDefaultContextMenuSettings);
+        if (defaultContextMenuConfig.exists()) {
+            // TODO
+        }
 
         final JDialog dialog = new JDialog( (Frame) null, "Bdv Playground Settings" );
         dialog.getContentPane().add( settings, BorderLayout.CENTER );
@@ -178,6 +188,8 @@ public class BdvSettingsGUISetter implements Runnable {
                 e.printStackTrace();
             }
         }
+
+        // ----------------------- TODO the key bindings...
 
         // Are there subfolders ?
         try (Stream<Path> walk = Files.walk(Paths.get(pathDir))) {
