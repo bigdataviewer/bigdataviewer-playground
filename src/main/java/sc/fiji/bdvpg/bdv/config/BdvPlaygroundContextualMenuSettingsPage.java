@@ -72,7 +72,7 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
         }
 
         SourceAndConverterPopupMenu.setDefaultSettings(filteredActions.toArray(new String[filteredActions.size()]));
-
+        // Stores
     }
 
     class BdvPgContextMenuEditor extends JPanel {
