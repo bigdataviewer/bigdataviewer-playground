@@ -3,6 +3,8 @@ package sc.fiji.bdvpg.bdv.sourceandconverter.bigwarp;
 import java.io.File;
 import java.io.IOException;
 
+import org.jdom2.Element;
+
 import bdv.img.WarpedSource;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
@@ -33,26 +35,28 @@ public class BigWarpedSourceLoadingSaving {
 
 		File warpedSourceXml = new File( "src/test/resources/mri-stack_warped.xml" );
 
-//        SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml");
-//        AbstractSpimData asd = importer.get();
-//        SourceAndConverter sac = SourceAndConverterServices
-//                .getSourceAndConverterService()
-//                .getSourceAndConverterFromSpimdata(asd)
-//                .get(0);
+		// The original source
+        SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml");
+        AbstractSpimData asd = importer.get();
+        SourceAndConverter sac = SourceAndConverterServices
+                .getSourceAndConverterService()
+                .getSourceAndConverterFromSpimdata(asd)
+                .get(0);
+
  
-//        // Show the source
-//        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac );
+        // Show the source
+        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac );
 
 		XmlIoWarpedSource io = new XmlIoWarpedSource();
 
         /*
          * The code below creats / saves an xml storing 
          */
-//		File bigwarpLandmarksFile = new File("src/test/resources/mri-stack_bigwarpLandmarks.csv" );
-//		LandmarkTableModel bwLtm = new LandmarkTableModel( 3 );
-//		bwLtm.load( bigwarpLandmarksFile );
-//		Element root = io.toXml( asd, bwLtm.getTransform(), warpedSourceXml );
-//		io.save( root, warpedSourceXml.getCanonicalPath() );
+		File bigwarpLandmarksFile = new File("src/test/resources/mri-stack_bigwarpLandmarks.csv" );
+		LandmarkTableModel bwLtm = new LandmarkTableModel( 3 );
+		bwLtm.load( bigwarpLandmarksFile );
+		Element root = io.toXml( asd, bwLtm.getTransform(), warpedSourceXml );
+		io.save( root, warpedSourceXml.getCanonicalPath() );
 
 
 		WarpedSource ws = io.load( warpedSourceXml.getCanonicalPath() );
@@ -68,7 +72,6 @@ public class BigWarpedSourceLoadingSaving {
 //        new ViewerTransformAdjuster(bdvHandle, sac ).run();
         new ViewerTransformAdjuster(bdvHandle, warpedSac ).run();
         
-
     }
 
 }
