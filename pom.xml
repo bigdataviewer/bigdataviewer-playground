@@ -122,9 +122,6 @@
 		<spim_data.version>2.2.4</spim_data.version>
 		<ui-behaviour.version>2.0.1</ui-behaviour.version>
 
-		<bigvolumeviewer.version>0.1.8-SNAPSHOT</bigvolumeviewer.version>
-
-		<!--<imglib2-cache.version>1.0.0-beta-13</imglib2-cache.version>-->
 
 	</properties>
 
@@ -148,7 +145,7 @@
 		<dependency>
 			<groupId>org.mastodon</groupId>
 			<artifactId>mastodon</artifactId>
-			<version>1.0.0-beta-17-SNAPSHOT</version>
+			<version>1.0.0-beta-17-SNAPSHOT</version> <!-- necessary to keep version here -->
 		</dependency>
 
 		<dependency>
@@ -186,7 +183,7 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigvolumeviewer</artifactId>
-			<version>0.1.8-SNAPSHOT</version>
+			<version>0.1.8-SNAPSHOT</version> <!-- necessary to keep version here -->
 		</dependency>
 
     </dependencies>
