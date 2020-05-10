@@ -23,12 +23,15 @@ public class SourcesResamplerCommand implements Command{
     @Parameter
     boolean interpolate;
 
+    @Parameter
+    boolean cache;
+
     @Override
     public void run() {
         // Should not be parallel
         for (int i=0;i<sourcesToResample.length;i++) {
             SourceAndConverterServices.getSourceAndConverterService().register(
-                new SourceResampler(sourcesToResample[i], model, reuseMipMaps, interpolate).get()
+                new SourceResampler(sourcesToResample[i], model, reuseMipMaps, cache, interpolate).get()
             );
         }
 
