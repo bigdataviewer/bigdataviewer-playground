@@ -21,6 +21,18 @@ import net.imglib2.view.Views;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * A {@link VolatileSource<T,V>} simply wraps and cache volatileviews of a {@link Source<T>}
+ * which can be made Volatile thanks to {@link VolatileViews#wrapAsVolatile}
+ * That's not always possible!
+ *
+ * A {@link SharedQueue} can be passed as an argument in the constructor to control more finely
+ * the volatile fetching jobs
+ *
+ * @param <T> concrete pixel {@link net.imglib2.type.Type} linked to:
+ * @param <V> {@link Volatile} type
+ */
+
 public class VolatileSource<T extends NumericType<T>, V extends Volatile< T > & NumericType< V >> implements Source<V> {
 
     final Source<T> originSource;
@@ -31,8 +43,8 @@ public class VolatileSource<T extends NumericType<T>, V extends Volatile< T > & 
 
     ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, RandomAccessibleInterval>> cachedRAIs = new ConcurrentHashMap<>();
 
-    public VolatileSource(final Source resampledSource) {
-        this.originSource = resampledSource;
+    public VolatileSource(final Source source) {
+        this.originSource = source;
         queue = new SharedQueue(2);
     }
 
@@ -99,6 +111,12 @@ public class VolatileSource<T extends NumericType<T>, V extends Volatile< T > & 
     public int getNumMipmapLevels() {
         return originSource.getNumMipmapLevels();
     }
+
+    /**
+     * TODO : this helper class should be already somewhere else!
+     * @param t
+     * @return
+     */
 
     static public Volatile getVolatileOf(NumericType t) {
         if (t instanceof UnsignedShortType) return new VolatileUnsignedShortType();

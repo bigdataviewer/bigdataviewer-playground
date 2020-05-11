@@ -7,13 +7,15 @@ import net.imglib2.ui.TransformListener;
 import java.util.Map;
 
 /**
- * Action which stops the synchronization of the display location of n BdvHandle
- * Works in combination with the action ViewerTransformSyncStarter
+ * BigDataViewer Playground Action -->
+ * Action which stops the synchronization of the display location of a {@link BdvHandle}
+ * Works in combination with the action {@link ViewerTransformSyncStarter}
+ * and {@link ViewerOrthoSyncStarter}
  *
- * See also ViewTransformSynchronizationDemo
+ * See {@link ViewTransformSynchronizationDemo} for a usage example
  *
- * author Nicolas Chiaruttini, BIOP EPFL, nicolas.chiaruttini@epfl.ch
- **/
+ * @author Nicolas Chiaruttini, BIOP EPFL, nicolas.chiaruttini@epfl.ch
+ */
 
 public class ViewerTransformSyncStopper implements Runnable {
 
@@ -40,13 +42,19 @@ public class ViewerTransformSyncStopper implements Runnable {
         }
     }
 
+    /**
+     * Tests whether two arrays of double are approximately equal
+     * Used internally with {@link AffineTransform3D#getRowPackedCopy()}
+     * To test if two matrices are approximately equal
+     *
+     * @param m1 first matrix of double
+     * @param m2 second matrix of double
+     * @return
+     */
     public static boolean MatrixApproxEquals(double[] m1, double[] m2) {
         assert m1.length == m2.length;
         boolean ans = true;
         for (int i=0;i<m1.length;i++) {
-            //System.out.println("Math.abs(m1["+i+"]-m2["+i+"]) = "+(Math.abs(m1[i]-m2[i])));
-            //System.out.println("Math.ulp(Math.min(Math.abs(m1[i]), Math.abs(m2[i]))) = "+(Math.ulp(Math.min(Math.abs(m1[i]), Math.abs(m2[i])))));
-
             if (Math.abs(m1[i]-m2[i])>1e6*Math.ulp(Math.min(Math.abs(m1[i]), Math.abs(m2[i])))) {
                 ans = false;
                 break;

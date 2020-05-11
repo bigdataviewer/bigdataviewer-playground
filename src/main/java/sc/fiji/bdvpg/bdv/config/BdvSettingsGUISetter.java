@@ -16,7 +16,6 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,10 +24,12 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 /**
- * Action opening a GUI which helps defining bindings i.e.
+ * BigDataViewer Playground Action -->
+ *
+ * Opens a GUI which helps defining bindings i.e.
  * what a user input (key, mouse, TODO DnD, TODO key bindings (only behaviour bindings work at the moment))
  * triggers as an action
- * Uses VisualEditorPanel from scijava.ui-behaviour
+ * Uses {@link VisualEditorPanel} from scijava.ui-behaviour, which is part of Mastodon for now
  *
  * And Bdv Settings
  *
@@ -54,6 +55,7 @@ import java.util.stream.Stream;
  *    contextmenubdv.json
  *
  * TODO : have a look at https://github.com/bigdataviewer/bigdataviewer-vistools/blob/master/src/main/java/bdv/util/BehaviourTransformEventHandlerPlanar.java
+ * work in progress
  */
 
 public class BdvSettingsGUISetter implements Runnable {

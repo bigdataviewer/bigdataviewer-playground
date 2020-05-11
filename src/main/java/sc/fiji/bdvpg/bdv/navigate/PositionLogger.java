@@ -6,6 +6,14 @@ import sc.fiji.bdvpg.log.Logger;
 import sc.fiji.bdvpg.log.Logs;
 import sc.fiji.bdvpg.log.SystemLogger;
 
+/**
+ * BigDataViewer Playground Action -->
+ * Action which logs the position of the mouse in a {@link BdvHandle}
+ *
+ * See {@link LogMousePositionDemo} for a usage example
+ *
+ * @author Robert Haase, MPI CBG
+ */
 public class PositionLogger implements Runnable
 {
 	private final BdvHandle bdvHandle;

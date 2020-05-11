@@ -11,6 +11,12 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 
+/**
+ * Helper function to transform RealTyped {@link bdv.viewer.Source} to {@link UnsignedShortType} source
+ *
+ * TODO : improved convertion or retire... the convertion is not modular it's a direct casting to int
+ *
+ */
 public class SourceToUnsignedShortConverter {
 
     static public Source<UnsignedShortType> convertRealSource(Source<RealType> iniSrc) {

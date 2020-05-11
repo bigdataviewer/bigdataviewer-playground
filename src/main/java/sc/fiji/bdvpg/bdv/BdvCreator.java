@@ -5,18 +5,15 @@ import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
 import bdv.util.BdvStackSource;
 import bdv.viewer.Interpolation;
-import bdv.viewer.ViewerOptions;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerConfigHelper;
-import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.scijava.ui.behaviour.util.Behaviours;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
-import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.behaviour.SourceAndConverterContextMenuClickBehaviour;
 import sc.fiji.bdvpg.scijava.command.bdv.ScreenShotMakerCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
@@ -24,8 +21,13 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
 import java.util.function.Supplier;
+
+/**
+ * BigDataViewer Playground Action -->
+ *
+ * TODO Documentation
+ */
 
 public class BdvCreator implements Runnable, Supplier<BdvHandle>
 {
@@ -33,6 +35,7 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 	private boolean interpolate;
 	private BdvHandle bdv;
 	private int numTimePoints;
+
 	/** This String should hold a reference to a path which could contains:
 	 /* a bdvkeyconfig.yaml file
 	 /* a contextmenu.txt file
@@ -86,7 +89,7 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 	}
 
 	/**
-	 * Hack: add an image and remove it after the
+	 * Hack: adds an image and remove it after the
 	 * bdvHandle has been created.
 	 */
 	private void createEmptyBdv()

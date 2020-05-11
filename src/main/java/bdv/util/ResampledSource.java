@@ -16,53 +16,67 @@ import net.imglib2.view.Views;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Resamples on the fly a source based on another source
- * The origin source is accessed through its RealRandomAccessible representation :
- * - It can be accessed at any 3d point in space, with real valued coordinates : it's a scalar field
+ * A {@link ResampledSource} is a {@link Source} which is computed on the fly
+ * by sampling an {@link ResampledSource#origin} source at space and time coordinates
+ * defined by a model {@link ResampledSource#resamplingModel} source
  *
- * The srcResamplingModel is there to define a portion of space and how it is sampled :
- * - through its RandomAccessibleInterval bounds
- * - and the Source affine transform
- *
- * The returned resampled is a source which is:
- * - the sampling of the scalar field
- * - at the points which are defined by the model source
- *
- * Options:
- * - reuseMipmaps allows to reuse mipmaps of both the origin and the model source in the resampling
- * - interpolate specifies whether the origin source should be interpolated of not in the resampling process
+ * The returned resampled source is a source which is:
+ * - the sampling of the scalar origin source field {@link ResampledSource#origin}
+ * at the points which are defined by the model source {@link ResampledSource#resamplingModel} source
  *
  * Note:
  * - To be present at a certain timepoint, both the origin and the model source need to exist
- * - There is no duplication of data
+ * - There is no duplication of data, unless {@link ResampledSource#cache} is true
  *
- * @author Nicolas Chiaruttini, BIOP EPFL
- * @param <T>
+ * @author Nicolas Chiaruttini, BIOP EPFL, 2020
+ * @param <T> Type of the output source, identical to the origin source
  */
 public class ResampledSource< T extends NumericType<T> & NativeType<T>> implements Source<T> {
 
+    /**
+     * Hashmap to cache RAIs (mipmaps and timepoints), used only if {@link ResampledSource#cache} is true
+     */
     ConcurrentHashMap<Integer, ConcurrentHashMap<Integer,RandomAccessibleInterval<T>>> cachedRAIs
             = new ConcurrentHashMap<>();
 
     /**
-     * Origin source
+     * Origin source of type {@link T}
      */
     Source<T> origin;
 
     /**
-     * Model source
+     * Model source, no need to be of type {@link T}
      */
     Source<?> resamplingModel;
 
-    protected Interpolation originInterpolation;
-
     protected final DefaultInterpolators< T > interpolators = new DefaultInterpolators<>();
+
+    protected Interpolation originInterpolation;
 
     boolean reuseMipMaps;
 
     boolean cache;
 
-
+    /**
+     * The origin source {@param source} is accessed through its RealRandomAccessible representation :
+     * - It can be accessed at any 3d point in space, with real valued coordinates : it's a scalar field of {@link T} objects
+     *
+     * The model source ({@param resamplingModel}) defines a portion of space and how it is sampled :
+     *  - through its RandomAccessibleInterval bounds
+     *  - and the Source affine transform
+     *  - and mipmaps, if {@param reuseMipMaps} is true
+     *
+     * @param reuseMipMaps allows to reuse mipmaps of both the origin and the model source in the resampling
+     *  Reusing mipmaps works well is the voxel size are approximately identical between
+     *  the model and the origin source TODO : fix this to allow for a more clever mipmap reuse - check hos it is done in multiresolution renderer
+     *
+     * @param cache specifies whether the result of the resampling should be cached.
+     *  This allows for a fast access of resampled source after the first computation - but the synchronization with
+     *  the origin and model source is lost.
+     *
+     * @param originInterpolation specifies whether the origin source should be interpolated of not in the resampling process
+     *
+     */
     public ResampledSource(Source<T> source, Source<T> resamplingModel, boolean reuseMipMaps, boolean cache, boolean originInterpolation) {
         this.origin=source;
         this.resamplingModel=resamplingModel;
