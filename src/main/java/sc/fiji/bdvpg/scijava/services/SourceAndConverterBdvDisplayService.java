@@ -416,12 +416,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         }
 
         public String toString() {
-            return name;
+            return getName();
         }
 
-        public void setName(String name) {
-            this.name = name;
-        }
     }
 
 }
