@@ -1,4 +1,4 @@
-package src.sc.fiji.bdvpg.bdv.navigate;
+package sc.fiji.bdvpg.bdv.navigate;
 
 import bdv.util.BdvHandle;
 import mpicbg.spim.data.generic.AbstractSpimData;

@@ -49,6 +49,13 @@ public class BigWarpLauncher implements Runnable {
     List<SourceAndConverter> movingSources;
     List<SourceAndConverter> fixedSources;
 
+    List<SourceAndConverter> allRegisteredSources;
+
+    SourceAndConverter gridSource;
+    SourceAndConverter warpMagnitudeSource;
+
+    SourceAndConverter[] warpedSources;
+
     public BigWarpLauncher(List<SourceAndConverter> movingSources, List<SourceAndConverter> fixedSources, String bigWarpName, List<ConverterSetup> allConverterSetups) {
 
         this.movingSources = movingSources;
@@ -86,21 +93,21 @@ public class BigWarpLauncher implements Runnable {
             bdvHandleP = new ViewerPanelHandle(bigWarp.getViewerFrameP().getViewerPanel(), bigWarp.getSetupAssignments(), bigWarpName+"_Moving");
             bdvHandleQ = new ViewerPanelHandle(bigWarp.getViewerFrameQ().getViewerPanel(), bigWarp.getSetupAssignments(), bigWarpName+"_Fixed");
 
-            SourceAndConverter[] warpedSources = new SourceAndConverter[movingSources.size()];
+            warpedSources = new SourceAndConverter[movingSources.size()];
 
             for (int i=0;i<warpedSources.length;i++) {
                 warpedSources[i] = bdvHandleP.getViewerPanel().getState().getSources().get(i);
             }
 
             int nSources = bdvHandleP.getViewerPanel().getState().numSources();
-            SourceAndConverter gridSource = bdvHandleP.getViewerPanel().getState().getSources().get(nSources-1);
-            SourceAndConverter warpMagnitudeSource = bdvHandleP.getViewerPanel().getState().getSources().get(nSources-2);
+            gridSource = bdvHandleP.getViewerPanel().getState().getSources().get(nSources-1);
+            warpMagnitudeSource = bdvHandleP.getViewerPanel().getState().getSources().get(nSources-2);
 
-            SourceAndConverterServices.getSourceAndConverterService().register(gridSource);
+            /*SourceAndConverterServices.getSourceAndConverterService().register(gridSource);
             SourceAndConverterServices.getSourceAndConverterService().register(warpMagnitudeSource);
             for (SourceAndConverter sac : warpedSources) {
                 SourceAndConverterServices.getSourceAndConverterService().register(sac);
-            }
+            }*/
 
         } catch (SpimDataException e) {
             e.printStackTrace();
@@ -119,6 +126,18 @@ public class BigWarpLauncher implements Runnable {
 
     public BigWarp getBigWarp() {
         return bigWarp;
+    }
+
+    public SourceAndConverter getGridSource() {
+        return gridSource;
+    }
+
+    public SourceAndConverter getWarpMagnitudeSource() {
+        return warpMagnitudeSource;
+    }
+
+    public SourceAndConverter[] getWarpedSources() {
+        return warpedSources;
     }
 
 }

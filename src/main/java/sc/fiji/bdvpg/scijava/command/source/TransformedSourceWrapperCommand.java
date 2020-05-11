@@ -6,6 +6,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
 import java.util.Arrays;
@@ -19,6 +20,8 @@ public class TransformedSourceWrapperCommand implements Command {
     @Override
     public void run() {
         SourceAffineTransformer sat = new SourceAffineTransformer(null, new AffineTransform3D());
-        Arrays.asList(sources_in).stream().map(sat::apply).collect(Collectors.toList());
+        Arrays.asList(sources_in).stream().map(sat::apply).forEach(sac ->
+                        SourceAndConverterServices.getSourceAndConverterService().register(sac)
+                );
     }
 }

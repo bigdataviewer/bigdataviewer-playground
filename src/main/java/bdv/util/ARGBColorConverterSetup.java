@@ -8,6 +8,17 @@ import org.scijava.listeners.Listeners;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ *
+ * {@link ConverterSetup} used to control a {@link ColorConverter}
+ * {@link ConverterSetup} used for colored Sources in bigdataviewer-playground  - Why is this necessary ? TODO : ask Christian because I don't remember
+ *
+ * Note that if the setup of the converter is changed (min max, color...),
+ * all the listeners are called, which usually triggers repainting if the source is displayed
+ *
+ */
+
+
 public class ARGBColorConverterSetup implements ConverterSetup
 {
 

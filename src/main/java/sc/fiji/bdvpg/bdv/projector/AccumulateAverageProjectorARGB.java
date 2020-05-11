@@ -1,6 +1,5 @@
 package sc.fiji.bdvpg.bdv.projector;
 
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.render.AccumulateProjector;
 import bdv.viewer.render.AccumulateProjectorFactory;
@@ -12,6 +11,16 @@ import net.imglib2.type.numeric.ARGBType;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
+
+/**
+ * Bdv Projector which computes the average of all present Sources
+ *
+ * By looking if the alpha channel is 0 or not, the average is computed only
+ * with the source present at every pixel. To rephrase : if the alpha channel of a source
+ * at a specific position is 0, it is ignored in the average computation of this pixel.
+ *
+ * @author Christian Tischer, EMBL
+ */
 
 public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBType, ARGBType >
 {

@@ -1,5 +1,8 @@
 ## BDV playground / toolbox / actions
-In this repository, we collect useful additions for the [BigDataViewer](https://imagej.net/BigDataViewer) in [Fiji](https://fiji.sc).
+
+[![Gitter](https://badges.gitter.im/bigdataviewer-playground/community.svg)](https://gitter.im/bigdataviewer-playground/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
+In this repository, we collect useful additions for the [BigDataViewer](https://imagej.net/BigDataViewer) in [Fiji](https://fiji.sc). These functionalities are accessible by enabling the FIJI update site : https://biop.epfl.ch/Fiji-Bdv-Playground/
 
 ## List of actions
 * Read a source from disc

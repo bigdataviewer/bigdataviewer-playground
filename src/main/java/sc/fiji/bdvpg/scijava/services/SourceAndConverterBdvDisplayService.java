@@ -354,6 +354,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * @return
      */
     public Set<BdvHandle> getDisplaysOf(SourceAndConverter... sacs) {
+        if (sacs == null) {
+            return new HashSet<>();
+        }
 
         List<SourceAndConverter<?>> sacList = Arrays.asList(sacs);
 

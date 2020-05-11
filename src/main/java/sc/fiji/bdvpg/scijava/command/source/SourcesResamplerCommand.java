@@ -5,6 +5,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Resample Source Based on Model Source")
@@ -22,11 +23,16 @@ public class SourcesResamplerCommand implements Command{
     @Parameter
     boolean interpolate;
 
+    @Parameter
+    boolean cache;
+
     @Override
     public void run() {
-
+        // Should not be parallel
         for (int i=0;i<sourcesToResample.length;i++) {
-            new SourceResampler(sourcesToResample[i], model, reuseMipMaps, interpolate).get();
+            SourceAndConverterServices.getSourceAndConverterService().register(
+                new SourceResampler(sourcesToResample[i], model, reuseMipMaps, cache, interpolate).get()
+            );
         }
 
     }
