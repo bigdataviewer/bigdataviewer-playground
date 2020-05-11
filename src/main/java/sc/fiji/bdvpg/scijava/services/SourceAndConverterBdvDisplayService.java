@@ -312,7 +312,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * Useful for BigWarp where the grid and the deformation magnitude sourceandconverter are created
      * into bigwarp
      * @param bdvh_in
-     * @param index
      */
     public void registerBdvSource(BdvHandle bdvh_in) {
         bdvh_in.getViewerPanel().state().getSources().forEach(sac -> {
@@ -354,6 +353,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * @return
      */
     public Set<BdvHandle> getDisplaysOf(SourceAndConverter... sacs) {
+        if (sacs == null) {
+            return new HashSet<>();
+        }
 
         List<SourceAndConverter<?>> sacList = Arrays.asList(sacs);
 

@@ -11,7 +11,7 @@
 
 	<groupId>sc.fiji</groupId>
 	<artifactId>bigdataviewer-playground</artifactId>
-	<version>0.2.0-SNAPSHOT</version>
+	<version>0.2.1-SNAPSHOT</version>
 
 	<name>bigdataviewer-playground</name>
 	<description>BigDataViewer Actions and GUI</description>
@@ -128,10 +128,11 @@
 		<ui-behaviour.version>2.0.1</ui-behaviour.version>
 
 
+
 		<!-- Locally built version
 		<sciview.version>0.2.0-beta-5-SAC-SNAPSHOT</sciview.version>
 		<scenery.version>0.7.0-beta-8-SAC-SNAPSHOT</scenery.version>
--->
+		-->
 		<!-- Remote version-->
 		<sciview.version>f9f2f45</sciview.version>
 		<scenery.version>f4417b7</scenery.version>
@@ -143,7 +144,6 @@
 		<cleargl.version>2.2.10</cleargl.version>
 		<bigvolumeviewer.version>0.1.8-SNAPSHOT</bigvolumeviewer.version>
 
-		<!--<imglib2-cache.version>1.0.0-beta-13</imglib2-cache.version>-->
 
 	</properties>
 
@@ -169,10 +169,17 @@
 			<artifactId>sciview</artifactId>
 			<version>${sciview.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>graphics.scenery</groupId>
 			<artifactId>scenery</artifactId>
 			<version>${scenery.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mastodon</groupId>
+			<artifactId>mastodon</artifactId>
+			<version>1.0.0-beta-17-SNAPSHOT</version> <!-- necessary to keep version here -->
 		</dependency>
 
 		<dependency>
@@ -210,7 +217,7 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigvolumeviewer</artifactId>
-			<version>0.1.8-SNAPSHOT</version>
+			<version>0.1.8-SNAPSHOT</version> <!-- necessary to keep version here -->
 		</dependency>
 
     </dependencies>

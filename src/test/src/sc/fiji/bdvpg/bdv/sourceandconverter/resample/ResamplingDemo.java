@@ -66,7 +66,7 @@ public class ResamplingDemo {
         new BrightnessAdjuster(bigMandelbrot,0,800).run();
 
         // Resample generative source as model source
-        SourceResampler sr = new SourceResampler(bigMandelbrot, sac,false,false);
+        SourceResampler sr = new SourceResampler(bigMandelbrot, sac,false,false, false);
         SourceAndConverter resampledMandelbrot = sr.get();
 
         SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, resampledMandelbrot );
@@ -97,7 +97,7 @@ public class ResamplingDemo {
         // DOWNSAMPLING
         EmptySourceAndConverterCreator downSampledModel = new EmptySourceAndConverterCreator("DownSampled",sac,0,4,4,4, factory);
 
-        sr = new SourceResampler(sac, downSampledModel.get(),false,true);
+        sr = new SourceResampler(sac, downSampledModel.get(),false,false, true);
         SourceAndConverter downsampledSource = sr.get();
 
         SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, downsampledSource );
@@ -107,7 +107,7 @@ public class ResamplingDemo {
         // UPSAMPLING
         EmptySourceAndConverterCreator upSampledModel = new EmptySourceAndConverterCreator("UpSampled",sac,0,0.2,0.2,0.2, factory);
 
-        sr = new SourceResampler(sac, upSampledModel.get(),false,true);
+        sr = new SourceResampler(sac, upSampledModel.get(),false,false, true);
         SourceAndConverter upsampledSource = sr.get();
 
         SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, upsampledSource );

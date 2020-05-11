@@ -13,6 +13,8 @@ import net.imglib2.type.numeric.NumericType;
 import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.Views;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Resamples on the fly a source based on another source
  * The origin source is accessed through its RealRandomAccessible representation :
@@ -37,8 +39,10 @@ import net.imglib2.view.Views;
  * @author Nicolas Chiaruttini, BIOP EPFL
  * @param <T>
  */
-
 public class ResampledSource< T extends NumericType<T> & NativeType<T>> implements Source<T> {
+
+    ConcurrentHashMap<Integer, ConcurrentHashMap<Integer,RandomAccessibleInterval<T>>> cachedRAIs
+            = new ConcurrentHashMap<>();
 
     /**
      * Origin source
@@ -50,16 +54,20 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
      */
     Source<?> resamplingModel;
 
-    Interpolation originInterpolation;
+    protected Interpolation originInterpolation;
 
     protected final DefaultInterpolators< T > interpolators = new DefaultInterpolators<>();
 
     boolean reuseMipMaps;
 
-    public ResampledSource(Source<T> source, Source<T> resamplingModel, boolean reuseMipMaps, boolean originInterpolation) {
+    boolean cache;
+
+
+    public ResampledSource(Source<T> source, Source<T> resamplingModel, boolean reuseMipMaps, boolean cache, boolean originInterpolation) {
         this.origin=source;
         this.resamplingModel=resamplingModel;
         this.reuseMipMaps=reuseMipMaps;
+        this.cache = cache;
         if (originInterpolation) {
             this.originInterpolation = Interpolation.NLINEAR;
         } else {
@@ -82,6 +90,35 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     @Override
     public RandomAccessibleInterval<T> getSource(int t, int level) {
+        if (cache) {
+            if (!cachedRAIs.containsKey(t)) {
+                cachedRAIs.put(t, new ConcurrentHashMap<>());
+            }
+
+            if (!cachedRAIs.get(t).containsKey(level)) {
+                if (cache) {
+                    RandomAccessibleInterval<T> nonCached = buildSource(t, level);
+
+                    int[] blockSize = {64, 64, 64};
+
+                    if (nonCached.dimension(0) < 64) blockSize[0] = (int) nonCached.dimension(0);
+                    if (nonCached.dimension(1) < 64) blockSize[1] = (int) nonCached.dimension(1);
+                    if (nonCached.dimension(2) < 64) blockSize[2] = (int) nonCached.dimension(2);
+
+                    cachedRAIs.get(t).put(level, RAIHelper.wrapAsVolatileCachedCellImg(nonCached, blockSize));
+                } else {
+                    cachedRAIs.get(t).put(level,buildSource(t, level));
+                }
+            }
+            return cachedRAIs.get(t).get(level);
+        } else {
+            return buildSource(t,level);
+        }
+
+    }
+
+
+    public RandomAccessibleInterval<T> buildSource(int t, int level) {
         // Get current model source transformation
         AffineTransform3D at = new AffineTransform3D();
         resamplingModel.getSourceTransform(t,reuseMipMaps?level:0,at);

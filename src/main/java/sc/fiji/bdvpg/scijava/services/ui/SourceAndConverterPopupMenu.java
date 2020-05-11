@@ -22,7 +22,7 @@ public class SourceAndConverterPopupMenu
 	private JPopupMenu popup;
 	private final SourceAndConverter[] sacs;
 
-	 public static String[] defaultPopupActions = {
+	 private static String[] defaultPopupActions = {
 			getCommandName(BdvSourcesAdderCommand.class),
 			getCommandName(BdvSourcesRemoverCommand.class),
 			"Inspect Sources",
@@ -46,6 +46,10 @@ public class SourceAndConverterPopupMenu
 
 	 String[] popupActions;
 
+	public static synchronized void setDefaultSettings(String[] newDefaults) {
+		defaultPopupActions = newDefaults.clone();
+	}
+
 	public SourceAndConverterPopupMenu( SourceAndConverter[] sacs )
 	{
 		this(sacs, defaultPopupActions);
@@ -55,7 +59,6 @@ public class SourceAndConverterPopupMenu
 	{
 		this.sacs = sacs;
 		this.popupActions = actions;
-
 		createPopupMenu();
 	}
 

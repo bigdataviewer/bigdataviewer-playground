@@ -52,7 +52,6 @@ public class SourceAffineTransformer implements Runnable, Function<SourceAndConv
         } else {
             sac = new SourceAndConverter<>(src, SourceAndConverterUtils.cloneConverter(in.getConverter()));
         }
-        SourceAndConverterServices.getSourceAndConverterService().register(sac);
         return sac;
     }
 }
