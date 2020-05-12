@@ -65,7 +65,7 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
                     @Override
                     public void viewerStateChanged(ViewerStateChange change) {
                         if (change.toString().equals("NUM_SOURCES_CHANGED")) {
-                            node.update(SourceFilterNode.FILTER_UPDATED);
+                            node.update(new SourceFilterNode.FilterUpdateEvent());
                             SwingUtilities.invokeLater(()->sacsService.getUI().getTreeModel().reload());
                         }
                     }

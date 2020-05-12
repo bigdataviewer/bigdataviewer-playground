@@ -161,15 +161,17 @@ public class BdvSourceServiceUI {
     public void update(SourceAndConverter sac) {
         displayedSource.add(sac);
         updateSpimDataFilterNodes();
-        model.reload();
+        //model.reload();
         if (top.hasConsumed(sac)) {
-            top.update(SourceFilterNode.SOURCES_UPDATED);
+            top.update(new SourceFilterNode.SourceUpdateEvent(sac));
         } else {
             top.add(new DefaultMutableTreeNode(new RenamableSourceAndConverter(sac)));
         }
         model.reload();
-        panel.revalidate();
-        frame.setVisible( true );
+        //panel.revalidate();
+        if (!frame.isVisible()) {
+            frame.setVisible( true );
+        }
     }
 
     private void updateSpimDataFilterNodes() {
@@ -255,7 +257,7 @@ public class BdvSourceServiceUI {
             displayedSource.remove(sac);
             top.remove(sac);
             //visitAllNodesAndDelete(top, sac);
-            updateSpimDataFilterNodes();
+            // updateSpimDataFilterNodes();
         }
     }
 
