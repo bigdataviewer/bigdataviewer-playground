@@ -256,6 +256,7 @@ public class BdvSourceServiceUI {
             // No Need to update
             displayedSource.remove(sac);
             top.remove(sac);
+            model.reload();
             //visitAllNodesAndDelete(top, sac);
             // updateSpimDataFilterNodes();
         }
