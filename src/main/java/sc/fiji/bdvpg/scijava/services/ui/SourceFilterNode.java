@@ -5,13 +5,12 @@ import bdv.viewer.SourceAndConverter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
 /**
- * SourceAndConverter filter node : generic node which filters the incoming SourceAndConverter Object
+ * {@link SourceAndConverter} filter node : generic node which filters the incoming SourceAndConverter Object
  *
  * Inserting in a node like this a {@link DefaultMutableTreeNode} which contains a user object of
  * class {@link RenamableSourceAndConverter} triggers this procedure:
@@ -34,17 +33,27 @@ import java.util.function.Predicate;
  *             - The children filter nodes have have their remove SourceAndConverter method called
  *
  * - the node has to be updated if:
- *      - a new SourceAndConverter node is inserted
- *      - the filter has changed
- *      - one of the input SourceAndConverter PROPERTY has changed
- *      - a SourceAndConverter node has to be removed
+ *      - a new SourceAndConverter node is inserted {@link SourceUpdateEvent}
+ *      - the filter has changed, and source needs to be retested {@link FilterUpdateEvent}
+ *      - a new children node is inserted {@link NodeAddedUpdateEvent} // TODO : check that is linked nodes are added, the update is properly handled
  *
  */
 
 public class SourceFilterNode extends DefaultMutableTreeNode {
 
+    /**
+     * Filters SourceAndConverter to downstream nodes in the tree
+     */
     public Predicate<SourceAndConverter> filter;
+
+    /**
+     * Name of this node : displayed in the jtree
+     */
     String name;
+
+    /**
+     * Are the filtered sources displayed as direct children of this node ?
+     */
     boolean displayFilteredSources;
 
     public SourceFilterNode(String name, Predicate<SourceAndConverter> filter, boolean displayFilteredSources) {
@@ -63,16 +72,16 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
     }
 
     // Holding current state = set of SourceAndConverter contained in the filter node
-    volatile Set<SourceAndConverter> currentInputSacs = ConcurrentHashMap.newKeySet();
-    volatile Set<SourceAndConverter> currentOutputSacs = ConcurrentHashMap.newKeySet();
+    Set<SourceAndConverter> currentInputSacs = ConcurrentHashMap.newKeySet();
+    Set<SourceAndConverter> currentOutputSacs = ConcurrentHashMap.newKeySet();
 
     public boolean hasConsumed(SourceAndConverter sac) {
         return currentOutputSacs.contains(sac);
     }
 
     @Override
-    public void insert(MutableTreeNode newChild, int childIndex) { // is synchronized useful ?
-        System.out.println("insert called");
+    public synchronized void insert(MutableTreeNode newChild, int childIndex) { // is synchronized useful ?
+
         if (((DefaultMutableTreeNode)newChild).getUserObject() instanceof RenamableSourceAndConverter) {
             SourceAndConverter sac = getSacFromNode(newChild);
             if (currentInputSacs.contains(sac)) {
@@ -89,13 +98,13 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
                     }
                     if (displayFilteredSources) {
                         super.insert(new DefaultMutableTreeNode(((DefaultMutableTreeNode)newChild).getUserObject()), childIndex);
-                        //super.insert(newChild, childIndex);
                     }
                 }
             }
         } else {
             // It's not a node containing a SourceAndConverter : standard behaviour
             super.insert(newChild, childIndex);
+            // Still : notifying the insertion of a new node, which can be a nw filter node and thus needs recomputation
             this.update(new NodeAddedUpdateEvent(newChild));
         }
     }
@@ -104,7 +113,11 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
         return ((RenamableSourceAndConverter)(((DefaultMutableTreeNode)newChild).getUserObject())).sac;
     }
 
-    public void remove(SourceAndConverter sac) {
+    /**
+     * Removes a source and converter from this node and children nodes
+     * @param sac
+     */
+    void remove(SourceAndConverter sac) {
         currentInputSacs.remove(sac);
         currentOutputSacs.remove(sac);
         for (int i = 0; i < getChildCount(); i++) {
@@ -124,15 +137,13 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
         }
     }
 
-    /*public final static String SOURCES_UPDATED = "SOURCES_UPDATED";
-
-    public final static String FILTER_UPDATED = "FILTER_UPDATED";
-
-    public final static String NODE_ADDED = "NODE_ADDED";*/
-
+    /**
+     * Very important method which recomputes the tree based on the {@link UpdateEvent} notified
+     * ensures new and up to date recomputation of the whole tree
+     * @param event
+     */
     public synchronized void update(UpdateEvent event) {
         if (event instanceof NodeAddedUpdateEvent) {
-            System.out.println("Node added");
             NodeAddedUpdateEvent nodeEvent = (NodeAddedUpdateEvent) event;
             assert this.isNodeChild(nodeEvent.getNode());
             if (nodeEvent.getNode() instanceof SourceFilterNode) {
@@ -142,13 +153,9 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
             }
         } else if (event instanceof FilterUpdateEvent) {
             for (SourceAndConverter sac : currentInputSacs) {
-                System.out.println("currentInputSacs length = "+currentInputSacs.size());
-                System.out.println("testing " + sac.getSpimSource().getName());
                 if (filter.test(sac)) {
-                    System.out.println("test pass ");
                     if (!currentOutputSacs.contains(sac)) {
                         // a blocked source is now passing
-                        System.out.println("1111111111111 a blocked source is now passing");
                         currentOutputSacs.add(sac);
                         RenamableSourceAndConverter rsac = new RenamableSourceAndConverter(sac);
                         for (int i = 0; i < getChildCount(); i++) {
@@ -162,12 +169,8 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
                         }
                     }
                 } else {
-
-                    System.out.println("test do not pass ");
                     if (currentOutputSacs.contains(sac)) {
                         // a passing source is now blocked
-                        //System.out.println(toString());
-                        System.out.println("0000000000000 a passing source is now blocked");
                         remove(sac);
                         // Restores it because it's this node who filtered it
                         currentInputSacs.add(sac);
@@ -177,13 +180,9 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
         } else if (event instanceof SourceUpdateEvent){
             SourceUpdateEvent sourceEvent = (SourceUpdateEvent) event;
             SourceAndConverter sac = sourceEvent.getSource();
-            System.out.println("currentInputSacs length = "+currentInputSacs.size());
-            System.out.println("testing " + sac.getSpimSource().getName());
             if (filter.test(sac)) {
-                System.out.println("test pass ");
                 if (!currentOutputSacs.contains(sac)) {
                     // a blocked source is now passing
-                    System.out.println("1111111111111 a blocked source is now passing");
                     currentOutputSacs.add(sac);
                     RenamableSourceAndConverter rsac = new RenamableSourceAndConverter(sac);
                     for (int i = 0; i < getChildCount(); i++) {
@@ -205,12 +204,8 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
                     }
                 }
             } else {
-
-                System.out.println("test do not pass ");
                 if (currentOutputSacs.contains(sac)) {
                     // a passing source is now blocked
-                    //System.out.println(toString());
-                    System.out.println("0000000000000 a passing source is now blocked");
                     remove(sac);
                     // Restores it because it's this node who filtered it
                     currentInputSacs.add(sac);
@@ -218,117 +213,43 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
             }
 
         } else {
-            throw new UnsupportedOperationException("Unknown UpdateEvent class ");
+            throw new UnsupportedOperationException("Unsupported UpdateEvent class ");
         }
 
-
-        //System.out.println("Update node "+toString()+" event = "+event);
-        /*
-        switch (event) {
-            case SOURCES_UPDATED:
-            case FILTER_UPDATED:
-                // Actually it's the same behaviour
-                for (SourceAndConverter sac : currentInputSacs) {
-                    System.out.println("currentInputSacs length = "+currentInputSacs.size());
-                    System.out.println("testing " + sac.getSpimSource().getName());
-                    if (filter.test(sac)) {
-                        System.out.println("test pass ");
-                        if (!currentOutputSacs.contains(sac)) {
-                            // a blocked source is now passing
-                            System.out.println("1111111111111 a blocked source is now passing");
-                            currentOutputSacs.add(sac);
-                            RenamableSourceAndConverter rsac = new RenamableSourceAndConverter(sac);
-                            for (int i = 0; i < getChildCount(); i++) {
-                                DefaultMutableTreeNode n = (DefaultMutableTreeNode) getChildAt(i);
-                                if (n instanceof SourceFilterNode) {
-                                    n.add(new DefaultMutableTreeNode(rsac));
-                                }
-                            }
-                            if (displayFilteredSources) {
-                               super.insert(new DefaultMutableTreeNode(rsac), getChildCount());
-                            }
-                        } else {
-
-                            System.out.println("a passing source is still passing, updating children");
-                            if (event.equals(SOURCES_UPDATED)) {
-
-                                // System.out.println("there are "+getChildCount()+" children");
-                                for (int i = 0; i < getChildCount(); i++) {
-                                    DefaultMutableTreeNode n = (DefaultMutableTreeNode) getChildAt(i);
-                                    if (n instanceof SourceFilterNode) {
-
-                                        System.out.println("updating child "+i+" named "+n.toString());
-                                        ((SourceFilterNode) n).update(event);
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-
-                        System.out.println("test do not pass ");
-                        if (currentOutputSacs.contains(sac)) {
-                            // a passing source is now blocked
-                            //System.out.println(toString());
-                            System.out.println("0000000000000 a passing source is now blocked");
-                            currentOutputSacs.remove(sac);
-                            // System.out.println("there are "+getChildCount()+" children");
-                            for (int i = 0; i < getChildCount(); i++) {
-
-                                System.out.println("Getting node i");
-                                DefaultMutableTreeNode n = (DefaultMutableTreeNode) getChildAt(i);
-
-                                System.out.println("Got it!");
-                                if (n instanceof SourceFilterNode) {
-                                    System.out.println("updating child "+i+" named "+n.toString());
-                                    ((SourceFilterNode) n).remove(sac);
-                                } else {
-                                    if (displayFilteredSources) {
-                                        if (n.getUserObject() instanceof RenamableSourceAndConverter) {
-                                            if (((RenamableSourceAndConverter)(n.getUserObject())).sac.equals(sac)) {
-
-                                                System.out.println("removing child "+i+" named "+n.toString()+" because it contains an obsolete leaf");
-                                                this.remove(i);
-                                                i--;
-                                                System.out.println("done removing");
-                                                //n.removeFromParent();//.removefrompaent();
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                break;
-
-            case NODE_ADDED:
-                System.out.println("Node added");
-                for (SourceAndConverter sac : currentOutputSacs) {
-                    for (int i = 0; i < getChildCount(); i++) {
-                        DefaultMutableTreeNode n = (DefaultMutableTreeNode) getChildAt(i);
-                        if (n instanceof SourceFilterNode) {
-                            n.add(new DefaultMutableTreeNode(new RenamableSourceAndConverter(sac)));
-                        }
-                    }
-                }
-                break;
-        }*/
     }
 
     public String getName() {
         return name;
     }
 
-    public static class UpdateEvent {
+    /**
+     * Abstract parent method for update events, should not be instantianted directly
+     */
+    abstract static class UpdateEvent {
     }
 
+    /**
+     * The filter of this node has been modified - recomputation needed
+     * There is no need to notified children nodes as the {@link SourceFilterNode#update(UpdateEvent)}
+     * method will do the job itself
+     */
     public static class FilterUpdateEvent extends UpdateEvent {
         public FilterUpdateEvent() {
 
         }
     }
 
+    /**
+     * A source has been modified in some ways, all nodes should recompute if
+     * the source filtering result is modified
+     * There is no need to notified children nodes as the {@link SourceFilterNode#update(UpdateEvent)}
+     * method will do the job itself
+     *
+     * However this is true for the children only.
+     *
+     * Normally, such an event should be triggered from the top node, to ensure a complete update of
+     * the full tree
+     */
     public static class SourceUpdateEvent extends UpdateEvent {
         final SourceAndConverter sac;
 
