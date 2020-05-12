@@ -286,7 +286,7 @@ public class BdvSourceServiceUI {
         return sacs;
     }
 
-    public TreeModel getTreeModel() {
+    public DefaultTreeModel getTreeModel() {
         return model;
     }
 

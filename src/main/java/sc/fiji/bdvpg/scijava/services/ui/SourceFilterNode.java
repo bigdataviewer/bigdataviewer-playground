@@ -37,8 +37,6 @@ import java.util.function.Predicate;
  *      - one of the input SourceAndConverter PROPERTY has changed
  *      - a SourceAndConverter node has to be removed
  *
- * - Properties:
- *
  */
 
 public class SourceFilterNode extends DefaultMutableTreeNode {
