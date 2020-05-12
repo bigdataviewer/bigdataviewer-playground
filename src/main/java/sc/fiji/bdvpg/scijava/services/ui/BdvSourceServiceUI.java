@@ -290,4 +290,44 @@ public class BdvSourceServiceUI {
         return model;
     }
 
+    public TreePath getTreePathFromString(String path) {
+
+        String[] stringPath = path.split(">");
+
+        Object[] nodes = new Object[stringPath.length];
+
+        TreeNode current = top;
+        int currentDepth = 0;
+
+        while (currentDepth<stringPath.length) {
+            final Enumeration children = current.children();
+            System.out.println("Searching "+stringPath[currentDepth].trim());
+            boolean found = false;
+            while (children.hasMoreElements()) {
+                TreeNode testNode = (TreeNode)children.nextElement();
+                if (testNode.toString().trim().equals(stringPath[currentDepth].trim())) {
+                    System.out.println("Found "+testNode.toString().trim());
+                    nodes[currentDepth] = testNode;
+                    currentDepth++;
+                    current = testNode;
+                    found = true;
+                    break;
+                } else {
+                    System.out.println("Not Matched "+testNode.toString().trim());
+                }
+            }
+            if (found==false) break;
+        }
+
+        if (currentDepth==stringPath.length) {
+            return new TreePath(nodes);
+        } else {
+            System.err.println("TreePath "+path+" not found.");
+            return null;
+        }
+    }
+
+    public Set<SourceAndConverter> getSourceAndConvertersFromTreePath(TreePath path) {
+        return getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) path.getLastPathComponent());
+    }
 }
