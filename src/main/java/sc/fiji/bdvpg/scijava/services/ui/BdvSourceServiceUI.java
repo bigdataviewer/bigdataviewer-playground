@@ -101,13 +101,6 @@ public class BdvSourceServiceUI {
     Set<SourceAndConverter> displayedSource = ConcurrentHashMap.newKeySet();
 
     /**
-     * Node holding all Sources just below the root node,
-     * Should be kept as last index in this branch. Nothing below except
-     * results of inspection should go there.
-     */
-    SourceFilterNode allSourcesNode;
-
-    /**
      * Spimdata Filter nodes currently present in the tree
      */
     List<SpimDataFilterNode> spimdataFilterNodes = new ArrayList<>();
@@ -121,12 +114,8 @@ public class BdvSourceServiceUI {
         // Tree view of Spimdata
         top = new SourceFilterNode("Sources", (sac) -> true, false);
         tree = new JTree(top);
-        //tree.setRootVisible(false);
-        //allSourcesNode = new SourceFilterNode("All Sources", (sac) -> true, true);
-        //top.add(allSourcesNode);
 
         SourceFilterNode outsideSpimDataSources = new SourceFilterNode("Other Sources", (sac) -> !sourceAndConverterService.getSacToMetadata().get(sac).containsKey( SPIM_DATA_INFO ), true);
-        //allSourcesNode.add(spimDataSources);
         top.add(outsideSpimDataSources);
 
         model = (DefaultTreeModel)tree.getModel();
@@ -145,14 +134,6 @@ public class BdvSourceServiceUI {
                             .getPopup()
                             .show(e.getComponent(), e.getX(), e.getY());
                 }
-                // Double Click : display source, if possible
-                /*if (e.getClickCount()==2 && !e.isConsumed()) {
-                    if (SacServies.getSourceDisplayService()!=null) {
-                        for (SourceAndConverter sac: getSelectedSourceAndConverters()) {
-                            SacServies.getSourceDisplayService().show(sac);
-                        }
-                    }
-                }*/
             }
         });
 
@@ -179,11 +160,12 @@ public class BdvSourceServiceUI {
         }
     }
 
-    public void inspectSource(SourceAndConverter sac) {
+    public DefaultMutableTreeNode inspectSource(SourceAndConverter sac) {
         DefaultMutableTreeNode parentNodeInspect = new DefaultMutableTreeNode("Inspect Results ["+sac.getSpimSource().getName()+"]");
         appendInspectorResult(parentNodeInspect, sac);
         top.add(parentNodeInspect);
         model.reload(top);
+        return null;//parentNodeInspect;
     }
 
     // TODO : understand what the heck is this ?
@@ -330,21 +312,6 @@ public class BdvSourceServiceUI {
         model.reload();
         panel.revalidate();
         frame.setVisible( true );
-        /*if (displayedSource.contains(sac)) {
-            // No Need to update
-            visitAllNodesAndDelete(top, sac);
-            updateSpimDataFilterNodes();
-            insertIntoTree(sac);
-            //model.reload();
-        } else {
-            //System.out.println("Adding "+sac.getSpimSource().getName());
-            displayedSource.add(sac);
-
-            updateSpimDataFilterNodes();
-            insertIntoTree(sac);
-            panel.revalidate();
-            frame.setVisible( true );
-        }*/
     }
 
     private void updateSpimDataFilterNodes() {
@@ -360,13 +327,13 @@ public class BdvSourceServiceUI {
         });
 
         // Check for obsolete spimdatafilternodes
-        /*spimdataFilterNodes.forEach(fnode -> {
+        spimdataFilterNodes.forEach(fnode -> {
             if (!currentSpimdatas.contains(fnode.asd)) {
                 if (fnode.getParent()!=null) {
                     model.removeNodeFromParent(fnode);
                 }
             }
-        });*/
+        });
 
         // Check for new spimdata
         currentSpimdatas.forEach(asd -> {
@@ -400,6 +367,8 @@ public class BdvSourceServiceUI {
                     a.addAll(b);
                     return a;
                 }).stream()
+                // removes null entities
+                .filter(e -> e!=null)
                 // Collected and sorted by class
                 .collect(Collectors.groupingBy(e -> e.getClass(), Collectors.toList()));
 
@@ -409,9 +378,6 @@ public class BdvSourceServiceUI {
         });
 
         classNodes.values().forEach((f) -> nodeSpimData.add(f));
-
-        //nodeSpimData.add(new SourceFilterNode("All Sources", (sac)->true, true));
-
 
         Set<Entity> entitiesAlreadyRegistered = new HashSet<>();
         entitiesByClass.forEach((c,el) -> {
@@ -425,58 +391,13 @@ public class BdvSourceServiceUI {
 
     }
 
-    /*
-    void insertIntoTree(SourceAndConverter sac) {
-        RenamableSourceAndConverter rsac = new RenamableSourceAndConverter(sac);
-        //insertIntoTree(top, rsac);
-        top.add(new DefaultMutableTreeNode(rsac));
-    }
-    */
-
-    /*
-    void insertIntoTree(SourceFilterNode parent, RenamableSourceAndConverter rsac) {
-        boolean consumed = false;
-        for (int i = 0; i < parent.getChildCount(); i++) {
-            DefaultMutableTreeNode n = (DefaultMutableTreeNode) parent.getChildAt(i);
-            if (n instanceof SourceFilterNode) {
-                SourceFilterNode f = (SourceFilterNode) n;
-                if (f.filter.test(rsac.sac)) {
-                    insertIntoTree(f, rsac);
-                    if (!f.allowDuplicate) {
-                        consumed = true;
-                    }
-                }
-            }
-        }
-        if (!consumed) {
-            //System.out.println("Adding "+rsac.sac.getSpimSource().getName());
-            parent.add(new DefaultMutableTreeNode(rsac));
-            model.reload(parent);
-        }
-    }
-    */
     public void remove(SourceAndConverter sac) {
         if (displayedSource.contains(sac)) {
             // No Need to update
             displayedSource.remove(sac);
-            visitAllNodesAndDelete(top, sac);
+            top.remove(sac);
+            //visitAllNodesAndDelete(top, sac);
             updateSpimDataFilterNodes();
-        }
-    }
-
-    void visitAllNodesAndDelete(TreeNode node, SourceAndConverter sac) {
-        if (node.getChildCount() >= 0) {
-            for (Enumeration e = node.children(); e.hasMoreElements();) {
-                TreeNode n = (TreeNode) e.nextElement();
-                //n.isLeaf() &&
-                if (((DefaultMutableTreeNode) n).getUserObject() instanceof RenamableSourceAndConverter) {
-                    if (((RenamableSourceAndConverter)((DefaultMutableTreeNode) n).getUserObject()).sac.equals(sac)) {
-                        model.removeNodeFromParent(((DefaultMutableTreeNode) n));
-                    }
-                } else {
-                    visitAllNodesAndDelete(n, sac);
-                }
-            }
         }
     }
 
@@ -512,8 +433,6 @@ public class BdvSourceServiceUI {
     }
 
     // --------------------- INNER CLASSES
-
-
 
     /**
      * SourceAndConverter filter node : Selects SpimData and allow for duplicate
