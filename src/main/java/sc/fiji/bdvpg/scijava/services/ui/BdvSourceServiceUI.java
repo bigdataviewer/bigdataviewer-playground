@@ -1,19 +1,11 @@
 package sc.fiji.bdvpg.scijava.services.ui;
 
-import bdv.AbstractSpimSource;
-import bdv.img.WarpedSource;
-import bdv.tools.transformation.TransformedSource;
-import bdv.util.ResampledSource;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.base.Entity;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
-import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.realtransform.RealTransform;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -24,7 +16,6 @@ import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
@@ -160,144 +151,11 @@ public class BdvSourceServiceUI {
         }
     }
 
-    public DefaultMutableTreeNode inspectSource(SourceAndConverter sac) {
+    public void inspectSource(SourceAndConverter sac) {
         DefaultMutableTreeNode parentNodeInspect = new DefaultMutableTreeNode("Inspect Results ["+sac.getSpimSource().getName()+"]");
-        appendInspectorResult(parentNodeInspect, sac);
+        SourceAndConverterInspector.appendInspectorResult(parentNodeInspect, sac, sourceAndConverterService);
         top.add(parentNodeInspect);
         model.reload(top);
-        return null;//parentNodeInspect;
-    }
-
-    // TODO : understand what the heck is this ?
-    public void appendMetadata(DefaultMutableTreeNode parent, SourceAndConverter sac) {
-        Map<String, Object> metadata = SourceAndConverterServices.getSourceAndConverterService().getSacToMetadata().get(sac);
-        metadata.keySet().forEach(k -> {
-            DefaultMutableTreeNode nodeMetaKey = new DefaultMutableTreeNode(k);
-            parent.add(nodeMetaKey);
-            DefaultMutableTreeNode nodeMetaValue = new DefaultMutableTreeNode(metadata.get(k));
-            nodeMetaKey.add(nodeMetaValue);
-        });
-    }
-
-    public void appendInspectorResult(DefaultMutableTreeNode parent, SourceAndConverter sac) {
-        if (sac.getSpimSource() instanceof TransformedSource) {
-            DefaultMutableTreeNode nodeTransformedSource = new DefaultMutableTreeNode("Transformed Source");
-            parent.add(nodeTransformedSource);
-            TransformedSource source = (TransformedSource) sac.getSpimSource();
-            DefaultMutableTreeNode nodeAffineTransformGetter = new DefaultMutableTreeNode(new Supplier<AffineTransform3D>(){
-                public AffineTransform3D get() {
-                    AffineTransform3D at3D = new AffineTransform3D();
-                    source.getFixedTransform(at3D);
-                    return at3D;
-                }
-                public String toString() {
-                    return "AffineTransform["+source.getName()+"]";
-                }
-            });
-            nodeTransformedSource.add(nodeAffineTransformGetter);
-            if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).size()>0) {
-                // at least A sourceandconverteralready exists for this source
-                sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).forEach((src) -> {
-                            DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
-                            nodeTransformedSource.add(wrappedSourceNode);
-                            appendInspectorResult(wrappedSourceNode, src);
-                        }
-                );
-            } else {
-                // no source and converter exist for this source : creates it
-                SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getWrappedSource());
-                sourceAndConverterService.register(src);
-                DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
-                nodeTransformedSource.add(wrappedSourceNode);
-                appendInspectorResult(wrappedSourceNode, src);
-            }
-            appendMetadata(nodeTransformedSource,sac);
-        }
-
-        if (sac.getSpimSource() instanceof WarpedSource) {
-            DefaultMutableTreeNode nodeWarpedSource = new DefaultMutableTreeNode("Warped Source");
-            parent.add(nodeWarpedSource);
-            WarpedSource source = (WarpedSource) sac.getSpimSource();
-            DefaultMutableTreeNode nodeRealTransformGetter = new DefaultMutableTreeNode(new Supplier<RealTransform>(){
-                public RealTransform get() {
-                    return source.getTransform();
-                }
-                public String toString() {
-                    return "RealTransform["+source.getName()+"]";
-                }
-            });
-            nodeWarpedSource.add(nodeRealTransformGetter);
-            if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).size()>0) {
-                // at least A sourceandconverteralready exists for this source
-                sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).forEach((src) -> {
-                            DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
-                            nodeWarpedSource.add(wrappedSourceNode);
-                            appendInspectorResult(wrappedSourceNode, src);
-                        }
-                );
-            } else {
-                // no source and converter exist for this source : creates it
-                SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getWrappedSource());
-                sourceAndConverterService.register(src);
-                DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
-                nodeWarpedSource.add(wrappedSourceNode);
-                appendInspectorResult(wrappedSourceNode, src);
-            }
-            appendMetadata(nodeWarpedSource,sac);
-        }
-
-        if (sac.getSpimSource() instanceof ResampledSource) {
-            DefaultMutableTreeNode nodeResampledSource = new DefaultMutableTreeNode("Resampled Source");
-            parent.add(nodeResampledSource);
-            ResampledSource source = (ResampledSource) sac.getSpimSource();
-
-            DefaultMutableTreeNode nodeOrigin = new DefaultMutableTreeNode("Origin");
-            nodeResampledSource.add(nodeOrigin);
-
-            if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getOriginalSource()).size()>0) {
-                // at least A sourceandconverteralready exists for this source
-                sourceAndConverterService.getSourceAndConvertersFromSource(source.getOriginalSource()).forEach((src) -> {
-                            DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
-                            nodeOrigin.add(wrappedSourceNode);
-                            appendInspectorResult(wrappedSourceNode, src);
-                        }
-                );
-            } else {
-                // no source and converter exist for this source : creates it
-                SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getOriginalSource());
-                sourceAndConverterService.register(src);
-                DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
-                nodeOrigin.add(wrappedSourceNode);
-                appendInspectorResult(wrappedSourceNode, src);
-            }
-
-            DefaultMutableTreeNode nodeResampler = new DefaultMutableTreeNode("Sampler Model");
-            nodeResampledSource.add(nodeResampler);
-
-            if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getModelResamplerSource()).size()>0) {
-                // at least A sourceandconverteralready exists for this source
-                sourceAndConverterService.getSourceAndConvertersFromSource(source.getModelResamplerSource()).forEach((src) -> {
-                            DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
-                            nodeResampler.add(wrappedSourceNode);
-                            appendInspectorResult(wrappedSourceNode, src);
-                        }
-                );
-            } else {
-                // no source and converter exist for this source : creates it
-                SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getModelResamplerSource());
-                sourceAndConverterService.register(src);
-                DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
-                nodeResampler.add(wrappedSourceNode);
-                appendInspectorResult(wrappedSourceNode, src);
-            }
-            appendMetadata(nodeResampledSource,sac);
-        }
-
-        if (sac.getSpimSource() instanceof AbstractSpimSource) {
-            DefaultMutableTreeNode nodeSpimSource = new DefaultMutableTreeNode("Spim Source");
-            parent.add(nodeSpimSource);
-            appendMetadata(nodeSpimSource,sac);
-        }
     }
 
     public void update(SourceAndConverter sac) {
@@ -339,7 +197,7 @@ public class BdvSourceServiceUI {
         currentSpimdatas.forEach(asd -> {
                     //System.out.println("Test "+sdi.toString());
                     if ((spimdataFilterNodes.size()==0)||(spimdataFilterNodes.stream().noneMatch(fnode -> fnode.asd.equals(asd)))) {
-                        SpimDataFilterNode newNode = new SpimDataFilterNode("SpimData "+spimdataFilterNodes.size(), asd);
+                        SpimDataFilterNode newNode = new SpimDataFilterNode("SpimData "+spimdataFilterNodes.size(), asd, sourceAndConverterService);
                         spimdataFilterNodes.add(newNode);
                         addEntityFilterNodes(newNode, asd);
                         top.insert(newNode, 0);
@@ -383,7 +241,7 @@ public class BdvSourceServiceUI {
         entitiesByClass.forEach((c,el) -> {
             el.forEach(entity -> {
                 if (!entitiesAlreadyRegistered.contains(entity)) {
-                    classNodes.get(c).add(new SpimDataElementFilter(c.getSimpleName()+" "+entity.getId(),entity));
+                    classNodes.get(c).add(new SpimDataElementFilter(c.getSimpleName()+" "+entity.getId(),entity, sourceAndConverterService));
                     entitiesAlreadyRegistered.add(entity);
                 }
             });
@@ -430,65 +288,6 @@ public class BdvSourceServiceUI {
 
     public TreeModel getTreeModel() {
         return model;
-    }
-
-    // --------------------- INNER CLASSES
-
-    /**
-     * SourceAndConverter filter node : Selects SpimData and allow for duplicate
-     */
-    public class SpimDataFilterNode extends SourceFilterNode {
-
-        public AbstractSpimData asd;
-
-        public boolean filter(SourceAndConverter sac) {
-            Map<String, Object> props = sourceAndConverterService.getSacToMetadata().get(sac);
-            assert props!=null;
-            //System.out.println("Testing "+sac.getSpimSource().getName()+" vs "+asd.toString());
-            //assert props.get(SPIM_DATA) instanceof Set<BdvSourceAndConverterService.SpimDataInfo>;
-            return (props.containsKey( SPIM_DATA_INFO ))&&(( SourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).asd.equals(asd);
-        }
-
-        public SpimDataFilterNode(String name, AbstractSpimData spimdata) {
-            super(name,null, false);
-            this.filter = this::filter;
-            asd = spimdata;
-        }
-
-        public String toString() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-    }
-
-    /**
-     * SourceAndConverter filter node : Selected a SourceAndConverter which is linked
-     * to a particular Entity
-     */
-    public class SpimDataElementFilter extends SourceFilterNode {
-
-        Entity e;
-
-        public SpimDataElementFilter(String name, Entity e) {
-            super(name, null, true);
-            this.filter = this::filter;
-            this.e = e;
-        }
-
-        public boolean filter(SourceAndConverter sac) {
-            Map<String, Object> props = sourceAndConverterService.getSacToMetadata().get(sac);
-            assert props!=null;
-            assert props.containsKey( SPIM_DATA_INFO );
-
-            AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd = ( AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) (( SourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).asd;
-            Integer idx = (( SourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).setupId;
-
-            return asd.getSequenceDescription().getViewSetups().get(idx).getAttributes().values().contains(e);
-        }
-
     }
 
 }

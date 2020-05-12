@@ -124,7 +124,9 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
     }
 
     public final static String SOURCES_UPDATED = "SOURCES_UPDATED";
+
     public final static String FILTER_UPDATED = "FILTER_UPDATED";
+
     public final static String NODE_ADDED = "NODE_ADDED";
 
     public synchronized void update(String event) {
