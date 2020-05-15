@@ -253,12 +253,10 @@ public class BdvSourceServiceUI {
 
     public void remove(SourceAndConverter sac) {
         if (displayedSource.contains(sac)) {
-            // No Need to update
             displayedSource.remove(sac);
             top.remove(sac);
+            updateSpimDataFilterNodes();
             model.reload();
-            //visitAllNodesAndDelete(top, sac);
-            // updateSpimDataFilterNodes();
         }
     }
 
@@ -293,6 +291,12 @@ public class BdvSourceServiceUI {
         return model;
     }
 
+    /**
+     * Allows to get the tree path from a String
+     * Like SpimData_0
+     * @param path
+     * @return
+     */
     public TreePath getTreePathFromString(String path) {
 
         String[] stringPath = path.split(">");

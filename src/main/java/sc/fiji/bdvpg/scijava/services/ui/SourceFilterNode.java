@@ -110,7 +110,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
         }
     }
 
-    public static SourceAndConverter getSacFromNode(MutableTreeNode newChild) {
+    private static SourceAndConverter getSacFromNode(MutableTreeNode newChild) {
         return ((RenamableSourceAndConverter)(((DefaultMutableTreeNode)newChild).getUserObject())).sac;
     }
 
