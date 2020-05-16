@@ -8,7 +8,6 @@ import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
 import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
 
 import javax.swing.*;

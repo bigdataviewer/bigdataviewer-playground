@@ -3,7 +3,6 @@ package sc.fiji.bdvpg.scijava.services;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imglib2.converter.Converter;
 import net.imglib2.util.Pair;
 import org.scijava.command.CommandService;
@@ -15,7 +14,6 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
-import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
@@ -24,7 +22,6 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**

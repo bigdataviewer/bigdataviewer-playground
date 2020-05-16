@@ -17,6 +17,7 @@ import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.behaviour.SourceAndConverterContextMenuClickBehaviour;
 import sc.fiji.bdvpg.scijava.command.bdv.ScreenShotMakerCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.ui.swingdnd.BdvTransferHandler;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.*;
@@ -114,6 +115,9 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 
 		addBdvPlaygroundActions();
 
+		// For drag and drop
+		addCustomTransferHandler();
+
 	}
 
 	private void addBdvPlaygroundActions()
@@ -194,6 +198,11 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 		for (KeyStroke ks : bdv.getKeybindings().getConcatenatedInputMap().allKeys()) {
 			System.out.println("\t"+ks+":"+bdv.getKeybindings().getConcatenatedInputMap().get(ks));
 		}
+	}
+
+	void addCustomTransferHandler() {
+		bdv.getViewerPanel().setTransferHandler(new BdvTransferHandler());
+
 	}
 
 

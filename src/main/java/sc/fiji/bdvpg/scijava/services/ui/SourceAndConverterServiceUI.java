@@ -6,6 +6,7 @@ import mpicbg.spim.data.generic.base.Entity;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.ui.swingdnd.SourceAndConverterServiceUITransferHandler;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -49,7 +50,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  * TODO
  *
  */
-public class BdvSourceServiceUI {
+public class SourceAndConverterServiceUI {
 
     /**
      * Linked {@link SourceAndConverterService}
@@ -96,7 +97,7 @@ public class BdvSourceServiceUI {
      */
     List<SpimDataFilterNode> spimdataFilterNodes = new ArrayList<>();
 
-    public BdvSourceServiceUI( SourceAndConverterService sourceAndConverterService ) {
+    public SourceAndConverterServiceUI(SourceAndConverterService sourceAndConverterService ) {
         this.sourceAndConverterService = sourceAndConverterService;
 
         frame = new JFrame("Bdv Sources");
@@ -140,6 +141,14 @@ public class BdvSourceServiceUI {
                     }
                 }
         );
+
+        // We can drag the nodes
+        tree.setDragEnabled(true);
+        // Enables:
+        // - drag -> TODO
+        // - drop -> automatically import xml bdv datasets
+        tree.setTransferHandler(new SourceAndConverterServiceUITransferHandler());
+
         frame.add(panel);
         frame.pack();
         frame.setVisible(false);
@@ -273,7 +282,7 @@ public class BdvSourceServiceUI {
         return sacList.toArray(new SourceAndConverter[sacList.size()]);
     }
 
-    private Set<SourceAndConverter> getSourceAndConvertersFromChildrenOf(DefaultMutableTreeNode node) {
+    public Set<SourceAndConverter> getSourceAndConvertersFromChildrenOf(DefaultMutableTreeNode node) {
         Set<SourceAndConverter> sacs = new HashSet<>();
         for (int i=0;i<node.getChildCount();i++) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
