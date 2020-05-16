@@ -1,5 +1,6 @@
 package sc.fiji.bdvpg.scijava.services.ui.swingdnd;
 
+import bdv.ui.SourcesTransferable;
 import bdv.viewer.SourceAndConverter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
@@ -22,7 +23,7 @@ import java.util.List;
 
 public class BdvTransferHandler extends TransferHandler {
     DataFlavor nodesFlavor;
-    DataFlavor[] flavors = new DataFlavor[1];
+    DataFlavor[] flavors = new DataFlavor[2];
 
     public BdvTransferHandler() {
         try {
@@ -30,27 +31,64 @@ public class BdvTransferHandler extends TransferHandler {
                     DefaultMutableTreeNode[].class.getName() + "\"";
             nodesFlavor = new DataFlavor(mimeType);
             flavors[0] = nodesFlavor;
+            flavors[1] = SourcesTransferable.flavor;
         } catch(ClassNotFoundException e) {
             System.out.println("ClassNotFound: " + e.getMessage());
         }
     }
 
     //TransferHandler
-    @Override public boolean canImport(JComponent comp, DataFlavor flavor[]) {
+    /*@Override public boolean canImport(JComponent comp, DataFlavor flavor[]) {
         for (int i = 0, n = flavor.length; i < n; i++) {
             for (int j = 0, m = flavors.length; j < m; j++) {
                 if (flavor[i].equals(flavors[j])) {
+
                     return true;
                 }
             }
         }
         return false;
+    }*/
+
+
+    public boolean canImport(TransferSupport support) {
+
+        if (support.getComponent() instanceof JComponent) {
+            //return canImport((JComponent)support.getComponent(), support.getDataFlavors());
+
+            for (int i = 0, n = support.getDataFlavors().length; i < n; i++) {
+                for (int j = 0, m = flavors.length; j < m; j++) {
+                    if (support.getDataFlavors()[i].equals(flavors[j])) {
+
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } else {
+            return false;
+        }
     }
 
     @Override public boolean importData(TransferHandler.TransferSupport support) {
         if (!canImport(support)) {
             return false;
         }
+
+        // See if we can get the SourcesTransferable flavor
+        if (support.getTransferable().isDataFlavorSupported(SourcesTransferable.flavor)) {
+            try {
+                System.out.println("SourcesTransferable flavor");
+                final List<SourceAndConverter<?>> sacs =
+                        ((SourcesTransferable.SourceList) support.getTransferable().getTransferData(SourcesTransferable.flavor))
+                                .getSources();
+                ((bdv.viewer.ViewerPanel)support.getComponent()).state().addSources(sacs);
+                ((bdv.viewer.ViewerPanel)support.getComponent()).state().setSourcesActive(sacs, true);
+            } catch (Exception e) {
+
+            }
+        }
+
         // Extract transfer data.
         DefaultMutableTreeNode[] nodes = null;
         try {
@@ -87,10 +125,6 @@ public class BdvTransferHandler extends TransferHandler {
         }
         */
         // Add data to model.
-
-        System.out.println("Let's get some sacs");
-
-
 
         if (SourceAndConverterServices.getSourceAndConverterService() instanceof SourceAndConverterService) {
             List<SourceAndConverter<?>> sacs = new ArrayList<>();
