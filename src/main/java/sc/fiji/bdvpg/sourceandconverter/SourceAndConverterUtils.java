@@ -263,7 +263,6 @@ public class SourceAndConverterUtils {
         }
     }
 
-
     public static ConverterSetup createConverterSetup(SourceAndConverter sac) {
         return  createConverterSetup(sac,-1);
     }
@@ -380,8 +379,7 @@ public class SourceAndConverterUtils {
      * @param <T>
      * @return
      */
-    private static< T extends RealType< T >>  Converter createConverterRealType(final T type) { //Source<T> source) {
-        //final T type = source.getType();//Util.getTypeFromInterval( source.getSource( 0, 0 ) );
+    private static< T extends RealType< T >>  Converter createConverterRealType(final T type) {
         final double typeMin = Math.max( 0, Math.min( type.getMinValue(), 65535 ) );
         final double typeMax = Math.max( 0, Math.min( type.getMaxValue(), 65535 ) );
         final RealARGBColorConverter< T > converter ;
@@ -455,7 +453,6 @@ public class SourceAndConverterUtils {
             return false;
         }
     }
-
 
     /**
      * if a source has a linked spimdata, mutates the last registration to account for changes

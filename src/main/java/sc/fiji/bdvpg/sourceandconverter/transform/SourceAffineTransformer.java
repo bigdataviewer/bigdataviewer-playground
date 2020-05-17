@@ -3,13 +3,12 @@ package sc.fiji.bdvpg.sourceandconverter.transform;
 import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import java.util.function.Function;
 
 /**
- * This action aaplies an AffineTransform onto a SourceAndConverter
+ * This action applies an AffineTransform onto a SourceAndConverter
  * Both the non volatile and the volatile spimsource, if present, are wrapped
  * Another option could be to check whether the spimsource are already wrapped, and then concatenate the transforms
  * TODO : write this alternative action, or set a transform in place flag in this action
