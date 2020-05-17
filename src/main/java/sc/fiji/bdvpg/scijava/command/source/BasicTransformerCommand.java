@@ -9,7 +9,9 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAndTimeRange;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
 
 /**
  * Not clever but consistent : always append transform which acts as if it was inserted at first position
@@ -52,7 +54,7 @@ public class BasicTransformerCommand implements Command {
                     case "Rot270": rot(3, at3D );
                     break;
                 }
-                SourceAndConverterUtils.append(at3D, sac);
+                SourceTransformHelper.append(at3D, new SourceAndConverterAndTimeRange(sac, timepoint));
             }
             /*
             // Get affine transform
