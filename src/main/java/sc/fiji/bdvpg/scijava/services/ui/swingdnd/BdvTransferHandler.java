@@ -1,7 +1,9 @@
 package sc.fiji.bdvpg.scijava.services.ui.swingdnd;
 
 import bdv.ui.SourcesTransferable;
+import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import bdv.viewer.ViewerPanel;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
@@ -14,9 +16,10 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Goal : allows to drop drop SourceAndConverter from the SourceAndConverterServiceUI into the bdv windows
+ * Allows to drop drop SourceAndConverter from the SourceAndConverterServiceUI into the bdv windows
  *
  * Allows importing nodes from the SourceAndConverterServiceUI JTree
  */
@@ -37,19 +40,24 @@ public class BdvTransferHandler extends TransferHandler {
         }
     }
 
-    //TransferHandler
-    /*@Override public boolean canImport(JComponent comp, DataFlavor flavor[]) {
-        for (int i = 0, n = flavor.length; i < n; i++) {
-            for (int j = 0, m = flavors.length; j < m; j++) {
-                if (flavor[i].equals(flavors[j])) {
+    public void updateDropLocation(TransferSupport support, DropLocation dl) {
+        // Do nothing : can be extended for custom behaviour
+    }
 
-                    return true;
-                }
-            }
+    public void importSourcesAndConverters(TransferSupport support, List<SourceAndConverter<?>> sacs) {
+        // Can be extended for custom action on sources import
+        Optional<BdvHandle> bdvh = getBdvHandleFromViewerPanel(((bdv.viewer.ViewerPanel)support.getComponent()));
+        if (bdvh.isPresent()) {
+            SourceAndConverterServices.getSourceAndConverterDisplayService()
+                    .show(bdvh.get(), sacs.toArray(new SourceAndConverter[sacs.size()]));
         }
-        return false;
-    }*/
+    }
 
+    public Optional<BdvHandle> getBdvHandleFromViewerPanel(ViewerPanel viewerPanel) {
+        return SourceAndConverterServices.
+                getSourceAndConverterDisplayService()
+                .getDisplays().stream().filter(bdvh -> bdvh.getViewerPanel().equals(viewerPanel)).findFirst();
+    }
 
     public boolean canImport(TransferSupport support) {
 
@@ -59,7 +67,8 @@ public class BdvTransferHandler extends TransferHandler {
             for (int i = 0, n = support.getDataFlavors().length; i < n; i++) {
                 for (int j = 0, m = flavors.length; j < m; j++) {
                     if (support.getDataFlavors()[i].equals(flavors[j])) {
-
+                        DropLocation dl = support.getDropLocation();
+                        updateDropLocation(support, dl);
                         return true;
                     }
                 }
@@ -78,12 +87,10 @@ public class BdvTransferHandler extends TransferHandler {
         // See if we can get the SourcesTransferable flavor
         if (support.getTransferable().isDataFlavorSupported(SourcesTransferable.flavor)) {
             try {
-                System.out.println("SourcesTransferable flavor");
                 final List<SourceAndConverter<?>> sacs =
                         ((SourcesTransferable.SourceList) support.getTransferable().getTransferData(SourcesTransferable.flavor))
                                 .getSources();
-                ((bdv.viewer.ViewerPanel)support.getComponent()).state().addSources(sacs);
-                ((bdv.viewer.ViewerPanel)support.getComponent()).state().setSourcesActive(sacs, true);
+                importSourcesAndConverters(support, sacs);
             } catch (Exception e) {
 
             }
@@ -99,32 +106,6 @@ public class BdvTransferHandler extends TransferHandler {
         } catch (java.io.IOException ioe) {
             System.err.println("I/O error: " + ioe.getMessage());
         }
-        // Get drop location info.
-        /*
-        int childIndex;
-
-        TreePath dest;
-        if (support.isDrop()) {
-            JTree.DropLocation dl = (JTree.DropLocation) support.getDropLocation();
-            childIndex = dl.getChildIndex();
-            dest = dl.getPath();
-        } else {
-            childIndex = -1;
-            JTree tree = (JTree) support.getComponent();
-            dest = tree.getSelectionPath();
-        }
-
-        DefaultMutableTreeNode parent
-                = (DefaultMutableTreeNode) dest.getLastPathComponent();
-        JTree tree = (JTree) support.getComponent();
-        DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-        // Configure for drop mode.
-        int index = childIndex;    // DropMode.INSERT
-        if (childIndex == -1) {     // DropMode.ON
-            index = parent.getChildCount();
-        }
-        */
-        // Add data to model.
 
         if (SourceAndConverterServices.getSourceAndConverterService() instanceof SourceAndConverterService) {
             List<SourceAndConverter<?>> sacs = new ArrayList<>();
@@ -142,8 +123,7 @@ public class BdvTransferHandler extends TransferHandler {
                 }
             }
 
-            ((bdv.viewer.ViewerPanel)support.getComponent()).state().addSources(sacs);
-            ((bdv.viewer.ViewerPanel)support.getComponent()).state().setSourcesActive(sacs, true);
+            importSourcesAndConverters(support, sacs);
 
             return true;
         } else {

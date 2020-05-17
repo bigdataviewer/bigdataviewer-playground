@@ -366,6 +366,10 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
     }
 
+    public List<BdvHandle> getDisplays() {
+        return os.getObjects(BdvHandle.class);
+    }
+
     /**
      * Map containing objects that are 1 to 1 linked to a Display ( a BdvHandle object )
      * TODO : ask if it should contain a WeakReference to BdvHandle keys (Potential Memory leak ?)
