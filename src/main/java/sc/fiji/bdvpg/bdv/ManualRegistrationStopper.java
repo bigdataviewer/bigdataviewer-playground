@@ -4,6 +4,8 @@ package sc.fiji.bdvpg.bdv;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAndTimeRange;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -49,11 +51,11 @@ public class ManualRegistrationStopper implements Runnable {
 
     ManualRegistrationStarter starter;
 
-    BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter> registrationPolicy;// = ManualRegistrationStopper::createNewTransformedSourceAndConverter;
+    BiFunction<AffineTransform3D, SourceAndConverterAndTimeRange, SourceAndConverter> registrationPolicy;// = ManualRegistrationStopper::createNewTransformedSourceAndConverter;
 
     SourceAndConverter[] transformedSources;
 
-    public ManualRegistrationStopper(ManualRegistrationStarter starter, BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter> registrationPolicy) {
+    public ManualRegistrationStopper(ManualRegistrationStarter starter, BiFunction<AffineTransform3D, SourceAndConverterAndTimeRange, SourceAndConverter> registrationPolicy) {
         this.starter = starter;
         this.registrationPolicy = registrationPolicy;
     }
@@ -82,7 +84,8 @@ public class ManualRegistrationStopper implements Runnable {
         // Applies the policy
         for (int i=0;i<nSources;i++) {
             SourceAndConverter sac  = this.starter.getOriginalSourceAndConverter()[i];
-            transformedSources[i] = registrationPolicy.apply(transform3D, sac);
+
+            transformedSources[i] = registrationPolicy.apply(transform3D, new SourceAndConverterAndTimeRange(sac, starter.bdvHandle.getViewerPanel().state().getCurrentTimepoint()));
             if (starter.getOriginallyDisplayedSourceAndConverter().contains(sac)) {
                 transformedSacsToDisplay.add(transformedSources[i]);
             }
