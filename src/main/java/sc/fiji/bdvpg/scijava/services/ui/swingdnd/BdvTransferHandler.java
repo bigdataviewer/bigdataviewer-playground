@@ -91,6 +91,7 @@ public class BdvTransferHandler extends TransferHandler {
                         ((SourcesTransferable.SourceList) support.getTransferable().getTransferData(SourcesTransferable.flavor))
                                 .getSources();
                 importSourcesAndConverters(support, sacs);
+                return true;
             } catch (Exception e) {
 
             }
