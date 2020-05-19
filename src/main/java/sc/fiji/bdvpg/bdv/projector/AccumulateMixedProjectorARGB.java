@@ -16,6 +16,29 @@ import java.util.concurrent.ExecutorService;
 
 import static sc.fiji.bdvpg.bdv.projector.Projection.*;
 
+/**
+ * Bdv Projector which allows some flexibility in the way sources are combined
+ * when displayed in a bdv window.
+ *
+ * {@link bdv.viewer.SourceAndConverter} have associated Metadata which specifies how they
+ * should be displayed.
+ *
+ * Their metadata are accessed through {@link sc.fiji.bdvpg.scijava.services.SourceAndConverterService#getMetadata(SourceAndConverter, String)}
+ * where the key is {@link sc.fiji.bdvpg.bdv.projector.Projection#PROJECTION_MODE}
+ *
+ * The final pixel value is the result of the sum and/or average of sources based
+ * on their metadata + an occluding layer can be used to cover completely some sources
+ *
+ * See also {@link Projection} for extra details about the mechanism
+ *
+ * TODO : implement multilayered projection see https://github.com/bigdataviewer/bigdataviewer-playground/issues/95
+ *
+ * By looking if the alpha channel is 0 or not, sources are ignored or not in the pixel computation
+ * with the source present at every pixel. To rephrase : if the alpha channel of a source
+ * at a specific position is 0, it is ignored in the computation of this pixel.
+ *
+ * @author Christian Tischer, EMBL
+ */
 public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType, ARGBType >
 {
 	private final String[] projectionModes;

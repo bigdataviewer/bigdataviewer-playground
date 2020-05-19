@@ -5,39 +5,59 @@ import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
 import bdv.util.BdvStackSource;
 import bdv.viewer.Interpolation;
-import bdv.viewer.ViewerOptions;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerConfigHelper;
-import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.scijava.ui.behaviour.util.Behaviours;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
-import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.behaviour.SourceAndConverterContextMenuClickBehaviour;
 import sc.fiji.bdvpg.scijava.command.bdv.ScreenShotMakerCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.ui.swingdnd.BdvTransferHandler;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
 import java.util.function.Supplier;
+
+/**
+ * BigDataViewer Playground Action -->
+ *
+ * Creates a new {@link bdv.BigDataViewer} instance accessible through the {@link BdvHandle} interface
+ *
+ */
 
 public class BdvCreator implements Runnable, Supplier<BdvHandle>
 {
+
 	private BdvOptions bdvOptions;
 	private boolean interpolate;
-	private BdvHandle bdv;
+	//private BdvHandle bdv;
 	private int numTimePoints;
-	/** This String should hold a reference to a path which could contains:
-	 /* a bdvkeyconfig.yaml file
-	 /* a contextmenu.txt file
+	private String pathToBindings;
+
+	/**
+	 * @param bdvOptions holds a list of settings for creating options see {@link BdvOptions}
+	 *
+	 * @param interpolate should the window use linear interpolation or nearest neighbor interpolation ?
+	 *
+	 * @param numTimePoints Number of timepoints contained in the creating bdv window
+	 *
+	 * @param pathToBindings This String should hold a reference to a path which could contains:
+	 * 	 * a bdvkeyconfig.yaml file
+	 * 	 * a contextmenu.txt file
 	 */
-	private String pathToBindings = null;
+	public BdvCreator( BdvOptions bdvOptions, boolean interpolate, int numTimePoints, String pathToBindings )
+	{
+		this.bdvOptions = bdvOptions;
+		this.interpolate = interpolate;
+		this.numTimePoints = numTimePoints;
+		this.pathToBindings = pathToBindings;
+	}
 
 	public BdvCreator( )
 	{
@@ -71,25 +91,17 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 		this.pathToBindings = BdvSettingsGUISetter.defaultBdvPgSettingsRootPath;
 	}
 
-	public BdvCreator( BdvOptions bdvOptions, boolean interpolate, int numTimePoints, String pathToBindings )
-	{
-		this.bdvOptions = bdvOptions;
-		this.interpolate = interpolate;
-		this.numTimePoints = numTimePoints;
-		this.pathToBindings = pathToBindings;
-	}
-
 	@Override
 	public void run()
 	{
-		createEmptyBdv();
+		// Do nothing -> bdvhandle created with get() method
 	}
 
 	/**
-	 * Hack: add an image and remove it after the
+	 * Hack: adds an image and remove it after the
 	 * bdvHandle has been created.
 	 */
-	private void createEmptyBdv()
+	public BdvHandle get()
 	{
 		ArrayImg dummyImg = ArrayImgs.bytes(2, 2, 2);
 
@@ -97,10 +109,14 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 
 		BdvStackSource bss = BdvFunctions.show( dummyImg, "dummy", bdvOptions );
 
-		bdv = bss.getBdvHandle();
+		BdvHandle bdv = bss.getBdvHandle();
 
 		if (pathToBindings!=null) {
-			install(pathToBindings);
+			if (new File(pathToBindings).exists()) {
+				install(bdv,pathToBindings);
+			} else {
+				System.err.println("Bindings path "+pathToBindings+" do not exist.");
+			}
 		}
 
 		if ( interpolate ) bdv.getViewerPanel().setInterpolation( Interpolation.NLINEAR );
@@ -109,37 +125,40 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 
 		bdv.getViewerPanel().setNumTimepoints(numTimePoints);
 
-		addBdvPlaygroundActions();
+		addBdvPlaygroundActions(bdv);
 
+		// For drag and drop
+		addCustomTransferHandler(bdv);
+
+		return bdv;
 	}
 
-	private void addBdvPlaygroundActions()
+	/**
+	 * Adds Bdv Playground specific actions :
+	 * For now:
+	 * - Screenshot
+	 * - Show context menu
+	 * TODO : improve this
+	 */
+	private void addBdvPlaygroundActions(BdvHandle bdv)
 	{
-		/*final ClickBehaviourInstaller installerPopup = new ClickBehaviourInstaller( bdv, new SourceAndConverterContextMenuClickBehaviour( bdv ) );
-
-		installerPopup.install( "Sources context menu - C", "C" );
-		installerPopup.install( "Sources context menu - Right mouse button", "button3" );
-
-
-		final ClickBehaviourInstaller installerScreenshot = new ClickBehaviourInstaller( bdv, (x,y) -> {
-			SourceAndConverterServices.getSourceAndConverterService().getAction(actionScreenshotName).accept(null);
-		} );
-
-		installerScreenshot.install("Screenshot", "D" );*/
-
-
 		Behaviours behaviours = new Behaviours( new InputTriggerConfig() );
 		String actionScreenshotName = SourceAndConverterService.getCommandName(ScreenShotMakerCommand.class);
 		behaviours.behaviour((ClickBehaviour) (x, y) -> SourceAndConverterServices.getSourceAndConverterService().getAction(actionScreenshotName).accept(null),
 				actionScreenshotName, "not mapped");
 		behaviours.behaviour(new SourceAndConverterContextMenuClickBehaviour( bdv ), "Sources Context Menu", "not mapped");
 		behaviours.install(bdv.getTriggerbindings(), "bdvpgactions");
-		//behaviours.install( bdv.getTriggerbindings(), "bdvpgactions" );
-		//behaviours.behaviour( behaviour, name, trigger ) ;*/
 
 	}
 
-	void install(String pathToBindings) {
+	/**
+	 * Install trigger bindings according to the path specified
+	 * See {@link BdvSettingsGUISetter}
+	 * Key bindings can not be overriden yet
+	 * @param bdv
+	 * @param pathToBindings
+	 */
+	void install(BdvHandle bdv, String pathToBindings) {
 		String yamlDataLocation = pathToBindings + File.separator + BdvSettingsGUISetter.defaultYamlFileName;
 
 		InputTriggerConfig yamlConf = null;
@@ -157,14 +176,14 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 			// TODO : support replacement of key bindings bdv.getKeybindings().addInputMap("bdvpg", new InputMap(), "bdv", "navigation");
 		}
 
-		/*Behaviours behaviour_bdvpg = new Behaviours( yamlConf, "bdvpg" );
-		behaviour_bdvpg.updateKeyConfig(yamlConf);
-		InputTriggerConfigHelper.getInputTriggerMap(yamlConf);*/
-
-		// bdv a des trucs
 	}
 
-	void printBindings() {
+	/**
+	 * For debugging:
+	 * - print actions and triggers of a bdv
+	 * @param bdv
+	 */
+	public static void printBindings(BdvHandle bdv) {
 		System.out.println("--------------------- Behaviours");
 		bdv.getTriggerbindings().getConcatenatedBehaviourMap().getAllBindings().forEach((label,behaviour) -> {
 			System.out.println(label);
@@ -176,13 +195,6 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 			for (String action : actions)
 				System.out.println("\t"+action);
 		});
-		/*System.out.println("--------------------- Mine");
-		InputTriggerConfigHelper.getInputTriggerMap(yamlConf).getAllBindings().forEach((trigger, actions) -> {
-			System.out.println(trigger);
-			for (String action : actions)
-				System.out.println("\t"+action);
-		});*/
-
 		System.out.println("--------------------- Key Action");
 		for (Object o : bdv.getKeybindings().getConcatenatedActionMap().allKeys()) {
 			System.out.println("\t"+o);
@@ -193,11 +205,8 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 		}
 	}
 
-
-	public BdvHandle get()
-	{
-		if ( bdv == null ) run();
-
-		return bdv;
+	void addCustomTransferHandler(BdvHandle bdv) {
+		bdv.getViewerPanel().setTransferHandler(new BdvTransferHandler());
 	}
+
 }

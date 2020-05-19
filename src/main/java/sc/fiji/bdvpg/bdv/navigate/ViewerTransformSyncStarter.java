@@ -11,20 +11,29 @@ import java.util.Map;
 import static sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStopper.MatrixApproxEquals;
 
 /**
- * Action which synchronizes the display location of n BdvHandle
+ * BigDataViewer Playground Action -->
+ * Action which synchronizes the display location of a {@link BdvHandle}
  *
- * Works in combination with the action ViewerTransformSyncStopper
+ * Works in combination with the action {@link ViewerTransformSyncStopper}
  *
  * See also ViewTransformSynchronizationDemo
  *
  * Principle : for every changed view transform of a specific BdvHandle,
  * the view transform change is triggered to the following BdvHandle in a closed loop manner
  *
- * To avoid infinite loop, the stop condition is : if the view transform is unnecessary (between
- * the view target is equal to the source), then there's no need to trigger a view transform change
- * to the next BdvHandle
+ * Note : the center of the window in global coordinate is kept identical between BdvHandles
  *
- * author Nicolas Chiaruttini, BIOP EPFL, nicolas.chiaruttini@epfl.ch
+ * Note : closing one window in the chain breaks the synchronization TODO make more robust
+ *
+ * To avoid infinite loop, the stop condition is : if the view transform is unnecessary
+ * (i.e. the view target is approximately equal to the source {@link ViewerTransformSyncStopper#MatrixApproxEquals}),
+ * then there's no need to trigger a view transform change to the next BdvHandle
+ *
+ * see also {@link ViewerOrthoSyncStarter}
+ *
+ * See {@link ViewTransformSynchronizationDemo} for a usage example
+ *
+ * @author Nicolas Chiaruttini, BIOP EPFL, nicolas.chiaruttini@epfl.ch
  */
 
 public class ViewerTransformSyncStarter implements Runnable {
@@ -149,9 +158,7 @@ public class ViewerTransformSyncStarter implements Runnable {
 
         // It should have the same scaling and rotation than the current view
         nextAffineTransform.set(at3D);
-        /*System.out.println("sx = "+nextAffineTransform.get(0,3));
-        System.out.println("sy = "+nextAffineTransform.get(1,3));
-        System.out.println("sz = "+nextAffineTransform.get(2,3));*/
+
         // No Shift
         nextAffineTransform.set(0,0,3);
         nextAffineTransform.set(0,1,3);
@@ -166,7 +173,7 @@ public class ViewerTransformSyncStarter implements Runnable {
         RealPoint shiftNextBdv = new RealPoint(3);
 
         nextAffineTransform.inverse().apply(centerScreenNextBdv, shiftNextBdv);
-        //System.out.println( "shiftNextBdv:"+shiftNextBdv);
+
         double sx = -centerScreenGlobalCoord.getDoublePosition(0)+shiftNextBdv.getDoublePosition(0);
         double sy = -centerScreenGlobalCoord.getDoublePosition(1)+shiftNextBdv.getDoublePosition(1);
         double sz = -centerScreenGlobalCoord.getDoublePosition(2)+shiftNextBdv.getDoublePosition(2);
@@ -174,8 +181,6 @@ public class ViewerTransformSyncStarter implements Runnable {
         RealPoint shiftWindow = new RealPoint(new double[]{sx, sy, sz});
         RealPoint shiftMatrix = new RealPoint(3);
         nextAffineTransform.apply(shiftWindow, shiftMatrix);
-
-        //System.out.println("shiftMatrix:"+shiftMatrix);
 
         nextAffineTransform.set(shiftMatrix.getDoublePosition(0),0,3);
         nextAffineTransform.set(shiftMatrix.getDoublePosition(1),1,3);
@@ -187,10 +192,6 @@ public class ViewerTransformSyncStarter implements Runnable {
 
         if (!MatrixApproxEquals(nextAffineTransform.getRowPackedCopy(), ati.getRowPackedCopy())) {
             // Yes -> triggers a transform change to the nextBdvHandle
-            // For ortho view : switches axis:
-            // X --> Y
-            // Y --> Z
-            // Z --> X
             // Calling it three times leads to an identical transform, hence the stopping condition is triggered
             AffineTransform3D nextAt3D = nextAffineTransform.copy();
             nextAt3D.set(nextAffineTransform.getRowPackedCopy());
@@ -219,9 +220,7 @@ public class ViewerTransformSyncStarter implements Runnable {
     }
 
     /**
-     * output of this action : this map can be used to stop the synchronization
-     * see ViewerTransformSyncStopper
-     * @return
+     * @return map which can be used to stop the spatial synchronization see {@link ViewerTransformSyncStopper}
      */
     public Map<BdvHandle, TransformListener<AffineTransform3D>> getSynchronizers() {
         return bdvHandleToTransformListener;
@@ -232,9 +231,7 @@ public class ViewerTransformSyncStarter implements Runnable {
     }
 
     /**
-     * output of this action : this map can be used to stop the synchronization
-     * see ViewerTransformSyncStopper
-     * @return
+     * @return map which can be used to stop the time synchronization see {@link ViewerTransformSyncStopper}
      */
     public Map<BdvHandle, TimePointListener> getTimeSynchronizers() {
         return bdvHandleToTimeListener;

@@ -8,6 +8,16 @@ import java.util.Arrays;
 import java.util.List;
 import org.scijava.listeners.*;
 
+
+/**
+ * {@link ConverterSetup} used to control a {@link RealLUTConverter}
+ *
+ * Note that if the setup of the converter is changed (min max, color...),
+ * all the listeners are called, which usually triggers repainting if the source is displayed
+ *
+ * TODO : create a more generic convertersetup which can handle RealLUTConverter and ColorConverter
+ */
+
 public class LUTConverterSetup implements ConverterSetup
 {
     protected final List<RealLUTConverter> converters;

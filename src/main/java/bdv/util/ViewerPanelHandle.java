@@ -12,8 +12,11 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Wraps a BigDataViewer instance into a BdvHandle
- * This class NEEDS to be in bdv.util or it cannot implement the createViewer method
+ * Wraps a {@link bdv.BigDataViewer} instance into a {@link BdvHandle}
+ * This class NEEDS to be in bdv.util or else it cannot implement the createViewer method
+ *
+ * Class used in practive to wrap {@link bigwarp.BigWarp} BigDataViewer instances,
+ * this has very limited functionalities apart from this
  */
 
 public class ViewerPanelHandle extends BdvHandle {
