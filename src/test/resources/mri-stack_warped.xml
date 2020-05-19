@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WarpedSpimData>
+  <SpimData version="0.2">
+    <BasePath type="relative">.</BasePath>
+    <SequenceDescription>
+      <ImageLoader format="bdv.hdf5">
+        <hdf5 type="relative">mri-stack.h5</hdf5>
+      </ImageLoader>
+      <ViewSetups>
+        <ViewSetup>
+          <id>0</id>
+          <name>mri-stack</name>
+          <size>186 226 27</size>
+          <voxelSize>
+            <unit>cm</unit>
+            <size>1.0 1.0 10.0</size>
+          </voxelSize>
+          <attributes>
+            <illumination>0</illumination>
+            <channel>1</channel>
+            <tile>0</tile>
+            <angle>0</angle>
+          </attributes>
+        </ViewSetup>
+        <Attributes name="illumination">
+          <Illumination>
+            <id>0</id>
+            <name>0</name>
+          </Illumination>
+        </Attributes>
+        <Attributes name="channel">
+          <Channel>
+            <id>1</id>
+            <name>1</name>
+          </Channel>
+        </Attributes>
+        <Attributes name="tile">
+          <Tile>
+            <id>0</id>
+            <name>0</name>
+          </Tile>
+        </Attributes>
+        <Attributes name="angle">
+          <Angle>
+            <id>0</id>
+            <name>0</name>
+          </Angle>
+        </Attributes>
+      </ViewSetups>
+      <Timepoints type="range">
+        <first>0</first>
+        <last>0</last>
+      </Timepoints>
+    </SequenceDescription>
+    <ViewRegistrations>
+      <ViewRegistration timepoint="0" setup="0">
+        <ViewTransform type="affine">
+          <affine>1.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 10.0 0.0</affine>
+        </ViewTransform>
+      </ViewRegistration>
+    </ViewRegistrations>
+  </SpimData>
+  <ThinPlateSplineTransform tpsdata="ThinPlateSplineR2LogR 3 20 @v6s0VnKXq9k/uIKLNSuOYT9/K8vSnc90v4EengMQATY/wUc5Wt6A4D+3cmYCJH3Ev7IYWNqqc+A/RUgxJfl5qT+PDc0peh/OQA5Qw4FbXFPAXLnd3HOtPUArFVQWqQHi eJxzCK29u3F+orpDehfvbLuLIQ6GZ0M4Hz8642A3v/fBa9U5DpFrA03fTE2Hi0f/kIhKZYx38PC9N2dHqR5cPDHC6N9sma8O8UqHzT93v3ZwfqEm/rEjziEivGb+jqfiDtEz1PU6k9rh6kOvxV5p5HrmkJl0VGNZYYlDqpIzwyPZfQ726b7n+noKHOI1/n/Ir1aAiyftb/yofXiHQ1xa+k7Rjm9w8YjsP98lnRwcnIvueiyf4wsXD5vxjfvWXz6H2I9L/7l+XwUXj9ldY+CpEOuQkcux3J/zs0O0wMJ1ewPsHFzuPdUp3/LGIYHTcTO73x24eEKK8+rfoSwOEVq7DjAct4aLh1RILBEKZ3CIOhD5aMa/qXDx0I728G+rOBw8Xn/iSsq+BxeP5r20YK+gtkNqvPrk4p4LDjnJVWVWYT4O7h1nL33hz3KIf3mApU3FFS4evoq7+qG6Cjw8c2L3ik0Xt3EIvNKoqrKG0cFtXe6eMNktcPXxb84v2qVo6hDyQGH19A1fYeL2KTssr4WK37H3ZA5hWjxFd39cVs3xeNnF9mmJ3YmT+CfsTxU9P63tvIJ90eT27FN9rfZRP24GJ/2NsDddske3U/Pc/uT3OheOfH+4P26pmdBhiZP7K08sy8i369tfEmASM6fByN6z1d3rsbWkfcUPrUSVyLX2ARGn48wFn+6Pbj0r3GT8aX9Mdb4i5/ZT9oGi5wRb98rbR5vxHjoX4Gtv7CIQHr1Zxl5y7jbpxX8r7CMXyajvOfV8v9tOsXKG97v2V8YENp26eMa++NqNQsP0L/uT2YI9srPz7EvCZiunf726P5857WfVjq/2EeZaV0XD2PaLzhT74NTTaZ8gpHT1xluX/c0qpnVTY7vtiyZNeewUpmRfK3P6/En+qfuLb3WuX6fWZF/C5L7DzOGaveOnipCsCxP2NzI8Lju9WH9/sHRiw/uZz+yLy1n2COtG2DvZCfv1vzm1PyiY942rsLm9ww45MR5ei/2FDze/fn3RyT7DM7Ko5uWn/fZy9R1PJsnZK3ZnugUni9prqvJOeaKstF/+SHN/YbfFflsW39yU2tX2vmazLvaKe+2XONvHd/A2m338vLBDRadK9utbziw873xmv+V8y6bdTqftJTRPhMzPObGff0O/lcv0WHueaTtnz35fb/d3avtcJc5T+zliH3nf2M4HAM68rdU=" />
+</WarpedSpimData>
