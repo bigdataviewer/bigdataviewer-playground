@@ -102,8 +102,8 @@ public class ScreenShotMaker {
         final double viewerVoxelSpacing = getViewerVoxelSpacing( bdvHandle );
         double dxy = physicalPixelSpacingInXY / viewerVoxelSpacing;
 
-        final int w = getBdvWindowWidth( bdvHandle );
-        final int h = getBdvWindowHeight( bdvHandle );
+        final int w = bdvHandle.getViewerPanel().getWidth();
+        final int h = bdvHandle.getViewerPanel().getHeight();
 
         captureWidth = ( long ) Math.ceil( w / dxy );
         captureHeight = ( long ) Math.ceil( h / dxy );
