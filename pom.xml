@@ -142,8 +142,8 @@
 		<scenery.version>0.7.0-beta-8-SAC-SNAPSHOT</scenery.version>
 		-->
 		<!-- Remote version-->
-		<sciview.version>f9f2f45</sciview.version>
-		<scenery.version>f4417b7</scenery.version>
+		<sciview.version>d4f219d2b1e8d585</sciview.version>
+		<scenery.version>6a994af</scenery.version>
 
 
 		<joml.version>1.9.22</joml.version>
