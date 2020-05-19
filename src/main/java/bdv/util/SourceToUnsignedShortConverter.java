@@ -14,7 +14,7 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 /**
  * Helper function to transform RealTyped {@link bdv.viewer.Source} to {@link UnsignedShortType} source
  *
- * TODO : improved convertion or retire... the convertion is not modular it's a direct casting to int
+ * TODO : improved conversion or retire... the conversion is not modular it's a direct casting to int
  *
  */
 public class SourceToUnsignedShortConverter {

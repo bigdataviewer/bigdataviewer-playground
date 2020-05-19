@@ -21,6 +21,7 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
+import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.util.List;
@@ -84,7 +85,7 @@ public class ManualRegistrationDemo {
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
-                    SourceAndConverterUtils::createNewTransformedSourceAndConverter
+                    SourceTransformHelper::createNewTransformedSourceAndConverter
             );
 
             manualRegistrationStarter.run();
@@ -110,7 +111,7 @@ public class ManualRegistrationDemo {
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
-                    SourceAndConverterUtils::mutateTransformedSourceAndConverter
+                    SourceTransformHelper::mutateTransformedSourceAndConverter
             );
 
             isTransforming = false;
@@ -142,7 +143,7 @@ public class ManualRegistrationDemo {
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
-                    SourceAndConverterUtils::mutateLastSpimdataTransformation
+                    SourceTransformHelper::mutateLastSpimdataTransformation
             );
 
             isTransforming = false;
@@ -178,7 +179,7 @@ public class ManualRegistrationDemo {
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
-                    SourceAndConverterUtils::appendNewSpimdataTransformation
+                    SourceTransformHelper::appendNewSpimdataTransformation
             );
 
             isTransforming = false;

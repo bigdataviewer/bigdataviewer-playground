@@ -8,6 +8,11 @@ import net.imglib2.type.numeric.RealType;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * TODO : documentation - why is this here ? Is it for the transparency ?
+ * @param <R>
+ */
+
 public abstract class RealARGBColorConverter< R extends RealType< ? > > implements ColorConverter, Converter< R, ARGBType >
 {
 	protected double min = 0;
