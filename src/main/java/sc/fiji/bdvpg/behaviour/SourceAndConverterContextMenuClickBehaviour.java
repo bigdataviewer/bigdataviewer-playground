@@ -11,6 +11,12 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Behaviour that shows the context menu of actions available that will act on the sources
+ * that are drawn below the mouse location
+ *
+ * TODO : find a way to
+ */
 public class SourceAndConverterContextMenuClickBehaviour implements ClickBehaviour
 {
 	private final BdvHandle bdv;

@@ -1,14 +1,20 @@
 package sc.fiji.bdvpg.bvv;
 
 import bdv.util.Affine3DHelpers;
-import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import bdv.viewer.SynchronizedViewerState;
 import bdv.viewer.state.ViewerState;
 import bvv.util.BvvHandle;
 import net.imglib2.Interval;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
+
+/**
+ * BigDataViewer Playground Action -->
+ *
+ * Adjust bigvolumeviewer view to a SourceAndConverter
+ *
+ * Note that BigVolumeViewer - should be replaced by Sciview
+ */
 
 public class BvvViewerTransformAdjuster implements Runnable
 {
