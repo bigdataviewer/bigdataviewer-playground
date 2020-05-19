@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * BigDataViewer Playground Action -->
  * Action which starts the manual registration of n SourceAndConverters
  * Works in coordination with ManualRegistrationStopper
  *
@@ -85,7 +86,7 @@ public class ManualRegistrationStarter implements Runnable {
             }
         }
 
-        // Remove from display the originally dispalyed sources
+        // Remove from display the originally displayed sources
         SourceAndConverterServices.getSourceAndConverterDisplayService().remove(bdvHandle, originallyDisplayedSacs.toArray(new SourceAndConverter[originallyDisplayedSacs.size()]));
 
         // Shows the displayed wrapped Source
@@ -96,14 +97,14 @@ public class ManualRegistrationStarter implements Runnable {
         bdvHandle.getViewerPanel().state().getViewerTransform(originalViewTransform);
 
         manualRegistrationListener = (newView) -> {
-                // Compute "difference" of ViewTransform beteween the original state and the current state
+                // Compute "difference" of ViewTransform between the original state and the current state
 
                 // Global difference of transform is
                 currentRegistration = newView.copy();
                 currentRegistration = currentRegistration.inverse();
                 currentRegistration = currentRegistration.concatenate(originalViewTransform);
 
-                // Sets view transform fo transiently wrapped soure to maintain relative position
+                // Sets view transform fo transiently wrapped source to maintain relative position
                 displayedSacsWrapped.forEach(sac -> ((TransformedSource) sac.getSpimSource()).setFixedTransform(currentRegistration));
         };
 

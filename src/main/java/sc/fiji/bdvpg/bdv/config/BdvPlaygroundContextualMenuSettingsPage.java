@@ -11,6 +11,12 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TODO WIP : link keys and actions available in bigdataviewer playground
+ *
+ * SettingsPage comes from Mastodon
+ */
+
 public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
 
     private final String treePath;

@@ -1,20 +1,12 @@
 package sc.fiji.bdvpg.bdv;
 
 import bdv.tools.brightness.ConverterSetup;
-import bdv.tools.brightness.MinMaxGroup;
-import bdv.tools.transformation.TransformedSource;
-import bdv.util.Bdv;
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;
-import bdv.viewer.state.SourceState;
 import net.imglib2.*;
-import net.imglib2.converter.Converter;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.util.Intervals;
 import net.imglib2.util.LinAlgHelpers;
-
-import java.util.List;
 
 /**
  * BDVUtils
@@ -26,10 +18,10 @@ import java.util.List;
  */
 public class BdvUtils
 {
-    public static double getViewerVoxelSpacing( BdvHandle bdv )
-    {
-        final int windowWidth = getBdvWindowWidth( bdv );
-        final int windowHeight = getBdvWindowHeight( bdv );
+
+    public static double getViewerVoxelSpacing( BdvHandle bdv ) {
+        final int windowWidth = bdv.getViewerPanel().getDisplay().getWidth();
+        final int windowHeight = bdv.getViewerPanel().getDisplay().getHeight();
 
         final AffineTransform3D viewerTransform = new AffineTransform3D();
         bdv.getViewerPanel().state().getViewerTransform( viewerTransform );
@@ -60,32 +52,13 @@ public class BdvUtils
         return viewerPhysicalVoxelSpacingX;
     }
 
-
-
-    public static int getBdvWindowWidth( BdvHandle bdvHandle )
-    {
-        return bdvHandle.getViewerPanel().getDisplay().getWidth();
-    }
-
-
-    public static int getBdvWindowHeight( BdvHandle bdvHandle )
-    {
-        return bdvHandle.getViewerPanel().getDisplay().getHeight();
-    }
-
-    public static List< Integer > getVisibleSourceIndices(BdvHandle bdvHandle )
-    {
-        return bdvHandle.getViewerPanel().getState().getVisibleSourceIndices();
-    }
-
-    public static boolean isSourceIntersectingCurrentView( BdvHandle bdv, Source source, boolean is2D )
-    {
+    public static boolean isSourceIntersectingCurrentView( BdvHandle bdv, Source source, boolean is2D ) {
         if (source.getSource(0,0) == null) {
             // Overlays have no RAI -> discard them
             return false;
         }
 
-        final Interval interval = getSourceGlobalBoundingInterval( bdv, source );
+        final Interval interval = getSourceGlobalBoundingInterval( source, bdv.getViewerPanel().state().getCurrentTimepoint() );
 
         final Interval viewerInterval =
                 Intervals.smallestContainingInterval(
@@ -102,8 +75,7 @@ public class BdvUtils
         return intersects;
     }
 
-    public static FinalInterval intersect2D( final Interval intervalA, final Interval intervalB )
-    {
+    public static FinalInterval intersect2D( final Interval intervalA, final Interval intervalB ) {
         assert intervalA.numDimensions() == intervalB.numDimensions();
 
         final long[] min = new long[ 2 ];
@@ -116,10 +88,9 @@ public class BdvUtils
         return new FinalInterval( min, max );
     }
 
-    public static FinalRealInterval getViewerGlobalBoundingInterval(BdvHandle bdvHandle)
-    {
+    public static FinalRealInterval getViewerGlobalBoundingInterval(BdvHandle bdvHandle) {
         AffineTransform3D viewerTransform = new AffineTransform3D();
-        bdvHandle.getViewerPanel().getState().getViewerTransform( viewerTransform );
+        bdvHandle.getViewerPanel().state().getViewerTransform( viewerTransform );
         viewerTransform = viewerTransform.inverse();
         final long[] min = new long[ 3 ];
         final long[] max = new long[ 3 ];
@@ -130,54 +101,16 @@ public class BdvUtils
         return realInterval;
     }
 
-    public static Interval getSourceGlobalBoundingInterval( BdvHandle bdvHandle, Source< ? > source)
-    {
-        final AffineTransform3D sourceTransform = getSourceTransform( source );
-        final RandomAccessibleInterval< ? > rai = getRandomAccessibleInterval( source );
+    public static Interval getSourceGlobalBoundingInterval( Source< ? > source, int timepoint ) {
+        final AffineTransform3D sourceTransform = getSourceTransform( source, timepoint );
+        final RandomAccessibleInterval< ? > rai = source.getSource(timepoint,0);
         final Interval interval =
                 Intervals.smallestContainingInterval( sourceTransform.estimateBounds( rai ) );
         return interval;
     }
 
-    public static Interval getSourceGlobalBoundingInterval( BdvHandle bdvHandle, int sourceId )
-    {
-        final AffineTransform3D sourceTransform =
-                getSourceTransform( bdvHandle, sourceId );
-        final RandomAccessibleInterval< ? > rai =
-                getRandomAccessibleInterval( bdvHandle, sourceId );
-        final Interval interval =
-                Intervals.smallestContainingInterval( sourceTransform.estimateBounds( rai ) );
-        return interval;
-    }
-
-    public static AffineTransform3D getSourceTransform( BdvHandle bdvHandle, int sourceId )
-    {
-        final AffineTransform3D sourceTransform = getSourceTransform( bdvHandle.getViewerPanel().getState().getSources().get( sourceId ).getSpimSource() );
-        return sourceTransform;
-    }
-
-    public static AffineTransform3D getSourceTransform( Source< ? > source )
-    {
-        final AffineTransform3D sourceTransform = new AffineTransform3D();
-        source.getSourceTransform( 0, 0, sourceTransform );
-        return sourceTransform;
-    }
-
-    public static RandomAccessibleInterval< ? > getRandomAccessibleInterval( BdvHandle bdvHandle, int sourceId )
-    {
-        return getRandomAccessibleInterval( bdvHandle.getViewerPanel().getState().getSources().get( sourceId ).getSpimSource() );
-    }
-
-    public static RandomAccessibleInterval< ? > getRandomAccessibleInterval( Source< ? > source )
-    {
-        return source.getSource( 0, 0 );
-    }
-
-    public static Source< ? > getSource( BdvHandle bdvHandle, int sourceIndex )
-    {
-        final List<SourceState< ? >> sources = bdvHandle.getViewerPanel().getState().getSources();
-
-        return sources.get( sourceIndex ).getSpimSource();
+    public static AffineTransform3D getSourceTransform( Source< ? > source, int timepoint ) {
+        return getSourceTransform(source, timepoint, 0);
     }
 
     /**
@@ -188,8 +121,7 @@ public class BdvUtils
      * @param voxelSpacings
      * @return
      */
-    public static int getLevel( Source< ? > source, double... voxelSpacings )
-    {
+    public static int getLevel( Source< ? > source, double... voxelSpacings ) {
         final int numMipmapLevels = source.getNumMipmapLevels();
         final int numDimensions = voxelSpacings.length;
 
@@ -211,16 +143,13 @@ public class BdvUtils
         return 0;
     }
 
-    public static AffineTransform3D getSourceTransform( Source source, int t, int level )
-    {
+    public static AffineTransform3D getSourceTransform( Source source, int t, int level ) {
         AffineTransform3D sourceTransform = new AffineTransform3D();
         source.getSourceTransform( t, level, sourceTransform );
         return sourceTransform;
     }
 
-
-    public static double[] getCalibration( Source source, int level )
-    {
+    public static double[] getCalibration( Source source, int level ) {
         final AffineTransform3D sourceTransform = new AffineTransform3D();
 
         source.getSourceTransform( 0, level, sourceTransform );
@@ -228,12 +157,6 @@ public class BdvUtils
         final double[] calibration = getScale( sourceTransform );
 
         return calibration;
-    }
-
-
-    public static void repaint( BdvHandle bdvHandle )
-    {
-        bdvHandle.getViewerPanel().requestRepaint();
     }
 
     public static double[] getScale(AffineTransform3D sourceTransform) {
@@ -252,82 +175,11 @@ public class BdvUtils
         return calibration;
     }
 
-    public static MinMaxGroup getMinMaxGroup( BdvHandle bdvHandle, Source< ? > source )
-    {
-        final int sourceIndex = getSourceIndex( bdvHandle, source );
-
-        System.out.println("sourceINdex = "+ sourceIndex);
-
-        final MinMaxGroup minmax = bdvHandle.getSetupAssignments().getMinMaxGroups().get( sourceIndex );
-
-        return minmax;
-    }
-
-
-    /**
-     * TODO: remove the print statements or make them some debug mode.
-     *
-     *
-     * @param bdv
-     * @param source
-     * @return
-     */
-    public static int getSourceIndex( Bdv bdv, Source< ? > source )
-    {
-        final List< SourceState< ? > > sources =
-                bdv.getBdvHandle().getViewerPanel().getState().getSources();
-
-        System.out.println("look for : "+  source);
-
-        for ( int i = 0; i < sources.size(); ++i ) {
-            final Source< ? > bdvSource = sources.get( i ).getSpimSource();
-
-            System.out.println("c:"+ bdvSource );
-
-            if ( bdvSource instanceof TransformedSource )
-            {
-                final Source wrappedSource = ( ( TransformedSource ) bdvSource ).getWrappedSource();
-
-                if ( wrappedSource.equals( source ) )
-                    return i;
-            }
-            else
-            {
-                if ( bdvSource.equals( source ) )
-                    return i;
-            }
-        }
-
-        return -1;
-    }
-
-    public static ARGBType getSourceColor(BdvHandle bdvHandle, int sourceId )
-    {
-        return bdvHandle.getSetupAssignments().getConverterSetups().get( sourceId ).getColor();
-    }
-
-    public static double[] getDisplayRange( BdvHandle bdvHandle, int sourceId )
-    {
-        final ConverterSetup converterSetup = bdvHandle.getSetupAssignments()
-                .getConverterSetups().get( sourceId );
-
-        return getDisplayRange( converterSetup );
-    }
-
-
-    public static double[] getDisplayRange( ConverterSetup converterSetup )
-    {
+    public static double[] getDisplayRange( ConverterSetup converterSetup ) {
         final double displayRangeMin = converterSetup.getDisplayRangeMin();
         final double displayRangeMax = converterSetup.getDisplayRangeMax();
 
         return new double[]{ displayRangeMin, displayRangeMax };
     }
 
-	public static Converter< ?, ARGBType > getConverter( Bdv bdv, int sourceIndex )
-	{
-		final List< SourceState< ? > > sources =
-				bdv.getBdvHandle().getViewerPanel().getState().getSources();
-
-		return sources.get( sourceIndex ).getConverter();
-	}
 }

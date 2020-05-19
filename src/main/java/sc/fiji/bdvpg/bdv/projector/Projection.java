@@ -4,7 +4,6 @@ package sc.fiji.bdvpg.bdv.projector;
  * Constants to define the projection mode of sources.
  * These constants are used within {@link AccumulateMixedProjectorARGB}.
  *
- *
  * PROJECTION_MODE_SUM
  * The ARGB values of the source will be added to the final ARGB to be displayed.
  *

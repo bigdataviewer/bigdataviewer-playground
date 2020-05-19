@@ -7,7 +7,12 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 
 import java.util.function.ToIntFunction;
-// TODO : replace by FunctionRandomAccessible and FunctionRealRandomAccessible
+
+/**
+ * // TODO : replace by FunctionRandomAccessible and FunctionRealRandomAccessible
+ */
+
+
 public class Procedural3DImageShort extends RealPoint implements RealRandomAccess<UnsignedShortType> {
     final UnsignedShortType t;
 

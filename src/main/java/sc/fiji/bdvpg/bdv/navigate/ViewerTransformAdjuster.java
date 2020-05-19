@@ -8,6 +8,18 @@ import net.imglib2.Interval;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
 
+/**
+ * BigDataViewer Playground Action -->
+ * Action which adjust the view of a {@link BdvHandle} to span a {@link SourceAndConverter}
+ * See {@link ViewerTransformAdjuster#getTransform()} for details
+ *
+ * TODO : support the adjustement on a series of SourceAndConverter
+ *
+ * Usage example see {@link sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjusterDemo}
+ *
+ * @author Christian Tischer, EMBL
+ */
+
 public class ViewerTransformAdjuster implements Runnable
 {
 	private final BdvHandle bdvHandle;
@@ -28,7 +40,7 @@ public class ViewerTransformAdjuster implements Runnable
 
 	/**
 	 * Get a "good" initial viewer transform. The viewer transform is chosen
-	 * such that for the sourceandconverter,
+	 * such that for the {@link SourceAndConverter},
 	 * <ul>
 	 * <li>the XY plane is aligned with the screen plane,
 	 * <li>the <em>z = dim_z / 2</em> slice is shown,

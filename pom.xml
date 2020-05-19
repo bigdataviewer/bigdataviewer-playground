@@ -114,11 +114,17 @@
 		<license.copyrightOwners>Nicolas Chiaruttini, EPFL</license.copyrightOwners>
 		<license.copyrightOwners>Christian Tischer, EMBL</license.copyrightOwners>
 
-		<!-- <scijava.app.directory>C:/Users/chiarutt/Desktop/fiji-bdv-playground/Fiji.app/</scijava.app.directory>  Please keep this line if you want to remove the one below (Nico) ! -->
-
-		<scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory>
 		<scijava.deleteOtherVersions>true</scijava.deleteOtherVersions>
 		<scijava-maven-plugin.version>1.1.0</scijava-maven-plugin.version>
+
+		<!--
+		<scijava-ui-swing.version>0.13.0</scijava-ui-swing.version>
+		<imagej.app.directory>C:/Programs/Fiji.app/</imagej.app.directory>
+		See Issue https://github.com/saalfeldlab/bigwarp/issues/83 -->
+        <bigwarp_fiji.version>5.1.0</bigwarp_fiji.version>
+
+		<scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory>
+
 
 		<imglib2.version>5.9.0</imglib2.version>
 		<imglib2-ij.version>2.0.0-beta-46</imglib2-ij.version>
@@ -127,6 +133,8 @@
 		<spim_data.version>2.2.4</spim_data.version>
 		<ui-behaviour.version>2.0.1</ui-behaviour.version>
 
+		<mastodon.version>1.0.0-beta-17-SNAPSHOT</mastodon.version>
+		<bigvolumeviewer.version>0.1.8-SNAPSHOT</bigvolumeviewer.version>
 
 
 		<!-- Locally built version
@@ -179,12 +187,18 @@
 		<dependency>
 			<groupId>org.mastodon</groupId>
 			<artifactId>mastodon</artifactId>
-			<version>1.0.0-beta-17-SNAPSHOT</version> <!-- necessary to keep version here -->
+			<version>${mastodon.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>bigvolumeviewer</artifactId>
+			<version>${bigvolumeviewer.version}</version> <!-- necessary to keep version here -->
 		</dependency>
 
 		<dependency>
@@ -212,12 +226,6 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>bigvolumeviewer</artifactId>
-			<version>0.1.8-SNAPSHOT</version> <!-- necessary to keep version here -->
 		</dependency>
 
     </dependencies>

@@ -11,8 +11,9 @@ import java.io.*;
 import java.util.Properties;
 
 /**
- * Settings Page to open, edit and resave the Bigdataviewer Preferences stored
+ * Settings Page to open, edit and resave the Bigdataviewer Preferences {@link Prefs} stored
  * within the bigdataviewer.properties file
+ * {@link SettingsPage} comes from Mastodon
  *
  * @author Nicolas Chiaruttini, EPFL 2020
  */

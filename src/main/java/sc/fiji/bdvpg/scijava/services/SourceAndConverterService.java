@@ -21,7 +21,7 @@ import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
 import sc.fiji.bdvpg.scijava.command.bdv.ScreenShotMakerCommand;
 import sc.fiji.bdvpg.scijava.command.source.*;
-import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
+import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
@@ -217,14 +217,14 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     /**
      * Swing UI for this Service, exists only if an UI is available in the current execution context
      */
-    BdvSourceServiceUI ui;
+    SourceAndConverterServiceUI ui;
 
     /**
      * Flags if the Inner UI exists
      */
     boolean uiAvailable = false;
 
-    public BdvSourceServiceUI getUI() {
+    public SourceAndConverterServiceUI getUI() {
         return ui;
     }
 
@@ -244,7 +244,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         registerDefaultActions();
         if (uiService!=null) {
             log.accept("uiService detected : Constructing JPanel for BdvSourceAndConverterService");
-            ui = new BdvSourceServiceUI(this);
+            ui = new SourceAndConverterServiceUI(this);
             uiAvailable = true;
         }
 

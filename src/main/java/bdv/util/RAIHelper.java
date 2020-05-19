@@ -25,6 +25,13 @@ import static net.imglib2.img.basictypeaccess.AccessFlags.VOLATILE;
 import static net.imglib2.type.PrimitiveType.*;
 import static net.imglib2.type.PrimitiveType.DOUBLE;
 
+/**
+ * Helper function to cache a {@link RandomAccessibleInterval}
+ *
+ * TODO : replace by an helper function moved to imglib2 when available
+ *
+ */
+
 public class RAIHelper {
 
     @SuppressWarnings( { "unchecked", "rawtypes" } )
