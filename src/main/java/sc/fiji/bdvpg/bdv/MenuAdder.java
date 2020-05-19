@@ -6,6 +6,10 @@ import bdv.util.BdvHandleFrame;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 
+/**
+ * TODO : demo
+ * + is this an action ?
+ */
 public class MenuAdder
 {
 	private final BdvHandle bdvHandle;

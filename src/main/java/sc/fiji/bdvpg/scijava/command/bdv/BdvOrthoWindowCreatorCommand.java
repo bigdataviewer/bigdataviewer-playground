@@ -14,13 +14,12 @@ import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGBFactory;
 import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.scijava.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.*;
 import java.awt.*;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bdv>Create Ortho BDV Frames",
-        label = "Creates a Bdvs window with orthogonal views")
+        label = "Creates 3 Bdvs windows with synchronized orthogonal views")
 public class BdvOrthoWindowCreatorCommand implements Command {
 
     @Parameter(label = "Title of Bdv windows")
@@ -47,26 +46,26 @@ public class BdvOrthoWindowCreatorCommand implements Command {
     @Parameter(type = ItemIO.OUTPUT)
     public BdvHandle bdvhZ;
 
-    @Parameter(choices = { Projection.MIXED_PROJECTOR, Projection.SUM_PROJECTOR, Projection.AVERAGE_PROJECTOR})
+    @Parameter(label = "Source blending", choices = { Projection.MIXED_PROJECTOR, Projection.SUM_PROJECTOR, Projection.AVERAGE_PROJECTOR})
     public String projector;
 
-    @Parameter
+    @Parameter(label = "Add cross overlay")
     public boolean drawCrosses;
 
-    @Parameter
-    int screen;
+    @Parameter(label = "Display (0 if you have one screen)")
+    int screen = 0;
 
-    @Parameter
-    int locationX;
+    @Parameter(label = "X Front Window location")
+    int locationX = 150;
 
-    @Parameter
-    int locationY;
+    @Parameter(label = "Y Front Window location")
+    int locationY = 150;
 
-    @Parameter
-    int sizeX;
+    @Parameter(label = "Window Width")
+    int sizeX = 500;
 
-    @Parameter
-    int sizeY;
+    @Parameter(label = "Window Height")
+    int sizeY = 500;
 
     @Override
     public void run() {
@@ -115,20 +114,15 @@ public class BdvOrthoWindowCreatorCommand implements Command {
         GraphicsDevice[] gd = ge.getScreenDevices();
         JFrame frame = BdvHandleHelper.getJFrame(bdvh);
         if( screen > -1 && screen < gd.length ) {
-            frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);//frame.getY());
+            frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);
         } else if( gd.length > 0 ) {
-            frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);//frame.getY());
-
-            //frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x, frame.getY());
+            frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);
         } else {
             throw new RuntimeException( "No Screens Found" );
         }
 
-        //.setLocation(, );
-
         return bdvh;
     }
-
 
     void addCross(BdvHandle bdvh) {
         final BdvOverlay overlay = new BdvOverlay()
@@ -146,7 +140,7 @@ public class BdvOrthoWindowCreatorCommand implements Command {
 
         };
 
-        BdvFunctions.showOverlay( overlay, "overlay", BdvOptions.options().addTo( bdvh ) );
+        BdvFunctions.showOverlay( overlay, "cross_overlay", BdvOptions.options().addTo( bdvh ) );
         bdvh.getViewerPanel().setTimepoint(nTimepoints);
     }
 

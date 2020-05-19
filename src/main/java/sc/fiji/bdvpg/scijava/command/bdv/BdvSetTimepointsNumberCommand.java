@@ -6,12 +6,13 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bdv>Set Number Of Timepoints")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bdv>Set Number Of Timepoints",
+    label = "Sets the number of timepoints in one or several Bdv Windows")
 public class BdvSetTimepointsNumberCommand implements Command {
-    @Parameter
+    @Parameter(label = "Select Bdv Windows")
     BdvHandle[] bdvhs;
 
-    @Parameter
+    @Parameter(label = "Number of timepoints, min = 1", min = "1")
     int numberOfTimePoints;
 
     public void run() {
