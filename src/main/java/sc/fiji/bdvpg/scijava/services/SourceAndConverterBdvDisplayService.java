@@ -3,7 +3,6 @@ package sc.fiji.bdvpg.scijava.services;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imglib2.converter.Converter;
 import net.imglib2.util.Pair;
 import org.scijava.command.CommandService;
@@ -15,6 +14,7 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
+import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
@@ -22,7 +22,6 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -47,7 +46,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     public static Consumer<String> errlog = (str) -> System.err.println( SourceAndConverterBdvDisplayService.class.getSimpleName()+":"+str);
 
     public static String CONVERTER_SETUP = "ConverterSetup";
-
 
     /**
      * Used to add Aliases for BdvHandle objects
@@ -368,6 +366,10 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
     }
 
+    public List<BdvHandle> getDisplays() {
+        return os.getObjects(BdvHandle.class);
+    }
+
     /**
      * Map containing objects that are 1 to 1 linked to a Display ( a BdvHandle object )
      * TODO : ask if it should contain a WeakReference to BdvHandle keys (Potential Memory leak ?)
@@ -394,6 +396,30 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         } else {
             return null;
         }
+    }
+
+    /**
+     * SourceAndConverter filter node : Selects SpimData and allow for duplicate
+     */
+
+    public static class BdvHandleFilterNode extends SourceFilterNode {
+
+        public BdvHandle bdvh;
+
+        public boolean filter(SourceAndConverter sac) {
+            return bdvh.getViewerPanel().state().getSources().contains(sac);
+        }
+
+        public BdvHandleFilterNode(String name, BdvHandle bdvh) {
+            super(name,null, true);
+            this.filter = this::filter;
+            this.bdvh = bdvh;
+        }
+
+        public String toString() {
+            return getName();
+        }
+
     }
 
 }

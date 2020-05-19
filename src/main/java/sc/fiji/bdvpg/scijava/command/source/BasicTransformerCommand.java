@@ -92,16 +92,17 @@ public class BasicTransformerCommand implements Command {
         }
     }
 
+    //
     private void rot(int quarterTurn, AffineTransform3D at3D) {
         switch (axis) {
             case "X":
-                at3D.rotate(0,((double)quarterTurn)*Math.PI/180.0);
+                at3D.rotate(0,((double)quarterTurn)*Math.PI/2.0);
                 break;
             case "Y":
-                at3D.rotate(1,((double)quarterTurn)*Math.PI/180.0);
+                at3D.rotate(1,((double)quarterTurn)*Math.PI/2.0);
                 break;
             case "Z":
-                at3D.rotate(2,((double)quarterTurn)*Math.PI/180.0);
+                at3D.rotate(2,((double)quarterTurn)*Math.PI/2.0);
                 break;
         }
     }

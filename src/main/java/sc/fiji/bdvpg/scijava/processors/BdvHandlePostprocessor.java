@@ -1,6 +1,8 @@
 package sc.fiji.bdvpg.scijava.processors;
 
 import bdv.util.BdvHandle;
+import bdv.viewer.ViewerStateChange;
+import bdv.viewer.ViewerStateChangeListener;
 import org.scijava.module.Module;
 import org.scijava.module.process.AbstractPostprocessorPlugin;
 import org.scijava.module.process.PostprocessorPlugin;
@@ -10,7 +12,10 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 
+import javax.swing.*;
 import java.util.function.Consumer;
 
 /**
@@ -25,6 +30,9 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
 
     @Parameter
     SourceAndConverterBdvDisplayService bsds;
+
+    @Parameter
+    SourceAndConverterService sacsService;
 
     @Parameter
     ObjectService os;
@@ -43,15 +51,35 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
                 log.accept("BdvHandle found.");
                 //------------ Register BdvHandle in ObjectService
                 os.addObject(bdvh);
-                //------------ Allows to remove the BdvHandle from the objectService when closed by the user
-                BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService,  bsds, true);
+
                 //------------ Renames window to ensure unicity
                 String windowTitle = BdvHandleHelper.getWindowTitle(bdvh);
                 windowTitle = BdvHandleHelper.getUniqueWindowTitle(os, windowTitle);
                 BdvHandleHelper.setWindowTitle(bdvh, windowTitle);
-                //for (int i=0;i<bdvh.getViewerPanel().getState().numSources();i++) {
-                //    bsds.registerBdvSource(bdvh,i);
-                //}
+
+                //------------ Event handling in bdv sourceandconverterserviceui
+                SourceAndConverterBdvDisplayService.BdvHandleFilterNode
+                        node = new SourceAndConverterBdvDisplayService.BdvHandleFilterNode(windowTitle, bdvh);
+
+                bdvh.getViewerPanel().state().changeListeners().add(new ViewerStateChangeListener() {
+                    @Override
+                    public void viewerStateChanged(ViewerStateChange change) {
+                        if (change.toString().equals("NUM_SOURCES_CHANGED")) {
+                            node.update(new SourceFilterNode.FilterUpdateEvent());
+                            SwingUtilities.invokeLater(()->sacsService.getUI().getTreeModel().reload());
+                        }
+                    }
+                });
+
+                //------------ Allows to remove the BdvHandle from the objectService when closed by the user
+                BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService,  bsds, true,
+                        () -> {
+                            sacsService.getUI().getTreeModel().removeNodeFromParent(node);
+                        });
+
+                ((SourceFilterNode)sacsService.getUI().getTreeModel().getRoot()).insert(node,0);
+                SwingUtilities.invokeLater(()->sacsService.getUI().getTreeModel().reload());
+
                 module.resolveOutput(name);
             }
         });

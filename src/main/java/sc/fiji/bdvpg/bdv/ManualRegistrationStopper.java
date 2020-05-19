@@ -26,17 +26,12 @@ import java.util.function.BiFunction;
  *
  * - Restores the initially displays sources, but transformed according to the choosen registrationPolicy
  *
- * a registrationPolicy is a function that outputs a registered source, with inputs being the initial source TODO
- * and an affine transform, thus it's BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>
+ * a registrationPolicy is a function that outputs a registered source, with inputs being the initial source with a time range {@link SourceAndConverterAndTimeRange}
+ * and an affine transform, thus it's {@code BiFunction<AffineTransform3D, SourceAndConverterAndTimeRange, SourceAndConverter>}
  *
  * This modularity allows for different ways to store the registration depending on the source.
  *
- * A few policies are implemented in TODO:
- * * createNewTransformedSourceAndConverter: Wraps into transformed sources the registered sources
- * * mutateTransformedSourceAndConverter: provided a source was already a transformed source, updates the inner affineTransform3D
- * * appendNewSpimdataTransformation: if a source has a linked spimdata, appends a new transformation in the registration model
- * * mutateLastSpimdataTransformation: if a source has a linked spimdata, mutates the last registration to account for changes
- * * cancel : ignore registration - returns the original source
+ * Standards policies are implemented in {@link sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper}
  *
  * * mutate : branch between mutateTransformedSourceAndConverter and mutateLastSpimdataTransformation depending  on the source class
  * * append : branch between createNewTransformedSourceAndConverter and appendNewSpimdataTransformation depending on the source class

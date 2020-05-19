@@ -7,7 +7,7 @@ import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
+import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -48,8 +48,8 @@ public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAn
     public SourceAndConverter[] getSelectedSourceAndConverters() {
         Set<SourceAndConverter> sacList = new HashSet<>(); // A set avoids duplicate SourceAndConverter
         for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
-            if (((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject() instanceof BdvSourceServiceUI.RenamableSourceAndConverter) {
-                Object userObj = ((BdvSourceServiceUI.RenamableSourceAndConverter) ((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject()).sac;
+            if (((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject() instanceof RenamableSourceAndConverter) {
+                Object userObj = ((RenamableSourceAndConverter) ((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject()).sac;
                 sacList.add((SourceAndConverter) userObj);
             } else {
                 sacList.addAll(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) tp.getLastPathComponent()));
@@ -62,8 +62,8 @@ public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAn
         Set<SourceAndConverter> sacs = new HashSet<>();
         for (int i=0;i<node.getChildCount();i++) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
-            if (child.getUserObject() instanceof BdvSourceServiceUI.RenamableSourceAndConverter) {
-                Object userObj = ((BdvSourceServiceUI.RenamableSourceAndConverter) (child.getUserObject())).sac;
+            if (child.getUserObject() instanceof RenamableSourceAndConverter) {
+                Object userObj = ((RenamableSourceAndConverter) (child.getUserObject())).sac;
                 sacs.add((SourceAndConverter) userObj);
             } else {
                 sacs.addAll(getSourceAndConvertersFromChildrenOf(child));

@@ -17,7 +17,7 @@ public class BdvHandleHelper {
         return (JFrame) SwingUtilities.getWindowAncestor(bdvh.getViewerPanel());
     }
 
-    public static void setBdvHandleCloseOperation( BdvHandle bdvh, CacheService cs, SourceAndConverterBdvDisplayService bdvsds, boolean putWindowOnTop) {
+    public static void setBdvHandleCloseOperation( BdvHandle bdvh, CacheService cs, SourceAndConverterBdvDisplayService bdvsds, boolean putWindowOnTop, Runnable runnable) {
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bdvh.getViewerPanel());
 
         topFrame.addWindowListener(new WindowAdapter() {
@@ -25,6 +25,9 @@ public class BdvHandleHelper {
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
                 bdvsds.closeBdv(bdvh);
+                if (runnable!=null) {
+                    runnable.run();
+                }
                 e.getWindow().dispose();
                 /*if (Recorder.record) {
                     // run("Select Bdv Window", "bdvh=bdv.util.BdvHandleFrame@e6c7718");
