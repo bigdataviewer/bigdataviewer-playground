@@ -50,35 +50,37 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
                 BdvHandle bdvh = (BdvHandle) object;
                 log.accept("BdvHandle found.");
                 //------------ Register BdvHandle in ObjectService
-                os.addObject(bdvh);
+                if (!os.getObjects(BdvHandle.class).contains(bdvh)) { // adds it only if not already present in ObjectService
+                    os.addObject(bdvh);
 
-                //------------ Renames window to ensure unicity
-                String windowTitle = BdvHandleHelper.getWindowTitle(bdvh);
-                windowTitle = BdvHandleHelper.getUniqueWindowTitle(os, windowTitle);
-                BdvHandleHelper.setWindowTitle(bdvh, windowTitle);
+                    //------------ Renames window to ensure unicity
+                    String windowTitle = BdvHandleHelper.getWindowTitle(bdvh);
+                    windowTitle = BdvHandleHelper.getUniqueWindowTitle(os, windowTitle);
+                    BdvHandleHelper.setWindowTitle(bdvh, windowTitle);
 
-                //------------ Event handling in bdv sourceandconverterserviceui
-                SourceAndConverterBdvDisplayService.BdvHandleFilterNode
-                        node = new SourceAndConverterBdvDisplayService.BdvHandleFilterNode(windowTitle, bdvh);
+                    //------------ Event handling in bdv sourceandconverterserviceui
+                    SourceAndConverterBdvDisplayService.BdvHandleFilterNode
+                            node = new SourceAndConverterBdvDisplayService.BdvHandleFilterNode(windowTitle, bdvh);
 
-                bdvh.getViewerPanel().state().changeListeners().add(new ViewerStateChangeListener() {
-                    @Override
-                    public void viewerStateChanged(ViewerStateChange change) {
-                        if (change.toString().equals("NUM_SOURCES_CHANGED")) {
-                            node.update(new SourceFilterNode.FilterUpdateEvent());
-                            SwingUtilities.invokeLater(()->sacsService.getUI().getTreeModel().reload());
+                    bdvh.getViewerPanel().state().changeListeners().add(new ViewerStateChangeListener() {
+                        @Override
+                        public void viewerStateChanged(ViewerStateChange change) {
+                            if (change.toString().equals("NUM_SOURCES_CHANGED")) {
+                                node.update(new SourceFilterNode.FilterUpdateEvent());
+                                SwingUtilities.invokeLater(()->sacsService.getUI().getTreeModel().reload());
+                            }
                         }
-                    }
-                });
+                    });
 
-                //------------ Allows to remove the BdvHandle from the objectService when closed by the user
-                BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService,  bsds, true,
-                        () -> {
-                            sacsService.getUI().getTreeModel().removeNodeFromParent(node);
-                        });
+                    //------------ Allows to remove the BdvHandle from the objectService when closed by the user
+                    BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService,  bsds, true,
+                            () -> {
+                                sacsService.getUI().getTreeModel().removeNodeFromParent(node);
+                            });
 
-                ((SourceFilterNode)sacsService.getUI().getTreeModel().getRoot()).insert(node,0);
-                SwingUtilities.invokeLater(()->sacsService.getUI().getTreeModel().reload());
+                    ((SourceFilterNode)sacsService.getUI().getTreeModel().getRoot()).insert(node,0);
+                    SwingUtilities.invokeLater(()->sacsService.getUI().getTreeModel().reload());
+                }
 
                 module.resolveOutput(name);
             }
