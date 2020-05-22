@@ -95,42 +95,44 @@ public class BdvTransferHandler extends TransferHandler {
             } catch (Exception e) {
 
             }
-        }
+        } else {
 
-        // Extract transfer data.
-        DefaultMutableTreeNode[] nodes = null;
-        try {
-            Transferable t = support.getTransferable();
-            nodes = (DefaultMutableTreeNode[]) t.getTransferData(nodesFlavor);
-        } catch (UnsupportedFlavorException ufe) {
-            System.err.println("UnsupportedFlavor: " + ufe.getMessage());
-        } catch (java.io.IOException ioe) {
-            System.err.println("I/O error: " + ioe.getMessage());
-        }
-
-        if (SourceAndConverterServices.getSourceAndConverterService() instanceof SourceAndConverterService) {
-            List<SourceAndConverter<?>> sacs = new ArrayList<>();
-            SourceAndConverterServiceUI ui =
-                    ((SourceAndConverterService)SourceAndConverterServices.getSourceAndConverterService()).getUI();
-
-            for (int i = 0; i < nodes.length; i++) {
-                DefaultMutableTreeNode unwraped = (DefaultMutableTreeNode) (nodes[i].getUserObject());
-                if (unwraped.getUserObject() instanceof RenamableSourceAndConverter) {
-                    sacs.add(((RenamableSourceAndConverter)unwraped.getUserObject()).sac);
-                } else {
-                    for (SourceAndConverter sac : ui.getSourceAndConvertersFromChildrenOf(unwraped)) {
-                        sacs.add(sac);
-                    }
-                }
+            // Extract transfer data.
+            DefaultMutableTreeNode[] nodes = null;
+            try {
+                Transferable t = support.getTransferable();
+                nodes = (DefaultMutableTreeNode[]) t.getTransferData(nodesFlavor);
+            } catch (UnsupportedFlavorException ufe) {
+                System.err.println("UnsupportedFlavor: " + ufe.getMessage());
+            } catch (java.io.IOException ioe) {
+                System.err.println("I/O error: " + ioe.getMessage());
             }
 
-            importSourcesAndConverters(support, sacs);
+            if (SourceAndConverterServices.getSourceAndConverterService() instanceof SourceAndConverterService) {
+                List<SourceAndConverter<?>> sacs = new ArrayList<>();
+                SourceAndConverterServiceUI ui =
+                        ((SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getUI();
 
-            return true;
-        } else {
-            // Unsupported drop
-            return false;
+                for (int i = 0; i < nodes.length; i++) {
+                    DefaultMutableTreeNode unwraped = (DefaultMutableTreeNode) (nodes[i].getUserObject());
+                    if (unwraped.getUserObject() instanceof RenamableSourceAndConverter) {
+                        sacs.add(((RenamableSourceAndConverter) unwraped.getUserObject()).sac);
+                    } else {
+                        for (SourceAndConverter sac : ui.getSourceAndConvertersFromChildrenOf(unwraped)) {
+                            sacs.add(sac);
+                        }
+                    }
+                }
+
+                importSourcesAndConverters(support, sacs);
+
+                return true;
+            } else {
+                // Unsupported drop
+                return false;
+            }
         }
+        return false;
 
     }
 
