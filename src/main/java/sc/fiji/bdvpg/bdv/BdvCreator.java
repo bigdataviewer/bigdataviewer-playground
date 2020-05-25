@@ -111,13 +111,13 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 
 		BdvHandle bdv = bss.getBdvHandle();
 
-		if (pathToBindings!=null) {
+		/*if (pathToBindings!=null) {
 			if (new File(pathToBindings).exists()) {
 				install(bdv,pathToBindings);
 			} else {
 				System.err.println("Bindings path "+pathToBindings+" do not exist.");
 			}
-		}
+		}*/
 
 		if ( interpolate ) bdv.getViewerPanel().setInterpolation( Interpolation.NLINEAR );
 
@@ -145,8 +145,8 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 		Behaviours behaviours = new Behaviours( new InputTriggerConfig() );
 		String actionScreenshotName = SourceAndConverterService.getCommandName(ScreenShotMakerCommand.class);
 		behaviours.behaviour((ClickBehaviour) (x, y) -> SourceAndConverterServices.getSourceAndConverterService().getAction(actionScreenshotName).accept(null),
-				actionScreenshotName, "not mapped");
-		behaviours.behaviour(new SourceAndConverterContextMenuClickBehaviour( bdv ), "Sources Context Menu", "not mapped");
+				actionScreenshotName, "D");
+		behaviours.behaviour(new SourceAndConverterContextMenuClickBehaviour( bdv ), "Sources Context Menu", "button3");
 		behaviours.install(bdv.getTriggerbindings(), "bdvpgactions");
 
 	}
