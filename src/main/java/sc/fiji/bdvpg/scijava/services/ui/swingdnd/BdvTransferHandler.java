@@ -17,6 +17,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Allows to drop drop SourceAndConverter from the SourceAndConverterServiceUI into the bdv windows
@@ -136,5 +138,24 @@ public class BdvTransferHandler extends TransferHandler {
 
     }
 
+    Function<JComponent, Transferable> transferableSupplier = null;
 
+    public void setTransferableFunction(Function<JComponent, Transferable> transferableSupplier) {
+        this.transferableSupplier = transferableSupplier;
+    }
+
+    @Override
+    protected Transferable createTransferable(JComponent c) {
+        System.out.println("Create Bdv Transferable");
+        if (transferableSupplier!=null) {
+            return transferableSupplier.apply(c);
+        } else {
+            return super.createTransferable(c);
+        }
+    }
+
+    @Override
+    public int getSourceActions(JComponent c) {
+        return COPY_OR_MOVE;
+    }
 }
