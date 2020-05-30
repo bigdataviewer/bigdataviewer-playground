@@ -5,6 +5,7 @@ import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
 import bdv.util.BdvStackSource;
 import bdv.viewer.Interpolation;
+import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -14,6 +15,7 @@ import org.scijava.ui.behaviour.io.InputTriggerConfigHelper;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.scijava.ui.behaviour.util.Behaviours;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
+import sc.fiji.bdvpg.behaviour.EditorBehaviourInstaller;
 import sc.fiji.bdvpg.behaviour.SourceAndConverterContextMenuClickBehaviour;
 import sc.fiji.bdvpg.scijava.command.bdv.ScreenShotMakerCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
@@ -125,7 +127,7 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 
 		bdv.getViewerPanel().setNumTimepoints(numTimePoints);
 
-		addBdvPlaygroundActions(bdv);
+		addBdvPlaygroundBehaviours(bdv);
 
 		// For drag and drop
 		addCustomTransferHandler(bdv);
@@ -140,15 +142,18 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 	 * - Show context menu
 	 * TODO : improve this
 	 */
-	private void addBdvPlaygroundActions(BdvHandle bdv)
+	private void addBdvPlaygroundBehaviours(BdvHandle bdv)
 	{
 		Behaviours behaviours = new Behaviours( new InputTriggerConfig() );
 		String actionScreenshotName = SourceAndConverterService.getCommandName(ScreenShotMakerCommand.class);
 		behaviours.behaviour((ClickBehaviour) (x, y) -> SourceAndConverterServices.getSourceAndConverterService().getAction(actionScreenshotName).accept(null),
 				actionScreenshotName, "D");
-		behaviours.behaviour(new SourceAndConverterContextMenuClickBehaviour( bdv ), "Sources Context Menu", "button3");
-		behaviours.install(bdv.getTriggerbindings(), "bdvpgactions");
 
+		// Adds selection mode triggered by E
+
+		// Setup a source selection mode with a trigger input key that toggles it on and off
+		SourceSelectorBehaviour ssb = new SourceSelectorBehaviour(bdv, "E");
+		new EditorBehaviourInstaller(ssb).run();
 	}
 
 	/**

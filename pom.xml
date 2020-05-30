@@ -130,6 +130,7 @@
 
 		<mastodon.version>1.0.0-beta-17-SNAPSHOT</mastodon.version>
 		<bigvolumeviewer.version>0.1.8-SNAPSHOT</bigvolumeviewer.version>
+		<bigdataviewer-selector.version>0.1.0</bigdataviewer-selector.version>
 
 	</properties>
 
@@ -154,6 +155,12 @@
 			<groupId>org.mastodon</groupId>
 			<artifactId>mastodon</artifactId>
 			<version>${mastodon.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.epfl.biop</groupId>
+			<artifactId>bigdataviewer-selector</artifactId>
+			<version>${bigdataviewer-selector.version}</version>
 		</dependency>
 
 		<dependency>

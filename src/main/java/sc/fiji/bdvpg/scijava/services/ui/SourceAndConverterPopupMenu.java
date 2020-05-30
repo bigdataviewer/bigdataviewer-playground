@@ -22,7 +22,7 @@ public class SourceAndConverterPopupMenu
 	private JPopupMenu popup;
 	private final SourceAndConverter[] sacs;
 
-	 private static String[] defaultPopupActions = {
+	 public static String[] defaultPopupActions = {
 			getCommandName(BdvSourcesAdderCommand.class),
 			getCommandName(BdvSourcesRemoverCommand.class),
 			"Inspect Sources",
@@ -33,6 +33,7 @@ public class SourceAndConverterPopupMenu
 			getCommandName(SourceColorChangerCommand.class),
 			getCommandName(SourceAndConverterProjectionModeChangerCommand.class),
 			"PopupLine",
+			getCommandName(BasicTransformerCommand.class),
 			getCommandName(SourcesDuplicatorCommand.class),
 			getCommandName(ManualTransformCommand.class),
 			getCommandName(TransformedSourceWrapperCommand.class),

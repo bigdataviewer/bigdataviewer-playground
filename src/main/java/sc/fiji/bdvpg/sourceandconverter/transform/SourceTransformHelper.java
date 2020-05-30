@@ -66,6 +66,8 @@ public class SourceTransformHelper {
                 return createNewTransformedSourceAndConverter(affineTransform3D,sacTR);
             }
         } else {
+            System.err.println("Cannot append a transformation to a source of class : "+sacTR.sac.getSpimSource().getClass().getSimpleName());
+            System.err.println("You can try 'mutate' or wrap as transformed Source");
             return createNewTransformedSourceAndConverter(affineTransform3D,sacTR);
         }
     }

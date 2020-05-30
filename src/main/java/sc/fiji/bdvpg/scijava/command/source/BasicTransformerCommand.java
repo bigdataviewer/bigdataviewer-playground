@@ -1,5 +1,6 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
+import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -54,7 +55,11 @@ public class BasicTransformerCommand implements Command {
                     break;
                 }
                 if (globalChange) {
-                    SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
+                    if (sac.getSpimSource() instanceof TransformedSource) {
+                        SourceTransformHelper.mutate(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
+                    } else {
+                        SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
+                    }
                 } else {
                     // Maintain center of box constant
                     AffineTransform3D at3D = new AffineTransform3D();
@@ -85,7 +90,12 @@ public class BasicTransformerCommand implements Command {
 
                     at3D_global.set(m);
 
-                    SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
+                    if (sac.getSpimSource() instanceof TransformedSource) {
+                        SourceTransformHelper.mutate(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
+                    } else {
+                        SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
+                    }
+                    //SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
 
                 }
             }

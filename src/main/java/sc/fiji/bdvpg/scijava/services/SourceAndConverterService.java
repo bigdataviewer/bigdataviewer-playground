@@ -308,6 +308,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         registerScijavaCommand(SourcesRemoverCommand.class);
         registerScijavaCommand(XmlHDF5ExporterCommand.class);
         registerScijavaCommand(ScreenShotMakerCommand.class);
+        registerScijavaCommand(BasicTransformerCommand.class);
 
         // registerScijavaCommand(SourcesResamplerCommand.class); Too many arguments -> need to define which one is used
         registerAction(getCommandName(SourcesResamplerCommand.class),
