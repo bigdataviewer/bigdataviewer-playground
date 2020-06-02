@@ -127,10 +127,10 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 
 		bdv.getViewerPanel().setNumTimepoints(numTimePoints);
 
-		addBdvPlaygroundBehaviours(bdv);
-
 		// For drag and drop
 		addCustomTransferHandler(bdv);
+
+		addBdvPlaygroundBehaviours(bdv);
 
 		return bdv;
 	}
