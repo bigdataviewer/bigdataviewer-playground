@@ -107,7 +107,7 @@ public class SourceAndConverterServiceUI {
         top = new SourceFilterNode("Sources", (sac) -> true, false);
         tree = new JTree(top);
 
-        SourceFilterNode outsideSpimDataSources = new SourceFilterNode("Other Sources", (sac) -> !sourceAndConverterService.getSacToMetadata().get(sac).containsKey( SPIM_DATA_INFO ), true);
+        SourceFilterNode outsideSpimDataSources = new SourceFilterNode("Other Sources", (sac) -> !sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO ), true);
         top.add(outsideSpimDataSources);
 
         model = (DefaultTreeModel)tree.getModel();
@@ -188,11 +188,11 @@ public class SourceAndConverterServiceUI {
         Set<AbstractSpimData> currentSpimdatas = new HashSet<>();
 
         displayedSource.forEach(sac -> {
-            if (sourceAndConverterService.getSacToMetadata().get(sac)!=null) {
-                if (sourceAndConverterService.getSacToMetadata().get(sac).containsKey(SPIM_DATA_INFO)) {
-                    currentSpimdatas.add(((SourceAndConverterService.SpimDataInfo) sourceAndConverterService.getSacToMetadata().get(sac).get(SPIM_DATA_INFO)).asd);
+            //if (sourceAndConverterService.getSacToMetadata().get(sac)!=null) {
+                if (sourceAndConverterService.containsMetadata(sac,SPIM_DATA_INFO)) {
+                    currentSpimdatas.add((( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).asd);
                 }
-            };
+            //};
         });
 
         // Check for obsolete spimdatafilternodes

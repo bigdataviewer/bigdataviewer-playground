@@ -4,6 +4,7 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,13 +67,6 @@ public interface ISourceAndConverterService
     void linkToSpimData(SourceAndConverter sac, AbstractSpimData asd, int idSetup);
 
     /**
-     * TODO: maybe remove this?
-     * Gets lists of associated objects and data attached to a Bdv Source
-     * @return
-     */
-    Map<SourceAndConverter, Map<String, Object>> getSacToMetadata();
-
-    /**
      * Adds metadata for a sac
      * @return
      */
@@ -84,6 +78,20 @@ public interface ISourceAndConverterService
      * @return
      */
     Object getMetadata(SourceAndConverter sac, String key);
+
+    /**
+     * Adds metadata for a sac
+     *
+     * @return
+     */
+    Collection<String> getMetadataKeys(SourceAndConverter sac);
+
+    /**
+     * Convenient method to know if a metadata for a sac exists
+     *
+     * @return
+     */
+    boolean containsMetadata(SourceAndConverter sac, String key);
 
     /**
      * Finds the list of corresponding registered sac for a source.

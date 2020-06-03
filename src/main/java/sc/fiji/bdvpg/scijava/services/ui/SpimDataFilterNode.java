@@ -17,9 +17,9 @@ public class SpimDataFilterNode extends SourceFilterNode {
     final SourceAndConverterService sourceAndConverterService;
 
     public boolean filter(SourceAndConverter sac) {
-        Map<String, Object> props = sourceAndConverterService.getSacToMetadata().get(sac);
-        assert props!=null;
-        return (props.containsKey( SPIM_DATA_INFO ))&&(( SourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).asd.equals(asd);
+        //Map<String, Object> props = sourceAndConverterService.getSacToMetadata().get(sac);
+        //assert props!=null;
+        return (sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO ))&&(( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).asd.equals(asd);
     }
 
     public SpimDataFilterNode(String name, AbstractSpimData spimdata, SourceAndConverterService sourceAndConverterService) {
