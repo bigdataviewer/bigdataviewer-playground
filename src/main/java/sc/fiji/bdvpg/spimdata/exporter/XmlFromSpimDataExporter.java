@@ -33,9 +33,14 @@ public class XmlFromSpimDataExporter implements Runnable {
 
             if (spimData instanceof SpimData) {
                 (new XmlIoSpimData()).save((SpimData) spimData, filePath);
+                SourceAndConverterServices.getSourceAndConverterService().setSpimDataName(spimData, filePath);
             } else if (spimData instanceof SpimDataMinimal) {
                 (new XmlIoSpimDataMinimal()).save((SpimDataMinimal) spimData, filePath);
+                SourceAndConverterServices.getSourceAndConverterService().setSpimDataName(spimData, filePath);
+            } else {
+                System.err.println("Cannot save SpimData of class : "+spimData.getClass().getSimpleName());
             }
+
         } catch (SpimDataException e) {
             e.printStackTrace();
         }

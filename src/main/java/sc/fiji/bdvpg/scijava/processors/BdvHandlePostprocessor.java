@@ -16,7 +16,6 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultTreeModel;
 import java.util.function.Consumer;
 
 /**
@@ -68,11 +67,7 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
                         public void viewerStateChanged(ViewerStateChange change) {
                             if (change.toString().equals("NUM_SOURCES_CHANGED")) {
                                 node.update(new SourceFilterNode.FilterUpdateEvent());
-
-                                ((DefaultTreeModel) sacsService.getUI().getTreeModel())
-                                        .nodeStructureChanged(sacsService.getUI().getTop());
-                                /*SwingUtilities.invokeLater(()->
-                                        sacsService.getUI().getTreeModel().reload());*/
+                                SwingUtilities.invokeLater(()->sacsService.getUI().getTreeModel().reload());
                             }
                         }
                     });
@@ -81,15 +76,10 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
                     BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService,  bsds, true,
                             () -> {
                                 sacsService.getUI().getTreeModel().removeNodeFromParent(node);
-                                ((DefaultTreeModel) sacsService.getUI().getTreeModel())
-                                        .nodeStructureChanged(sacsService.getUI().getTop());
                             });
 
                     ((SourceFilterNode)sacsService.getUI().getTreeModel().getRoot()).insert(node,0);
-                    //SwingUtilities.invokeLater(()->sacsService.getUI().getTreeModel().reload());
-
-                    ((DefaultTreeModel) sacsService.getUI().getTreeModel())
-                            .nodeStructureChanged(sacsService.getUI().getTop());
+                    SwingUtilities.invokeLater(()->sacsService.getUI().getTreeModel().reload());
                 }
 
                 module.resolveOutput(name);
