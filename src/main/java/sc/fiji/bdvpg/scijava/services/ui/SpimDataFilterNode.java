@@ -22,11 +22,15 @@ public class SpimDataFilterNode extends SourceFilterNode {
         return (sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO ))&&(( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).asd.equals(asd);
     }
 
-    public SpimDataFilterNode(String name, AbstractSpimData spimdata, SourceAndConverterService sourceAndConverterService) {
-        super(name,null, false);
+    public SpimDataFilterNode(String defaultName, AbstractSpimData spimdata, SourceAndConverterService sourceAndConverterService) {
+        super(defaultName,null, false);
         this.sourceAndConverterService = sourceAndConverterService;
         this.filter = this::filter;
         asd = spimdata;
+    }
+
+    String getName(AbstractSpimData spimdata, String defaultName) {
+        return defaultName;
     }
 
     public String toString() {

@@ -198,6 +198,10 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         });
     }
 
+    public void setSpimDataName(AbstractSpimData asd, String name) {
+        if (uiAvailable) ui.updateSpimDataName(asd, name);
+    }
+
     @Override
     public void remove(SourceAndConverter... sacs ) {
         // Remove displays

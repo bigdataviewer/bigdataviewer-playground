@@ -8,6 +8,7 @@ import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.swingdnd.SourceAndConverterServiceUITransferHandler;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import javax.swing.*;
@@ -18,6 +19,7 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -108,7 +110,6 @@ public class SourceAndConverterServiceUI {
         // Tree view of Spimdata
         top = new SourceFilterNode("Sources", (sac) -> true, false);
         tree = new JTree(top);
-        tree.setEditable(true);
 
         SourceFilterNode outsideSpimDataSources = new SourceFilterNode("Other Sources", (sac) -> !sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO ), true);
         top.add(outsideSpimDataSources);
@@ -167,7 +168,9 @@ public class SourceAndConverterServiceUI {
         DefaultMutableTreeNode parentNodeInspect = new DefaultMutableTreeNode("Inspect Results ["+sac.getSpimSource().getName()+"]");
         SourceAndConverterInspector.appendInspectorResult(parentNodeInspect, sac, sourceAndConverterService);
         top.add(parentNodeInspect);
-        model.reload(top);
+        ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(top);
+        //.nodeChanged(node);
+        //model.reload(top);
     }
 
     public void update(SourceAndConverter sac) {
@@ -178,7 +181,9 @@ public class SourceAndConverterServiceUI {
         } else {
             top.add(new DefaultMutableTreeNode(new RenamableSourceAndConverter(sac)));
         }
-        model.reload();
+
+        ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(top);
+        //model.reload();
         if (!frame.isVisible()) {
             frame.setVisible( true );
         }
@@ -210,6 +215,31 @@ public class SourceAndConverterServiceUI {
                 }
             }
         );
+    }
+
+    public void updateSpimDataName(AbstractSpimData asd_renamed, String name) {
+        visitAllNodesAndProcess(top,
+                node -> {
+                    if (node instanceof SpimDataFilterNode) {
+                        if (((SpimDataFilterNode) node).asd.equals(asd_renamed)) {
+                            ((SpimDataFilterNode) node).setName(name);
+                        }
+                    }
+                    ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
+                });
+    }
+
+    public static void visitAllNodesAndProcess(TreeNode node, Consumer<DefaultMutableTreeNode> processor) {
+        System.out.println(node);
+        if (node.getChildCount() >= 0) {
+            for (Enumeration e = node.children(); e.hasMoreElements();) {
+                TreeNode n = (TreeNode) e.nextElement();
+                visitAllNodesAndProcess(n, processor);
+                if (n instanceof DefaultMutableTreeNode) {
+                    processor.accept((DefaultMutableTreeNode) n);
+                }
+            }
+        }
     }
 
     private void addEntityFilterNodes(SpimDataFilterNode nodeSpimData, AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd) {
@@ -267,8 +297,14 @@ public class SourceAndConverterServiceUI {
             displayedSource.remove(sac);
             top.remove(sac);
             updateSpimDataFilterNodes();
-            model.reload();
+            //model.reload();
+
+            ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(top);
         }
+    }
+
+    public TreeNode getTop() {
+        return top;
     }
 
     public SourceAndConverter[] getSelectedSourceAndConverters() {

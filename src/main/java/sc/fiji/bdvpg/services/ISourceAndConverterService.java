@@ -130,4 +130,11 @@ public interface ISourceAndConverterService
      */
     Set<AbstractSpimData> getSpimDatasets();
 
+    /**
+     * Attach a name to a SpimDataObject
+     * @param asd
+     * @param name
+     */
+    void setSpimDataName(AbstractSpimData asd, String name);
+
 }
