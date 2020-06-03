@@ -292,8 +292,18 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         return actionMap.get(actionName);
     }
 
+    @Override
+    public Set<AbstractSpimData> getSpimDatasets() {
+        Set<AbstractSpimData> asds = new HashSet<>();
+        this.getSourceAndConverters().forEach(sac -> {
+            if (containsMetadata(sac, SPIM_DATA_INFO)) {
+                asds.add(((SpimDataInfo)getMetadata(sac, SPIM_DATA_INFO)).asd);
+            }
+        });
+        return asds;
+    }
+
     /**
-     *
      * @return a list of of action name / keys / identifiers
      */
     public Set<String> getActionsKeys() {

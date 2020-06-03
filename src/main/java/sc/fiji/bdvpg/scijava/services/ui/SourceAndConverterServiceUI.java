@@ -7,6 +7,7 @@ import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.swingdnd.SourceAndConverterServiceUITransferHandler;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -279,7 +280,7 @@ public class SourceAndConverterServiceUI {
                 sacList.addAll(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) tp.getLastPathComponent()));
             }
         }
-        return sacList.toArray(new SourceAndConverter[sacList.size()]);
+        return SourceAndConverterUtils.sortDefaultNoGeneric(sacList).toArray(new SourceAndConverter[sacList.size()]);
     }
 
     public Set<SourceAndConverter> getSourceAndConvertersFromChildrenOf(DefaultMutableTreeNode node) {
@@ -343,7 +344,7 @@ public class SourceAndConverterServiceUI {
         }
     }
 
-    public Set<SourceAndConverter> getSourceAndConvertersFromTreePath(TreePath path) {
-        return getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) path.getLastPathComponent());
+    public List<SourceAndConverter> getSourceAndConvertersFromTreePath(TreePath path) {
+        return SourceAndConverterUtils.sortDefaultNoGeneric(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) path.getLastPathComponent()));
     }
 }

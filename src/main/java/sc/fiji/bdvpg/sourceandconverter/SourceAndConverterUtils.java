@@ -37,8 +37,7 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 import spimdata.util.Displaysettings;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
@@ -452,6 +451,139 @@ public class SourceAndConverterUtils {
         } else {
             return false;
         }
+
+    }
+
+    /**
+     * Default sorting order for SourceAndConverter
+     * Because sometimes we want some consistency in channel ordering when exporting / importing
+     *
+     * TODO : find a better way to order between spimdata
+     * @param sacs
+     * @return
+     */
+    public static List<SourceAndConverter<?>> sortDefaultGeneric(Collection<SourceAndConverter<?>> sacs) {
+        List<SourceAndConverter<?>> sortedList = new ArrayList<>(sacs.size());
+        sortedList.addAll(sacs);
+        Set<AbstractSpimData> spimData = new HashSet<>();
+        // Gets all SpimdataInfo
+        sacs.forEach(sac -> {
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                SourceAndConverterService.SpimDataInfo sdi = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)));
+                spimData.add(sdi.asd);
+            }
+        });
+
+        Comparator<SourceAndConverter> sacComparator = (s1, s2) -> {
+            // Those who do not belong to spimdata are last:
+            SourceAndConverterService.SpimDataInfo sdi1 = null, sdi2 = null;
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(s1, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                sdi1 = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(s1, SourceAndConverterService.SPIM_DATA_INFO)));
+            }
+
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(s2, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                sdi2 = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(s2, SourceAndConverterService.SPIM_DATA_INFO)));
+            }
+
+            if ((sdi1==null)&&(sdi2!=null)) {
+                return -1;
+            }
+
+            if ((sdi1!=null)&&(sdi2==null)) {
+                return 1;
+            }
+
+            if ((sdi1!=null)&&(sdi2!=null)) {
+                if (sdi1.asd==sdi2.asd) {
+                    return sdi1.setupId-sdi2.setupId;
+                } else {
+                    return sdi2.toString().compareTo(sdi1.toString());
+                }
+            }
+
+            return s2.getSpimSource().getName().compareTo(s1.getSpimSource().getName());
+        };
+
+        sortedList.sort(sacComparator);
+        return sortedList;
+    }
+
+    /**
+     * Default sorting order for SourceAndConverter
+     * Because sometimes we want some consistency in channel ordering when exporting / importing
+     *
+     * TODO : find a better way to order between spimdata
+     * @param sacs
+     * @return
+     */
+    public static List<SourceAndConverter> sortDefaultNoGeneric(Collection<SourceAndConverter> sacs) {
+        List<SourceAndConverter> sortedList = new ArrayList<>(sacs.size());
+        sortedList.addAll(sacs);
+        Set<AbstractSpimData> spimData = new HashSet<>();
+        // Gets all SpimdataInfo
+        sacs.forEach(sac -> {
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                SourceAndConverterService.SpimDataInfo sdi = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)));
+                spimData.add(sdi.asd);
+            }
+        });
+
+        Comparator<SourceAndConverter> sacComparator = (s1, s2) -> {
+            // Those who do not belong to spimdata are last:
+            SourceAndConverterService.SpimDataInfo sdi1 = null, sdi2 = null;
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(s1, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                sdi1 = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(s1, SourceAndConverterService.SPIM_DATA_INFO)));
+            }
+
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(s2, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                sdi2 = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(s2, SourceAndConverterService.SPIM_DATA_INFO)));
+            }
+
+            if ((sdi1==null)&&(sdi2!=null)) {
+                return -1;
+            }
+
+            if ((sdi1!=null)&&(sdi2==null)) {
+                return 1;
+            }
+
+            if ((sdi1!=null)&&(sdi2!=null)) {
+                if (sdi1.asd==sdi2.asd) {
+                    return sdi1.setupId-sdi2.setupId;
+                } else {
+                    return sdi2.toString().compareTo(sdi1.toString());
+                }
+            }
+
+            return s2.getSpimSource().getName().compareTo(s1.getSpimSource().getName());
+        };
+
+        sortedList.sort(sacComparator);
+        return sortedList;
     }
 
 }

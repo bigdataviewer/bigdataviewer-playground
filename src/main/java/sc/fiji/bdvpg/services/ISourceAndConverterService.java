@@ -125,4 +125,9 @@ public interface ISourceAndConverterService
      */
     Consumer<SourceAndConverter[]> getAction(String actionName);
 
+    /**
+     * Gets All SpimDatas present in the service
+     */
+    Set<AbstractSpimData> getSpimDatasets();
+
 }
