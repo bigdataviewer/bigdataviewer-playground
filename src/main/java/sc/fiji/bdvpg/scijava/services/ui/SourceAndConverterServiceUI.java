@@ -3,6 +3,7 @@ package sc.fiji.bdvpg.scijava.services.ui;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.base.Entity;
+import mpicbg.spim.data.generic.base.NamedEntity;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
@@ -107,6 +108,7 @@ public class SourceAndConverterServiceUI {
         // Tree view of Spimdata
         top = new SourceFilterNode("Sources", (sac) -> true, false);
         tree = new JTree(top);
+        tree.setEditable(true);
 
         SourceFilterNode outsideSpimDataSources = new SourceFilterNode("Other Sources", (sac) -> !sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO ), true);
         top.add(outsideSpimDataSources);
@@ -146,7 +148,7 @@ public class SourceAndConverterServiceUI {
         // We can drag the nodes
         tree.setDragEnabled(true);
         // Enables:
-        // - drag -> TODO
+        // - drag -> SourceAndConverters
         // - drop -> automatically import xml bdv datasets
         tree.setTransferHandler(new SourceAndConverterServiceUITransferHandler());
 
@@ -171,14 +173,12 @@ public class SourceAndConverterServiceUI {
     public void update(SourceAndConverter sac) {
         displayedSource.add(sac);
         updateSpimDataFilterNodes();
-        //model.reload();
         if (top.hasConsumed(sac)) {
             top.update(new SourceFilterNode.SourceUpdateEvent(sac));
         } else {
             top.add(new DefaultMutableTreeNode(new RenamableSourceAndConverter(sac)));
         }
         model.reload();
-        //panel.revalidate();
         if (!frame.isVisible()) {
             frame.setVisible( true );
         }
@@ -186,15 +186,7 @@ public class SourceAndConverterServiceUI {
 
     private void updateSpimDataFilterNodes() {
         // Fetch All Spimdatas from all Sources
-        Set<AbstractSpimData> currentSpimdatas = new HashSet<>();
-
-        displayedSource.forEach(sac -> {
-            //if (sourceAndConverterService.getSacToMetadata().get(sac)!=null) {
-                if (sourceAndConverterService.containsMetadata(sac,SPIM_DATA_INFO)) {
-                    currentSpimdatas.add((( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).asd);
-                }
-            //};
-        });
+        Set<AbstractSpimData> currentSpimdatas = sourceAndConverterService.getSpimDatasets();
 
         // Check for obsolete spimdatafilternodes
         spimdataFilterNodes.forEach(fnode -> {
@@ -207,22 +199,21 @@ public class SourceAndConverterServiceUI {
 
         // Check for new spimdata
         currentSpimdatas.forEach(asd -> {
-                    //System.out.println("Test "+sdi.toString());
-                    if ((spimdataFilterNodes.size()==0)||(spimdataFilterNodes.stream().noneMatch(fnode -> fnode.asd.equals(asd)))) {
-                        SpimDataFilterNode newNode = new SpimDataFilterNode("SpimData "+spimdataFilterNodes.size(), asd, sourceAndConverterService);
-                        spimdataFilterNodes.add(newNode);
-                        addEntityFilterNodes(newNode, asd);
-                        top.insert(newNode, 0);
-                        //model.reload(top);
-                        //System.out.println("Adding");
-                    }
+                if ((spimdataFilterNodes.size()==0)||(spimdataFilterNodes.stream().noneMatch(fnode -> fnode.asd.equals(asd)))) {
+                    SpimDataFilterNode newNode = new SpimDataFilterNode("SpimData "+spimdataFilterNodes.size(), asd, sourceAndConverterService);
+                    SourceFilterNode allSources = new SourceFilterNode("All Sources", (in) -> true, true);
+                    newNode.add(allSources);
+                    spimdataFilterNodes.add(newNode);
+                    addEntityFilterNodes(newNode, asd);
+                    top.insert(newNode, 0);
+
                 }
+            }
         );
     }
 
     private void addEntityFilterNodes(SpimDataFilterNode nodeSpimData, AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd) {
         // Gets all entities by class
-
 
         Map<Class, List<Entity>> entitiesByClass = asd.getSequenceDescription()
                 .getViewDescriptions()
@@ -247,13 +238,23 @@ public class SourceAndConverterServiceUI {
             classNodes.put(c, new SourceFilterNode(c.getSimpleName(),(sac)-> true, false));
         });
 
-        classNodes.values().forEach((f) -> nodeSpimData.add(f));
+        List<SourceFilterNode> orderedNodes = new ArrayList<>(classNodes.values());
+        orderedNodes.sort(Comparator.comparing(SourceFilterNode::getName));
+        orderedNodes.forEach((f) -> nodeSpimData.add(f));
 
         Set<Entity> entitiesAlreadyRegistered = new HashSet<>();
         entitiesByClass.forEach((c,el) -> {
             el.forEach(entity -> {
                 if (!entitiesAlreadyRegistered.contains(entity)) {
-                    classNodes.get(c).add(new SpimDataElementFilter(c.getSimpleName()+" "+entity.getId(),entity, sourceAndConverterService));
+                    // Attempt to use NamedEntity if applicable
+                    String entityName = null;
+                    if (entity instanceof NamedEntity) {
+                        entityName = ((NamedEntity) entity).getName();
+                    }
+                    if ((entityName==null) || (entityName.equals(""))) {
+                        entityName = c.getSimpleName()+" "+entity.getId();
+                    }
+                    classNodes.get(c).add(new SpimDataElementFilter(entityName, entity, sourceAndConverterService));
                     entitiesAlreadyRegistered.add(entity);
                 }
             });
