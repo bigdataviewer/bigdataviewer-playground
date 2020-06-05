@@ -27,7 +27,9 @@ import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
 import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
@@ -235,7 +237,7 @@ public class SourceAndConverterUtils {
      * TODO :
      * @return
      */
-    public static Converter cloneConverter(Converter converter) {
+    public static Converter cloneConverter(Converter converter, SourceAndConverter sac) {
         if (converter instanceof RealARGBColorConverter.Imp0) {
             RealARGBColorConverter.Imp0 out = new RealARGBColorConverter.Imp0<>( ((RealARGBColorConverter.Imp0) converter).getMin(), ((RealARGBColorConverter.Imp0) converter).getMax() );
             out.setColor(((RealARGBColorConverter.Imp0) converter).getColor());
@@ -257,6 +259,21 @@ public class SourceAndConverterUtils {
         } else if (converter instanceof RealLUTConverter) {
             return new RealLUTConverter(((RealLUTConverter) converter).getMin(),((RealLUTConverter) converter).getMax(),((RealLUTConverter) converter).getLUT());
         } else {
+            //RealARGBColorConverter
+            Converter cvt = BigDataViewer.createConverterToARGB((NumericType)sac.getSpimSource().getType());
+            if ((converter instanceof ColorConverter)&&(cvt instanceof ColorConverter)) {
+                ((ColorConverter) cvt).setColor(((ColorConverter)converter).getColor());
+            }
+
+            if ((converter instanceof RealARGBColorConverter)&&(cvt instanceof RealARGBColorConverter)) {
+                ((RealARGBColorConverter)cvt).setMin(((RealARGBColorConverter)converter).getMin());
+                ((RealARGBColorConverter)cvt).setMax(((RealARGBColorConverter)converter).getMax());
+            }
+
+            if (cvt!=null) {
+                return cvt;
+            }
+
             errlog.accept("Could not clone the converter of class " + converter.getClass().getSimpleName());
             return null;
         }
@@ -584,6 +601,28 @@ public class SourceAndConverterUtils {
 
         sortedList.sort(sacComparator);
         return sortedList;
+    }
+
+    /**
+     * Return the center point in global coordinates of the source
+     * Do not expect this to work with {@link WarpedSource}
+     * @param source
+     * @return
+     */
+    public static RealPoint getSourceAndConverterCenterPoint(SourceAndConverter source) {
+        AffineTransform3D at3D = new AffineTransform3D();
+        at3D.identity();
+        //double[] m = at3D.getRowPackedCopy();
+        source.getSpimSource().getSourceTransform(0,0,at3D);
+        long[] dims = new long[3];
+        source.getSpimSource().getSource(0,0).dimensions(dims);
+
+        RealPoint ptCenterGlobal = new RealPoint(3);
+        RealPoint ptCenterPixel = new RealPoint((dims[0]-1.0)/2.0,(dims[1]-1.0)/2.0, (dims[2]-1.0)/2.0);
+
+        at3D.apply(ptCenterPixel, ptCenterGlobal);
+
+        return ptCenterGlobal;
     }
 
 }

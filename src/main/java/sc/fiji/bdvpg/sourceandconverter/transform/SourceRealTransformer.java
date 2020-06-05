@@ -42,10 +42,10 @@ public class SourceRealTransformer implements Runnable, Function<SourceAndConver
             WarpedSource vsrc = new WarpedSource(in.asVolatile().getSpimSource(), "Transformed_"+in.asVolatile().getSpimSource().getName());//f.apply(in.asVolatile().getSpimSource());
             vsrc.updateTransform(rt);
             vsrc.setIsTransformed(true);
-            SourceAndConverter vout = new SourceAndConverter<>(vsrc, SourceAndConverterUtils.cloneConverter(in.asVolatile().getConverter()));
-            return new SourceAndConverter(src, SourceAndConverterUtils.cloneConverter(in.getConverter()), vout);
+            SourceAndConverter vout = new SourceAndConverter<>(vsrc, SourceAndConverterUtils.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));
+            return new SourceAndConverter(src, SourceAndConverterUtils.cloneConverter(in.getConverter(), in), vout);
         } else {
-            return new SourceAndConverter(src, SourceAndConverterUtils.cloneConverter(in.getConverter()));
+            return new SourceAndConverter(src, SourceAndConverterUtils.cloneConverter(in.getConverter(), in));
         }
     }
 }
