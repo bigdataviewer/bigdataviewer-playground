@@ -11,7 +11,7 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Delete Sources")
 public class SourcesRemoverCommand implements Command {
 
-    @Parameter
+    @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sacs;
 
     @Parameter

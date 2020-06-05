@@ -13,7 +13,7 @@ import java.util.Arrays;
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Export Sources to XML/HDF5 Spimdataset")
 public class XmlHDF5ExporterCommand implements Command {
 
-    @Parameter
+    @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sacs;
     @Parameter
     int nThreads = 4;

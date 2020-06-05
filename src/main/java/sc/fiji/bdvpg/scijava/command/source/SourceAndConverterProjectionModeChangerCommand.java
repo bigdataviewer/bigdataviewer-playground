@@ -13,10 +13,10 @@ import static sc.fiji.bdvpg.bdv.projector.Projection.PROJECTION_MODE_SUM;
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Projection Mode")
 public class SourceAndConverterProjectionModeChangerCommand implements Command {
 
-    @Parameter ( label = "Projection Mode", choices = { PROJECTION_MODE_SUM, PROJECTION_MODE_AVG })
+    @Parameter(label = "Projection Mode", choices = { PROJECTION_MODE_SUM, PROJECTION_MODE_AVG })
     String projectionMode = PROJECTION_MODE_SUM;
 
-    @Parameter
+    @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sacs;
 
     @Parameter

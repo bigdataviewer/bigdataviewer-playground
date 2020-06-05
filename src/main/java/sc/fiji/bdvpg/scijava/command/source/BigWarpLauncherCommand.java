@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
         label = "Starts BigWarp from existing sources")
 public class BigWarpLauncherCommand implements Command {
 
-    @Parameter
+    @Parameter(label = "Window title for BigWarp")
     String bigWarpName;
 
-    @Parameter
+    @Parameter(label = "Moving Source(s)")
     SourceAndConverter[] movingSources;
 
-    @Parameter
+    @Parameter(label = "Fixed Source(s)")
     SourceAndConverter[] fixedSources;
 
     @Parameter(type = ItemIO.OUTPUT)
