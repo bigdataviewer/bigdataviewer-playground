@@ -18,12 +18,12 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import javax.swing.*;
 import java.awt.*;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bdv>Create Ortho BDV Frames",
-        label = "Creates 3 Bdvs windows with synchronized orthogonal views")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>Create Ortho BDV Frames",
+        label = "Creates 3 BDVs windows with synchronized orthogonal views")
 public class BdvOrthoWindowCreatorCommand implements Command {
 
-    @Parameter(label = "Title of Bdv windows")
-    public String windowTitle = "Bdv";
+    @Parameter(label = "Title of BDV windows")
+    public String windowTitle = "BDV";
 
     @Parameter(label = "Interpolate")
     public boolean interpolate = false;
