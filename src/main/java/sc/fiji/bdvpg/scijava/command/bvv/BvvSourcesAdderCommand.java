@@ -9,7 +9,7 @@ import sc.fiji.bdvpg.bvv.BvvViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bvv>Show Sources in Bvv")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>Show Sources in BVV")
 public class BvvSourcesAdderCommand implements Command {
 
     @Parameter

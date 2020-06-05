@@ -19,12 +19,12 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bvv>Create Empty BVV Frame",
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>Create Empty BVV Frame",
     label = "Creates an empty Bdv window")
 public class BvvWindowCreatorCommand implements Command {
 
-    @Parameter(label = "Title of the new Bvv window")
-    public String windowTitle = "Bvv";
+    @Parameter(label = "Title of the new BVV window")
+    public String windowTitle = "BVV";
 
     @Parameter(label = "Number of timepoints (1 for a single timepoint)")
     public int nTimepoints = 1;
