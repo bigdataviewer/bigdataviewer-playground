@@ -27,7 +27,7 @@ import java.util.Map;
  * @author Nicolas Chiaruttini biop.epfl.ch
  */
 @Plugin(type = Command.class,
-        menuPath = ScijavaBdvDefaults.RootMenu+"List BigDataServer Datasets")
+        menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>List BigDataServer Datasets")
 public class BigDataBrowserPlugInCommand implements Command
 {
     private final Map< String, ImageIcon > imageMap = new HashMap<>();

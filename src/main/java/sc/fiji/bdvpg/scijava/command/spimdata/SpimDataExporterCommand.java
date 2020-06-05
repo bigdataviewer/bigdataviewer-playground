@@ -15,7 +15,7 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.io.File;
 
-@Plugin( type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"SpimDataset>Save SpimDataset" )
+@Plugin( type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>Save BDVDataset" )
 public class SpimDataExporterCommand implements Command {
 
     // To get associated spimdata
@@ -29,7 +29,7 @@ public class SpimDataExporterCommand implements Command {
 
         if (SourceAndConverterServices.getSourceAndConverterService()
                 .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)==null) {
-            System.err.println("No SpimData associated to the chosen source - aborting save Command");
+            System.err.println("No BDVDataset associated to the chosen source - Aborting save command");
             return;
         }
 

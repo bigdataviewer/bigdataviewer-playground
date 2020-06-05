@@ -9,7 +9,7 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.io.File;
 
-@Plugin( type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"SpimDataset>Open XML/HDF5 Files" )
+@Plugin( type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>Open XML/HDF5 Files" )
 public class MultipleSpimDataImporterCommand implements Command {
 
     /**
