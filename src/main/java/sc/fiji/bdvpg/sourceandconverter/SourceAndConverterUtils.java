@@ -12,7 +12,6 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
-import mpicbg.spim.data.generic.sequence.BasicImgLoader;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.registration.ViewRegistration;
 import mpicbg.spim.data.registration.ViewTransform;
@@ -30,17 +29,15 @@ import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.util.Util;
 import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
-import spimdata.util.DisplaySettings;
+import spimdata.util.Displaysettings;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
@@ -177,10 +174,11 @@ public class SourceAndConverterUtils {
                     } else {
                         out.put(setupId, new SourceAndConverter(s, nonVolatileConverter));
                     }
-
+                    // Metadata need to exist before the display settings (projection mode) are set
+                    SourceAndConverterServices.getSourceAndConverterService().register(out.get(setupId));
                     // Applying display settings if some have been set
-                    if (setup.getAttribute(DisplaySettings.class)!=null) {
-                        DisplaySettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(DisplaySettings.class));
+                    if (setup.getAttribute(Displaysettings.class)!=null) {
+                        Displaysettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(Displaysettings.class));
                     }
 
                 } else if ( ARGBType.class.isInstance( type ) ) {
@@ -197,10 +195,11 @@ public class SourceAndConverterUtils {
                     } else {
                         out.put(setupId, new SourceAndConverter(s, nonVolatileConverter));
                     }
-
+                    // Metadata need to exist before the display settings (projection mode) are set
+                    SourceAndConverterServices.getSourceAndConverterService().register(out.get(setupId));
                     // Applying display settings if some have been set
-                    if (setup.getAttribute(DisplaySettings.class)!=null) {
-                        DisplaySettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(DisplaySettings.class));
+                    if (setup.getAttribute(Displaysettings.class)!=null) {
+                        Displaysettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(Displaysettings.class));
                     }
 
                 } else {
@@ -262,7 +261,6 @@ public class SourceAndConverterUtils {
             return null;
         }
     }
-
 
     public static ConverterSetup createConverterSetup(SourceAndConverter sac) {
         return  createConverterSetup(sac,-1);
@@ -380,8 +378,7 @@ public class SourceAndConverterUtils {
      * @param <T>
      * @return
      */
-    private static< T extends RealType< T >>  Converter createConverterRealType(final T type) { //Source<T> source) {
-        //final T type = source.getType();//Util.getTypeFromInterval( source.getSource( 0, 0 ) );
+    private static< T extends RealType< T >>  Converter createConverterRealType(final T type) {
         final double typeMin = Math.max( 0, Math.min( type.getMinValue(), 65535 ) );
         final double typeMax = Math.max( 0, Math.min( type.getMaxValue(), 65535 ) );
         final RealARGBColorConverter< T > converter ;
@@ -454,193 +451,139 @@ public class SourceAndConverterUtils {
         } else {
             return false;
         }
+
     }
 
-
     /**
-     * if a source has a linked spimdata, mutates the last registration to account for changes
-     * @param affineTransform3D
-     * @param sac
+     * Default sorting order for SourceAndConverter
+     * Because sometimes we want some consistency in channel ordering when exporting / importing
+     *
+     * TODO : find a better way to order between spimdata
+     * @param sacs
      * @return
      */
-    public static SourceAndConverter mutateLastSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
-        assert SourceAndConverterServices
-                .getSourceAndConverterService()
-                .getSacToMetadata().get(sac).containsKey(SPIM_DATA_INFO);
-        assert SourceAndConverterServices
-                .getSourceAndConverterService()
-                .getSacToMetadata().get(sac).get(SPIM_DATA_INFO) instanceof SourceAndConverterService.SpimDataInfo;
+    public static List<SourceAndConverter<?>> sortDefaultGeneric(Collection<SourceAndConverter<?>> sacs) {
+        List<SourceAndConverter<?>> sortedList = new ArrayList<>(sacs.size());
+        sortedList.addAll(sacs);
+        Set<AbstractSpimData> spimData = new HashSet<>();
+        // Gets all SpimdataInfo
+        sacs.forEach(sac -> {
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                SourceAndConverterService.SpimDataInfo sdi = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)));
+                spimData.add(sdi.asd);
+            }
+        });
 
-        SourceAndConverterService.SpimDataInfo sdi = ((SourceAndConverterService.SpimDataInfo)
-                SourceAndConverterServices.getSourceAndConverterService()
-                        .getSacToMetadata().get(sac).get(SPIM_DATA_INFO));
-
-        // TODO : find a way to pass the ref of starter into this function ? but static looks great...
-        BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
-
-        int timePoint = bdvHandle.getViewerPanel().getState().getCurrentTimepoint();
-
-        ViewRegistration vr = sdi.asd.getViewRegistrations().getViewRegistration(timePoint,sdi.setupId);
-
-        ViewTransform vt = vr.getTransformList().get(vr.getTransformList().size()-1);
-
-        AffineTransform3D at3D = new AffineTransform3D();
-        at3D.concatenate(vt.asAffine3D());
-        at3D.preConcatenate(affineTransform3D);
-
-        ViewTransform newvt = new ViewTransformAffine(vt.getName(), at3D);
-
-        vr.getTransformList().remove(vt);
-        vr.getTransformList().add(newvt);
-        vr.updateModel();
-
-
-        try {
-            Method updateBdvSource = Class.forName("bdv.AbstractSpimSource").getDeclaredMethod("loadTimepoint", int.class);
-            updateBdvSource.setAccessible(true);
-            AbstractSpimSource ass = (AbstractSpimSource) sac.getSpimSource();
-            updateBdvSource.invoke(ass, timePoint);
-
-            if (sac.asVolatile() != null) {
-                ass = (AbstractSpimSource) sac.asVolatile().getSpimSource();
-                updateBdvSource.invoke(ass, timePoint);
+        Comparator<SourceAndConverter> sacComparator = (s1, s2) -> {
+            // Those who do not belong to spimdata are last:
+            SourceAndConverterService.SpimDataInfo sdi1 = null, sdi2 = null;
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(s1, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                sdi1 = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(s1, SourceAndConverterService.SPIM_DATA_INFO)));
             }
 
-        } catch (ClassCastException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return sac;
-    }
-
-    /**
-     * if a source has a linked spimdata, appends a new transformation in the registration model
-     * @param affineTransform3D
-     * @param sac
-     * @return
-     */
-    public static SourceAndConverter appendNewSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
-        assert SourceAndConverterServices
-                .getSourceAndConverterService()
-                .getSacToMetadata().get(sac).containsKey(SPIM_DATA_INFO);
-        assert SourceAndConverterServices
-                .getSourceAndConverterService()
-                .getSacToMetadata().get(sac).get(SPIM_DATA_INFO) instanceof SourceAndConverterService.SpimDataInfo;
-
-        SourceAndConverterService.SpimDataInfo sdi = ((SourceAndConverterService.SpimDataInfo)
-                SourceAndConverterServices.getSourceAndConverterService()
-                        .getSacToMetadata().get(sac).get(SPIM_DATA_INFO));
-
-        // TODO : find a way to pass the ref of starter into this function ? but static looks great...
-        BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
-
-        int timePoint = bdvHandle.getViewerPanel().getState().getCurrentTimepoint();
-
-        ViewTransform newvt = new ViewTransformAffine("Manual transform", affineTransform3D);
-
-        sdi.asd.getViewRegistrations().getViewRegistration(timePoint,sdi.setupId).preconcatenateTransform(newvt);
-        sdi.asd.getViewRegistrations().getViewRegistration(timePoint,sdi.setupId).updateModel();
-
-        try {
-            Method updateBdvSource = Class.forName("bdv.AbstractSpimSource").getDeclaredMethod("loadTimepoint", int.class);
-            updateBdvSource.setAccessible(true);
-            AbstractSpimSource ass = (AbstractSpimSource) sac.getSpimSource();
-            updateBdvSource.invoke(ass, timePoint);
-
-            if (sac.asVolatile() != null) {
-                ass = (AbstractSpimSource) sac.asVolatile().getSpimSource();
-                updateBdvSource.invoke(ass, timePoint);
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(s2, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                sdi2 = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(s2, SourceAndConverterService.SPIM_DATA_INFO)));
             }
 
-        } catch (ClassCastException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            if ((sdi1==null)&&(sdi2!=null)) {
+                return -1;
+            }
 
-        return sac;
-    }
+            if ((sdi1!=null)&&(sdi2==null)) {
+                return 1;
+            }
 
-    /**
-     *
-     * branch between mutateTransformedSourceAndConverter and mutateLastSpimdataTransformation depending  on the source class
-     *
-     * @param affineTransform3D
-     * @param sac
-     * @return
-     */
-    public static SourceAndConverter mutate(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
-        if (sac.getSpimSource() instanceof AbstractSpimSource) {
-            if (SourceAndConverterServices.getSourceAndConverterService().getMetadata(sac,SPIM_DATA_INFO)!=null) {
-                return mutateLastSpimdataTransformation(affineTransform3D, sac);
-            } else {
-                if (sac.getSpimSource() instanceof TransformedSource) {
-                    return mutateTransformedSourceAndConverter(affineTransform3D,sac);
+            if ((sdi1!=null)&&(sdi2!=null)) {
+                if (sdi1.asd==sdi2.asd) {
+                    return sdi1.setupId-sdi2.setupId;
                 } else {
-                    return createNewTransformedSourceAndConverter(affineTransform3D,sac);
+                    return sdi2.toString().compareTo(sdi1.toString());
                 }
             }
-        } else if (sac.getSpimSource() instanceof TransformedSource) {
-            return mutateTransformedSourceAndConverter(affineTransform3D,sac);
-        } else {
-            return createNewTransformedSourceAndConverter(affineTransform3D,sac);
-        }
+
+            return s2.getSpimSource().getName().compareTo(s1.getSpimSource().getName());
+        };
+
+        sortedList.sort(sacComparator);
+        return sortedList;
     }
 
     /**
-     *  branch between createNewTransformedSourceAndConverter and appendNewSpimdataTransformation depending on the source class
+     * Default sorting order for SourceAndConverter
+     * Because sometimes we want some consistency in channel ordering when exporting / importing
      *
-     * @param affineTransform3D
-     * @param sac
+     * TODO : find a better way to order between spimdata
+     * @param sacs
      * @return
      */
-    public static SourceAndConverter append(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
-        if (sac.getSpimSource() instanceof AbstractSpimSource) {
-            if (SourceAndConverterServices.getSourceAndConverterService().getMetadata(sac,SPIM_DATA_INFO)!=null) {
-                return appendNewSpimdataTransformation(affineTransform3D, sac);
-            } else {
-                return createNewTransformedSourceAndConverter(affineTransform3D,sac);
+    public static List<SourceAndConverter> sortDefaultNoGeneric(Collection<SourceAndConverter> sacs) {
+        List<SourceAndConverter> sortedList = new ArrayList<>(sacs.size());
+        sortedList.addAll(sacs);
+        Set<AbstractSpimData> spimData = new HashSet<>();
+        // Gets all SpimdataInfo
+        sacs.forEach(sac -> {
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                SourceAndConverterService.SpimDataInfo sdi = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)));
+                spimData.add(sdi.asd);
             }
-        } else {
-            return createNewTransformedSourceAndConverter(affineTransform3D,sac);
-        }
-    }
+        });
 
-    /**
-     * Ignores registration
-     * @param affineTransform3D
-     * @param sac
-     * @return
-     */
-    public static SourceAndConverter cancel(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
-        return sac;
-    }
+        Comparator<SourceAndConverter> sacComparator = (s1, s2) -> {
+            // Those who do not belong to spimdata are last:
+            SourceAndConverterService.SpimDataInfo sdi1 = null, sdi2 = null;
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(s1, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                sdi1 = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(s1, SourceAndConverterService.SPIM_DATA_INFO)));
+            }
 
-    /**
-     * Wraps into transformed sources the registered sources
-     * @param affineTransform3D
-     * @param sac
-     * @return
-     */
-    public static SourceAndConverter createNewTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
-        SourceAndConverter transformedSac = new SourceAffineTransformer(sac, affineTransform3D).getSourceOut();
-        return transformedSac;
-    }
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(s2, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                sdi2 = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(s2, SourceAndConverterService.SPIM_DATA_INFO)));
+            }
 
-    /**
-     * provided a source was already a trasnformed source, updates the inner affineTransform3D
-     * @param affineTransform3D
-     * @param sac
-     * @return
-     */
-    public static SourceAndConverter mutateTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverter sac) {
-        assert sac.getSpimSource() instanceof TransformedSource;
-        AffineTransform3D at3D = new AffineTransform3D();
-        ((TransformedSource)sac.getSpimSource()).getFixedTransform(at3D);
-        ((TransformedSource)sac.getSpimSource()).setFixedTransform(at3D.preConcatenate(affineTransform3D));
-        return sac;
+            if ((sdi1==null)&&(sdi2!=null)) {
+                return -1;
+            }
+
+            if ((sdi1!=null)&&(sdi2==null)) {
+                return 1;
+            }
+
+            if ((sdi1!=null)&&(sdi2!=null)) {
+                if (sdi1.asd==sdi2.asd) {
+                    return sdi1.setupId-sdi2.setupId;
+                } else {
+                    return sdi2.toString().compareTo(sdi1.toString());
+                }
+            }
+
+            return s2.getSpimSource().getName().compareTo(s1.getSpimSource().getName());
+        };
+
+        sortedList.sort(sacComparator);
+        return sortedList;
     }
 
 }

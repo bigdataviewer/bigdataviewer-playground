@@ -33,6 +33,7 @@ public class SourceAndConverterPopupMenu
 			getCommandName(SourceColorChangerCommand.class),
 			getCommandName(SourceAndConverterProjectionModeChangerCommand.class),
 			"PopupLine",
+			getCommandName(BasicTransformerCommand.class),
 			getCommandName(SourcesDuplicatorCommand.class),
 			getCommandName(ManualTransformCommand.class),
 			getCommandName(TransformedSourceWrapperCommand.class),
@@ -46,6 +47,10 @@ public class SourceAndConverterPopupMenu
 
 	 String[] popupActions;
 
+	public static synchronized void setDefaultSettings(String[] newDefaults) {
+		defaultPopupActions = newDefaults.clone();
+	}
+
 	public SourceAndConverterPopupMenu( SourceAndConverter[] sacs )
 	{
 		this(sacs, defaultPopupActions);
@@ -55,7 +60,6 @@ public class SourceAndConverterPopupMenu
 	{
 		this.sacs = sacs;
 		this.popupActions = actions;
-
 		createPopupMenu();
 	}
 

@@ -21,7 +21,7 @@ import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
 import sc.fiji.bdvpg.scijava.command.bdv.ScreenShotMakerCommand;
 import sc.fiji.bdvpg.scijava.command.source.*;
-import sc.fiji.bdvpg.scijava.services.ui.BdvSourceServiceUI;
+import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * Scijava Service which centralizes Bdv Sources, independently of their display
@@ -86,9 +89,9 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
     /**
      * Map containing objects that are 1 to 1 linked to a Source
-     * TODO : ask if it should contain a WeakReference to Source keys (Potential Memory leak ?)
+     * Keys are Weakly referenced -> Metadata should be GCed if referenced only here
      */
-    Map<SourceAndConverter, Map<String, Object>> sacToMetadata;
+    Cache<SourceAndConverter, Map<String, Object>> sacToMetadata;
 
     /**
      * Reserved key for the data map. data.get(sourceandconverter).get(SPIM_DATA)
@@ -104,7 +107,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      * @return
      */
     public boolean isRegistered(SourceAndConverter src) {
-        return sacToMetadata.containsKey(src);
+        return sacToMetadata.getIfPresent(src)!=null;
     }
 
     public void setDisplayService( SourceAndConverterBdvDisplayService bsds) {
@@ -116,10 +119,10 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      * Gets lists of associated objects and data attached to a Bdv Source
      * @return
      */
-    @Override
-    public Map<SourceAndConverter, Map<String, Object>> getSacToMetadata() {
-        return sacToMetadata;
-    }
+    //@Override
+    //public Map<SourceAndConverter, Map<String, Object>> getSacToMetadata() {
+    //    return sacToMetadata;
+    //}
 
     @Override
     public void setMetadata( SourceAndConverter sac, String key, Object data )
@@ -128,23 +131,38 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             System.err.println("Error : sac is null in setMetadata function! ");
             //return;
         }
-        if (sacToMetadata.get( sac ) == null) {
+        if (sacToMetadata.getIfPresent( sac ) == null) {
             System.err.println("Error : sac has no associated metadata ! This should not happen. ");
             System.err.println("Sac : "+sac.getSpimSource().getName());
             System.err.println("SpimSource class: "+sac.getSpimSource().getClass().getSimpleName());
             //return;
         }
-        sacToMetadata.get( sac ).put( key, data );
+        sacToMetadata.getIfPresent( sac ).put( key, data );
     }
 
     @Override
     public Object getMetadata( SourceAndConverter sac, String key )
     {
-        if (sacToMetadata.containsKey(sac)) {
-            return sacToMetadata.get(sac).get(key);
+        if (sacToMetadata.getIfPresent(sac)!=null) {
+            return sacToMetadata.getIfPresent(sac).get(key);
         } else {
             return null;
         }
+    }
+
+    @Override
+    public Collection<String> getMetadataKeys(SourceAndConverter sac) {
+        Map<String, Object> map = sacToMetadata.getIfPresent(sac);
+        if (map==null) {
+            return new ArrayList<String>();
+        } else {
+            return map.keySet();
+        }
+    }
+
+    @Override
+    public boolean containsMetadata(SourceAndConverter sac, String key) {
+        return getMetadata(sac,key)!=null;
     }
 
     /**
@@ -153,13 +171,14 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      * @param sac
      */
     public void register(SourceAndConverter sac) {
-        if ( sacToMetadata.containsKey(sac)) {
+        if (objectService.getObjects(SourceAndConverter.class).contains(sac)) {
             log.accept("Source already registered");
             return;
         }
-        final int numTimepoints = 1;
-        Map<String, Object> sourceData = new HashMap<>();
-        sacToMetadata.put(sac, sourceData);
+        if (!(sacToMetadata.getIfPresent(sac)!=null)) {
+            Map<String, Object> sourceData = new HashMap<>();
+            sacToMetadata.put(sac, sourceData);
+        }
         objectService.addObject(sac);
         if (uiAvailable) ui.update(sac);
     }
@@ -179,6 +198,10 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         });
     }
 
+    public void setSpimDataName(AbstractSpimData asd, String name) {
+        if (uiAvailable) ui.updateSpimDataName(asd, name);
+    }
+
     @Override
     public void remove(SourceAndConverter... sacs ) {
         // Remove displays
@@ -186,7 +209,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             bsds.removeFromAllBdvs( sacs );
         }
         for (SourceAndConverter sac : sacs) {
-            sacToMetadata.remove(sac);
+            sacToMetadata.invalidate(sac);
             objectService.removeObject(sac);
             if (uiAvailable) {
                 ui.remove(sac);
@@ -203,27 +226,27 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     public List<SourceAndConverter> getSourceAndConverterFromSpimdata(AbstractSpimData asd) {
         return objectService.getObjects(SourceAndConverter.class)
                 .stream()
-                .filter(s -> ((SpimDataInfo)sacToMetadata.get(s).get(SPIM_DATA_INFO)!=null))
-                .filter(s -> ((SpimDataInfo)sacToMetadata.get(s).get(SPIM_DATA_INFO)).asd.equals(asd))
+                .filter(s -> ((SpimDataInfo)sacToMetadata.getIfPresent(s).get(SPIM_DATA_INFO)!=null))
+                .filter(s -> ((SpimDataInfo)sacToMetadata.getIfPresent(s).get(SPIM_DATA_INFO)).asd.equals(asd))
                 .collect(Collectors.toList());
     }
 
     public void linkToSpimData( SourceAndConverter sac, AbstractSpimData asd, int idSetup) {
-        sacToMetadata.get( sac ).put( SPIM_DATA_INFO, new SpimDataInfo(asd,idSetup));
+        sacToMetadata.getIfPresent( sac ).put( SPIM_DATA_INFO, new SpimDataInfo(asd,idSetup));
     }
 
 
     /**
      * Swing UI for this Service, exists only if an UI is available in the current execution context
      */
-    BdvSourceServiceUI ui;
+    SourceAndConverterServiceUI ui;
 
     /**
      * Flags if the Inner UI exists
      */
     boolean uiAvailable = false;
 
-    public BdvSourceServiceUI getUI() {
+    public SourceAndConverterServiceUI getUI() {
         return ui;
     }
 
@@ -238,12 +261,12 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         scriptService.addAlias(AffineTransform3D.class);
         scriptService.addAlias(AbstractSpimData.class);
         // -- TODO End of to check
-        sacToMetadata = new HashMap<>();
+        sacToMetadata = CacheBuilder.newBuilder().weakKeys().build();//new HashMap<>();
 
         registerDefaultActions();
         if (uiService!=null) {
             log.accept("uiService detected : Constructing JPanel for BdvSourceAndConverterService");
-            ui = new BdvSourceServiceUI(this);
+            ui = new SourceAndConverterServiceUI(this);
             uiAvailable = true;
         }
 
@@ -273,8 +296,18 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         return actionMap.get(actionName);
     }
 
+    @Override
+    public Set<AbstractSpimData> getSpimDatasets() {
+        Set<AbstractSpimData> asds = new HashSet<>();
+        this.getSourceAndConverters().forEach(sac -> {
+            if (containsMetadata(sac, SPIM_DATA_INFO)) {
+                asds.add(((SpimDataInfo)getMetadata(sac, SPIM_DATA_INFO)).asd);
+            }
+        });
+        return asds;
+    }
+
     /**
-     *
      * @return a list of of action name / keys / identifiers
      */
     public Set<String> getActionsKeys() {
@@ -307,6 +340,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         registerScijavaCommand(SourcesRemoverCommand.class);
         registerScijavaCommand(XmlHDF5ExporterCommand.class);
         registerScijavaCommand(ScreenShotMakerCommand.class);
+        registerScijavaCommand(BasicTransformerCommand.class);
 
         // registerScijavaCommand(SourcesResamplerCommand.class); Too many arguments -> need to define which one is used
         registerAction(getCommandName(SourcesResamplerCommand.class),

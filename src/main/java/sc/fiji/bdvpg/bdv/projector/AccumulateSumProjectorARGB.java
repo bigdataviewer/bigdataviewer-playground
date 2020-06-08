@@ -12,6 +12,13 @@ import net.imglib2.type.numeric.ARGBType;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 
+/**
+ * Default sum projector
+ *
+ * TODO : is this projector necessary ?
+ *
+ */
+
 public class AccumulateSumProjectorARGB extends AccumulateProjector< ARGBType, ARGBType >
 {
 	public static AccumulateProjectorFactory< ARGBType > factory = new AccumulateProjectorFactory< ARGBType >()

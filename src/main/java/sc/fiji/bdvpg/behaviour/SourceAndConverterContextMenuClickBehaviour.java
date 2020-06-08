@@ -8,16 +8,50 @@ import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterPopupMenu;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+/**
+ * Behaviour that shows the context menu of actions available that will act on the sources
+ * that are drawn below the mouse location
+ *
+ */
 public class SourceAndConverterContextMenuClickBehaviour implements ClickBehaviour
 {
-	private final BdvHandle bdv;
+	final BdvHandle bdv;
+	final Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier;
+	final String[] popupActions;
 
 	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv )
 	{
+		this(bdv,
+		() -> {
+			// Gets mouse location in space (global 3D coordinates) and time
+			final RealPoint mousePosInBdv = new RealPoint( 3 );
+			bdv.getBdvHandle().getViewerPanel().getGlobalMouseCoordinates( mousePosInBdv );
+			int timePoint = bdv.getViewerPanel().state().getCurrentTimepoint();
+
+			return SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverterOf(bdv)
+				.stream()
+				.filter(sac -> SourceAndConverterUtils.isSourcePresentAt(sac,timePoint, mousePosInBdv))
+				.filter(sac -> SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible(sac,bdv))
+				.collect(Collectors.toList());
+		});
+	}
+
+	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv, Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier )
+	{
+		this(bdv, sourcesSupplier, SourceAndConverterPopupMenu.defaultPopupActions);
+	}
+
+	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv, Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier, String[] popupActions )
+	{
 		this.bdv = bdv;
+		this.sourcesSupplier = sourcesSupplier;
+		this.popupActions = popupActions;
 	}
 
 	@Override
@@ -26,19 +60,11 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 		showPopupMenu( bdv, x, y );
 	}
 
-	private static void showPopupMenu( BdvHandle bdv, int x, int y )
+	private void showPopupMenu( BdvHandle bdv, int x, int y )
 	{
-		// Gets mouse location in space (global 3D coordinates) and time
-		final RealPoint mousePosInBdv = new RealPoint( 3 );
-		bdv.getBdvHandle().getViewerPanel().getGlobalMouseCoordinates( mousePosInBdv );
-		int timePoint = bdv.getViewerPanel().state().getCurrentTimepoint();
 
-		final List< SourceAndConverter > sacs =
-		SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverterOf(bdv)
-				.stream()
-				.filter(sac -> SourceAndConverterUtils.isSourcePresentAt(sac,timePoint, mousePosInBdv))
-				.filter(sac -> SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible(sac,bdv))
-				.collect(Collectors.toList());
+		final List< SourceAndConverter > sacs = new ArrayList<>();
+		sacs.addAll(sourcesSupplier.get());
 
 		if ( sacs.size() == 0 )
 			return;
@@ -57,7 +83,7 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 		SourceAndConverter[] sacArray = new SourceAndConverter[sacs.size()];
 		sacArray = sacs.toArray(sacArray);
 
-		final SourceAndConverterPopupMenu popupMenu = new SourceAndConverterPopupMenu( sacArray );
+		final SourceAndConverterPopupMenu popupMenu = new SourceAndConverterPopupMenu( sacArray, popupActions );
 
 		popupMenu.getPopup().show( bdv.getViewerPanel().getDisplay(), x, y );
 	}

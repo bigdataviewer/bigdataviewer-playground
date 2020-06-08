@@ -10,6 +10,10 @@ import net.imglib2.type.numeric.ARGBType;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 
+/**
+ * For information about this projector, see {@link AccumulateMixedProjectorARGB}
+ */
+
 public class AccumulateMixedProjectorARGBFactory implements AccumulateProjectorFactory< ARGBType >
 {
 

@@ -3,7 +3,6 @@ package sc.fiji.bdvpg.scijava.services;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imglib2.converter.Converter;
 import net.imglib2.util.Pair;
 import org.scijava.command.CommandService;
@@ -15,6 +14,7 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
+import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
@@ -22,8 +22,10 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * Scijava Service which handles the Display of Bdv SourceAndConverters in one or multiple Bdv Windows
@@ -48,7 +50,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
     public static String CONVERTER_SETUP = "ConverterSetup";
 
-
     /**
      * Used to add Aliases for BdvHandle objects
      **/
@@ -72,6 +73,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      **/
     @Parameter
     GuavaWeakCacheService cacheService;
+
     @Parameter
     ObjectService os;
 
@@ -235,12 +237,12 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         }
 
         // If no ConverterSetup is built then build it
-        if ( bdvSourceAndConverterService.sacToMetadata.get(sac).get( CONVERTER_SETUP ) == null) {
+        if ( bdvSourceAndConverterService.sacToMetadata.getIfPresent(sac).get( CONVERTER_SETUP ) == null) {
             ConverterSetup setup = SourceAndConverterUtils.createConverterSetup(sac);
-            bdvSourceAndConverterService.sacToMetadata.get(sac).put( CONVERTER_SETUP,  setup );
+            bdvSourceAndConverterService.sacToMetadata.getIfPresent(sac).put( CONVERTER_SETUP,  setup );
         }
 
-        return (ConverterSetup) bdvSourceAndConverterService.sacToMetadata.get(sac).get( CONVERTER_SETUP );
+        return (ConverterSetup) bdvSourceAndConverterService.sacToMetadata.getIfPresent(sac).get( CONVERTER_SETUP );
     }
 
     /**
@@ -262,7 +264,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     @Override
     public void initialize() {
         scriptService.addAlias(BdvHandle.class);
-        displayToMetadata = new HashMap<>();
+        displayToMetadata = CacheBuilder.newBuilder().weakKeys().build();//new HashMap<>();
         bdvSourceAndConverterService.setDisplayService(this);
         SourceAndConverterServices.setSourceAndConverterDisplayService(this);
         log.accept("Service initialized.");
@@ -312,7 +314,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * Useful for BigWarp where the grid and the deformation magnitude sourceandconverter are created
      * into bigwarp
      * @param bdvh_in
-     * @param index
      */
     public void registerBdvSource(BdvHandle bdvh_in) {
         bdvh_in.getViewerPanel().state().getSources().forEach(sac -> {
@@ -354,6 +355,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * @return
      */
     public Set<BdvHandle> getDisplaysOf(SourceAndConverter... sacs) {
+        if (sacs == null) {
+            return new HashSet<>();
+        }
 
         List<SourceAndConverter<?>> sacList = Arrays.asList(sacs);
 
@@ -366,11 +370,15 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
     }
 
+    public List<BdvHandle> getDisplays() {
+        return os.getObjects(BdvHandle.class);
+    }
+
     /**
      * Map containing objects that are 1 to 1 linked to a Display ( a BdvHandle object )
-     * TODO : ask if it should contain a WeakReference to BdvHandle keys (Potential Memory leak ?)
+     * Keys are Weakly referenced -> Metadata should be GCed if referenced only here
      */
-    Map<BdvHandle, Map<String, Object>> displayToMetadata;
+    Cache<BdvHandle, Map<String, Object>> displayToMetadata;
 
     public void setDisplayMetadata( BdvHandle bdvh, String key, Object data )
     {
@@ -378,20 +386,44 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
             System.err.println("Error : bdvh is null in setMetadata function! ");
             //return;
         }
-        if (displayToMetadata.get( bdvh ) == null) {
+        if (displayToMetadata.getIfPresent( bdvh ) == null) {
             // Create Metadata
             displayToMetadata.put(bdvh, new HashMap<>());
         }
-        displayToMetadata.get( bdvh ).put( key, data );
+        displayToMetadata.getIfPresent( bdvh ).put( key, data );
     }
 
     public Object getDisplayMetadata( BdvHandle bdvh, String key )
     {
-        if (displayToMetadata.containsKey(bdvh)) {
-            return displayToMetadata.get(bdvh).get(key);
+        if (displayToMetadata.getIfPresent(bdvh)!=null) {
+            return displayToMetadata.getIfPresent(bdvh).get(key);
         } else {
             return null;
         }
+    }
+
+    /**
+     * SourceAndConverter filter node : Selects SpimData and allow for duplicate
+     */
+
+    public static class BdvHandleFilterNode extends SourceFilterNode {
+
+        public BdvHandle bdvh;
+
+        public boolean filter(SourceAndConverter sac) {
+            return bdvh.getViewerPanel().state().getSources().contains(sac);
+        }
+
+        public BdvHandleFilterNode(String name, BdvHandle bdvh) {
+            super(name,null, true);
+            this.filter = this::filter;
+            this.bdvh = bdvh;
+        }
+
+        public String toString() {
+            return getName();
+        }
+
     }
 
 }

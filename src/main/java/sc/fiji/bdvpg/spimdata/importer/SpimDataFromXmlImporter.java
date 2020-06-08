@@ -35,6 +35,7 @@ public class SpimDataFromXmlImporter implements Runnable, Function<String, Abstr
         try {
             sd = new XmlIoSpimData().load(dataLocation);
             SourceAndConverterServices.getSourceAndConverterService().register(sd);
+            SourceAndConverterServices.getSourceAndConverterService().setSpimDataName(sd, dataLocation);
         } catch (SpimDataException e) {
             e.printStackTrace();
         }

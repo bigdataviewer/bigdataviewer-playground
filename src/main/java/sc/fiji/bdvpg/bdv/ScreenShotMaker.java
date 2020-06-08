@@ -39,6 +39,7 @@ import java.util.List;
 import static sc.fiji.bdvpg.bdv.BdvUtils.*;
 
 /**
+ * BigDataViewer Playground Action -->
  * ScreenShotMaker
  * <p>
  * <p>
@@ -97,13 +98,13 @@ public class ScreenShotMaker {
     private void createScreenShot()
     {
         final AffineTransform3D viewerTransform = new AffineTransform3D();
-        bdvHandle.getViewerPanel().getState().getViewerTransform( viewerTransform );
+        bdvHandle.getViewerPanel().state().getViewerTransform( viewerTransform );
 
         final double viewerVoxelSpacing = getViewerVoxelSpacing( bdvHandle );
         double dxy = physicalPixelSpacingInXY / viewerVoxelSpacing;
 
-        final int w = getBdvWindowWidth( bdvHandle );
-        final int h = getBdvWindowHeight( bdvHandle );
+        final int w = bdvHandle.getViewerPanel().getWidth();
+        final int h = bdvHandle.getViewerPanel().getHeight();
 
         captureWidth = ( long ) Math.ceil( w / dxy );
         captureHeight = ( long ) Math.ceil( h / dxy );
@@ -117,7 +118,7 @@ public class ScreenShotMaker {
         final List< SourceAndConverter <?> > visibleSacs = getVisibleSacs( bdvHandle );
         if ( visibleSacs.size() == 0 ) return;
 
-        final int t = bdvHandle.getViewerPanel().getState().getCurrentTimepoint();
+        final int t = bdvHandle.getViewerPanel().state().getCurrentTimepoint();
 
         for ( SourceAndConverter sac : visibleSacs )
         {

@@ -4,6 +4,7 @@ import mpicbg.spim.data.generic.base.NamedEntity;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.type.numeric.ARGBType;
+import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
@@ -12,33 +13,39 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
  *
  * limited to simple colored LUT + min max display
  *
+ * also stores the projection mode
+ *
  */
-public class DisplaySettings extends NamedEntity implements Comparable< DisplaySettings >
+
+public class Displaysettings extends NamedEntity implements Comparable<Displaysettings>
 {
     // RGBA value
     public int[] color = new int[] {255,255,255,0}; // Initialization avoids null pointer exception
 
     // min display value
-    public double min;
+    public double min = 0;
 
     // max display value
-    public double max;
+    public double max = 255;
 
     // if isset is false, the display value is discarded
     public boolean isSet = false;
 
-    public DisplaySettings( final int id, final String name)
+    // stores projection mode
+    public String projectionMode = Projection.PROJECTION_MODE_SUM; // Default projection mode
+
+    public Displaysettings(final int id, final String name)
     {
         super( id, name );
     }
 
-    public DisplaySettings( final int id )
+    public Displaysettings(final int id )
     {
         this( id, Integer.toString( id ) );
     }
 
     /**
-     * Get the unique id of this location.
+     * Get the unique id of this displaysettings
      */
     @Override
     public int getId()
@@ -48,9 +55,6 @@ public class DisplaySettings extends NamedEntity implements Comparable< DisplayS
 
     /**
      * Get the name of this Display Settings Entity.
-     *
-     * The name is used for example to replace it in filenames when
-     * opening individual 3d-stacks (e.g. SPIM_TL20_Tile1_Angle45.tif)
      */
     @Override
     public String getName()
@@ -59,7 +63,7 @@ public class DisplaySettings extends NamedEntity implements Comparable< DisplayS
     }
 
     /**
-     * Set the name of this tile.
+     * Set the name of this displaysettings (probably useless).
      */
     @Override
     public void setName( final String name )
@@ -71,16 +75,49 @@ public class DisplaySettings extends NamedEntity implements Comparable< DisplayS
      * Compares the {@link #getId() ids}.
      */
     @Override
-    public int compareTo( final DisplaySettings o )
+    public int compareTo( final Displaysettings o )
     {
         return getId() - o.getId();
     }
 
-    protected DisplaySettings()
+    protected Displaysettings()
     {}
 
     /**
-     * Stores display settings into the link SpimData object
+     * Stores display settings currently in use by the SourceAndConverter into the link SpimData object
+     * @param sac
+     */
+    public static void GetDisplaySettingsFromCurrentConverter(SourceAndConverter sac, Displaysettings ds) {
+
+        // Color + min max
+        if (sac.getConverter() instanceof ColorConverter) {
+            ColorConverter cc = (ColorConverter) sac.getConverter();
+            ds.setName("vs:" + ds.getId());
+            int colorCode = cc.getColor().get();
+            ds.color = new int[]{
+                    ARGBType.red(colorCode),
+                    ARGBType.green(colorCode),
+                    ARGBType.blue(colorCode),
+                    ARGBType.alpha(colorCode)};
+            ds.min = cc.getMin();
+            ds.max = cc.getMax();
+            ds.isSet = true;
+        } else {
+            System.err.println("Converter is of class :"+sac.getConverter().getClass().getSimpleName()+" -> Display settings cannot be stored.");
+        }
+
+        if (SourceAndConverterServices
+                .getSourceAndConverterService()
+                .getMetadata(sac, Projection.PROJECTION_MODE)!=null) {
+            // A projection mode is set
+            ds.projectionMode = (String) (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(sac, Projection.PROJECTION_MODE));
+        }
+    }
+
+    /**
+     * Stores display settings currently in use by the SourceAndConverter into the link SpimData object
      * @param sac
      */
     public static void PushDisplaySettingsFromCurrentConverter(SourceAndConverter sac) {
@@ -100,31 +137,20 @@ public class DisplaySettings extends NamedEntity implements Comparable< DisplayS
                 .getSourceAndConverterService()
                 .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO);
 
+        Displaysettings ds = new Displaysettings(viewSetup);
 
-        DisplaySettings ds = new DisplaySettings(viewSetup);
-
-        // Color + min max
-        if (sac.getConverter() instanceof ColorConverter) {
-            ColorConverter cc = (ColorConverter) sac.getConverter();
-            ds.setName("vs:" + viewSetup);
-            int colorCode = cc.getColor().get();
-            ds.color = new int[]{
-                    ARGBType.red(colorCode),
-                    ARGBType.green(colorCode),
-                    ARGBType.blue(colorCode),
-                    ARGBType.alpha(colorCode)};
-            ds.min = cc.getMin();
-            ds.max = cc.getMax();
-            ds.isSet = true;
-        } else {
-            System.err.println("Converter is of class :"+sac.getConverter().getClass().getSimpleName()+" -> Display settings cannot be stored.");
-        }
+        GetDisplaySettingsFromCurrentConverter(sac, ds);
 
         ((BasicViewSetup)sdi.asd.getSequenceDescription().getViewSetups().get(viewSetup)).setAttribute(ds);
 
     }
 
-    public static void PullDisplaySettings(SourceAndConverter sac, DisplaySettings ds) {
+    /**
+     * Apply the display settings to the SourceAndConverter object
+     * @param sac
+     */
+    public static void PullDisplaySettings(SourceAndConverter sac, Displaysettings ds) {
+
         if (ds.isSet) {
             if (sac.getConverter() instanceof ColorConverter) {
                 ColorConverter cc = (ColorConverter) sac.getConverter();
@@ -140,7 +166,37 @@ public class DisplaySettings extends NamedEntity implements Comparable< DisplayS
             } else {
                 System.err.println("Converter is of class :" + sac.getConverter().getClass().getSimpleName() + " -> Display settings cannot be reapplied.");
             }
+
+            SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .setMetadata(sac, Projection.PROJECTION_MODE, ds.projectionMode);
+
         }
+    }
+
+    /**
+     * More meaningful String representation of DisplaySettings
+     * @return
+     */
+    public String toString() {
+        String str = "";
+        str+="set = "+this.isSet+", ";
+
+        if (this.projectionMode!=null)
+            str+="set = "+this.projectionMode+", ";
+
+        if (this.color!=null) {
+            str += "color = ";
+            for (int i = 0; i < this.color.length;i++) {
+                str += this.color[i] + ", ";
+            }
+        }
+
+        str+="min = "+this.min+", ";
+
+        str+="max = "+this.max;
+
+        return str;
     }
 
 }
