@@ -13,10 +13,10 @@ import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>Show Sources In Multiple BDV Windows")
 public class MultiBdvSourcesAdderCommand implements Command {
 
-    @Parameter
+    @Parameter(label = "Select BDV Windows")
     BdvHandle[] bdvhs;
 
-    @Parameter
+    @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sacs;
 
     @Override

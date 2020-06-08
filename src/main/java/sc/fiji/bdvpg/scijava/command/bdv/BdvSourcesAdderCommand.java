@@ -13,16 +13,16 @@ import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>Show Sources")
 public class BdvSourcesAdderCommand implements Command {
 
-    @Parameter
+    @Parameter(label="Select BDV Window")
     BdvHandle bdvh;
 
-    @Parameter
+    @Parameter(label="Select Source(s)")
     SourceAndConverter[] sacs;
 
-    @Parameter
+    @Parameter(label="Auto Contrast")
     boolean autoContrast;
 
-    @Parameter
+    @Parameter(label="Adjust View on Source")
     boolean adjustViewOnSource;
 
     @Override

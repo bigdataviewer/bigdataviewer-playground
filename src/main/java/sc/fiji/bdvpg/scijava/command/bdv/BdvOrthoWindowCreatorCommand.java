@@ -46,10 +46,10 @@ public class BdvOrthoWindowCreatorCommand implements Command {
     @Parameter(type = ItemIO.OUTPUT)
     public BdvHandle bdvhZ;
 
-    @Parameter(label = "Source blending", choices = { Projection.MIXED_PROJECTOR, Projection.SUM_PROJECTOR, Projection.AVERAGE_PROJECTOR})
+    @Parameter(label = "Source Projection Mode", choices = { Projection.MIXED_PROJECTOR, Projection.SUM_PROJECTOR, Projection.AVERAGE_PROJECTOR})
     public String projector;
 
-    @Parameter(label = "Add cross overlay")
+    @Parameter(label = "Add cross overlay to show view plane locations")
     public boolean drawCrosses;
 
     @Parameter(label = "Display (0 if you have one screen)")

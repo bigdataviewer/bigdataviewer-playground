@@ -19,10 +19,10 @@ import java.io.File;
 public class SpimDataExporterCommand implements Command {
 
     // To get associated spimdata
-    @Parameter
+    @Parameter(label = "Select source(s)")
     SourceAndConverter sac;
 
-    @Parameter
+    @Parameter(label = "Output File (XML)")
     public File xmlFilePath;
 
     public void run() {

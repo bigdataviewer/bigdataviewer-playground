@@ -23,18 +23,22 @@ public class ViewTransformatorCommand implements Command {
     @Parameter
     BdvHandle bdvh;
 
-    @Parameter
+    @Parameter(label="Translate in X")
     public Double translateX = 0.0;
-    @Parameter
+
+    @Parameter(label="Translate in Y")
     public Double translateY = 0.0;
-    @Parameter
+
+    @Parameter(label="Translate in Z")
     public Double translateZ = 0.0;
 
-    @Parameter
+    @Parameter(label="Rotate around X")
     public Double rotateAroundX = 0.0;
-    @Parameter
+
+    @Parameter(label="Rotate around Y")
     public Double rotateAroundY = 0.0;
-    @Parameter
+
+    @Parameter(label="Rotate around Z")
     public Double rotateAroundZ = 0.0;
 
     @Override

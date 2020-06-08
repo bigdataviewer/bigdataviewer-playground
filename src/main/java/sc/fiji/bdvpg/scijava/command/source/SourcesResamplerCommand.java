@@ -17,7 +17,7 @@ public class SourcesResamplerCommand implements Command{
     @Parameter
     SourceAndConverter model;
 
-    @Parameter
+    @Parameter(label="Re-use MipMaps")
     boolean reuseMipMaps;
 
     @Parameter

@@ -14,7 +14,7 @@ public class BdvSourcesRemoverCommand implements Command {
     @Parameter
     BdvHandle bdvh;
 
-    @Parameter
+    @Parameter(label="Select Source(s)")
     SourceAndConverter[] srcs_in;
 
     @Override

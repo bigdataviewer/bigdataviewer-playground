@@ -23,7 +23,7 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Basic Transformation")
 public class BasicTransformerCommand implements Command {
-    @Parameter(label = "Choose source(s)")
+    @Parameter(label = "Select source(s)")
     SourceAndConverter[] sources_in;
 
     @Parameter(choices = {"Flip", "Rot90", "Rot180", "Rot270"})

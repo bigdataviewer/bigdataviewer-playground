@@ -22,13 +22,13 @@ public class ScreenShotMakerCommand implements Command {
     @Parameter
     BdvHandle bdvh;
 
-    @Parameter
+    @Parameter(label="Target Pixel Size (in XY)")
     public double targetPixelSizeInXY = 1;
 
-    @Parameter
+    @Parameter(label="Pixel Size Unit")
     public String targetPixelUnit = "Pixels";
 
-    @Parameter
+    @Parameter(label="Show Raw Data")
     public boolean showRawData = false;
 
     @Override

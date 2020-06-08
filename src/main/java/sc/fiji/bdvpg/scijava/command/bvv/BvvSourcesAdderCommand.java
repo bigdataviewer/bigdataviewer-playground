@@ -12,13 +12,13 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>Show Sources in BVV")
 public class BvvSourcesAdderCommand implements Command {
 
-    @Parameter
+    @Parameter(label = "Select BVV Window(s)")
     BvvHandle bvvh;
 
-    @Parameter
+    @Parameter(label="Adjust View on Source")
     boolean adjustViewOnSource;
 
-    @Parameter
+    @Parameter(label = "Select source(s)")
     SourceAndConverter[] sacs;
 
     @Override

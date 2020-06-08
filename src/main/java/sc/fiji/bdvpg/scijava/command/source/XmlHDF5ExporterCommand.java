@@ -15,21 +15,29 @@ public class XmlHDF5ExporterCommand implements Command {
 
     @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sacs;
-    @Parameter
+
+    @Parameter(label="# of Threads")
     int nThreads = 4;
-    @Parameter
+
+    @Parameter(label="Timepoint (Beginning)")
     int timePointBegin = 0;
-    @Parameter
+
+    @Parameter(label="Timepoint (End)")
     int timePointEnd = 1;
+
     @Parameter
     int scaleFactor = 4;
+
     @Parameter
     int blockSizeX = 64;
+
     @Parameter
     int blockSizeY = 64;
+
     @Parameter
     int blockSizeZ = 64;
-    @Parameter
+
+    @Parameter(label="Output file (XML)")
     File xmlFile;
 
     @Override

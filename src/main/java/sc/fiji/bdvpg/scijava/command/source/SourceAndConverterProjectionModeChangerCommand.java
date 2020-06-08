@@ -19,7 +19,7 @@ public class SourceAndConverterProjectionModeChangerCommand implements Command {
     @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sacs;
 
-    @Parameter
+    @Parameter(label="Add Source(s) to occluding layer")
     boolean addToOccludingLayer = false;
 
     @Override
