@@ -17,8 +17,8 @@ import java.util.concurrent.ExecutorService;
 import static sc.fiji.bdvpg.bdv.projector.Projection.*;
 
 /**
- * Bdv Projector which allows some flexibility in the way sources are combined
- * when displayed in a bdv window.
+ * BDV Projector which allows some flexibility in the way sources are combined
+ * when displayed in a BDV window.
  *
  * {@link bdv.viewer.SourceAndConverter} have associated Metadata which specifies how they
  * should be displayed.

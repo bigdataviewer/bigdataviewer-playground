@@ -9,10 +9,10 @@ public class AffineTransformSourceBatchDemo {
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
         RandomAccessibleInterval rai = ImageJFunctions.wrapReal(imp);
-        // Adds a third dimension because Bdv needs 3D
+        // Adds a third dimension because BDV needs 3D
         rai = Views.addDimension( rai, 0, 0 );
 
-        // Makes Bdv Source
+        // Makes BDV Source
         Source sourceandconverter = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
 
         // Creates a BdvHandle
@@ -31,7 +31,7 @@ public class AffineTransformSourceBatchDemo {
         at3d.scale(1,2,1);
         SourceAffineTransformer affineTransformer = new SourceAffineTransformer(null, at3d); // Not necessary to specify a sourceandconverter
 
-        // Creates a bdv adder ( = an action described as in the readme but it also implements Consumer<Source> -> it has one Source input and no output
+        // Creates a BDV adder ( = an action described as in the readme but it also implements Consumer<Source> -> it has one Source input and no output
         // This bdvAdder is a Consumer because it takes one Source as an input and do not return anything
         // It is initializes with a null Source -> this sourceandconverter specified in the constructor is only useful for single action
         SourceAdder bdvAdder = new SourceAdder(bdvHandle, null);

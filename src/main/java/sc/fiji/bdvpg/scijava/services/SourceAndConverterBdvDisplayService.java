@@ -28,10 +28,10 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 /**
- * Scijava Service which handles the Display of Bdv SourceAndConverters in one or multiple Bdv Windows
+ * Scijava Service which handles the Display of BDV SourceAndConverters in one or multiple BDV Windows
  * Pairs with BdvSourceAndConverterService, but this service is optional
  *
- * Handling multiple Sources displayed in potentially multiple Bdv Windows
+ * Handling multiple Sources displayed in potentially multiple BDV Windows
  * Make its best to keep in synchronizations all of this, without creating errors nor memory leaks
  */
 
@@ -57,19 +57,19 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     ScriptService scriptService;
 
     /**
-     * Service containing all registered Bdv Sources
+     * Service containing all registered BDV Sources
      **/
     @Parameter
     SourceAndConverterService bdvSourceAndConverterService;
 
     /**
-     * Used to create Bdv Windows when necessary
+     * Used to create BDV Windows when necessary
      **/
     @Parameter
     CommandService cs;
 
     /**
-     * Used to retrieved the last active Bdv Windows (if the activated callback has been set right)
+     * Used to retrieved the last active BDV Windows (if the activated callback has been set right)
      **/
     @Parameter
     GuavaWeakCacheService cacheService;
@@ -94,7 +94,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Returns the last active Bdv or create a new one
+     * Returns the last active BDV or create a new one
      */
     public BdvHandle getActiveBdv() {
         List<BdvHandle> bdvhs = os.getObjects(BdvHandle.class);
@@ -137,7 +137,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Makes visible a source, makes it visible in all bdvs according to BdvhReferences
+     * Makes visible a source, makes it visible in all BDVs according to BdvhReferences
      * @param sac
      */
     public boolean isVisible(SourceAndConverter sac, BdvHandle bdvh) {
@@ -145,7 +145,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Makes invisible a source, makes it invisible in all bdvs according to BdvhReferences
+     * Makes invisible a source, makes it invisible in all BDVs according to BdvhReferences
      * @param sac
      */
     public void makeInvisible(SourceAndConverter sac) {
@@ -153,7 +153,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Displays a Bdv sourceandconverter into the specified BdvHandle
+     * Displays a BDV sourceandconverter into the specified BdvHandle
      * This function really is the core of this service
      * It mimicks or copies the functions of BdvVisTools because it is responsible to
      * create converter, volatiles, convertersetups and so on

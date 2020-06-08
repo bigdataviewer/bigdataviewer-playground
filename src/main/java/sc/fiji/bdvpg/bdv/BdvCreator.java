@@ -50,7 +50,7 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 	 *
 	 * @param interpolate should the window use linear interpolation or nearest neighbor interpolation ?
 	 *
-	 * @param numTimePoints Number of timepoints contained in the creating bdv window
+	 * @param numTimePoints Number of timepoints contained in the creating BDV window
 	 *
 	 * @param pathToBindings This String should hold a reference to a path which could contains:
 	 * 	 * a bdvkeyconfig.yaml file
@@ -139,7 +139,7 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 	}
 
 	/**
-	 * Adds Bdv Playground specific actions :
+	 * Adds BDV Playground specific actions :
 	 * For now:
 	 * - Screenshot
 	 * - Show context menu

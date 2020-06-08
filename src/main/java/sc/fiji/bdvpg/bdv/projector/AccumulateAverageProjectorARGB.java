@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 
 /**
- * Bdv Projector which computes the average of all present Sources
+ * BDV Projector which computes the average of all present Sources
  *
  * By looking if the alpha channel is 0 or not, the average is computed only
  * with the source present at every pixel. To rephrase : if the alpha channel of a source

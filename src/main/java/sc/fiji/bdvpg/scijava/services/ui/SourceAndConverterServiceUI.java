@@ -104,7 +104,7 @@ public class SourceAndConverterServiceUI {
     public SourceAndConverterServiceUI(SourceAndConverterService sourceAndConverterService ) {
         this.sourceAndConverterService = sourceAndConverterService;
 
-        frame = new JFrame("Bdv Sources");
+        frame = new JFrame("BDV Sources");
         panel = new JPanel(new BorderLayout());
 
         // Tree view of Spimdata
@@ -150,7 +150,7 @@ public class SourceAndConverterServiceUI {
         tree.setDragEnabled(true);
         // Enables:
         // - drag -> SourceAndConverters
-        // - drop -> automatically import xml bdv datasets
+        // - drop -> automatically import xml BDV datasets
         tree.setTransferHandler(new SourceAndConverterServiceUITransferHandler());
 
         frame.add(panel);

@@ -31,7 +31,7 @@ import java.util.stream.Stream;
  * triggers as an action
  * Uses {@link VisualEditorPanel} from scijava.ui-behaviour, which is part of Mastodon for now
  *
- * And Bdv Settings
+ * And BDV Settings
  *
  * Needs a linked yaml file
  *
@@ -86,16 +86,16 @@ public class BdvSettingsGUISetter implements Runnable {
         final BdvPrefsSettingsPage bdvPrefsEditor = new BdvPrefsSettingsPage( "bdv prefs" );
         settings.addPage( bdvPrefsEditor );
 
-        // --- Bdv Playground settings
+        // --- BDV Playground settings
         String pathDirDefaultSettings = rootPath+File.separator;
         File dirDefaultSettings = new File(pathDirDefaultSettings);
 
         if (!dirDefaultSettings.exists()) {
             boolean bool = dirDefaultSettings.mkdir();
             if(bool){
-                System.out.println("Bdv Playground Directory for default settings created successfully");
+                System.out.println("BDV Playground Directory for default settings created successfully");
             } else{
-                System.err.println("Sorry couldn’t create Bdv Playground Directory ("+pathDirDefaultSettings+")for settings storage");
+                System.err.println("Sorry couldn’t create BDV Playground Directory ("+pathDirDefaultSettings+")for settings storage");
                 return;
             }
         }
@@ -155,7 +155,7 @@ public class BdvSettingsGUISetter implements Runnable {
             // TODO
         }
 
-        final JDialog dialog = new JDialog( (Frame) null, "Bdv Playground Settings" );
+        final JDialog dialog = new JDialog( (Frame) null, "BDV Playground Settings" );
         dialog.getContentPane().add( settings, BorderLayout.CENTER );
         dialog.pack();
         dialog.setVisible( true );
