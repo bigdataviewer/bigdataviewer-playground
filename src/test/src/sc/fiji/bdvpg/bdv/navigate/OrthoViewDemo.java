@@ -28,7 +28,7 @@ import java.util.List;
  * 01 2020
  */
 public class OrthoViewDemo {
-    
+
     static boolean isSynchronizing;
 
     public static void main(String[] args) {
@@ -37,7 +37,7 @@ public class OrthoViewDemo {
         ImageJ ij = new ImageJ();
         ij.ui().showUI();
 
-        // Makes Bdv Source
+        // Makes BDV Source
 
         new SpimDataFromXmlImporter( "src/test/resources/mri-stack.xml" ).run();
 

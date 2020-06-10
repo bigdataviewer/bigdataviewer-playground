@@ -38,7 +38,7 @@ public class LUTSourceCreatorCommand extends DynamicCommand {
     // -- other fields --
     private Map<String, URL> luts = null;
 
-    @Parameter
+    @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sources_in;
 
     @Override

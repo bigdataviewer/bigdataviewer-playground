@@ -11,8 +11,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * Service which centralizes Bdv Sources, independently of their display
- * Bdv Sources can be registered to this Service.
+ * Service which centralizes BDV Sources, independently of their display
+ * BDV Sources can be registered to this Service.
  * This service stores Sources but on top of it,
  * It contains a Map which contains any object which can be linked to the sourceandconverter.
  *
@@ -34,7 +34,7 @@ public interface ISourceAndConverterService
     boolean isRegistered(SourceAndConverter src);
 
     /**
-     * Register a Bdv Source in this Service.
+     * Register a BDV Source in this Service.
      * Called in the BdvSourcePostProcessor
      * @param src
      */
@@ -57,7 +57,7 @@ public interface ISourceAndConverterService
     List<SourceAndConverter> getSourceAndConverterFromSpimdata(AbstractSpimData asd);
 
     /**
-     * Removes a Bdv Source in this Service.
+     * Removes a BDV Source in this Service.
      * Called in the BdvSourcePostProcessor
      * @param sac
      */

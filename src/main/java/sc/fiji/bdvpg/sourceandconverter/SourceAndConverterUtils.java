@@ -47,7 +47,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
 /**
  * Following the logic of the repository, i.e. dealing with SourceAndConverter objects only,
  * This class contains the main functions which allow to convert objects which can be
- * vizualized in Bdv windows into SourceAndConverters objects
+ * vizualized in BDV windows into SourceAndConverters objects
  * SourceAndConverters objects contains:
  * - a Source, non volatile, which holds the data
  * - a converter from the Source type to ARGBType, for display purpose
@@ -67,7 +67,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  * Limitations : TODO : think about CacheControls
  */
 public class SourceAndConverterUtils {
-    
+
     /**
      * Standard logger
      */
@@ -77,7 +77,7 @@ public class SourceAndConverterUtils {
      * Error logger
      */
     public static Consumer<String> errlog = (str) -> System.err.println( SourceAndConverterBdvDisplayService.class.getSimpleName()+":"+str);
-    
+
     /**
      * Core function : makes SourceAndConverter object out of a Source
      * Mainly duplicated functions from BdvVisTools
@@ -106,7 +106,7 @@ public class SourceAndConverterUtils {
                 out = new SourceAndConverter(source, nonVolatileConverter);
 
             }
-            
+
         } else if (source.getType() instanceof ARGBType) {
 
             nonVolatileConverter = createConverterARGBType(source);
