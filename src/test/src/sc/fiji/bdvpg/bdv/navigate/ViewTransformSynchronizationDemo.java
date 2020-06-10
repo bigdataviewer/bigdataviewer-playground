@@ -24,7 +24,7 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
  * 01 2020
  */
 public class ViewTransformSynchronizationDemo {
-    
+
     static boolean isSynchronizing;
 
     public static void main(String[] args) {
@@ -36,10 +36,10 @@ public class ViewTransformSynchronizationDemo {
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
         RandomAccessibleInterval rai = ImageJFunctions.wrapReal(imp);
-        // Adds a third dimension because Bdv needs 3D
+        // Adds a third dimension because BDV needs 3D
         rai = Views.addDimension( rai, 0, 0 );
 
-        // Makes Bdv Source
+        // Makes BDV Source
         Source source = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
         SourceAndConverter sac = SourceAndConverterUtils.createSourceAndConverter(source);
 

@@ -11,7 +11,7 @@ public class BdvCreatorDemo
 		ImageJ ij = new ImageJ();
 		ij.ui().showUI();
 
-		// Creates a Bdv since none exists yet
+		// Creates a BDV since none exists yet
 		SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
 	}
 }

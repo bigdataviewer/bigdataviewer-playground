@@ -181,7 +181,7 @@ public class ViewerOrthoSyncStarter implements Runnable {
 
         at3D.inverse().apply(centerScreenCurrentBdv, centerScreenGlobalCoord);
 
-        // Now compute what should be the matrix in the next bdv frame:
+        // Now compute what should be the matrix in the next BDV frame:
         AffineTransform3D nextAffineTransform = new AffineTransform3D();
 
         // It should have the same scaling and rotation than the current view

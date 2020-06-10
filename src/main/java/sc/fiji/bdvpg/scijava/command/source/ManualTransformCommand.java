@@ -20,7 +20,7 @@ public class ManualTransformCommand implements Command {
     @Parameter(choices = {"Mutate", "Append"})
     String mode = "Mutate";
 
-    @Parameter
+    @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sacs;
 
     @Parameter

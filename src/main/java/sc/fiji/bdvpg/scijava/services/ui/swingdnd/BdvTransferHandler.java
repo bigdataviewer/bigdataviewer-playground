@@ -146,7 +146,7 @@ public class BdvTransferHandler extends TransferHandler {
 
     @Override
     protected Transferable createTransferable(JComponent c) {
-        System.out.println("Create Bdv Transferable");
+        System.out.println("Create BDV Transferable");
         if (transferableSupplier!=null) {
             return transferableSupplier.apply(c);
         } else {

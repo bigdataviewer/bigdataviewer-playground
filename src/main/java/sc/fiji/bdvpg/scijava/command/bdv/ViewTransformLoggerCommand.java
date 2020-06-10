@@ -16,7 +16,7 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
  * 12 2019
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bdv>Log view transform")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>Log view transform")
 public class ViewTransformLoggerCommand implements Command {
 
     @Parameter

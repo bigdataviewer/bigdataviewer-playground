@@ -18,7 +18,7 @@ public class ColorSourceCreatorCommand implements Command {
     @Parameter
     ColorRGB color = new ColorRGB(255,255,255);
 
-    @Parameter
+    @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sources_in;
 
     @Override

@@ -11,13 +11,13 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Resample Source Based on Model Source")
 public class SourcesResamplerCommand implements Command{
 
-    @Parameter
+    @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sourcesToResample;
 
     @Parameter
     SourceAndConverter model;
 
-    @Parameter
+    @Parameter(label="Re-use MipMaps")
     boolean reuseMipMaps;
 
     @Parameter

@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 /**
  *
- * Export a set of Sources into a new Xml/Hdf5 bdv dataset
+ * Export a set of Sources into a new Xml/Hdf5 BDV dataset
  *
  * Mipmaps are recomputed. Do not work with RGB images.
  * Other pixel types are truncated to their int value between 0 and 65535
