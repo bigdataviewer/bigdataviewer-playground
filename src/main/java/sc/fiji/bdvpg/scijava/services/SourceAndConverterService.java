@@ -170,7 +170,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      * Called in the BdvSourcePostProcessor
      * @param sac
      */
-    public void register(SourceAndConverter sac) {
+    public synchronized void register(SourceAndConverter sac) {
         if (objectService.getObjects(SourceAndConverter.class).contains(sac)) {
             log.accept("Source already registered");
             return;
@@ -183,13 +183,13 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         if (uiAvailable) ui.update(sac);
     }
 
-    public void register(Collection<SourceAndConverter> sources) {
+    public synchronized void register(Collection<SourceAndConverter> sources) {
         for (SourceAndConverter sac:sources) {
             this.register(sac);
         }
     }
 
-    public void register(AbstractSpimData asd) {
+    public synchronized void register(AbstractSpimData asd) {
         Map<Integer, SourceAndConverter> sacs = SourceAndConverterUtils.createSourceAndConverters(asd);
         this.register(sacs.values());
         sacs.forEach((id,sac) -> {
@@ -198,21 +198,23 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         });
     }
 
-    public void setSpimDataName(AbstractSpimData asd, String name) {
+    public synchronized void setSpimDataName(AbstractSpimData asd, String name) {
         if (uiAvailable) ui.updateSpimDataName(asd, name);
     }
 
     @Override
-    public void remove(SourceAndConverter... sacs ) {
+    public synchronized void remove(SourceAndConverter... sacs ) {
         // Remove displays
-        if (bsds!=null) {
-            bsds.removeFromAllBdvs( sacs );
-        }
-        for (SourceAndConverter sac : sacs) {
-            sacToMetadata.invalidate(sac);
-            objectService.removeObject(sac);
-            if (uiAvailable) {
-                ui.remove(sac);
+        if (sacs != null) {
+            if (bsds!=null) {
+                bsds.removeFromAllBdvs( sacs );
+            }
+            for (SourceAndConverter sac : sacs) {
+                sacToMetadata.invalidate(sac);
+                objectService.removeObject(sac);
+                if (uiAvailable) {
+                    ui.remove(sac);
+                }
             }
         }
     }
