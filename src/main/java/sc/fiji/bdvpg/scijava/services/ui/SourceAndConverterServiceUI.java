@@ -74,7 +74,7 @@ public class SourceAndConverterServiceUI {
     /**
      * Swing JTree used for displaying Sources object
      */
-    JTree tree;
+    final JTree tree;
 
     /**
      * Tree root note
@@ -101,7 +101,13 @@ public class SourceAndConverterServiceUI {
      */
     List<SpimDataFilterNode> spimdataFilterNodes = new ArrayList<>();
 
-    public SourceAndConverterServiceUI(SourceAndConverterService sourceAndConverterService ) {
+    // Performance optimization to avoid too many structure reloading when adding multiple sources
+    Thread updater; //
+    int delayInMsBetweenUpdates = 100;
+    volatile Boolean topNodeStructureChanged = false;
+    Set<TreeNode> changedNodes = ConcurrentHashMap.newKeySet();
+
+    public SourceAndConverterServiceUI(SourceAndConverterService sourceAndConverterService) {
         this.sourceAndConverterService = sourceAndConverterService;
 
         frame = new JFrame("BDV Sources");
@@ -156,6 +162,50 @@ public class SourceAndConverterServiceUI {
         frame.add(panel);
         frame.pack();
         frame.setVisible(false);
+
+        updater = new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(delayInMsBetweenUpdates);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                if ((topNodeStructureChanged)){//||(changedNodes.size()>0)) {
+
+                    SwingUtilities.invokeLater(() -> {
+                        synchronized (tree) {
+                            ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(top);
+                            //model.reload();
+                            if (!frame.isVisible()) {
+                                frame.setVisible(true);
+                            }
+                            topNodeStructureChanged = false;
+                        }
+                       /* synchronized (changedNodes) {
+                            changedNodes.forEach(node -> {
+                                SwingUtilities.invokeLater(() -> {
+                                    ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
+                                });
+                            });
+                            changedNodes.clear();
+                        } */
+                    });
+
+                }
+
+                /*
+                synchronized (changedNodes) {
+                    if (changedNodes.size()>0) {
+
+                    }
+                    changedNodes.clear();
+                }*/
+            }
+        });
+
+        updater.start();
+
     }
 
     public void inspectSources(SourceAndConverter[] sacs) {
@@ -168,10 +218,13 @@ public class SourceAndConverterServiceUI {
         DefaultMutableTreeNode parentNodeInspect = new DefaultMutableTreeNode("Inspect Results ["+sac.getSpimSource().getName()+"]");
         SourceAndConverterInspector.appendInspectorResult(parentNodeInspect, sac, sourceAndConverterService);
         top.add(parentNodeInspect);
-        ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(top);
+        topNodeStructureChanged = true;
+        //((DefaultTreeModel) tree.getModel()).nodeStructureChanged(top);
         //.nodeChanged(node);
         //model.reload(top);
     }
+
+
 
     public void update(SourceAndConverter sac) {
 
@@ -186,41 +239,36 @@ public class SourceAndConverterServiceUI {
         }
 
         SwingUtilities.invokeLater(() -> {
-            ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(top);
-            //model.reload();
-            if (!frame.isVisible()) {
-                frame.setVisible(true);
-            }
-
+            topNodeStructureChanged = true;
         });
     }
 
     private void updateSpimDataFilterNodes() {
-        // Fetch All Spimdatas from all Sources
-        Set<AbstractSpimData> currentSpimdatas = sourceAndConverterService.getSpimDatasets();
+        synchronized (tree) {
+            // Fetch All Spimdatas from all Sources
+            Set<AbstractSpimData> currentSpimdatas = sourceAndConverterService.getSpimDatasets();
 
-        // Check for obsolete spimdatafilternodes
-        spimdataFilterNodes.forEach(fnode -> {
-            if (!currentSpimdatas.contains(fnode.asd)) {
-                if (fnode.getParent()!=null) {
-                    model.removeNodeFromParent(fnode);
+            // Check for obsolete spimdatafilternodes
+            spimdataFilterNodes.forEach(fnode -> {
+                if (!currentSpimdatas.contains(fnode.asd)) {
+                    if (fnode.getParent() != null) {
+                        model.removeNodeFromParent(fnode);
+                    }
                 }
-            }
-        });
-
-        // Check for new spimdata
-        currentSpimdatas.forEach(asd -> {
-                if ((spimdataFilterNodes.size()==0)||(spimdataFilterNodes.stream().noneMatch(fnode -> fnode.asd.equals(asd)))) {
-                    SpimDataFilterNode newNode = new SpimDataFilterNode("SpimData "+spimdataFilterNodes.size(), asd, sourceAndConverterService);
-                    SourceFilterNode allSources = new SourceFilterNode("All Sources", (in) -> true, true);
-                    newNode.add(allSources);
-                    spimdataFilterNodes.add(newNode);
-                    addEntityFilterNodes(newNode, asd);
-                    top.insert(newNode, 0);
-
+            });
+            // Check for new spimdata
+            currentSpimdatas.forEach(asd -> {
+                    if ((spimdataFilterNodes.size()==0)||(spimdataFilterNodes.stream().noneMatch(fnode -> fnode.asd.equals(asd)))) {
+                        SpimDataFilterNode newNode = new SpimDataFilterNode("SpimData "+spimdataFilterNodes.size(), asd, sourceAndConverterService);
+                        SourceFilterNode allSources = new SourceFilterNode("All Sources", (in) -> true, true);
+                        newNode.add(allSources);
+                        spimdataFilterNodes.add(newNode);
+                        addEntityFilterNodes(newNode, asd);
+                        top.insert(newNode, 0);
+                    }
                 }
-            }
-        );
+            );
+        }
     }
 
     public void updateSpimDataName(AbstractSpimData asd_renamed, String name) {
@@ -232,9 +280,8 @@ public class SourceAndConverterServiceUI {
                                 ((SpimDataFilterNode) node).setName(name);
                             }
                         }
-                        SwingUtilities.invokeLater(() -> {
-                            ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
-                        });
+                        // TODO : be more specific in the update
+                        topNodeStructureChanged = true;
                     });
         }
     }
@@ -303,13 +350,15 @@ public class SourceAndConverterServiceUI {
     }
 
     public void remove(SourceAndConverter sac) {
-        if (displayedSource.contains(sac)) {
-            displayedSource.remove(sac);
-            top.remove(sac);
-            updateSpimDataFilterNodes();
-            //model.reload();
-
-            ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(top);
+        synchronized (tree) {
+            if (displayedSource.contains(sac)) {
+                    displayedSource.remove(sac);
+                    top.remove(sac);
+                    updateSpimDataFilterNodes();
+                    //model.reload();
+                    topNodeStructureChanged = true;
+                    //((DefaultTreeModel) tree.getModel()).nodeStructureChanged(top);
+            }
         }
     }
 

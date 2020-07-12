@@ -20,10 +20,8 @@ public class SourceAndConverterInspector {
 
     // TODO : understand what the heck is this ?
     public static void appendMetadata(DefaultMutableTreeNode parent, SourceAndConverter sac) {
-        //Map<String, Object> metadata = SourceAndConverterServices.getSourceAndConverterService().getActionsKeys();//.getSacToMetadata().get(sac);
-
-        //metadata.keySet()
-        SourceAndConverterServices.getSourceAndConverterService().getActionsKeys().forEach(k -> {
+        SourceAndConverterServices.getSourceAndConverterService().getMetadataKeys(sac)
+                .forEach(k -> {
             DefaultMutableTreeNode nodeMetaKey = new DefaultMutableTreeNode(k);
             parent.add(nodeMetaKey);
             DefaultMutableTreeNode nodeMetaValue = new DefaultMutableTreeNode(
