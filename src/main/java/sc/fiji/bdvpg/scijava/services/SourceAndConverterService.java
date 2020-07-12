@@ -57,7 +57,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     /**
      * Standard logger
      */
-    public static Consumer<String> log = (str) -> System.out.println( SourceAndConverterService.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = (str) -> {};//System.out.println( SourceAndConverterService.class.getSimpleName()+":"+str);
 
     /**
      * Error logger

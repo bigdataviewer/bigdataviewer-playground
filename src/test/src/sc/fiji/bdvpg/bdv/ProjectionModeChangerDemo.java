@@ -24,13 +24,11 @@ public class ProjectionModeChangerDemo
 
 		// Gets active BdvHandle instance
 		BdvHandle bdv = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
-		for (int i=0;i<100;i++) {
-			// Import SpimData
-			new SpimDataFromXmlImporter( "src/test/resources/mri-stack.xml" ).run();
-			new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
-			new SpimDataFromXmlImporter( "src/test/resources/mri-stack-shiftedY.xml" ).run();
-			System.out.println(i);
-		}
+
+		// Import SpimData
+		new SpimDataFromXmlImporter( "src/test/resources/mri-stack.xml" ).run();
+		new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
+		new SpimDataFromXmlImporter( "src/test/resources/mri-stack-shiftedY.xml" ).run();
 
 		// Get a handle on the sacs
 		final List< SourceAndConverter > sacs = SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();

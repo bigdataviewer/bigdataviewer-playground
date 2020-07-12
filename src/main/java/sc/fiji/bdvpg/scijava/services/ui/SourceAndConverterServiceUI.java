@@ -174,19 +174,25 @@ public class SourceAndConverterServiceUI {
     }
 
     public void update(SourceAndConverter sac) {
+
         displayedSource.add(sac);
-        updateSpimDataFilterNodes();
-        if (top.hasConsumed(sac)) {
-            top.update(new SourceFilterNode.SourceUpdateEvent(sac));
-        } else {
-            top.add(new DefaultMutableTreeNode(new RenamableSourceAndConverter(sac)));
+        synchronized (tree) {
+            updateSpimDataFilterNodes();
+            if (top.hasConsumed(sac)) {
+                top.update(new SourceFilterNode.SourceUpdateEvent(sac));
+            } else {
+                top.add(new DefaultMutableTreeNode(new RenamableSourceAndConverter(sac)));
+            }
         }
 
-        ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(top);
-        //model.reload();
-        if (!frame.isVisible()) {
-            frame.setVisible( true );
-        }
+        SwingUtilities.invokeLater(() -> {
+            ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(top);
+            //model.reload();
+            if (!frame.isVisible()) {
+                frame.setVisible(true);
+            }
+
+        });
     }
 
     private void updateSpimDataFilterNodes() {
@@ -218,28 +224,32 @@ public class SourceAndConverterServiceUI {
     }
 
     public void updateSpimDataName(AbstractSpimData asd_renamed, String name) {
-        visitAllNodesAndProcess(top,
-                node -> {
-                    if (node instanceof SpimDataFilterNode) {
-                        if (((SpimDataFilterNode) node).asd.equals(asd_renamed)) {
-                            ((SpimDataFilterNode) node).setName(name);
+        synchronized (tree) {
+            visitAllNodesAndProcess(top,
+                    node -> {
+                        if (node instanceof SpimDataFilterNode) {
+                            if (((SpimDataFilterNode) node).asd.equals(asd_renamed)) {
+                                ((SpimDataFilterNode) node).setName(name);
+                            }
                         }
-                    }
-                    ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
-                });
+                        SwingUtilities.invokeLater(() -> {
+                            ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
+                        });
+                    });
+        }
     }
 
-    public static void visitAllNodesAndProcess(TreeNode node, Consumer<DefaultMutableTreeNode> processor) {
-        System.out.println(node);
-        if (node.getChildCount() >= 0) {
-            for (Enumeration e = node.children(); e.hasMoreElements();) {
-                TreeNode n = (TreeNode) e.nextElement();
-                visitAllNodesAndProcess(n, processor);
-                if (n instanceof DefaultMutableTreeNode) {
-                    processor.accept((DefaultMutableTreeNode) n);
+    private static void visitAllNodesAndProcess(TreeNode node, Consumer<DefaultMutableTreeNode> processor) {
+        //System.out.println(node);
+            if (node.getChildCount() >= 0) {
+                for (Enumeration e = node.children(); e.hasMoreElements(); ) {
+                    TreeNode n = (TreeNode) e.nextElement();
+                    visitAllNodesAndProcess(n, processor);
+                    if (n instanceof DefaultMutableTreeNode) {
+                        processor.accept((DefaultMutableTreeNode) n);
+                    }
                 }
             }
-        }
     }
 
     private void addEntityFilterNodes(SpimDataFilterNode nodeSpimData, AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd) {
@@ -367,7 +377,7 @@ public class SourceAndConverterServiceUI {
                     found = true;
                     break;
                 } else {
-                    System.out.println("Not Matched "+testNode.toString().trim());
+                    //System.out.println("Not Matched "+testNode.toString().trim());
                 }
             }
             if (found==false) break;
