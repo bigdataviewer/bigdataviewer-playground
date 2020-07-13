@@ -12,13 +12,13 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class SourceAndConverterInspector {
 
-
-    // TODO : understand what the heck is this ?
+    /**
+     * Appends all the metadata fo a SourceAndConverter into a tree structure
+     */
     public static void appendMetadata(DefaultMutableTreeNode parent, SourceAndConverter sac) {
         SourceAndConverterServices.getSourceAndConverterService().getMetadataKeys(sac)
                 .forEach(k -> {
@@ -30,8 +30,18 @@ public class SourceAndConverterInspector {
         });
     }
 
+    /**
+     * Inspects recursively a SourceAndConverter object
+     * Properly inspected bdv.viewer.Source class:
+     * - SpimSource (AbstractSpimSource)
+     * - WarpedSource
+     * - TransformedSource
+     * - ResampledSource
+     * @param parent
+     * @param sac
+     * @param sourceAndConverterService
+     */
     public static void appendInspectorResult(DefaultMutableTreeNode parent, SourceAndConverter sac, SourceAndConverterService sourceAndConverterService) {
-
         if (sac.getSpimSource() instanceof TransformedSource) {
             DefaultMutableTreeNode nodeTransformedSource = new DefaultMutableTreeNode("Transformed Source");
             parent.add(nodeTransformedSource);
