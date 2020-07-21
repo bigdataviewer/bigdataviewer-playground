@@ -25,7 +25,7 @@ import java.awt.event.WindowEvent;
  * author Nicolas Chiaruttini
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bdv>Synchronize Views")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>Synchronize Views")
 public class ViewSynchronizerCommand implements Command {
 
     @Parameter(label = "Select Windows to synchronize")
@@ -38,7 +38,7 @@ public class ViewSynchronizerCommand implements Command {
 
     public void run() {
         if (bdvhs.length<2) {
-            System.err.println("You should select at least 2 bdv windows!");
+            System.err.println("You should select at least 2 BDV windows!");
             return;
         }
 

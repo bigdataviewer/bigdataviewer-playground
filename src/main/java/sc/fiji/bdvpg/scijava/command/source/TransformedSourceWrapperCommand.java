@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Wrap as Transformed Source")
 public class TransformedSourceWrapperCommand implements Command {
-    @Parameter
+    @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sources_in;
 
     @Override

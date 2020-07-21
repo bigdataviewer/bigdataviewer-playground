@@ -19,7 +19,7 @@ import java.util.function.Consumer;
  * Ensures BdvHandle is stored into ObjectService
  * and all containing Sources as well are stored into the BdvSourceAndConverterDisplayService and
  * BdvSourceAndConverterService
- * Also fix Bdv Close operation
+ * Also fix BDV Close operation
  */
 
 @Plugin(type = PostprocessorPlugin.class)

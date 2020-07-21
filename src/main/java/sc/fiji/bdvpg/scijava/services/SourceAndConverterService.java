@@ -36,8 +36,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 /**
- * Scijava Service which centralizes Bdv Sources, independently of their display
- * Bdv Sources can be registered to this Service.
+ * Scijava Service which centralizes BDV Sources, independently of their display
+ * BDV Sources can be registered to this Service.
  * This service adds the Source to the ObjectService, but on top of it,
  * It contains a Map which contains any object which can be linked to the sourceandconverter.
  *
@@ -57,7 +57,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     /**
      * Standard logger
      */
-    public static Consumer<String> log = (str) -> System.out.println( SourceAndConverterService.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = (str) -> {};//System.out.println( SourceAndConverterService.class.getSimpleName()+":"+str);
 
     /**
      * Error logger
@@ -116,7 +116,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     /**
-     * Gets lists of associated objects and data attached to a Bdv Source
+     * Gets lists of associated objects and data attached to a BDV Source
      * @return
      */
     //@Override
@@ -166,11 +166,11 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     /**
-     * Register a Bdv Source in this Service.
+     * Register a BDV Source in this Service.
      * Called in the BdvSourcePostProcessor
      * @param sac
      */
-    public void register(SourceAndConverter sac) {
+    public synchronized void register(SourceAndConverter sac) {
         if (objectService.getObjects(SourceAndConverter.class).contains(sac)) {
             log.accept("Source already registered");
             return;
@@ -183,13 +183,13 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         if (uiAvailable) ui.update(sac);
     }
 
-    public void register(Collection<SourceAndConverter> sources) {
+    public synchronized void register(Collection<SourceAndConverter> sources) {
         for (SourceAndConverter sac:sources) {
             this.register(sac);
         }
     }
 
-    public void register(AbstractSpimData asd) {
+    public synchronized void register(AbstractSpimData asd) {
         Map<Integer, SourceAndConverter> sacs = SourceAndConverterUtils.createSourceAndConverters(asd);
         this.register(sacs.values());
         sacs.forEach((id,sac) -> {
@@ -198,21 +198,23 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         });
     }
 
-    public void setSpimDataName(AbstractSpimData asd, String name) {
+    public synchronized void setSpimDataName(AbstractSpimData asd, String name) {
         if (uiAvailable) ui.updateSpimDataName(asd, name);
     }
 
     @Override
-    public void remove(SourceAndConverter... sacs ) {
+    public synchronized void remove(SourceAndConverter... sacs ) {
         // Remove displays
-        if (bsds!=null) {
-            bsds.removeFromAllBdvs( sacs );
-        }
-        for (SourceAndConverter sac : sacs) {
-            sacToMetadata.invalidate(sac);
-            objectService.removeObject(sac);
-            if (uiAvailable) {
-                ui.remove(sac);
+        if (sacs != null) {
+            if (bsds!=null) {
+                bsds.removeFromAllBdvs( sacs );
+            }
+            for (SourceAndConverter sac : sacs) {
+                sacToMetadata.invalidate(sac);
+                objectService.removeObject(sac);
+                if (uiAvailable) {
+                    ui.remove(sac);
+                }
             }
         }
     }
@@ -324,7 +326,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             for (SourceAndConverter src:srcs){
                 System.out.println(src.getSpimSource().getName());
             }});
-        // Bdv add and remove
+        // BDV add and remove
         registerScijavaCommand(BdvSourcesAdderCommand.class);
         registerScijavaCommand(BdvSourcesRemoverCommand.class);
         registerScijavaCommand(SourcesInvisibleMakerCommand.class);

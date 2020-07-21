@@ -13,7 +13,7 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getCommandName;
 
 /**
- * Bdv Actions called by default on each Bdv Window being created
+ * BDV Actions called by default on each BDV Window being created
  * See {@link EditorBehaviourUnInstaller} to remove the default editor and replace by a custom if necessary
  *
  */

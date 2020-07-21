@@ -16,7 +16,7 @@ import static org.scijava.ItemVisibility.MESSAGE;
 @Plugin(type = Command.class, initializer = "init",  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Brightness")
 public class BrightnessAdjusterCommand extends InteractiveCommand {
 
-    @Parameter
+    @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sources;
 
     @Parameter(visibility=MESSAGE, required=false, style = "text field")
@@ -28,10 +28,10 @@ public class BrightnessAdjusterCommand extends InteractiveCommand {
     @Parameter(callback = "updateMessage")
     double max;
 
-    @Parameter(style = "slider", min = "0", max = "1000", callback = "updateMessage")
+    @Parameter(label = "relative Minimum", style = "slider", min = "0", max = "1000", callback = "updateMessage")
     double minSlider;
 
-    @Parameter(style = "slider", min = "0", max = "1000", callback = "updateMessage")
+    @Parameter(label = "relative Maximum", style = "slider", min = "0", max = "1000", callback = "updateMessage")
     double maxSlider;
 
     boolean firstTimeCalled = true;
