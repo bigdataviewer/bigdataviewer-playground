@@ -135,6 +135,10 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 
 		addBdvPlaygroundBehaviours(bdv);
 
+		/*bdv.getViewerPanel().addTransformListener(tl -> {
+			checkandmnotifyprojector();
+		});*/
+
 		return bdv;
 	}
 

@@ -99,9 +99,9 @@ public class BigWarpLauncher implements Runnable {
                 warpedSources[i] = bdvHandleP.getViewerPanel().getState().getSources().get(i);
             }
 
-            int nSources = bdvHandleP.getViewerPanel().getState().numSources();
-            gridSource = bdvHandleP.getViewerPanel().getState().getSources().get(nSources-1);
-            warpMagnitudeSource = bdvHandleP.getViewerPanel().getState().getSources().get(nSources-2);
+            int nSources = bdvHandleP.getViewerPanel().state().getSources().size();
+            gridSource = bdvHandleP.getViewerPanel().state().getSources().get(nSources-1);
+            warpMagnitudeSource = bdvHandleP.getViewerPanel().state().getSources().get(nSources-2);
 
             /*SourceAndConverterServices.getSourceAndConverterService().register(gridSource);
             SourceAndConverterServices.getSourceAndConverterService().register(warpMagnitudeSource);
