@@ -11,7 +11,5 @@ public class SimpleIJLaunch {
         final ImageJ ij = new ImageJ();
         ij.ui().showUI();
 
-        BdvHandle bdvh;
-
     }
 }
