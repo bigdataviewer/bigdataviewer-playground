@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>28.0.0</version>
+		<version>29.0.0-beta-3</version>
 		<relativePath />
 	</parent>
 
 	<groupId>sc.fiji</groupId>
 	<artifactId>bigdataviewer-playground</artifactId>
-	<version>0.2.2-SNAPSHOT</version>
+	<version>0.2.3-SNAPSHOT</version>
 
 	<name>bigdataviewer-playground</name>
 	<description>BigDataViewer Actions and GUI</description>
@@ -110,26 +110,12 @@
 		<license.copyrightOwners>Christian Tischer, EMBL</license.copyrightOwners>
 
 		<scijava.deleteOtherVersions>true</scijava.deleteOtherVersions>
-		<scijava-maven-plugin.version>1.1.0</scijava-maven-plugin.version>
+		<!--<scijava-maven-plugin.version>1.1.0</scijava-maven-plugin.version>-->
 		<scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory>
 
-		<!--
-		<scijava-ui-swing.version>0.13.0</scijava-ui-swing.version>
-		<imagej.app.directory>C:/Programs/Fiji.app/</imagej.app.directory>
-		See Issue https://github.com/saalfeldlab/bigwarp/issues/83 -->
         <bigwarp_fiji.version>6.0.1-SNAPSHOT</bigwarp_fiji.version>
 
-		<imglib2.version>5.9.0</imglib2.version>
-		<imglib2-ij.version>2.0.0-beta-46</imglib2-ij.version>
-		<!--<bigdataviewer-vistools.version>1.0.0-beta-20</bigdataviewer-vistools.version>-->
-		<bigdataviewer-vistools.version>1.0.0-beta-20</bigdataviewer-vistools.version>
-		<bigdataviewer-core.version>9.0.4</bigdataviewer-core.version>
-		<bigdataviewer_fiji.version>6.1.0</bigdataviewer_fiji.version>
-		<ui-behaviour.version>2.0.1</ui-behaviour.version>
-
-		<bigdataviewer-vistools.version>1.0.0-beta-21-SNAPSHOT</bigdataviewer-vistools.version>
-
-		<spim_data.version>2.2.4</spim_data.version>
+		<bigdataviewer-core.version>9.0.6</bigdataviewer-core.version>
 
 		<mastodon.version>1.0.0-beta-17-SNAPSHOT</mastodon.version>
 		<bigvolumeviewer.version>0.1.8</bigvolumeviewer.version>
