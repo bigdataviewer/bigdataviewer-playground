@@ -1,6 +1,5 @@
 package sc.fiji.bdvpg.bdv.scijava;
 
-import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
 
 public class SimpleIJLaunch {
