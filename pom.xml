@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>29.0.0-beta-3</version>
+		<version>29.2.1</version>
 		<relativePath />
 	</parent>
 
@@ -113,13 +113,13 @@
 		<!--<scijava-maven-plugin.version>1.1.0</scijava-maven-plugin.version>-->
 		<scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory>
 
-        <bigwarp_fiji.version>6.0.1-SNAPSHOT</bigwarp_fiji.version>
+        <bigwarp_fiji.version>6.0.2</bigwarp_fiji.version>
 
-		<bigdataviewer-core.version>9.0.6</bigdataviewer-core.version>
+		<!--<bigdataviewer-core.version>9.0.6</bigdataviewer-core.version>-->
 
 		<mastodon.version>1.0.0-beta-17-SNAPSHOT</mastodon.version>
 		<bigvolumeviewer.version>0.1.8</bigvolumeviewer.version>
-		<bigdataviewer-selector.version>0.1.1-SNAPSHOT</bigdataviewer-selector.version>
+		<bigdataviewer-selector.version>0.1.4</bigdataviewer-selector.version>
 
 	</properties>
 
