@@ -27,6 +27,14 @@ public interface ISourceAndConverterService
 {
 
     /**
+     * Reserved key for the data map. data.get(sourceandconverter).get(SPIM_DATA)
+     * is expected to return a List of Spimdata Objects which refer to this sourceandconverter
+     * whether a list of necessary is not obvious at the moment
+     * TODO : make an example
+     */
+    final public String SPIM_DATA_INFO = "SPIMDATA";
+
+    /**
      * Test if a Source is already registered in the Service
      * @param src
      * @return
@@ -136,5 +144,33 @@ public interface ISourceAndConverterService
      * @param name
      */
     void setSpimDataName(AbstractSpimData asd, String name);
+
+
+    /**
+     * Adds metadata for a sac
+     * @return
+     */
+    void setMetadata(AbstractSpimData asd, String key, Object data);
+
+    /**
+     * Adds metadata for a sac
+     *
+     * @return
+     */
+    Object getMetadata(AbstractSpimData asd, String key);
+
+    /**
+     * Adds metadata for a sac
+     *
+     * @return
+     */
+    Collection<String> getMetadataKeys(AbstractSpimData asd);
+
+    /**
+     * Convenient method to know if a metadata for a sac exists
+     *
+     * @return
+     */
+    boolean containsMetadata(AbstractSpimData asd, String key);
 
 }

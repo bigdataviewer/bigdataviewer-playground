@@ -211,20 +211,16 @@ public class SourceAndConverterServiceUI {
     public void inspectSources(SourceAndConverter[] sacs) {
         for (SourceAndConverter sac:sacs) {
             inspectSource(sac);
+            //System.out.println(SourceAndConverterInspector.getRootSourceAndConverter(sac).getSpimSource().getName());
         }
     }
 
     public void inspectSource(SourceAndConverter sac) {
         DefaultMutableTreeNode parentNodeInspect = new DefaultMutableTreeNode("Inspect Results ["+sac.getSpimSource().getName()+"]");
-        SourceAndConverterInspector.appendInspectorResult(parentNodeInspect, sac, sourceAndConverterService);
+        SourceAndConverterInspector.appendInspectorResult(parentNodeInspect, sac, sourceAndConverterService, false);
         top.add(parentNodeInspect);
         topNodeStructureChanged = true;
-        //((DefaultTreeModel) tree.getModel()).nodeStructureChanged(top);
-        //.nodeChanged(node);
-        //model.reload(top);
     }
-
-
 
     public void update(SourceAndConverter sac) {
 

@@ -94,14 +94,6 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     Cache<SourceAndConverter, Map<String, Object>> sacToMetadata;
 
     /**
-     * Reserved key for the data map. data.get(sourceandconverter).get(SPIM_DATA)
-     * is expected to return a List of Spimdata Objects which refer to this sourceandconverter
-     * whether a list of necessary is not obvious at the moment
-     * TODO : make an example
-     */
-    final public static String SPIM_DATA_INFO = "SPIMDATA";
-
-    /**
      * Test if a Source is already registered in the Service
      * @param src
      * @return
@@ -112,17 +104,8 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
     public void setDisplayService( SourceAndConverterBdvDisplayService bsds) {
         assert bsds instanceof SourceAndConverterBdvDisplayService;
-        this.bsds = ( SourceAndConverterBdvDisplayService ) bsds;
+        this.bsds = bsds;
     }
-
-    /**
-     * Gets lists of associated objects and data attached to a BDV Source
-     * @return
-     */
-    //@Override
-    //public Map<SourceAndConverter, Map<String, Object>> getSacToMetadata() {
-    //    return sacToMetadata;
-    //}
 
     @Override
     public void setMetadata( SourceAndConverter sac, String key, Object data )
@@ -190,16 +173,18 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     public synchronized void register(AbstractSpimData asd) {
+
+        if (spimdataToMetadata.getIfPresent(asd)==null) {
+            Map<String, Object> sourceData = new HashMap<>();
+            spimdataToMetadata.put(asd, sourceData);
+        }
+
         Map<Integer, SourceAndConverter> sacs = SourceAndConverterUtils.createSourceAndConverters(asd);
         this.register(sacs.values());
         sacs.forEach((id,sac) -> {
             this.linkToSpimData(sac, asd, id);
             if (uiAvailable) ui.update(sac);
         });
-    }
-
-    public synchronized void setSpimDataName(AbstractSpimData asd, String name) {
-        if (uiAvailable) ui.updateSpimDataName(asd, name);
     }
 
     @Override
@@ -264,6 +249,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         scriptService.addAlias(AbstractSpimData.class);
         // -- TODO End of to check
         sacToMetadata = CacheBuilder.newBuilder().weakKeys().build();//new HashMap<>();
+        spimdataToMetadata = CacheBuilder.newBuilder().weakKeys().build();
 
         registerDefaultActions();
         if (uiService!=null) {
@@ -429,6 +415,8 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
     }
 
+    //------------------- SpimData specific informations
+
    public class SpimDataInfo {
 
         public final AbstractSpimData asd;
@@ -443,5 +431,61 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             return asd.toString()+": setupId = "+setupId;
         }
    }
+
+    /**
+     * Map containing objects that are 1 to 1 linked to a Source
+     * Keys are Weakly referenced -> Metadata should be GCed if referenced only here
+     */
+    Cache<AbstractSpimData, Map<String, Object>> spimdataToMetadata;
+
+    // Key to the string linking to the SpimData (either last save or last loading)
+    // {@link XmlFromSpimDataExporter}
+    final static public String SPIM_DATA_LOCATION = "SPIM_DATA_LOCATION";
+
+    public synchronized void setSpimDataName(AbstractSpimData asd, String name) {
+        spimdataToMetadata.getIfPresent(asd).put("NAME", name);
+        if (uiAvailable) ui.updateSpimDataName(asd, name);
+    }
+
+    @Override
+    public void setMetadata( AbstractSpimData asd, String key, Object data )
+    {
+        if (asd == null) {
+            System.err.println("Error : asd is null in setMetadata function! ");
+            return;
+        }
+        if (spimdataToMetadata.getIfPresent(asd)==null) {
+            Map<String, Object> sourceData = new HashMap<>();
+            spimdataToMetadata.put(asd, sourceData);
+        }
+        spimdataToMetadata.getIfPresent( asd ).put( key, data );
+    }
+
+    @Override
+    public Object getMetadata( AbstractSpimData asd, String key )
+    {
+        if (spimdataToMetadata.getIfPresent(asd)!=null) {
+            return spimdataToMetadata.getIfPresent(asd).get(key);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Collection<String> getMetadataKeys(AbstractSpimData asd) {
+        Map<String, Object> map = spimdataToMetadata.getIfPresent(asd);
+        if (map==null) {
+            return new ArrayList<String>();
+        } else {
+            return map.keySet();
+        }
+    }
+
+    @Override
+    public boolean containsMetadata(AbstractSpimData asd, String key) {
+        return getMetadata(asd,key)!=null;
+    }
+
+
 
 }
