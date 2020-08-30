@@ -27,7 +27,9 @@ import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
 import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
@@ -37,8 +39,7 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 import spimdata.util.Displaysettings;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
@@ -46,7 +47,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
 /**
  * Following the logic of the repository, i.e. dealing with SourceAndConverter objects only,
  * This class contains the main functions which allow to convert objects which can be
- * vizualized in Bdv windows into SourceAndConverters objects
+ * vizualized in BDV windows into SourceAndConverters objects
  * SourceAndConverters objects contains:
  * - a Source, non volatile, which holds the data
  * - a converter from the Source type to ARGBType, for display purpose
@@ -66,7 +67,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  * Limitations : TODO : think about CacheControls
  */
 public class SourceAndConverterUtils {
-    
+
     /**
      * Standard logger
      */
@@ -76,7 +77,7 @@ public class SourceAndConverterUtils {
      * Error logger
      */
     public static Consumer<String> errlog = (str) -> System.err.println( SourceAndConverterBdvDisplayService.class.getSimpleName()+":"+str);
-    
+
     /**
      * Core function : makes SourceAndConverter object out of a Source
      * Mainly duplicated functions from BdvVisTools
@@ -105,7 +106,7 @@ public class SourceAndConverterUtils {
                 out = new SourceAndConverter(source, nonVolatileConverter);
 
             }
-            
+
         } else if (source.getType() instanceof ARGBType) {
 
             nonVolatileConverter = createConverterARGBType(source);
@@ -236,7 +237,7 @@ public class SourceAndConverterUtils {
      * TODO :
      * @return
      */
-    public static Converter cloneConverter(Converter converter) {
+    public static Converter cloneConverter(Converter converter, SourceAndConverter sac) {
         if (converter instanceof RealARGBColorConverter.Imp0) {
             RealARGBColorConverter.Imp0 out = new RealARGBColorConverter.Imp0<>( ((RealARGBColorConverter.Imp0) converter).getMin(), ((RealARGBColorConverter.Imp0) converter).getMax() );
             out.setColor(((RealARGBColorConverter.Imp0) converter).getColor());
@@ -258,6 +259,21 @@ public class SourceAndConverterUtils {
         } else if (converter instanceof RealLUTConverter) {
             return new RealLUTConverter(((RealLUTConverter) converter).getMin(),((RealLUTConverter) converter).getMax(),((RealLUTConverter) converter).getLUT());
         } else {
+            //RealARGBColorConverter
+            Converter cvt = BigDataViewer.createConverterToARGB((NumericType)sac.getSpimSource().getType());
+            if ((converter instanceof ColorConverter)&&(cvt instanceof ColorConverter)) {
+                ((ColorConverter) cvt).setColor(((ColorConverter)converter).getColor());
+            }
+
+            if ((converter instanceof RealARGBColorConverter)&&(cvt instanceof RealARGBColorConverter)) {
+                ((RealARGBColorConverter)cvt).setMin(((RealARGBColorConverter)converter).getMin());
+                ((RealARGBColorConverter)cvt).setMax(((RealARGBColorConverter)converter).getMax());
+            }
+
+            if (cvt!=null) {
+                return cvt;
+            }
+
             errlog.accept("Could not clone the converter of class " + converter.getClass().getSimpleName());
             return null;
         }
@@ -452,6 +468,161 @@ public class SourceAndConverterUtils {
         } else {
             return false;
         }
+
+    }
+
+    /**
+     * Default sorting order for SourceAndConverter
+     * Because sometimes we want some consistency in channel ordering when exporting / importing
+     *
+     * TODO : find a better way to order between spimdata
+     * @param sacs
+     * @return
+     */
+    public static List<SourceAndConverter<?>> sortDefaultGeneric(Collection<SourceAndConverter<?>> sacs) {
+        List<SourceAndConverter<?>> sortedList = new ArrayList<>(sacs.size());
+        sortedList.addAll(sacs);
+        Set<AbstractSpimData> spimData = new HashSet<>();
+        // Gets all SpimdataInfo
+        sacs.forEach(sac -> {
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                SourceAndConverterService.SpimDataInfo sdi = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)));
+                spimData.add(sdi.asd);
+            }
+        });
+
+        Comparator<SourceAndConverter> sacComparator = (s1, s2) -> {
+            // Those who do not belong to spimdata are last:
+            SourceAndConverterService.SpimDataInfo sdi1 = null, sdi2 = null;
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(s1, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                sdi1 = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(s1, SourceAndConverterService.SPIM_DATA_INFO)));
+            }
+
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(s2, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                sdi2 = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(s2, SourceAndConverterService.SPIM_DATA_INFO)));
+            }
+
+            if ((sdi1==null)&&(sdi2!=null)) {
+                return -1;
+            }
+
+            if ((sdi1!=null)&&(sdi2==null)) {
+                return 1;
+            }
+
+            if ((sdi1!=null)&&(sdi2!=null)) {
+                if (sdi1.asd==sdi2.asd) {
+                    return sdi1.setupId-sdi2.setupId;
+                } else {
+                    return sdi2.toString().compareTo(sdi1.toString());
+                }
+            }
+
+            return s2.getSpimSource().getName().compareTo(s1.getSpimSource().getName());
+        };
+
+        sortedList.sort(sacComparator);
+        return sortedList;
+    }
+
+    /**
+     * Default sorting order for SourceAndConverter
+     * Because sometimes we want some consistency in channel ordering when exporting / importing
+     *
+     * TODO : find a better way to order between spimdata
+     * @param sacs
+     * @return
+     */
+    public static List<SourceAndConverter> sortDefaultNoGeneric(Collection<SourceAndConverter> sacs) {
+        List<SourceAndConverter> sortedList = new ArrayList<>(sacs.size());
+        sortedList.addAll(sacs);
+        Set<AbstractSpimData> spimData = new HashSet<>();
+        // Gets all SpimdataInfo
+        sacs.forEach(sac -> {
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                SourceAndConverterService.SpimDataInfo sdi = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)));
+                spimData.add(sdi.asd);
+            }
+        });
+
+        Comparator<SourceAndConverter> sacComparator = (s1, s2) -> {
+            // Those who do not belong to spimdata are last:
+            SourceAndConverterService.SpimDataInfo sdi1 = null, sdi2 = null;
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(s1, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                sdi1 = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(s1, SourceAndConverterService.SPIM_DATA_INFO)));
+            }
+
+            if (SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadata(s2, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
+                sdi2 = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .getMetadata(s2, SourceAndConverterService.SPIM_DATA_INFO)));
+            }
+
+            if ((sdi1==null)&&(sdi2!=null)) {
+                return -1;
+            }
+
+            if ((sdi1!=null)&&(sdi2==null)) {
+                return 1;
+            }
+
+            if ((sdi1!=null)&&(sdi2!=null)) {
+                if (sdi1.asd==sdi2.asd) {
+                    return sdi1.setupId-sdi2.setupId;
+                } else {
+                    return sdi2.toString().compareTo(sdi1.toString());
+                }
+            }
+
+            return s2.getSpimSource().getName().compareTo(s1.getSpimSource().getName());
+        };
+
+        sortedList.sort(sacComparator);
+        return sortedList;
+    }
+
+    /**
+     * Return the center point in global coordinates of the source
+     * Do not expect this to work with {@link WarpedSource}
+     * @param source
+     * @return
+     */
+    public static RealPoint getSourceAndConverterCenterPoint(SourceAndConverter source) {
+        AffineTransform3D at3D = new AffineTransform3D();
+        at3D.identity();
+        //double[] m = at3D.getRowPackedCopy();
+        source.getSpimSource().getSourceTransform(0,0,at3D);
+        long[] dims = new long[3];
+        source.getSpimSource().getSource(0,0).dimensions(dims);
+
+        RealPoint ptCenterGlobal = new RealPoint(3);
+        RealPoint ptCenterPixel = new RealPoint((dims[0]-1.0)/2.0,(dims[1]-1.0)/2.0, (dims[2]-1.0)/2.0);
+
+        at3D.apply(ptCenterPixel, ptCenterGlobal);
+
+        return ptCenterGlobal;
     }
 
 }

@@ -17,9 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Swing implementation of {@link BdvHandleWidget}.
- *
- * @author Nicolas Chiaruttini
+
  */
 
 @Plugin(type = InputWidget.class, priority = Priority.EXTREMELY_HIGH)
@@ -51,7 +49,6 @@ public class SwingBdvHandleWidget extends SwingInputWidget<BdvHandle> implements
 
     @Parameter
     ObjectService os;
-
 
     @Override
     public void set(final WidgetModel model) {

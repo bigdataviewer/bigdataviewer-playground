@@ -24,11 +24,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 /**
- * Scijava Service which handles the Display of Bdv SourceAndConverters in one or multiple Bdv Windows
+ * Scijava Service which handles the Display of BDV SourceAndConverters in one or multiple BDV Windows
  * Pairs with BdvSourceAndConverterService, but this service is optional
  *
- * Handling multiple Sources displayed in potentially multiple Bdv Windows
+ * Handling multiple Sources displayed in potentially multiple BDV Windows
  * Make its best to keep in synchronizations all of this, without creating errors nor memory leaks
  */
 
@@ -54,22 +57,23 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     ScriptService scriptService;
 
     /**
-     * Service containing all registered Bdv Sources
+     * Service containing all registered BDV Sources
      **/
     @Parameter
     SourceAndConverterService bdvSourceAndConverterService;
 
     /**
-     * Used to create Bdv Windows when necessary
+     * Used to create BDV Windows when necessary
      **/
     @Parameter
     CommandService cs;
 
     /**
-     * Used to retrieved the last active Bdv Windows (if the activated callback has been set right)
+     * Used to retrieved the last active BDV Windows (if the activated callback has been set right)
      **/
     @Parameter
     GuavaWeakCacheService cacheService;
+
     @Parameter
     ObjectService os;
 
@@ -90,7 +94,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Returns the last active Bdv or create a new one
+     * Returns the last active BDV or create a new one
      */
     public BdvHandle getActiveBdv() {
         List<BdvHandle> bdvhs = os.getObjects(BdvHandle.class);
@@ -133,7 +137,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Makes visible a source, makes it visible in all bdvs according to BdvhReferences
+     * Makes visible a source, makes it visible in all BDVs according to BdvhReferences
      * @param sac
      */
     public boolean isVisible(SourceAndConverter sac, BdvHandle bdvh) {
@@ -141,7 +145,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Makes invisible a source, makes it invisible in all bdvs according to BdvhReferences
+     * Makes invisible a source, makes it invisible in all BDVs according to BdvhReferences
      * @param sac
      */
     public void makeInvisible(SourceAndConverter sac) {
@@ -149,7 +153,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Displays a Bdv sourceandconverter into the specified BdvHandle
+     * Displays a BDV sourceandconverter into the specified BdvHandle
      * This function really is the core of this service
      * It mimicks or copies the functions of BdvVisTools because it is responsible to
      * create converter, volatiles, convertersetups and so on
@@ -233,12 +237,12 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         }
 
         // If no ConverterSetup is built then build it
-        if ( bdvSourceAndConverterService.sacToMetadata.get(sac).get( CONVERTER_SETUP ) == null) {
+        if ( bdvSourceAndConverterService.sacToMetadata.getIfPresent(sac).get( CONVERTER_SETUP ) == null) {
             ConverterSetup setup = SourceAndConverterUtils.createConverterSetup(sac);
-            bdvSourceAndConverterService.sacToMetadata.get(sac).put( CONVERTER_SETUP,  setup );
+            bdvSourceAndConverterService.sacToMetadata.getIfPresent(sac).put( CONVERTER_SETUP,  setup );
         }
 
-        return (ConverterSetup) bdvSourceAndConverterService.sacToMetadata.get(sac).get( CONVERTER_SETUP );
+        return (ConverterSetup) bdvSourceAndConverterService.sacToMetadata.getIfPresent(sac).get( CONVERTER_SETUP );
     }
 
     /**
@@ -260,7 +264,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     @Override
     public void initialize() {
         scriptService.addAlias(BdvHandle.class);
-        displayToMetadata = new HashMap<>();
+        displayToMetadata = CacheBuilder.newBuilder().weakKeys().build();//new HashMap<>();
         bdvSourceAndConverterService.setDisplayService(this);
         SourceAndConverterServices.setSourceAndConverterDisplayService(this);
         log.accept("Service initialized.");
@@ -372,9 +376,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
     /**
      * Map containing objects that are 1 to 1 linked to a Display ( a BdvHandle object )
-     * TODO : ask if it should contain a WeakReference to BdvHandle keys (Potential Memory leak ?)
+     * Keys are Weakly referenced -> Metadata should be GCed if referenced only here
      */
-    Map<BdvHandle, Map<String, Object>> displayToMetadata;
+    Cache<BdvHandle, Map<String, Object>> displayToMetadata;
 
     public void setDisplayMetadata( BdvHandle bdvh, String key, Object data )
     {
@@ -382,17 +386,17 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
             System.err.println("Error : bdvh is null in setMetadata function! ");
             //return;
         }
-        if (displayToMetadata.get( bdvh ) == null) {
+        if (displayToMetadata.getIfPresent( bdvh ) == null) {
             // Create Metadata
             displayToMetadata.put(bdvh, new HashMap<>());
         }
-        displayToMetadata.get( bdvh ).put( key, data );
+        displayToMetadata.getIfPresent( bdvh ).put( key, data );
     }
 
     public Object getDisplayMetadata( BdvHandle bdvh, String key )
     {
-        if (displayToMetadata.containsKey(bdvh)) {
-            return displayToMetadata.get(bdvh).get(key);
+        if (displayToMetadata.getIfPresent(bdvh)!=null) {
+            return displayToMetadata.getIfPresent(bdvh).get(key);
         } else {
             return null;
         }

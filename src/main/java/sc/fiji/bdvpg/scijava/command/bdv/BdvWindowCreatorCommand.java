@@ -15,15 +15,15 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bdv>Create Empty BDV Frame",
-    label = "Creates an empty Bdv window")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>Create Empty BDV Frame",
+    label = "Creates an empty BDV window")
 public class BdvWindowCreatorCommand implements Command {
 
-    @Parameter(label = "Create a 2D Bdv window")
+    @Parameter(label = "Create a 2D BDV window")
     public boolean is2D = false;
 
-    @Parameter(label = "Title of the new Bdv window")
-    public String windowTitle = "Bdv";
+    @Parameter(label = "Title of the new BDV window")
+    public String windowTitle = "BDV";
 
     @Parameter(label = "Interpolate")
     public boolean interpolate = false;

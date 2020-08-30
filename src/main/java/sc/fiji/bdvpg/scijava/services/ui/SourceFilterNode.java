@@ -143,7 +143,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
      * ensures new and up to date recomputation of the whole tree
      * @param event
      */
-    public synchronized void update(UpdateEvent event) {
+    public void update(UpdateEvent event) {
         if (event instanceof NodeAddedUpdateEvent) {
             NodeAddedUpdateEvent nodeEvent = (NodeAddedUpdateEvent) event;
             assert this.isNodeChild(nodeEvent.getNode());

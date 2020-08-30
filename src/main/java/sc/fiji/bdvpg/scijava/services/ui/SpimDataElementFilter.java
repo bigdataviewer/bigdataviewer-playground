@@ -28,12 +28,12 @@ public class SpimDataElementFilter extends SourceFilterNode {
     }
 
     public boolean filter(SourceAndConverter sac) {
-        Map<String, Object> props = sourceAndConverterService.getSacToMetadata().get(sac);
-        assert props!=null;
-        assert props.containsKey( SPIM_DATA_INFO );
+        //Map<String, Object> props = sourceAndConverterService.getSacToMetadata().get(sac);
+        //assert props!=null;
+        //assert props.containsKey( SPIM_DATA_INFO );
 
-        AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd = ( AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) (( SourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).asd;
-        Integer idx = (( SourceAndConverterService.SpimDataInfo)props.get( SPIM_DATA_INFO )).setupId;
+        AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd = ( AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) (( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).asd;
+        Integer idx = (( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).setupId;
 
         return asd.getSequenceDescription().getViewSetups().get(idx).getAttributes().values().contains(e);
     }

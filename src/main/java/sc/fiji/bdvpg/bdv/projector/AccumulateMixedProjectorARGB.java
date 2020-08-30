@@ -17,8 +17,8 @@ import java.util.concurrent.ExecutorService;
 import static sc.fiji.bdvpg.bdv.projector.Projection.*;
 
 /**
- * Bdv Projector which allows some flexibility in the way sources are combined
- * when displayed in a bdv window.
+ * BDV Projector which allows some flexibility in the way sources are combined
+ * when displayed in a BDV window.
  *
  * {@link bdv.viewer.SourceAndConverter} have associated Metadata which specifies how they
  * should be displayed.
@@ -122,7 +122,7 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 		for ( int sourceIndex : sourceOrder )
 		{
-			final int argb = accesses[ sourceIndex ].get().get();
+			final int argb = accesses[ sourceIndex ].get().get(); // is this expensive ?
 			final int a = ARGBType.alpha( argb );
 			final int r = ARGBType.red( argb );
 			final int g = ARGBType.green( argb );

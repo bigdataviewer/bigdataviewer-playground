@@ -29,14 +29,14 @@ import java.util.function.Function;
         if (sourceAndConverter.asVolatile() != null) {
             sac = new SourceAndConverter(
                     sourceAndConverter.getSpimSource(),
-                    SourceAndConverterUtils.cloneConverter(sourceAndConverter.getConverter()),
+                    SourceAndConverterUtils.cloneConverter(sourceAndConverter.getConverter(), sourceAndConverter),
                     new SourceAndConverter(sourceAndConverter.asVolatile().getSpimSource(),
-                            SourceAndConverterUtils.cloneConverter(sourceAndConverter.asVolatile().getConverter()))
+                            SourceAndConverterUtils.cloneConverter(sourceAndConverter.asVolatile().getConverter(), sourceAndConverter.asVolatile()))
             );
         } else {
             sac = new SourceAndConverter(
                     sourceAndConverter.getSpimSource(),
-                    SourceAndConverterUtils.cloneConverter(sourceAndConverter.getConverter()));
+                    SourceAndConverterUtils.cloneConverter(sourceAndConverter.getConverter(), sourceAndConverter));
         }
         SourceAndConverterServices.getSourceAndConverterService().register(sac);
         return sac;

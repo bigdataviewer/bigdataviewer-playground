@@ -16,19 +16,19 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
  * 12 2019
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bdv>Screenshot")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>Screenshot")
 public class ScreenShotMakerCommand implements Command {
 
     @Parameter
     BdvHandle bdvh;
 
-    @Parameter
+    @Parameter(label="Target Pixel Size (in XY)")
     public double targetPixelSizeInXY = 1;
 
-    @Parameter
+    @Parameter(label="Pixel Size Unit")
     public String targetPixelUnit = "Pixels";
 
-    @Parameter
+    @Parameter(label="Show Raw Data")
     public boolean showRawData = false;
 
     @Override

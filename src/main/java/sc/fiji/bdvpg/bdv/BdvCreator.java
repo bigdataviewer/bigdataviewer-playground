@@ -1,19 +1,23 @@
 package sc.fiji.bdvpg.bdv;
 
+import bdv.ui.SourcesTransferable;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
 import bdv.util.BdvStackSource;
 import bdv.viewer.Interpolation;
+import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.ui.behaviour.ClickBehaviour;
+import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerConfigHelper;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.scijava.ui.behaviour.util.Behaviours;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
+import sc.fiji.bdvpg.behaviour.EditorBehaviourInstaller;
 import sc.fiji.bdvpg.behaviour.SourceAndConverterContextMenuClickBehaviour;
 import sc.fiji.bdvpg.scijava.command.bdv.ScreenShotMakerCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
@@ -21,6 +25,7 @@ import sc.fiji.bdvpg.scijava.services.ui.swingdnd.BdvTransferHandler;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.*;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.function.Supplier;
 
@@ -45,7 +50,7 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 	 *
 	 * @param interpolate should the window use linear interpolation or nearest neighbor interpolation ?
 	 *
-	 * @param numTimePoints Number of timepoints contained in the creating bdv window
+	 * @param numTimePoints Number of timepoints contained in the creating BDV window
 	 *
 	 * @param pathToBindings This String should hold a reference to a path which could contains:
 	 * 	 * a bdvkeyconfig.yaml file
@@ -111,13 +116,13 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 
 		BdvHandle bdv = bss.getBdvHandle();
 
-		if (pathToBindings!=null) {
+		/*if (pathToBindings!=null) {
 			if (new File(pathToBindings).exists()) {
 				install(bdv,pathToBindings);
 			} else {
 				System.err.println("Bindings path "+pathToBindings+" do not exist.");
 			}
-		}
+		}*/
 
 		if ( interpolate ) bdv.getViewerPanel().setInterpolation( Interpolation.NLINEAR );
 
@@ -125,29 +130,50 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 
 		bdv.getViewerPanel().setNumTimepoints(numTimePoints);
 
-		addBdvPlaygroundActions(bdv);
-
 		// For drag and drop
 		addCustomTransferHandler(bdv);
+
+		addBdvPlaygroundBehaviours(bdv);
+
+		/*bdv.getViewerPanel().addTransformListener(tl -> {
+			checkandmnotifyprojector();
+		});*/
 
 		return bdv;
 	}
 
 	/**
-	 * Adds Bdv Playground specific actions :
+	 * Adds BDV Playground specific actions :
 	 * For now:
 	 * - Screenshot
 	 * - Show context menu
 	 * TODO : improve this
 	 */
-	private void addBdvPlaygroundActions(BdvHandle bdv)
+	private void addBdvPlaygroundBehaviours(BdvHandle bdv)
 	{
 		Behaviours behaviours = new Behaviours( new InputTriggerConfig() );
 		String actionScreenshotName = SourceAndConverterService.getCommandName(ScreenShotMakerCommand.class);
 		behaviours.behaviour((ClickBehaviour) (x, y) -> SourceAndConverterServices.getSourceAndConverterService().getAction(actionScreenshotName).accept(null),
-				actionScreenshotName, "not mapped");
-		behaviours.behaviour(new SourceAndConverterContextMenuClickBehaviour( bdv ), "Sources Context Menu", "not mapped");
-		behaviours.install(bdv.getTriggerbindings(), "bdvpgactions");
+				actionScreenshotName, "D");
+
+		// Adds selection mode triggered by E
+
+		// Setup a source selection mode with a trigger input key that toggles it on and off
+		SourceSelectorBehaviour ssb = new SourceSelectorBehaviour(bdv, "E");
+
+		// Stores the associated selector to the display
+		SourceAndConverterServices.getSourceAndConverterDisplayService().setDisplayMetadata(
+				bdv, SourceSelectorBehaviour.class.getSimpleName(), ssb);
+
+		new EditorBehaviourInstaller(ssb).run();
+
+		// Custom Drag support
+		if (bdv.getViewerPanel().getTransferHandler() instanceof BdvTransferHandler) {
+			System.out.println("Dragging support enabled");
+			BdvTransferHandler handler = (BdvTransferHandler) bdv.getViewerPanel().getTransferHandler();
+			handler.setTransferableFunction(c -> new SourcesTransferable(ssb.getSelectedSources()));
+			ssb.addBehaviour(new DragNDSourcesBehaviour(bdv), "drag-selected-sources", new String[]{"alt button1"});
+		}
 
 	}
 
@@ -207,6 +233,30 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 
 	void addCustomTransferHandler(BdvHandle bdv) {
 		bdv.getViewerPanel().setTransferHandler(new BdvTransferHandler());
+	}
+
+	class DragNDSourcesBehaviour implements DragBehaviour {
+
+		final BdvHandle bdvh;
+
+		public DragNDSourcesBehaviour(BdvHandle bdvh) {
+			this.bdvh = bdvh;
+		}
+
+		@Override
+		public void init(int x, int y) {
+			bdvh.getViewerPanel().getTransferHandler().exportAsDrag(bdvh.getViewerPanel(), new MouseEvent(bdvh.getViewerPanel(), 0, 0, 0, 100, 100, 1, false), TransferHandler.MOVE);
+		}
+
+		@Override
+		public void drag(int x, int y) {
+
+		}
+
+		@Override
+		public void end(int x, int y) {
+
+		}
 	}
 
 }

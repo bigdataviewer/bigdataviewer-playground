@@ -15,11 +15,11 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 import java.util.List;
 
 /**
- * ViewTransformSetAndLogDemo
+ * ScreenShotDemo
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
+ * Author: Tischi
  * 12 2019
  */
 public class ScreenShotDemo

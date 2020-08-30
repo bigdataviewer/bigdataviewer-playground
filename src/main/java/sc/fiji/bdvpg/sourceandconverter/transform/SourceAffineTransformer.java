@@ -46,10 +46,10 @@ public class SourceAffineTransformer implements Runnable, Function<SourceAndConv
         src.setFixedTransform(at3D);
         if (in.asVolatile()!=null) {
             TransformedSource vsrc = new TransformedSource(in.asVolatile().getSpimSource(), src);
-            SourceAndConverter vout = new SourceAndConverter<>(vsrc, SourceAndConverterUtils.cloneConverter(in.asVolatile().getConverter()));
-            sac = new SourceAndConverter<>(src, SourceAndConverterUtils.cloneConverter(in.getConverter()), vout);
+            SourceAndConverter vout = new SourceAndConverter<>(vsrc, SourceAndConverterUtils.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));
+            sac = new SourceAndConverter<>(src, SourceAndConverterUtils.cloneConverter(in.getConverter(), in), vout);
         } else {
-            sac = new SourceAndConverter<>(src, SourceAndConverterUtils.cloneConverter(in.getConverter()));
+            sac = new SourceAndConverter<>(src, SourceAndConverterUtils.cloneConverter(in.getConverter(), in));
         }
         return sac;
     }
