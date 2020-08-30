@@ -8,13 +8,13 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Bdv>Remove Sources From Bdv")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>Remove Sources From BDV")
 public class BdvSourcesRemoverCommand implements Command {
 
     @Parameter
     BdvHandle bdvh;
 
-    @Parameter
+    @Parameter(label="Select Source(s)")
     SourceAndConverter[] srcs_in;
 
     @Override

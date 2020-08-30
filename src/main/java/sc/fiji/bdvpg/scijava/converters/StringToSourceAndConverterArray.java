@@ -8,8 +8,16 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
+<<<<<<< HEAD
 import java.util.stream.Stream;
+=======
+import javax.swing.tree.TreePath;
+import java.util.ArrayList;
+import java.util.List;
+
+>>>>>>> master
 
 @Plugin(type = org.scijava.convert.Converter.class)
 public class StringToSourceAndConverterArray extends AbstractConverter<String, SourceAndConverter[]> {
@@ -48,7 +56,7 @@ public class StringToSourceAndConverterArray extends AbstractConverter<String, S
         String str = (String) src;
         TreePath tp = sacsService.getUI().getTreePathFromString(str);
         if (tp!=null) {
-            return (T) sacsService.getUI().getSourceAndConvertersFromTreePath(tp).toArray(new SourceAndConverter[0]);
+            return (T) sacsService.getUI().getSourceAndConvertersFromTreePath(tp).toArray(new SourceAndConverter[0]);//sacsService.getUI().getSourceAndConvertersFromTreePath(tp).toArray(new SourceAndConverter[0]);
         } else {
             return null;
         }

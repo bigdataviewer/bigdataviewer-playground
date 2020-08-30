@@ -1,36 +1,68 @@
 package sc.fiji.bdvpg.bdv.sourceandconverter.transform;
 
+import bdv.util.BdvHandle;
+import bdv.viewer.SourceAndConverter;
+import mpicbg.spim.data.generic.AbstractSpimData;
+import net.imagej.ImageJ;
+import net.imglib2.realtransform.AffineTransform3D;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
+import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+
+import java.util.ArrayList;
+
 public class AffineTransformSourceDemo {
-/*
+
     public static void main(String... args) {
         // Initializes static SourceService and Display Service
-        BdvService.InitScijavaServices();
+
+        final ImageJ ij = new ImageJ();
+        ij.ui().showUI();
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle = BdvService.getSourceDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceAndConverterServices
+                .getSourceAndConverterDisplayService().getActiveBdv();
 
         final String filePath = "src/test/resources/mri-stack.xml";
+        // Import SpimData
+        SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
+        importer.run();
 
-        final SourceLoader sourceLoader = new SourceLoader( filePath );
-        sourceLoader.run();
-        final SpimData spimData = sourceLoader.getSpimData();
+        final AbstractSpimData spimData = importer.get();
 
-        BdvService.getSourceService().register(spimData);
+        SourceAndConverter sac = SourceAndConverterServices
+                .getSourceAndConverterService()
+                .getSourceAndConverterFromSpimdata(spimData)
+                .get(0);
 
-        Source src = BdvService.getSourceService().getSourcesFromSpimdata(spimData).get(0);
+        new ViewerTransformAdjuster(bdvHandle, sac).run();
+        new BrightnessAutoAdjuster(sac, 0).run();
 
-        BdvService.getSourceDisplayService().show(bdvHandle, src);
+        ArrayList<SourceAndConverter> sacs = new ArrayList<>();
+        for (int x = 0;x<20;x++) {
+            for (int y = 0; y < 20; y++) {
 
-        AffineTransform3D at3d = new AffineTransform3D();
-        at3d.rotate(2,1);
-        at3d.scale(1,2,1);
+                if (Math.random()>0.0) {
+                    AffineTransform3D at3d = new AffineTransform3D();
+                    at3d.rotate(2, Math.random());
+                    at3d.scale(0.5 + Math.random() / 4, 0.5 + Math.random() / 4, 1);
+                    at3d.translate(200 * x, 200 * y, 0);
 
-        SourceAffineTransformer sat = new SourceAffineTransformer(src, at3d);
-        sat.run();
+                    SourceAffineTransformer sat = new SourceAffineTransformer(sac, at3d);
+                    sat.run();
 
-        BdvService.getSourceDisplayService().show(bdvHandle, sat.getSourceOut());
+                    SourceAndConverter transformedSac = sat.getSourceOut();
 
-        new ViewerTransformAdjuster(bdvHandle, sat.getSourceOut()).run();
-        new BrightnessAutoAdjuster(sat.getSourceOut(), 0).run();
-    }*/
+                    sacs.add(transformedSac);
+                }
+            }
+        }
+
+        SourceAndConverterServices
+                .getSourceAndConverterDisplayService()
+                .show(bdvHandle, sacs.toArray(new SourceAndConverter[0]));
+
+    }
 }

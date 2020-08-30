@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"SpimDataset>SpimDataset [BigDataServer]",
-        label = "Command that opens a Spimdata dataset from a BigDataServer. Click on Show to display it.")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>BDVDataset [BigDataServer]",
+        label = "Command that opens a BDV dataset from a BigDataServer. Click on Show to display it.")
 public class SpimdataBigDataServerImportCommand implements Command
 {
     @Parameter(label = "Big Data Server URL")

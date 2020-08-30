@@ -18,7 +18,7 @@ import sc.fiji.bdvpg.sourceandconverter.importer.SourceAndConverterDuplicator;
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Duplicate Sources")
 public class SourcesDuplicatorCommand implements Command {
 
-    @Parameter
+    @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sources_in;
 
     @Override
