@@ -126,13 +126,13 @@ public class SourceAndConverterServiceSaver implements Runnable {
             obj.addProperty("converter class", sourceAndConverter.getConverter().getClass().toString());
             obj.add("converter", jsonSerializationContext.serialize(sourceAndConverter.getConverter()));
 
-            if ()
+            /*if ()
             SourceAndConverterServices
                     .getSourceAndConverterService()
 
                     .getSourceAndConverterDisplayService().getConverterSetup(sourceAndConverter);
 
-            obj.add("convertersetup", );
+            obj.add("convertersetup", );*/
 
             obj.addProperty("source id", String.valueOf(IdToSac.get(sourceAndConverter)));
             //obj.add("source", jsonSerializationContext.serialize(sourceAndConverter.getSpimSource()));
