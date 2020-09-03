@@ -1,0 +1,47 @@
+[
+  {
+    "source name": "mri-stack",
+    "source class": "SpimSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "converter": {
+      "color": -1
+    },
+    "source id": "null",
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack.xml"
+      },
+      "viewsetup": 0
+    }
+  },
+  {
+    "source name": "mri-stack-shiftedX",
+    "source class": "SpimSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "converter": {
+      "color": -1
+    },
+    "source id": "null",
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack-shiftedX.xml"
+      },
+      "viewsetup": 0
+    }
+  },
+  {
+    "source name": "mri-stack-shiftedY",
+    "source class": "SpimSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "converter": {
+      "color": -16711936
+    },
+    "source id": "null",
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack-shiftedY.xml"
+      },
+      "viewsetup": 0
+    }
+  }
+]

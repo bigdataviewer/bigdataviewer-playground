@@ -440,7 +440,6 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
     // Key to the string linking to the SpimData (either last save or last loading)
     // {@link XmlFromSpimDataExporter}
-    final static public String SPIM_DATA_LOCATION = "SPIM_DATA_LOCATION";
 
     public synchronized void setSpimDataName(AbstractSpimData asd, String name) {
         spimdataToMetadata.getIfPresent(asd).put("NAME", name);
