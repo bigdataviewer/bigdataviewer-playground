@@ -4,13 +4,19 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imglib2.display.ColorConverter;
+import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.services.serializers.AbstractSpimdataAdapter;
+import sc.fiji.bdvpg.services.serializers.AffineTransform3DAdapter;
 import sc.fiji.bdvpg.services.serializers.ColorConverterAdapter;
 import sc.fiji.bdvpg.services.serializers.SourceAndConverterAdapter;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class SourceAndConverterSerializer {
 
@@ -19,6 +25,9 @@ public class SourceAndConverterSerializer {
     Map<Integer, Source> idToSource;
     Map<Source, Integer> sourceToId;
 
+    public Set<Integer> alreadyDeSerializedSacs = new HashSet<>();
+    public Map<Integer, JsonElement> idToJsonElement = new HashMap<>();
+
     public Gson getGson() {
         return new GsonBuilder()
                 .setPrettyPrinting()
@@ -26,6 +35,7 @@ public class SourceAndConverterSerializer {
                 //.registerTypeHierarchyAdapter(SpimSource.class, new SpimSourceAdapter())
                 //.registerTypeAdapter(AbstractSpimData.class, new SpimdataAdapter())
                 //.registerTypeAdapter(SpimDataMinimal.class, new SpimdataAdapter())
+                .registerTypeHierarchyAdapter(AffineTransform3D.class, new AffineTransform3DAdapter())
                 .registerTypeHierarchyAdapter(ColorConverter.class, new ColorConverterAdapter(this))
                 .registerTypeHierarchyAdapter(SourceAndConverter.class, new SourceAndConverterAdapter(this))
                 .registerTypeHierarchyAdapter(AbstractSpimData.class, new AbstractSpimdataAdapter(this))

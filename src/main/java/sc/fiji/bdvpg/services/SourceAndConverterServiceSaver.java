@@ -51,6 +51,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
                 idToSac.put(i, sacs.get(i));
                 sacToId.put(sacs.get(i), i);
                 idToSource.put(i, sacs.get(i).getSpimSource());
+                sourceToId.put(sacs.get(i).getSpimSource(), i);
             }
 
             Gson gson = getGson();
