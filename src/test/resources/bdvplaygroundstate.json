@@ -1,12 +1,11 @@
 [
   {
     "source name": "mri-stack",
-    "source class": "SpimSource",
+    "source class": "bdv.SpimSource",
     "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
     "converter": {
       "color": -1
     },
-    "source id": "null",
     "sac": {
       "spimdata": {
         "datalocation": "src/test/resources/mri-stack.xml"
@@ -16,12 +15,11 @@
   },
   {
     "source name": "mri-stack-shiftedX",
-    "source class": "SpimSource",
+    "source class": "bdv.SpimSource",
     "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
     "converter": {
       "color": -1
     },
-    "source id": "null",
     "sac": {
       "spimdata": {
         "datalocation": "src/test/resources/mri-stack-shiftedX.xml"
@@ -31,12 +29,11 @@
   },
   {
     "source name": "mri-stack-shiftedY",
-    "source class": "SpimSource",
+    "source class": "bdv.SpimSource",
     "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
     "converter": {
       "color": -16711936
     },
-    "source id": "null",
     "sac": {
       "spimdata": {
         "datalocation": "src/test/resources/mri-stack-shiftedY.xml"
