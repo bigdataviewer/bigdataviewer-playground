@@ -3,15 +3,9 @@ package sc.fiji.bdvpg.services;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class SourceAndConverterServiceLoader extends SourceAndConverterSerializer implements Runnable{
 
@@ -46,7 +40,7 @@ public class SourceAndConverterServiceLoader extends SourceAndConverterSerialize
             System.out.println(rawSacsArray.size());
 
             for (int i = 0;i<rawSacsArray.size();i++) {
-                idToJsonElement.put(i,rawSacsArray.get(i));
+                idToJsonElement.put(rawSacsArray.get(i).getAsJsonObject().get("source_id").getAsInt(),rawSacsArray.get(i));
             }
 
             SourceAndConverter[] sacs_loaded = getGson().fromJson(rawSacsArray, SourceAndConverter[].class);

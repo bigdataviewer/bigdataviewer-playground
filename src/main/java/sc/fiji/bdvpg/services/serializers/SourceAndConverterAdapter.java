@@ -34,10 +34,10 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
                                  Type type,
                                  JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
-        obj.addProperty("source name", sourceAndConverter.getSpimSource().getName());
-        obj.addProperty("source class", sourceAndConverter.getSpimSource().getClass().getName());
-        obj.addProperty("converter class", sourceAndConverter.getConverter().getClass().toString());
-        obj.addProperty("source id", sacSerializer.getSacToId().get(sourceAndConverter));
+        obj.addProperty("source_name", sourceAndConverter.getSpimSource().getName());
+        obj.addProperty("source_class", sourceAndConverter.getSpimSource().getClass().getName());
+        obj.addProperty("converter_class", sourceAndConverter.getConverter().getClass().toString());
+        obj.addProperty("source_id", sacSerializer.getSacToId().get(sourceAndConverter));
 
         if (sourceAndConverter.getConverter() instanceof ColorConverter) {
             ColorConverter colorConverter = (ColorConverter) sourceAndConverter.getConverter();
@@ -83,7 +83,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
     public SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-        String sourceClass = jsonObject.getAsJsonPrimitive("source class").getAsString();
+        String sourceClass = jsonObject.getAsJsonPrimitive("source_class").getAsString();
 
         SourceAndConverter sac = null;
 
@@ -108,7 +108,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
             }
 
             // unique identifier
-            int idSource = jsonObject.getAsJsonPrimitive("source id").getAsInt();
+            int idSource = jsonObject.getAsJsonPrimitive("source_id").getAsInt();
             sacSerializer.getIdToSac().put(idSource, sac);
             sacSerializer.getSacToId().put(sac, idSource);
             sacSerializer.getSourceToId().put(sac.getSpimSource(), idSource);
