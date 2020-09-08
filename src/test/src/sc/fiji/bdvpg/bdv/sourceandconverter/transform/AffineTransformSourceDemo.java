@@ -28,7 +28,7 @@ public class AffineTransformSourceDemo {
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
-        importer.run();
+        //importer.run();
 
         final AbstractSpimData spimData = importer.get();
 
@@ -41,8 +41,8 @@ public class AffineTransformSourceDemo {
         new BrightnessAutoAdjuster(sac, 0).run();
 
         ArrayList<SourceAndConverter> sacs = new ArrayList<>();
-        for (int x = 0;x<20;x++) {
-            for (int y = 0; y < 20; y++) {
+        for (int x = 0; x < 20*0.25;x++) {
+            for (int y = 0; y < 20*0.25; y++) {
 
                 if (Math.random()>0.0) {
                     AffineTransform3D at3d = new AffineTransform3D();

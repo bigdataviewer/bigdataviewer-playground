@@ -39,7 +39,6 @@ public class ManualRegistrationDemo {
     final public static int AppendNewSpimdataTransformation = 2;
     final public static int MutateLastSpimdataTransformation = 3;
 
-
     public static boolean isTransforming = false;
 
     public static void main(String[] args) {

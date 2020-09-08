@@ -15,33 +15,1103 @@
     }
   },
   {
-    "source name": "mri-stack-shiftedX",
-    "source class": "bdv.SpimSource",
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
     "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
     "source id": 1,
     "color": -1,
     "converter_setup_min": 10.0,
     "converter_setup_max": 150.0,
     "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack-shiftedX.xml"
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.3070837307833315,
+          -0.46936314376737354,
+          0.0,
+          0.0,
+          0.6181362617930461,
+          0.40441946054875877,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
       },
-      "viewsetup": 0
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
     }
   },
   {
-    "source name": "mri-stack-shiftedY",
-    "source class": "bdv.SpimSource",
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
     "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
     "source id": 2,
-    "color": -16711936,
+    "color": -1,
     "converter_setup_min": 10.0,
     "converter_setup_max": 150.0,
     "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack-shiftedY.xml"
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.6453609765533448,
+          -0.10536531765877008,
+          0.0,
+          0.0,
+          0.08669991769447563,
+          0.53103568416703,
+          0.0,
+          200.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
       },
-      "viewsetup": 0
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 3,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.6584186457748405,
+          -0.1823186050519695,
+          0.0,
+          0.0,
+          0.19785849229244723,
+          0.7145388179835547,
+          0.0,
+          400.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 4,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.6205897335493944,
+          -0.33132809838157173,
+          0.0,
+          0.0,
+          0.2411571095847313,
+          0.4516961498640421,
+          0.0,
+          600.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 5,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.5637172887585249,
+          -0.4854357046502549,
+          0.0,
+          0.0,
+          0.4526229059221992,
+          0.5256130830761566,
+          0.0,
+          800.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 6,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.47662314455472005,
+          -0.16265874035356992,
+          0.0,
+          200.0,
+          0.21244700256065302,
+          0.622512864612017,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 7,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.6740350933650155,
+          -0.02911718839664213,
+          0.0,
+          200.0,
+          0.025282316855483607,
+          0.585261480951747,
+          0.0,
+          200.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 8,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.4099115445804152,
+          -0.43250926290693903,
+          0.0,
+          200.0,
+          0.4883084437334761,
+          0.4627953331152496,
+          0.0,
+          400.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 9,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.6534842666216534,
+          -0.0585612035493622,
+          0.0,
+          200.0,
+          0.06239955694154644,
+          0.6963164387680466,
+          0.0,
+          600.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 10,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.5925440340558208,
+          -0.269188175694759,
+          0.0,
+          200.0,
+          0.21047222062708323,
+          0.463296942167608,
+          0.0,
+          800.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 11,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.5581672155039906,
+          -0.3377600810750459,
+          0.0,
+          400.0,
+          0.34038264226464626,
+          0.5625011429237996,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 12,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.6291236647209033,
+          -0.006030965879593605,
+          0.0,
+          400.0,
+          0.005750485168927382,
+          0.5998651585212715,
+          0.0,
+          200.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 13,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.40677968981103096,
+          -0.36370776457243087,
+          0.0,
+          400.0,
+          0.353642945350809,
+          0.3955229489883859,
+          0.0,
+          400.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 14,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.6237671436722438,
+          -0.404003500559011,
+          0.0,
+          400.0,
+          0.3314570453028351,
+          0.5117579776227498,
+          0.0,
+          600.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 15,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.447954478894857,
+          -0.2934974533419208,
+          0.0,
+          400.0,
+          0.3106298004975343,
+          0.47410295669237273,
+          0.0,
+          800.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 16,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.6274955678571583,
+          -0.21732882043461882,
+          0.0,
+          600.0,
+          0.183491462944692,
+          0.529796644122766,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 17,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.49712899831025154,
+          -0.18813900283388385,
+          0.0,
+          600.0,
+          0.24703748468362358,
+          0.6527593718262011,
+          0.0,
+          200.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 18,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.6263512834887067,
+          -0.3830148055116751,
+          0.0,
+          600.0,
+          0.268852672764608,
+          0.43965981009668414,
+          0.0,
+          400.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 19,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.36840257462352477,
+          -0.4454812936006197,
+          0.0,
+          600.0,
+          0.4003095588886337,
+          0.33104661017078224,
+          0.0,
+          600.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 20,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.5030502881904618,
+          -0.04933242522146848,
+          0.0,
+          600.0,
+          0.05340108230547682,
+          0.5445390070091721,
+          0.0,
+          800.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 21,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.6544520196512992,
+          -0.11675784318988501,
+          0.0,
+          800.0,
+          0.09013716747167524,
+          0.5052375899197471,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 22,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.4760103718407022,
+          -0.5638567286143578,
+          0.0,
+          800.0,
+          0.4182703363782668,
+          0.3531056884585425,
+          0.0,
+          200.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 23,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.3288101646459653,
+          -0.486406125907011,
+          0.0,
+          800.0,
+          0.49006758539360634,
+          0.3312853084250182,
+          0.0,
+          400.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 24,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.514209087649358,
+          -0.20685793447826425,
+          0.0,
+          800.0,
+          0.27217295365594535,
+          0.6765696782927145,
+          0.0,
+          600.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
+    }
+  },
+  {
+    "source name": "mri-stack",
+    "source class": "bdv.tools.transformation.TransformedSource",
+    "converter class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
+    "source id": 25,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          0.5431888978129846,
+          -0.21670862065764282,
+          0.0,
+          800.0,
+          0.2239500692310618,
+          0.5613398807191007,
+          0.0,
+          800.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "affinetransform_incremental": {
+        "affinetransform3d": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 0
     }
   }
 ]

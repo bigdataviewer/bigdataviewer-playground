@@ -5,6 +5,7 @@ import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
 import java.lang.reflect.Type;
@@ -51,28 +52,10 @@ public class TransformedSourceAndConverterAdapter {
 
         AffineTransform3D at3d = jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("affinetransform_fixed"), AffineTransform3D.class);
 
-        return new SourceAffineTransformer(wrappedSac, at3d).getSourceOut();
+        SourceAndConverter sac = new SourceAffineTransformer(wrappedSac, at3d).getSourceOut();
+        SourceAndConverterServices.getSourceAndConverterService()
+                .register(sac);
 
-
-            /*JsonObject obj = jsonElement.getAsJsonObject();
-            AbstractSpimData asd = jsonDeserializationContext.deserialize(obj.get("spimdata"), AbstractSpimData.class);
-            int setupId = obj.getAsJsonPrimitive("viewsetup").getAsInt();
-            final ISourceAndConverterService sacservice =  SourceAndConverterServices
-                    .getSourceAndConverterService();
-            Optional<SourceAndConverter> futureSac = sacservice.getSourceAndConverters()
-                    .stream()
-                    .filter(sac -> sacservice.containsMetadata(sac, SPIM_DATA_INFO))
-                    .filter(sac -> {
-                        SourceAndConverterService.SpimDataInfo sdi = (SourceAndConverterService.SpimDataInfo) sacservice.getMetadata(sac,SPIM_DATA_INFO);
-                        return sdi.asd.equals(asd)&&sdi.setupId ==setupId;
-                    }).findFirst();
-            if (futureSac.isPresent()) {
-                return futureSac.get();
-            } else {
-                System.err.println("Couldn't deserialize spim source from json element "+jsonElement.getAsString());
-                return null;
-            }*/
-        //return null;
-
+        return sac;
     }
 }

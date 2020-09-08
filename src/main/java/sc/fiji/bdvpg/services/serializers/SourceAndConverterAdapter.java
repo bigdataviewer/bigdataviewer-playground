@@ -77,8 +77,6 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
         System.out.println("Unsupported serialisation of "+sourceAndConverter.getSpimSource().getClass().getSimpleName());
 
         throw new UnsupportedOperationException();
-        //return null;//jsonSerializationContext.serialize(sourceAndConverter.getSpimSource()):
-
     }
 
     @Override
@@ -91,6 +89,10 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
 
         if (sourceClass.equals(SpimSource.class.getName())) {
             sac = SpimSourceAndConverterAdapter.deserialize(jsonObject.get("sac"), SourceAndConverter.class, jsonDeserializationContext);
+        }
+
+        if (sourceClass.equals(TransformedSource.class.getName())) {
+            sac = new TransformedSourceAndConverterAdapter(sacSerializer).deserialize(jsonObject.get("sac"), SourceAndConverter.class, jsonDeserializationContext);
         }
 
         if (sac != null) {

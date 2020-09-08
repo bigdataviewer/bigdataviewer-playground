@@ -15,10 +15,10 @@ import java.util.Set;
 
 public class SourceAndConverterServiceLoader extends SourceAndConverterSerializer implements Runnable{
 
-    File f;
+    String filePath;
 
-    public SourceAndConverterServiceLoader(File f) {
-        this.f = f;
+    public SourceAndConverterServiceLoader(String filePath) {
+        this.filePath = filePath;
         idToSac = new HashMap<>();
         sacToId = new HashMap<>();
         sourceToId = new HashMap<>();
@@ -39,7 +39,7 @@ public class SourceAndConverterServiceLoader extends SourceAndConverterSerialize
                 .remove(sacs);
 
         try {
-            FileReader fileReader = new FileReader("src/test/resources/bdvplaygroundstate.json");
+            FileReader fileReader = new FileReader(filePath);
 
             Gson gson = new Gson();
             JsonArray rawSacsArray = gson.fromJson(fileReader, JsonArray.class);
