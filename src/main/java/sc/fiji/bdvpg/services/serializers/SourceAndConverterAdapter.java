@@ -3,6 +3,7 @@ package sc.fiji.bdvpg.services.serializers;
 import bdv.SpimSource;
 import bdv.img.WarpedSource;
 import bdv.tools.transformation.TransformedSource;
+import bdv.util.Procedural3DImageShort;
 import bdv.util.ResampledSource;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.JsonDeserializationContext;
@@ -33,34 +34,38 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
     public JsonElement serialize(SourceAndConverter sourceAndConverter,
                                  Type type,
                                  JsonSerializationContext jsonSerializationContext) {
-        JsonObject obj = new JsonObject();
-        obj.addProperty("source_name", sourceAndConverter.getSpimSource().getName());
-        obj.addProperty("source_class", sourceAndConverter.getSpimSource().getClass().getName());
-        obj.addProperty("converter_class", sourceAndConverter.getConverter().getClass().toString());
-        obj.addProperty("source_id", sacSerializer.getSacToId().get(sourceAndConverter));
+        try {
+            JsonObject obj = new JsonObject();
+            obj.addProperty("source_name", sourceAndConverter.getSpimSource().getName());
+            obj.addProperty("source_class", sourceAndConverter.getSpimSource().getClass().getName());
+            obj.addProperty("converter_class", sourceAndConverter.getConverter().getClass().toString());
+            obj.addProperty("source_id", sacSerializer.getSacToId().get(sourceAndConverter));
 
-        if (sourceAndConverter.getConverter() instanceof ColorConverter) {
-            ColorConverter colorConverter = (ColorConverter) sourceAndConverter.getConverter();
-            obj.add("color", jsonSerializationContext.serialize(colorConverter.getColor().get()));
-            double min = SourceAndConverterServices.getSourceAndConverterDisplayService()
-                    .getConverterSetup(sourceAndConverter).getDisplayRangeMin();
-            double max = SourceAndConverterServices.getSourceAndConverterDisplayService()
-                    .getConverterSetup(sourceAndConverter).getDisplayRangeMax();
-            obj.addProperty("converter_setup_min", min);
-            obj.addProperty("converter_setup_max", max);
+            if (sourceAndConverter.getConverter() instanceof ColorConverter) {
+                ColorConverter colorConverter = (ColorConverter) sourceAndConverter.getConverter();
+                obj.add("color", jsonSerializationContext.serialize(colorConverter.getColor().get()));
+                double min = SourceAndConverterServices.getSourceAndConverterDisplayService()
+                        .getConverterSetup(sourceAndConverter).getDisplayRangeMin();
+                double max = SourceAndConverterServices.getSourceAndConverterDisplayService()
+                        .getConverterSetup(sourceAndConverter).getDisplayRangeMax();
+                obj.addProperty("converter_setup_min", min);
+                obj.addProperty("converter_setup_max", max);
+            }
+
+            JsonElement element = serializeSubClass(sourceAndConverter, SourceAndConverter.class, jsonSerializationContext);
+            obj.add("sac", element);
+
+            return obj;
+        } catch (UnsupportedOperationException e) {
+            System.err.println("Could not serialize source "+ sourceAndConverter.getSpimSource().getName());
+            return null;
         }
-
-        JsonElement element = serializeSubClass(sourceAndConverter, SourceAndConverter.class, jsonSerializationContext);
-        obj.add("sac", element);
-
-        return obj;
     }
 
     JsonElement serializeSubClass (SourceAndConverter sourceAndConverter,
                                           Type type,
-                                          JsonSerializationContext jsonSerializationContext) {
-        //JsonObject obj = new JsonObject();
-        //obj
+                                          JsonSerializationContext jsonSerializationContext) throws UnsupportedOperationException {
+
         if (sourceAndConverter.getSpimSource() instanceof SpimSource) {
             return SpimSourceAndConverterAdapter.serialize(sourceAndConverter, SourceAndConverter.class, jsonSerializationContext);
         }
@@ -71,10 +76,10 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
             throw new UnsupportedOperationException();
         }
         if (sourceAndConverter.getSpimSource() instanceof WarpedSource) {
-            throw new UnsupportedOperationException();
+            return new WarpedSourceAndConverterAdapter(sacSerializer).serialize(sourceAndConverter, SourceAndConverter.class, jsonSerializationContext);
         }
 
-        System.out.println("Unsupported serialisation of "+sourceAndConverter.getSpimSource().getClass().getSimpleName());
+        System.out.println("Unsupported serialisation of "+sourceAndConverter.getSpimSource().getClass().getName());
 
         throw new UnsupportedOperationException();
     }

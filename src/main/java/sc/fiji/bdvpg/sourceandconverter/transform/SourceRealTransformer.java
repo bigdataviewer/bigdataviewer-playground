@@ -1,6 +1,5 @@
 package sc.fiji.bdvpg.sourceandconverter.transform;
 
-import bdv.viewer.Source;
 import bdv.img.WarpedSource;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.RealTransform;
@@ -8,11 +7,6 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import java.util.function.Function;
 
-//NOTE:
-// Wrapping the sourceandconverter. If the sourceandconverter is already a transformed sourceandconverter, the transform can be concatenated directly
-// But the choice here is to wrap it again
-// Another information : the transform is duplicated during the call to setFixedTransform ->
-// Transform not passed by reference
 
 public class SourceRealTransformer implements Runnable, Function<SourceAndConverter,SourceAndConverter> {
 

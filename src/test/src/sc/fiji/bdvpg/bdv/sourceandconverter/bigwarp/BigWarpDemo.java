@@ -7,6 +7,7 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import ij.IJ;
 import ij.ImagePlus;
+import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
@@ -19,6 +20,7 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.importer.MandelbrotSourceGetter;
 import sc.fiji.bdvpg.sourceandconverter.register.BigWarpLauncher;
+import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,20 +34,31 @@ public class BigWarpDemo {
         ij.ui().showUI();
 
         // load and convert an image
-        ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
+      /*  ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
         RandomAccessibleInterval rai = ImageJFunctions.wrapReal(imp);
         // Adds a third dimension because BDV needs 3D
         rai = Views.addDimension( rai, 0, 0 );
 
         // Makes BDV Source
         Source blobs = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
+        */
+        final String filePath = "src/test/resources/mri-stack.xml";
+        // Import SpimData
+        SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
+        //importer.run();
+
+        final AbstractSpimData spimData = importer.get();
+
+        SourceAndConverter sacBlobs = SourceAndConverterServices
+                .getSourceAndConverterService()
+                .getSourceAndConverterFromSpimdata(spimData)
+                .get(0);
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
 
         // Creates SourceAndConverter Reference
-        SourceAndConverter sacBlobs = SourceAndConverterUtils.createSourceAndConverter(blobs);
-
+        //SourceAndConverter sacBlobs = SourceAndConverterUtils.createSourceAndConverter(blobs);
 
         // Show the sourceandconverter
         SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacBlobs);
@@ -67,14 +80,27 @@ public class BigWarpDemo {
         new ViewerTransformAdjuster(bdvHandle, sacBlobs).run();
 
         List<SourceAndConverter> movingSources = new ArrayList<>();
-        movingSources.add(mandelbrot);
+        movingSources.add(sacBlobs);
+
         List<SourceAndConverter> fixedSources = new ArrayList<>();
-        fixedSources.add(sacBlobs);
+        fixedSources.add(mandelbrot);
 
         List<ConverterSetup> converterSetups = movingSources.stream().map(src -> SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(src)).collect(Collectors.toList());
         converterSetups.addAll(fixedSources.stream().map(src -> SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(src)).collect(Collectors.toList()));
 
-        new BigWarpLauncher(movingSources, fixedSources, "BigWarp Demo", converterSetups).run();
+        BigWarpLauncher bwl = new BigWarpLauncher(movingSources, fixedSources, "BigWarp Demo", converterSetups);
+        bwl.run();
+
+        bwl.getBigWarp().loadLandmarks( "src/test/resources/landmarks3d-demo.csv" );
+
+        bwl.getBigWarp().toggleMovingImageDisplay();
+
+        bwl.getBigWarp().closeAll();
+
+        for (SourceAndConverter sac : bwl.getWarpedSources()) {
+            SourceAndConverterServices.getSourceAndConverterService()
+                    .register(sac);
+        }
 
     }
 }

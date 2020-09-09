@@ -40,7 +40,11 @@ public class SourceAndConverterServiceLoader extends SourceAndConverterSerialize
             System.out.println(rawSacsArray.size());
 
             for (int i = 0;i<rawSacsArray.size();i++) {
-                idToJsonElement.put(rawSacsArray.get(i).getAsJsonObject().get("source_id").getAsInt(),rawSacsArray.get(i));
+                if (rawSacsArray.get(i).isJsonObject()) {
+                    idToJsonElement.put(rawSacsArray.get(i).getAsJsonObject().get("source_id").getAsInt(), rawSacsArray.get(i));
+                } else {
+                    // Source couldn't be serialized
+                }
             }
 
             SourceAndConverter[] sacs_loaded = getGson().fromJson(rawSacsArray, SourceAndConverter[].class);
