@@ -1,7 +1,7 @@
 package sc.fiji.bdvpg.bdv.config;
 
-import bdv.BehaviourTransformEventHandler3D;
-import bdv.util.BehaviourTransformEventHandlerPlanar;
+//import bdv.BehaviourTransformEventHandler3D;
+//import bdv.util.BehaviourTransformEventHandlerPlanar;
 import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SettingsPage;
 import org.mastodon.app.ui.settings.SettingsPanel;
@@ -106,10 +106,10 @@ public class BdvSettingsGUISetter implements Runnable {
         if (!defaultKeyConfig.exists()) {
             // ---- Default 2D Bindings "transform"
             InputTriggerConfig itc_default_2D = new InputTriggerConfig();
-            new BehaviourTransformEventHandlerPlanar(null, itc_default_2D);
+            //new BehaviourTransformEventHandlerPlanar(null, itc_default_2D);
             // ---- Default 3D Bindings "transform"
             InputTriggerConfig itc_default_3D = new InputTriggerConfig();
-            new BehaviourTransformEventHandler3D(null, itc_default_3D);
+            //new BehaviourTransformEventHandler3D(null, itc_default_3D);
 
             // ---- Bdv Playground specific bindings
 

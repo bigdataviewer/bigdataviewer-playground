@@ -26,7 +26,6 @@ public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBTyp
 {
 	public static AccumulateProjectorFactory< ARGBType > factory = new AccumulateProjectorFactory< ARGBType >()
 	{
-		@Override
 		public AccumulateAverageProjectorARGB createProjector(
 				final ArrayList< VolatileProjector > sourceProjectors,
 				final ArrayList<SourceAndConverter< ? >> sources,

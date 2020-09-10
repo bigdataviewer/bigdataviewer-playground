@@ -21,8 +21,6 @@ public class AccumulateMixedProjectorARGBFactory implements AccumulateProjectorF
 	{
 	}
 
-
-	@Override
 	public VolatileProjector createProjector(
 			ArrayList< VolatileProjector > sourceProjectors,
 			ArrayList<SourceAndConverter< ? >> sources,

@@ -23,7 +23,6 @@ public class AccumulateSumProjectorARGB extends AccumulateProjector< ARGBType, A
 {
 	public static AccumulateProjectorFactory< ARGBType > factory = new AccumulateProjectorFactory< ARGBType >()
 	{
-		@Override
 		public AccumulateSumProjectorARGB createProjector(
 				final ArrayList< VolatileProjector > sourceProjectors,
 				final ArrayList<SourceAndConverter< ? >> sources,
