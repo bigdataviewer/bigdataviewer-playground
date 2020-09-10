@@ -94,10 +94,12 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
 
         if (sourceClass.equals(SpimSource.class.getName())) {
             sac = SpimSourceAndConverterAdapter.deserialize(jsonObject.get("sac"), SourceAndConverter.class, jsonDeserializationContext);
-        }
-
-        if (sourceClass.equals(TransformedSource.class.getName())) {
+        } else if (sourceClass.equals(TransformedSource.class.getName())) {
             sac = new TransformedSourceAndConverterAdapter(sacSerializer).deserialize(jsonObject.get("sac"), SourceAndConverter.class, jsonDeserializationContext);
+        } else if (sourceClass.equals(WarpedSource.class.getName())) {
+            sac = new WarpedSourceAndConverterAdapter(sacSerializer).deserialize(jsonObject.get("sac"), SourceAndConverter.class, jsonDeserializationContext);
+        } else {
+            System.err.println("Could not deserialise source of class "+sourceClass);
         }
 
         if (sac != null) {

@@ -4,11 +4,10 @@ import bdv.img.WarpedSource;
 import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
-import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
+import net.imglib2.realtransform.inverse.WrappedIterativeInvertibleRealTransform;
 import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceRealTransformer;
 
 import java.lang.reflect.Type;
@@ -24,8 +23,7 @@ public class WarpedSourceAndConverterAdapter {
     public JsonElement serialize(SourceAndConverter sac, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
         WarpedSource source = (WarpedSource) sac.getSpimSource();
-        obj.addProperty("realtransform_class", source.getTransform().getClass().getName() );
-        //obj.add("realtransform", jsonSerializationContext.serialize(source.getTransform()));
+        obj.add("realtransform", jsonSerializationContext.serialize(source.getTransform()));
         obj.addProperty("wrapped_source_id", sacSerializer.getSourceToId().get(source.getWrappedSource()));
         return obj;
     }
@@ -48,9 +46,12 @@ public class WarpedSourceAndConverterAdapter {
             return null;
         }
 
-        RealTransform rt = jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("affinetransform_fixed"), RealTransform.class);
+        RealTransform rt = jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("realtransform"), RealTransform.class);
 
-        SourceAndConverter sac = new SourceRealTransformer(wrappedSac, rt).getSourceOut();
+        SourceRealTransformer srt = new SourceRealTransformer(wrappedSac, rt);
+        srt.run();
+        SourceAndConverter sac = srt.getSourceOut();
+
         SourceAndConverterServices.getSourceAndConverterService()
                 .register(sac);
 

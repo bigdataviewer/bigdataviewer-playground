@@ -7,7 +7,6 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import java.util.function.Function;
 
-
 public class SourceRealTransformer implements Runnable, Function<SourceAndConverter,SourceAndConverter> {
 
     SourceAndConverter sourceIn;
