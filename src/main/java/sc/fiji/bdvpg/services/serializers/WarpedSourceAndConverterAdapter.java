@@ -1,11 +1,9 @@
 package sc.fiji.bdvpg.services.serializers;
 
 import bdv.img.WarpedSource;
-import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import net.imglib2.realtransform.RealTransform;
-import net.imglib2.realtransform.inverse.WrappedIterativeInvertibleRealTransform;
 import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceRealTransformer;

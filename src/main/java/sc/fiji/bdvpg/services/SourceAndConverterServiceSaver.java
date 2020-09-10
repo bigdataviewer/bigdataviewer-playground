@@ -45,6 +45,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
             Gson gson = getGson();
 
             try {
+                System.out.println(f.getAbsolutePath());
                 FileWriter writer = new FileWriter(f.getAbsolutePath());
                 gson.toJson(sacs, writer);
                 writer.flush();

@@ -8,8 +8,7 @@ import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
 
 import java.io.File;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Save Bdv Playground State",
-        label = "Creates 3 BDVs windows with synchronized orthogonal views")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Save Bdv Playground State")
 public class SaveSourceAndConverterServiceState implements Command {
 
     @Parameter
