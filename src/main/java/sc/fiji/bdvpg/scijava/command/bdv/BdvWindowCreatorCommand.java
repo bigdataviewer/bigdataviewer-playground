@@ -31,14 +31,14 @@ public class BdvWindowCreatorCommand implements Command {
     @Parameter(label = "Number of timepoints (1 for a single timepoint)")
     public int nTimepoints = 1;
 
+    @Parameter(choices = { Projection.MIXED_PROJECTOR, Projection.SUM_PROJECTOR, Projection.AVERAGE_PROJECTOR})
+    public String projector;
+
     /**
      * This triggers: BdvHandlePostprocessor
      */
     @Parameter(type = ItemIO.OUTPUT)
     public BdvHandle bdvh;
-
-    @Parameter(choices = { Projection.MIXED_PROJECTOR, Projection.SUM_PROJECTOR, Projection.AVERAGE_PROJECTOR})
-    public String projector;
 
     @Override
     public void run() {

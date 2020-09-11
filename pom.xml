@@ -118,10 +118,10 @@
 		<bigdataviewer-core.version>10.0.0</bigdataviewer-core.version>
 		<bigdataviewer-vistools.version>1.0.0-beta-22</bigdataviewer-vistools.version>
 		<imglib2-cache.version>1.0.0-beta-15</imglib2-cache.version>
+		<bigdataviewer-selector.version>0.1.5-SNAPSHOT</bigdataviewer-selector.version>
 
 		<mastodon.version>1.0.0-beta-17-SNAPSHOT</mastodon.version>
 		<bigvolumeviewer.version>0.1.8</bigvolumeviewer.version>
-		<bigdataviewer-selector.version>0.1.5-SNAPSHOT</bigdataviewer-selector.version>
 
 	</properties>
 
