@@ -31,7 +31,7 @@ public class EditorBehaviourInstaller implements Runnable {
 
     private ToggleListener toggleListener;
 
-    public String[] getEditorPopupActions() {
+    public static String[] getEditorPopupActions() {
         File f = new File("bdvpgsettings"+File.separator+"DefaultEditorActions.json");
         String[] editorPopupActions = {
                 getCommandName(BdvSourcesShowCommand.class),
