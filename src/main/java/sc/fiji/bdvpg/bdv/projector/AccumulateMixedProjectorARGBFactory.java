@@ -8,6 +8,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.ARGBType;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -22,9 +23,9 @@ public class AccumulateMixedProjectorARGBFactory implements AccumulateProjectorF
 	}
 
 	public VolatileProjector createProjector(
-			ArrayList< VolatileProjector > sourceProjectors,
-			ArrayList<SourceAndConverter< ? >> sources,
-			ArrayList< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
+			List< VolatileProjector > sourceProjectors,
+			List<SourceAndConverter< ? >> sources,
+			List< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
 			RandomAccessibleInterval< ARGBType > targetScreenImage,
 			int numThreads,
 			ExecutorService executorService )

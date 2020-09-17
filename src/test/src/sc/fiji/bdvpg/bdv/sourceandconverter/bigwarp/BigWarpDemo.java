@@ -94,13 +94,14 @@ public class BigWarpDemo {
         bwl.getBigWarp().loadLandmarks( "src/test/resources/landmarks3d-demo.csv" );
 
         bwl.getBigWarp().toggleMovingImageDisplay();
+        bwl.getBigWarp().matchActiveViewerPanelToOther();
 
-        bwl.getBigWarp().closeAll();
+        /*bwl.getBigWarp().closeAll();
 
         for (SourceAndConverter sac : bwl.getWarpedSources()) {
             SourceAndConverterServices.getSourceAndConverterService()
                     .register(sac);
-        }
+        }*/
 
     }
 }

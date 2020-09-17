@@ -9,7 +9,7 @@ import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.ARGBType;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -26,6 +26,7 @@ public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBTyp
 {
 	public static AccumulateProjectorFactory< ARGBType > factory = new AccumulateProjectorFactory< ARGBType >()
 	{
+		/*@Override
 		public AccumulateAverageProjectorARGB createProjector(
 				final ArrayList< VolatileProjector > sourceProjectors,
 				final ArrayList<SourceAndConverter< ? >> sources,
@@ -41,13 +42,31 @@ public class AccumulateAverageProjectorARGB extends AccumulateProjector< ARGBTyp
 					targetScreenImage,
 					numThreads,
 					executorService );
+		}*/
+
+		public VolatileProjector createProjector(
+				final List< VolatileProjector > sourceProjectors,
+				final List< SourceAndConverter< ? > > sources,
+				final List< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
+				final RandomAccessibleInterval< ARGBType > targetScreenImage,
+				final int numThreads,
+				final ExecutorService executorService )
+		{
+			return new AccumulateAverageProjectorARGB(
+					sourceProjectors,
+					sources,
+					sourceScreenImages,
+					targetScreenImage,
+					numThreads,
+					executorService );
 		}
+
 	};
 
 	public AccumulateAverageProjectorARGB(
-			final ArrayList< VolatileProjector > sourceProjectors,
-			final ArrayList< SourceAndConverter< ? > > sources,
-			final ArrayList< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
+			final List< VolatileProjector > sourceProjectors,
+			final List< SourceAndConverter< ? > > sources,
+			final List< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
 			final RandomAccessibleInterval< ARGBType > target,
 			final int numThreads,
 			final ExecutorService executorService )

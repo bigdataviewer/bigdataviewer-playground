@@ -45,9 +45,9 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 	private int[] sourceOrder;
 
 	public AccumulateMixedProjectorARGB(
-			final ArrayList< VolatileProjector > sourceProjectors,
-			final ArrayList< SourceAndConverter< ? > > sources,
-			final ArrayList< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
+			final List< VolatileProjector > sourceProjectors,
+			final List< SourceAndConverter< ? > > sources,
+			final List< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
 			final RandomAccessibleInterval< ARGBType > target,
 			final int numThreads,
 			final ExecutorService executorService )
