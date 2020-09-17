@@ -244,14 +244,21 @@ public class SourceAndConverterServiceUI {
             // Fetch All Spimdatas from all Sources
             Set<AbstractSpimData> currentSpimdatas = sourceAndConverterService.getSpimDatasets();
 
+            Set<SpimDataFilterNode> obsoleteSpimDataFilterNodes = new HashSet<>();
+
             // Check for obsolete spimdatafilternodes
             spimdataFilterNodes.forEach(fnode -> {
                 if (!currentSpimdatas.contains(fnode.asd)) {
                     if (fnode.getParent() != null) {
                         model.removeNodeFromParent(fnode);
+                        obsoleteSpimDataFilterNodes.add(fnode);
                     }
                 }
             });
+
+            // Important to avoid memory leak
+            spimdataFilterNodes.removeAll(obsoleteSpimDataFilterNodes);
+
             // Check for new spimdata
             currentSpimdatas.forEach(asd -> {
                     if ((spimdataFilterNodes.size()==0)||(spimdataFilterNodes.stream().noneMatch(fnode -> fnode.asd.equals(asd)))) {

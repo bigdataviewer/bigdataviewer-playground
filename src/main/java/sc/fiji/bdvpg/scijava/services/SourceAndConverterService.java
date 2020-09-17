@@ -1,5 +1,7 @@
 package sc.fiji.bdvpg.scijava.services;
 
+import bdv.ViewerImgLoader;
+import bdv.img.cache.VolatileGlobalCellCache;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.Gson;
@@ -200,6 +202,29 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                 bsds.removeFromAllBdvs( sacs );
             }
             for (SourceAndConverter sac : sacs) {
+                // Checks if it's the last of a spimdataset -> should shutdown cache
+                // ----------------------------
+                AbstractSpimData asd = null;
+
+                if (sacToMetadata.getIfPresent( sac ).get( SPIM_DATA_INFO ) != null) {
+                    asd = ((SpimDataInfo) (sacToMetadata.getIfPresent( sac ).get( SPIM_DATA_INFO ))).asd;
+                }
+
+                if (asd!=null) {
+                    if (this.getSourceAndConverterFromSpimdata(asd).size()==1) {
+                        // Last one! Time to invalidate the cache (if there's one, meaning, if the image loader
+                        // is a ViewerImageLoader)
+
+                        if (asd.getSequenceDescription().getImgLoader() instanceof ViewerImgLoader) {
+                            ViewerImgLoader imgLoader = (ViewerImgLoader) (asd.getSequenceDescription().getImgLoader());
+                            if (imgLoader.getCacheControl() instanceof VolatileGlobalCellCache) {
+                                ((VolatileGlobalCellCache)(imgLoader.getCacheControl())).clearCache();
+                            }
+                        }
+                    }
+                }
+                //----------------
+
                 sacToMetadata.invalidate(sac);
                 objectService.removeObject(sac);
                 if (uiAvailable) {

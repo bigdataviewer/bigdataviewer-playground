@@ -277,6 +277,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      */
     public void closeBdv(BdvHandle bdvh) {
         os.removeObject(bdvh);
+        displayToMetadata.invalidate(bdvh); // enables memory release on GC - even if it bdv was weekly referenced
 
         // Fix BigWarp closing issue
         boolean isPaired = pairedBdvs.stream().filter(p -> (p.getA()==bdvh)||(p.getB()==bdvh)).findFirst().isPresent();

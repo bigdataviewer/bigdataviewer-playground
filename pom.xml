@@ -127,6 +127,12 @@
 
 	<dependencies>
 
+		<!--<dependency>
+			<groupId>ch.epfl.biop</groupId>
+			<artifactId>bigdataviewer-bioformats</artifactId>
+			<version>0.2.7-SNAPSHOT</version>
+		</dependency>-->
+
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-legacy</artifactId>
