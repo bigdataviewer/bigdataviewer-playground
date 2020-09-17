@@ -176,7 +176,7 @@ public class SourceAndConverterServiceUI {
                     SwingUtilities.invokeLater(() -> {
                         synchronized (tree) {
                             ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(top);
-                            //model.reload();
+                            model.reload(); // avoids memory leaks ?
                             if (!frame.isVisible()) {
                                 frame.setVisible(true);
                             }

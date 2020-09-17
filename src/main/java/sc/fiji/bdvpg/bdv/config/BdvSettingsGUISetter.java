@@ -152,10 +152,7 @@ public class BdvSettingsGUISetter implements Runnable {
 
         recursivelySearchAndAppend("bdvpg", settings, pathDirDefaultSettings);
 
-
         // ----------------------- TODO the key bindings...
-
-
 
         // Is there a sourceandconverter context menu file ?
         String pathDefaultContextMenuSettings = dirDefaultSettings.getAbsolutePath()+File.separator+defaultContextMenuFileName;
