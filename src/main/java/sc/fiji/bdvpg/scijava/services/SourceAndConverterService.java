@@ -231,6 +231,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                     ui.remove(sac);
                 }
             }
+            System.out.println("Sources left = "+this.getSourceAndConverters().size());
         }
     }
 
