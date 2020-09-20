@@ -89,7 +89,7 @@ public class SourceAndConverterServiceUI {
     /**
      * Tree model
      */
-    DefaultTreeModel model;
+    private DefaultTreeModel model;
 
     /**
      * SourceAndConverter currently displayed in the JTree
@@ -446,4 +446,5 @@ public class SourceAndConverterServiceUI {
     public List<SourceAndConverter> getSourceAndConvertersFromTreePath(TreePath path) {
         return SourceAndConverterUtils.sortDefaultNoGeneric(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) path.getLastPathComponent()));
     }
+
 }

@@ -11,6 +11,9 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
 
 import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -91,7 +94,33 @@ public class SwingSourceAndConverterWidget extends SwingInputWidget<SourceAndCon
         getComponent().add(scrollPane);
         refreshWidget();
         model.setValue(null);
-        tree.addTreeSelectionListener((e)-> model.setValue(getValue()));
+        TreeSelectionListener tsl = (e)-> model.setValue(getValue());
+        tree.addTreeSelectionListener(tsl);
+        // The part below helps solve the memory leak
+        tree.addAncestorListener(new AncestorListener() {
+            @Override
+            public void ancestorAdded(AncestorEvent event) {
+            }
+
+            @Override
+            public void ancestorRemoved(AncestorEvent event) {
+                tree.removeTreeSelectionListener(tsl);
+                tree.clearSelection();
+                tree.cancelEditing();
+                //tree.clearToggledPaths();
+                tree.resetKeyboardActions();
+                tree.updateUI();
+                scrollPane.remove(tree);
+                getComponent().remove(scrollPane);
+                tree.setModel(null);
+                tree.removeAncestorListener(this);
+                tree = null;
+            }
+
+            @Override
+            public void ancestorMoved(AncestorEvent event) {
+            }
+        });
     }
 
     public class JTreeLeavesOnlySelectable extends JTree {

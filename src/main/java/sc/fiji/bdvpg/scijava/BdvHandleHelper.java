@@ -19,8 +19,8 @@ public class BdvHandleHelper {
 
     public static void setBdvHandleCloseOperation( BdvHandle bdvh, CacheService cs, SourceAndConverterBdvDisplayService bdvsds, boolean putWindowOnTop, Runnable runnable) {
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bdvh.getViewerPanel());
-
-        topFrame.addWindowListener(new WindowAdapter() {
+        WindowAdapter wa;
+        wa = new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
@@ -28,6 +28,7 @@ public class BdvHandleHelper {
                 if (runnable!=null) {
                     runnable.run();
                 }
+                topFrame.removeWindowListener(this); // Avoid memory leak
                 e.getWindow().dispose();
                 /*if (Recorder.record) {
                     // run("Select Bdv Window", "bdvh=bdv.util.BdvHandleFrame@e6c7718");
@@ -47,7 +48,8 @@ public class BdvHandleHelper {
                     Recorder.recordString(cmdrecord);
                 }*/
             }
-        });
+        };
+        topFrame.addWindowListener(wa);
 
         if (putWindowOnTop) {
             cs.put("LAST_ACTIVE_BDVH", new WeakReference<>(bdvh));// why a weak reference ? because we want to dispose the bdvhandle if it is closed
