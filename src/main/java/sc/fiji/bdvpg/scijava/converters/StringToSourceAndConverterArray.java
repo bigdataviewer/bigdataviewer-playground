@@ -11,6 +11,10 @@ import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TODO : allows multiple Paths splitted by a character ? Not sure it's fool proof
+ * @param <I>
+ */
 
 @Plugin(type = org.scijava.convert.Converter.class)
 public class StringToSourceAndConverterArray<I extends String> extends AbstractConverter<I, SourceAndConverter[]> {
@@ -20,7 +24,6 @@ public class StringToSourceAndConverterArray<I extends String> extends AbstractC
 
     @Override
     public <T> T convert(Object src, Class<T> dest) {
-        System.out.println("Converter called");
         String str = (String) src;
         TreePath tp = sacsService.getUI().getTreePathFromString(str);
         if (tp!=null) {
@@ -28,7 +31,6 @@ public class StringToSourceAndConverterArray<I extends String> extends AbstractC
         } else {
             return null;
         }
-
     }
 
     @Override
