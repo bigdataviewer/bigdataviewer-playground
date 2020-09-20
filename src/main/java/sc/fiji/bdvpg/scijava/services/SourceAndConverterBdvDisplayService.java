@@ -7,12 +7,15 @@ import net.imglib2.converter.Converter;
 import net.imglib2.util.Pair;
 import org.scijava.command.CommandService;
 import org.scijava.object.ObjectService;
+import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.prefs.PrefService;
 import org.scijava.script.ScriptService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
+import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -84,7 +87,10 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
                     cs.run(BdvWindowCreatorCommand.class,
                             true,
                             "is2D", false,
-                            "windowTitle", "Bdv").get().getOutput("bdvh");
+                            "windowTitle", "Bdv",
+                            "nTimepoints", 1,
+                            "interpolate",false,
+                            "projector", Projection.MIXED_PROJECTOR).get().getOutput("bdvh");
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
