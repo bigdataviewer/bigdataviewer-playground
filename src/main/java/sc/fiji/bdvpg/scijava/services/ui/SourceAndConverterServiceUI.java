@@ -45,13 +45,9 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  * - Getter Node for Source properties. For instance in the inspect method, a Transformed Source will
  * create a Node for the wrapped source and another node which holds a getter for the fixedAffineTransform
  *
- * For Spimdata synchronization : TODO
- *
- * Addition TODO : a BdvHandle filtering node (which is a filtering node), allows to sort sourceandconverters
- * based on whether they are displayed or not within a BdvHandle
- *
- * For BdvHandle synchronization :
- * TODO
+ * TODO :
+ * - reactivate the erase inspect node
+ * -
  *
  */
 public class SourceAndConverterServiceUI {
@@ -92,11 +88,6 @@ public class SourceAndConverterServiceUI {
     private DefaultTreeModel model;
 
     /**
-     * SourceAndConverter currently displayed in the JTree
-     */
-    Set<SourceAndConverter> displayedSource = ConcurrentHashMap.newKeySet();
-
-    /**
      * Spimdata Filter nodes currently present in the tree
      */
     List<SpimDataFilterNode> spimdataFilterNodes = new ArrayList<>();
@@ -105,7 +96,6 @@ public class SourceAndConverterServiceUI {
     Thread updater; //
     int delayInMsBetweenUpdates = 100;
     volatile Boolean topNodeStructureChanged = false;
-    Set<TreeNode> changedNodes = ConcurrentHashMap.newKeySet();
 
     public SourceAndConverterServiceUI(SourceAndConverterService sourceAndConverterService) {
         this.sourceAndConverterService = sourceAndConverterService;
@@ -171,36 +161,22 @@ public class SourceAndConverterServiceUI {
                     e.printStackTrace();
                 }
 
-                if ((topNodeStructureChanged)){//||(changedNodes.size()>0)) {
+                if (topNodeStructureChanged){
 
                     SwingUtilities.invokeLater(() -> {
                         synchronized (tree) {
                             ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(top);
+                            // TODO : be more precise than a full reload
                             model.reload(); // avoids memory leaks ?
                             if (!frame.isVisible()) {
                                 frame.setVisible(true);
                             }
                             topNodeStructureChanged = false;
                         }
-                       /* synchronized (changedNodes) {
-                            changedNodes.forEach(node -> {
-                                SwingUtilities.invokeLater(() -> {
-                                    ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
-                                });
-                            });
-                            changedNodes.clear();
-                        } */
                     });
 
                 }
 
-                /*
-                synchronized (changedNodes) {
-                    if (changedNodes.size()>0) {
-
-                    }
-                    changedNodes.clear();
-                }*/
             }
         });
 
@@ -208,13 +184,22 @@ public class SourceAndConverterServiceUI {
 
     }
 
+    /**
+     * Recursive source inspection of an array of {@link SourceAndConverter}
+     * - adds a node per source which summarizes the results of the inspection
+     * @param sacs
+     */
     public void inspectSources(SourceAndConverter[] sacs) {
         for (SourceAndConverter sac:sacs) {
             inspectSource(sac);
-            //System.out.println(SourceAndConverterInspector.getRootSourceAndConverter(sac).getSpimSource().getName());
         }
     }
 
+    /**
+     * Recursive source inspection of a {@link SourceAndConverter}
+     * - adds a node per source which summarizes the results of the inspection
+     * @param sac
+     */
     public void inspectSource(SourceAndConverter sac) {
         DefaultMutableTreeNode parentNodeInspect = new DefaultMutableTreeNode("Inspect Results ["+sac.getSpimSource().getName()+"]");
         SourceAndConverterInspector.appendInspectorResult(parentNodeInspect, sac, sourceAndConverterService, false);
@@ -224,7 +209,6 @@ public class SourceAndConverterServiceUI {
 
     public void update(SourceAndConverter sac) {
 
-        displayedSource.add(sac);
         synchronized (tree) {
             updateSpimDataFilterNodes();
             if (top.hasConsumed(sac)) {
@@ -354,19 +338,12 @@ public class SourceAndConverterServiceUI {
 
     public void remove(SourceAndConverter sac) {
         synchronized (tree) {
-            if (displayedSource.contains(sac)) {
-                    displayedSource.remove(sac);
-                    top.remove(sac);
-                    updateSpimDataFilterNodes();
-                    //model.reload();
-                    topNodeStructureChanged = true;
-                    //((DefaultTreeModel) tree.getModel()).nodeStructureChanged(top);
+            if (top.currentInputSacs.contains(sac)) {
+                top.remove(sac);
+                updateSpimDataFilterNodes();
+                topNodeStructureChanged = true; // Notifies the ever running thread that a model reload should happen
             }
         }
-    }
-
-    public TreeNode getTop() {
-        return top;
     }
 
     public SourceAndConverter[] getSelectedSourceAndConverters() {
