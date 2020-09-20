@@ -26,6 +26,8 @@ import java.util.Set;
 /**
  * Swing implementation of {@link SourceAndConverterWidget}.
  *
+ * Note the rather complex {@link SwingSourceAndConverterListWidget#set} method to avoid memory leak
+ *
  * @author Nicolas Chiaruttini
  */
 
@@ -96,7 +98,12 @@ public class SwingSourceAndConverterWidget extends SwingInputWidget<SourceAndCon
         model.setValue(null);
         TreeSelectionListener tsl = (e)-> model.setValue(getValue());
         tree.addTreeSelectionListener(tsl);
-        // The part below helps solve the memory leak
+
+        // -------------------------------- Memory leak! Cut heads of the Hydra of Lerna
+        // The part below helps solve the memory leak:
+        // with JTree not released the lastly selected path
+        // with Listeners holding references with objects of potentially big memory footprint (SourceAndConverters)
+
         tree.addAncestorListener(new AncestorListener() {
             @Override
             public void ancestorAdded(AncestorEvent event) {
@@ -121,6 +128,7 @@ public class SwingSourceAndConverterWidget extends SwingInputWidget<SourceAndCon
             public void ancestorMoved(AncestorEvent event) {
             }
         });
+        // -------------------------------- All heads cut (hopefully)
     }
 
     public class JTreeLeavesOnlySelectable extends JTree {

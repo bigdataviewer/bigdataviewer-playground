@@ -16,13 +16,13 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Swing implementation of {@link SourceAndConverterListWidget}.
+ *
+ * Note the rather complex {@link SwingSourceAndConverterListWidget#set} method to avoid memory leak
  *
  * @author Nicolas Chiaruttini
  */
@@ -90,7 +90,16 @@ public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAn
         TreeSelectionListener tsl = (e)-> model.setValue(getValue());
         tree.addTreeSelectionListener(tsl); // Memory leak... How ot solve this ?
 
-        // The part below helps solve the memory leak
+        // -------------------------------- Memory leak! Cut heads of the Hydra of Lerna
+        // The part below helps solve the memory leak:
+        // with JTree not released the lastly selected path
+        // with Listeners holding references with objects of potentially big memory footprint (SourceAndConverters)
+        // Maybe related:
+        // https://bugs.openjdk.java.net/browse/JDK-6472844
+        // https://stackoverflow.com/questions/4517931/java-swing-jtree-is-not-garbage-collected
+        // this one more particularly :
+
+
         tree.addAncestorListener(new AncestorListener() {
             @Override
             public void ancestorAdded(AncestorEvent event) {
@@ -115,6 +124,8 @@ public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAn
             public void ancestorMoved(AncestorEvent event) {
             }
         });
+        // -------------------------------- All heads cut (hopefully)
+
     }
 
 }

@@ -28,9 +28,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * - To be present at a certain timepoint, both the origin and the model source need to exist
  * - There is no duplication of data, unless {@link ResampledSource#cache} is true
  *
+ *  TODO : fix multiresolution resampling (see comments below)
+ *
  * @author Nicolas Chiaruttini, BIOP EPFL, 2020
  * @param <T> Type of the output source, identical to the origin source
  */
+
 public class ResampledSource< T extends NumericType<T> & NativeType<T>> implements Source<T> {
 
     /**
