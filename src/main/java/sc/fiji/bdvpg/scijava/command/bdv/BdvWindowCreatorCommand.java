@@ -35,7 +35,7 @@ public class BdvWindowCreatorCommand implements Command {
     public String projector;
 
     /**
-     * This triggers: BdvHandlePostprocessor
+     * This triggers: {@link sc.fiji.bdvpg.scijava.processors.BdvHandlePostprocessor}
      */
     @Parameter(type = ItemIO.OUTPUT)
     public BdvHandle bdvh;
@@ -81,4 +81,5 @@ public class BdvWindowCreatorCommand implements Command {
             default:
         }
     }
+
 }
