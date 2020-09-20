@@ -11,6 +11,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
+import org.junit.Test;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
@@ -81,5 +82,10 @@ public class OrthoViewDemo {
             }).install("Toggle Synchronization", "ctrl S");
         }
 
+    }
+
+    @Test
+    public void demoRunOk() {
+        main(new String[]{""});
     }
 }

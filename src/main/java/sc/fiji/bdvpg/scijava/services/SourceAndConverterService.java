@@ -231,7 +231,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                     ui.remove(sac);
                 }
             }
-            System.out.println("Sources left = "+this.getSourceAndConverters().size());
+            //System.out.println("Sources left = "+this.getSourceAndConverters().size());
         }
     }
 
@@ -414,10 +414,6 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     public static boolean isContainedInPackagesToRegister(String commandClass) {
-        /*switch (commandInfoTitle) {
-            case "Export Fused Sequence as XML/HDF5": return true;
-            case "Export Spim Sequence as XML/HDF5": return true;
-        }*/
 
         for (String packagePath : defaultAllowedPackagesPaths) {
             if (commandClass.startsWith(packagePath)) {
@@ -437,9 +433,9 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     public void registerScijavaCommandInfo(CommandInfo ci) {
         int nCountSourceAndConverter = 0;
         int nCountSourceAndConverterList = 0;
-        ci.getDelegateClassName();
-        System.out.println(ci.getIdentifier());
-        //System.out.println(ci.getTitle());
+        // ci.getDelegateClassName();
+        // System.out.println(ci.getIdentifier());
+        // System.out.println(ci.getTitle());
         try {
             if (isContainedInPackagesToRegister(ci.getIdentifier()) && (ci.inputs() != null)) {
                 for (ModuleItem input : ci.inputs()) {

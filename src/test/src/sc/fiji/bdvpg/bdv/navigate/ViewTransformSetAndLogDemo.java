@@ -12,6 +12,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
+import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.bdv.navigate.ViewTransformator;
@@ -67,7 +68,10 @@ public class ViewTransformSetAndLogDemo {
         // log transform
         new ViewerTransformLogger(bdvHandle).run();
 
+    }
 
-
+    @Test
+    public void demoRunOk() {
+        main(new String[]{""});
     }
 }

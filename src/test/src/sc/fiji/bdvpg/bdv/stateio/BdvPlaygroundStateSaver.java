@@ -1,5 +1,6 @@
 package sc.fiji.bdvpg.bdv.stateio;
 
+import org.junit.Test;
 import sc.fiji.bdvpg.bdv.ProjectionModeChangerDemo;
 import sc.fiji.bdvpg.bdv.sourceandconverter.bigwarp.BigWarpDemo;
 import sc.fiji.bdvpg.bdv.sourceandconverter.transform.AffineTransformSourceDemo;
@@ -8,6 +9,7 @@ import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
 import java.io.File;
 
 public class BdvPlaygroundStateSaver {
+
     public static void main( String[] args )
     {
 
@@ -21,5 +23,10 @@ public class BdvPlaygroundStateSaver {
 
         System.out.println("Saved!");
 
+    }
+
+    @Test
+    public void demoRunOk() {
+        main(new String[]{""});
     }
 }

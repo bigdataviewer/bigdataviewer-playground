@@ -4,6 +4,8 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import net.imagej.ImageJ;
 import net.imglib2.type.numeric.ARGBType;
+import org.junit.Assert;
+import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -27,7 +29,7 @@ public class PerfOpenMultipleSpimDataTest
 		// Gets active BdvHandle instance
 		BdvHandle bdv = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
 		tic();
-		for (int i=0;i<500;i++) {
+		for (int i=0;i<100;i++) {
 			// Import SpimData
 			new SpimDataFromXmlImporter( "src/test/resources/mri-stack.xml" ).run();
 			new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
@@ -43,10 +45,18 @@ public class PerfOpenMultipleSpimDataTest
 		start = Instant.now();
 	}
 
+	static long timeElapsedInS;
+
 	public static void toc() {
 		Instant finish = Instant.now();
-		long timeElapsed = Duration.between(start, finish).toMillis()/1000;
+		timeElapsedInS = Duration.between(start, finish).toMillis()/1000;
 
-		System.out.println("It took "+timeElapsed+" s to open");
+		System.out.println("It took "+timeElapsedInS+" s to open 100 datasets");
+	}
+
+	@Test
+	public void demoRunOk() {
+		main(new String[]{""});
+		Assert.assertTrue(timeElapsedInS<4);
 	}
 }

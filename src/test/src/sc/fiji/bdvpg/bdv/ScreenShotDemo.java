@@ -3,6 +3,7 @@ package sc.fiji.bdvpg.bdv;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import net.imagej.ImageJ;
+import org.junit.Test;
 import sc.fiji.bdvpg.bdv.ScreenShotMaker;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.projector.Projection;
@@ -58,5 +59,10 @@ public class ScreenShotDemo
                 new ViewerTransformAdjuster( bdvHandle, sac ).run();
                 new BrightnessAutoAdjuster( sac, 0 ).run();
         } );
+    }
+
+    @Test
+    public void demoRunOk() {
+        main(new String[]{""});
     }
 }

@@ -1,6 +1,7 @@
 package sc.fiji.bdvpg;
 
 import net.imagej.ImageJ;
+import org.junit.Test;
 
 public class SimpleIJLaunch {
 
@@ -9,4 +10,10 @@ public class SimpleIJLaunch {
         final ImageJ ij = new ImageJ();
         ij.ui().showUI();
     }
+
+    @Test
+    public void demoRunOk() {
+        main(new String[]{""});
+    }
+
 }

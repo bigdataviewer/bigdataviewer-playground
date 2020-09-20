@@ -90,7 +90,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
                             "windowTitle", "Bdv",
                             "nTimepoints", 1,
                             "interpolate",false,
-                            "projector", Projection.MIXED_PROJECTOR).get().getOutput("bdvh");
+                            "projector", Projection.SUM_PROJECTOR).get().getOutput("bdvh");
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
