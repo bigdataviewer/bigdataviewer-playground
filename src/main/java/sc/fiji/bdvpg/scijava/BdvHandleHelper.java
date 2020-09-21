@@ -30,6 +30,7 @@ public class BdvHandleHelper {
                 }
                 topFrame.removeWindowListener(this); // Avoid memory leak
                 e.getWindow().dispose();
+                bdvh.close();
                 /*if (Recorder.record) {
                     // run("Select Bdv Window", "bdvh=bdv.util.BdvHandleFrame@e6c7718");
                     String cmdrecord = "run(\"Close Bdv Window\", \"bdvh=" + getWindowTitle(bdvh) + "\");\n";

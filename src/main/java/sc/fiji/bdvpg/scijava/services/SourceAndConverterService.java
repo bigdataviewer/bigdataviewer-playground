@@ -205,27 +205,30 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                 // Checks if it's the last of a spimdataset -> should shutdown cache
                 // ----------------------------
                 AbstractSpimData asd = null;
+                if (sacToMetadata.getIfPresent(sac)!=null) {
+                    if (sacToMetadata.getIfPresent(sac).get(SPIM_DATA_INFO) != null) {
+                        asd = ((SpimDataInfo) (sacToMetadata.getIfPresent(sac).get(SPIM_DATA_INFO))).asd;
+                    }
 
-                if (sacToMetadata.getIfPresent( sac ).get( SPIM_DATA_INFO ) != null) {
-                    asd = ((SpimDataInfo) (sacToMetadata.getIfPresent( sac ).get( SPIM_DATA_INFO ))).asd;
-                }
+                    if (asd != null) {
+                        if (this.getSourceAndConverterFromSpimdata(asd).size() == 1) {
+                            // Last one! Time to invalidate the cache (if there's one, meaning, if the image loader
+                            // is a ViewerImageLoader)
 
-                if (asd!=null) {
-                    if (this.getSourceAndConverterFromSpimdata(asd).size()==1) {
-                        // Last one! Time to invalidate the cache (if there's one, meaning, if the image loader
-                        // is a ViewerImageLoader)
-
-                        if (asd.getSequenceDescription().getImgLoader() instanceof ViewerImgLoader) {
-                            ViewerImgLoader imgLoader = (ViewerImgLoader) (asd.getSequenceDescription().getImgLoader());
-                            if (imgLoader.getCacheControl() instanceof VolatileGlobalCellCache) {
-                                ((VolatileGlobalCellCache)(imgLoader.getCacheControl())).clearCache();
+                            if (asd.getSequenceDescription().getImgLoader() instanceof ViewerImgLoader) {
+                                ViewerImgLoader imgLoader = (ViewerImgLoader) (asd.getSequenceDescription().getImgLoader());
+                                if (imgLoader.getCacheControl() instanceof VolatileGlobalCellCache) {
+                                    ((VolatileGlobalCellCache) (imgLoader.getCacheControl())).clearCache();
+                                }
                             }
                         }
                     }
-                }
-                //----------------
+                    //----------------
 
-                sacToMetadata.invalidate(sac);
+                    sacToMetadata.invalidate(sac);
+                } else {
+                    errlog.accept(sac.getSpimSource().getName() + " has no associated metadata");
+                }
                 objectService.removeObject(sac);
                 if (uiAvailable) {
                     ui.remove(sac);

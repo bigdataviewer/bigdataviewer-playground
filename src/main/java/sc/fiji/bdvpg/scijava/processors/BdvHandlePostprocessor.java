@@ -62,7 +62,7 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
                     SourceAndConverterBdvDisplayService.BdvHandleFilterNode
                             node = new SourceAndConverterBdvDisplayService.BdvHandleFilterNode(windowTitle, bdvh);
 
-                    bdvh.getViewerPanel().state().changeListeners().add(new ViewerStateChangeListener() {
+                    ViewerStateChangeListener vscl = new ViewerStateChangeListener() {
                         @Override
                         public void viewerStateChanged(ViewerStateChange change) {
                             if (change.toString().equals("NUM_SOURCES_CHANGED")) {
@@ -70,11 +70,14 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
                                 SwingUtilities.invokeLater(()->sacsService.getUI().getTreeModel().reload());
                             }
                         }
-                    });
+                    };
+
+                    bdvh.getViewerPanel().state().changeListeners().add(vscl);
 
                     //------------ Allows to remove the BdvHandle from the objectService when closed by the user
                     BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService,  bsds, true,
                             () -> {
+                                bdvh.getViewerPanel().state().changeListeners().remove(vscl);
                                 sacsService.getUI().getTreeModel().removeNodeFromParent(node);
                             });
 
