@@ -402,7 +402,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     CommandService commandService;
 
     static String[] allowedPackagesPaths = null;
-    static String[] defaultAllowedPackagesPaths = {"sc.fiji.bdvpg", "ch.epfl.biop"};
+    static String[] defaultAllowedPackagesPaths = {"command:sc.fiji.bdvpg"};//, "command:ch.epfl.biop"};
 
     static {
         File f = new File("bdvpgsettings"+File.separator+"ActionPackages.json");
@@ -420,16 +420,21 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
         for (String packagePath : defaultAllowedPackagesPaths) {
             if (commandClass.startsWith(packagePath)) {
+                //System.out.println("is "+commandClass+" contained ? Yes");
                 return true;
             }
         }
 
-        for (String packagePath : allowedPackagesPaths) {
-            if (commandClass.startsWith(packagePath)) {
-                return true;
+        if (allowedPackagesPaths!=null) {
+            for (String packagePath : allowedPackagesPaths) {
+                if (commandClass.startsWith(packagePath)) {
+                    //System.out.println(" Yes");
+                    return true;
+                }
             }
         }
 
+        //System.out.println(" No");
         return false;
     }
 
@@ -437,7 +442,8 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         int nCountSourceAndConverter = 0;
         int nCountSourceAndConverterList = 0;
         // ci.getDelegateClassName();
-        // System.out.println(ci.getIdentifier());
+        //System.out.println(ci.getIdentifier());
+        //isContainedInPackagesToRegister(ci.getIdentifier());
         // System.out.println(ci.getTitle());
         try {
             if (isContainedInPackagesToRegister(ci.getIdentifier()) && (ci.inputs() != null)) {

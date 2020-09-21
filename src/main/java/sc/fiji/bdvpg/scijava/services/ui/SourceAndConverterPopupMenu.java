@@ -63,7 +63,7 @@ public class SourceAndConverterPopupMenu
 		this.sacs = sacs;
 		this.popupActions = defaultPopupActions;
 
-		File f = new File("bdvpgsettings"+File.separator+"DefaultPopupActions.json");
+		File f = new File("Contents"+File.separator+"bdvpgsettings"+File.separator+"DefaultPopupActions.json");
 		if (f.exists()) {
 			try {
 				Gson gson = new Gson();
