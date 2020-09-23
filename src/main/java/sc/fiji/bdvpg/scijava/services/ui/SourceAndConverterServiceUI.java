@@ -142,25 +142,16 @@ public class SourceAndConverterServiceUI {
                 super.mouseClicked(e);
                 // Right Click -> popup
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    new SourceAndConverterPopupMenu(getSelectedSourceAndConverters())
-                            .getPopup()
-                            .show(e.getComponent(), e.getX(), e.getY());
+                    JPopupMenu popup = new SourceAndConverterPopupMenu(getSelectedSourceAndConverters())
+                            .getPopup();
+                    addUISpecificActions(popup);
+                    popup.show(e.getComponent(), e.getX(), e.getY());
                 }
             }
         });
 
+        // Registers the action which would
         this.sourceAndConverterService.registerAction("Inspect Sources", this::inspectSources);
-
-        // Delete node for inspection result only
-        JMenuItem menuItem = new JMenuItem("Delete Inspect Node");
-        menuItem.addActionListener(e -> {
-                    for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
-                        if ((tp.getLastPathComponent()).toString().startsWith("Inspect Results [")) {
-                            model.removeNodeFromParent((DefaultMutableTreeNode)tp.getLastPathComponent());
-                        }
-                    }
-                }
-        );
 
         // We can drag the nodes
         tree.setDragEnabled(true);
@@ -201,7 +192,120 @@ public class SourceAndConverterServiceUI {
         });
 
         updater.start();
+    }
 
+    SourceFilterNode copiedNode = null;
+
+    void addUISpecificActions(JPopupMenu popup) {
+        // Delete node for inspection result only
+        JMenuItem deleteInspectNodesMenuItem = new JMenuItem("Delete Selected Inspect Nodes");
+        deleteInspectNodesMenuItem.addActionListener(e ->
+                {
+                    for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
+                        if ((tp.getLastPathComponent()).toString().startsWith("Inspect Results [")) {
+                            // TODO Fix The little guy who would name its source "Inspect Results [whatever"
+                            model.removeNodeFromParent((DefaultMutableTreeNode) tp.getLastPathComponent());
+                            topNodeStructureChanged = true;
+                        }
+                    }
+                }
+        );
+
+        // Only if a single node is selected, and if it is of class SourceFilterNode
+        JMenuItem copyFilterNodeMenuItem = new JMenuItem("Copy Filter Node");
+        copyFilterNodeMenuItem.addActionListener(e ->
+                {
+                    TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
+                    if (paths.length!=1) {
+                        errlog.accept("Only one node should be selected");
+                        return;
+                    }
+                    if ((paths[0].getLastPathComponent()) instanceof SourceFilterNode) {
+                        copiedNode = (SourceFilterNode) ((SourceFilterNode)(paths[0].getLastPathComponent())).clone();
+                    } else {
+                        errlog.accept("A source filter node should be selected");
+                        return;
+                    }
+
+                }
+        );
+
+        // Only if a single node is selected, and if it is of class SourceFilterNode
+        JMenuItem pasteFilterNodeMenuItem = new JMenuItem("Paste Filter Node");
+        pasteFilterNodeMenuItem.addActionListener(e ->
+                {
+                    TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
+                    if (paths.length!=1) {
+                        errlog.accept("Only one node should be selected");
+                        return;
+                    }
+                    if ((paths[0].getLastPathComponent()) instanceof SourceFilterNode) {
+                        ((SourceFilterNode) (paths[0].getLastPathComponent())).add(copiedNode);
+                        topNodeStructureChanged = true;
+                        copiedNode = null; // Free memory
+                    } else {
+                        errlog.accept("A source filter node should be selected");
+                        return;
+                    }
+                }
+        );
+
+        // Delete node for inspection result only
+        JMenuItem deleteFilterNodesMenuItem = new JMenuItem("Delete Filter Node");
+        deleteFilterNodesMenuItem.addActionListener(e ->
+                {
+                    TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
+                    if (paths.length!=1) {
+                        errlog.accept("Only one node should be selected");
+                        return;
+                    }
+                    if ((paths[0].getLastPathComponent()) instanceof SourceFilterNode) {
+
+                        SourceFilterNode sfn = (SourceFilterNode) (paths[0].getLastPathComponent());
+
+                        if (sfn.equals(top)) {
+                            errlog.accept("The root can't be deleted");
+                        } else {
+                            sfn.removeFromParent();
+                            topNodeStructureChanged = true; // Needs to be done on removal
+                        }
+
+                    } else {
+                        errlog.accept("A source filter node should be selected");
+                        return;
+                    }
+                }
+        );
+
+        // Delete node for inspection result only
+        JMenuItem addShowAllFilterNodeMenuItem = new JMenuItem("Add 'Show All' Filter Node");
+        addShowAllFilterNodeMenuItem.addActionListener(e ->
+                {
+                    TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
+                    if (paths.length!=1) {
+                        errlog.accept("Only one node should be selected");
+                        return;
+                    }
+                    if ((paths[0].getLastPathComponent()) instanceof SourceFilterNode) {
+
+                        SourceFilterNode sfn = (SourceFilterNode) (paths[0].getLastPathComponent());
+
+                        sfn.add(new SourceFilterNode("All sources", (sac) -> true, true));
+                        topNodeStructureChanged = true;
+                        
+
+                    } else {
+                        errlog.accept("A source filter node should be selected");
+                        return;
+                    }
+                }
+        );
+
+        popup.add(deleteInspectNodesMenuItem);
+        popup.add(copyFilterNodeMenuItem);
+        popup.add(pasteFilterNodeMenuItem);
+        popup.add(addShowAllFilterNodeMenuItem);
+        popup.add(deleteFilterNodesMenuItem);
     }
 
     /**
@@ -446,6 +550,9 @@ public class SourceAndConverterServiceUI {
      * nodes names are separated by the ">" character
      * Like SpimData_0>Channel>0 will return the {@link TreePath} to the childrennode
      * Used in {@link sc.fiji.bdvpg.scijava.converters.StringToSourceAndConverterArray}
+     *
+     * Not the ideal situation where the UI is used to retrieve SourceAndConverter
+     *
      * @param path
      * @return
      */

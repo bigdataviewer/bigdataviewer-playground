@@ -28,14 +28,22 @@ public class SpimDataElementFilter extends SourceFilterNode {
     }
 
     public boolean filter(SourceAndConverter sac) {
-        //Map<String, Object> props = sourceAndConverterService.getSacToMetadata().get(sac);
+        //Map<String, Object> props = sourceAndConverterService..getSacToMetadata().get(sac);
         //assert props!=null;
         //assert props.containsKey( SPIM_DATA_INFO );
 
-        AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd = ( AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) (( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).asd;
-        Integer idx = (( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).setupId;
+        if (sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO)) {
+            AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd = ( AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) (( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).asd;
+            Integer idx = (( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).setupId;
+            return asd.getSequenceDescription().getViewSetups().get(idx).getAttributes().values().contains(e);
+        } else {
+            return false;
+        }
+    }
 
-        return asd.getSequenceDescription().getViewSetups().get(idx).getAttributes().values().contains(e);
+    @Override
+    public Object clone() {
+        return new SpimDataElementFilter(name, e, sourceAndConverterService);
     }
 
 }

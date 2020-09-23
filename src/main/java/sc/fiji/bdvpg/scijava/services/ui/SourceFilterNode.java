@@ -40,7 +40,7 @@ import java.util.function.Predicate;
  * // TODO : node name change event ?
  */
 
-public class SourceFilterNode extends DefaultMutableTreeNode {
+public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneable {
 
     /**
      * Filters SourceAndConverter to downstream nodes in the tree
@@ -275,6 +275,10 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
         public TreeNode getNode() {
             return o;
         }
+    }
+
+    public Object clone() {
+        return new SourceFilterNode(name, filter, displayFilteredSources);
     }
 
 }

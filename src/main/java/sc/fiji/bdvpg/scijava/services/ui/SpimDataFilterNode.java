@@ -17,8 +17,6 @@ public class SpimDataFilterNode extends SourceFilterNode {
     final SourceAndConverterService sourceAndConverterService;
 
     public boolean filter(SourceAndConverter sac) {
-        //Map<String, Object> props = sourceAndConverterService.getSacToMetadata().get(sac);
-        //assert props!=null;
         return (sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO ))&&(( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).asd.equals(asd);
     }
 
@@ -39,5 +37,10 @@ public class SpimDataFilterNode extends SourceFilterNode {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public Object clone() {
+        return new SpimDataFilterNode(name, asd, sourceAndConverterService);
     }
 }

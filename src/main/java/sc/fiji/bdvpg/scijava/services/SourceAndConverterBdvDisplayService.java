@@ -18,6 +18,7 @@ import org.scijava.service.Service;
 import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
+import sc.fiji.bdvpg.scijava.services.ui.SpimDataFilterNode;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
@@ -416,6 +417,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     public static class BdvHandleFilterNode extends SourceFilterNode {
 
         public BdvHandle bdvh;
+        String name;
 
         public boolean filter(SourceAndConverter sac) {
             return bdvh.getViewerPanel().state().getSources().contains(sac);
@@ -423,12 +425,18 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
         public BdvHandleFilterNode(String name, BdvHandle bdvh) {
             super(name,null, true);
+            this.name = name;
             this.filter = this::filter;
             this.bdvh = bdvh;
         }
 
         public String toString() {
             return getName();
+        }
+
+        @Override
+        public Object clone() {
+            return new BdvHandleFilterNode(name, bdvh);
         }
 
     }
