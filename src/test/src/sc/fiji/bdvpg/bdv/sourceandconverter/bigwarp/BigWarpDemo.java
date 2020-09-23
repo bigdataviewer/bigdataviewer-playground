@@ -35,14 +35,14 @@ public class BigWarpDemo {
         ij.ui().showUI();
 
         // load and convert an image
-      /*  ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
+        ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
         RandomAccessibleInterval rai = ImageJFunctions.wrapReal(imp);
         // Adds a third dimension because BDV needs 3D
         rai = Views.addDimension( rai, 0, 0 );
 
         // Makes BDV Source
         Source blobs = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
-        */
+
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
@@ -50,16 +50,16 @@ public class BigWarpDemo {
 
         final AbstractSpimData spimData = importer.get();
 
-        SourceAndConverter sacBlobs = SourceAndConverterServices
+        /*SourceAndConverter sacBlobs = SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(spimData)
-                .get(0);
+                .get(0);*/
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
 
         // Creates SourceAndConverter Reference
-        //SourceAndConverter sacBlobs = SourceAndConverterUtils.createSourceAndConverter(blobs);
+        SourceAndConverter sacBlobs = SourceAndConverterUtils.createSourceAndConverter(blobs);
 
         // Show the sourceandconverter
         SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacBlobs);

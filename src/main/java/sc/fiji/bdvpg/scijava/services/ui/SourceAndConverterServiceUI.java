@@ -498,4 +498,19 @@ public class SourceAndConverterServiceUI {
         return SourceAndConverterUtils.sortDefaultNoGeneric(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) path.getLastPathComponent()));
     }
 
+    public synchronized void addNode(DefaultMutableTreeNode node) {
+        addNode(this.top, node);
+    }
+
+    public synchronized void removeNode(DefaultMutableTreeNode node) {
+        getTreeModel().removeNodeFromParent(node);
+    }
+
+    public synchronized void addNode(DefaultMutableTreeNode parent, DefaultMutableTreeNode node) {
+        parent.add(node);
+        model.reload(parent);
+    }
+
+
+
 }

@@ -42,6 +42,8 @@ import java.util.stream.Collectors;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+
 /**
  * Scijava Service which centralizes BDV Sources, independently of their display
  * BDV Sources can be registered to this Service.
