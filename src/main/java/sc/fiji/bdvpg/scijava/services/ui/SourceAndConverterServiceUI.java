@@ -27,6 +27,7 @@ import java.util.Enumeration;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
 
@@ -257,25 +258,18 @@ public class SourceAndConverterServiceUI {
         deleteFilterNodesMenuItem.addActionListener(e ->
                 {
                     TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
-                    if (paths.length!=1) {
-                        errlog.accept("Only one node should be selected");
-                        return;
-                    }
-                    if ((paths[0].getLastPathComponent()) instanceof SourceFilterNode) {
 
-                        SourceFilterNode sfn = (SourceFilterNode) (paths[0].getLastPathComponent());
-
-                        if (sfn.equals(top)) {
-                            errlog.accept("The root can't be deleted");
-                        } else {
-                            sfn.removeFromParent();
-                            topNodeStructureChanged = true; // Needs to be done on removal
-                        }
-
-                    } else {
-                        errlog.accept("A source filter node should be selected");
-                        return;
-                    }
+                    Stream.of(paths).map(TreePath::getLastPathComponent)
+                            .filter(n -> n instanceof SourceFilterNode)
+                            .forEach(n -> {
+                                SourceFilterNode sfn = (SourceFilterNode) n;
+                                if (sfn.equals(top)) {
+                                    errlog.accept("The root can't be deleted");
+                                } else {
+                                    sfn.removeFromParent();
+                                    topNodeStructureChanged = true; // Needs to be done on removal
+                                }
+                            });
                 }
         );
 
