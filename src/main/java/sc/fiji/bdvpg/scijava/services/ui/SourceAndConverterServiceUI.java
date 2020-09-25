@@ -214,7 +214,7 @@ public class SourceAndConverterServiceUI {
                 }
         );
 
-        // Only if a single node is selected, and if it is of class SourceFilterNode
+        // Copy : only if a single node is selected, and if it is of class SourceFilterNode
         JMenuItem copyFilterNodeMenuItem = new JMenuItem("Copy Filter Node");
         copyFilterNodeMenuItem.addActionListener(e ->
                 {
@@ -233,7 +233,7 @@ public class SourceAndConverterServiceUI {
                 }
         );
 
-        // Only if a single node is selected, and if it is of class SourceFilterNode
+        // Paste : only if a single node is selected, and if it is of class SourceFilterNode
         JMenuItem pasteFilterNodeMenuItem = new JMenuItem("Paste Filter Node");
         pasteFilterNodeMenuItem.addActionListener(e ->
                 {
@@ -253,8 +253,8 @@ public class SourceAndConverterServiceUI {
                 }
         );
 
-        // Delete node for inspection result only
-        JMenuItem deleteFilterNodesMenuItem = new JMenuItem("Delete Filter Node");
+        // Delete filter nodes
+        JMenuItem deleteFilterNodesMenuItem = new JMenuItem("Delete Filter Node(s)");
         deleteFilterNodesMenuItem.addActionListener(e ->
                 {
                     TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
@@ -273,7 +273,7 @@ public class SourceAndConverterServiceUI {
                 }
         );
 
-        // Delete node for inspection result only
+        // Add show all item
         JMenuItem addShowAllFilterNodeMenuItem = new JMenuItem("Add 'Show All' Filter Node");
         addShowAllFilterNodeMenuItem.addActionListener(e ->
                 {

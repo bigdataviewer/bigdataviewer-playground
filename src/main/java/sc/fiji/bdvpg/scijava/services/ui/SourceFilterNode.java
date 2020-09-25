@@ -35,8 +35,9 @@ import java.util.function.Predicate;
  * - the node has to be updated if:
  *      - a new SourceAndConverter node is inserted {@link SourceUpdateEvent}
  *      - the filter has changed, and source needs to be retested {@link FilterUpdateEvent}
- *      - a new children node is inserted {@link NodeAddedUpdateEvent} // TODO : check that is linked nodes are added, the update is properly handled
+ *      - a new children node is inserted {@link NodeAddedUpdateEvent} // TODO : check that if linked nodes are added, the update is properly handled
  *
+ * - Implements cloneable : clone is used in copy / paste of nodes + in drag and drop of sourcefilter nodes
  * // TODO : node name change event ?
  */
 
