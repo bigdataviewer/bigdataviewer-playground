@@ -99,9 +99,9 @@ public class SourceAndConverterServiceUI {
     List<SpimDataFilterNode> spimdataFilterNodes = new ArrayList<>();
 
     // Performance optimization to avoid too many structure reloading when adding multiple sources
-    Thread updater; //
+    /*Thread updater; //
     int delayInMsBetweenUpdates = 100;
-    volatile Boolean topNodeStructureChanged = false;
+    volatile Boolean topNodeStructureChanged = false;*/
 
     Consumer<String> log = (str) -> System.out.println(getClass().getSimpleName()+":"+str);
 
@@ -166,8 +166,9 @@ public class SourceAndConverterServiceUI {
         frame.add(panel);
         frame.pack();
         frame.setVisible(false);
+        frame.setVisible(true);
 
-        updater = new Thread(() -> {
+        /*updater = new Thread(() -> {
             while (true) {
                 try {
                     Thread.sleep(delayInMsBetweenUpdates);
@@ -194,7 +195,7 @@ public class SourceAndConverterServiceUI {
             }
         });
 
-        updater.start();
+        updater.start();*/
     }
 
     SourceFilterNode copiedNode = null;
@@ -208,7 +209,7 @@ public class SourceAndConverterServiceUI {
                         if ((tp.getLastPathComponent()).toString().startsWith("Inspect Results [")) {
                             // TODO Fix The little guy who would name its source "Inspect Results [whatever"
                             model.removeNodeFromParent((DefaultMutableTreeNode) tp.getLastPathComponent());
-                            topNodeStructureChanged = true;
+                            //topNodeStructureChanged = true;
                         }
                     }
                 }
@@ -243,9 +244,12 @@ public class SourceAndConverterServiceUI {
                         return;
                     }
                     if ((paths[0].getLastPathComponent()) instanceof SourceFilterNode) {
-                        ((SourceFilterNode) (paths[0].getLastPathComponent())).add(copiedNode);
-                        topNodeStructureChanged = true;
+                        SourceFilterNode sfn = ((SourceFilterNode) (paths[0].getLastPathComponent()));
+                        sfn.add(copiedNode);
+                        //topNodeStructureChanged = true;
                         copiedNode = null; // Free memory
+                        //model.nodeStructureChanged(sfn);
+                        //model.nodesWereInserted(sfn, new int[]{sfn.getChildCount()-1});
                     } else {
                         errlog.accept("A source filter node should be selected");
                         return;
@@ -266,8 +270,10 @@ public class SourceAndConverterServiceUI {
                                 if (sfn.equals(top)) {
                                     errlog.accept("The root can't be deleted");
                                 } else {
+                                    DefaultMutableTreeNode parent = (DefaultMutableTreeNode) sfn.getParent();
                                     sfn.removeFromParent();
-                                    topNodeStructureChanged = true; // Needs to be done on removal
+                                    //model.nodeStructureChanged(parent);
+                                    //topNodeStructureChanged = true; // Needs to be done on removal
                                 }
                             });
                 }
@@ -287,8 +293,8 @@ public class SourceAndConverterServiceUI {
                         SourceFilterNode sfn = (SourceFilterNode) (paths[0].getLastPathComponent());
 
                         sfn.add(new SourceFilterNode("All sources", (sac) -> true, true));
-                        topNodeStructureChanged = true;
-
+                        //topNodeStructureChanged = true;
+                        //model.nodeStructureChanged(sfn);
 
                     } else {
                         errlog.accept("A source filter node should be selected");
@@ -324,7 +330,8 @@ public class SourceAndConverterServiceUI {
         DefaultMutableTreeNode parentNodeInspect = new DefaultMutableTreeNode("Inspect Results ["+sac.getSpimSource().getName()+"]");
         SourceAndConverterInspector.appendInspectorResult(parentNodeInspect, sac, sourceAndConverterService, false);
         top.add(parentNodeInspect);
-        topNodeStructureChanged = true;
+        //topNodeStructureChanged = true;
+        //model.nodesWereInserted(top, new int[] {top.getChildCount()-1});
     }
 
     public void removeBdvHandleNodes(BdvHandle bdvh) {
@@ -332,8 +339,10 @@ public class SourceAndConverterServiceUI {
             if (node instanceof BdvHandleFilterNode) {
                 BdvHandleFilterNode bfn = (BdvHandleFilterNode) node;
                 if (bfn.bdvh.equals(bdvh)) {
+                    DefaultMutableTreeNode parent = (DefaultMutableTreeNode) bfn.getParent();
                     bfn.removeFromParent();
-                    topNodeStructureChanged = true;
+                    //topNodeStructureChanged = true;
+                    //model.nodeStructureChanged(parent);
                 }
             }
         });
@@ -351,10 +360,11 @@ public class SourceAndConverterServiceUI {
             } else {
                 top.add(new DefaultMutableTreeNode(new RenamableSourceAndConverter(sac)));
             }
+            //model.nodeStructureChanged(top);
         }
-        SwingUtilities.invokeLater(() -> {
+        /*SwingUtilities.invokeLater(() -> {
             topNodeStructureChanged = true;
-        });
+        });*/
     }
 
     /**
@@ -373,7 +383,7 @@ public class SourceAndConverterServiceUI {
             spimdataFilterNodes.forEach(fnode -> {
                 if (!currentSpimdatas.contains(fnode.asd)) {
                     if (fnode.getParent() != null) {
-                        model.removeNodeFromParent(fnode);
+                        //model.removeNodeFromParent(fnode);
                         obsoleteSpimDataFilterNodes.add(fnode);
                     }
                 }
@@ -409,10 +419,11 @@ public class SourceAndConverterServiceUI {
                         if (node instanceof SpimDataFilterNode) {
                             if (((SpimDataFilterNode) node).asd.equals(asd_renamed)) {
                                 ((SpimDataFilterNode) node).setName(name);
+                                //model.nodeChanged(node);
                             }
                         }
                         // TODO : be more specific in the update
-                        topNodeStructureChanged = true;
+                        // topNodeStructureChanged = true;
                     });
         }
     }
@@ -499,7 +510,8 @@ public class SourceAndConverterServiceUI {
             if (top.currentInputSacs.contains(sac)) {
                 top.remove(sac);
                 updateSpimDataFilterNodes();
-                topNodeStructureChanged = true; // Notifies the ever running thread that a model reload should happen
+                //model.nodeStructureChanged(top);
+                //topNodeStructureChanged = true; // Notifies the ever running thread that a model reload should happen
             }
         }
     }
@@ -623,7 +635,7 @@ public class SourceAndConverterServiceUI {
 
     public synchronized void addNode(DefaultMutableTreeNode parent, DefaultMutableTreeNode node) {
         parent.add(node);
-        model.reload(parent);
+        //model.nodeStructureChanged(parent);
     }
 
 

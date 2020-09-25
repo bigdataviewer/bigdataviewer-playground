@@ -70,7 +70,9 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
                             });
 
                     ((SourceFilterNode)sacsService.getUI().getTreeModel().getRoot()).insert(node,0);
-                    SwingUtilities.invokeLater(()->sacsService.getUI().getTreeModel().reload());
+                    SwingUtilities.invokeLater(()->
+                            sacsService.getUI().getTreeModel().nodeStructureChanged(node.getParent())//.reload()
+                    );
                 }
 
                 module.resolveOutput(name);

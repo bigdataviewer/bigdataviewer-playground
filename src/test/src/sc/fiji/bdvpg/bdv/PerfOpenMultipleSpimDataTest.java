@@ -29,7 +29,7 @@ public class PerfOpenMultipleSpimDataTest
 		// Gets active BdvHandle instance
 		BdvHandle bdv = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
 		tic();
-		for (int i=0;i<100;i++) {
+		for (int i=0;i<1000;i++) {
 			// Import SpimData
 			new SpimDataFromXmlImporter( "src/test/resources/mri-stack.xml" ).run();
 			new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();

@@ -182,8 +182,8 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
 
                     SwingUtilities.invokeLater(() -> {
                         model.insertNodeInto(nodes[0], parent, indexFinal);
-
-                        model.reload();
+                        model.nodeStructureChanged(parent);
+                        //model.reload();
                     });
 
                     return true;
