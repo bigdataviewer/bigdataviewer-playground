@@ -1,5 +1,6 @@
 package sc.fiji.bdvpg.scijava.services.ui;
 
+import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.base.Entity;
@@ -155,6 +156,7 @@ public class SourceAndConverterServiceUI {
 
         // We can drag the nodes
         tree.setDragEnabled(true);
+        tree.setDropMode(DropMode.ON_OR_INSERT);
         // Enables:
         // - drag -> SourceAndConverters
         // - drop -> automatically import xml BDV datasets
@@ -292,7 +294,7 @@ public class SourceAndConverterServiceUI {
 
                         sfn.add(new SourceFilterNode("All sources", (sac) -> true, true));
                         topNodeStructureChanged = true;
-                        
+
 
                     } else {
                         errlog.accept("A source filter node should be selected");
@@ -329,6 +331,18 @@ public class SourceAndConverterServiceUI {
         SourceAndConverterInspector.appendInspectorResult(parentNodeInspect, sac, sourceAndConverterService, false);
         top.add(parentNodeInspect);
         topNodeStructureChanged = true;
+    }
+
+    public void removeBdvHandleNodes(BdvHandle bdvh) {
+        visitAllNodesAndProcess(top, (node) -> {
+            if (node instanceof BdvHandleFilterNode) {
+                BdvHandleFilterNode bfn = (BdvHandleFilterNode) node;
+                if (bfn.bdvh.equals(bdvh)) {
+                    bfn.removeFromParent();
+                    topNodeStructureChanged = true;
+                }
+            }
+        });
     }
 
     /**
