@@ -154,7 +154,6 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
                     }
                 }
             } else if (t.isDataFlavorSupported(nodesFlavor)) {
-                System.out.println("NODES!");
                 DefaultMutableTreeNode[] nodes = (DefaultMutableTreeNode[]) t.getTransferData(nodesFlavor);
                 if (nodes.length!=1) {
                     System.err.println("Only one node should be dragged");
@@ -174,7 +173,7 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
 
                 } else {
                     System.err.println("A source filter node should be selected");
-                    System.out.println(nodes[0].getClass().getName());
+                    System.out.println("You have selected a node of class "+nodes[0].getClass().getName());
                     return false;
                 }
 

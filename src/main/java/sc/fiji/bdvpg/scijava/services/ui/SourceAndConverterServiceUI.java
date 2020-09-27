@@ -135,11 +135,11 @@ public class SourceAndConverterServiceUI {
         top.model = model;
 
         tree = new JTree(model);
+        tree.setCellRenderer(new SourceAndConverterTreeCellRenderer());
 
         SourceFilterNode outsideSpimDataSources = new SourceFilterNode(model,"Other Sources", (sac) -> !sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO ), true);
         top.add(outsideSpimDataSources);
 
-        //model = (DefaultTreeModel)tree.getModel();
         treeView = new JScrollPane(tree);
 
         panel.add(treeView, BorderLayout.CENTER);
@@ -169,6 +169,16 @@ public class SourceAndConverterServiceUI {
         // - drag -> SourceAndConverters
         // - drop -> automatically import xml BDV datasets
         tree.setTransferHandler(new SourceAndConverterServiceUITransferHandler());
+
+        // get the screen size as a java dimension
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+        // get a fixed proportion of the height and of the width
+        int height = screenSize.height * 4 / 5;
+        int width = screenSize.width / 6;
+
+        // set the jframe height and width
+        frame.setPreferredSize(new Dimension(width, height));
 
         frame.add(panel);
         frame.pack();
