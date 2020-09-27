@@ -30,13 +30,13 @@ public class BdvHandleFilterNode extends SourceFilterNode {
         ViewerStateChangeListener vscl = (change) -> {
             if (change.toString().equals("NUM_SOURCES_CHANGED")) {
                 update(new SourceFilterNode.FilterUpdateEvent());
-                //SwingUtilities.invokeLater(()->
+                SwingUtilities.invokeLater(() -> {
                         ((SourceAndConverterService)SourceAndConverterServices
                                 .getSourceAndConverterService())
                                 .getUI()
                                 .getTreeModel()
                                 .nodeStructureChanged(BdvHandleFilterNode.this);
-                //);
+                });
             }
         };
 
