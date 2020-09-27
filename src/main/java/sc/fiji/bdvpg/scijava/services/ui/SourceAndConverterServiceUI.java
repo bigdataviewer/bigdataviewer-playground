@@ -470,10 +470,13 @@ public class SourceAndConverterServiceUI {
                     }
                     entitiesAlreadyRegistered.add(entity);
 
-                    final String entityNameFinal = entityName;
+                    SpimDataElementFilter nodeElement = new SpimDataElementFilter(entityName, entity, sourceAndConverterService);
+
+                    SourceFilterNode showAllSources = new SourceFilterNode("All Sources", (sac)-> true, true);
 
                     safeModelReloadAction(() -> {
-                        model.insertNodeInto(new SpimDataElementFilter(entityNameFinal, entity, sourceAndConverterService), classNodes.get(c), 0);
+                        model.insertNodeInto(nodeElement, classNodes.get(c), 0);
+                        model.insertNodeInto(showAllSources, nodeElement, 0);
                     });
 
                 }
@@ -491,7 +494,7 @@ public class SourceAndConverterServiceUI {
             if (top.currentInputSacs.contains(sac)) {
                 top.remove(sac);
                 updateSpimDataFilterNodes();
-                safeModelReloadAction(() -> {model.nodeStructureChanged(top);}); // TODO more precise model reload  : but it's hard to know which nodes are affected
+                safeModelReloadAction(() -> model.reload()); // TODO more precise model reload  : but it's hard to know which nodes are affected
             }
         }
     }

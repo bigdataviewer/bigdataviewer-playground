@@ -61,6 +61,7 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
 
                     //------------ Event handling in bdv sourceandconverterserviceui
                     BdvHandleFilterNode node = new BdvHandleFilterNode(windowTitle, bdvh);
+                    node.add(new SourceFilterNode("All Sources", (sac) -> true, true));
 
                     //------------ Allows to remove the BdvHandle from the objectService when closed by the user
                     BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService,  bsds, true,

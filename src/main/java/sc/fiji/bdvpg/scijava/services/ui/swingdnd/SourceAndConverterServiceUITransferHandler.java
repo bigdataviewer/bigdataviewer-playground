@@ -18,6 +18,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -160,7 +161,7 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
 
                     //sfn.add(new SourceFilterNode("All sources", (sac) -> true, true));
                     //topNodeStructureChanged = true;
-                    System.out.println("In theory DnD OK");
+                    //System.out.println("In theory DnD OK");
 
                     JTree.DropLocation dl = (JTree.DropLocation) supp.getDropLocation();
                     int childIndex = dl.getChildIndex();
@@ -180,11 +181,19 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
 
                     final int indexFinal = index;
 
-                    SwingUtilities.invokeLater(() -> {
-                        model.insertNodeInto(nodes[0], parent, indexFinal);
-                        model.nodeStructureChanged(parent);
-                        //model.reload();
-                    });
+                    try {
+                        if (SwingUtilities.isEventDispatchThread()) {
+                            model.insertNodeInto(nodes[0], parent, indexFinal);
+                        } else {
+                            SwingUtilities.invokeAndWait(() -> {
+                                model.insertNodeInto(nodes[0], parent, indexFinal);
+                            });
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
 
                     return true;
 

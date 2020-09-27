@@ -21,7 +21,7 @@ public class SpimDataElementFilter extends SourceFilterNode {
     final SourceAndConverterService sourceAndConverterService;
 
     public SpimDataElementFilter(String name, Entity e, SourceAndConverterService sourceAndConverterService) {
-        super(name, null, true);
+        super(name, null, false);
         this.filter = this::filter;
         this.e = e;
         this.sourceAndConverterService = sourceAndConverterService;

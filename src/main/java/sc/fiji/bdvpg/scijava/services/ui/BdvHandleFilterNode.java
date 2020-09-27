@@ -22,7 +22,7 @@ public class BdvHandleFilterNode extends SourceFilterNode {
     }
 
     public BdvHandleFilterNode(String name, BdvHandle bdvh) {
-        super(name,null, true);
+        super(name,null, false);
         this.name = name;
         this.filter = this::filter;
         this.bdvh = bdvh;
