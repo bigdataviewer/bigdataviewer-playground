@@ -3,14 +3,17 @@ package sc.fiji.bdvpg.scijava.services.ui;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerStateChangeListener;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-
-import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
 
 /**
- * SourceAndConverter filter node : Selects SpimData and allow for duplicate
+ * Filter nodes which filters based on the presence or not of a {@link SourceAndConverter}
+ * in the {@link BdvHandle}
+ *
+ * A listener to the state of the BdvHandle {@link ViewerStateChangeListener} allows to trigger a
+ * {@link FilterUpdateEvent} to the node which in turns triggers the recomputation of the
+ * downstream part of the UI tree see {@link SourceFilterNode} and {@link SourceAndConverterServiceUI}
+ *
+ * @author Nicolas Chiaruttini, BIOP, EPFL, 2020
  */
 
 public class BdvHandleFilterNode extends SourceFilterNode {
@@ -31,13 +34,6 @@ public class BdvHandleFilterNode extends SourceFilterNode {
         ViewerStateChangeListener vscl = (change) -> {
             if (change.toString().equals("NUM_SOURCES_CHANGED")) {
                 update(new SourceFilterNode.FilterUpdateEvent());
-                /*SwingUtilities.invokeLater(() -> {
-                        ((SourceAndConverterService)SourceAndConverterServices
-                                .getSourceAndConverterService())
-                                .getUI()
-                                .getTreeModel()
-                                .nodeStructureChanged(BdvHandleFilterNode.this);
-                });*/
             }
         };
 

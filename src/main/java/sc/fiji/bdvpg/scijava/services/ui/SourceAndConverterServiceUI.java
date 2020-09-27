@@ -16,7 +16,6 @@ import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
@@ -41,22 +40,36 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  * the appropriate {@link SpimDataFilterNode} in which it will appear again multiple times, sorted
  * by {@link Entity} class found in the spimdata object (Illumination, Angle, Channel ...)
  *
- *
  * Nodes are {@link DefaultMutableTreeNode} containing potentially:
  * - {@link RenamableSourceAndConverter} (SourceAndConverter with an overriden toString method)
  * - Filtering nodes : {@link SourceFilterNode} nodes that can filter SourceAndConverters,
  * they contain a {@link Predicate<SourceAndConverter>} that decides whether a SourceAndConverter
- * object should be included in the node; they also contain a boolean flag which sets whether the
- * SourceAndConverter should be passed to the current remaining branch in the tree. In short the sourceandconverter
- * is either captured, or captured and duplicated
+ * object should be included in the tree nodes below this filter;
+ *
+ * - Filtering nodes can conveniently be chained in order to make complex filtering easily.
+ *
+ * SourceFilterNode can be dragged and dropped in the tree in order to make these sub groups
+ *
+ * SourceFilterNodes contains a flag which decides whether the filtered nodes should be displayed directly below
+ * the node or not. Usually it is more convenient to create a non filtering SourceFilterNode
+ * at the end of the branch.
+ *      - Programmatically new SourceFilterNode(model, "AllSources", () -> true, true);
+ *      - Or with a Right-Click 'Create a show all filter node'
+ *
+ *  NB : All SourceFilterNodes contains a reference to the tree model, this is used to fire only necessary
+ *  tree update fire events - and in the EDT thread only in order to avoid many exceptions
+ *
+ *  WARNING ! It is probably not safe to modify in a parallel fashion this UI.
+ *
+ * TODO : Documentation for inspection
+ *
  * - Getter Node for Source properties. For instance in the inspect method, a Transformed Source will
  * create a Node for the wrapped source and another node which holds a getter for the fixedAffineTransform
  *
- * TODO :
- * - reactivate the erase inspect node
- * -
+ * @author Nicolas Chiaruttini, BIOP, EPFL
  *
  */
+
 public class SourceAndConverterServiceUI {
 
     /**
@@ -174,12 +187,7 @@ public class SourceAndConverterServiceUI {
                     for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
                         if ((tp.getLastPathComponent()).toString().startsWith("Inspect Results [")) {
                             // TODO Fix The little guy who would name its source "Inspect Results [whatever"
-                            /*safeModelReloadAction(() -> {
-                                model.removeNodeFromParent((DefaultMutableTreeNode) tp.getLastPathComponent());
-                            });*/
-
                             ((DefaultMutableTreeNode) tp.getLastPathComponent()).removeFromParent();
-
                         }
                     }
                 }
@@ -215,9 +223,6 @@ public class SourceAndConverterServiceUI {
                     }
                     if ((paths[0].getLastPathComponent()) instanceof SourceFilterNode) {
                         SourceFilterNode sfn = ((SourceFilterNode) (paths[0].getLastPathComponent()));
-                        /*safeModelReloadAction(() -> {
-                            model.insertNodeInto(copiedNode, sfn, 0);
-                        });*/
                         sfn.add(copiedNode);
                    } else {
                         errlog.accept("A source filter node should be selected");
@@ -239,9 +244,6 @@ public class SourceAndConverterServiceUI {
                                 if (sfn.equals(top)) {
                                     errlog.accept("The root can't be deleted");
                                 } else {
-                                    /*safeModelReloadAction(() -> {
-                                        model.removeNodeFromParent(sfn);
-                                    });*/
                                     sfn.removeFromParent();
                                 }
                             });
@@ -261,10 +263,6 @@ public class SourceAndConverterServiceUI {
 
                         SourceFilterNode sfn = (SourceFilterNode) (paths[0].getLastPathComponent());
                         SourceFilterNode newNode = new SourceFilterNode(model,"All sources", (sac) -> true, true);
-
-                        /*safeModelReloadAction(() -> {
-                            model.insertNodeInto(newNode, sfn, 0);
-                        });*/
                         sfn.add(newNode);
 
                     } else {
@@ -300,9 +298,6 @@ public class SourceAndConverterServiceUI {
     public void inspectSource(SourceAndConverter sac) {
         DefaultMutableTreeNode parentNodeInspect = new DefaultMutableTreeNode("Inspect Results ["+sac.getSpimSource().getName()+"]");
         SourceAndConverterInspector.appendInspectorResult(parentNodeInspect, sac, sourceAndConverterService, false);
-        /*safeModelReloadAction(() -> {
-            model.insertNodeInto(parentNodeInspect, top, 0);
-        });*/
         top.add(parentNodeInspect);
     }
 
@@ -311,9 +306,6 @@ public class SourceAndConverterServiceUI {
             if (node instanceof BdvHandleFilterNode) {
                 BdvHandleFilterNode bfn = (BdvHandleFilterNode) node;
                 if (bfn.bdvh.equals(bdvh)) {
-                    /*safeModelReloadAction(() -> {
-                        model.removeNodeFromParent(bfn);
-                    });*/
                     bfn.removeFromParent();
                 }
             }
@@ -329,14 +321,8 @@ public class SourceAndConverterServiceUI {
             updateSpimDataFilterNodes();
             if (top.hasConsumed(sac)) {
                 top.update(new SourceFilterNode.SourceUpdateEvent(sac));
-                /*safeModelReloadAction(() -> {
-                    model.nodeStructureChanged(top);
-                });*/
             } else {
                 top.add(new DefaultMutableTreeNode(new RenamableSourceAndConverter(sac)));
-                /*safeModelReloadAction(() -> {
-                    model.nodeStructureChanged(top);
-                });*/
             }
         }
     }
@@ -358,9 +344,6 @@ public class SourceAndConverterServiceUI {
                 if (!currentSpimdatas.contains(fnode.asd)) {
                     if (fnode.getParent() != null) {
                         obsoleteSpimDataFilterNodes.add(fnode);
-                        /*safeModelReloadAction(() -> {
-                            model.removeNodeFromParent(fnode);
-                        });*/
                         fnode.removeFromParent();
                     }
                 }
@@ -374,17 +357,9 @@ public class SourceAndConverterServiceUI {
                     if ((spimdataFilterNodes.size()==0)||(spimdataFilterNodes.stream().noneMatch(fnode -> fnode.asd.equals(asd)))) {
                         SpimDataFilterNode newNode = new SpimDataFilterNode(model,"SpimData "+spimdataFilterNodes.size(), asd, sourceAndConverterService);
                         SourceFilterNode allSources = new SourceFilterNode(model,"All Sources", (in) -> true, true);
-
-
                         spimdataFilterNodes.add(newNode);
-
-                        /*safeModelReloadAction(() -> {
-                            model.insertNodeInto(allSources, newNode, 0);
-                            model.insertNodeInto(newNode, top, 0);
-                        });*/
                         newNode.add(allSources);
                         top.add(newNode);
-
                         addEntityFilterNodes(newNode, asd);
                     }
                 }
@@ -404,13 +379,11 @@ public class SourceAndConverterServiceUI {
                         if (node instanceof SpimDataFilterNode) {
                             if (((SpimDataFilterNode) node).asd.equals(asd_renamed)) {
                                 ((SpimDataFilterNode) node).setName(name);
-                                /*safeModelReloadAction(() -> {
-                                    model.nodeChanged(node);
-                                });*/
                                 SourceFilterNode.safeModelReloadAction(() -> model.nodeChanged(node));
                             }
                         }
-                    });
+                    }
+                );
         }
     }
 
@@ -466,9 +439,6 @@ public class SourceAndConverterServiceUI {
         List<SourceFilterNode> orderedNodes = new ArrayList<>(classNodes.values());
         orderedNodes.sort(Comparator.comparing(SourceFilterNode::getName));
         orderedNodes.forEach((f) -> {
-                    /*safeModelReloadAction(() -> {
-                        model.insertNodeInto(f, nodeSpimData, 0);
-                    });*/
                     nodeSpimData.add(f);
         });
 
@@ -490,11 +460,6 @@ public class SourceAndConverterServiceUI {
 
                     SourceFilterNode showAllSources = new SourceFilterNode(model, "All Sources", (sac)-> true, true);
 
-                    /*safeModelReloadAction(() -> {
-                        model.insertNodeInto(nodeElement, classNodes.get(c), 0);
-                        model.insertNodeInto(showAllSources, nodeElement, 0);
-                    });*/
-
                     classNodes.get(c).add(nodeElement);
                     nodeElement.add(showAllSources);
                 }
@@ -512,7 +477,6 @@ public class SourceAndConverterServiceUI {
             if (top.currentInputSacs.contains(sac)) {
                 top.remove(sac);
                 updateSpimDataFilterNodes();
-                //safeModelReloadAction(() -> model.reload()); // TODO more precise model reload  : but it's hard to know which nodes are affected
             }
         }
     }
@@ -588,7 +552,6 @@ public class SourceAndConverterServiceUI {
 
         while (currentDepth<stringPath.length) {
             final Enumeration children = current.children();
-            //System.out.println("Searching "+stringPath[currentDepth].trim());
             boolean found = false;
             while (children.hasMoreElements()) {
                 TreeNode testNode = (TreeNode)children.nextElement();
@@ -627,9 +590,6 @@ public class SourceAndConverterServiceUI {
     }
 
     public synchronized void addNode(DefaultMutableTreeNode node) {
-        /*safeModelReloadAction(() -> { // TODO THINK IF THIS A GOOD IDEA ?
-            model.insertNodeInto(node, top, 0);
-        });*/
         top.add(node);
     }
 
@@ -638,23 +598,7 @@ public class SourceAndConverterServiceUI {
     }
 
     public synchronized void addNode(DefaultMutableTreeNode parent, DefaultMutableTreeNode node) {
-        //model.removeNodeFromParent(node);
         parent.add(node);
     }
-
-
-   /* public void safeModelReloadAction(Runnable runnable) {
-        if (SwingUtilities.isEventDispatchThread()) {
-            runnable.run();
-        } else {
-            try {
-                SwingUtilities.invokeAndWait(runnable);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        }
-    } */
 
 }

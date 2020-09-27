@@ -34,10 +34,10 @@ public class SourceAndConverterInspector {
     /**
      * Inspects recursively a SourceAndConverter object
      * Properly inspected bdv.viewer.Source class:
-     * - SpimSource (AbstractSpimSource)
-     * - WarpedSource
-     * - TransformedSource
-     * - ResampledSource
+     * - SpimSource {@link AbstractSpimSource}
+     * - WarpedSource {@link WarpedSource}
+     * - TransformedSource {@link TransformedSource}
+     * - ResampledSource {@link ResampledSource}
      *
      * @param parent
      * @param sac

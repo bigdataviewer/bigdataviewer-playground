@@ -5,7 +5,6 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import javax.swing.tree.DefaultTreeModel;
-import java.util.Map;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
 

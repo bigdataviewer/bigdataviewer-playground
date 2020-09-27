@@ -1,13 +1,9 @@
 package sc.fiji.bdvpg.scijava.services.ui;
 
-import bdv.TransformEventHandler2D;
 import bdv.viewer.SourceAndConverter;
 
 import javax.swing.*;
 import javax.swing.tree.*;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
@@ -42,6 +38,10 @@ import java.util.function.Predicate;
  *
  * - Implements cloneable : clone is used in copy / paste of nodes + in drag and drop of sourcefilter nodes
  * // TODO : node name change event ?
+ *
+ * // TODO : Is this functionality implemented in an overly complicated manner ?...
+ *
+ * @author Nicolas Chiaruttini, BIOP, EPFL
  */
 
 public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneable {
@@ -106,11 +106,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
                     }
                     if (displayFilteredSources) {
                         DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(((DefaultMutableTreeNode)newChild).getUserObject());
-                        //System.out.println("Il y a "+this.getChildCount()+" enfants avant.");
                         super.insert(newNode, childIndex);
-                        //System.out.println("Il y a "+this.getChildCount()+" enfants apres.");
-                        //System.out.println("Pas de soucis  pour "+super.getChildAt(0));
-                        //model.nodesWereInserted(this, new int[]{childIndex});
                         safeModelReloadAction(() -> model.reload(this));//.nodesWereInserted(this, new int[]{childIndex}) ); // updates model in EDT thread
                     }
                 }
@@ -144,37 +140,21 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
     void remove(SourceAndConverter sac) {
         currentInputSacs.remove(sac);
         currentOutputSacs.remove(sac);
-        //List<Integer> removedIndexes = new ArrayList<>();
-        //List<Object> removedNodes = new ArrayList<>();
 
         for (int i = 0; i < getChildCount(); i++) {
             DefaultMutableTreeNode n = (DefaultMutableTreeNode) getChildAt(i);
             if (n instanceof SourceFilterNode) {
-                // System.out.println("updating child "+i+" named "+n.toString());
                 ((SourceFilterNode) n).remove(sac);
             } else {
                 if (displayFilteredSources) {
                     if (n.getUserObject() instanceof RenamableSourceAndConverter) {
                         if (((RenamableSourceAndConverter)(n.getUserObject())).sac.equals(sac)) {
                             remove(n);
-                            //removedIndexes.add(i);
-                            //removedNodes.add(n);
                         }
                     }
                 }
             }
         }
-
-        /*if (removedIndexes.size()>0) {
-            safeModelReloadAction(() -> {
-                    model.nodesWereRemoved(this,
-                    removedIndexes.stream().mapToInt(i -> i).toArray(),
-                    removedNodes.toArray());
-                    //model.reload(this);
-                    });
-        }*/
-
-
     }
 
     /**
@@ -324,8 +304,12 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
         return new SourceFilterNode(model, name, filter, displayFilteredSources);
     }
 
-
-     static public void safeModelReloadAction(Runnable runnable) {
+    /**
+     * Executes the model reloading actions in the EDT
+     *
+     * @param runnable
+     */
+    static public void safeModelReloadAction(Runnable runnable) {
         if (SwingUtilities.isEventDispatchThread()) {
             runnable.run();
         } else {

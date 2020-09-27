@@ -10,7 +10,6 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.datatransfer.DataFlavor;
@@ -18,10 +17,18 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+/**
+ * Class which allows Drag and Drop in the tree UI of source and converter.
+ *
+ * XML BDV Dataset can be dragged into the tree
+ *
+ * Some nodes can be dragged to create custom filters in the UI (sources cannot be dragged)
+ *
+ */
 
 public class SourceAndConverterServiceUITransferHandler extends TreeTransferHandler {
 
@@ -117,8 +124,6 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
             e.printStackTrace();
         }
         return null;
-
-        //return new StringSelection(c.getSelection());
     }
 
     @Override
@@ -157,44 +162,13 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
                 }
                 if ((nodes[0]) instanceof SourceFilterNode) {
 
-                    SourceFilterNode sfn = (SourceFilterNode) (nodes[0]);
-
-                    //sfn.add(new SourceFilterNode("All sources", (sac) -> true, true));
-                    //topNodeStructureChanged = true;
-                    //System.out.println("In theory DnD OK");
-
                     JTree.DropLocation dl = (JTree.DropLocation) supp.getDropLocation();
-                    int childIndex = dl.getChildIndex();
                     TreePath dest = dl.getPath();
 
                     DefaultMutableTreeNode parent = (DefaultMutableTreeNode) dest.getLastPathComponent();
 
-                    JTree tree = (JTree) supp.getComponent();
-
-                    DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-
-                   /* int index = childIndex;
-
-                    if (childIndex == -1) {
-                        index = parent.getChildCount();
-                    }
-
-                    final int indexFinal = index;*/
-                    parent.add(nodes[0]);
-                    /*
-                    try {
-                        if (SwingUtilities.isEventDispatchThread()) {
-                            model.insertNodeInto(nodes[0], parent, indexFinal);
-                        } else {
-                            SwingUtilities.invokeAndWait(() -> {
-                                model.insertNodeInto(nodes[0], parent, indexFinal);
-                            });
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }*/
+                    SourceFilterNode sfn = (SourceFilterNode) (nodes[0]);
+                    parent.add(sfn);
 
                     return true;
 
