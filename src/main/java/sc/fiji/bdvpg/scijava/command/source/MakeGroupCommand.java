@@ -30,7 +30,7 @@ public class MakeGroupCommand implements Command {
     @Override
     public void run() {
         final Set<SourceAndConverter> sacs_set = new HashSet<>(Arrays.asList(sacs));
-        SourceFilterNode sfn = new SourceFilterNode(groupName, sacs_set::contains, displaySources);
+        SourceFilterNode sfn = new SourceFilterNode(sac_service.getUI().getTreeModel(), groupName, sacs_set::contains, displaySources);
         sac_service.getUI().addNode(sfn);
     }
 }

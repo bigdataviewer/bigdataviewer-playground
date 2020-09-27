@@ -3,10 +3,11 @@ package sc.fiji.bdvpg.scijava.services.ui;
 import bdv.TransformEventHandler2D;
 import bdv.viewer.SourceAndConverter;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
+import javax.swing.*;
+import javax.swing.tree.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
@@ -60,8 +61,11 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
      */
     boolean displayFilteredSources;
 
-    public SourceFilterNode(String name, Predicate<SourceAndConverter> filter, boolean displayFilteredSources) {
+    DefaultTreeModel model;
+
+    public SourceFilterNode(DefaultTreeModel model, String name, Predicate<SourceAndConverter> filter, boolean displayFilteredSources) {
         super(name);
+        this.model = model;
         this.name = name;
         this.filter = filter;
         this.displayFilteredSources = displayFilteredSources;
@@ -101,20 +105,36 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
                         }
                     }
                     if (displayFilteredSources) {
-                        super.insert(new DefaultMutableTreeNode(((DefaultMutableTreeNode)newChild).getUserObject()), childIndex);
+                        DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(((DefaultMutableTreeNode)newChild).getUserObject());
+                        //System.out.println("Il y a "+this.getChildCount()+" enfants avant.");
+                        super.insert(newNode, childIndex);
+                        //System.out.println("Il y a "+this.getChildCount()+" enfants apres.");
+                        //System.out.println("Pas de soucis  pour "+super.getChildAt(0));
+                        //model.nodesWereInserted(this, new int[]{childIndex});
+                        safeModelReloadAction(() -> model.reload(this));//.nodesWereInserted(this, new int[]{childIndex}) ); // updates model in EDT thread
                     }
                 }
             }
         } else {
             // It's not a node containing a SourceAndConverter : standard behaviour
             super.insert(newChild, childIndex);
-            // Still : notifying the insertion of a new node, which can be a nw filter node and thus needs recomputation
+            safeModelReloadAction(() -> model.nodesWereInserted(this, new int[]{childIndex}) ); // updates model in EDT thread
+
+            // Still : notifying the insertion of a new node, which can be a new filter node and thus needs recomputation
             this.update(new NodeAddedUpdateEvent(newChild));
         }
     }
 
     private static SourceAndConverter getSacFromNode(MutableTreeNode newChild) {
         return ((RenamableSourceAndConverter)(((DefaultMutableTreeNode)newChild).getUserObject())).sac;
+    }
+
+    public void remove(MutableTreeNode aChild) {
+       int iChild = this.getIndex(aChild);
+       super.remove(aChild);
+       safeModelReloadAction(() -> model.nodesWereRemoved(this,
+               new int[]{iChild},
+               new Object[]{aChild}));
     }
 
     /**
@@ -124,6 +144,9 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
     void remove(SourceAndConverter sac) {
         currentInputSacs.remove(sac);
         currentOutputSacs.remove(sac);
+        //List<Integer> removedIndexes = new ArrayList<>();
+        //List<Object> removedNodes = new ArrayList<>();
+
         for (int i = 0; i < getChildCount(); i++) {
             DefaultMutableTreeNode n = (DefaultMutableTreeNode) getChildAt(i);
             if (n instanceof SourceFilterNode) {
@@ -133,12 +156,25 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
                 if (displayFilteredSources) {
                     if (n.getUserObject() instanceof RenamableSourceAndConverter) {
                         if (((RenamableSourceAndConverter)(n.getUserObject())).sac.equals(sac)) {
-                            super.remove(n);
+                            remove(n);
+                            //removedIndexes.add(i);
+                            //removedNodes.add(n);
                         }
                     }
                 }
             }
         }
+
+        /*if (removedIndexes.size()>0) {
+            safeModelReloadAction(() -> {
+                    model.nodesWereRemoved(this,
+                    removedIndexes.stream().mapToInt(i -> i).toArray(),
+                    removedNodes.toArray());
+                    //model.reload(this);
+                    });
+        }*/
+
+
     }
 
     /**
@@ -169,7 +205,9 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
                             }
                         }
                         if (displayFilteredSources) {
-                            super.insert(new DefaultMutableTreeNode(rsac), getChildCount());
+                            int iChild = getChildCount()-1;
+                            super.insert(new DefaultMutableTreeNode(rsac), iChild);
+                            safeModelReloadAction(() -> model.nodesWereInserted(this, new int[]{iChild}) );
                         }
                     }
                 } else {
@@ -196,7 +234,9 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
                         }
                     }
                     if (displayFilteredSources) {
-                        super.insert(new DefaultMutableTreeNode(rsac), getChildCount());
+                        int iChild = getChildCount()-1;
+                        super.insert(new DefaultMutableTreeNode(rsac), iChild);
+                        safeModelReloadAction(() -> model.nodesWereInserted(this, new int[]{iChild}));
                     }
                 } else {
                     // Still need to update the children
@@ -281,7 +321,18 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
     }
 
     public Object clone() {
-        return new SourceFilterNode(name, filter, displayFilteredSources);
+        return new SourceFilterNode(model, name, filter, displayFilteredSources);
+    }
+
+
+     static public void safeModelReloadAction(Runnable runnable) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            runnable.run();
+        } else {
+            SwingUtilities.invokeLater(() -> {
+                runnable.run();
+            });
+        }
     }
 
 }

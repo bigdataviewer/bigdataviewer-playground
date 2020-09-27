@@ -17,6 +17,7 @@ import sc.fiji.bdvpg.scijava.services.ui.BdvHandleFilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultTreeModel;
 import java.util.function.Consumer;
 
 /**
@@ -60,8 +61,9 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
                     BdvHandleHelper.setWindowTitle(bdvh, windowTitle);
 
                     //------------ Event handling in bdv sourceandconverterserviceui
-                    BdvHandleFilterNode node = new BdvHandleFilterNode(windowTitle, bdvh);
-                    node.add(new SourceFilterNode("All Sources", (sac) -> true, true));
+                    DefaultTreeModel model = sacsService.getUI().getTreeModel();
+                    BdvHandleFilterNode node = new BdvHandleFilterNode(model, windowTitle, bdvh);
+                    node.add(new SourceFilterNode(model, "All Sources", (sac) -> true, true));
 
                     //------------ Allows to remove the BdvHandle from the objectService when closed by the user
                     BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService,  bsds, true,
@@ -71,9 +73,9 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
                             });
 
                     ((SourceFilterNode)sacsService.getUI().getTreeModel().getRoot()).insert(node,0);
-                    SwingUtilities.invokeLater(()->
+                    /*SwingUtilities.invokeLater(()->
                             sacsService.getUI().getTreeModel().nodeStructureChanged(node.getParent())//.reload()
-                    );
+                    );*/
                 }
 
                 module.resolveOutput(name);

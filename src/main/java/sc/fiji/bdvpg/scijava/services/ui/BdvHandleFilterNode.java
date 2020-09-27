@@ -7,6 +7,7 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultTreeModel;
 
 /**
  * SourceAndConverter filter node : Selects SpimData and allow for duplicate
@@ -21,8 +22,8 @@ public class BdvHandleFilterNode extends SourceFilterNode {
         return bdvh.getViewerPanel().state().getSources().contains(sac);
     }
 
-    public BdvHandleFilterNode(String name, BdvHandle bdvh) {
-        super(name,null, false);
+    public BdvHandleFilterNode(DefaultTreeModel model, String name, BdvHandle bdvh) {
+        super(model, name,null, false);
         this.name = name;
         this.filter = this::filter;
         this.bdvh = bdvh;
@@ -30,13 +31,13 @@ public class BdvHandleFilterNode extends SourceFilterNode {
         ViewerStateChangeListener vscl = (change) -> {
             if (change.toString().equals("NUM_SOURCES_CHANGED")) {
                 update(new SourceFilterNode.FilterUpdateEvent());
-                SwingUtilities.invokeLater(() -> {
+                /*SwingUtilities.invokeLater(() -> {
                         ((SourceAndConverterService)SourceAndConverterServices
                                 .getSourceAndConverterService())
                                 .getUI()
                                 .getTreeModel()
                                 .nodeStructureChanged(BdvHandleFilterNode.this);
-                });
+                });*/
             }
         };
 
@@ -49,7 +50,7 @@ public class BdvHandleFilterNode extends SourceFilterNode {
 
     @Override
     public Object clone() {
-        return new BdvHandleFilterNode(name, bdvh);
+        return new BdvHandleFilterNode(model, name, bdvh);
     }
 
 }

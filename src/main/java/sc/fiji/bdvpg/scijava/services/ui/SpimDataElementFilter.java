@@ -7,6 +7,7 @@ import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
+import javax.swing.tree.DefaultTreeModel;
 import java.util.Map;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
@@ -20,8 +21,8 @@ public class SpimDataElementFilter extends SourceFilterNode {
     final Entity e;
     final SourceAndConverterService sourceAndConverterService;
 
-    public SpimDataElementFilter(String name, Entity e, SourceAndConverterService sourceAndConverterService) {
-        super(name, null, false);
+    public SpimDataElementFilter(DefaultTreeModel model, String name, Entity e, SourceAndConverterService sourceAndConverterService) {
+        super(model, name, null, false);
         this.filter = this::filter;
         this.e = e;
         this.sourceAndConverterService = sourceAndConverterService;
@@ -43,7 +44,7 @@ public class SpimDataElementFilter extends SourceFilterNode {
 
     @Override
     public Object clone() {
-        return new SpimDataElementFilter(name, e, sourceAndConverterService);
+        return new SpimDataElementFilter(model, name, e, sourceAndConverterService);
     }
 
 }

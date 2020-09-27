@@ -173,14 +173,15 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
 
                     DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
 
-                    int index = childIndex;
+                   /* int index = childIndex;
 
                     if (childIndex == -1) {
                         index = parent.getChildCount();
                     }
 
-                    final int indexFinal = index;
-
+                    final int indexFinal = index;*/
+                    parent.add(nodes[0]);
+                    /*
                     try {
                         if (SwingUtilities.isEventDispatchThread()) {
                             model.insertNodeInto(nodes[0], parent, indexFinal);
@@ -193,7 +194,7 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
                         e.printStackTrace();
                     } catch (InvocationTargetException e) {
                         e.printStackTrace();
-                    }
+                    }*/
 
                     return true;
 

@@ -4,6 +4,7 @@ import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
+import javax.swing.tree.DefaultTreeModel;
 import java.util.Map;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
@@ -20,8 +21,8 @@ public class SpimDataFilterNode extends SourceFilterNode {
         return (sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO ))&&(( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).asd.equals(asd);
     }
 
-    public SpimDataFilterNode(String defaultName, AbstractSpimData spimdata, SourceAndConverterService sourceAndConverterService) {
-        super(defaultName,null, false);
+    public SpimDataFilterNode(DefaultTreeModel model, String defaultName, AbstractSpimData spimdata, SourceAndConverterService sourceAndConverterService) {
+        super(model, defaultName,null, false);
         this.sourceAndConverterService = sourceAndConverterService;
         this.filter = this::filter;
         asd = spimdata;
@@ -41,6 +42,6 @@ public class SpimDataFilterNode extends SourceFilterNode {
 
     @Override
     public Object clone() {
-        return new SpimDataFilterNode(name, asd, sourceAndConverterService);
+        return new SpimDataFilterNode(model, name, asd, sourceAndConverterService);
     }
 }

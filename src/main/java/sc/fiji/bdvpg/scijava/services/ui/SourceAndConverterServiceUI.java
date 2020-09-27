@@ -117,13 +117,16 @@ public class SourceAndConverterServiceUI {
         panel = new JPanel(new BorderLayout());
 
         // Tree view of Spimdata
-        top = new SourceFilterNode("Sources", (sac) -> true, false);
-        tree = new JTree(top);
+        top = new SourceFilterNode(null,"Sources", (sac) -> true, false);
+        model = new DefaultTreeModel(top);
+        top.model = model;
 
-        SourceFilterNode outsideSpimDataSources = new SourceFilterNode("Other Sources", (sac) -> !sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO ), true);
+        tree = new JTree(model);
+
+        SourceFilterNode outsideSpimDataSources = new SourceFilterNode(model,"Other Sources", (sac) -> !sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO ), true);
         top.add(outsideSpimDataSources);
 
-        model = (DefaultTreeModel)tree.getModel();
+        //model = (DefaultTreeModel)tree.getModel();
         treeView = new JScrollPane(tree);
 
         panel.add(treeView, BorderLayout.CENTER);
@@ -171,9 +174,12 @@ public class SourceAndConverterServiceUI {
                     for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
                         if ((tp.getLastPathComponent()).toString().startsWith("Inspect Results [")) {
                             // TODO Fix The little guy who would name its source "Inspect Results [whatever"
-                            safeModelReloadAction(() -> {
+                            /*safeModelReloadAction(() -> {
                                 model.removeNodeFromParent((DefaultMutableTreeNode) tp.getLastPathComponent());
-                            });
+                            });*/
+
+                            ((DefaultMutableTreeNode) tp.getLastPathComponent()).removeFromParent();
+
                         }
                     }
                 }
@@ -209,9 +215,10 @@ public class SourceAndConverterServiceUI {
                     }
                     if ((paths[0].getLastPathComponent()) instanceof SourceFilterNode) {
                         SourceFilterNode sfn = ((SourceFilterNode) (paths[0].getLastPathComponent()));
-                        safeModelReloadAction(() -> {
+                        /*safeModelReloadAction(() -> {
                             model.insertNodeInto(copiedNode, sfn, 0);
-                        });
+                        });*/
+                        sfn.add(copiedNode);
                    } else {
                         errlog.accept("A source filter node should be selected");
                         return;
@@ -232,9 +239,10 @@ public class SourceAndConverterServiceUI {
                                 if (sfn.equals(top)) {
                                     errlog.accept("The root can't be deleted");
                                 } else {
-                                    safeModelReloadAction(() -> {
+                                    /*safeModelReloadAction(() -> {
                                         model.removeNodeFromParent(sfn);
-                                    });
+                                    });*/
+                                    sfn.removeFromParent();
                                 }
                             });
                 }
@@ -252,11 +260,12 @@ public class SourceAndConverterServiceUI {
                     if ((paths[0].getLastPathComponent()) instanceof SourceFilterNode) {
 
                         SourceFilterNode sfn = (SourceFilterNode) (paths[0].getLastPathComponent());
-                        SourceFilterNode newNode = new SourceFilterNode("All sources", (sac) -> true, true);
+                        SourceFilterNode newNode = new SourceFilterNode(model,"All sources", (sac) -> true, true);
 
-                        safeModelReloadAction(() -> {
+                        /*safeModelReloadAction(() -> {
                             model.insertNodeInto(newNode, sfn, 0);
-                        });
+                        });*/
+                        sfn.add(newNode);
 
                     } else {
                         errlog.accept("A source filter node should be selected");
@@ -291,9 +300,10 @@ public class SourceAndConverterServiceUI {
     public void inspectSource(SourceAndConverter sac) {
         DefaultMutableTreeNode parentNodeInspect = new DefaultMutableTreeNode("Inspect Results ["+sac.getSpimSource().getName()+"]");
         SourceAndConverterInspector.appendInspectorResult(parentNodeInspect, sac, sourceAndConverterService, false);
-        safeModelReloadAction(() -> {
+        /*safeModelReloadAction(() -> {
             model.insertNodeInto(parentNodeInspect, top, 0);
-        });
+        });*/
+        top.add(parentNodeInspect);
     }
 
     public void removeBdvHandleNodes(BdvHandle bdvh) {
@@ -301,9 +311,10 @@ public class SourceAndConverterServiceUI {
             if (node instanceof BdvHandleFilterNode) {
                 BdvHandleFilterNode bfn = (BdvHandleFilterNode) node;
                 if (bfn.bdvh.equals(bdvh)) {
-                    safeModelReloadAction(() -> {
+                    /*safeModelReloadAction(() -> {
                         model.removeNodeFromParent(bfn);
-                    });
+                    });*/
+                    bfn.removeFromParent();
                 }
             }
         });
@@ -318,14 +329,14 @@ public class SourceAndConverterServiceUI {
             updateSpimDataFilterNodes();
             if (top.hasConsumed(sac)) {
                 top.update(new SourceFilterNode.SourceUpdateEvent(sac));
-                safeModelReloadAction(() -> {
+                /*safeModelReloadAction(() -> {
                     model.nodeStructureChanged(top);
-                });
+                });*/
             } else {
                 top.add(new DefaultMutableTreeNode(new RenamableSourceAndConverter(sac)));
-                safeModelReloadAction(() -> {
+                /*safeModelReloadAction(() -> {
                     model.nodeStructureChanged(top);
-                });
+                });*/
             }
         }
     }
@@ -347,9 +358,10 @@ public class SourceAndConverterServiceUI {
                 if (!currentSpimdatas.contains(fnode.asd)) {
                     if (fnode.getParent() != null) {
                         obsoleteSpimDataFilterNodes.add(fnode);
-                        safeModelReloadAction(() -> {
+                        /*safeModelReloadAction(() -> {
                             model.removeNodeFromParent(fnode);
-                        });
+                        });*/
+                        fnode.removeFromParent();
                     }
                 }
             });
@@ -360,16 +372,18 @@ public class SourceAndConverterServiceUI {
             // Check for new spimdata
             currentSpimdatas.forEach(asd -> {
                     if ((spimdataFilterNodes.size()==0)||(spimdataFilterNodes.stream().noneMatch(fnode -> fnode.asd.equals(asd)))) {
-                        SpimDataFilterNode newNode = new SpimDataFilterNode("SpimData "+spimdataFilterNodes.size(), asd, sourceAndConverterService);
-                        SourceFilterNode allSources = new SourceFilterNode("All Sources", (in) -> true, true);
+                        SpimDataFilterNode newNode = new SpimDataFilterNode(model,"SpimData "+spimdataFilterNodes.size(), asd, sourceAndConverterService);
+                        SourceFilterNode allSources = new SourceFilterNode(model,"All Sources", (in) -> true, true);
 
 
                         spimdataFilterNodes.add(newNode);
 
-                        safeModelReloadAction(() -> {
+                        /*safeModelReloadAction(() -> {
                             model.insertNodeInto(allSources, newNode, 0);
                             model.insertNodeInto(newNode, top, 0);
-                        });
+                        });*/
+                        newNode.add(allSources);
+                        top.add(newNode);
 
                         addEntityFilterNodes(newNode, asd);
                     }
@@ -390,9 +404,10 @@ public class SourceAndConverterServiceUI {
                         if (node instanceof SpimDataFilterNode) {
                             if (((SpimDataFilterNode) node).asd.equals(asd_renamed)) {
                                 ((SpimDataFilterNode) node).setName(name);
-                                safeModelReloadAction(() -> {
+                                /*safeModelReloadAction(() -> {
                                     model.nodeChanged(node);
-                                });
+                                });*/
+                                SourceFilterNode.safeModelReloadAction(() -> model.nodeChanged(node));
                             }
                         }
                     });
@@ -445,15 +460,16 @@ public class SourceAndConverterServiceUI {
 
         Map<Class, SourceFilterNode> classNodes = new HashMap<>();
         entitiesByClass.keySet().forEach((c)-> {
-            classNodes.put(c, new SourceFilterNode(c.getSimpleName(),(sac)-> true, false));
+            classNodes.put(c, new SourceFilterNode(model,c.getSimpleName(),(sac)-> true, false));
         });
 
         List<SourceFilterNode> orderedNodes = new ArrayList<>(classNodes.values());
         orderedNodes.sort(Comparator.comparing(SourceFilterNode::getName));
         orderedNodes.forEach((f) -> {
-                    safeModelReloadAction(() -> {
+                    /*safeModelReloadAction(() -> {
                         model.insertNodeInto(f, nodeSpimData, 0);
-                    });
+                    });*/
+                    nodeSpimData.add(f);
         });
 
         Set<Entity> entitiesAlreadyRegistered = new HashSet<>();
@@ -470,15 +486,17 @@ public class SourceAndConverterServiceUI {
                     }
                     entitiesAlreadyRegistered.add(entity);
 
-                    SpimDataElementFilter nodeElement = new SpimDataElementFilter(entityName, entity, sourceAndConverterService);
+                    SpimDataElementFilter nodeElement = new SpimDataElementFilter(model, entityName, entity, sourceAndConverterService);
 
-                    SourceFilterNode showAllSources = new SourceFilterNode("All Sources", (sac)-> true, true);
+                    SourceFilterNode showAllSources = new SourceFilterNode(model, "All Sources", (sac)-> true, true);
 
-                    safeModelReloadAction(() -> {
+                    /*safeModelReloadAction(() -> {
                         model.insertNodeInto(nodeElement, classNodes.get(c), 0);
                         model.insertNodeInto(showAllSources, nodeElement, 0);
-                    });
+                    });*/
 
+                    classNodes.get(c).add(nodeElement);
+                    nodeElement.add(showAllSources);
                 }
             });
         });
@@ -494,7 +512,7 @@ public class SourceAndConverterServiceUI {
             if (top.currentInputSacs.contains(sac)) {
                 top.remove(sac);
                 updateSpimDataFilterNodes();
-                safeModelReloadAction(() -> model.reload()); // TODO more precise model reload  : but it's hard to know which nodes are affected
+                //safeModelReloadAction(() -> model.reload()); // TODO more precise model reload  : but it's hard to know which nodes are affected
             }
         }
     }
@@ -609,9 +627,10 @@ public class SourceAndConverterServiceUI {
     }
 
     public synchronized void addNode(DefaultMutableTreeNode node) {
-        safeModelReloadAction(() -> { // TODO THINK IF THIS A GOOD IDEA ?
+        /*safeModelReloadAction(() -> { // TODO THINK IF THIS A GOOD IDEA ?
             model.insertNodeInto(node, top, 0);
-        });
+        });*/
+        top.add(node);
     }
 
     public synchronized void removeNode(DefaultMutableTreeNode node) {
@@ -619,11 +638,12 @@ public class SourceAndConverterServiceUI {
     }
 
     public synchronized void addNode(DefaultMutableTreeNode parent, DefaultMutableTreeNode node) {
-        model.removeNodeFromParent(node);
+        //model.removeNodeFromParent(node);
+        parent.add(node);
     }
 
 
-    public void safeModelReloadAction(Runnable runnable) {
+   /* public void safeModelReloadAction(Runnable runnable) {
         if (SwingUtilities.isEventDispatchThread()) {
             runnable.run();
         } else {
@@ -635,6 +655,6 @@ public class SourceAndConverterServiceUI {
                 e.printStackTrace();
             }
         }
-    }
+    } */
 
 }
