@@ -8,12 +8,25 @@ import java.net.URL;
 
 public class SourceAndConverterTreeCellRenderer extends DefaultTreeCellRenderer {
 
-    static ImageIcon sourceIcon;
+    private static final String SPAN_FORMAT = "<span style='color:%s'>%s</span>";
+
+    //static ImageIcon sourceIcon;
+    static ImageIcon source2d;
+    static ImageIcon source2dwarped;
+
+    static ImageIcon source3d;
+    static ImageIcon source3dwarped;
+
+    static ImageIcon sourceFilterNode;
 
     static {
-        URL iconSourceURL = SourceAndConverterTreeCellRenderer.class.getResource("/images/SourceIcon50px.png");
-        System.out.println(iconSourceURL);
-        sourceIcon = new ImageIcon(iconSourceURL);
+        URL iconSourceURL;
+        iconSourceURL = SourceAndConverterTreeCellRenderer.class.getResource("/images/source2d.png");
+        source2d = new ImageIcon(iconSourceURL);
+        iconSourceURL = SourceAndConverterTreeCellRenderer.class.getResource("/images/source3d.png");
+        source3d = new ImageIcon(iconSourceURL);
+        iconSourceURL = SourceAndConverterTreeCellRenderer.class.getResource("/images/sourceFilterNodeCentered.png");
+        sourceFilterNode = new ImageIcon(iconSourceURL);
     }
 
     @Override
@@ -37,7 +50,15 @@ public class SourceAndConverterTreeCellRenderer extends DefaultTreeCellRenderer 
             setToolTipText(null); //no tool tip
         }*/
         if (isSourceAndConverterNode(value)) {
-            setIcon(sourceIcon);
+            setIcon(source3d);
+            String text = String.format(SPAN_FORMAT, "rgb(80,80,80)", getText());
+            setText("<html>"+text+"</html>");
+            setToolTipText("Source node");
+        } else if (value instanceof SourceFilterNode) {
+            setIcon(sourceFilterNode);
+            String text = String.format(SPAN_FORMAT, "rgb(0,0,0)", getText()+" ["+((SourceFilterNode)value).currentOutputSacs.size()+"]");
+            setText("<html>"+text+"</html>");
+            setToolTipText("Filter node");
         }
 
         return this;
@@ -48,4 +69,5 @@ public class SourceAndConverterTreeCellRenderer extends DefaultTreeCellRenderer 
                 (DefaultMutableTreeNode)value;
         return node.getUserObject() instanceof RenamableSourceAndConverter;
     }
+
 }
