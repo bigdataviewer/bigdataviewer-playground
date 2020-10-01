@@ -14,7 +14,7 @@ import java.util.List;
 public class TreeTransferHandler extends TransferHandler {
     DataFlavor nodesFlavor;
     DataFlavor[] flavors = new DataFlavor[1];
-    DefaultMutableTreeNode[] nodesToRemove;
+    //DefaultMutableTreeNode[] nodesToRemove;
 
     public TreeTransferHandler() {
         try {
@@ -72,7 +72,7 @@ public class TreeTransferHandler extends TransferHandler {
             }
             DefaultMutableTreeNode[] nodes =
                     copies.toArray(new DefaultMutableTreeNode[copies.size()]);
-            nodesToRemove =
+            DefaultMutableTreeNode[] nodesToRemove =
                     toRemove.toArray(new DefaultMutableTreeNode[toRemove.size()]);
             return new NodesTransferable(nodes);
         }

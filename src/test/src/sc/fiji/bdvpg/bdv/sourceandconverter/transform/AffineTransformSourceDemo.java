@@ -5,6 +5,7 @@ import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import net.imglib2.realtransform.AffineTransform3D;
+import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
@@ -28,7 +29,7 @@ public class AffineTransformSourceDemo {
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
-        importer.run();
+        //importer.run();
 
         final AbstractSpimData spimData = importer.get();
 
@@ -41,7 +42,7 @@ public class AffineTransformSourceDemo {
         new BrightnessAutoAdjuster(sac, 0).run();
 
         ArrayList<SourceAndConverter> sacs = new ArrayList<>();
-        for (int x = 0;x<20;x++) {
+        for (int x = 0; x < 20;x++) {
             for (int y = 0; y < 20; y++) {
 
                 if (Math.random()>0.0) {
@@ -64,5 +65,10 @@ public class AffineTransformSourceDemo {
                 .getSourceAndConverterDisplayService()
                 .show(bdvHandle, sacs.toArray(new SourceAndConverter[0]));
 
+    }
+
+    @Test
+    public void demoRunOk() {
+        main(new String[]{""});
     }
 }

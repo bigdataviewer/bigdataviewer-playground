@@ -16,6 +16,8 @@ public class MultipleSpimDataImporterCommand implements Command {
      * Note: Due to a bug in SciJava there needs to be some
      * text above the `File[]` parameter.
      * Otherwise the UI for `File[]` is not built.
+     *
+     * But then programmatically the message above is always shown...
      */
     @Parameter ( visibility = ItemVisibility.MESSAGE  )
     private String message = "Please choose XML/HDF5 files:";

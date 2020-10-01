@@ -7,14 +7,18 @@ import net.imglib2.converter.Converter;
 import net.imglib2.util.Pair;
 import org.scijava.command.CommandService;
 import org.scijava.object.ObjectService;
+import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.prefs.PrefService;
 import org.scijava.script.ScriptService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
+import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
+import sc.fiji.bdvpg.scijava.services.ui.SpimDataFilterNode;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
@@ -84,7 +88,10 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
                     cs.run(BdvWindowCreatorCommand.class,
                             true,
                             "is2D", false,
-                            "windowTitle", "Bdv").get().getOutput("bdvh");
+                            "windowTitle", "Bdv",
+                            "nTimepoints", 1,
+                            "interpolate",false,
+                            "projector", Projection.SUM_PROJECTOR).get().getOutput("bdvh");
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -277,6 +284,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      */
     public void closeBdv(BdvHandle bdvh) {
         os.removeObject(bdvh);
+        displayToMetadata.invalidate(bdvh); // enables memory release on GC - even if it bdv was weekly referenced
 
         // Fix BigWarp closing issue
         boolean isPaired = pairedBdvs.stream().filter(p -> (p.getA()==bdvh)||(p.getB()==bdvh)).findFirst().isPresent();
@@ -400,30 +408,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         } else {
             return null;
         }
-    }
-
-    /**
-     * SourceAndConverter filter node : Selects SpimData and allow for duplicate
-     */
-
-    public static class BdvHandleFilterNode extends SourceFilterNode {
-
-        public BdvHandle bdvh;
-
-        public boolean filter(SourceAndConverter sac) {
-            return bdvh.getViewerPanel().state().getSources().contains(sac);
-        }
-
-        public BdvHandleFilterNode(String name, BdvHandle bdvh) {
-            super(name,null, true);
-            this.filter = this::filter;
-            this.bdvh = bdvh;
-        }
-
-        public String toString() {
-            return getName();
-        }
-
     }
 
 }

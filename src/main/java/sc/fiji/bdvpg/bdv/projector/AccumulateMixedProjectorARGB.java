@@ -10,7 +10,6 @@ import net.imglib2.type.numeric.ARGBType;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -45,9 +44,9 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 	private int[] sourceOrder;
 
 	public AccumulateMixedProjectorARGB(
-			final ArrayList< VolatileProjector > sourceProjectors,
-			final ArrayList< SourceAndConverter< ? > > sources,
-			final ArrayList< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
+			final List< VolatileProjector > sourceProjectors,
+			final List< SourceAndConverter< ? > > sources,
+			final List< ? extends RandomAccessible< ? extends ARGBType > > sourceScreenImages,
 			final RandomAccessibleInterval< ARGBType > target,
 			final int numThreads,
 			final ExecutorService executorService )

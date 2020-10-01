@@ -1,18 +1,17 @@
 package sc.fiji.bdvpg.scijava.services.ui;
 
 import bdv.viewer.SourceAndConverter;
-import org.scijava.command.Command;
-import org.scijava.command.CommandInfo;
-import org.scijava.command.CommandService;
-import org.scijava.module.ModuleItem;
+import com.google.gson.Gson;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
-import sc.fiji.bdvpg.scijava.command.bdv.ScreenShotMakerCommand;
+import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesShowCommand;
 import sc.fiji.bdvpg.scijava.command.source.*;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.*;
-import java.util.List;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.function.Consumer;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getCommandName;
@@ -24,6 +23,7 @@ public class SourceAndConverterPopupMenu
 
 	 public static String[] defaultPopupActions = {
 			getCommandName(BdvSourcesAdderCommand.class),
+			getCommandName(BdvSourcesShowCommand.class),
 			getCommandName(BdvSourcesRemoverCommand.class),
 			"Inspect Sources",
 			"PopupLine",
@@ -42,7 +42,8 @@ public class SourceAndConverterPopupMenu
 			getCommandName(LUTSourceCreatorCommand.class),
 			"PopupLine",
 			getCommandName(SourcesRemoverCommand.class),
-			getCommandName(XmlHDF5ExporterCommand.class)
+			getCommandName(XmlHDF5ExporterCommand.class),
+			"PopupLine"
 	 };
 
 	 String[] popupActions;
@@ -53,7 +54,19 @@ public class SourceAndConverterPopupMenu
 
 	public SourceAndConverterPopupMenu( SourceAndConverter[] sacs )
 	{
-		this(sacs, defaultPopupActions);
+		this.sacs = sacs;
+		this.popupActions = defaultPopupActions;
+
+		File f = new File("Contents"+File.separator+"bdvpgsettings"+File.separator+"DefaultPopupActions.json");
+		if (f.exists()) {
+			try {
+				Gson gson = new Gson();
+				popupActions = gson.fromJson(new FileReader(f.getAbsoluteFile()), String[].class);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		createPopupMenu();
 	}
 
 	public SourceAndConverterPopupMenu( SourceAndConverter[] sacs, String[] actions )
@@ -93,13 +106,12 @@ public class SourceAndConverterPopupMenu
 	 * @param actionName
 	 */
 	public void addPopupAction( String actionName, Consumer<SourceAndConverter[]> action ) {
-		if (action==null) {
-			System.err.println("No action defined for action named "+actionName);
-		}
 		JMenuItem menuItem = new JMenuItem(actionName);
-		menuItem.addActionListener(e -> action.accept(
-				sacs
-		));
+		if (action == null) {
+			menuItem.addActionListener(e -> System.err.println("No action defined for action named "+actionName));
+		} else {
+			menuItem.addActionListener(e -> action.accept(sacs));
+		}
 		popup.add(menuItem);
 	}
 

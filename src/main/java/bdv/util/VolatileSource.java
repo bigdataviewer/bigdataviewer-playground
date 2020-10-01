@@ -29,6 +29,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * A {@link SharedQueue} can be passed as an argument in the constructor to control more finely
  * the volatile fetching jobs
  *
+ * Use case : see {@link ResampledSource}
+ *
  * @param <T> concrete pixel {@link net.imglib2.type.Type} linked to:
  * @param <V> {@link Volatile} type
  */

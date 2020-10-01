@@ -4,6 +4,7 @@ import bdv.util.BdvHandle;
 import net.imagej.display.process.SingleInputPreprocessor;
 import org.scijava.Priority;
 import org.scijava.command.CommandService;
+import org.scijava.module.Module;
 import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
@@ -26,7 +27,7 @@ import java.util.concurrent.ExecutionException;
 public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle>  {
 
     @Parameter
-    private ObjectService os;
+    ObjectService os;
 
     @Parameter
     CommandService cs;
@@ -48,10 +49,15 @@ public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle>  {
         if ((bdvhs == null)||(bdvhs.size()==0)) {
              try
             {
+
+                Module module = cs.moduleService()
+                        .createModule(cs.getCommand(BdvWindowCreatorCommand.class));
+
+                cs.moduleService().loadInputs(module);
+
                 return (BdvHandle)
-                        cs.run(BdvWindowCreatorCommand.class,true,
-                            "is2D", false,
-                            "windowTitle", "Bdv")
+                        cs.moduleService()
+                                .run(module, true, module.getInputs())
                                 .get()
                                 .getOutput("bdvh");
             } catch (InterruptedException e) {

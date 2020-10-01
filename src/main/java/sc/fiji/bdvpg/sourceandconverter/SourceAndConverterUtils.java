@@ -158,10 +158,15 @@ public class SourceAndConverterUtils {
             final ViewerImgLoader imgLoader = ( ViewerImgLoader ) seq.getImgLoader();
             for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() ) {
                 final int setupId = setup.getId();
-                final Object type = imgLoader.getSetupImgLoader( setupId ).getImageType();
-                String sourceName = createSetupName(setup);
-                if ( RealType.class.isInstance( type ) ) {
 
+                ViewerSetupImgLoader vsil = imgLoader.getSetupImgLoader(setupId);
+
+                final Object type = vsil.getImageType();
+
+
+                String sourceName = createSetupName(setup);
+
+                if ( RealType.class.isInstance( type ) ) {
 
                     final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
 
@@ -169,18 +174,27 @@ public class SourceAndConverterUtils {
 
                     assert nonVolatileConverter!=null;
                     if (!nonVolatile) {
+
                         final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
+
                         Converter volatileConverter = createConverterRealType((RealType)vs.getType());
+
                         out.put(setupId, new SourceAndConverter(s, nonVolatileConverter,
                                 new SourceAndConverter<>(vs, volatileConverter)));
+
                     } else {
+
                         out.put(setupId, new SourceAndConverter(s, nonVolatileConverter));
                     }
                     // Metadata need to exist before the display settings (projection mode) are set
+
                     SourceAndConverterServices.getSourceAndConverterService().register(out.get(setupId));
+
                     // Applying display settings if some have been set
                     if (setup.getAttribute(Displaysettings.class)!=null) {
+
                         Displaysettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(Displaysettings.class));
+
                     }
 
                 } else if ( ARGBType.class.isInstance( type ) ) {
@@ -605,7 +619,7 @@ public class SourceAndConverterUtils {
 
     /**
      * Return the center point in global coordinates of the source
-     * Do not expect this to work with {@link WarpedSource}
+     * Do not expect this to work with WarpedSource
      * @param source
      * @return
      */

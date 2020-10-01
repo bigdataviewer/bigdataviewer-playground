@@ -1,6 +1,7 @@
 package test;
 
 import bdv.viewer.SourceAndConverter;
+import net.imagej.ImageJ;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -17,10 +18,15 @@ import java.util.List;
 
 public class XmlHDF5SpimdataExporterTest {
     @Rule
-    public TemporaryFolder folder= new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void run() throws Exception {
+        // Need to initialize the services:
+        // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
+        ImageJ ij = new ImageJ();
+        ij.ui().showUI();
+
         // Arrange
         // creates a Voronoi SourceAndConverter
         SourceAndConverter sac = new VoronoiSourceGetter(new long[]{512,512,1},256,true).get();
@@ -39,8 +45,8 @@ public class XmlHDF5SpimdataExporterTest {
         File fileXmlControl = new File("src/test/resources/testVoronoi.xml");
         File fileH5Control = new File("src/test/resources/testVoronoi.h5");
 
-        /*
-        //TO DEBUG
+
+        //-------------- Uncomment TO DEBUG
 
         BufferedReader br = new BufferedReader(new FileReader(fileXmlControl.getAbsoluteFile()));
         String line;
@@ -55,10 +61,12 @@ public class XmlHDF5SpimdataExporterTest {
             System.out.println(line);
         }
         br.close();
-        */
 
-        //Assert.assertTrue(FileUtils.contentEquals(fileXmlGen, fileXmlControl)); Fails and I don't know why
-        //Assert.assertTrue(fileH5Gen.length() == fileH5Control.length()); Fails and I don't know why
+        // -------------------------------------- End of uncomment
+
+        Assert.assertTrue(FileUtils.contentEquals(fileXmlGen, fileXmlControl));
+        //Assert.assertTrue(fileH5Gen.length() == fileH5Control.length()); //Fails and I don't know why
+
 
     }
 

@@ -1,6 +1,7 @@
 package sc.fiji.bdvpg.bdv;
 
 import net.imagej.ImageJ;
+import org.junit.Test;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 public class BdvCreatorDemo
@@ -13,5 +14,10 @@ public class BdvCreatorDemo
 
 		// Creates a BDV since none exists yet
 		SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+	}
+
+	@Test
+	public void demoRunOk() {
+		main(new String[]{""});
 	}
 }

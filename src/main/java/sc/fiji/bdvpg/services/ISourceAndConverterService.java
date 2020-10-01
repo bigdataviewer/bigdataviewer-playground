@@ -32,7 +32,9 @@ public interface ISourceAndConverterService
      * whether a list of necessary is not obvious at the moment
      * TODO : make an example
      */
-    final public String SPIM_DATA_INFO = "SPIMDATA";
+    String SPIM_DATA_INFO = "SPIMDATA";
+
+    String SPIM_DATA_LOCATION = "SPIM_DATA_LOCATION";
 
     /**
      * Test if a Source is already registered in the Service

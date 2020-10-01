@@ -1,16 +1,21 @@
 package sc.fiji.bdvpg.bdv.config;
 
-import bdv.BehaviourTransformEventHandler3D;
-import bdv.util.BehaviourTransformEventHandlerPlanar;
+//import bdv.BehaviourTransformEventHandler3D;
+//import bdv.util.BehaviourTransformEventHandlerPlanar;
+import bdv.TransformEventHandler2D;
+import bdv.TransformEventHandler3D;
+import bdv.TransformState;
 import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SettingsPage;
 import org.mastodon.app.ui.settings.SettingsPanel;
 import org.scijava.listeners.Listeners;
+import org.scijava.ui.behaviour.BehaviourMap;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerConfigHelper;
 import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
 import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
+import org.scijava.ui.behaviour.util.Behaviours;
 import sc.fiji.bdvpg.scijava.command.bdv.ScreenShotMakerCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
@@ -106,11 +111,15 @@ public class BdvSettingsGUISetter implements Runnable {
         if (!defaultKeyConfig.exists()) {
             // ---- Default 2D Bindings "transform"
             InputTriggerConfig itc_default_2D = new InputTriggerConfig();
-            new BehaviourTransformEventHandlerPlanar(null, itc_default_2D);
+            TransformEventHandler2D teh2d = new TransformEventHandler2D(TransformState.from((at3d) ->{}, (at3d) ->{}));
+            Behaviours bt2d = new Behaviours(itc_default_2D, "DEFAULT_2D_NAVIGATION");
+            teh2d.install(bt2d);
+
             // ---- Default 3D Bindings "transform"
             InputTriggerConfig itc_default_3D = new InputTriggerConfig();
-            new BehaviourTransformEventHandler3D(null, itc_default_3D);
-
+            TransformEventHandler3D teh3d = new TransformEventHandler3D(TransformState.from((at3d) ->{}, (at3d) ->{}));
+            Behaviours bt3d = new Behaviours(itc_default_3D, "DEFAULT_2D_NAVIGATION");
+            teh3d.install(bt3d);
             // ---- Bdv Playground specific bindings
 
             InputTriggerConfig itc_bdvpg = new InputTriggerConfig();
@@ -143,10 +152,7 @@ public class BdvSettingsGUISetter implements Runnable {
 
         recursivelySearchAndAppend("bdvpg", settings, pathDirDefaultSettings);
 
-
         // ----------------------- TODO the key bindings...
-
-
 
         // Is there a sourceandconverter context menu file ?
         String pathDefaultContextMenuSettings = dirDefaultSettings.getAbsolutePath()+File.separator+defaultContextMenuFileName;
