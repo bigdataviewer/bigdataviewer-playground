@@ -12,7 +12,6 @@ import java.util.function.ToIntFunction;
  * // TODO : replace by FunctionRandomAccessible and FunctionRealRandomAccessible
  */
 
-
 public class Procedural3DImageShort extends RealPoint implements RealRandomAccess<UnsignedShortType> {
     final UnsignedShortType t;
 

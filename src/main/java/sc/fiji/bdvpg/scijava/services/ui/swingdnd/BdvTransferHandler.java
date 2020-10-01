@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * Allows to drop drop SourceAndConverter from the SourceAndConverterServiceUI into the bdv windows
@@ -64,8 +63,6 @@ public class BdvTransferHandler extends TransferHandler {
     public boolean canImport(TransferSupport support) {
 
         if (support.getComponent() instanceof JComponent) {
-            //return canImport((JComponent)support.getComponent(), support.getDataFlavors());
-
             for (int i = 0, n = support.getDataFlavors().length; i < n; i++) {
                 for (int j = 0, m = flavors.length; j < m; j++) {
                     if (support.getDataFlavors()[i].equals(flavors[j])) {

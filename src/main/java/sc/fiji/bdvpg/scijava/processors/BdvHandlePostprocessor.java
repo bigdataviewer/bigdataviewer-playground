@@ -13,9 +13,11 @@ import sc.fiji.bdvpg.scijava.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.ui.BdvHandleFilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultTreeModel;
 import java.util.function.Consumer;
 
 /**
@@ -59,27 +61,21 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
                     BdvHandleHelper.setWindowTitle(bdvh, windowTitle);
 
                     //------------ Event handling in bdv sourceandconverterserviceui
-                    SourceAndConverterBdvDisplayService.BdvHandleFilterNode
-                            node = new SourceAndConverterBdvDisplayService.BdvHandleFilterNode(windowTitle, bdvh);
-
-                    bdvh.getViewerPanel().state().changeListeners().add(new ViewerStateChangeListener() {
-                        @Override
-                        public void viewerStateChanged(ViewerStateChange change) {
-                            if (change.toString().equals("NUM_SOURCES_CHANGED")) {
-                                node.update(new SourceFilterNode.FilterUpdateEvent());
-                                SwingUtilities.invokeLater(()->sacsService.getUI().getTreeModel().reload());
-                            }
-                        }
-                    });
+                    DefaultTreeModel model = sacsService.getUI().getTreeModel();
+                    BdvHandleFilterNode node = new BdvHandleFilterNode(model, windowTitle, bdvh);
+                    node.add(new SourceFilterNode(model, "All Sources", (sac) -> true, true));
 
                     //------------ Allows to remove the BdvHandle from the objectService when closed by the user
                     BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService,  bsds, true,
                             () -> {
-                                sacsService.getUI().getTreeModel().removeNodeFromParent(node);
+                                //bdvh.getViewerPanel().state().changeListeners().remove(vscl); // TODO : check no memory leak
+                                sacsService.getUI().removeBdvHandleNodes(bdvh);
                             });
 
                     ((SourceFilterNode)sacsService.getUI().getTreeModel().getRoot()).insert(node,0);
-                    SwingUtilities.invokeLater(()->sacsService.getUI().getTreeModel().reload());
+                    /*SwingUtilities.invokeLater(()->
+                            sacsService.getUI().getTreeModel().nodeStructureChanged(node.getParent())//.reload()
+                    );*/
                 }
 
                 module.resolveOutput(name);

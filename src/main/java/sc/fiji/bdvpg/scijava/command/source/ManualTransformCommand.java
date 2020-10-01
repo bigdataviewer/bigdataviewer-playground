@@ -60,6 +60,7 @@ public class ManualTransformCommand implements Command {
                     SourceTransformHelper::cancel
             ).run();
             frameStopManualTransformation.dispatchEvent(new WindowEvent(frameStopManualTransformation, WindowEvent.WINDOW_CLOSING));
+            frameStopManualTransformation.dispose();
         });
 
         pane.add(buttonApply);

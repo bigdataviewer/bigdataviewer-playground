@@ -14,6 +14,8 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
+import org.junit.Assert;
+import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -28,6 +30,9 @@ import java.util.List;
 
 /**
  * Manual Registration Demo
+ *
+ * Press Ctrl+M to enable / disable the movement of a source
+ *
  * Author: Nicolas Chiaruttini
  * 01 2020
  */
@@ -39,6 +44,8 @@ public class ManualRegistrationDemo {
     final public static int AppendNewSpimdataTransformation = 2;
     final public static int MutateLastSpimdataTransformation = 3;
 
+    // Change to test the different options
+    static int demoMode = AppendNewSpimdataTransformation;
 
     public static boolean isTransforming = false;
 
@@ -65,8 +72,6 @@ public class ManualRegistrationDemo {
 
         //int demoMode = CreateNewTransformedSourceAndConverter;
         //int demoMode = MutateTransformedSourceAndConverter;
-
-        int demoMode = AppendNewSpimdataTransformation;
 
 
         if (demoMode == CreateNewTransformedSourceAndConverter) {
@@ -196,4 +201,10 @@ public class ManualRegistrationDemo {
         }
 
     }
+
+    @Test
+    public void demoRunOk() {
+        main(new String[]{""});
+    }
+
 }

@@ -11,7 +11,7 @@
 
 	<groupId>sc.fiji</groupId>
 	<artifactId>bigdataviewer-playground</artifactId>
-	<version>0.2.3-SNAPSHOT</version>
+	<version>0.2.5-SNAPSHOT</version>
 
 	<name>bigdataviewer-playground</name>
 	<description>BigDataViewer Actions and GUI</description>
@@ -88,7 +88,7 @@
 		<connection>scm:git:git://github.com/</connection>
 		<developerConnection>scm:git:git@github.com:</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/</url>
+		<url>https://github.com/bigdataviewer/bigdataviewer-playground/</url>
 	</scm>
 
 	<issueManagement>
@@ -101,26 +101,26 @@
 	</ciManagement>
 
 	<properties>
-		<package-name>sc.fiji.bdvpg.bdv</package-name>
+		<package-name>sc.fiji.bdvpg</package-name>
 		<license.licenseName>bsd_2</license.licenseName>
-		<license.projectName>ImgLib2: a general-purpose, multidimensional image processing library.</license.projectName>
+		<license.projectName>BigDataViewer-Playground</license.projectName>
 		<license.organizationName>MPI CBG / EMBL / EPFL </license.organizationName>
 		<license.copyrightOwners>Robert Haase, MPI CBG</license.copyrightOwners>
 		<license.copyrightOwners>Nicolas Chiaruttini, EPFL</license.copyrightOwners>
 		<license.copyrightOwners>Christian Tischer, EMBL</license.copyrightOwners>
 
 		<scijava.deleteOtherVersions>true</scijava.deleteOtherVersions>
-		<!--<scijava-maven-plugin.version>1.1.0</scijava-maven-plugin.version>-->
 		<scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory>
 
+        <bigwarp_fiji.version>6.0.3-SNAPSHOT</bigwarp_fiji.version>
 
-        <bigwarp_fiji.version>6.0.2</bigwarp_fiji.version>
-
-		<!--<bigdataviewer-core.version>9.0.6</bigdataviewer-core.version>-->
+		<bigdataviewer-core.version>10.0.2</bigdataviewer-core.version>
+		<bigdataviewer-vistools.version>1.0.0-beta-23</bigdataviewer-vistools.version>
+		<imglib2-cache.version>1.0.0-beta-15</imglib2-cache.version>
+		<bigdataviewer-selector.version>0.1.5-SNAPSHOT</bigdataviewer-selector.version>
 
 		<mastodon.version>1.0.0-beta-17-SNAPSHOT</mastodon.version>
 		<bigvolumeviewer.version>0.1.8</bigvolumeviewer.version>
-		<bigdataviewer-selector.version>0.1.4</bigdataviewer-selector.version>
 
 	</properties>
 
@@ -161,7 +161,7 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigvolumeviewer</artifactId>
-			<version>${bigvolumeviewer.version}</version> <!-- necessary to keep version here -->
+			<version>${bigvolumeviewer.version}</version>
 		</dependency>
 
 		<dependency>

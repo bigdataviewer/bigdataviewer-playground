@@ -17,6 +17,13 @@ import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 import java.util.List;
 
+<<<<<<< HEAD
+>>>>>>> master
+=======
+/**
+ * TODO : allows multiple Paths splitted by a character ? Not sure it's fool proof
+ * @param <I>
+ */
 >>>>>>> master
 
 @Plugin(type = org.scijava.convert.Converter.class)
@@ -33,6 +40,7 @@ public class StringToSourceAndConverterArray extends AbstractConverter<String, S
 
     @Override
     public <T> T convert(Object src, Class<T> dest) {
+<<<<<<< HEAD
         // From a gson list
         Gson gson = new Gson();
         try {
@@ -53,6 +61,8 @@ public class StringToSourceAndConverterArray extends AbstractConverter<String, S
         // Todo : from a path in the tree view
         /*
          System.out.println("Converter called");
+=======
+>>>>>>> master
         String str = (String) src;
         TreePath tp = sacsService.getUI().getTreePathFromString(str);
         if (tp!=null) {
@@ -60,7 +70,10 @@ public class StringToSourceAndConverterArray extends AbstractConverter<String, S
         } else {
             return null;
         }
+<<<<<<< HEAD
          */
+=======
+>>>>>>> master
     }
 
     @Override

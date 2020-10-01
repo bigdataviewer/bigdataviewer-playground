@@ -7,7 +7,7 @@ import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
-import java.util.Map;
+import javax.swing.tree.DefaultTreeModel;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
 
@@ -20,22 +20,26 @@ public class SpimDataElementFilter extends SourceFilterNode {
     final Entity e;
     final SourceAndConverterService sourceAndConverterService;
 
-    public SpimDataElementFilter(String name, Entity e, SourceAndConverterService sourceAndConverterService) {
-        super(name, null, true);
+    public SpimDataElementFilter(DefaultTreeModel model, String name, Entity e, SourceAndConverterService sourceAndConverterService) {
+        super(model, name, null, false);
         this.filter = this::filter;
         this.e = e;
         this.sourceAndConverterService = sourceAndConverterService;
     }
 
     public boolean filter(SourceAndConverter sac) {
-        //Map<String, Object> props = sourceAndConverterService.getSacToMetadata().get(sac);
-        //assert props!=null;
-        //assert props.containsKey( SPIM_DATA_INFO );
+        if (sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO)) {
+            AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd = ( AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) (( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).asd;
+            Integer idx = (( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).setupId;
+            return asd.getSequenceDescription().getViewSetups().get(idx).getAttributes().values().contains(e);
+        } else {
+            return false;
+        }
+    }
 
-        AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd = ( AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) (( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).asd;
-        Integer idx = (( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).setupId;
-
-        return asd.getSequenceDescription().getViewSetups().get(idx).getAttributes().values().contains(e);
+    @Override
+    public Object clone() {
+        return new SpimDataElementFilter(model, name, e, sourceAndConverterService);
     }
 
 }

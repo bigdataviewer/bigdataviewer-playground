@@ -9,8 +9,12 @@ import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
+import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterTreeCellRenderer;
 
 import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -22,6 +26,8 @@ import java.util.Set;
 
 /**
  * Swing implementation of {@link SourceAndConverterWidget}.
+ *
+ * Note the rather complex {@link SwingSourceAndConverterListWidget#set} method to avoid memory leak
  *
  * @author Nicolas Chiaruttini
  */
@@ -84,6 +90,7 @@ public class SwingSourceAndConverterWidget extends SwingInputWidget<SourceAndCon
     public void set(final WidgetModel model) {
         super.set(model);
         tree = new JTreeLeavesOnlySelectable(bss.getUI().getTreeModel());
+        tree.setCellRenderer(new SourceAndConverterTreeCellRenderer());
         // Only one node selected (needs to be a leaf
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(tree);
@@ -91,7 +98,39 @@ public class SwingSourceAndConverterWidget extends SwingInputWidget<SourceAndCon
         getComponent().add(scrollPane);
         refreshWidget();
         model.setValue(null);
-        tree.addTreeSelectionListener((e)-> model.setValue(getValue()));
+        TreeSelectionListener tsl = (e)-> model.setValue(getValue());
+        tree.addTreeSelectionListener(tsl);
+
+        // -------------------------------- Memory leak! Cut heads of the Hydra of Lerna
+        // The part below helps solve the memory leak:
+        // with JTree not released the lastly selected path
+        // with Listeners holding references with objects of potentially big memory footprint (SourceAndConverters)
+
+        tree.addAncestorListener(new AncestorListener() {
+            @Override
+            public void ancestorAdded(AncestorEvent event) {
+            }
+
+            @Override
+            public void ancestorRemoved(AncestorEvent event) {
+                tree.removeTreeSelectionListener(tsl);
+                tree.clearSelection();
+                tree.cancelEditing();
+                //tree.clearToggledPaths();
+                tree.resetKeyboardActions();
+                tree.updateUI();
+                scrollPane.remove(tree);
+                getComponent().remove(scrollPane);
+                tree.setModel(null);
+                tree.removeAncestorListener(this);
+                tree = null;
+            }
+
+            @Override
+            public void ancestorMoved(AncestorEvent event) {
+            }
+        });
+        // -------------------------------- All heads cut (hopefully)
     }
 
     public class JTreeLeavesOnlySelectable extends JTree {

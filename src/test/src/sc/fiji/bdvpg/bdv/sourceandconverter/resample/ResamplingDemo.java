@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.bdv.sourceAndConverter.resample;
+package sc.fiji.bdvpg.bdv.sourceandconverter.resample;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
@@ -9,6 +9,7 @@ import net.imglib2.cache.img.DiskCachedCellImgOptions;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
+import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
@@ -114,5 +115,10 @@ public class ResamplingDemo {
 
         new ColorChanger( upsampledSource, new ARGBType(ARGBType.rgba(0, 0,255,0))).run();
 
+    }
+
+    @Test
+    public void demoRunOk() {
+        main(new String[]{""});
     }
 }

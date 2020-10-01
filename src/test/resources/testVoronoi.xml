@@ -26,13 +26,14 @@
         </Channel>
       </Attributes>
       <Attributes name="displaysettings">
-        <displaysettings>
+        <Displaysettings>
           <id>0</id>
           <isset>true</isset>
           <color>255 255 255 255</color>
           <min>0.0</min>
           <max>65535.0</max>
-        </displaysettings>
+          <Projection_Mode>Sum</Projection_Mode>
+        </Displaysettings>
       </Attributes>
     </ViewSetups>
     <Timepoints type="range">

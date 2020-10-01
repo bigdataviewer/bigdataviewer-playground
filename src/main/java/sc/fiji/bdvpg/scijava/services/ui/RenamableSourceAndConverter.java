@@ -5,6 +5,7 @@ import bdv.viewer.SourceAndConverter;
 /**
  * Wraps a SourceAndConverter and allow to change its name
  */
+
 public class RenamableSourceAndConverter {
     public SourceAndConverter sac;
     public RenamableSourceAndConverter(SourceAndConverter sac) {

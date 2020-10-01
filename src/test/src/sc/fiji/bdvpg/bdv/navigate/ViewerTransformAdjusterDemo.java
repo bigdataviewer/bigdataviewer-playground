@@ -3,6 +3,7 @@ package sc.fiji.bdvpg.bdv.navigate;
 import bdv.util.BdvHandle;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
+import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
@@ -51,5 +52,10 @@ public class ViewerTransformAdjusterDemo {
         });
 
         new ViewerTransformAdjuster(bdvHandle, SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
+    }
+
+    @Test
+    public void demoRunOk() {
+        main(new String[]{""});
     }
 }

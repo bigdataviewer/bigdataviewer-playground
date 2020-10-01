@@ -2,9 +2,8 @@ package sc.fiji.bdvpg.scijava.services.ui;
 
 import bdv.viewer.SourceAndConverter;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
+import javax.swing.*;
+import javax.swing.tree.*;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
@@ -35,12 +34,17 @@ import java.util.function.Predicate;
  * - the node has to be updated if:
  *      - a new SourceAndConverter node is inserted {@link SourceUpdateEvent}
  *      - the filter has changed, and source needs to be retested {@link FilterUpdateEvent}
- *      - a new children node is inserted {@link NodeAddedUpdateEvent} // TODO : check that is linked nodes are added, the update is properly handled
+ *      - a new children node is inserted {@link NodeAddedUpdateEvent} // TODO : check that if linked nodes are added, the update is properly handled
  *
+ * - Implements cloneable : clone is used in copy / paste of nodes + in drag and drop of sourcefilter nodes
  * // TODO : node name change event ?
+ *
+ * // TODO : Is this functionality implemented in an overly complicated manner ?...
+ *
+ * @author Nicolas Chiaruttini, BIOP, EPFL
  */
 
-public class SourceFilterNode extends DefaultMutableTreeNode {
+public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneable {
 
     /**
      * Filters SourceAndConverter to downstream nodes in the tree
@@ -57,8 +61,11 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
      */
     boolean displayFilteredSources;
 
-    public SourceFilterNode(String name, Predicate<SourceAndConverter> filter, boolean displayFilteredSources) {
+    DefaultTreeModel model;
+
+    public SourceFilterNode(DefaultTreeModel model, String name, Predicate<SourceAndConverter> filter, boolean displayFilteredSources) {
         super(name);
+        this.model = model;
         this.name = name;
         this.filter = filter;
         this.displayFilteredSources = displayFilteredSources;
@@ -98,20 +105,32 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
                         }
                     }
                     if (displayFilteredSources) {
-                        super.insert(new DefaultMutableTreeNode(((DefaultMutableTreeNode)newChild).getUserObject()), childIndex);
+                        DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(((DefaultMutableTreeNode)newChild).getUserObject());
+                        super.insert(newNode, childIndex);
+                        safeModelReloadAction(() -> model.reload(this));//.nodesWereInserted(this, new int[]{childIndex}) ); // updates model in EDT thread
                     }
                 }
             }
         } else {
             // It's not a node containing a SourceAndConverter : standard behaviour
             super.insert(newChild, childIndex);
-            // Still : notifying the insertion of a new node, which can be a nw filter node and thus needs recomputation
+            safeModelReloadAction(() -> model.nodesWereInserted(this, new int[]{childIndex}) ); // updates model in EDT thread
+
+            // Still : notifying the insertion of a new node, which can be a new filter node and thus needs recomputation
             this.update(new NodeAddedUpdateEvent(newChild));
         }
     }
 
     private static SourceAndConverter getSacFromNode(MutableTreeNode newChild) {
         return ((RenamableSourceAndConverter)(((DefaultMutableTreeNode)newChild).getUserObject())).sac;
+    }
+
+    public void remove(MutableTreeNode aChild) {
+       int iChild = this.getIndex(aChild);
+       super.remove(aChild);
+       safeModelReloadAction(() -> model.nodesWereRemoved(this,
+               new int[]{iChild},
+               new Object[]{aChild}));
     }
 
     /**
@@ -121,16 +140,16 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
     void remove(SourceAndConverter sac) {
         currentInputSacs.remove(sac);
         currentOutputSacs.remove(sac);
+
         for (int i = 0; i < getChildCount(); i++) {
             DefaultMutableTreeNode n = (DefaultMutableTreeNode) getChildAt(i);
             if (n instanceof SourceFilterNode) {
-                // System.out.println("updating child "+i+" named "+n.toString());
                 ((SourceFilterNode) n).remove(sac);
             } else {
                 if (displayFilteredSources) {
                     if (n.getUserObject() instanceof RenamableSourceAndConverter) {
                         if (((RenamableSourceAndConverter)(n.getUserObject())).sac.equals(sac)) {
-                            super.remove(n);
+                            remove(n);
                         }
                     }
                 }
@@ -166,7 +185,9 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
                             }
                         }
                         if (displayFilteredSources) {
-                            super.insert(new DefaultMutableTreeNode(rsac), getChildCount());
+                            int iChild = getChildCount()-1;
+                            super.insert(new DefaultMutableTreeNode(rsac), iChild);
+                            safeModelReloadAction(() -> model.nodesWereInserted(this, new int[]{iChild}) );
                         }
                     }
                 } else {
@@ -193,7 +214,9 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
                         }
                     }
                     if (displayFilteredSources) {
-                        super.insert(new DefaultMutableTreeNode(rsac), getChildCount());
+                        int iChild = getChildCount()-1;
+                        super.insert(new DefaultMutableTreeNode(rsac), iChild);
+                        safeModelReloadAction(() -> model.nodesWereInserted(this, new int[]{iChild}));
                     }
                 } else {
                     // Still need to update the children
@@ -274,6 +297,25 @@ public class SourceFilterNode extends DefaultMutableTreeNode {
 
         public TreeNode getNode() {
             return o;
+        }
+    }
+
+    public Object clone() {
+        return new SourceFilterNode(model, name, filter, displayFilteredSources);
+    }
+
+    /**
+     * Executes the model reloading actions in the EDT
+     *
+     * @param runnable
+     */
+    static public void safeModelReloadAction(Runnable runnable) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            runnable.run();
+        } else {
+            SwingUtilities.invokeLater(() -> {
+                runnable.run();
+            });
         }
     }
 

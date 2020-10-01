@@ -1,6 +1,7 @@
 package sc.fiji.bdvpg.bdv.scijava;
 
 import net.imagej.ImageJ;
+import org.junit.Test;
 import sc.fiji.bdvpg.scijava.command.spimdata.MultipleSpimDataImporterCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
@@ -18,5 +19,10 @@ public class MultipleSpimDataImporterCommandDemo
 		files[0] = new File("src/test/resources/mri-stack.xml");
 		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
 		ij.command().run( MultipleSpimDataImporterCommand.class, true, "files", files);
+	}
+
+	@Test
+	public void demoRunOk() {
+		main(new String[]{""});
 	}
 }

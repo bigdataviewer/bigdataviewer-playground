@@ -2,6 +2,7 @@ package sc.fiji.bdvpg.bdv;
 
 import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
+import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -32,5 +33,10 @@ public class SpimDataDisplayDemo
 			new ViewerTransformAdjuster(bdvHandle, sac).run();
 			new BrightnessAutoAdjuster(sac, 0).run();
 		});
+	}
+
+	@Test
+	public void demoRunOk() {
+		main(new String[]{""});
 	}
 }
