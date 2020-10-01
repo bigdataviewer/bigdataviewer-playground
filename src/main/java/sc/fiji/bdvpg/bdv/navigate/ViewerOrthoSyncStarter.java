@@ -230,7 +230,7 @@ public class ViewerOrthoSyncStarter implements Runnable {
             // Calling it three times leads to an identical transform, hence the stopping condition is triggered
             AffineTransform3D nextAt3D = nextAffineTransform.copy();
             nextAt3D.set(nextAffineTransform.getRowPackedCopy());
-            nextBdvHandle.getViewerPanel().setCurrentViewerTransform(nextAt3D);
+            nextBdvHandle.getViewerPanel().state().setViewerTransform(nextAt3D);
             nextBdvHandle.getViewerPanel().requestRepaint();
         }
 

@@ -131,7 +131,7 @@ public class ViewerTransformSyncStarter implements Runnable {
         // but only if the two necessary objects are present (the origin BdvHandle and the transform
          if ((bdvHandleInitialReference !=null)&&(at3Dorigin!=null)) {
              for (BdvHandle bdvh: bdvHandles) {
-                 bdvh.getViewerPanel().setCurrentViewerTransform(at3Dorigin.copy());
+                 bdvh.getViewerPanel().state().setViewerTransform(at3Dorigin.copy());
                  bdvh.getViewerPanel().requestRepaint();
                  if (synchronizeTime) {
                      bdvh.getViewerPanel().state().setCurrentTimepoint(
