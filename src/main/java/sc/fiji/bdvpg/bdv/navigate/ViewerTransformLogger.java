@@ -10,7 +10,7 @@ import sc.fiji.bdvpg.log.SystemLogger;
  * BigDataViewer Playground Action -->
  * Action which logs the view transform of a {@link BdvHandle}
  *
- * See {@link ViewTransformSetAndLogDemo} for a usage example
+ * See ViewTransformSetAndLogDemo for a usage example
  *
  * @author Robert Haase, MPI CBG
  */

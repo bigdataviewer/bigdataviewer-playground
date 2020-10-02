@@ -12,7 +12,8 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>Show Sources (new Bdv window)")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Show Sources (new Bdv window)",
+        label = "Displays one or several sources into a new BDV window")
 public class BdvSourcesShowCommand implements Command {
 
     @Parameter(label="Select Source(s)")

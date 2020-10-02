@@ -35,7 +35,7 @@ import static sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStopper.MatrixApprox
  * the target viewTransform is approximately equal {@link ViewerTransformSyncStopper#MatrixApproxEquals}
  * to the source viewTransform), then there's no need to trigger a view transform change to the next BdvHandle
  *
- * See {@link TODO ViewOrthoSynchronizationDemo} for a usage example
+ * See OrthoViewDemo for a usage example
  *
  * @author Nicolas Chiaruttini, BIOP EPFL, nicolas.chiaruttini@epfl.ch
  */

@@ -18,7 +18,9 @@ import java.util.stream.Collectors;
  * Behaviour that shows the context menu of actions available that will act on the sources
  * that are drawn below the mouse location
  *
+ * @author Nicolas Chiaruttini, BIOP, EPFL 2020
  */
+
 public class SourceAndConverterContextMenuClickBehaviour implements ClickBehaviour
 {
 	final BdvHandle bdv;

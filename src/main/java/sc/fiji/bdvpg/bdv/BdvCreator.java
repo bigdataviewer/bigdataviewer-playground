@@ -18,7 +18,6 @@ import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.scijava.ui.behaviour.util.Behaviours;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.behaviour.EditorBehaviourInstaller;
-import sc.fiji.bdvpg.behaviour.SourceAndConverterContextMenuClickBehaviour;
 import sc.fiji.bdvpg.scijava.command.bdv.ScreenShotMakerCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.swingdnd.BdvTransferHandler;
@@ -34,6 +33,8 @@ import java.util.function.Supplier;
  *
  * Creates a new {@link bdv.BigDataViewer} instance accessible through the {@link BdvHandle} interface
  *
+ * TODO improve documentation with customisation used in this class
+ *
  */
 
 public class BdvCreator implements Runnable, Supplier<BdvHandle>
@@ -41,7 +42,6 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 
 	private BdvOptions bdvOptions;
 	private boolean interpolate;
-	//private BdvHandle bdv;
 	private int numTimePoints;
 	private String pathToBindings;
 

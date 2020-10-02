@@ -18,13 +18,13 @@ import java.util.function.BiFunction;
  *
  * Works with a single BdvHandle (TODO : synchronizes with multiple BdvHandle)
  *
- * Working principle ( read ManualRegistrationStarter first ) :
+ * Working principle ( read {@link ManualRegistrationStarter} first ) :
  * - Stops listener of manual registration
  * - Removes transiently wrapped sources from display, and from {@link SourceAndConverterServices}
  *
  * - Transform all the sources that needed to be transformed, according to the {@link ManualRegistrationStopper#registrationPolicy} (see details below)
  *
- * - Restores the initially displays sources, but transformed according to the choosen registrationPolicy
+ * - Restores the initially displays sources, but transformed according to the chosen registrationPolicy
  *
  * a registrationPolicy is a function that outputs a registered source, with inputs being the initial source with a time range {@link SourceAndConverterAndTimeRange}
  * and an affine transform, thus it's {@code BiFunction<AffineTransform3D, SourceAndConverterAndTimeRange, SourceAndConverter>}
@@ -38,6 +38,7 @@ import java.util.function.BiFunction;
  *
  * Any other policy can be used since it is a parameter of this action
  *
+ * @author : Nicolas Chiaruttini, BIOP, EPFL 2019
  */
 
 public class ManualRegistrationStopper implements Runnable {

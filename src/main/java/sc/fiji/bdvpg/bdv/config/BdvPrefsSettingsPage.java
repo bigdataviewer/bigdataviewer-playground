@@ -15,7 +15,7 @@ import java.util.Properties;
  * within the bigdataviewer.properties file
  * {@link SettingsPage} comes from Mastodon
  *
- * @author Nicolas Chiaruttini, EPFL 2020
+ * @author Nicolas Chiaruttini, BIOP, EPFL, 2020
  */
 
 public class BdvPrefsSettingsPage implements SettingsPage {

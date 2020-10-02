@@ -3,7 +3,7 @@ package sc.fiji.bdvpg.bdv.navigate;
 import bdv.util.BdvHandle;
 import bdv.viewer.TimePointListener;
 import net.imglib2.realtransform.AffineTransform3D;
-import bdv.viewer.TransformListener;//net.imglib2.ui.TransformListener;
+import bdv.viewer.TransformListener;
 import java.util.Map;
 
 /**
@@ -12,7 +12,7 @@ import java.util.Map;
  * Works in combination with the action {@link ViewerTransformSyncStarter}
  * and {@link ViewerOrthoSyncStarter}
  *
- * See {@link ViewTransformSynchronizationDemo} for a usage example
+ * See ViewTransformSynchronizationDemo for a usage example
  *
  * @author Nicolas Chiaruttini, BIOP EPFL, nicolas.chiaruttini@epfl.ch
  */

@@ -21,6 +21,7 @@ package sc.fiji.bdvpg.bdv.projector;
  * can be used to only show this source.
  *
  */
+
 public class Projection
 {
 	public static final String PROJECTION_MODE = "Projection Mode"; // underscore necessary for valid xml element to store in @see DisplaySettings

@@ -8,7 +8,7 @@ import net.imglib2.realtransform.AffineTransform3D;
  * Action which concatenates the current viewTransform
  * of a {@link BdvHandle} with the input {@link AffineTransform3D}
  *
- * See {@link ViewTransformSetAndLogDemo} for a usage example
+ * See ViewTransformSetAndLogDemo for a usage example
  *
  * @author @haesleinhuepf
  * 12 2019
@@ -34,7 +34,7 @@ public class ViewTransformator implements Runnable {
         view = view.concatenate(transform);
 
         // submit to BDV
-        bdvHandle.getViewerPanel().setCurrentViewerTransform(view);
+        bdvHandle.getViewerPanel().state().setViewerTransform(view);
 
     }
 }

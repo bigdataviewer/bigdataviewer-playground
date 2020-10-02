@@ -22,6 +22,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getComman
  * BDV Actions called by default on each BDV Window being created
  * See {@link EditorBehaviourUnInstaller} to remove the default editor and replace by a custom if necessary
  *
+ * @author Nicolas Chiaruttini, BIOP, EPFL 2020
  */
 
 public class EditorBehaviourInstaller implements Runnable {
@@ -32,6 +33,7 @@ public class EditorBehaviourInstaller implements Runnable {
     private ToggleListener toggleListener;
 
     public static String[] getEditorPopupActions() {
+        // TODO : fix the file path containing default actions
         File f = new File("Contents"+File.separator+"bdvpgsettings"+File.separator+"DefaultEditorActions.json");
         String[] editorPopupActions = {
                 getCommandName(BdvSourcesShowCommand.class),

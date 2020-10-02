@@ -18,8 +18,8 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import javax.swing.*;
 import java.awt.*;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>Create Ortho BDV Frames",
-        label = "Creates 3 BDVs windows with synchronized orthogonal views")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Create Orthogonal Views",
+        label = "Creates 3 BDV windows with synchronized orthogonal views")
 public class BdvOrthoWindowCreatorCommand implements Command {
 
     @Parameter(label = "Title of BDV windows")
@@ -30,21 +30,6 @@ public class BdvOrthoWindowCreatorCommand implements Command {
 
     @Parameter(label = "Number of timepoints (1 for a single timepoint)")
     public int nTimepoints = 1;
-
-    @Parameter(label = "Synchronize time")
-    public boolean syncTime;
-
-    /**
-     * This triggers: BdvHandlePostprocessor
-     */
-    @Parameter(type = ItemIO.OUTPUT)
-    public BdvHandle bdvhX;
-
-    @Parameter(type = ItemIO.OUTPUT)
-    public BdvHandle bdvhY;
-
-    @Parameter(type = ItemIO.OUTPUT)
-    public BdvHandle bdvhZ;
 
     @Parameter(label = "Source Projection Mode", choices = { Projection.MIXED_PROJECTOR, Projection.SUM_PROJECTOR, Projection.AVERAGE_PROJECTOR})
     public String projector;
@@ -66,6 +51,21 @@ public class BdvOrthoWindowCreatorCommand implements Command {
 
     @Parameter(label = "Window Height")
     int sizeY = 500;
+
+    //@Parameter(label = "Synchronize time") // honestly no reason not to synchronize the time
+    public boolean syncTime = true;
+
+    /**
+     * This triggers: BdvHandlePostprocessor
+     */
+    @Parameter(type = ItemIO.OUTPUT)
+    public BdvHandle bdvhX;
+
+    @Parameter(type = ItemIO.OUTPUT)
+    public BdvHandle bdvhY;
+
+    @Parameter(type = ItemIO.OUTPUT)
+    public BdvHandle bdvhZ;
 
     @Override
     public void run() {

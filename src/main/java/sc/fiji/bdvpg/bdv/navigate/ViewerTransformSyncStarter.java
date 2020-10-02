@@ -31,7 +31,7 @@ import static sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStopper.MatrixApprox
  *
  * see also {@link ViewerOrthoSyncStarter}
  *
- * See {@link ViewTransformSynchronizationDemo} for a usage example
+ * See ViewTransformSynchronizationDemo for a usage example
  *
  * @author Nicolas Chiaruttini, BIOP EPFL, nicolas.chiaruttini@epfl.ch
  */

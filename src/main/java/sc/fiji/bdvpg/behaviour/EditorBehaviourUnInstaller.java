@@ -7,7 +7,10 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 /**
  * Removes an editor behaviour installed
  * See {@link EditorBehaviourInstaller}
+ *
+ * @author Nicolas Chiaruttini, BIOP, EPFL 2020
  */
+
 public class EditorBehaviourUnInstaller implements Runnable {
 
     BdvHandle bdvh;

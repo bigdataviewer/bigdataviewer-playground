@@ -38,6 +38,7 @@ import static sc.fiji.bdvpg.bdv.projector.Projection.*;
  *
  * @author Christian Tischer, EMBL
  */
+
 public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType, ARGBType >
 {
 	private final String[] projectionModes;

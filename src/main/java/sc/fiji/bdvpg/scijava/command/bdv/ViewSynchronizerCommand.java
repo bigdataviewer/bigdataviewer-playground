@@ -22,17 +22,21 @@ import java.awt.event.WindowEvent;
  *
  * Hence the dirty JFrame the user has to close to stop synchronization ...
  *
- * author Nicolas Chiaruttini
+ * TODO fix potential memory leaks which could be a consequence of this extra JFrame
+ *
+ * author Nicolas Chiaruttini, BIOP, EPFL, 2020
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>Synchronize Views")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Synchronize Views",
+            label = "Synchronizes the view of a set of BDV windows. A window popup should be closed" +
+                    " to stop the synchronization")
 public class ViewSynchronizerCommand implements Command {
 
     @Parameter(label = "Select Windows to synchronize")
     BdvHandle[] bdvhs;
 
     @Parameter(label = "Synchronize timepoints")
-    boolean synchronizeTime;
+    boolean synchronizeTime = true;
 
     ViewerTransformSyncStarter sync;
 

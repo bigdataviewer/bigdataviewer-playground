@@ -4,7 +4,6 @@ import bdv.viewer.Source;
 import mpicbg.spim.data.generic.sequence.BasicSetupImgLoader;
 import mpicbg.spim.data.generic.sequence.TypedBasicImgLoader;
 import net.imglib2.type.Type;
-
 import java.util.List;
 
 /**

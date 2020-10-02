@@ -5,7 +5,6 @@ import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imglib2.*;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
-
 import java.util.function.ToIntFunction;
 
 /**

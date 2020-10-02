@@ -1,7 +1,5 @@
 package sc.fiji.bdvpg.bdv.config;
 
-//import bdv.BehaviourTransformEventHandler3D;
-//import bdv.util.BehaviourTransformEventHandlerPlanar;
 import bdv.TransformEventHandler2D;
 import bdv.TransformEventHandler3D;
 import bdv.TransformState;
@@ -9,7 +7,6 @@ import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SettingsPage;
 import org.mastodon.app.ui.settings.SettingsPanel;
 import org.scijava.listeners.Listeners;
-import org.scijava.ui.behaviour.BehaviourMap;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerConfigHelper;
 import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
@@ -165,7 +162,6 @@ public class BdvSettingsGUISetter implements Runnable {
         dialog.getContentPane().add( settings, BorderLayout.CENTER );
         dialog.pack();
         dialog.setVisible( true );
-
     }
 
     private void recursivelySearchAndAppend(String subPath, SettingsPanel settings, String pathDir) {

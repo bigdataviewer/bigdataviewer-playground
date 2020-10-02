@@ -17,6 +17,7 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
  * TODO : improved conversion or retire... the conversion is not modular it's a direct casting to int
  *
  */
+
 public class SourceToUnsignedShortConverter {
 
     static public Source<UnsignedShortType> convertRealSource(Source<RealType> iniSrc) {

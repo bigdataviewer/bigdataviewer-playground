@@ -4,7 +4,7 @@ import bdv.tools.transformation.TransformedSource;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
-import bdv.viewer.TransformListener;//net.imglib2.ui.TransformListener;
+import bdv.viewer.TransformListener;
 import org.scijava.vecmath.Point3d;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
@@ -28,9 +28,11 @@ import java.util.List;
  * The ManualRegistrationStopper action does actually stores the registration once it is finished
  *
  * Note : all the selected sources will be registered ( parameter 'SourceAndConverter... sacs' in the constructor ),
- * however, only those who were displayed originally will be used for the intereactive manual registration,
+ * however, only those who were displayed originally will be used for the interactive manual registration,
  * this allows for a much stronger performance : you can actually register multiple
  * sources but only base your registration on a single displayed one.
+ *
+ * @author : Nicolas Chiaruttini, BIOP, EPFL 2019
  *
  */
 public class ManualRegistrationStarter implements Runnable {

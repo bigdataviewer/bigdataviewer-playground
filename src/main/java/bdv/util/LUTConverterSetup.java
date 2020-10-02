@@ -3,11 +3,9 @@ package bdv.util;
 import bdv.tools.brightness.ConverterSetup;
 import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.type.numeric.ARGBType;
-
 import java.util.Arrays;
 import java.util.List;
 import org.scijava.listeners.*;
-
 
 /**
  * {@link ConverterSetup} used to control a {@link RealLUTConverter}

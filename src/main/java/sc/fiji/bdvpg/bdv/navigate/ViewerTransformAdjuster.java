@@ -15,7 +15,7 @@ import net.imglib2.util.LinAlgHelpers;
  *
  * TODO : support the adjustement on a series of SourceAndConverter
  *
- * Usage example see {@link sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjusterDemo}
+ * Usage example see ViewerTransformAdjusterDemo
  *
  * @author Christian Tischer, EMBL
  */
@@ -35,7 +35,7 @@ public class ViewerTransformAdjuster implements Runnable
 	public void run()
 	{
 		final AffineTransform3D transform = getTransform();
-		bdvHandle.getViewerPanel().setCurrentViewerTransform( transform );
+		bdvHandle.getViewerPanel().state().setViewerTransform(transform);
 	}
 
 	/**

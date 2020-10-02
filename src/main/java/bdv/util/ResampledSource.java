@@ -21,14 +21,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * defined by a model {@link ResampledSource#resamplingModel} source
  *
  * The returned resampled source is a source which is:
- * - the sampling of the scalar origin source field {@link ResampledSource#origin}
+ * - the sampling of the origin source field {@link ResampledSource#origin}
  * at the points which are defined by the model source {@link ResampledSource#resamplingModel} source
  *
  * Note:
  * - To be present at a certain timepoint, both the origin and the model source need to exist
  * - There is no duplication of data, unless {@link ResampledSource#cache} is true
  *
- *  TODO : fix multiresolution resampling (see comments below)
+ *  TODO : improve multiresolution resampling (see comments in the class)
  *
  * @author Nicolas Chiaruttini, BIOP EPFL, 2020
  * @param <T> Type of the output source, identical to the origin source
@@ -62,7 +62,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     /**
      * The origin source {@param source} is accessed through its RealRandomAccessible representation :
-     * - It can be accessed at any 3d point in space, with real valued coordinates : it's a scalar field of {@link T} objects
+     * - It can be accessed at any 3d point in space, with real valued coordinates : it's a field of {@link T} objects
      *
      * The model source ({@param resamplingModel}) defines a portion of space and how it is sampled :
      *  - through its RandomAccessibleInterval bounds
@@ -71,11 +71,13 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
      *
      * @param reuseMipMaps allows to reuse mipmaps of both the origin and the model source in the resampling
      *  Reusing mipmaps works well is the voxel size are approximately identical between
-     *  the model and the origin source TODO : fix this to allow for a more clever mipmap reuse - check hos it is done in multiresolution renderer
+     *  the model and the origin source
+     *  TODO : improve this to allow for a more clever mipmap reuse - check how it is done in multiresolution renderer
      *
      * @param cache specifies whether the result of the resampling should be cached.
      *  This allows for a fast access of resampled source after the first computation - but the synchronization with
      *  the origin and model source is lost.
+     *  TODO : check how the cache can be accessed / reset
      *
      * @param originInterpolation specifies whether the origin source should be interpolated of not in the resampling process
      *
@@ -146,8 +148,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         long sy = resamplingModel.getSource(t,reuseMipMaps?level:0).dimension(1)-1;
         long sz = resamplingModel.getSource(t,reuseMipMaps?level:0).dimension(2)-1;
 
-
-        // Get scalar field of origin source
+        // Get field of origin source
         final RealRandomAccessible<T> ipimg = origin.getInterpolatedSource(t, reuseMipMaps?level:0, originInterpolation);
 
         // Gets randomAccessible... ( with appropriate transform )
@@ -186,7 +187,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     @Override
     public String getName() {
-        return origin.getName()+"_ResampledLike_"+resamplingModel.getName();
+        return origin.getName()+"_ResampledAs_"+resamplingModel.getName();
     }
 
     @Override
