@@ -1,4 +1,6 @@
-## BDV playground / toolbox / actions
+# THIS REPOSITORY IS IN ACTIVE DEVELOPMENT. ITS API IS NOT STABLE. ACTIVATING ITS UPDATE SITE CAN BREAK THE FUNCTIONALITIES OF OTHER UPDATE SITES (BigSticher)
+
+## BDV playground / toolbox / actions [WIP]
 
 [![Gitter](https://badges.gitter.im/bigdataviewer-playground/community.svg)](https://gitter.im/bigdataviewer-playground/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
