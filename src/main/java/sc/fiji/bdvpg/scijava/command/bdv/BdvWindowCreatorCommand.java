@@ -16,7 +16,7 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Create empty BDV window",
-    label = "Creates an empty BDV window")
+    description = "Creates an empty BDV window")
 public class BdvWindowCreatorCommand implements Command {
 
     @Parameter(label = "Create a 2D BDV window")

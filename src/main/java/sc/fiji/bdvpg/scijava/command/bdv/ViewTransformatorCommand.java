@@ -18,7 +18,7 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
  */
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Change view transform",
-    label = "Applies a simple view transform (translation / rotation) to a BDV window")
+    description = "Applies a simple view transform (translation / rotation) to a BDV window")
 public class ViewTransformatorCommand implements Command {
 
     @Parameter(label = "Select BDV Windows")

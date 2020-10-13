@@ -19,7 +19,7 @@ import static sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStopper.MatrixApprox
  * See also ViewTransformSynchronizationDemo
  *
  * Principle : for every changed view transform of a specific BdvHandle,
- * the view transform change is triggered to the following BdvHandle in a closed loop manner
+ * the view transform change is passed to the following BdvHandle in a closed loop manner
  *
  * Note : the center of the window in global coordinate is kept identical between BdvHandles
  *
@@ -195,7 +195,7 @@ public class ViewerTransformSyncStarter implements Runnable {
             // Calling it three times leads to an identical transform, hence the stopping condition is triggered
             AffineTransform3D nextAt3D = nextAffineTransform.copy();
             nextAt3D.set(nextAffineTransform.getRowPackedCopy());
-            nextBdvHandle.getViewerPanel().setCurrentViewerTransform(nextAt3D);
+            nextBdvHandle.getViewerPanel().state().setViewerTransform(nextAt3D);
             nextBdvHandle.getViewerPanel().requestRepaint();
         }
     }

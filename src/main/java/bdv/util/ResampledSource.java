@@ -30,8 +30,9 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  *  TODO : improve multiresolution resampling (see comments in the class)
  *
- * @author Nicolas Chiaruttini, BIOP EPFL, 2020
  * @param <T> Type of the output source, identical to the origin source
+ *
+ * @author Nicolas Chiaruttini, BIOP EPFL, 2020
  */
 
 public class ResampledSource< T extends NumericType<T> & NativeType<T>> implements Source<T> {

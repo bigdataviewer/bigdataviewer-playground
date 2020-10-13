@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * TODO WIP : link keys and actions available in bigdataviewer playground
- *
+ * NOT WORKING
  * SettingsPage comes from Mastodon
  */
 

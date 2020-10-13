@@ -47,6 +47,7 @@ import static sc.fiji.bdvpg.bdv.BdvUtils.*;
  * Author: @haesleinhuepf, @tischi
  *         December 2019
  */
+
 public class ScreenShotMaker {
 
     private BdvHandle bdvHandle;

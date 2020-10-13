@@ -33,6 +33,10 @@ import java.util.function.Supplier;
  *
  * Creates a new {@link bdv.BigDataViewer} instance accessible through the {@link BdvHandle} interface
  *
+ * The Bdv window also has a few customization:
+ * * custom TransferHandler for drag and drop support
+ * * an editor mode which can be activated by pressing E
+ *
  * TODO improve documentation with customisation used in this class
  *
  */

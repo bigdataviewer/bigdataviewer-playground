@@ -19,7 +19,7 @@ import javax.swing.*;
 import java.awt.*;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Create Orthogonal Views",
-        label = "Creates 3 BDV windows with synchronized orthogonal views")
+        description = "Creates 3 BDV windows with synchronized orthogonal views")
 public class BdvOrthoWindowCreatorCommand implements Command {
 
     @Parameter(label = "Title of BDV windows")

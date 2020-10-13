@@ -6,7 +6,7 @@ import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Preferences - Set (Key) Bindings",
-        label = "Sets actions linked to key / mouse event in BDV (WIP, currently not working)")
+        description = "Sets actions linked to key / mouse event in BDV (WIP, currently not working)")
 
 public class BdvSettingsCommand implements Command {
 

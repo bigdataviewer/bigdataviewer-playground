@@ -4,24 +4,27 @@ import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.ui.TransformEventHandler3D;
-import net.imglib2.util.LinAlgHelpers;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAndTimeRange;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
 
 /**
  * Not clever but consistent : always append transform which acts as if it was inserted at first position
  * Maybe not good numerically speaking - but at least it's consistent and there's
  * no special case depending on the type of the SourceAndConverter
+ *
+ * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Basic Transformation")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Basic Transformation",
+description = "Performs basic transformation (rotate / flip) along X Y Z axis for several sources. " +
+        "If global is selected, the transformation is performed relative to the global origin (0,0,0). " +
+        "If global is not selected, the center of each source is unchanged.")
+
 public class BasicTransformerCommand implements Command {
     @Parameter(label = "Select source(s)")
     SourceAndConverter[] sources_in;
@@ -73,7 +76,6 @@ public class BasicTransformerCommand implements Command {
                     RealPoint ptCenterPixel = new RealPoint((dims[0]-1.0)/2.0,(dims[1]-1.0)/2.0, (dims[2]-1.0)/2.0);
 
                     at3D.apply(ptCenterPixel, ptCenterGlobalBefore);
-
 
                     RealPoint ptCenterGlobalAfter = new RealPoint(3);
 

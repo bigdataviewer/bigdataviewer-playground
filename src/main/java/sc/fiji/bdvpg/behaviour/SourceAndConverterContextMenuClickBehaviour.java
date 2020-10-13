@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 /**
  * Behaviour that shows the context menu of actions available that will act on the sources
- * that are drawn below the mouse location
+ * provided by the supplier
  *
  * @author Nicolas Chiaruttini, BIOP, EPFL 2020
  */

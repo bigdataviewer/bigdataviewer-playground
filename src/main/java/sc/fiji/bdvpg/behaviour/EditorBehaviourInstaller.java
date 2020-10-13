@@ -81,7 +81,6 @@ public class EditorBehaviourInstaller implements Runnable {
             @Override
             public void isEnabled() {
                 bdvh.getViewerPanel().showMessage("Editor Mode");
-                //bdvh.getViewerPanel().showMessage(ssb.getSelectedSources().size()+" sources selected");
                 // Enable the editor behaviours when the selector is enabled
                 editor.install(bdvh.getTriggerbindings(), "sources-editor");
             }

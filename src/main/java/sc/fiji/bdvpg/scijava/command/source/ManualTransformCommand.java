@@ -8,13 +8,21 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStarter;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStopper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
 
 import javax.swing.*;
 import java.awt.event.WindowEvent;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Manual Sources Transformation")
+/**
+ *
+ * @author Nicolas Chiaruttini, EPFL 2020
+ */
+
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Manual Sources Transformation",
+description = "Manual transformation of selected sources. Works only with a single bdv window (the active one)." +
+        "The sources that are not displayed but selected are transformed. During the registration, the user is" +
+        "placed in the reference of the moving sources. That's why they are not moving during the registration.")
+
 public class ManualTransformCommand implements Command {
 
     @Parameter(choices = {"Mutate", "Append"})

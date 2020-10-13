@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Create New Source (Set LUT)", initializer = "init")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Create New Source (Set LUT)",
+        initializer = "init",
+        description = "Duplicate one or several sources and sets an (identical) Look Up Table for these duplicated sources")
 
 public class LUTSourceCreatorCommand extends DynamicCommand {
 

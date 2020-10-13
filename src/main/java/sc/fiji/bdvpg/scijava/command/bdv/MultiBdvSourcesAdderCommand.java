@@ -9,7 +9,7 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Show Sources In Multiple BDV Windows",
-        label = "Adds one or several sources into several existing BDV windows")
+        description = "Adds one or several sources into several existing BDV windows")
 public class MultiBdvSourcesAdderCommand implements Command {
 
     @Parameter(label = "Select BDV Windows")

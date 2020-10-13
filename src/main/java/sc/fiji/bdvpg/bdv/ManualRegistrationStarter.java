@@ -30,7 +30,9 @@ import java.util.List;
  * Note : all the selected sources will be registered ( parameter 'SourceAndConverter... sacs' in the constructor ),
  * however, only those who were displayed originally will be used for the interactive manual registration,
  * this allows for a much stronger performance : you can actually register multiple
- * sources but only base your registration on a single displayed one.
+ * sources but only perform your registration based on a subset of them (those which are currently displayed).
+ *
+ * Limitation : if no other source is visible, you don't see waht's happening at all...
  *
  * @author : Nicolas Chiaruttini, BIOP, EPFL 2019
  *

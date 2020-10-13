@@ -63,7 +63,6 @@ public class ViewerPanelHandle extends BdvHandle {
         return false;
     }
 
-
     @Override
     public String toString() {
         return name;

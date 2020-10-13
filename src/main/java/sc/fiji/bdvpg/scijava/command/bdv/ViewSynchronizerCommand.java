@@ -28,7 +28,7 @@ import java.awt.event.WindowEvent;
  */
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Synchronize Views",
-            label = "Synchronizes the view of a set of BDV windows. A window popup should be closed" +
+            description = "Synchronizes the view of a set of BDV windows. A window popup should be closed" +
                     " to stop the synchronization")
 public class ViewSynchronizerCommand implements Command {
 

@@ -15,8 +15,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ *
+ * @author Nicolas Chiaruttini, EPFL 2020
+ */
+
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Register>Launch BigWarp",
-        label = "Starts BigWarp from existing sources")
+        description = "Starts BigWarp from existing sources")
+
 public class BigWarpLauncherCommand implements Command {
 
     @Parameter(label = "Window title for BigWarp")

@@ -19,9 +19,14 @@ import static net.imglib2.cache.img.DiskCachedCellImgOptions.options;
  * Command which creates an empty Source based on a model Source
  * The created source will cover the same portion of space as the model source,
  * but with the specified voxel size, and at a specific timepoint
+ *
+ * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>New Source Based on Model Source")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>New Source Based on Model Source",
+description = "Defines an empty source which occupied the same volume as a model source but with a potentially" +
+        " different voxel size. Works with a single timepoint.")
+
 public class NewSourceCommand implements Command {
     
     @Parameter(label = "Model Source", description = "Defines the portion of space covered by the new source")

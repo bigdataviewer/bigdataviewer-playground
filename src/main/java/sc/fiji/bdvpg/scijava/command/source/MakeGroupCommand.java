@@ -11,9 +11,10 @@ import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Predicate;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Make Global Source Group")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Make Global Source Group",
+description = "Adds a node in the tree view which selects the sources specified in the command")
+
 public class MakeGroupCommand implements Command {
 
     @Parameter(label = "Name of the group")

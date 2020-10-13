@@ -17,7 +17,7 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
  */
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Screenshot",
-        label = "Creates a screenshot of a BDV view, the resolution can be chosen to upscale or downscale" +
+        description = "Creates a screenshot of a BDV view, the resolution can be chosen to upscale or downscale" +
                 " the image compared to the original window. A single RGB image resulting from the projection" +
                 " of all sources is displayed. Raw image data can also be exported in grayscale.")
 public class ScreenShotMakerCommand implements Command {

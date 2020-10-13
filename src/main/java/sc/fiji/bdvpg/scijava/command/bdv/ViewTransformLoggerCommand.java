@@ -19,7 +19,7 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
  */
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Log view transform",
-        label="Outputs the current view transfrom of a BDV window into the standard IJ logger")
+        description = "Outputs the current view transfrom of a BDV window into the standard IJ logger")
 
 public class ViewTransformLoggerCommand implements Command {
 
