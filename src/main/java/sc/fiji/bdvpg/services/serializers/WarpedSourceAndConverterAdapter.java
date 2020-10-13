@@ -40,7 +40,7 @@ public class WarpedSourceAndConverterAdapter {
         }
 
         if (wrappedSac == null) {
-            System.err.println("Couldn't deserialize wrapped source");
+            System.err.println("Couldn't deserialize wrapped source of Warped Source");
             return null;
         }
 

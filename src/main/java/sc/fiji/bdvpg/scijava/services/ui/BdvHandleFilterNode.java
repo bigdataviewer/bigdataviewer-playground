@@ -21,6 +21,8 @@ public class BdvHandleFilterNode extends SourceFilterNode {
     public BdvHandle bdvh;
     String name;
 
+    ViewerStateChangeListener vscl;
+
     public boolean filter(SourceAndConverter sac) {
         return bdvh.getViewerPanel().state().getSources().contains(sac);
     }
@@ -31,7 +33,7 @@ public class BdvHandleFilterNode extends SourceFilterNode {
         this.filter = this::filter;
         this.bdvh = bdvh;
 
-        ViewerStateChangeListener vscl = (change) -> {
+        vscl = (change) -> {
             if (change.toString().equals("NUM_SOURCES_CHANGED")) {
                 update(new SourceFilterNode.FilterUpdateEvent());
             }
@@ -39,6 +41,11 @@ public class BdvHandleFilterNode extends SourceFilterNode {
 
         bdvh.getViewerPanel().state().changeListeners().add(vscl);
     }
+
+    public void clear() { // avoid memory leak
+        bdvh.getViewerPanel().state().changeListeners().remove(vscl);
+    }
+
 
     public String toString() {
         return getName();

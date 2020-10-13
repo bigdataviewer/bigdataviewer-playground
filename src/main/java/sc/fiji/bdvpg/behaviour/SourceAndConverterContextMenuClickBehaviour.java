@@ -82,10 +82,7 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 
 		bdv.getViewerPanel().showMessage(message);
 
-		SourceAndConverter[] sacArray = new SourceAndConverter[sacs.size()];
-		sacArray = sacs.toArray(sacArray);
-
-		final SourceAndConverterPopupMenu popupMenu = new SourceAndConverterPopupMenu( sacArray, popupActions );
+		final SourceAndConverterPopupMenu popupMenu = new SourceAndConverterPopupMenu( () -> sacs.toArray(new SourceAndConverter[sacs.size()]), popupActions );
 
 		popupMenu.getPopup().show( bdv.getViewerPanel().getDisplay(), x, y );
 	}

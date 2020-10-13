@@ -13,13 +13,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getCommandName;
 
 public class SourceAndConverterPopupMenu
 {
 	private JPopupMenu popup;
-	private final SourceAndConverter[] sacs;
+	private final Supplier<SourceAndConverter[]> sacs_supplier;
 
 	 public static String[] defaultPopupActions = {
 			getCommandName(BdvSourcesAdderCommand.class),
@@ -52,12 +53,12 @@ public class SourceAndConverterPopupMenu
 		defaultPopupActions = newDefaults.clone();
 	}
 
-	public SourceAndConverterPopupMenu( SourceAndConverter[] sacs )
+	public SourceAndConverterPopupMenu( Supplier<SourceAndConverter[]> sacs_supplier )
 	{
-		this.sacs = sacs;
+		this.sacs_supplier = sacs_supplier;
 		this.popupActions = defaultPopupActions;
 
-		File f = new File("Contents"+File.separator+"bdvpgsettings"+File.separator+"DefaultPopupActions.json");
+		File f = new File("bdvpgsettings"+File.separator+"DefaultPopupActions.json");
 		if (f.exists()) {
 			try {
 				Gson gson = new Gson();
@@ -69,9 +70,9 @@ public class SourceAndConverterPopupMenu
 		createPopupMenu();
 	}
 
-	public SourceAndConverterPopupMenu( SourceAndConverter[] sacs, String[] actions )
+	public SourceAndConverterPopupMenu( Supplier<SourceAndConverter[]> sacs_supplier, String[] actions )
 	{
-		this.sacs = sacs;
+		this.sacs_supplier = sacs_supplier;
 		this.popupActions = actions;
 		createPopupMenu();
 	}
@@ -110,7 +111,7 @@ public class SourceAndConverterPopupMenu
 		if (action == null) {
 			menuItem.addActionListener(e -> System.err.println("No action defined for action named "+actionName));
 		} else {
-			menuItem.addActionListener(e -> action.accept(sacs));
+			menuItem.addActionListener(e -> action.accept(sacs_supplier.get()));
 		}
 		popup.add(menuItem);
 	}

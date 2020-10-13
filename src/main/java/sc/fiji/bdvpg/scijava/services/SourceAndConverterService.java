@@ -66,7 +66,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     /**
      * Standard logger
      */
-    public static Consumer<String> log = (str) -> {};//System.out.println( SourceAndConverterService.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = (str) -> System.out.println( SourceAndConverterService.class.getSimpleName()+":"+str);
 
     /**
      * Error logger
@@ -447,8 +447,12 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         //System.out.println(ci.getIdentifier());
         //isContainedInPackagesToRegister(ci.getIdentifier());
         // System.out.println(ci.getTitle());
+
+        //System.out.println("before registration "+ci.getIdentifier());
         try {
-            if (isContainedInPackagesToRegister(ci.getIdentifier()) && (ci.inputs() != null)) {
+
+            if (isContainedInPackagesToRegister(ci.getIdentifier())){// && (ci.inputs() != null)) {
+
                 for (ModuleItem input : ci.inputs()) {
                     if (input.getType().equals(SourceAndConverter.class)) {
                         nCountSourceAndConverter++;
@@ -462,7 +466,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                     for (ModuleItem input : ci.inputs()) {
                         if (input.getType().equals(SourceAndConverter.class)) {
                             // It's an action which takes a SourceAndConverter
-                            registerAction(ci.getTitle(),
+                            registerAction(ci.getMenuPath().getLeaf().toString(),
                                     (sacs) -> {
                                         // Todo : improve by sending the parameters all over again
                                         //try {
@@ -475,13 +479,22 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                                         //    e.printStackTrace();
                                         //}
                                     });
-
-                            log.accept("Registering action entitled " + ci.getTitle() + " from command " + ci.getClassName());
+                           /* log.accept("name:"+ci.getName());
+                            log.accept("title:"+ci.getTitle());
+                            log.accept("tostring:"+ci.toString());
+                            log.accept("identifier:"+ci.getIdentifier());
+                            log.accept("classname:"+ci.getClassName());
+                            log.accept("menuroot:"+ci.getMenuRoot());
+                            log.accept("label:"+ci.getLabel());
+                            log.accept("location:"+ci.getLocation());
+                            log.accept("menustring:"+ci.getMenuPath().getMenuString());
+                            log.accept("menustring leaf:"+ci.getMenuPath().getLeaf().toString());*/
+                            log.accept("Registering action entitled " + ci.getMenuPath().getLeaf().toString() + " from command " + ci.getClassName());
 
                         }
                         if (input.getType().equals(SourceAndConverter[].class)) {
                             // It's an action which takes a SourceAndConverter List
-                            registerAction(ci.getTitle(),
+                            registerAction(ci.getMenuPath().getLeaf().toString(),
                                     (sacs) -> {
                                         //try {
                                         commandService.run(ci, true, input.getName(), sacs);//.get();
@@ -491,11 +504,12 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                                         //    e.printStackTrace();
                                         //}
                                     });
-                            log.accept("Registering action entitled " + ci.getTitle() + " from command " + ci.getClassName());
+
+                            log.accept("Registering action entitled " + ci.getMenuPath().getLeaf().toString() + " from command " + ci.getClassName());
                         }
                     }
                 } else {
-                    registerAction(ci.getTitle(),
+                    registerAction(ci.getMenuPath().getMenuString(),
                             (sacs) -> {
                                 //try {
                                 commandService.run(ci, true);//.get();
@@ -505,7 +519,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                                 //    e.printStackTrace();
                                 //}
                             });
-                    log.accept("Registering action entitled " + ci.getTitle() + " from command " + ci.getClassName() + " sacs ignored");
+                    log.accept("Registering action entitled " + ci.getMenuPath().getMenuString() + " from command " + ci.getClassName() + " sacs ignored");
                 }
             }
         } catch (NullPointerException npe) {
@@ -561,7 +575,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     public void setMetadata( AbstractSpimData asd, String key, Object data )
     {
         if (asd == null) {
-            System.err.println("Error : asd is null in setMetadata function! ");
+            errlog.accept("Error : asd is null in setMetadata function! ");
             return;
         }
         if (spimdataToMetadata.getIfPresent(asd)==null) {

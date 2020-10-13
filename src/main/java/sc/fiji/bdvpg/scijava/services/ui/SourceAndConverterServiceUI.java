@@ -12,6 +12,8 @@ import sc.fiji.bdvpg.scijava.services.ui.swingdnd.SourceAndConverterServiceUITra
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import javax.swing.*;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -151,10 +153,14 @@ public class SourceAndConverterServiceUI {
                 super.mouseClicked(e);
                 // Right Click -> popup
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    JPopupMenu popup = new SourceAndConverterPopupMenu(getSelectedSourceAndConverters())
-                            .getPopup();
+
+                    JPopupMenu popup = new SourceAndConverterPopupMenu(() -> getSelectedSourceAndConverters()).getPopup();
+
                     addUISpecificActions(popup);
+
                     popup.show(e.getComponent(), e.getX(), e.getY());
+
+                   // });
                 }
             }
         });
@@ -315,8 +321,10 @@ public class SourceAndConverterServiceUI {
         visitAllNodesAndProcess(top, (node) -> {
             if (node instanceof BdvHandleFilterNode) {
                 BdvHandleFilterNode bfn = (BdvHandleFilterNode) node;
+
                 if (bfn.bdvh.equals(bdvh)) {
                     bfn.removeFromParent();
+                    bfn.clear();
                 }
             }
         });

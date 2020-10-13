@@ -34,7 +34,7 @@ public class EditorBehaviourInstaller implements Runnable {
 
     public static String[] getEditorPopupActions() {
         // TODO : fix the file path containing default actions
-        File f = new File("Contents"+File.separator+"bdvpgsettings"+File.separator+"DefaultEditorActions.json");
+        File f = new File("bdvpgsettings"+File.separator+"DefaultEditorActions.json");
         String[] editorPopupActions = {
                 getCommandName(BdvSourcesShowCommand.class),
                 getCommandName(BasicTransformerCommand.class),
