@@ -14,6 +14,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
+import org.junit.Ignore;
 import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -108,6 +109,7 @@ public class BigWarpDemo {
 
     }
 
+    @Ignore // Needs BigWarp Fiji v > 6.0.3, but snapshot only
     @Test
     public void demoRunOk() {
         main(new String[]{""});

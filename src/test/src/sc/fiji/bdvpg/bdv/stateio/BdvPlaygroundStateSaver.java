@@ -14,12 +14,12 @@ public class BdvPlaygroundStateSaver {
     {
 
         //ProjectionModeChangerDemo.main(args); // Test SpimData Saving
-        //AffineTransformSourceDemo.main(args); // Test Transformed Source Saving
-        BigWarpDemo.main(args); // Test Warped source saving
+        AffineTransformSourceDemo.main(args); // Test Transformed Source Saving
+        //BigWarpDemo.main(args); // Test Warped source saving
 
         new SourceAndConverterServiceSaver(
                 new File("src/test/resources/bdvplaygroundstate.json"),
-                BigWarpDemo.ij.context()
+                AffineTransformSourceDemo.ij.context()
         ).run();
 
         System.out.println("Saved!");

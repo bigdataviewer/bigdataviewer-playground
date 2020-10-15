@@ -109,20 +109,22 @@
 		<license.copyrightOwners>Nicolas Chiaruttini, EPFL</license.copyrightOwners>
 		<license.copyrightOwners>Christian Tischer, EMBL</license.copyrightOwners>
 
+		<releaseProfiles>deploy-to-scijava</releaseProfiles>
+
 		<scijava.deleteOtherVersions>true</scijava.deleteOtherVersions>
 		<scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory>
 
-        <!--<bigwarp_fiji.version>6.0.3-SNAPSHOT</bigwarp_fiji.version>-->
+        <bigwarp_fiji.version>6.0.2</bigwarp_fiji.version>
 
-
-		<bigwarp_fiji.version>6.0.3-SNAPSHOT-NOCULLING</bigwarp_fiji.version>
+		<!--<bigwarp_fiji.version>6.0.3-SNAPSHOT-NOCULLING</bigwarp_fiji.version>-->
 
 		<bigdataviewer-core.version>10.0.2</bigdataviewer-core.version>
 		<bigdataviewer-vistools.version>1.0.0-beta-23</bigdataviewer-vistools.version>
 		<imglib2-cache.version>1.0.0-beta-15</imglib2-cache.version>
-		<bigdataviewer-selector.version>0.1.5-SNAPSHOT</bigdataviewer-selector.version>
+		<bigdataviewer-selector.version>0.1.5</bigdataviewer-selector.version>
 
-		<mastodon.version>1.0.0-beta-17-SNAPSHOT</mastodon.version>
+		<!--<mastodon.version>1.0.0-beta-17-SNAPSHOT</mastodon.version>-->
+		<mastodon.version>1.0.0-beta-16</mastodon.version>
 		<bigvolumeviewer.version>0.1.8</bigvolumeviewer.version>
 
 	</properties>
