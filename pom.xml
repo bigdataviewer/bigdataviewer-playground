@@ -72,7 +72,6 @@
 	</developers>
 	<contributors>
 		<contributor>
-			<id>martinschorb</id>
 			<name>Martin Schorb</name>
 			<roles>
 				<role>debugger</role>
