@@ -1,3 +1,5 @@
+[![](https://travis-ci.com/bigdataviewer/bigdataviewer-playground.svg?branch=master)](https://travis-ci.com/bigdataviewer/bigdataviewer-playground)
+
 # THIS REPOSITORY IS IN ACTIVE DEVELOPMENT. ITS API IS NOT STABLE. ACTIVATING ITS UPDATE SITE CAN BREAK THE FUNCTIONALITIES OF OTHER UPDATE SITES (BigStitcher)
 
 ## BDV playground / toolbox / actions [WIP]
