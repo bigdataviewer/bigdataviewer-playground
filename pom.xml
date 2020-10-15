@@ -85,8 +85,8 @@
 
 	<!-- TODO -->
 	<scm>
-		<connection>scm:git:git://github.com/</connection>
-		<developerConnection>scm:git:git@github.com:</developerConnection>
+		<connection>scm:git:git://github.com/bigdataviewer/bigdataviewer-playground</connection>
+		<developerConnection>scm:git:git@github.com:bigdataviewer/bigdataviewer-playground</developerConnection>
 		<tag>HEAD</tag>
 		<url>https://github.com/bigdataviewer/bigdataviewer-playground/</url>
 	</scm>
