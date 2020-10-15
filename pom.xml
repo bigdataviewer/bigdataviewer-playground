@@ -72,7 +72,13 @@
 	</developers>
 	<contributors>
 		<contributor>
-			<name>none</name>
+			<id>martinschorb</id>
+			<name>Martin Schorb</name>
+			<roles>
+				<role>debugger</role>
+				<role>reviewer</role>
+				<role>support</role>
+			</roles>
 		</contributor>
 	</contributors>
 
