@@ -103,12 +103,12 @@
 
 	<properties>
 		<package-name>sc.fiji.bdvpg</package-name>
-		<license.licenseName>bsd_2</license.licenseName>
+		<!--<license.licenseName>bsd_2</license.licenseName>-->
 		<license.projectName>BigDataViewer-Playground</license.projectName>
 		<license.organizationName>MPI CBG / EMBL / EPFL </license.organizationName>
-		<license.copyrightOwners>Robert Haase, MPI CBG</license.copyrightOwners>
+		<!--<license.copyrightOwners>Robert Haase, MPI CBG</license.copyrightOwners>
 		<license.copyrightOwners>Nicolas Chiaruttini, EPFL</license.copyrightOwners>
-		<license.copyrightOwners>Christian Tischer, EMBL</license.copyrightOwners>
+		<license.copyrightOwners>Christian Tischer, EMBL</license.copyrightOwners>-->
 
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>
 
