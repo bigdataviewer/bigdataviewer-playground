@@ -38,7 +38,7 @@ import net.imglib2.realtransform.AffineTransform3D;
  *
  * See ViewTransformSetAndLogDemo for a usage example
  *
- * @author @haesleinhuepf
+ * @author haesleinhuepf
  * 12 2019
  */
 

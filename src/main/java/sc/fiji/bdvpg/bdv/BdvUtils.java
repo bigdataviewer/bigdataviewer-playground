@@ -142,12 +142,12 @@ public class BdvUtils
     }
 
     /**
-     * Returns the highest level where the sourceandconverter voxel spacings are <= the requested ones.
-     *
+     * Returns the highest level where the sourceandconverter voxel spacings
+     * are inferior or equals to the requested ones.
      *
      * @param source
      * @param voxelSpacings
-     * @return
+     * @return the optimal level for image visualization
      */
     public static int getLevel( Source< ? > source, double... voxelSpacings ) {
         final int numMipmapLevels = source.getNumMipmapLevels();

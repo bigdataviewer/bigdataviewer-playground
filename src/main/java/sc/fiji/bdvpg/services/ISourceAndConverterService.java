@@ -106,14 +106,13 @@ public interface ISourceAndConverterService
 
     /**
      * Adds metadata for a sac
-     * @return
      */
     void setMetadata(SourceAndConverter sac, String key, Object data);
 
     /**
      * Adds metadata for a sac
      *
-     * @return
+     * @return metadata object
      */
     Object getMetadata(SourceAndConverter sac, String key);
 
@@ -127,7 +126,7 @@ public interface ISourceAndConverterService
     /**
      * Convenient method to know if a metadata for a sac exists
      *
-     * @return
+     * @return flag
      */
     boolean containsMetadata(SourceAndConverter sac, String key);
 
@@ -178,7 +177,6 @@ public interface ISourceAndConverterService
 
     /**
      * Adds metadata for a sac
-     * @return
      */
     void setMetadata(AbstractSpimData asd, String key, Object data);
 

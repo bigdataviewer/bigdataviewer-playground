@@ -91,13 +91,17 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
     boolean cache;
 
     /**
-     * The origin source {@param source} is accessed through its RealRandomAccessible representation :
+     * The origin source is accessed through its RealRandomAccessible representation :
      * - It can be accessed at any 3d point in space, with real valued coordinates : it's a field of {@link T} objects
      *
-     * The model source ({@param resamplingModel}) defines a portion of space and how it is sampled :
+     * The model source defines a portion of space and how it is sampled :
      *  - through its RandomAccessibleInterval bounds
      *  - and the Source affine transform
-     *  - and mipmaps, if {@param reuseMipMaps} is true
+     *  - and mipmaps, if reuseMipMaps is true
+     *
+     * @param source origin source
+     *
+     * @param resamplingModel model source used for resampling the origin source
      *
      * @param reuseMipMaps allows to reuse mipmaps of both the origin and the model source in the resampling
      *  Reusing mipmaps works well is the voxel size are approximately identical between

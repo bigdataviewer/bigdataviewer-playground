@@ -50,7 +50,7 @@ import net.imglib2.view.Views;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A {@link VolatileSource<T,V>} simply wraps and cache volatileviews of a {@link Source<T>}
+ * A {@link VolatileSource} simply wraps and cache volatileviews of a {@link Source}
  * which can be made Volatile thanks to {@link VolatileViews#wrapAsVolatile}
  * That's not always possible!
  *

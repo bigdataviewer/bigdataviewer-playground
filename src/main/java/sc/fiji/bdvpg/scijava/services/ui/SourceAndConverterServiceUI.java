@@ -73,7 +73,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  * Nodes are {@link DefaultMutableTreeNode} containing potentially:
  * - {@link RenamableSourceAndConverter} (SourceAndConverter with an overriden toString method)
  * - Filtering nodes : {@link SourceFilterNode} nodes that can filter SourceAndConverters,
- * they contain a {@link Predicate<SourceAndConverter>} that decides whether a SourceAndConverter
+ * they contain a {@link Predicate} {@link SourceAndConverter} that decides whether a SourceAndConverter
  * object should be included in the tree nodes below this filter;
  *
  * - Filtering nodes can conveniently be chained in order to make complex filtering easily.
@@ -83,7 +83,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  * SourceFilterNodes contains a flag which decides whether the filtered nodes should be displayed directly below
  * the node or not. Usually it is more convenient to create a non filtering SourceFilterNode
  * at the end of the branch.
- *      - Programmatically new SourceFilterNode(model, "AllSources", () -> true, true);
+ *      - Programmatically new SourceFilterNode(model, "AllSources", () - true, true);
  *      - Or with a Right-Click 'Create a show all filter node'
  *
  *  NB : All SourceFilterNodes contains a reference to the tree model, this is used to fire only necessary
@@ -578,8 +578,8 @@ public class SourceAndConverterServiceUI {
 
     /**
      * Allows to get the tree path from a String,
-     * nodes names are separated by the ">" character
-     * Like SpimData_0>Channel>0 will return the {@link TreePath} to the childrennode
+     * nodes names are separated by the "&gt;" character
+     * Like SpimData_0 &gt; Channel &gt; 0 will return the {@link TreePath} to the childrennode
      * Used in {@link sc.fiji.bdvpg.scijava.converters.StringToSourceAndConverterArray}
      *
      * Not the ideal situation where the UI is used to retrieve SourceAndConverter

@@ -46,7 +46,7 @@ import java.awt.event.WindowEvent;
 /**
  * I wanted to do this as an Interactive Command but there's no callback
  * when an interactive command is closed (bug https://github.com/scijava/scijava-common/issues/379)
- * -> we cannot stop the synchronization appropriately.
+ * so we cannot stop the synchronization appropriately.
  *
  * Hence the dirty JFrame the user has to close to stop synchronization ...
  *

@@ -285,7 +285,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * TODO: This method currently modifies the order of the sources shown in the bdvh window
      * While this is not important for most bdvhandle, this could affect the functionality
      * of BigWarp
-     * LIMITATION : Cannot use LUT for ARGBType -> TODO check type and send an error
+     * LIMITATION : Cannot use LUT for ARGBType - TODO check type and send an error
      * @param source
      * @param cvt
      */
@@ -374,7 +374,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
     /**
      * Returns the list of sacs held within a BdvHandle ( whether they are visible or not )
-     * List is ordered by index in the BdvHandle -> complexification to implement
+     * List is ordered by index in the BdvHandle - complexification to implement
      * the mixed projector
      * TODO : Avoid duplicates by returning a Set
      * @param bdvHandle

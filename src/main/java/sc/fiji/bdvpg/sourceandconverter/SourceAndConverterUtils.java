@@ -89,7 +89,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  * - TODO : RAI, ImagePLUS, etc... to SourceAndConverter
  *
  * Additionally, this class contains default function which allow to create a
- * ConverterSetup object. These objects can be used to adjust the B&C of the displayed
+ * ConverterSetup object. These objects can be used to adjust the B and C of the displayed
  * SourceAndConverter objects.
  *
  * Limitations : TODO : think about CacheControls
@@ -472,9 +472,9 @@ public class SourceAndConverterUtils {
     /**
      * Is the point pt located inside the source  at a particular timepoint ?
      * Looks at highest resolution whether the alpha value of the displayed pixel is zero
-     * TODO TO think Alternative : looks whether R, G and B values equal zero -> source not present
+     * TODO TO think Alternative : looks whether R, G and B values equal zero - source not present
      * Another option : if the display RGB value is zero, then consider it's not displayed and thus not selected
-     * -> Convenient way to adjust whether a source should be selected or not ?
+     * - Convenient way to adjust whether a source should be selected or not ?
      * TODO : Time out if too long to access the data
      * @param sac
      * @param pt

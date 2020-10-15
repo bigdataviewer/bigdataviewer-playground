@@ -39,7 +39,7 @@ import sc.fiji.bdvpg.log.SystemLogger;
  * Action which logs the position of the mouse in a {@link BdvHandle}
  *
  * TODO : Apparently, linking resources in test is not good practice ?https://stackoverflow.com/questions/45160647/include-link-to-unit-test-classes-in-javadoc Then separate repo for examples or tests ? Looks painful
- * TODO fix javadoc : " See {@link sc.fiji.bdvpg.bdv.navigate.LogMousePositionDemo} for a usage example "
+ * TODO fix javadoc : " See sc.fiji.bdvpg.bdv.navigate.LogMousePositionDemo for a usage example "
  *
  * @author Robert Haase, MPI CBG
  */

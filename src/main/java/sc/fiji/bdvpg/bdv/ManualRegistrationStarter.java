@@ -149,7 +149,7 @@ public class ManualRegistrationStarter implements Runnable {
     }
 
     /**
-     * Gets the listener -> useful to stop the registration
+     * Gets the listener, this is useful to stop the registration
      * @return
      */
     public TransformListener<AffineTransform3D> getListener() {
