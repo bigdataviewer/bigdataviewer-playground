@@ -39,7 +39,7 @@ import java.util.Map;
 import static sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStopper.MatrixApproxEquals;
 
 /**
- * BigDataViewer Playground Action -->
+ * BigDataViewer Playground Action --
  * Action which synchronizes the display location of a {@link BdvHandle}
  *
  * Works in combination with the action {@link ViewerTransformSyncStopper}

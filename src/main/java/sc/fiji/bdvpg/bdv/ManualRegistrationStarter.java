@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * BigDataViewer Playground Action -->
+ * BigDataViewer Playground Action --
  * Action which starts the manual registration of n SourceAndConverters
  * Works in coordination with ManualRegistrationStopper
  *

@@ -32,7 +32,7 @@ import bdv.util.BdvHandle;
 import net.imglib2.realtransform.AffineTransform3D;
 
 /**
- * BigDataViewer Playground Action -->
+ * BigDataViewer Playground Action --
  * Action which concatenates the current viewTransform
  * of a {@link BdvHandle} with the input {@link AffineTransform3D}
  *

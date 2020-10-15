@@ -67,7 +67,7 @@ import java.util.List;
 import static sc.fiji.bdvpg.bdv.BdvUtils.*;
 
 /**
- * BigDataViewer Playground Action -->
+ * BigDataViewer Playground Action --
  * ScreenShotMaker
  * <p>
  * <p>

@@ -54,7 +54,7 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 /**
- * BigDataViewer Playground Action -->
+ * BigDataViewer Playground Action --
  *
  * Opens a GUI which helps defining bindings i.e.
  * what a user input (key, mouse, TODO DnD, TODO key bindings (only behaviour bindings work at the moment))

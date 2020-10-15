@@ -35,7 +35,7 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import java.util.function.Consumer;
 
 /**
- * BigDataViewer Playground Action -->
+ * BigDataViewer Playground Action --
  * Removes a {@link SourceAndConverter} from a {@link BdvHandle}
  *
  * Note : - the functional interface allows to use this action in a functional way,

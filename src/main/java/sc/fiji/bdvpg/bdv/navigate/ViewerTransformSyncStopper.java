@@ -35,7 +35,7 @@ import bdv.viewer.TransformListener;
 import java.util.Map;
 
 /**
- * BigDataViewer Playground Action -->
+ * BigDataViewer Playground Action --
  * Action which stops the synchronization of the display location of a {@link BdvHandle}
  * Works in combination with the action {@link ViewerTransformSyncStarter}
  * and {@link ViewerOrthoSyncStarter}

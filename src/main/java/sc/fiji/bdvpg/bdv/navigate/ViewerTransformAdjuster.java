@@ -37,7 +37,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
 
 /**
- * BigDataViewer Playground Action -->
+ * BigDataViewer Playground Action --
  * Action which adjust the view of a {@link BdvHandle} to span a {@link SourceAndConverter}
  * See {@link ViewerTransformAdjuster#getTransform()} for details
  *

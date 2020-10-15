@@ -35,7 +35,7 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import java.util.function.Consumer;
 
 /**
- * BigDataViewer Playground Action -->
+ * BigDataViewer Playground Action --
  * Appends a {@link SourceAndConverter} into a {@link BdvHandle}
  *
  * Note :

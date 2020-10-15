@@ -41,7 +41,7 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import java.util.function.Supplier;
 
 /**
- * BigDataViewer Playground Action -->
+ * BigDataViewer Playground Action --
  *
  * Creates a BigVolumeViewer - should be replaced by Sciview
  */

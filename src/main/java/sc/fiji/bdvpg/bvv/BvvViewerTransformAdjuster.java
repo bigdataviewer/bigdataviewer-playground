@@ -37,7 +37,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
 
 /**
- * BigDataViewer Playground Action -->
+ * BigDataViewer Playground Action --
  *
  * Adjust bigvolumeviewer view to a SourceAndConverter
  *

@@ -57,7 +57,7 @@ import java.io.File;
 import java.util.function.Supplier;
 
 /**
- * BigDataViewer Playground Action -->
+ * BigDataViewer Playground Action --
  *
  * Creates a new {@link bdv.BigDataViewer} instance accessible through the {@link BdvHandle} interface
  *

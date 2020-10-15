@@ -40,7 +40,7 @@ import java.util.function.BiFunction;
 // TODO : Ensure volatile is working with source which are not AbstractSpimSource
 
 /**
- * BigDataViewer Playground Action -->
+ * BigDataViewer Playground Action --
  * Action which stops the manual registration of n {@link SourceAndConverter}s
  * Works in coordination with {@link ManualRegistrationStarter}
  *
