@@ -19,7 +19,7 @@
 	<inceptionYear>2019</inceptionYear>
 	<organization>
 		<name>MPI-CBG / EMBL / EPFL</name>
-		<url />
+		<url></url>
 	</organization>
 	<licenses>
 		<license>
@@ -87,13 +87,13 @@
 	<scm>
 		<connection>scm:git:git://github.com/bigdataviewer/bigdataviewer-playground</connection>
 		<developerConnection>scm:git:git@github.com:bigdataviewer/bigdataviewer-playground</developerConnection>
+		<tag>HEAD</tag>
 		<url>https://github.com/bigdataviewer/bigdataviewer-playground/</url>
 	</scm>
 
 	<issueManagement>
 		<system>GitHub Issues</system>
-		<url>https://github.com/bigdataviewer/bigdataviewer-playground/issues</url>
-
+		<url></url>
 	</issueManagement>
 
 	<ciManagement>
@@ -103,10 +103,13 @@
 
 	<properties>
 		<package-name>sc.fiji.bdvpg</package-name>
-		<license.licenseName>bsd_2</license.licenseName>
+		<!--<license.licenseName>bsd_2</license.licenseName>-->
 		<license.projectName>BigDataViewer-Playground</license.projectName>
 		<license.organizationName>MPI CBG / EMBL / EPFL </license.organizationName>
-		<license.copyrightOwners>Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL</license.copyrightOwners>
+		<!--<license.copyrightOwners>Robert Haase, MPI CBG</license.copyrightOwners>
+		<license.copyrightOwners>Nicolas Chiaruttini, EPFL</license.copyrightOwners>
+		<license.copyrightOwners>Christian Tischer, EMBL</license.copyrightOwners>-->
+
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>
 
 		<scijava.deleteOtherVersions>true</scijava.deleteOtherVersions>
