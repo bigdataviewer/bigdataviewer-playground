@@ -97,7 +97,8 @@
 	</issueManagement>
 
 	<ciManagement>
-		<system>None</system>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/github/bigdataviewer/bigdataviewer-playground</url>
 	</ciManagement>
 
 	<properties>
