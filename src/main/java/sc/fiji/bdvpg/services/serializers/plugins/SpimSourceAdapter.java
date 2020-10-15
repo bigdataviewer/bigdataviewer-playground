@@ -1,8 +1,10 @@
-package sc.fiji.bdvpg.services.serializers;
+package sc.fiji.bdvpg.services.serializers.plugins;
 
+import bdv.SpimSource;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
@@ -13,15 +15,23 @@ import java.util.Optional;
 
 import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_INFO;
 
-class SpimSourceAndConverterAdapter {
+@Plugin(type = ISourceAdapter.class)
+public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 
-    SourceAndConverterSerializer sacSerializer;
+    SourceAndConverterSerializer sacSerializer;;
 
-    public SpimSourceAndConverterAdapter(SourceAndConverterSerializer sacSerializer) {
+    @Override
+    public void setSacSerializer(SourceAndConverterSerializer sacSerializer) {
         this.sacSerializer = sacSerializer;
     }
 
-    static public JsonElement serialize(SourceAndConverter sac, Type type, JsonSerializationContext jsonSerializationContext) {
+    @Override
+    public Class<SpimSource> getSourceClass() {
+        return SpimSource.class;
+    }
+
+    @Override
+    public JsonElement serialize(SourceAndConverter sac, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
 
         SourceAndConverterService.SpimDataInfo sdi =
@@ -35,7 +45,8 @@ class SpimSourceAndConverterAdapter {
         return obj;
     }
 
-    static public SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    @Override
+    public SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
         AbstractSpimData asd = jsonDeserializationContext.deserialize(obj.get("spimdata"), AbstractSpimData.class);
         int setupId = obj.getAsJsonPrimitive("viewsetup").getAsInt();

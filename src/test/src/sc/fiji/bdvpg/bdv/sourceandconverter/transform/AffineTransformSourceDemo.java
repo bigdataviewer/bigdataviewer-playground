@@ -15,11 +15,11 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 import java.util.ArrayList;
 
 public class AffineTransformSourceDemo {
-
+    public static ImageJ ij;
     public static void main(String... args) {
         // Initializes static SourceService and Display Service
 
-        final ImageJ ij = new ImageJ();
+        ij = new ImageJ();
         ij.ui().showUI();
 
         // Creates a BdvHandle

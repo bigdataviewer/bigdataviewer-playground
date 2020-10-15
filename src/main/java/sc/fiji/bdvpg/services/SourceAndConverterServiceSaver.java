@@ -2,6 +2,8 @@ package sc.fiji.bdvpg.services;
 
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
+import org.scijava.Context;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.util.HashMap;
@@ -20,7 +22,8 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
 
     File f;
 
-    public SourceAndConverterServiceSaver(File f) {
+    public SourceAndConverterServiceSaver(File f, Context ctx) {
+        super(ctx);
         this.f = f;
         idToSac = new HashMap<>();
         sacToId = new HashMap<>();

@@ -17,10 +17,11 @@ import java.util.List;
 
 public class ProjectionModeChangerDemo
 {
+	public static ImageJ ij;
 	public static void main( String[] args )
 	{
 		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ImageJ ij = new ImageJ();
+		ij = new ImageJ();
 		ij.ui().showUI();
 
 		// Gets active BdvHandle instance

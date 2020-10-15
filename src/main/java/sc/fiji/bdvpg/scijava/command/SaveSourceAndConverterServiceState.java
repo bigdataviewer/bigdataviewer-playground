@@ -1,5 +1,6 @@
 package sc.fiji.bdvpg.scijava.command;
 
+import org.scijava.Context;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -14,8 +15,11 @@ public class SaveSourceAndConverterServiceState implements Command {
     @Parameter
     File file;
 
+    @Parameter
+    Context ctx;
+
     @Override
     public void run() {
-        new SourceAndConverterServiceSaver(file).run();
+        new SourceAndConverterServiceSaver(file, ctx).run();
     }
 }

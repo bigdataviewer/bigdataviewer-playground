@@ -29,9 +29,11 @@ import java.util.stream.Collectors;
 
 public class BigWarpDemo {
 
+    public static ImageJ ij;
+
     public static void main(String... args) {
         // Initializes static SourceService and Display Service
-        final ImageJ ij = new ImageJ();
+        ij = new ImageJ();
         ij.ui().showUI();
 
         // load and convert an image
@@ -50,16 +52,16 @@ public class BigWarpDemo {
 
         final AbstractSpimData spimData = importer.get();
 
-        /*SourceAndConverter sacBlobs = SourceAndConverterServices
+        SourceAndConverter sacBlobs = SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(spimData)
-                .get(0);*/
+                .get(0);
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
 
         // Creates SourceAndConverter Reference
-        SourceAndConverter sacBlobs = SourceAndConverterUtils.createSourceAndConverter(blobs);
+        //SourceAndConverter sacBlobs = SourceAndConverterUtils.createSourceAndConverter(blobs);
 
         // Show the sourceandconverter
         SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacBlobs);
@@ -97,12 +99,12 @@ public class BigWarpDemo {
         bwl.getBigWarp().toggleMovingImageDisplay();
         bwl.getBigWarp().matchActiveViewerPanelToOther();
 
-        /*bwl.getBigWarp().closeAll();
+        //bwl.getBigWarp().closeAll();
 
         for (SourceAndConverter sac : bwl.getWarpedSources()) {
             SourceAndConverterServices.getSourceAndConverterService()
                     .register(sac);
-        }*/
+        }
 
     }
 

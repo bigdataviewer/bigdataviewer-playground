@@ -3,6 +3,8 @@ package sc.fiji.bdvpg.services;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import org.scijava.Context;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
@@ -10,13 +12,16 @@ import java.util.HashMap;
 public class SourceAndConverterServiceLoader extends SourceAndConverterSerializer implements Runnable{
 
     String filePath;
+    Context ctx;
 
-    public SourceAndConverterServiceLoader(String filePath) {
+    public SourceAndConverterServiceLoader(String filePath, Context ctx) {
+        super(ctx);
         this.filePath = filePath;
         idToSac = new HashMap<>();
         sacToId = new HashMap<>();
         sourceToId = new HashMap<>();
         idToSource = new HashMap<>();
+        this.ctx = ctx;
     }
 
     @Override

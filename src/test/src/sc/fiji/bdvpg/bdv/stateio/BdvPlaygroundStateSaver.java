@@ -18,7 +18,8 @@ public class BdvPlaygroundStateSaver {
         BigWarpDemo.main(args); // Test Warped source saving
 
         new SourceAndConverterServiceSaver(
-                new File("src/test/resources/bdvplaygroundstate.json")
+                new File("src/test/resources/bdvplaygroundstate.json"),
+                BigWarpDemo.ij.context()
         ).run();
 
         System.out.println("Saved!");
