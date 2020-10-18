@@ -43,12 +43,23 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 import java.util.ArrayList;
 
 public class AffineTransformSourceDemo {
-    public static ImageJ ij;
+
     public static void main(String... args) {
         // Initializes static SourceService and Display Service
 
-        ij = new ImageJ();
+        ImageJ ij = new ImageJ();
         ij.ui().showUI();
+
+        demo(20);
+
+    }
+
+    @Test
+    public void demoRunOk() {
+        main(new String[]{""});
+    }
+
+    public static void demo(int numberOfSourcesInOneAxis) {
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = SourceAndConverterServices
@@ -70,8 +81,8 @@ public class AffineTransformSourceDemo {
         new BrightnessAutoAdjuster(sac, 0).run();
 
         ArrayList<SourceAndConverter> sacs = new ArrayList<>();
-        for (int x = 0; x < 20;x++) {
-            for (int y = 0; y < 20; y++) {
+        for (int x = 0; x < numberOfSourcesInOneAxis;x++) {
+            for (int y = 0; y < numberOfSourcesInOneAxis; y++) {
 
                 if (Math.random()>0.0) {
                     AffineTransform3D at3d = new AffineTransform3D();
@@ -92,11 +103,5 @@ public class AffineTransformSourceDemo {
         SourceAndConverterServices
                 .getSourceAndConverterDisplayService()
                 .show(bdvHandle, sacs.toArray(new SourceAndConverter[0]));
-
-    }
-
-    @Test
-    public void demoRunOk() {
-        main(new String[]{""});
     }
 }

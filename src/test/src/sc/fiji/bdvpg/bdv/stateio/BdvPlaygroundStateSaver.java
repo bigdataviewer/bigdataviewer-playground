@@ -28,9 +28,10 @@
  */
 package sc.fiji.bdvpg.bdv.stateio;
 
+import net.imagej.ImageJ;
 import org.junit.Test;
-import sc.fiji.bdvpg.bdv.ProjectionModeChangerDemo;
 import sc.fiji.bdvpg.bdv.sourceandconverter.bigwarp.BigWarpDemo;
+import sc.fiji.bdvpg.bdv.sourceandconverter.resample.ResamplingDemo;
 import sc.fiji.bdvpg.bdv.sourceandconverter.transform.AffineTransformSourceDemo;
 import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
 
@@ -40,18 +41,30 @@ public class BdvPlaygroundStateSaver {
 
     public static void main( String[] args )
     {
+        // Initializes static SourceService and Display Service
+        ImageJ ij = new ImageJ();
+        ij.ui().showUI();
+
+        createSacs();
 
         //ProjectionModeChangerDemo.main(args); // Test SpimData Saving
-        AffineTransformSourceDemo.main(args); // Test Transformed Source Saving
+        //AffineTransformSourceDemo.main(args); // Test Transformed Source Saving
         //BigWarpDemo.main(args); // Test Warped source saving
 
         new SourceAndConverterServiceSaver(
                 new File("src/test/resources/bdvplaygroundstate.json"),
-                AffineTransformSourceDemo.ij.context()
+                ij.context()
         ).run();
 
         System.out.println("Saved!");
 
+    }
+
+    public static void createSacs() {
+       // Creates demo Warped Sources
+       BigWarpDemo.demo();
+       AffineTransformSourceDemo.demo(2);
+       //ResamplingDemo.demo();
     }
 
     @Test

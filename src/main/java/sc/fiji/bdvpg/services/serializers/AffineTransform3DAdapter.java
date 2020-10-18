@@ -30,11 +30,13 @@ package sc.fiji.bdvpg.services.serializers;
 
 import com.google.gson.*;
 import net.imglib2.realtransform.AffineTransform3D;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.services.serializers.plugins.IClassAdapter;
 
 import java.lang.reflect.Type;
 
-public class AffineTransform3DAdapter implements JsonSerializer<AffineTransform3D>,
-        JsonDeserializer<AffineTransform3D> {
+@Plugin(type = IClassAdapter.class)
+public class AffineTransform3DAdapter implements IClassAdapter<AffineTransform3D> {
 
     @Override
     public AffineTransform3D deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
@@ -50,5 +52,10 @@ public class AffineTransform3DAdapter implements JsonSerializer<AffineTransform3
         JsonObject obj = new JsonObject();
         obj.add("affinetransform3d", jsonSerializationContext.serialize(affineTransform3D.getRowPackedCopy()));
         return obj;
+    }
+
+    @Override
+    public Class<? extends AffineTransform3D> getAdapterClass() {
+        return AffineTransform3D.class;
     }
 }

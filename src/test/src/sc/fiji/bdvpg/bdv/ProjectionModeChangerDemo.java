@@ -45,12 +45,21 @@ import java.util.List;
 
 public class ProjectionModeChangerDemo
 {
-	public static ImageJ ij;
 	public static void main( String[] args )
 	{
 		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
+		ImageJ ij = new ImageJ();
 		ij.ui().showUI();
+
+		demo();
+	}
+
+	@Test
+	public void demoRunOk() {
+		main(new String[]{""});
+	}
+
+	public static void demo() {
 
 		// Gets active BdvHandle instance
 		BdvHandle bdv = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
@@ -78,10 +87,5 @@ public class ProjectionModeChangerDemo
 		averageProjectionSacs[ 0 ] = sacs.get( 0 );
 		averageProjectionSacs[ 1 ] = sacs.get( 1 );
 		new ProjectionModeChanger( averageProjectionSacs, Projection.PROJECTION_MODE_AVG, false ).run();
-	}
-
-	@Test
-	public void demoRunOk() {
-		main(new String[]{""});
 	}
 }

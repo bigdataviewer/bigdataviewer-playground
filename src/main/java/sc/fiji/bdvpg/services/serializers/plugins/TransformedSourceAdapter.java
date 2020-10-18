@@ -65,7 +65,14 @@ public class TransformedSourceAdapter implements ISourceAdapter<TransformedSourc
         source.getFixedTransform(fixedTr);
 
         obj.add("affinetransform_fixed", jsonSerializationContext.serialize(fixedTr));
-        obj.addProperty("wrapped_source_id", sacSerializer.getSourceToId().get(source.getWrappedSource()));
+        Integer idWrapped = sacSerializer.getSourceToId().get(source.getWrappedSource());
+
+        if (idWrapped==null) {
+            System.err.println(source.getName()+" can't be serialized : the wrapped source "+source.getWrappedSource().getName()+" couldn't be identified. ");
+            return null;
+        }
+
+        obj.addProperty("wrapped_source_id", idWrapped);
         return obj;
     }
 

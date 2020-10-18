@@ -69,7 +69,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
     /**
      * Hashmap to cache RAIs (mipmaps and timepoints), used only if {@link ResampledSource#cache} is true
      */
-    ConcurrentHashMap<Integer, ConcurrentHashMap<Integer,RandomAccessibleInterval<T>>> cachedRAIs
+    transient ConcurrentHashMap<Integer, ConcurrentHashMap<Integer,RandomAccessibleInterval<T>>> cachedRAIs
             = new ConcurrentHashMap<>();
 
     /**
@@ -141,6 +141,18 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         return origin.isPresent(t)&&resamplingModel.isPresent(t);
     }
 
+    public boolean areMipmapsReused() {
+        return reuseMipMaps;
+    }
+
+    public boolean isCached() {
+        return cache;
+    }
+
+    public Interpolation originInterpolation() {
+        return originInterpolation;
+    }
+
     @Override
     public RandomAccessibleInterval<T> getSource(int t, int level) {
         if (cache) {
@@ -169,7 +181,6 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         }
 
     }
-
 
     public RandomAccessibleInterval<T> buildSource(int t, int level) {
         // Get current model source transformation

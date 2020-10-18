@@ -59,6 +59,16 @@ public class ResamplingDemo {
         final ImageJ ij = new ImageJ();
         ij.ui().showUI();
 
+        demo();
+    }
+
+    @Test
+    public void demoRunOk() {
+        main(new String[]{""});
+    }
+
+    public static void demo() {
+
         // --------------------- USE CASE 1:
         // --- Resample a functional source (or a warped / big warped source)
         // --- like a standard source backed by a RandomAccessibleInterval
@@ -142,11 +152,5 @@ public class ResamplingDemo {
         SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, upsampledSource );
 
         new ColorChanger( upsampledSource, new ARGBType(ARGBType.rgba(0, 0,255,0))).run();
-
-    }
-
-    @Test
-    public void demoRunOk() {
-        main(new String[]{""});
     }
 }

@@ -38,12 +38,15 @@ import net.imglib2.display.ColorConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
 import org.scijava.Context;
+import org.scijava.InstantiableException;
 import sc.fiji.bdvpg.services.serializers.*;
+import sc.fiji.bdvpg.services.serializers.plugins.BdvPlaygroundObjectAdapterService;
+import sc.fiji.bdvpg.services.serializers.plugins.IClassAdapter;
+import sc.fiji.bdvpg.services.serializers.plugins.IClassRuntimeAdapter;
+import sc.fiji.bdvpg.services.serializers.plugins.ISourceAdapter;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class SourceAndConverterSerializer {
 
@@ -65,12 +68,74 @@ public class SourceAndConverterSerializer {
         return ctx;
     }
 
+    GsonBuilder builder;
+
+    public static Consumer<String> log = (str) -> System.out.println(SourceAndConverterSerializer.class+":"+str);
+
     public Gson getGson() {
-        GsonBuilder builder = new GsonBuilder()
-                .setPrettyPrinting()
-                .registerTypeHierarchyAdapter(RealTransform.class, new RealTransformAdapter())
-                .registerTypeHierarchyAdapter(AffineTransform3D.class, new AffineTransform3DAdapter())
-                .registerTypeHierarchyAdapter(ColorConverter.class, new ColorConverterAdapter(this))
+
+        Map<Class, List<Class>> runTimeAdapters = new HashMap<>();
+
+
+
+        builder = new GsonBuilder()
+                .setPrettyPrinting();
+
+        log.accept("IClassAdapters : ");
+        ctx.getService(BdvPlaygroundObjectAdapterService.class)
+                .getAdapters(IClassAdapter.class)
+                .forEach(pi -> {
+                    try {
+                        IClassAdapter adapter = pi.createInstance();
+                        log.accept("\t "+adapter.getAdapterClass());
+                        builder = builder.registerTypeHierarchyAdapter(adapter.getAdapterClass(), adapter);
+                    } catch (InstantiableException e) {
+                        e.printStackTrace();
+                    }
+               });
+
+        ctx.getService(BdvPlaygroundObjectAdapterService.class)
+                .getAdapters(IClassRuntimeAdapter.class)
+                .forEach(pi -> {
+                            try {
+                                IClassRuntimeAdapter adapter = pi.createInstance();
+                                if (runTimeAdapters.containsKey(adapter.getBaseClass())) {
+                                    runTimeAdapters.get(adapter.getBaseClass()).add(adapter.getRunTimeClass());
+                                } else {
+                                    List<Class> subClasses = new ArrayList<>();
+                                    subClasses.add(adapter.getRunTimeClass());
+                                    runTimeAdapters.put(adapter.getBaseClass(), subClasses);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                );
+
+        ctx.getService(BdvPlaygroundObjectAdapterService.class)
+                .getAdapters(IClassRuntimeAdapter.class)
+                .forEach(pi -> {
+                    try {
+                        IClassRuntimeAdapter adapter = pi.createInstance();
+                        builder = builder.registerTypeHierarchyAdapter(adapter.getRunTimeClass(), adapter);
+                    } catch (InstantiableException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+
+        log.accept("IRunTimeClassAdapters : ");
+        runTimeAdapters.keySet().forEach(baseClass -> {
+            log.accept("\t "+baseClass);
+            RuntimeTypeAdapterFactory factory = RuntimeTypeAdapterFactory.of(baseClass);
+            runTimeAdapters.get(baseClass).forEach(subClass -> {
+                factory.registerSubtype(subClass);
+                log.accept("\t \t "+subClass);
+            });
+            builder = builder.registerTypeAdapterFactory(factory);
+        });
+
+        builder = builder
                 .registerTypeHierarchyAdapter(SourceAndConverter.class, new SourceAndConverterAdapter(this))
                 .registerTypeHierarchyAdapter(AbstractSpimData.class, new AbstractSpimdataAdapter(this));
 

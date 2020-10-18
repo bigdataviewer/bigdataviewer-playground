@@ -58,33 +58,46 @@ import java.util.stream.Collectors;
 
 public class BigWarpDemo {
 
-    public static ImageJ ij;
-
     public static void main(String... args) {
         // Initializes static SourceService and Display Service
-        ij = new ImageJ();
+        ImageJ ij = new ImageJ();
         ij.ui().showUI();
 
+        demo();
+    }
+
+    public static void demo() {
         // load and convert an image
-        ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
-        RandomAccessibleInterval rai = ImageJFunctions.wrapReal(imp);
+        //ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
+        //RandomAccessibleInterval rai = ImageJFunctions.wrapReal(imp);
         // Adds a third dimension because BDV needs 3D
-        rai = Views.addDimension( rai, 0, 0 );
+        //rai = Views.addDimension( rai, 0, 0 );
 
         // Makes BDV Source
-        Source blobs = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
+        // Source blobs = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
 
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
         //importer.run();
 
-        final AbstractSpimData spimData = importer.get();
+        AbstractSpimData spimData = importer.get();
 
-        SourceAndConverter sacBlobs = SourceAndConverterServices
+        SourceAndConverter sacFixed = SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
+
+        importer = new SpimDataFromXmlImporter(filePath);
+        //importer.run();
+
+        spimData = importer.get();
+
+        SourceAndConverter sacMoving = SourceAndConverterServices
+                .getSourceAndConverterService()
+                .getSourceAndConverterFromSpimdata(spimData)
+                .get(0);
+
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
@@ -93,29 +106,22 @@ public class BigWarpDemo {
         //SourceAndConverter sacBlobs = SourceAndConverterUtils.createSourceAndConverter(blobs);
 
         // Show the sourceandconverter
-        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacBlobs);
+        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacFixed);
 
-        SourceAndConverter mandelbrot = new MandelbrotSourceGetter().get();
-
-        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, mandelbrot);
-
-        SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(mandelbrot)
-                .setColor(new ARGBType(ARGBType.rgba(255, 0, 255,0)));
-
-        SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(sacBlobs)
+        SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(sacMoving)
                 .setColor(new ARGBType(ARGBType.rgba(0, 255, 255,0)));
 
-        new BrightnessAutoAdjuster(mandelbrot, 0).run();
+        new BrightnessAutoAdjuster(sacFixed, 0).run();
 
-        new BrightnessAutoAdjuster(sacBlobs, 0).run();
+        new BrightnessAutoAdjuster(sacMoving, 0).run();
 
-        new ViewerTransformAdjuster(bdvHandle, sacBlobs).run();
+        new ViewerTransformAdjuster(bdvHandle, sacFixed).run();
 
         List<SourceAndConverter> movingSources = new ArrayList<>();
-        movingSources.add(sacBlobs);
+        movingSources.add(sacMoving);
 
         List<SourceAndConverter> fixedSources = new ArrayList<>();
-        fixedSources.add(mandelbrot);
+        fixedSources.add(sacFixed);
 
         List<ConverterSetup> converterSetups = movingSources.stream().map(src -> SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(src)).collect(Collectors.toList());
         converterSetups.addAll(fixedSources.stream().map(src -> SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(src)).collect(Collectors.toList()));
@@ -128,16 +134,13 @@ public class BigWarpDemo {
         bwl.getBigWarp().toggleMovingImageDisplay();
         bwl.getBigWarp().matchActiveViewerPanelToOther();
 
-        //bwl.getBigWarp().closeAll();
-
         for (SourceAndConverter sac : bwl.getWarpedSources()) {
             SourceAndConverterServices.getSourceAndConverterService()
                     .register(sac);
         }
-
     }
 
-    @Ignore // Needs BigWarp Fiji v > 6.0.3, but snapshot only
+    @Ignore // Needs BigWarp Fiji v > 6.0.3, but as of today, it is only 6.0.3 - SNAPSHOT - not ready for release
     @Test
     public void demoRunOk() {
         main(new String[]{""});

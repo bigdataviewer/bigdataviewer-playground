@@ -49,6 +49,7 @@ import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConverter>,
         JsonDeserializer<SourceAndConverter> {
