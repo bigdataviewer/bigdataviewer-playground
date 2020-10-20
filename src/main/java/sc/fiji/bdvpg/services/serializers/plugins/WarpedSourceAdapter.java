@@ -29,7 +29,6 @@
 package sc.fiji.bdvpg.services.serializers.plugins;
 
 import bdv.img.WarpedSource;
-import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import net.imglib2.realtransform.RealTransform;
@@ -43,7 +42,7 @@ import java.lang.reflect.Type;
 @Plugin(type = ISourceAdapter.class)
 public class WarpedSourceAdapter implements ISourceAdapter<WarpedSource>{
 
-    SourceAndConverterSerializer sacSerializer;;
+    SourceAndConverterSerializer sacSerializer;
 
     @Override
     public void setSacSerializer(SourceAndConverterSerializer sacSerializer) {
@@ -60,7 +59,15 @@ public class WarpedSourceAdapter implements ISourceAdapter<WarpedSource>{
         JsonObject obj = new JsonObject();
         WarpedSource source = (WarpedSource) sac.getSpimSource();
         obj.add("realtransform", jsonSerializationContext.serialize(source.getTransform()));
-        obj.addProperty("wrapped_source_id", sacSerializer.getSourceToId().get(source.getWrappedSource()));
+
+        Integer idWrapped = sacSerializer.getSourceToId().get(source.getWrappedSource());
+
+        if (idWrapped==null) {
+            System.err.println(source.getName()+" can't be serialized : the wrapped source "+source.getWrappedSource().getName()+" couldn't be identified. ");
+            return null;
+        }
+
+        obj.addProperty("wrapped_source_id", idWrapped);
         return obj;
     }
 
