@@ -31,7 +31,9 @@ package sc.fiji.bdvpg.services;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import org.scijava.Context;
+import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterInspector;
 
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.HashMap;
@@ -63,6 +65,20 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
     public void run() {
         synchronized (SourceAndConverterServiceSaver.class) {
             List<SourceAndConverter> sacs = SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getSourceAndConverters();
+
+            // Makes sure each source is associated to at least one sourceAndConverter
+            // this happens via recursive source inspection
+            sacs.forEach(sac -> {
+                SourceAndConverterInspector.appendInspectorResult(new DefaultMutableTreeNode(),
+                        sac,
+                        SourceAndConverterServices.getSourceAndConverterService(),
+                        true);
+            });
+
+            // Then let's get back all the sacs - they may have increase in number
+            sacs = SourceAndConverterServices
                     .getSourceAndConverterService()
                     .getSourceAndConverters();
 

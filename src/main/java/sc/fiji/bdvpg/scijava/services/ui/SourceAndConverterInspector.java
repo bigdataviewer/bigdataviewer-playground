@@ -36,6 +36,7 @@ import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
@@ -73,7 +74,7 @@ public class SourceAndConverterInspector {
      */
     public static void appendInspectorResult(DefaultMutableTreeNode parent,
                                              SourceAndConverter sac,
-                                             SourceAndConverterService sourceAndConverterService,
+                                             ISourceAndConverterService sourceAndConverterService,
                                              boolean registerIntermediateSources) {
         if (sac.getSpimSource() instanceof TransformedSource) {
             DefaultMutableTreeNode nodeTransformedSource = new DefaultMutableTreeNode("Transformed Source");

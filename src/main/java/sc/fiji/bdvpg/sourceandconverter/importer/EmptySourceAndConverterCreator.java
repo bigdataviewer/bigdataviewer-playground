@@ -28,9 +28,11 @@
  */
 package sc.fiji.bdvpg.sourceandconverter.importer;
 
+import bdv.util.EmptySource;
 import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
+import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
@@ -52,13 +54,11 @@ import java.util.function.Supplier;
 
 public class EmptySourceAndConverterCreator implements Runnable, Supplier<SourceAndConverter> {
 
-    AffineTransform3D at3D = new AffineTransform3D();
+    AffineTransform3D at3D;
 
     long nx, ny, nz;
 
     String name;
-
-    ImgFactory imgfactory;
 
     /**
      * Simple constructor
@@ -67,20 +67,17 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
      * @param nx
      * @param ny
      * @param nz
-     * @param imgfactory
      */
     public EmptySourceAndConverterCreator(
             String name,
             AffineTransform3D at3D,
-            long nx, long ny, long nz,
-            ImgFactory imgfactory
-            ) {
+            long nx, long ny, long nz
+    ) {
         this.nx = nx;
         this.ny = ny;
         this.nz = nz;
         this.at3D = at3D;
         this.name = name;
-        this.imgfactory = imgfactory;
     }
 
     /**
@@ -93,14 +90,12 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
      * @param voxSizeX
      * @param voxSizeY
      * @param voxSizeZ
-     * @param imgfactory
      */
     public EmptySourceAndConverterCreator(
             String name,
             SourceAndConverter model,
             int timePoint,
-            double voxSizeX, double voxSizeY, double voxSizeZ,
-            ImgFactory imgfactory
+            double voxSizeX, double voxSizeY, double voxSizeZ
     ) {
         // Gets model RAI
         RandomAccessibleInterval rai = model.getSpimSource().getSource(timePoint,0);
@@ -180,7 +175,6 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
         this.nx = (long) nPixX;
         this.ny = (long) nPixY;
         this.nz = (long) nPixZ;
-        this.imgfactory = imgfactory;
 
     }
 
@@ -192,9 +186,7 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
     @Override
     public SourceAndConverter get() {
 
-        Img img = imgfactory.create(nx,ny,nz);
-
-        Source src = new RandomAccessibleIntervalSource(img, Util.getTypeFromInterval(img), at3D, name);
+        Source src = new EmptySource(nx,ny,nz,at3D,name);
 
         SourceAndConverter sac;
 

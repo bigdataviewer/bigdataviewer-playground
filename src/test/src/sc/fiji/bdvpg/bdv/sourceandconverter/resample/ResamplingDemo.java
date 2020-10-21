@@ -131,10 +131,10 @@ public class ResamplingDemo {
                 .maxCacheSize( 1 );
 
         // Creates cached image factory of Type UnsignedShort
-        final DiskCachedCellImgFactory<UnsignedShortType> factory = new DiskCachedCellImgFactory<>( new UnsignedShortType(), factoryOptions );
+        // final DiskCachedCellImgFactory<UnsignedShortType> factory = new DiskCachedCellImgFactory<>( new UnsignedShortType(), factoryOptions );
 
         // DOWNSAMPLING
-        EmptySourceAndConverterCreator downSampledModel = new EmptySourceAndConverterCreator("DownSampled",sac,0,4,4,4, factory);
+        EmptySourceAndConverterCreator downSampledModel = new EmptySourceAndConverterCreator("DownSampled",sac,0,4,4,4);//, factory);
 
         sr = new SourceResampler(sac, downSampledModel.get(),false,false, true);
         SourceAndConverter downsampledSource = sr.get();
@@ -144,7 +144,7 @@ public class ResamplingDemo {
         new ColorChanger( downsampledSource, new ARGBType(ARGBType.rgba(255, 0,0,0))).run();
 
         // UPSAMPLING
-        EmptySourceAndConverterCreator upSampledModel = new EmptySourceAndConverterCreator("UpSampled",sac,0,0.2,0.2,0.2, factory);
+        EmptySourceAndConverterCreator upSampledModel = new EmptySourceAndConverterCreator("UpSampled",sac,0,0.2,0.2,0.2);//, factory);
 
         sr = new SourceResampler(sac, upSampledModel.get(),false,false, true);
         SourceAndConverter upsampledSource = sr.get();

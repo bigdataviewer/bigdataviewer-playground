@@ -147,5 +147,4 @@ public class Procedural3DImageShort extends RealPoint implements RealRandomAcces
         };
     }
 
-
 }

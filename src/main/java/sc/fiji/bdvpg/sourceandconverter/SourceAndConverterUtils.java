@@ -31,9 +31,7 @@ package sc.fiji.bdvpg.sourceandconverter;
 import bdv.*;
 import bdv.spimdata.WrapBasicImgLoader;
 import bdv.tools.brightness.ConverterSetup;
-import bdv.tools.transformation.TransformedSource;
 import bdv.util.ARGBColorConverterSetup;
-import bdv.util.BdvHandle;
 import bdv.util.LUTConverterSetup;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
@@ -41,9 +39,6 @@ import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
-import mpicbg.spim.data.registration.ViewRegistration;
-import mpicbg.spim.data.registration.ViewTransform;
-import mpicbg.spim.data.registration.ViewTransformAffine;
 import mpicbg.spim.data.sequence.Angle;
 import mpicbg.spim.data.sequence.Channel;
 import net.imglib2.RealPoint;
@@ -55,7 +50,6 @@ import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.type.Type;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
@@ -63,14 +57,11 @@ import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 import spimdata.util.Displaysettings;
 
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
 
 /**
  * Following the logic of the repository, i.e. dealing with SourceAndConverter objects only,

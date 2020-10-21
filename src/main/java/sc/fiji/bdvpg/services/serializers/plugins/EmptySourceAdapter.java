@@ -29,19 +29,20 @@
 package sc.fiji.bdvpg.services.serializers.plugins;
 
 import bdv.img.WarpedSource;
-import bdv.viewer.Source;
+import bdv.util.EmptySource;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import net.imglib2.realtransform.RealTransform;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceRealTransformer;
 
 import java.lang.reflect.Type;
 
 @Plugin(type = ISourceAdapter.class)
-public class WarpedSourceAdapter implements ISourceAdapter<WarpedSource>{
+public class EmptySourceAdapter implements ISourceAdapter<EmptySource>{
 
     SourceAndConverterSerializer sacSerializer;
 
@@ -51,61 +52,23 @@ public class WarpedSourceAdapter implements ISourceAdapter<WarpedSource>{
     }
 
     @Override
-    public Class<WarpedSource> getSourceClass() {
-        return WarpedSource.class;
+    public Class<EmptySource> getSourceClass() {
+        return EmptySource.class;
     }
 
     @Override
     public JsonElement serialize(SourceAndConverter sac, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
-        WarpedSource source = (WarpedSource) sac.getSpimSource();
-        obj.add("realtransform", jsonSerializationContext.serialize(source.getTransform()));
-
-        /*if (sacSerializer.isObjectRegistered(Source.class, source.getWrappedSource())) {
-            int idWrapped = sacSerializer.getObjectIndex()
-        } else {
-
-        }*/
-
-        Integer idWrapped = sacSerializer.getSourceToId().get(source.getWrappedSource());
-
-        if (idWrapped==null) {
-            System.err.println(source.getName()+" can't be serialized : the wrapped source "+source.getWrappedSource().getName()+" couldn't be identified. ");
-            return null;
-        }
-
-        obj.addProperty("wrapped_source_id", idWrapped);
+        EmptySource source = (EmptySource) sac.getSpimSource();
+        obj.add("empty_source_parameters", jsonSerializationContext.serialize(source.getParameters()));
         return obj;
     }
 
     @Override
     public SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
-        int wrappedSourceId = obj.getAsJsonPrimitive("wrapped_source_id").getAsInt();
-        SourceAndConverter wrappedSac = null;
-        if (sacSerializer.getIdToSac().containsKey(wrappedSourceId)) {
-            // Already deserialized
-            wrappedSac = sacSerializer.getIdToSac().get(wrappedSourceId);
-        } else {
-            // Should be deserialized first
-            JsonElement element = sacSerializer.idToJsonElement.get(wrappedSourceId);
-            wrappedSac = sacSerializer.getGson().fromJson(element, SourceAndConverter.class);
-        }
+        EmptySource.EmptySourceParams sourceParams = jsonDeserializationContext.deserialize(obj.get("empty_source_parameters"), EmptySource.EmptySourceParams.class);
 
-        if (wrappedSac == null) {
-            System.err.println("Couldn't deserialize wrapped source of Warped Source");
-            return null;
-        }
-
-        RealTransform rt = jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("realtransform"), RealTransform.class);
-
-        SourceRealTransformer srt = new SourceRealTransformer(wrappedSac, rt);
-        srt.run();
-        SourceAndConverter sac = srt.getSourceOut();
-
-        SourceAndConverterServices.getSourceAndConverterService()
-                .register(sac);
-
-        return sac;
+        return SourceAndConverterUtils.createSourceAndConverter(new EmptySource(sourceParams));
     }
 }

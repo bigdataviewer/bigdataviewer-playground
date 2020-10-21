@@ -1,372 +1,163 @@
 [
   {
-    "source_name": "demoSlice.tif channel 1",
+    "source_name": "mri-stack",
     "source_class": "bdv.SpimSource",
     "converter_class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
     "source_id": 0,
     "color": -1,
     "converter_setup_min": 10.0,
-    "converter_setup_max": 250.0,
+    "converter_setup_max": 150.0,
     "sac": {
       "spimdata": {
-        "datalocation": "src/test/resources/demoSlice.xml"
+        "datalocation": "src/test/resources/mri-stack.xml"
       },
       "viewsetup": 0
     }
   },
   {
-    "source_name": "demoSlice.tif channel 1",
-    "source_class": "bdv.SpimSource",
+    "source_name": "Mandelbrot Set",
+    "source_class": "bdv.tools.transformation.TransformedSource",
     "converter_class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
     "source_id": 1,
-    "color": 65535,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 250.0,
+    "color": -1,
+    "converter_setup_min": 0.0,
+    "converter_setup_max": 800.0,
     "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/demoSlice.xml"
+      "affinetransform_fixed": {
+        "affinetransform3d": [
+          600.0,
+          0.0,
+          0.0,
+          -100.0,
+          0.0,
+          600.0,
+          0.0,
+          -100.0,
+          0.0,
+          0.0,
+          600.0,
+          0.0
+        ]
       },
-      "viewsetup": 0
+      "wrapped_source_id": 5
     }
   },
   {
-    "source_name": "demoSlice.tif channel 1_xfm_0",
-    "source_class": "bdv.img.WarpedSource",
+    "source_name": "Mandelbrot Set_ResampledAs_mri-stack",
+    "source_class": "bdv.util.ResampledSource",
     "converter_class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
     "source_id": 2,
-    "color": 65535,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 250.0,
+    "color": 16711680,
+    "converter_setup_min": 0.0,
+    "converter_setup_max": 800.0,
     "sac": {
-      "realtransform": {
-        "type": "Wrapped2DTransformAs3D",
-        "wrappedTransform": {
-          "type": "WrappedIterativeInvertibleRealTransform",
-          "wrappedTransform": {
-            "type": "ThinplateSplineTransform",
-            "kernel": {
-              "ndims": 2,
-              "dMatrix": {
-                "data": [
-                  1.8329294211066302E-4,
-                  -0.010577530750358449,
-                  0.00545429719185857,
-                  -0.005403359499720603,
-                  0.010343300116109821,
-                  -0.017036017577662974,
-                  -0.08366351248559274,
-                  0.031204584081867576,
-                  -0.038073150334934185,
-                  0.10756809631632232
-                ],
-                "numRows": 2,
-                "numCols": 5
-              },
-              "aMatrix": [
-                [
-                  0.01630122778579545,
-                  -0.05351950743554103
-                ],
-                [
-                  -0.07529557564652013,
-                  0.02338844288244062
-                ]
-              ],
-              "bVector": [
-                -0.5658767972693312,
-                1.9875441586012255
-              ],
-              "stiffness": 0.0,
-              "wMatrixComputeD": false,
-              "computeAffine": true,
-              "nLandmarks": 5,
-              "sourceLandmarks": [
-                [
-                  0.586500005865,
-                  6.752850067528501,
-                  7.245000072450001,
-                  1.0,
-                  3.5973000359730003
-                ],
-                [
-                  -0.3228000032280005,
-                  1.2115500121154996,
-                  4.6855500468555,
-                  4.5,
-                  1.1247000112469996
-                ]
-              ]
-            }
-          }
-        }
-      },
-      "wrapped_source_id": 1
+      "type": "ResampledSource",
+      "interpolate": "NEARESTNEIGHBOR",
+      "cache": false,
+      "mipmaps_reused": false,
+      "origin_source_id": 1,
+      "model_source_id": 0
     }
   },
   {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
+    "source_name": "mri-stack_ResampledAs_DownSampled",
+    "source_class": "bdv.util.ResampledSource",
     "converter_class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
     "source_id": 3,
-    "color": -1,
+    "color": 16711680,
     "converter_setup_min": 10.0,
-    "converter_setup_max": 180.0,
+    "converter_setup_max": 150.0,
     "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack.xml"
-      },
-      "viewsetup": 0
+      "type": "ResampledSource",
+      "interpolate": "NLINEAR",
+      "cache": false,
+      "mipmaps_reused": false,
+      "origin_source_id": 0,
+      "model_source_id": 6
     }
   },
   {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
+    "source_name": "mri-stack_ResampledAs_UpSampled",
+    "source_class": "bdv.util.ResampledSource",
     "converter_class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
     "source_id": 4,
-    "color": 65535,
+    "color": 255,
     "converter_setup_min": 10.0,
-    "converter_setup_max": 180.0,
+    "converter_setup_max": 150.0,
     "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack.xml"
-      },
-      "viewsetup": 0
+      "type": "ResampledSource",
+      "interpolate": "NLINEAR",
+      "cache": false,
+      "mipmaps_reused": false,
+      "origin_source_id": 0,
+      "model_source_id": 7
     }
   },
+  null,
   {
-    "source_name": "mri-stack_xfm_0",
-    "source_class": "bdv.img.WarpedSource",
-    "converter_class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
-    "source_id": 5,
-    "color": 65535,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 180.0,
-    "sac": {
-      "realtransform": {
-        "type": "WrappedIterativeInvertibleRealTransform",
-        "wrappedTransform": {
-          "type": "ThinplateSplineTransform",
-          "kernel": {
-            "ndims": 3,
-            "dMatrix": {
-              "data": [
-                -0.0018147643225755654,
-                9.937219522355566E-5,
-                0.002720200684161685,
-                -0.001004808556809675,
-                0.0014236457673694831,
-                1.9858790642546546E-4,
-                -0.0019622634274516905,
-                3.400297536567416E-4,
-                5.259055622021923E-4,
-                -0.0023893587235438154,
-                -2.954740099695975E-4,
-                0.00215892717131122,
-                -3.617689760137099E-4,
-                0.002135691864806513,
-                -2.6442713015425133E-4,
-                -0.001509495758638552,
-                -7.237800329932433E-35,
-                8.672748292187118E-35,
-                -1.4518616967534091E-34,
-                1.3742792991959995E-34,
-                -2.0278748385804365E-35,
-                9.206037698582177E-36,
-                4.2049224373903864E-35,
-                -2.741660821205197E-35
-              ],
-              "numRows": 3,
-              "numCols": 8
-            },
-            "aMatrix": [
-              [
-                -0.5477492582391575,
-                -0.5075505929354065,
-                0.025057805649639782
-              ],
-              [
-                0.5013190355432224,
-                -0.577513575656011,
-                0.0024364382828444466
-              ],
-              [
-                9.309990066822979E-33,
-                -0.0,
-                3.675612633116444E-17
-              ]
-            ],
-            "bVector": [
-              119.97527017523913,
-              52.79330603411314,
-              -9.659771704405156E-15
-            ],
-            "stiffness": 0.0,
-            "wMatrixComputeD": false,
-            "computeAffine": true,
-            "nLandmarks": 8,
-            "sourceLandmarks": [
-              [
-                48.10642972599996,
-                137.513570274,
-                135.09716107,
-                46.898225123999964,
-                22.73413308399995,
-                153.2202301,
-                161.677662314,
-                22.73413308399995
-              ],
-              [
-                51.19156529799997,
-                47.56695149199996,
-                179.26125310999998,
-                180.469457712,
-                51.19156529799997,
-                49.98336069599998,
-                186.510480722,
-                191.34329913
-              ],
-              [
-                -2.997892414000053,
-                -2.997892414000053,
-                -2.997892414000053,
-                -2.997892414000053,
-                262.807120026,
-                262.807120026,
-                262.807120026,
-                262.807120026
-              ]
-            ]
-          }
-        }
-      },
-      "wrapped_source_id": 4
-    }
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
+    "source_name": "DownSampled",
+    "source_class": "bdv.util.EmptySource",
     "converter_class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
     "source_id": 6,
     "color": -1,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 150.0,
+    "converter_setup_min": 0.0,
+    "converter_setup_max": 65535.0,
     "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack.xml"
-      },
-      "viewsetup": 0
+      "empty_source_parameters": {
+        "nx": 46,
+        "ny": 56,
+        "nz": 67,
+        "at3D": {
+          "affinetransform3d": [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            4.0,
+            0.0
+          ]
+        },
+        "name": "DownSampled"
+      }
     }
   },
   {
-    "source_name": "mri-stack",
-    "source_class": "bdv.tools.transformation.TransformedSource",
+    "source_name": "UpSampled",
+    "source_class": "bdv.util.EmptySource",
     "converter_class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
     "source_id": 7,
     "color": -1,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 150.0,
+    "converter_setup_min": 0.0,
+    "converter_setup_max": 65535.0,
     "sac": {
-      "affinetransform_fixed": {
-        "affinetransform3d": [
-          0.6046475179419821,
-          -0.2080664312626016,
-          0.0,
-          0.0,
-          0.1954417030251839,
-          0.5679596651868571,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ]
-      },
-      "wrapped_source_id": 6
-    }
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.tools.transformation.TransformedSource",
-    "converter_class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
-    "source_id": 8,
-    "color": -1,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 150.0,
-    "sac": {
-      "affinetransform_fixed": {
-        "affinetransform3d": [
-          0.4451220043154436,
-          -0.47150070456432286,
-          0.0,
-          0.0,
-          0.43891543812423334,
-          0.41435976161133603,
-          0.0,
-          200.0,
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ]
-      },
-      "wrapped_source_id": 6
-    }
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.tools.transformation.TransformedSource",
-    "converter_class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
-    "source_id": 9,
-    "color": -1,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 150.0,
-    "sac": {
-      "affinetransform_fixed": {
-        "affinetransform3d": [
-          0.36477197439320636,
-          -0.4159166512963456,
-          0.0,
-          200.0,
-          0.43346469665791426,
-          0.38016216166589656,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ]
-      },
-      "wrapped_source_id": 6
-    }
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.tools.transformation.TransformedSource",
-    "converter_class": "class sc.fiji.bdvpg.converter.RealARGBColorConverter$Imp1",
-    "source_id": 10,
-    "color": -1,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 150.0,
-    "sac": {
-      "affinetransform_fixed": {
-        "affinetransform3d": [
-          0.6458202946294721,
-          -0.2812849760829089,
-          0.0,
-          200.0,
-          0.246907508725415,
-          0.5668908530126265,
-          0.0,
-          200.0,
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ]
-      },
-      "wrapped_source_id": 6
+      "empty_source_parameters": {
+        "nx": 930,
+        "ny": 1130,
+        "nz": 1350,
+        "at3D": {
+          "affinetransform3d": [
+            0.2,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.2,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.2,
+            0.0
+          ]
+        },
+        "name": "UpSampled"
+      }
     }
   }
 ]

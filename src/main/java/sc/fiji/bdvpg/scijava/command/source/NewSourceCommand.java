@@ -93,6 +93,6 @@ public class NewSourceCommand implements Command {
         // Creates cached image factory of Type UnsignedShort
         final DiskCachedCellImgFactory<UnsignedShortType> factory = new DiskCachedCellImgFactory<>( new UnsignedShortType(), factoryOptions );
 
-        newsource = new EmptySourceAndConverterCreator(name, model, timePoint, voxSizeX, voxSizeY, voxSizeZ, factory).get();
+        newsource = new EmptySourceAndConverterCreator(name, model, timePoint, voxSizeX, voxSizeY, voxSizeZ).get();//, factory).get();
     }
 }

@@ -35,6 +35,7 @@ import net.imglib2.FinalInterval;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 
 public class MandelbrotSourceGetter implements Runnable, Supplier<SourceAndConverter> {
 
@@ -66,4 +67,5 @@ public class MandelbrotSourceGetter implements Runnable, Supplier<SourceAndConve
 
         return SourceAndConverterUtils.createSourceAndConverter(s);
     }
+
 }

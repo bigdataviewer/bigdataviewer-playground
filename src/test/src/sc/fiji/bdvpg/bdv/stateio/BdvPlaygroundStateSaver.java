@@ -47,10 +47,6 @@ public class BdvPlaygroundStateSaver {
 
         createSacs();
 
-        //ProjectionModeChangerDemo.main(args); // Test SpimData Saving
-        //AffineTransformSourceDemo.main(args); // Test Transformed Source Saving
-        //BigWarpDemo.main(args); // Test Warped source saving
-
         new SourceAndConverterServiceSaver(
                 new File("src/test/resources/bdvplaygroundstate.json"),
                 ij.context()
@@ -62,10 +58,10 @@ public class BdvPlaygroundStateSaver {
 
     public static void createSacs() {
        // Creates demo Warped Sources
-       BigWarpDemo.demo2d();
-       BigWarpDemo.demo3d();
-       AffineTransformSourceDemo.demo(2);
-       //ResamplingDemo.demo();
+       //BigWarpDemo.demo2d();
+       //BigWarpDemo.demo3d();
+       //AffineTransformSourceDemo.demo(2);
+       ResamplingDemo.demo();
     }
 
     @Test

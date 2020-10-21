@@ -103,7 +103,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
 
             return obj;
         } catch (UnsupportedOperationException e) {
-            System.err.println("Could not serialize source "+ sourceAndConverter.getSpimSource().getName());
+            System.err.println("Could not serialize source "+ sourceAndConverter.getSpimSource().getName() + " of class "+ sourceAndConverter.getSpimSource().getClass().getName());
             return null;
         }
     }

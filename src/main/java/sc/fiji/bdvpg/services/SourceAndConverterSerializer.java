@@ -52,7 +52,19 @@ public class SourceAndConverterSerializer {
 
     public SourceAndConverterSerializer(Context ctx) {
         this.ctx = ctx;
+        //objectStore = new HashMap<>();
     }
+
+    //Map<Class, List> objectStore;
+
+    /*Consumer<String> logger = (str) -> System.out.println("Serializer : "+str);
+
+    public synchronized void registerObject(Object o) {
+        if (objectStore.containsKey(o.getClass())) {
+            objectStore.put(o.getClass(), new ArrayList());
+        }
+        objectStore.get(o.getClass()).add(o);
+    }*/
 
     Map<Integer, SourceAndConverter> idToSac;
     Map<SourceAndConverter, Integer> sacToId;
@@ -75,8 +87,6 @@ public class SourceAndConverterSerializer {
     public Gson getGson() {
 
         Map<Class, List<Class>> runTimeAdapters = new HashMap<>();
-
-
 
         builder = new GsonBuilder()
                 .setPrettyPrinting();
@@ -157,4 +167,6 @@ public class SourceAndConverterSerializer {
     public synchronized Map<Source, Integer> getSourceToId() {
         return sourceToId;
     }
+
+
 }
