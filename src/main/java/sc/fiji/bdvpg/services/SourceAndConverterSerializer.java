@@ -45,26 +45,22 @@ import sc.fiji.bdvpg.services.serializers.plugins.IClassAdapter;
 import sc.fiji.bdvpg.services.serializers.plugins.IClassRuntimeAdapter;
 import sc.fiji.bdvpg.services.serializers.plugins.ISourceAdapter;
 
+import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
 
 public class SourceAndConverterSerializer {
 
-    public SourceAndConverterSerializer(Context ctx) {
+    final File basePath;
+
+    public SourceAndConverterSerializer(Context ctx, File basePath) {
         this.ctx = ctx;
-        //objectStore = new HashMap<>();
+        this.basePath = basePath;
     }
 
-    //Map<Class, List> objectStore;
-
-    /*Consumer<String> logger = (str) -> System.out.println("Serializer : "+str);
-
-    public synchronized void registerObject(Object o) {
-        if (objectStore.containsKey(o.getClass())) {
-            objectStore.put(o.getClass(), new ArrayList());
-        }
-        objectStore.get(o.getClass()).add(o);
-    }*/
+    public File getBasePath() {
+        return basePath;
+    }
 
     Map<Integer, SourceAndConverter> idToSac;
     Map<SourceAndConverter, Integer> sacToId;

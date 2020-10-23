@@ -53,7 +53,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
     File f;
 
     public SourceAndConverterServiceSaver(File f, Context ctx) {
-        super(ctx);
+        super(ctx, f.getParentFile());
         this.f = f;
         idToSac = new HashMap<>();
         sacToId = new HashMap<>();

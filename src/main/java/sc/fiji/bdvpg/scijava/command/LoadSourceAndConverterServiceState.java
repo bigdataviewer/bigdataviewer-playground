@@ -48,6 +48,6 @@ public class LoadSourceAndConverterServiceState implements Command {
 
     @Override
     public void run() {
-        new SourceAndConverterServiceLoader(file.getAbsolutePath(), ctx).run();
+        new SourceAndConverterServiceLoader(file.getAbsolutePath(), file.getParent(), ctx).run();
     }
 }

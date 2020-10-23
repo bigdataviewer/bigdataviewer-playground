@@ -33,6 +33,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import org.scijava.Context;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
@@ -42,8 +43,8 @@ public class SourceAndConverterServiceLoader extends SourceAndConverterSerialize
     String filePath;
     Context ctx;
 
-    public SourceAndConverterServiceLoader(String filePath, Context ctx) {
-        super(ctx);
+    public SourceAndConverterServiceLoader(String filePath, String basePath, Context ctx) {
+        super(ctx, new File(basePath));
         this.filePath = filePath;
         idToSac = new HashMap<>();
         sacToId = new HashMap<>();

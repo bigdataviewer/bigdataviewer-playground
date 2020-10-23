@@ -32,8 +32,10 @@ import com.google.gson.*;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.spimdata.exporter.XmlFromSpimDataExporter;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,6 +46,8 @@ public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData>
         JsonDeserializer<AbstractSpimData> {
 
     SourceAndConverterSerializer sacSerializer;
+
+    int spimdataCounter = 0;
 
     public AbstractSpimdataAdapter(SourceAndConverterSerializer sacSerializer) {
         this.sacSerializer = sacSerializer;
@@ -57,6 +61,16 @@ public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData>
         String dataLocation = (String) SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getMetadata(asd, SPIM_DATA_LOCATION );
+        if ((dataLocation == null)||(dataLocation=="")) {
+            dataLocation = new File(sacSerializer.getBasePath(), "_bdvdataset_"+spimdataCounter+".xml").getAbsolutePath();
+            while (new File(dataLocation).exists()) {
+                spimdataCounter++;
+                dataLocation = new File(sacSerializer.getBasePath(), "_bdvdataset_"+spimdataCounter+".xml").getAbsolutePath();
+            }
+            spimdataCounter++;
+            System.out.println("Previously unsaved bdv dataset, saving it to "+dataLocation);
+            new XmlFromSpimDataExporter(asd, dataLocation ).run();
+        }
         obj.addProperty("datalocation", dataLocation);
         return obj;
     }
