@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bdv.sourceandconverter.bigwarp;
+package sc.fiji.bdvpg;
 
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;

@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bdv;
+package sc.fiji.bdvpg.io;
 
 import bdv.util.BdvHandle;
 import net.imagej.ImageJ;

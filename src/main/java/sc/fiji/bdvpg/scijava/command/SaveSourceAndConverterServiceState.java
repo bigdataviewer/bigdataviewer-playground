@@ -37,7 +37,7 @@ import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
 
 import java.io.File;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Save Bdv Playground State")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Save Bdv Playground State (experimental)")
 public class SaveSourceAndConverterServiceState implements Command {
 
     @Parameter

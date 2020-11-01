@@ -26,21 +26,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bdv;
+package sc.fiji.bdvpg.io;
 
-import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
 import org.junit.Test;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.scijava.command.spimdata.MultipleSpimDataImporterCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
-/**
- * Demonstrates visualisation of two spimData sources.
- *
- */
-public class SpimDataDisplayDemo
+import java.io.File;
+
+public class MultipleSpimDataImporterCommandDemo
 {
 	public static void main( String[] args )
 	{
@@ -48,19 +43,10 @@ public class SpimDataDisplayDemo
 		ImageJ ij = new ImageJ();
 		ij.ui().showUI();
 
-		// Gets active BdvHandle instance
-		BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
-
-		// Import SpimData
-		new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").run();
-		new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
-
-		// Show all SourceAndConverter associated with above SpimData
-		SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
-			SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
-			new ViewerTransformAdjuster(bdvHandle, sac).run();
-			new BrightnessAutoAdjuster(sac, 0).run();
-		});
+		final File[] files = new File[ 2 ];
+		files[0] = new File("src/test/resources/mri-stack.xml");
+		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
+		ij.command().run( MultipleSpimDataImporterCommand.class, true, "files", files);
 	}
 
 	@Test

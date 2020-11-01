@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bdv.sourceandconverter.transform;
+package sc.fiji.bdvpg.io;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;

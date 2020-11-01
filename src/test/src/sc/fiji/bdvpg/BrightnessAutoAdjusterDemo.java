@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.sourceandconverter.display;
+package sc.fiji.bdvpg;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
@@ -36,6 +36,7 @@ import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.sourceandconverter.SourceAdder;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 

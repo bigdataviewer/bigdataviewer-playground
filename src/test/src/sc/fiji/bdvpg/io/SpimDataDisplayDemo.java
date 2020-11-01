@@ -26,46 +26,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bdv.stateio;
+package sc.fiji.bdvpg.io;
 
+import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
 import org.junit.Test;
-import sc.fiji.bdvpg.bdv.sourceandconverter.bigwarp.BigWarpDemo;
-import sc.fiji.bdvpg.bdv.sourceandconverter.resample.ResamplingDemo;
-import sc.fiji.bdvpg.bdv.sourceandconverter.transform.AffineTransformSourceDemo;
-import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
-import java.io.File;
+/**
+ * Demonstrates visualisation of two spimData sources.
+ *
+ */
+public class SpimDataDisplayDemo
+{
+	public static void main( String[] args )
+	{
+		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
+		ImageJ ij = new ImageJ();
+		ij.ui().showUI();
 
-public class BdvPlaygroundStateSaver {
+		// Gets active BdvHandle instance
+		BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
 
-    public static void main( String[] args )
-    {
-        // Initializes static SourceService and Display Service
-        ImageJ ij = new ImageJ();
-        ij.ui().showUI();
+		// Import SpimData
+		new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").run();
+		new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
 
-        createSacs();
+		// Show all SourceAndConverter associated with above SpimData
+		SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
+			SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+			new ViewerTransformAdjuster(bdvHandle, sac).run();
+			new BrightnessAutoAdjuster(sac, 0).run();
+		});
+	}
 
-        new SourceAndConverterServiceSaver(
-                new File("src/test/resources/bdvplaygroundstate.json"),
-                ij.context()
-        ).run();
-
-        System.out.println("Saved!");
-
-    }
-
-    public static void createSacs() {
-       // Creates demo Warped Sources
-       BigWarpDemo.demo2d();
-       BigWarpDemo.demo3d();
-       AffineTransformSourceDemo.demo(2);
-       ResamplingDemo.demo();
-    }
-
-    @Test
-    public void demoRunOk() {
-        main(new String[]{""});
-    }
+	@Test
+	public void demoRunOk() {
+		main(new String[]{""});
+	}
 }

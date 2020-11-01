@@ -26,31 +26,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bdv.scijava;
+package sc.fiji.bdvpg.io.state;
 
 import net.imagej.ImageJ;
 import org.junit.Test;
-import sc.fiji.bdvpg.scijava.command.spimdata.MultipleSpimDataImporterCommand;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.BigWarpDemo;
+import sc.fiji.bdvpg.ResamplingDemo;
+import sc.fiji.bdvpg.io.AffineTransformSourceDemo;
+import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
 
 import java.io.File;
 
-public class MultipleSpimDataImporterCommandDemo
-{
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ImageJ ij = new ImageJ();
-		ij.ui().showUI();
+public class BdvPlaygroundStateSaver {
 
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( MultipleSpimDataImporterCommand.class, true, "files", files);
-	}
+    public static void main( String[] args )
+    {
+        // Initializes static SourceService and Display Service
+        ImageJ ij = new ImageJ();
+        ij.ui().showUI();
 
-	@Test
-	public void demoRunOk() {
-		main(new String[]{""});
-	}
+        createSacs();
+
+        new SourceAndConverterServiceSaver(
+                new File("src/test/resources/bdvplaygroundstate.json"),
+                ij.context()
+        ).run();
+
+        System.out.println("Saved!");
+
+    }
+
+    public static void createSacs() {
+       // Creates demo Warped Sources
+       BigWarpDemo.demo2d();
+       BigWarpDemo.demo3d();
+       AffineTransformSourceDemo.demo(2);
+       ResamplingDemo.demo();
+    }
+
+    @Test
+    public void demoRunOk() {
+        main(new String[]{""});
+    }
 }

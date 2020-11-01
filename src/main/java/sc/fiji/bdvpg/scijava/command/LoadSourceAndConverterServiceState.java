@@ -37,7 +37,7 @@ import sc.fiji.bdvpg.services.SourceAndConverterServiceLoader;
 
 import java.io.File;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Load Bdv Playground State")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Load Bdv Playground State (experimental)")
 public class LoadSourceAndConverterServiceState implements Command {
 
     @Parameter
