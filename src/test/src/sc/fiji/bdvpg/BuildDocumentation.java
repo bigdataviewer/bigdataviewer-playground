@@ -61,7 +61,7 @@ public class BuildDocumentation {
             Plugin plugin = c.getAnnotation(Plugin.class);
             if (plugin!=null) {
                 String url = linkGitHubRepoPrefix+c.getName().replaceAll("\\.","\\/")+".java";
-                doc = "## [" + c.getSimpleName() + "]("+url+") [" + (plugin.menuPath() == null ? "null" : plugin.menuPath()) + "]\n";
+                doc = "### [" + c.getSimpleName() + "]("+url+") [" + (plugin.menuPath() == null ? "null" : plugin.menuPath()) + "]\n";
                 if (!plugin.label().equals(""))
                     doc+=plugin.label()+"\n";
                 if (!plugin.description().equals(""))
@@ -76,7 +76,7 @@ public class BuildDocumentation {
                                             }).collect(Collectors.toList());
                 inputFields.sort(Comparator.comparing(f -> f.getName()));
                 if (inputFields.size()>0) {
-                    doc += "### Input\n";
+                    doc += "#### Input\n";
                     inputFields.forEach(f -> {
                         doc += "* ["+f.getType().getSimpleName()+"] **" + f.getName() + "**:" + f.getAnnotation(Parameter.class).label() + "\n";
                         if (!f.getAnnotation(Parameter.class).description().equals(""))
@@ -92,7 +92,7 @@ public class BuildDocumentation {
                         }).collect(Collectors.toList());
                 outputFields.sort(Comparator.comparing(f -> f.getName()));
                 if (outputFields.size()>0) {
-                    doc += "### Output\n";
+                    doc += "#### Output\n";
                     outputFields.forEach(f -> {
                         doc += "* ["+f.getType().getSimpleName()+"] **" + f.getName() + "**:" + f.getAnnotation(Parameter.class).label() + "\n";
                         if (!f.getAnnotation(Parameter.class).description().equals(""))

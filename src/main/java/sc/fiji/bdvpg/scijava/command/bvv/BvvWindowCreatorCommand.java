@@ -38,7 +38,7 @@ import sc.fiji.bdvpg.bvv.BvvCreator;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>Create Empty BVV Frame",
-    description = "Creates an empty Bdv window")
+    description = "Creates an empty Bvv window")
 public class BvvWindowCreatorCommand implements Command {
 
     @Parameter(label = "Title of the new BVV window")
