@@ -45,72 +45,7 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
  *
  */
 
-public class Displaysettings extends NamedEntity implements Comparable<Displaysettings>
-{
-    // RGBA value
-    public int[] color = new int[] {255,255,255,0}; // Initialization avoids null pointer exception
-
-    // min display value
-    public double min = 0;
-
-    // max display value
-    public double max = 255;
-
-    // if isset is false, the display value is discarded
-    public boolean isSet = false;
-
-    // stores projection mode
-    public String projectionMode = Projection.PROJECTION_MODE_SUM; // Default projection mode
-
-    public Displaysettings(final int id, final String name)
-    {
-        super( id, name );
-    }
-
-    public Displaysettings(final int id )
-    {
-        this( id, Integer.toString( id ) );
-    }
-
-    /**
-     * Get the unique id of this displaysettings
-     */
-    @Override
-    public int getId()
-    {
-        return super.getId();
-    }
-
-    /**
-     * Get the name of this Display Settings Entity.
-     */
-    @Override
-    public String getName()
-    {
-        return super.getName();
-    }
-
-    /**
-     * Set the name of this displaysettings (probably useless).
-     */
-    @Override
-    public void setName( final String name )
-    {
-        super.setName( name );
-    }
-
-    /**
-     * Compares the {@link #getId() ids}.
-     */
-    @Override
-    public int compareTo( final Displaysettings o )
-    {
-        return getId() - o.getId();
-    }
-
-    protected Displaysettings()
-    {}
-
+public class DisplaysettingsHelper {
     /**
      * Stores display settings currently in use by the SourceAndConverter into the link SpimData object
      * @param sac
@@ -200,31 +135,6 @@ public class Displaysettings extends NamedEntity implements Comparable<Displayse
                     .setMetadata(sac, Projection.PROJECTION_MODE, ds.projectionMode);
 
         }
-    }
-
-    /**
-     * More meaningful String representation of DisplaySettings
-     * @return
-     */
-    public String toString() {
-        String str = "";
-        str+="set = "+this.isSet+", ";
-
-        if (this.projectionMode!=null)
-            str+="set = "+this.projectionMode+", ";
-
-        if (this.color!=null) {
-            str += "color = ";
-            for (int i = 0; i < this.color.length;i++) {
-                str += this.color[i] + ", ";
-            }
-        }
-
-        str+="min = "+this.min+", ";
-
-        str+="max = "+this.max;
-
-        return str;
     }
 
 }

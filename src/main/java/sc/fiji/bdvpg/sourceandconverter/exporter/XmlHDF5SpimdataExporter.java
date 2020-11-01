@@ -49,11 +49,9 @@ import mpicbg.spim.data.sequence.TimePoints;
 import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imglib2.FinalDimensions;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.display.ColorConverter;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.type.numeric.ARGBType;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import spimdata.util.Displaysettings;
+import spimdata.util.DisplaysettingsHelper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -240,7 +238,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
                 Displaysettings ds = new Displaysettings(idx_current_src);
 
-                Displaysettings.GetDisplaySettingsFromCurrentConverter(sac, ds);
+                DisplaysettingsHelper.GetDisplaySettingsFromCurrentConverter(sac, ds);
 
                 basicviewsetup.setAttribute(ds);
 

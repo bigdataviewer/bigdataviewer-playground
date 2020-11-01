@@ -58,6 +58,7 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import spimdata.util.Displaysettings;
+import spimdata.util.DisplaysettingsHelper;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -212,7 +213,7 @@ public class SourceAndConverterUtils {
                     // Applying display settings if some have been set
                     if (setup.getAttribute(Displaysettings.class)!=null) {
 
-                        Displaysettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(Displaysettings.class));
+                        DisplaysettingsHelper.PullDisplaySettings(out.get(setupId),setup.getAttribute(Displaysettings.class));
 
                     }
 
@@ -234,7 +235,7 @@ public class SourceAndConverterUtils {
                     SourceAndConverterServices.getSourceAndConverterService().register(out.get(setupId));
                     // Applying display settings if some have been set
                     if (setup.getAttribute(Displaysettings.class)!=null) {
-                        Displaysettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(Displaysettings.class));
+                        DisplaysettingsHelper.PullDisplaySettings(out.get(setupId),setup.getAttribute(Displaysettings.class));
                     }
 
                 } else {

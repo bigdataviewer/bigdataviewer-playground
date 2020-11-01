@@ -36,8 +36,7 @@ import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterInspector;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /** Big Objective : save the state of all open sources
  * By Using Gson and specific serialization depending on SourceAndConverter classes
@@ -52,8 +51,17 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
 
     File f;
 
+    List<SourceAndConverter> sacs;
+
     public SourceAndConverterServiceSaver(File f, Context ctx) {
+        this(f, ctx, SourceAndConverterServices
+                .getSourceAndConverterService()
+                .getSourceAndConverters());
+    }
+
+    public SourceAndConverterServiceSaver(File f, Context ctx, List<SourceAndConverter> sacs) {
         super(ctx, f.getParentFile());
+        this.sacs = sacs;
         this.f = f;
         idToSac = new HashMap<>();
         sacToId = new HashMap<>();
@@ -61,26 +69,32 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
         idToSource = new HashMap<>();
     }
 
+
+    Set<SourceAndConverter> setOfSourcesNeedingSerialization = new HashSet<>();
+
     @Override
     public void run() {
         synchronized (SourceAndConverterServiceSaver.class) {
-            List<SourceAndConverter> sacs = SourceAndConverterServices
+            /*sacs = SourceAndConverterServices
                     .getSourceAndConverterService()
-                    .getSourceAndConverters();
+                    .getSourceAndConverters();*/
 
             // Makes sure each source is associated to at least one sourceAndConverter
             // this happens via recursive source inspection
+
             sacs.forEach(sac -> {
-                SourceAndConverterInspector.appendInspectorResult(new DefaultMutableTreeNode(),
+                setOfSourcesNeedingSerialization.addAll(SourceAndConverterInspector.appendInspectorResult(new DefaultMutableTreeNode(),
                         sac,
                         SourceAndConverterServices.getSourceAndConverterService(),
-                        true);
+                        true));
             });
 
             // Then let's get back all the sacs - they may have increase in number
-            sacs = SourceAndConverterServices
+            sacs = /*SourceAndConverterServices
                     .getSourceAndConverterService()
-                    .getSourceAndConverters();
+                    .getSourceAndConverters()*/
+                    new ArrayList<>(setOfSourcesNeedingSerialization);
+
 
             for (int i = 0; i < sacs.size(); i++) {
                 idToSac.put(i, sacs.get(i));
@@ -91,8 +105,17 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
 
             Gson gson = getGson();
 
+            // Let's launch serialization of all SpimDatasets first
+            // This forces a saving of all datasets before they can be required by other sourceAdnConverters
+            // Serializes datasets - required to avoid serialization issues
+            SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getSpimDatasets().forEach(asd -> {
+                gson.toJson(asd);
+            });
+
             try {
-                System.out.println(f.getAbsolutePath());
+                //System.out.println(f.getAbsolutePath());
                 FileWriter writer = new FileWriter(f.getAbsolutePath());
                 gson.toJson(sacs, writer);
                 writer.flush();

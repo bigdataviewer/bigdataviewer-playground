@@ -67,9 +67,12 @@ public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
                         .getSourceAndConverterService()
                         .getMetadata(sac, SPIM_DATA_INFO);
 
-        obj.add("spimdata", jsonSerializationContext.serialize(sdi.asd));
-        obj.addProperty("viewsetup", sdi.setupId);
-
+        if (sdi == null) {
+            System.err.println("Spim Source "+sac.getSpimSource().getName()+"  has no associated spimdata. Deserialization will fail.");
+        } else {
+            obj.add("spimdata", jsonSerializationContext.serialize(sdi.asd));
+            obj.addProperty("viewsetup", sdi.setupId);
+        }
         return obj;
     }
 
@@ -77,21 +80,26 @@ public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
     public SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
         AbstractSpimData asd = jsonDeserializationContext.deserialize(obj.get("spimdata"), AbstractSpimData.class);
-        int setupId = obj.getAsJsonPrimitive("viewsetup").getAsInt();
-        final ISourceAndConverterService sacservice =  SourceAndConverterServices
-                .getSourceAndConverterService();
-        Optional<SourceAndConverter> futureSac = sacservice.getSourceAndConverters()
-                .stream()
-                .filter(sac -> sacservice.containsMetadata(sac, SPIM_DATA_INFO))
-                .filter(sac -> {
-                    SourceAndConverterService.SpimDataInfo sdi = (SourceAndConverterService.SpimDataInfo) sacservice.getMetadata(sac,SPIM_DATA_INFO);
-                    return sdi.asd.equals(asd)&&sdi.setupId ==setupId;
-                }).findFirst();
-        if (futureSac.isPresent()) {
-            return futureSac.get();
-        } else {
-            System.err.println("Couldn't deserialize spim source from json element "+jsonElement.getAsString());
+        if (asd == null) {
+            System.err.println("A BDV Dataset could not be serialized!");
             return null;
+        } else {
+            int setupId = obj.getAsJsonPrimitive("viewsetup").getAsInt();
+            final ISourceAndConverterService sacservice = SourceAndConverterServices
+                    .getSourceAndConverterService();
+            Optional<SourceAndConverter> futureSac = sacservice.getSourceAndConverters()
+                    .stream()
+                    .filter(sac -> sacservice.containsMetadata(sac, SPIM_DATA_INFO))
+                    .filter(sac -> {
+                        SourceAndConverterService.SpimDataInfo sdi = (SourceAndConverterService.SpimDataInfo) sacservice.getMetadata(sac, SPIM_DATA_INFO);
+                        return sdi.asd.equals(asd) && sdi.setupId == setupId;
+                    }).findFirst();
+            if (futureSac.isPresent()) {
+                return futureSac.get();
+            } else {
+                System.err.println("Couldn't deserialize spim source from json element " + jsonElement.getAsString());
+                return null;
+            }
         }
     }
 }

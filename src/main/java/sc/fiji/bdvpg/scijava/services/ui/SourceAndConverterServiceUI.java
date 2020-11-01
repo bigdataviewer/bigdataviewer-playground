@@ -221,6 +221,14 @@ public class SourceAndConverterServiceUI {
 
     }
 
+    public void show() {
+        frame.setVisible(true);
+    }
+
+    public void hide() {
+        frame.setVisible(false);
+    }
+
     SourceFilterNode copiedNode = null;
 
     void addUISpecificActions(JPopupMenu popup) {
