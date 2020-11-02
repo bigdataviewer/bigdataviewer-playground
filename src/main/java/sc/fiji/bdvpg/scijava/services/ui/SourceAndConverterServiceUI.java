@@ -217,7 +217,7 @@ public class SourceAndConverterServiceUI {
         frame.add(panel);
         frame.pack();
         frame.setVisible(false);
-        frame.setVisible(true);
+        //frame.setVisible(true);
 
     }
 
@@ -348,6 +348,7 @@ public class SourceAndConverterServiceUI {
      * @param sac
      */
     public void inspectSource(SourceAndConverter sac) {
+        if (!frame.isVisible()) {show();}
         DefaultMutableTreeNode parentNodeInspect = new DefaultMutableTreeNode("Inspect Results ["+sac.getSpimSource().getName()+"]");
         SourceAndConverterInspector.appendInspectorResult(parentNodeInspect, sac, sourceAndConverterService, false);
         top.add(parentNodeInspect);
@@ -371,6 +372,7 @@ public class SourceAndConverterServiceUI {
      * @param sac
      */
     public void update(SourceAndConverter sac) {
+        if (!frame.isVisible()) {show();}
         synchronized (tree) {
             updateSpimDataFilterNodes();
             if (top.hasConsumed(sac)) {
@@ -527,6 +529,7 @@ public class SourceAndConverterServiceUI {
      * @param sac
      */
     public void remove(SourceAndConverter sac) {
+        if (!frame.isVisible()) {show();}
         synchronized (tree) {
             if (top.currentInputSacs.contains(sac)) {
                 top.remove(sac);

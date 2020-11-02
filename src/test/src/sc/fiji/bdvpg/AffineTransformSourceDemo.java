@@ -26,10 +26,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.io;
+package sc.fiji.bdvpg;
 
 import bdv.util.BdvHandle;
-import bdv.viewer.SourceAndConverter;
+import bdv.viewer.*;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -80,7 +80,7 @@ public class AffineTransformSourceDemo {
         new ViewerTransformAdjuster(bdvHandle, sac).run();
         new BrightnessAutoAdjuster(sac, 0).run();
 
-        ArrayList<SourceAndConverter> sacs = new ArrayList<>();
+        ArrayList<SourceAndConverter<?>> sacs = new ArrayList<>();
         for (int x = 0; x < numberOfSourcesInOneAxis;x++) {
             for (int y = 0; y < numberOfSourcesInOneAxis; y++) {
 
@@ -103,5 +103,9 @@ public class AffineTransformSourceDemo {
         SourceAndConverterServices
                 .getSourceAndConverterDisplayService()
                 .show(bdvHandle, sacs.toArray(new SourceAndConverter[0]));
+
+        SourceGroup sg = bdvHandle.getViewerPanel().state().getGroups().get(1);
+
+        bdvHandle.getViewerPanel().state().addSourcesToGroup(sacs, sg);
     }
 }

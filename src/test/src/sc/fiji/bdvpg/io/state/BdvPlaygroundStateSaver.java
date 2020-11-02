@@ -33,7 +33,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import sc.fiji.bdvpg.BigWarpDemo;
 import sc.fiji.bdvpg.ResamplingDemo;
-import sc.fiji.bdvpg.io.AffineTransformSourceDemo;
+import sc.fiji.bdvpg.AffineTransformSourceDemo;
 import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
 
 import java.io.File;
