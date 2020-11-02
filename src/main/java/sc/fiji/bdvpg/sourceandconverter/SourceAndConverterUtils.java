@@ -33,6 +33,7 @@ import bdv.spimdata.WrapBasicImgLoader;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.ARGBColorConverterSetup;
 import bdv.util.LUTConverterSetup;
+import bdv.util.UnmodifiableConverterSetup;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
@@ -370,9 +371,11 @@ public class SourceAndConverterUtils {
                 setup = new LUTConverterSetup((RealLUTConverter) source.getConverter());
             }
         } else {
-            // Here different kinds of Converter can be supported
-            errlog.accept("Cannot build ConverterSetup for Converters of class "+source.getConverter().getClass());
-            setup = null;
+            if (source.asVolatile() != null) {
+                setup = new UnmodifiableConverterSetup( source.getConverter(), source.asVolatile().getConverter());
+            } else {
+                setup = new UnmodifiableConverterSetup( source.getConverter());
+            }
         }
         return setup;
     }
