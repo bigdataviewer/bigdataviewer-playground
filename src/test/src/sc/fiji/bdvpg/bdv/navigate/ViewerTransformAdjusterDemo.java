@@ -44,10 +44,10 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
  * Author: @tischi
  * 12 2019
  */
-public class ViewerTransformAdjusterDemo {
+public class ViewerTransformAdjusterDemo
+{
     public static void main(String[] args)
     {
-
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ImageJ ij = new ImageJ();
         ij.ui().showUI();

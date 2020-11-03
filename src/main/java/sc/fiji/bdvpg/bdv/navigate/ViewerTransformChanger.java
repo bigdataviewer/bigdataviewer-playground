@@ -29,6 +29,7 @@
 package sc.fiji.bdvpg.bdv.navigate;
 
 import bdv.util.BdvHandle;
+import bdv.viewer.animate.SimilarityTransformAnimator;
 import net.imglib2.realtransform.AffineTransform3D;
 
 /**
@@ -38,31 +39,53 @@ import net.imglib2.realtransform.AffineTransform3D;
  *
  * See ViewTransformSetAndLogDemo for a usage example
  *
- * @author haesleinhuepf
+ * @author haesleinhuepf, tischi
  * 12 2019
  */
 
-public class ViewTransformator implements Runnable {
+public class ViewerTransformChanger implements Runnable {
 
-    private BdvHandle bdvHandle;
+    private final BdvHandle bdvHandle;
     private AffineTransform3D transform;
+    private final int animationDurationMillis;
+    private final boolean concatenateToCurrentTransform;
 
-    public ViewTransformator(BdvHandle bdvHandle, AffineTransform3D transform) {
+    public ViewerTransformChanger( BdvHandle bdvHandle, AffineTransform3D transform, boolean concatenateToCurrentTransform, int animationDurationMillis ) {
         this.bdvHandle = bdvHandle;
         this.transform = transform;
+        this.concatenateToCurrentTransform = concatenateToCurrentTransform;
+        this.animationDurationMillis = animationDurationMillis;
     }
 
     @Override
     public void run() {
-        // get current transform
-        AffineTransform3D view = new AffineTransform3D();
-        bdvHandle.getViewerPanel().state().getViewerTransform(view);
 
-        // change the transform
-        view = view.concatenate(transform);
+        if ( concatenateToCurrentTransform )
+        {
+            AffineTransform3D view = new AffineTransform3D();
+            bdvHandle.getViewerPanel().state().getViewerTransform( view );
+            transform = view.concatenate( transform );
+        }
 
-        // submit to BDV
-        bdvHandle.getViewerPanel().state().setViewerTransform(view);
+        if ( animationDurationMillis <= 0 )
+        {
+            bdvHandle.getViewerPanel().state().setViewerTransform( transform );
+            return;
+        }
+        else
+        {
+            final AffineTransform3D currentViewerTransform = new AffineTransform3D();
+            bdvHandle.getViewerPanel().state().getViewerTransform( currentViewerTransform );
 
+            final SimilarityTransformAnimator similarityTransformAnimator =
+                    new SimilarityTransformAnimator(
+                            currentViewerTransform,
+                            transform,
+                            0, 0,  // TODO: understand what this does
+                            animationDurationMillis  );
+
+            bdvHandle.getViewerPanel().setTransformAnimator( similarityTransformAnimator );
+            //bdvHandle.getViewerPanel().( currentViewerTransform );
+        }
     }
 }
