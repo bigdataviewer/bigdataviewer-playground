@@ -371,6 +371,7 @@ public class SourceAndConverterUtils {
                 setup = new LUTConverterSetup((RealLUTConverter) source.getConverter());
             }
         } else {
+            log.accept( "Unsupported ConverterSetup for Converters of class " + source.getConverter().getClass() );
             if (source.asVolatile() != null) {
                 setup = new UnmodifiableConverterSetup( source.getConverter(), source.asVolatile().getConverter());
             } else {
