@@ -1,8 +1,6 @@
 package sc.fiji.bdvpg.bdv.navigate;
 
-import bdv.util.Bdv;
 import bdv.util.BdvHandle;
-import bdv.viewer.animate.SimilarityTransformAnimator;
 import net.imglib2.realtransform.AffineTransform3D;
 
 public class AdaptedViewCenterTransformCreator
