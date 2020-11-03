@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package src.sc.fiji.bdvpg.bdv.navigate;
+package sc.fiji.bdvpg.bdv.navigate;
 
 import bdv.util.BdvHandle;
 import bdv.util.RandomAccessibleIntervalSource;
@@ -41,11 +41,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import org.junit.Test;
-import sc.fiji.bdvpg.bdv.navigate.AdaptedViewCenterTransformCreator;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformChanger;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformLogger;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
