@@ -41,10 +41,8 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import org.junit.Test;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.bdv.BdvUtils;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.bdv.navigate.ViewTransformator;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformLogger;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
@@ -53,7 +51,7 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
+ * Author: @haesleinhuepf, @tischi
  * 12 2019
  */
 public class ViewTransformSetAndLogDemo {
@@ -88,10 +86,16 @@ public class ViewTransformSetAndLogDemo {
         // log transform
         new ViewerTransformLogger(bdvHandle).run();
 
-        // update transform
+        // update transform relative to current
         AffineTransform3D affineTransform3D = new AffineTransform3D();
         affineTransform3D.rotate(2, 45);
-        new ViewTransformator(bdvHandle, affineTransform3D).run();
+        int animationDurationMillis = 2000;
+        new ViewerTransformChanger(bdvHandle, affineTransform3D, true, animationDurationMillis ).run();
+        IJ.wait( animationDurationMillis );
+
+        // set a new transform
+        AffineTransform3D adaptedCenterTransform = BdvUtils.getViewerTransformWithNewCenter( bdvHandle, new double[]{ 133, 133, 0 } );
+        new ViewerTransformChanger(bdvHandle, adaptedCenterTransform, false, animationDurationMillis ).run();
 
         // log transform
         new ViewerTransformLogger(bdvHandle).run();

@@ -33,7 +33,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.navigate.ViewTransformator;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformChanger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 
 /**
@@ -78,6 +78,6 @@ public class ViewTransformatorCommand implements Command {
         affineTransform3D.rotate(1, rotateAroundY);
         affineTransform3D.rotate(2, rotateAroundZ);
 
-        new ViewTransformator(bdvh, affineTransform3D).run();
+        new ViewerTransformChanger(bdvh, affineTransform3D, true, 0).run();
     }
 }
