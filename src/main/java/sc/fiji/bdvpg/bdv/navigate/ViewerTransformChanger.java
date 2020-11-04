@@ -33,22 +33,44 @@ import bdv.viewer.animate.SimilarityTransformAnimator;
 import net.imglib2.realtransform.AffineTransform3D;
 
 /**
- * BigDataViewer Playground Action --
- * Action which concatenates the current viewTransform
+ * Action which changes the current viewerTransform
  * of a {@link BdvHandle} with the input {@link AffineTransform3D}
  *
- * See ViewTransformSetAndLogDemo for a usage example
+ * See ViewTransformSetAndLogDemo for usage examples
  *
- * @author haesleinhuepf, tischi
- * 12 2019
+ * @author @haesleinhuepf, @tischi
+ * - 12 2019
+ * - 11 2020 @tischi: add option to animate; add option to apply absolute or relative (concatenate)
  */
 
 public class ViewerTransformChanger implements Runnable {
 
+    /**
+     * The bdvHandle of which the viewer transform should be changed
+     */
     private final BdvHandle bdvHandle;
+
+    /**
+     * The new viewer transform (either relative or absolute, see below)
+     */
     private AffineTransform3D transform;
-    private final int animationDurationMillis;
+
+    /**
+     * If {@code true} the transform will be concatenated (applied relative) to the current transform.
+     * This is useful, e.g., when one wants to rotate the current view. In this
+     * case the transform would only contain the rotation.
+     *
+     * If {@code false} the transform will be applied (absolute).
+     * This is useful, e.g., if one has stored a particular viewer transform, e.g.,
+     * in some sort of bookmark and wants to come back to it.
+     */
     private final boolean concatenateToCurrentTransform;
+
+    /**
+     * If <=0 the transform will be applied immediately.
+     * If >0 the change from the current transform to the new transform will be animated.
+     */
+    private final int animationDurationMillis;
 
     public ViewerTransformChanger( BdvHandle bdvHandle, AffineTransform3D transform, boolean concatenateToCurrentTransform ) {
         this.bdvHandle = bdvHandle;
@@ -92,7 +114,6 @@ public class ViewerTransformChanger implements Runnable {
                             animationDurationMillis  );
 
             bdvHandle.getViewerPanel().setTransformAnimator( similarityTransformAnimator );
-            //bdvHandle.getViewerPanel().( currentViewerTransform );
         }
     }
 }

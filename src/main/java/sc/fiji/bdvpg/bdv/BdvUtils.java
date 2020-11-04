@@ -46,6 +46,48 @@ import net.imglib2.util.LinAlgHelpers;
  */
 public class BdvUtils
 {
+    /**
+     * Creates a viewer transform with a new center position.
+     *
+     * Author: @tischi
+     * - 11 2020
+     *
+     * @param bdvHandle
+     *          the bdvHandle, used to fetch the current viewerTransform and the current window size
+     * @param xyz
+     * 			target coordinates for the new center in physical units
+     * @return
+     *          viewerTransform that keeps the orientation of the current viewerTransform but with a shifted center
+     */
+    public static AffineTransform3D getViewerTransformWithNewCenter( BdvHandle bdvHandle, double[] xyz )
+    {
+        final AffineTransform3D currentViewerTransform = new AffineTransform3D();
+        bdvHandle.getViewerPanel().state().getViewerTransform( currentViewerTransform );
+
+        AffineTransform3D adaptedViewerTransform = currentViewerTransform.copy();
+
+        // ViewerTransform notes:
+        // - applyInverse: coordinates in viewer => coordinates in image
+        // - apply: coordinates in image => coordinates in viewer
+
+        final double[] targetPositionInViewerInPixels = new double[ 3 ];
+        currentViewerTransform.apply( xyz, targetPositionInViewerInPixels );
+
+        for ( int d = 0; d < 3; d++ )
+        {
+            targetPositionInViewerInPixels[ d ] *= -1;
+        }
+
+        adaptedViewerTransform.translate( targetPositionInViewerInPixels );
+
+        final double[] windowCentreInViewerInPixels = new double[ 3 ];
+        windowCentreInViewerInPixels[ 0 ] = bdvHandle.getViewerPanel().getDisplay().getWidth() / 2.0;
+        windowCentreInViewerInPixels[ 1 ] = bdvHandle.getViewerPanel().getDisplay().getHeight() / 2.0;
+
+        adaptedViewerTransform.translate( windowCentreInViewerInPixels );
+
+        return adaptedViewerTransform;
+    }
 
     public static double getViewerVoxelSpacing( BdvHandle bdv ) {
         final int windowWidth = bdv.getViewerPanel().getDisplay().getWidth();

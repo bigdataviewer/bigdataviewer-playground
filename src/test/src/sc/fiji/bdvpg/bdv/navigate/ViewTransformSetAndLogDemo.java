@@ -41,6 +41,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import org.junit.Test;
+import sc.fiji.bdvpg.bdv.BdvUtils;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
@@ -88,12 +89,13 @@ public class ViewTransformSetAndLogDemo {
         // update transform relative to current
         AffineTransform3D affineTransform3D = new AffineTransform3D();
         affineTransform3D.rotate(2, 45);
-        new ViewerTransformChanger(bdvHandle, affineTransform3D, true, 5000).run();
-        IJ.wait( 5000 );
+        int animationDurationMillis = 2000;
+        new ViewerTransformChanger(bdvHandle, affineTransform3D, true, animationDurationMillis ).run();
+        IJ.wait( animationDurationMillis );
 
         // set a new transform
-        AffineTransform3D adaptedCenterTransform = new AdaptedViewCenterTransformCreator( bdvHandle, new double[]{ 133, 133, 0 }, 0 ).getAdaptedCenterTransform();
-        new ViewerTransformChanger(bdvHandle, adaptedCenterTransform, false, 5000).run();
+        AffineTransform3D adaptedCenterTransform = BdvUtils.getViewerTransformWithNewCenter( bdvHandle, new double[]{ 133, 133, 0 } );
+        new ViewerTransformChanger(bdvHandle, adaptedCenterTransform, false, animationDurationMillis ).run();
 
         // log transform
         new ViewerTransformLogger(bdvHandle).run();
