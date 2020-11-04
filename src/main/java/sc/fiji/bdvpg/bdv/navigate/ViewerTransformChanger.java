@@ -50,6 +50,13 @@ public class ViewerTransformChanger implements Runnable {
     private final int animationDurationMillis;
     private final boolean concatenateToCurrentTransform;
 
+    public ViewerTransformChanger( BdvHandle bdvHandle, AffineTransform3D transform, boolean concatenateToCurrentTransform ) {
+        this.bdvHandle = bdvHandle;
+        this.transform = transform;
+        this.concatenateToCurrentTransform = concatenateToCurrentTransform;
+        this.animationDurationMillis = 0;
+    }
+
     public ViewerTransformChanger( BdvHandle bdvHandle, AffineTransform3D transform, boolean concatenateToCurrentTransform, int animationDurationMillis ) {
         this.bdvHandle = bdvHandle;
         this.transform = transform;
