@@ -480,7 +480,7 @@ public class SourceAndConverterUtils {
 	 * @return
 	 * 			boolean indicating whether the position falls within the source interval
 	 */
-	public boolean isPositionWithinSourceInterval( SourceAndConverter< ? > source, RealPoint globalPosition, int timepoint, boolean sourceIs2d )
+	public static boolean isPositionWithinSourceInterval( SourceAndConverter< ? > source, RealPoint globalPosition, int timepoint, boolean sourceIs2d )
 	{
 		Source< ? > spimSource = source.getSpimSource();
 
