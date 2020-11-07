@@ -70,7 +70,7 @@ public class XmlHDF5SpimdataExporterTest {
         exporter.run();
 
         // Assert
-        File fileXmlControl = new File("src/test/resources/testVoronoi.xml");
+        File fileXmlControl = new File("src/test/resources/testVoronoi.txt");
         File fileH5Control = new File("src/test/resources/testVoronoi.h5");
 
 
