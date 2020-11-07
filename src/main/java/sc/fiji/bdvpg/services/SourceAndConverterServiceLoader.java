@@ -42,14 +42,16 @@ public class SourceAndConverterServiceLoader extends SourceAndConverterSerialize
 
     String filePath;
     Context ctx;
+    boolean erasePreviousState;
 
-    public SourceAndConverterServiceLoader(String filePath, String basePath, Context ctx) {
+    public SourceAndConverterServiceLoader(String filePath, String basePath, Context ctx, boolean erasePreviousState) {
         super(ctx, new File(basePath));
         this.filePath = filePath;
         idToSac = new HashMap<>();
         sacToId = new HashMap<>();
         sourceToId = new HashMap<>();
         idToSource = new HashMap<>();
+        this.erasePreviousState = erasePreviousState;
         this.ctx = ctx;
     }
 
@@ -62,9 +64,11 @@ public class SourceAndConverterServiceLoader extends SourceAndConverterSerialize
                         .getSourceAndConverterService()
                         .getSourceAndConverters().toArray(new SourceAndConverter[0]);
 
-        SourceAndConverterServices
-                .getSourceAndConverterService()
-                .remove(sacs);
+        if (erasePreviousState) {
+            SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .remove(sacs);
+        }
 
         try {
             FileReader fileReader = new FileReader(filePath);
@@ -81,7 +85,8 @@ public class SourceAndConverterServiceLoader extends SourceAndConverterSerialize
                 }
             }
 
-            SourceAndConverter[] sacs_loaded = getGson().fromJson(rawSacsArray, SourceAndConverter[].class);
+            //SourceAndConverter[] sacs_loaded =
+            getGson().fromJson(rawSacsArray, SourceAndConverter[].class);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();

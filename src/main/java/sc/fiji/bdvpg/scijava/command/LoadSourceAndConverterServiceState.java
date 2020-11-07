@@ -46,8 +46,11 @@ public class LoadSourceAndConverterServiceState implements Command {
     @Parameter
     Context ctx;
 
+    @Parameter
+    Boolean erasePreviousState;
+
     @Override
     public void run() {
-        new SourceAndConverterServiceLoader(file.getAbsolutePath(), file.getParent(), ctx).run();
+        new SourceAndConverterServiceLoader(file.getAbsolutePath(), file.getParent(), ctx, erasePreviousState).run();
     }
 }
