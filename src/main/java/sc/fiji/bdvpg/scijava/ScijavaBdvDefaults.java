@@ -29,5 +29,5 @@
 package sc.fiji.bdvpg.scijava;
 
 public class ScijavaBdvDefaults {
-    final public static String RootMenu = "BigDataViewer>";
+    final public static String RootMenu = "Plugins>BigDataViewer>Playground>";
 }
