@@ -28,6 +28,7 @@
  */
 package sc.fiji.bdvpg.sourceandconverter.display;
 
+import bdv.tools.brightness.ConverterSetup;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.histogram.DiscreteFrequencyDistribution;
@@ -92,7 +93,8 @@ public class BrightnessAutoAdjuster implements Runnable
 
 		//minMaxGroup.getMinBoundedValue().setCurrentValue( min );
 		//minMaxGroup.getMaxBoundedValue().setCurrentValue( max );
-		SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup( sac ).setDisplayRange(min, max);
+		ConverterSetup converterSetup = SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup( sac );
+		converterSetup.setDisplayRange(min, max);
 	}
 
 }

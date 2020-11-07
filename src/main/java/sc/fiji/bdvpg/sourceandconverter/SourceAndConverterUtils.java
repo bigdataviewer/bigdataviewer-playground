@@ -33,6 +33,7 @@ import bdv.spimdata.WrapBasicImgLoader;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.ARGBColorConverterSetup;
 import bdv.util.LUTConverterSetup;
+import bdv.util.UnmodifiableConverterSetup;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
@@ -41,10 +42,7 @@ import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.sequence.Angle;
 import mpicbg.spim.data.sequence.Channel;
-import net.imglib2.RealPoint;
-import net.imglib2.RealRandomAccess;
-import net.imglib2.RealRandomAccessible;
-import net.imglib2.Volatile;
+import net.imglib2.*;
 import net.imglib2.converter.Converter;
 import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.display.ColorConverter;
@@ -53,6 +51,8 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.util.Intervals;
+import sc.fiji.bdvpg.bdv.BdvUtils;
 import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
@@ -62,6 +62,7 @@ import spimdata.util.DisplaysettingsHelper;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 
 /**
@@ -370,9 +371,12 @@ public class SourceAndConverterUtils {
                 setup = new LUTConverterSetup((RealLUTConverter) source.getConverter());
             }
         } else {
-            // Here different kinds of Converter can be supported
-            errlog.accept("Cannot build ConverterSetup for Converters of class "+source.getConverter().getClass());
-            setup = null;
+            log.accept( "Unsupported ConverterSetup for Converters of class " + source.getConverter().getClass() );
+            if (source.asVolatile() != null) {
+                setup = new UnmodifiableConverterSetup( source.getConverter(), source.asVolatile().getConverter());
+            } else {
+                setup = new UnmodifiableConverterSetup( source.getConverter());
+            }
         }
         return setup;
     }
@@ -460,6 +464,87 @@ public class SourceAndConverterUtils {
         //converter.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
         return converter;
     }
+
+
+	/**
+	 * Checks whether a given point (calibrated global coordinate)
+	 * lies inside the voxel grid of the Source's underlying RandomAccessibleInterval.
+	 *
+	 * This can be used as an alternative to below method: isSourcePresentAt
+	 *
+	 * @param source
+	 * @param globalPosition
+	 * @param timepoint
+	 * @param sourceIs2d
+	 *
+	 * @return
+	 * 			boolean indicating whether the position falls within the source interval
+	 */
+	public static boolean isPositionWithinSourceInterval( SourceAndConverter< ? > source, RealPoint globalPosition, int timepoint, boolean sourceIs2d )
+	{
+		Source< ? > spimSource = source.getSpimSource();
+
+		final long[] voxelPositionInSource = getVoxelPositionInSource( spimSource, globalPosition, timepoint, 0 );
+		Interval sourceInterval = spimSource.getSource( 0, 0 );
+
+		if ( sourceIs2d )
+		{
+			final long[] min = new long[ 2 ];
+			final long[] max = new long[ 2 ];
+			final long[] positionInSource2D = new long[ 2 ];
+			for ( int d = 0; d < 2; d++ )
+			{
+				min[ d ] = sourceInterval.min( d );
+				max[ d ] = sourceInterval.max( d );
+				positionInSource2D[ d ] = voxelPositionInSource[ d ];
+			}
+
+			Interval interval2d = new FinalInterval( min, max );
+			Point point2d = new Point( positionInSource2D );
+
+			return Intervals.contains( interval2d, point2d ) ? true : false;
+		}
+		else
+		{
+			Interval interval3d = sourceInterval;
+			Point point3d = new Point( voxelPositionInSource );
+
+			return Intervals.contains( interval3d, point3d ) ? true : false;
+		}
+	}
+
+	/**
+	 * Given a calibrated global position, this function uses
+	 * the source transform to compute the position within the
+	 * voxel grid of the source.
+	 *
+	 * @param source
+	 * @param globalPosition
+	 * @param t
+	 * @param level
+	 * @return
+	 */
+	public static long[] getVoxelPositionInSource(
+			final Source source,
+			final RealPoint globalPosition,
+			final int t,
+			final int level )
+	{
+		final int numDimensions = 3;
+
+		final AffineTransform3D sourceTransform = BdvUtils.getSourceTransform( source, t, level );
+
+		final RealPoint voxelPositionInSource = new RealPoint( numDimensions );
+
+		sourceTransform.inverse().apply( globalPosition, voxelPositionInSource );
+
+		final long[] longPosition = new long[ numDimensions ];
+
+		for ( int d = 0; d < numDimensions; ++d )
+			longPosition[ d ] = (long) voxelPositionInSource.getFloatPosition( d );
+
+		return longPosition;
+	}
 
     /**
      * Is the point pt located inside the source  at a particular timepoint ?

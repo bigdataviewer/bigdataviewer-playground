@@ -83,7 +83,6 @@ public class LogMousePositionDemo {
 
         // log the current position
         new PositionLogger( bdvHandle ).run();
-
     }
 
     @Test
