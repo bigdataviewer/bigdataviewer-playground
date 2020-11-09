@@ -137,4 +137,49 @@ public class DisplaysettingsHelper {
         }
     }
 
+    /**
+     * Apply the display settings to an array of source and converter
+     *
+     * Silently ignored if null is found
+     *
+     * Applies the Displaysettings to the volatile source, if any
+     *
+     * @param sacs
+     * @param ds
+     */
+    public static void applyDisplaysettings(SourceAndConverter[] sacs, Displaysettings ds) {
+        if ((sacs!=null)&&(ds!=null)) {
+            for (SourceAndConverter sac : sacs) {
+                applyDisplaysettings(sac, ds);
+            }
+        }
+    }
+
+    /**
+     * Apply the display settings to an array of source and converter
+     *
+     * Silently ignored if null is found
+     *
+     * Applies the Displaysettings to the volatile source, if any
+     *
+     * @param sac
+     * @param ds
+     */
+    public static void applyDisplaysettings(SourceAndConverter sac, Displaysettings ds) {
+        if ((sac!=null)&&(ds!=null)) {
+            if (sac.getConverter() instanceof ColorConverter) {
+                ColorConverter cc = (ColorConverter) sac.getConverter();
+                cc.setMin(ds.min);
+                cc.setMax(ds.max);
+                cc.setColor(new ARGBType(ARGBType.rgba(ds.color[0], ds.color[1], ds.color[2], ds.color[3])));
+                if (sac.asVolatile()!=null) {
+                    cc = (ColorConverter) sac.asVolatile().getConverter();
+                    cc.setMin(ds.min);
+                    cc.setMax(ds.max);
+                    cc.setColor(new ARGBType(ARGBType.rgba(ds.color[0], ds.color[1], ds.color[2], ds.color[3])));
+                }
+            }
+        }
+    }
+
 }

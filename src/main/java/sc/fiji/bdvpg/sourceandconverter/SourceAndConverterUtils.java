@@ -62,13 +62,12 @@ import spimdata.util.DisplaysettingsHelper;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 
 /**
  * Following the logic of the repository, i.e. dealing with SourceAndConverter objects only,
  * This class contains the main functions which allow to convert objects which can be
- * vizualized in BDV windows into SourceAndConverters objects
+ * visualized in BDV windows into SourceAndConverters objects
  * SourceAndConverters objects contains:
  * - a Source, non volatile, which holds the data
  * - a converter from the Source type to ARGBType, for display purpose
@@ -79,11 +78,15 @@ import java.util.stream.Collectors;
  * It can deal wth conversion of:
  * - Source to SourceAndConverter
  * - Spimdata to a List of SourceAndConverter
- * - TODO : RAI, ImagePLUS, etc... to SourceAndConverter
+ * - TODO : RAI etc... to SourceAndConverter
  *
- * Additionally, this class contains default function which allow to create a
+ * Additionally, this class contains
+ * - default function which allow to create a
  * ConverterSetup object. These objects can be used to adjust the B and C of the displayed
  * SourceAndConverter objects.
+ *
+ * - Some helper functions for ColorConverter and Displaysettings objects
+ *
  *
  * Limitations : TODO : think about CacheControls
  */
@@ -766,7 +769,6 @@ public class SourceAndConverterUtils {
      * The transfer is performed for the volatile source as well if it exists.
      * The volatile source converter of src is ignored
      *
-     * Fails si
      * @param srcs
      * @param dsts
      */
