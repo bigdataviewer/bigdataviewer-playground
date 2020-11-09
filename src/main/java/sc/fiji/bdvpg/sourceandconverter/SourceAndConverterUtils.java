@@ -744,4 +744,52 @@ public class SourceAndConverterUtils {
         return ptCenterGlobal;
     }
 
+
+    /**
+     * Applies the color converter settings from the src source to the dst sources
+     * color, min, max
+     * @param src
+     * @param dst
+     */
+    public static void transferColorConverters(SourceAndConverter src, SourceAndConverter dst) {
+        transferColorConverters(new SourceAndConverter[]{src}, new SourceAndConverter[]{dst});
+    }
+
+    /**
+     * Applies the color converter settings from the sources srcs source to the sources dsts
+     * color, min, max.
+     *
+     * If the number of sources is unequal, the transfer is applied up to the common number of sources
+     *
+     * If null is encountered for src or dst, nothing happens silently
+     *
+     * The transfer is performed for the volatile source as well if it exists.
+     * The volatile source converter of src is ignored
+     *
+     * Fails si
+     * @param srcs
+     * @param dsts
+     */
+    public static void transferColorConverters(SourceAndConverter[] srcs, SourceAndConverter[] dsts) {
+        if ((srcs!=null)&&(dsts!=null))
+        for (int i = 0;i<Math.min(srcs.length, dsts.length);i++) {
+            SourceAndConverter src = srcs[i];
+            SourceAndConverter dst = dsts[i];
+            if ((src!=null)&&(dst!=null))
+            if ((dst.getConverter() instanceof ColorConverter) && (src.getConverter() instanceof ColorConverter)) {
+                ColorConverter conv_src = (ColorConverter) src.getConverter();
+                ColorConverter conv_dst = (ColorConverter) dst.getConverter();
+                conv_dst.setColor(conv_src.getColor());
+                conv_dst.setMin(conv_src.getMin());
+                conv_dst.setMax(conv_src.getMax());
+                if (dst.asVolatile()!=null) {
+                    conv_dst = (ColorConverter) dst.asVolatile().getConverter();
+                    conv_dst.setColor(conv_src.getColor());
+                    conv_dst.setMin(conv_src.getMin());
+                    conv_dst.setMax(conv_src.getMax());
+                }
+            }
+        }
+    }
+
 }
