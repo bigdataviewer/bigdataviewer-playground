@@ -51,10 +51,11 @@ public class ThinPlateSplineTransformAdapter implements IClassRuntimeAdapter<Rea
     }
 
     @Override
-    public ThinplateSplineTransform deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public ThinplateSplineTransform deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
-        ThinPlateR2LogRSplineKernelTransform kernel = jsonDeserializationContext.deserialize(obj.get("kernel"), ThinPlateR2LogRSplineKernelTransform.class);
-        ThinplateSplineTransform realTransform = new ThinplateSplineTransform(kernel);
+        double[][] srcPts = context.deserialize(obj.get("srcPts"), double[][].class);
+        double[][] tgtPts = context.deserialize(obj.get("tgtPts"), double[][].class);
+        ThinplateSplineTransform realTransform = new ThinplateSplineTransform(srcPts, tgtPts);
         return realTransform;
     }
 
@@ -64,14 +65,34 @@ public class ThinPlateSplineTransformAdapter implements IClassRuntimeAdapter<Rea
             Field kernelField = ThinplateSplineTransform.class.getDeclaredField("tps");
             kernelField.setAccessible(true);
             ThinPlateR2LogRSplineKernelTransform kernel = (ThinPlateR2LogRSplineKernelTransform) kernelField.get(thinplateSplineTransform);
+
+            double[][] srcPts = kernel.getSourceLandmarks(); // srcPts
+
+            int nbLandmarks = kernel.getNumLandmarks();
+            int nbDimensions = kernel.getNumDims();
+
+            double[][] tgtPts = new double[nbDimensions][nbLandmarks];
+
+            for (int i = 0;i<nbLandmarks;i++) {
+                double[] srcPt = new double[nbDimensions];
+                for (int d = 0; d<nbDimensions; d++) {
+                    srcPt[d] = srcPts[d][i];
+                }
+                double[] tgtPt = kernel.apply(srcPt);
+                for (int d = 0; d<nbDimensions; d++) {
+                    tgtPts[d][i] = tgtPt[d];
+                }
+            }
+
             JsonObject obj = new JsonObject();
             obj.addProperty("type", ThinplateSplineTransform.class.getSimpleName());
-            obj.add("kernel", jsonSerializationContext.serialize(kernel));
+            obj.add("srcPts", jsonSerializationContext.serialize(srcPts));
+            obj.add("tgtPts", jsonSerializationContext.serialize(tgtPts));
             return obj;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.err.println("Could not serilalize ThinplateSplineTransform");
+        System.err.println("Could not serialize ThinplateSplineTransform");
         return null;
     }
 }
