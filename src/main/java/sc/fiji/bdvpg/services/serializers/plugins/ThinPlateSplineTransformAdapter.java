@@ -61,38 +61,53 @@ public class ThinPlateSplineTransformAdapter implements IClassRuntimeAdapter<Rea
 
     @Override
     public JsonElement serialize(ThinplateSplineTransform thinplateSplineTransform, Type type, JsonSerializationContext jsonSerializationContext) {
-        try {
-            Field kernelField = ThinplateSplineTransform.class.getDeclaredField("tps");
-            kernelField.setAccessible(true);
-            ThinPlateR2LogRSplineKernelTransform kernel = (ThinPlateR2LogRSplineKernelTransform) kernelField.get(thinplateSplineTransform);
+            ThinPlateR2LogRSplineKernelTransform kernel = getKernel(thinplateSplineTransform);
 
-            double[][] srcPts = kernel.getSourceLandmarks(); // srcPts
-
-            int nbLandmarks = kernel.getNumLandmarks();
-            int nbDimensions = kernel.getNumDims();
-
-            double[][] tgtPts = new double[nbDimensions][nbLandmarks];
-
-            for (int i = 0;i<nbLandmarks;i++) {
-                double[] srcPt = new double[nbDimensions];
-                for (int d = 0; d<nbDimensions; d++) {
-                    srcPt[d] = srcPts[d][i];
-                }
-                double[] tgtPt = kernel.apply(srcPt);
-                for (int d = 0; d<nbDimensions; d++) {
-                    tgtPts[d][i] = tgtPt[d];
-                }
-            }
+            double[][] srcPts = getSrcPts(kernel);
+            double[][] tgtPts = getTgtPts(kernel);
 
             JsonObject obj = new JsonObject();
             obj.addProperty("type", ThinplateSplineTransform.class.getSimpleName());
             obj.add("srcPts", jsonSerializationContext.serialize(srcPts));
             obj.add("tgtPts", jsonSerializationContext.serialize(tgtPts));
             return obj;
+    }
+
+    public static ThinPlateR2LogRSplineKernelTransform getKernel(ThinplateSplineTransform thinplateSplineTransform) {
+        try {
+            Field kernelField = ThinplateSplineTransform.class.getDeclaredField("tps");
+            kernelField.setAccessible(true);
+            ThinPlateR2LogRSplineKernelTransform kernel = (ThinPlateR2LogRSplineKernelTransform) kernelField.get(thinplateSplineTransform);
+            return kernel;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.err.println("Could not serialize ThinplateSplineTransform");
+        System.err.println("Could not get kernel from ThinplateSplineTransform");
         return null;
+    }
+
+    public static double[][] getSrcPts(ThinPlateR2LogRSplineKernelTransform kernel) {
+        return kernel.getSourceLandmarks();
+    }
+
+    public static double[][] getTgtPts(ThinPlateR2LogRSplineKernelTransform kernel) {
+        double[][] srcPts = kernel.getSourceLandmarks(); // srcPts
+
+        int nbLandmarks = kernel.getNumLandmarks();
+        int nbDimensions = kernel.getNumDims();
+
+        double[][] tgtPts = new double[nbDimensions][nbLandmarks];
+
+        for (int i = 0;i<nbLandmarks;i++) {
+            double[] srcPt = new double[nbDimensions];
+            for (int d = 0; d<nbDimensions; d++) {
+                srcPt[d] = srcPts[d][i];
+            }
+            double[] tgtPt = kernel.apply(srcPt);
+            for (int d = 0; d<nbDimensions; d++) {
+                tgtPts[d][i] = tgtPt[d];
+            }
+        }
+        return tgtPts;
     }
 }
