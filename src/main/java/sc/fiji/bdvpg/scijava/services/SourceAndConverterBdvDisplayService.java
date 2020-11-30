@@ -399,9 +399,14 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
         return os.getObjects(BdvHandle.class)
                 .stream()
-                .filter(bdv -> bdv.getViewerPanel().state()
-                        .getSources().stream()
-                        .anyMatch(sac -> sacList.contains(sac)))
+                .filter(bdv -> {
+                        synchronized (bdv.getViewerPanel().state()) {
+                            return bdv.getViewerPanel().state()
+                                    .getSources().stream()
+                                    .anyMatch(sac -> sacList.contains(sac));
+                        }
+                    }
+                )
                 .collect(Collectors.toSet());
 
     }
