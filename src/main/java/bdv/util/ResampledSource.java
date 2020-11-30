@@ -128,6 +128,22 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         }
     }
 
+    public int getOriginMipMapLevel(int mipmapModel) {
+        if (reuseMipMaps) {
+            return mipmapModel;
+        } else {
+            return 0;
+        }
+    }
+
+    private int getNumMipMapLevelsRecomputed() {
+        if (reuseMipMaps) {
+            return origin.getNumMipmapLevels();
+        } else {
+            return 1;
+        }
+    }
+
     public Source getOriginalSource() {
         return origin;
     }
@@ -185,21 +201,22 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
     public RandomAccessibleInterval<T> buildSource(int t, int level) {
         // Get current model source transformation
         AffineTransform3D at = new AffineTransform3D();
-        resamplingModel.getSourceTransform(t,reuseMipMaps?level:0,at);
+        int mipmap = getOriginMipMapLevel(level);
+        resamplingModel.getSourceTransform(t,mipmap,at);
 
         // Get bounds of model source RAI
         // TODO check if -1 is necessary
-        long sx = resamplingModel.getSource(t,reuseMipMaps?level:0).dimension(0)-1;
-        long sy = resamplingModel.getSource(t,reuseMipMaps?level:0).dimension(1)-1;
-        long sz = resamplingModel.getSource(t,reuseMipMaps?level:0).dimension(2)-1;
+        long sx = resamplingModel.getSource(t,mipmap).dimension(0)-1;
+        long sy = resamplingModel.getSource(t,mipmap).dimension(1)-1;
+        long sz = resamplingModel.getSource(t,mipmap).dimension(2)-1;
 
         // Get field of origin source
-        final RealRandomAccessible<T> ipimg = origin.getInterpolatedSource(t, reuseMipMaps?level:0, originInterpolation);
+        final RealRandomAccessible<T> ipimg = origin.getInterpolatedSource(t, mipmap, originInterpolation);
 
         // Gets randomAccessible... ( with appropriate transform )
         at = at.inverse();
         AffineTransform3D atOrigin = new AffineTransform3D();
-        origin.getSourceTransform(t, reuseMipMaps?level:0, atOrigin);
+        origin.getSourceTransform(t, mipmap, atOrigin);
         at.concatenate(atOrigin);
         RandomAccessible<T> ra = RealViews.affine(ipimg, at); // Gets the view
 
@@ -222,7 +239,8 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     @Override
     public void getSourceTransform(int t, int level, AffineTransform3D transform) {
-        resamplingModel.getSourceTransform(t,reuseMipMaps?level:0,transform);
+        int mipmap = getOriginMipMapLevel(level);
+        resamplingModel.getSourceTransform(t,mipmap,transform);
     }
 
     @Override
@@ -242,6 +260,8 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     @Override
     public int getNumMipmapLevels() {
-        return reuseMipMaps?origin.getNumMipmapLevels():1;
+
+        return getNumMipMapLevelsRecomputed();
     }
+
 }
