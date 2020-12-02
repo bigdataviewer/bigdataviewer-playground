@@ -29,8 +29,10 @@
 package sc.fiji.bdvpg.sourceandconverter;
 
 import bdv.*;
+import bdv.img.WarpedSource;
 import bdv.spimdata.WrapBasicImgLoader;
 import bdv.tools.brightness.ConverterSetup;
+import bdv.tools.transformation.TransformedSource;
 import bdv.util.ARGBColorConverterSetup;
 import bdv.util.LUTConverterSetup;
 import bdv.util.UnmodifiableConverterSetup;
@@ -52,6 +54,7 @@ import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Intervals;
+import org.scijava.vecmath.Point3d;
 import sc.fiji.bdvpg.bdv.BdvUtils;
 import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
@@ -792,6 +795,85 @@ public class SourceAndConverterUtils {
                 }
             }
         }
+    }
+
+    /**
+     * Returns the most appropriate level of a multiresolution source for
+     * sampling it at a certain voxel size.
+     *
+     * To match the resolution, the 'middle dimension' of voxels is used to make comparison
+     * with the target size voxsize
+     *
+     * So if the voxel size is [1.2, 0.8, 50], the value 1.2 is used to compare the levels
+     * to the target resolution. This is a way to avoid the complexity of defining the correct
+     * pixel size while being also robust to comparing 2d and 3d sources. Indeed 2d sources may
+     * have aberrantly defined vox size along the third axis, either way too big or way too small
+     * in one case or the other, the missing dimension is ignored, which we hope works
+     * in most circumstances.
+     *
+     * Other complication : the sourceandconverter could be a warped source, or a warped source
+     * of a warped source of a transformed source, etc.
+     *
+     * The proper computation of the level required is complicated, and could be ill defined:
+     * Warping can cause local shrinking or expansion such that a single level won't be the
+     * best choice for all the image.
+     *
+     * Here the assumption that we make is that the transforms should not change drastically
+     * the scale of the image (which could be clearly wrong). Assuming this, we get to the 'root'
+     * of the source and converter and get the voxel value from this root source.
+     *
+     * So : the source root should be properly scaled from the beginning and weird transformation
+     * (like spherical transformed will give wrong results.
+     *
+     * @param src
+     * @param voxSize
+     * @return
+     */
+    public static int bestLevel(Source src, int t, double voxSize) {
+        List<Double> originVoxSize = new ArrayList<>();
+        Source rootOrigin = src;
+
+        while ((rootOrigin instanceof WarpedSource)||(rootOrigin instanceof TransformedSource)) {
+            if (rootOrigin instanceof WarpedSource) {
+                rootOrigin = ((WarpedSource) rootOrigin).getWrappedSource();
+            } else if (rootOrigin instanceof TransformedSource) {
+                rootOrigin = ((TransformedSource) rootOrigin).getWrappedSource();
+            }
+        }
+
+        for (int l=0;l<rootOrigin.getNumMipmapLevels();l++) {
+            AffineTransform3D at3d = new AffineTransform3D();
+            rootOrigin.getSourceTransform(t,l,at3d);
+            double mid = getMiddleDimensionSize(at3d);
+            originVoxSize.add(mid);
+        }
+
+        int level = 0;
+        while((originVoxSize.get(level)<voxSize)&&(level<originVoxSize.size()-1)) {
+            level=level+1;
+        }
+
+        return Math.max(level-1,0);
+    }
+
+    public static int bestLevel(SourceAndConverter sac, int t, double voxSize) {
+        return bestLevel(sac.getSpimSource(), t, voxSize);
+    }
+
+
+    private static double getMiddleDimensionSize(AffineTransform3D at3D) { // method also present in resampled source
+
+        // Gets three vectors
+        Point3d v1 = new Point3d(at3D.get(0,0), at3D.get(0,1), at3D.get(0,2));
+        Point3d v2 = new Point3d(at3D.get(1,0), at3D.get(1,1), at3D.get(1,2));
+        Point3d v3 = new Point3d(at3D.get(2,0), at3D.get(2,1), at3D.get(2,2));
+
+        // 0 - Ensure v1 and v2 have the same norm
+        double a = Math.sqrt(v1.x*v1.x+v1.y*v1.y+v1.z*v1.z);
+        double b = Math.sqrt(v2.x*v2.x+v2.y*v2.y+v2.z*v2.z);
+        double c = Math.sqrt(v3.x*v3.x+v3.y*v3.y+v3.z*v3.z);
+
+        return Math.max(Math.min(a,b), Math.min(Math.max(a,b),c)); //https://stackoverflow.com/questions/1582356/fastest-way-of-finding-the-middle-value-of-a-triple
     }
 
 }

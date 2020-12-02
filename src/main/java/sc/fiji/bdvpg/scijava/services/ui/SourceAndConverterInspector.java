@@ -32,6 +32,7 @@ import bdv.AbstractSpimSource;
 import bdv.img.WarpedSource;
 import bdv.tools.transformation.TransformedSource;
 import bdv.util.ResampledSource;
+import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
@@ -43,6 +44,7 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -236,6 +238,18 @@ public class SourceAndConverterInspector {
     }
 
     public static SourceAndConverter getRootSourceAndConverter(SourceAndConverter sac) {
+        return getListToRootSourceAndConverter(sac, (SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getLast();
+    }
+
+    public static SourceAndConverter getRootSourceAndConverter(Source source) {
+        SourceAndConverter sac;
+        List<SourceAndConverter> sacs = SourceAndConverterServices.getSourceAndConverterService()
+                .getSourceAndConvertersFromSource(source);
+        if (sacs.size()==0) {
+            sac = SourceAndConverterUtils.createSourceAndConverter(source);
+        } else {
+            sac = sacs.get(0);
+        }
         return getListToRootSourceAndConverter(sac, (SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getLast();
     }
 

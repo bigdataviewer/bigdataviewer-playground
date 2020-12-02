@@ -28,6 +28,9 @@
  */
 package bdv.util;
 
+//import bdv.SpimSource;
+import bdv.img.WarpedSource;
+import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import mpicbg.spim.data.sequence.VoxelDimensions;
@@ -38,9 +41,16 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealViews;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.NumericType;
+//import net.imglib2.util.LinAlgHelpers;
 import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.Views;
+import org.scijava.vecmath.Point3d;
+//import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterInspector;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -126,19 +136,81 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         } else {
             this.originInterpolation = Interpolation.NEARESTNEIGHBOR;
         }
+        computeMipMaps();
     }
 
-    public int getOriginMipMapLevel(int mipmapModel) {
-        if (reuseMipMaps) {
-            return mipmapModel;
-        } else {
-            return 0;
+    Map<Integer, Integer> mipmapModelToOrigin = new HashMap();
+
+    List<Double> originVoxSize;
+
+    private int bestMatch(double voxSize) {
+        if (originVoxSize==null) {
+            computeOriginSize();
         }
+        int level = 0;
+        while((originVoxSize.get(level)<voxSize)&&(level<originVoxSize.size()-1)) {
+            level=level+1;
+        }
+        return Math.max(level-1,0);
+    }
+
+    private void computeOriginSize() {
+        originVoxSize = new ArrayList<>();
+        Source rootOrigin = origin;
+
+        while ((rootOrigin instanceof WarpedSource)||(rootOrigin instanceof TransformedSource)) {
+            if (rootOrigin instanceof WarpedSource) {
+                rootOrigin = ((WarpedSource) rootOrigin).getWrappedSource();
+            } else if (rootOrigin instanceof TransformedSource) {
+                rootOrigin = ((TransformedSource) rootOrigin).getWrappedSource();
+            }
+        }
+
+        for (int l=0;l<rootOrigin.getNumMipmapLevels();l++) {
+            AffineTransform3D at3d = new AffineTransform3D();
+            rootOrigin.getSourceTransform(0,l,at3d);
+            double mid = getMiddleDimensionSize(at3d);
+            originVoxSize.add(mid);
+        }
+
+    }
+
+    private void computeMipMaps() {
+        AffineTransform3D at3D = new AffineTransform3D();
+        for (int l=0;l<resamplingModel.getNumMipmapLevels();l++) {
+            if (reuseMipMaps) {
+                resamplingModel.getSourceTransform(0,l, at3D);
+                double middleDim = getMiddleDimensionSize(at3D);
+                int match = bestMatch(middleDim);
+                mipmapModelToOrigin.put( l, match);
+            } else {
+                mipmapModelToOrigin.put(l, 0);
+            }
+        }
+    }
+
+    private static double getMiddleDimensionSize(AffineTransform3D at3D) {
+
+        // Gets three vectors
+        Point3d v1 = new Point3d(at3D.get(0,0), at3D.get(0,1), at3D.get(0,2));
+        Point3d v2 = new Point3d(at3D.get(1,0), at3D.get(1,1), at3D.get(1,2));
+        Point3d v3 = new Point3d(at3D.get(2,0), at3D.get(2,1), at3D.get(2,2));
+
+        // 0 - Ensure v1 and v2 have the same norm
+        double a = Math.sqrt(v1.x*v1.x+v1.y*v1.y+v1.z*v1.z);
+        double b = Math.sqrt(v2.x*v2.x+v2.y*v2.y+v2.z*v2.z);
+        double c = Math.sqrt(v3.x*v3.x+v3.y*v3.y+v3.z*v3.z);
+
+        return Math.max(Math.min(a,b), Math.min(Math.max(a,b),c)); //https://stackoverflow.com/questions/1582356/fastest-way-of-finding-the-middle-value-of-a-triple
+    }
+
+    public int getModelToOriginMipMapLevel(int mipmapModel) {
+        return mipmapModelToOrigin.get(mipmapModel);
     }
 
     private int getNumMipMapLevelsRecomputed() {
         if (reuseMipMaps) {
-            return origin.getNumMipmapLevels();
+            return resamplingModel.getNumMipmapLevels();
         } else {
             return 1;
         }
@@ -201,7 +273,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
     public RandomAccessibleInterval<T> buildSource(int t, int level) {
         // Get current model source transformation
         AffineTransform3D at = new AffineTransform3D();
-        int mipmap = getOriginMipMapLevel(level);
+        int mipmap = level;//getOriginMipMapLevel(level);
         resamplingModel.getSourceTransform(t,mipmap,at);
 
         // Get bounds of model source RAI
@@ -211,12 +283,12 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         long sz = resamplingModel.getSource(t,mipmap).dimension(2)-1;
 
         // Get field of origin source
-        final RealRandomAccessible<T> ipimg = origin.getInterpolatedSource(t, mipmap, originInterpolation);
+        final RealRandomAccessible<T> ipimg = origin.getInterpolatedSource(t, getModelToOriginMipMapLevel(mipmap), originInterpolation);
 
         // Gets randomAccessible... ( with appropriate transform )
         at = at.inverse();
         AffineTransform3D atOrigin = new AffineTransform3D();
-        origin.getSourceTransform(t, mipmap, atOrigin);
+        origin.getSourceTransform(t, getModelToOriginMipMapLevel(mipmap), atOrigin);
         at.concatenate(atOrigin);
         RandomAccessible<T> ra = RealViews.affine(ipimg, at); // Gets the view
 
@@ -239,8 +311,8 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     @Override
     public void getSourceTransform(int t, int level, AffineTransform3D transform) {
-        int mipmap = getOriginMipMapLevel(level);
-        resamplingModel.getSourceTransform(t,mipmap,transform);
+        //int mipmap = getResampledLevelToModelLevel(level);// getOriginMipMapLevel(level);
+        resamplingModel.getSourceTransform(t,level,transform);
     }
 
     @Override
@@ -260,7 +332,6 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     @Override
     public int getNumMipmapLevels() {
-
         return getNumMipMapLevelsRecomputed();
     }
 
