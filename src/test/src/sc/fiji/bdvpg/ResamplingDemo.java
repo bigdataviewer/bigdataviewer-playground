@@ -141,7 +141,13 @@ public class ResamplingDemo {
 
         SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, downsampledSource );
 
-        new ColorChanger( downsampledSource, new ARGBType(ARGBType.rgba(255, 0,0,0))).run();
+        // DOWNSAMPLING With Mipmap Reuse
+
+        sr = new SourceResampler(sac, downSampledModel.get(),true,false, true);
+        SourceAndConverter downsampledSourceWithMipmaps = sr.get();
+
+        SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, downsampledSourceWithMipmaps );
+        new ColorChanger( downsampledSourceWithMipmaps, new ARGBType(ARGBType.rgba(120, 120,0,0))).run();
 
         // UPSAMPLING
         EmptySourceAndConverterCreator upSampledModel = new EmptySourceAndConverterCreator("UpSampled",sac,0,0.2,0.2,0.2);//, factory);

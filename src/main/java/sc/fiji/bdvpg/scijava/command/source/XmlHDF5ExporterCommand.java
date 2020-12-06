@@ -65,12 +65,15 @@ public class XmlHDF5ExporterCommand implements Command {
     @Parameter
     int blockSizeZ = 64;
 
+    @Parameter(label = "Dimensions in pixel above which a new resolution level should be created")
+    int thresholdForMipmap = 512;
+
     @Parameter(label="Output file (XML)")
     File xmlFile;
 
     @Override
     public void run() {
-        new XmlHDF5SpimdataExporter(Arrays.asList(sacs),nThreads,timePointBegin,timePointEnd,scaleFactor,blockSizeX,blockSizeY,blockSizeZ,xmlFile).run();
+        new XmlHDF5SpimdataExporter(Arrays.asList(sacs),nThreads,timePointBegin,timePointEnd,scaleFactor,blockSizeX,blockSizeY,blockSizeZ, thresholdForMipmap,xmlFile).run();
     }
 
 

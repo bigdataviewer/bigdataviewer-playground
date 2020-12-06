@@ -66,7 +66,7 @@ public class XmlHDF5SpimdataExporterTest {
         File fileH5Gen = folder.newFile("testVoronoi.h5");
 
         // Act
-        XmlHDF5SpimdataExporter exporter = new XmlHDF5SpimdataExporter(sacs,1,0,1,4,64,64,1,fileXmlGen);
+        XmlHDF5SpimdataExporter exporter = new XmlHDF5SpimdataExporter(sacs,1,0,1,4,64,64,1,512, fileXmlGen);
         exporter.run();
 
         // Assert
