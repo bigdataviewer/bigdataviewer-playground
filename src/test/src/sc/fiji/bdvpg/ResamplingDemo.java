@@ -74,7 +74,7 @@ public class ResamplingDemo {
         // --- like a standard source backed by a RandomAccessibleInterval
 
         // Get Model Source
-        SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml");
+        SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter("src/test/resources/mri-stack-multilevel.xml");
         AbstractSpimData asd = importer.get();
 
         SourceAndConverter sac = SourceAndConverterServices
@@ -140,6 +140,7 @@ public class ResamplingDemo {
         SourceAndConverter downsampledSource = sr.get();
 
         SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, downsampledSource );
+        new ColorChanger( downsampledSource, new ARGBType(ARGBType.rgba(255, 120,0,0))).run();
 
         // DOWNSAMPLING With Mipmap Reuse
 

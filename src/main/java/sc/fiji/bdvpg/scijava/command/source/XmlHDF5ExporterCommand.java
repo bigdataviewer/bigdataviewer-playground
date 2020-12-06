@@ -76,5 +76,4 @@ public class XmlHDF5ExporterCommand implements Command {
         new XmlHDF5SpimdataExporter(Arrays.asList(sacs),nThreads,timePointBegin,timePointEnd,scaleFactor,blockSizeX,blockSizeY,blockSizeZ, thresholdForMipmap,xmlFile).run();
     }
 
-
 }
