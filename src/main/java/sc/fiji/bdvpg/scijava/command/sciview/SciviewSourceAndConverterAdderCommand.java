@@ -19,17 +19,20 @@ public class SciviewSourceAndConverterAdderCommand implements Command {
     @Parameter
     SourceAndConverter[] sacs;
 
+    @Parameter
+    int numTimepoints;
+
     @Override
     public void run() {
         for (SourceAndConverter sac : sacs) {
-            sciView.addVolume(sac,1,sac.getSpimSource().getName());
+            sciView.addVolume(sac,numTimepoints,sac.getSpimSource().getName());
         }
     }
 
     static public void main(String... args) {
         SciView sciview = null;
         try {
-            sciview = SciView.createSciView();
+            sciview = SciView.create();//.createSciView();
         } catch (Exception e) {
             e.printStackTrace();
         }
