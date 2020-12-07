@@ -1,8 +1,38 @@
+/*-
+ * #%L
+ * BigDataViewer-Playground
+ * %%
+ * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
 package sc.fiji.bdvpg.sourceandconverter.importer;
 
+import bdv.util.EmptySource;
 import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
+import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
@@ -24,13 +54,11 @@ import java.util.function.Supplier;
 
 public class EmptySourceAndConverterCreator implements Runnable, Supplier<SourceAndConverter> {
 
-    AffineTransform3D at3D = new AffineTransform3D();
+    AffineTransform3D at3D;
 
     long nx, ny, nz;
 
     String name;
-
-    ImgFactory imgfactory;
 
     /**
      * Simple constructor
@@ -39,20 +67,17 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
      * @param nx
      * @param ny
      * @param nz
-     * @param imgfactory
      */
     public EmptySourceAndConverterCreator(
             String name,
             AffineTransform3D at3D,
-            long nx, long ny, long nz,
-            ImgFactory imgfactory
-            ) {
+            long nx, long ny, long nz
+    ) {
         this.nx = nx;
         this.ny = ny;
         this.nz = nz;
         this.at3D = at3D;
         this.name = name;
-        this.imgfactory = imgfactory;
     }
 
     /**
@@ -65,14 +90,12 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
      * @param voxSizeX
      * @param voxSizeY
      * @param voxSizeZ
-     * @param imgfactory
      */
     public EmptySourceAndConverterCreator(
             String name,
             SourceAndConverter model,
             int timePoint,
-            double voxSizeX, double voxSizeY, double voxSizeZ,
-            ImgFactory imgfactory
+            double voxSizeX, double voxSizeY, double voxSizeZ
     ) {
         // Gets model RAI
         RandomAccessibleInterval rai = model.getSpimSource().getSource(timePoint,0);
@@ -152,7 +175,6 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
         this.nx = (long) nPixX;
         this.ny = (long) nPixY;
         this.nz = (long) nPixZ;
-        this.imgfactory = imgfactory;
 
     }
 
@@ -164,9 +186,7 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
     @Override
     public SourceAndConverter get() {
 
-        Img img = imgfactory.create(nx,ny,nz);
-
-        Source src = new RandomAccessibleIntervalSource(img, Util.getTypeFromInterval(img), at3D, name);
+        Source src = new EmptySource(nx,ny,nz,at3D,name);
 
         SourceAndConverter sac;
 

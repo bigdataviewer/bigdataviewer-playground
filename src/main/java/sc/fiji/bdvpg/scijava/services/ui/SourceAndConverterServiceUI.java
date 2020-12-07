@@ -1,3 +1,31 @@
+/*-
+ * #%L
+ * BigDataViewer-Playground
+ * %%
+ * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
 package sc.fiji.bdvpg.scijava.services.ui;
 
 import bdv.util.BdvHandle;
@@ -12,6 +40,8 @@ import sc.fiji.bdvpg.scijava.services.ui.swingdnd.SourceAndConverterServiceUITra
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import javax.swing.*;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -43,7 +73,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  * Nodes are {@link DefaultMutableTreeNode} containing potentially:
  * - {@link RenamableSourceAndConverter} (SourceAndConverter with an overriden toString method)
  * - Filtering nodes : {@link SourceFilterNode} nodes that can filter SourceAndConverters,
- * they contain a {@link Predicate<SourceAndConverter>} that decides whether a SourceAndConverter
+ * they contain a {@link Predicate} {@link SourceAndConverter} that decides whether a SourceAndConverter
  * object should be included in the tree nodes below this filter;
  *
  * - Filtering nodes can conveniently be chained in order to make complex filtering easily.
@@ -53,7 +83,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  * SourceFilterNodes contains a flag which decides whether the filtered nodes should be displayed directly below
  * the node or not. Usually it is more convenient to create a non filtering SourceFilterNode
  * at the end of the branch.
- *      - Programmatically new SourceFilterNode(model, "AllSources", () -> true, true);
+ *      - Programmatically new SourceFilterNode(model, "AllSources", () - true, true);
  *      - Or with a Right-Click 'Create a show all filter node'
  *
  *  NB : All SourceFilterNodes contains a reference to the tree model, this is used to fire only necessary
@@ -151,10 +181,14 @@ public class SourceAndConverterServiceUI {
                 super.mouseClicked(e);
                 // Right Click -> popup
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    JPopupMenu popup = new SourceAndConverterPopupMenu(getSelectedSourceAndConverters())
-                            .getPopup();
+
+                    JPopupMenu popup = new SourceAndConverterPopupMenu(() -> getSelectedSourceAndConverters()).getPopup();
+
                     addUISpecificActions(popup);
+
                     popup.show(e.getComponent(), e.getX(), e.getY());
+
+                   // });
                 }
             }
         });
@@ -183,8 +217,16 @@ public class SourceAndConverterServiceUI {
         frame.add(panel);
         frame.pack();
         frame.setVisible(false);
-        frame.setVisible(true);
+        //frame.setVisible(true);
 
+    }
+
+    public void show() {
+        frame.setVisible(true);
+    }
+
+    public void hide() {
+        frame.setVisible(false);
     }
 
     SourceFilterNode copiedNode = null;
@@ -306,6 +348,7 @@ public class SourceAndConverterServiceUI {
      * @param sac
      */
     public void inspectSource(SourceAndConverter sac) {
+        if (!frame.isVisible()) {show();}
         DefaultMutableTreeNode parentNodeInspect = new DefaultMutableTreeNode("Inspect Results ["+sac.getSpimSource().getName()+"]");
         SourceAndConverterInspector.appendInspectorResult(parentNodeInspect, sac, sourceAndConverterService, false);
         top.add(parentNodeInspect);
@@ -315,8 +358,10 @@ public class SourceAndConverterServiceUI {
         visitAllNodesAndProcess(top, (node) -> {
             if (node instanceof BdvHandleFilterNode) {
                 BdvHandleFilterNode bfn = (BdvHandleFilterNode) node;
+
                 if (bfn.bdvh.equals(bdvh)) {
                     bfn.removeFromParent();
+                    bfn.clear();
                 }
             }
         });
@@ -327,6 +372,7 @@ public class SourceAndConverterServiceUI {
      * @param sac
      */
     public void update(SourceAndConverter sac) {
+        if (!frame.isVisible()) {show();}
         synchronized (tree) {
             updateSpimDataFilterNodes();
             if (top.hasConsumed(sac)) {
@@ -483,6 +529,7 @@ public class SourceAndConverterServiceUI {
      * @param sac
      */
     public void remove(SourceAndConverter sac) {
+        if (!frame.isVisible()) {show();}
         synchronized (tree) {
             if (top.currentInputSacs.contains(sac)) {
                 top.remove(sac);
@@ -542,8 +589,8 @@ public class SourceAndConverterServiceUI {
 
     /**
      * Allows to get the tree path from a String,
-     * nodes names are separated by the ">" character
-     * Like SpimData_0>Channel>0 will return the {@link TreePath} to the childrennode
+     * nodes names are separated by the "&gt;" character
+     * Like SpimData_0 &gt; Channel &gt; 0 will return the {@link TreePath} to the childrennode
      * Used in {@link sc.fiji.bdvpg.scijava.converters.StringToSourceAndConverterArray}
      *
      * Not the ideal situation where the UI is used to retrieve SourceAndConverter

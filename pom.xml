@@ -11,7 +11,7 @@
 
 	<groupId>sc.fiji</groupId>
 	<artifactId>bigdataviewer-playground</artifactId>
-	<version>0.2.5-SNAPSHOT</version>
+	<version>0.2.7-SNAPSHOT</version>
 
 	<name>bigdataviewer-playground</name>
 	<description>BigDataViewer Actions and GUI</description>
@@ -19,7 +19,7 @@
 	<inceptionYear>2019</inceptionYear>
 	<organization>
 		<name>MPI-CBG / EMBL / EPFL</name>
-		<url></url>
+		<url />
 	</organization>
 	<licenses>
 		<license>
@@ -72,7 +72,12 @@
 	</developers>
 	<contributors>
 		<contributor>
-			<name>none</name>
+			<name>Martin Schorb</name>
+			<roles>
+				<role>debugger</role>
+				<role>reviewer</role>
+				<role>support</role>
+			</roles>
 		</contributor>
 	</contributors>
 
@@ -90,19 +95,21 @@
 
 	<!-- TODO -->
 	<scm>
-		<connection>scm:git:git://github.com/</connection>
-		<developerConnection>scm:git:git@github.com:</developerConnection>
-		<tag>HEAD</tag>
+		<connection>scm:git:git://github.com/bigdataviewer/bigdataviewer-playground</connection>
+		<developerConnection>scm:git:git@github.com:bigdataviewer/bigdataviewer-playground</developerConnection>
 		<url>https://github.com/bigdataviewer/bigdataviewer-playground/</url>
-	</scm>
+    <tag>HEAD</tag>
+  </scm>
 
 	<issueManagement>
 		<system>GitHub Issues</system>
-		<url></url>
+		<url>https://github.com/bigdataviewer/bigdataviewer-playground/issues</url>
+
 	</issueManagement>
 
 	<ciManagement>
-		<system>None</system>
+		<system>Travis CI</system>
+		<url>https://travis-ci.com/bigdataviewer/bigdataviewer-playground</url>
 	</ciManagement>
 
 	<properties>
@@ -110,21 +117,23 @@
 		<license.licenseName>bsd_2</license.licenseName>
 		<license.projectName>BigDataViewer-Playground</license.projectName>
 		<license.organizationName>MPI CBG / EMBL / EPFL </license.organizationName>
-		<license.copyrightOwners>Robert Haase, MPI CBG</license.copyrightOwners>
-		<license.copyrightOwners>Nicolas Chiaruttini, EPFL</license.copyrightOwners>
-		<license.copyrightOwners>Christian Tischer, EMBL</license.copyrightOwners>
+		<license.copyrightOwners>Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL</license.copyrightOwners>
+		<releaseProfiles>deploy-to-scijava</releaseProfiles>
 
 		<scijava.deleteOtherVersions>true</scijava.deleteOtherVersions>
 		<scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory>
 
         <bigwarp_fiji.version>6.0.3-SNAPSHOT</bigwarp_fiji.version>
 
+		<!--<bigwarp_fiji.version>6.0.3-SNAPSHOT-NOCULLING</bigwarp_fiji.version>-->
+
 		<bigdataviewer-core.version>10.0.2</bigdataviewer-core.version>
 		<bigdataviewer-vistools.version>1.0.0-beta-23</bigdataviewer-vistools.version>
 		<imglib2-cache.version>1.0.0-beta-15</imglib2-cache.version>
-		<bigdataviewer-selector.version>0.1.5-SNAPSHOT</bigdataviewer-selector.version>
+		<bigdataviewer-selector.version>0.1.5</bigdataviewer-selector.version>
 
-		<mastodon.version>1.0.0-beta-17-SNAPSHOT</mastodon.version>
+		<!--<mastodon.version>1.0.0-beta-17-SNAPSHOT</mastodon.version>-->
+		<mastodon.version>1.0.0-beta-16</mastodon.version>
 		<bigvolumeviewer.version>0.1.8</bigvolumeviewer.version>
 
 
@@ -144,8 +153,11 @@
 		<kotlin.version>1.4-M1</kotlin.version>
 
 		<cleargl.version>2.2.10</cleargl.version>
-		<bigvolumeviewer.version>0.1.8-SNAPSHOT</bigvolumeviewer.version>
 
+
+		<bigdataviewer-spimdata-extras.version>0.1.0</bigdataviewer-spimdata-extras.version>
+		<reflections.version>0.9.11</reflections.version>
+		<bigdataviewer-bioformats.version>0.2.12-SNAPSHOT</bigdataviewer-bioformats.version>
 
 	</properties>
 
@@ -221,10 +233,30 @@
 			<artifactId>imglib2</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>ch.epfl.biop</groupId>
+			<artifactId>bigdataviewer-spimdata-extras</artifactId>
+			<version>${bigdataviewer-spimdata-extras.version}</version>
+		</dependency>
+
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>${reflections.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.epfl.biop</groupId>
+			<artifactId>bigdataviewer-bioformats</artifactId>
+			<version>${bigdataviewer-bioformats.version}</version>
 			<scope>test</scope>
 		</dependency>
 

@@ -1,10 +1,34 @@
+/*-
+ * #%L
+ * BigDataViewer-Playground
+ * %%
+ * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
 package sc.fiji.bdvpg.services.serializers;
 
-import bdv.SpimSource;
-import bdv.img.WarpedSource;
-import bdv.tools.transformation.TransformedSource;
-import bdv.util.Procedural3DImageShort;
-import bdv.util.ResampledSource;
+import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -15,19 +39,41 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.type.numeric.ARGBType;
+import org.scijava.InstantiableException;
 import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.services.serializers.plugins.BdvPlaygroundObjectAdapterService;
+import sc.fiji.bdvpg.services.serializers.plugins.ISourceAdapter;
 import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConverter>,
         JsonDeserializer<SourceAndConverter> {
 
     SourceAndConverterSerializer sacSerializer;
 
+    Map<Class<? extends Source>, ISourceAdapter> sourceSerializers = new HashMap<>();
+    Map<String, ISourceAdapter> sourceSerializersFromName = new HashMap<>();
+
     public SourceAndConverterAdapter(SourceAndConverterSerializer sacSerializer) {
         this.sacSerializer = sacSerializer;
+        sacSerializer.getScijavaContext().getService(BdvPlaygroundObjectAdapterService.class)
+                .getAdapters(ISourceAdapter.class)
+                .forEach(pi -> {
+                    try {
+                        ISourceAdapter adapter = pi.createInstance();
+                        adapter.setSacSerializer(sacSerializer);
+                        System.out.println("adapter.getSourceClass()= "+adapter.getSourceClass());
+                        sourceSerializers.put(adapter.getSourceClass(), adapter);
+                        sourceSerializersFromName.put(adapter.getSourceClass().getName(), adapter);
+                    } catch (InstantiableException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     @Override
@@ -57,7 +103,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
 
             return obj;
         } catch (UnsupportedOperationException e) {
-            System.err.println("Could not serialize source "+ sourceAndConverter.getSpimSource().getName());
+            System.err.println("Could not serialize source "+ sourceAndConverter.getSpimSource().getName() + " of class "+ sourceAndConverter.getSpimSource().getClass().getName());
             return null;
         }
     }
@@ -66,22 +112,13 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
                                           Type type,
                                           JsonSerializationContext jsonSerializationContext) throws UnsupportedOperationException {
 
-        if (sourceAndConverter.getSpimSource() instanceof SpimSource) {
-            return SpimSourceAndConverterAdapter.serialize(sourceAndConverter, SourceAndConverter.class, jsonSerializationContext);
-        }
-        if (sourceAndConverter.getSpimSource() instanceof TransformedSource) {
-            return new TransformedSourceAndConverterAdapter(sacSerializer).serialize(sourceAndConverter, SourceAndConverter.class, jsonSerializationContext);
-        }
-        if (sourceAndConverter.getSpimSource() instanceof ResampledSource) {
+        if (!sourceSerializers.containsKey(sourceAndConverter.getSpimSource().getClass())) {
+            System.out.println("Unsupported serialisation of "+sourceAndConverter.getSpimSource().getClass());
             throw new UnsupportedOperationException();
         }
-        if (sourceAndConverter.getSpimSource() instanceof WarpedSource) {
-            return new WarpedSourceAndConverterAdapter(sacSerializer).serialize(sourceAndConverter, SourceAndConverter.class, jsonSerializationContext);
-        }
 
-        System.out.println("Unsupported serialisation of "+sourceAndConverter.getSpimSource().getClass().getName());
-
-        throw new UnsupportedOperationException();
+        return sourceSerializers.get(sourceAndConverter.getSpimSource().getClass())
+                .serialize(sourceAndConverter, SourceAndConverter.class, jsonSerializationContext);
     }
 
     @Override
@@ -90,17 +127,13 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
 
         String sourceClass = jsonObject.getAsJsonPrimitive("source_class").getAsString();
 
-        SourceAndConverter sac = null;
-
-        if (sourceClass.equals(SpimSource.class.getName())) {
-            sac = SpimSourceAndConverterAdapter.deserialize(jsonObject.get("sac"), SourceAndConverter.class, jsonDeserializationContext);
-        } else if (sourceClass.equals(TransformedSource.class.getName())) {
-            sac = new TransformedSourceAndConverterAdapter(sacSerializer).deserialize(jsonObject.get("sac"), SourceAndConverter.class, jsonDeserializationContext);
-        } else if (sourceClass.equals(WarpedSource.class.getName())) {
-            sac = new WarpedSourceAndConverterAdapter(sacSerializer).deserialize(jsonObject.get("sac"), SourceAndConverter.class, jsonDeserializationContext);
-        } else {
-            System.err.println("Could not deserialise source of class "+sourceClass);
+        if (!sourceSerializersFromName.containsKey(sourceClass)) {
+            System.out.println("Unsupported deserialisation of "+sourceClass);
+            throw new UnsupportedOperationException();
         }
+
+        SourceAndConverter sac = sourceSerializersFromName.get(sourceClass)
+                .deserialize(jsonObject.get("sac"), SourceAndConverter.class, jsonDeserializationContext);
 
         if (sac != null) {
             if (jsonObject.getAsJsonPrimitive("color")!=null) {

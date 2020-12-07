@@ -1,18 +1,51 @@
+/*-
+ * #%L
+ * BigDataViewer-Playground
+ * %%
+ * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
 package sc.fiji.bdvpg.scijava.services.ui;
 
 import bdv.AbstractSpimSource;
 import bdv.img.WarpedSource;
 import bdv.tools.transformation.TransformedSource;
 import bdv.util.ResampledSource;
+import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 public class SourceAndConverterInspector {
@@ -42,11 +75,15 @@ public class SourceAndConverterInspector {
      * @param parent
      * @param sac
      * @param sourceAndConverterService
+     * @return the set of sources that were necessary to build the sac (including itself)
      */
-    public static void appendInspectorResult(DefaultMutableTreeNode parent,
-                                             SourceAndConverter sac,
-                                             SourceAndConverterService sourceAndConverterService,
-                                             boolean registerIntermediateSources) {
+    public static Set<SourceAndConverter> appendInspectorResult(DefaultMutableTreeNode parent,
+                                                                SourceAndConverter sac,
+                                                                ISourceAndConverterService sourceAndConverterService,
+                                                                boolean registerIntermediateSources) {
+        Set<SourceAndConverter> subSources = new HashSet<>();
+        subSources.add(sac);
+
         if (sac.getSpimSource() instanceof TransformedSource) {
             DefaultMutableTreeNode nodeTransformedSource = new DefaultMutableTreeNode("Transformed Source");
             parent.add(nodeTransformedSource);
@@ -57,7 +94,7 @@ public class SourceAndConverterInspector {
                 sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeTransformedSource.add(wrappedSourceNode);
-                            appendInspectorResult(wrappedSourceNode, src, sourceAndConverterService, registerIntermediateSources);
+                            subSources.addAll(appendInspectorResult(wrappedSourceNode, src, sourceAndConverterService, registerIntermediateSources));
                         }
                 );
             } else {
@@ -68,7 +105,7 @@ public class SourceAndConverterInspector {
                 }
                 DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                 nodeTransformedSource.add(wrappedSourceNode);
-                appendInspectorResult(wrappedSourceNode, src, sourceAndConverterService, registerIntermediateSources);
+                subSources.addAll(appendInspectorResult(wrappedSourceNode, src, sourceAndConverterService, registerIntermediateSources));
             }
 
             DefaultMutableTreeNode nodeAffineTransformGetter = new DefaultMutableTreeNode(new Supplier<AffineTransform3D>() {
@@ -97,7 +134,7 @@ public class SourceAndConverterInspector {
                 sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeWarpedSource.add(wrappedSourceNode);
-                            appendInspectorResult(wrappedSourceNode, src, sourceAndConverterService, registerIntermediateSources);
+                            subSources.addAll(appendInspectorResult(wrappedSourceNode, src, sourceAndConverterService, registerIntermediateSources));
                         }
                 );
             } else {
@@ -108,7 +145,7 @@ public class SourceAndConverterInspector {
                 }
                 DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                 nodeWarpedSource.add(wrappedSourceNode);
-                appendInspectorResult(wrappedSourceNode, src, sourceAndConverterService, registerIntermediateSources);
+                subSources.addAll(appendInspectorResult(wrappedSourceNode, src, sourceAndConverterService, registerIntermediateSources));
             }
             DefaultMutableTreeNode nodeRealTransformGetter = new DefaultMutableTreeNode(new Supplier<RealTransform>() {
                 public RealTransform get() {
@@ -136,7 +173,7 @@ public class SourceAndConverterInspector {
                 sourceAndConverterService.getSourceAndConvertersFromSource(source.getOriginalSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeOrigin.add(wrappedSourceNode);
-                            appendInspectorResult(wrappedSourceNode, src, sourceAndConverterService, registerIntermediateSources);
+                            subSources.addAll(appendInspectorResult(wrappedSourceNode, src, sourceAndConverterService, registerIntermediateSources));
                         }
                 );
             } else {
@@ -147,7 +184,7 @@ public class SourceAndConverterInspector {
                 }
                 DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                 nodeOrigin.add(wrappedSourceNode);
-                appendInspectorResult(wrappedSourceNode, src, sourceAndConverterService, registerIntermediateSources);
+                subSources.addAll(appendInspectorResult(wrappedSourceNode, src, sourceAndConverterService, registerIntermediateSources));
             }
 
             DefaultMutableTreeNode nodeResampler = new DefaultMutableTreeNode("Sampler Model");
@@ -158,7 +195,7 @@ public class SourceAndConverterInspector {
                 sourceAndConverterService.getSourceAndConvertersFromSource(source.getModelResamplerSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeResampler.add(wrappedSourceNode);
-                            appendInspectorResult(wrappedSourceNode, src, sourceAndConverterService, registerIntermediateSources);
+                            subSources.addAll(appendInspectorResult(wrappedSourceNode, src, sourceAndConverterService, registerIntermediateSources));
                         }
                 );
             } else {
@@ -169,7 +206,7 @@ public class SourceAndConverterInspector {
                 }
                 DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                 nodeResampler.add(wrappedSourceNode);
-                appendInspectorResult(wrappedSourceNode, src, sourceAndConverterService, registerIntermediateSources);
+                subSources.addAll(appendInspectorResult(wrappedSourceNode, src, sourceAndConverterService, registerIntermediateSources));
             }
             appendMetadata(nodeResampledSource, sac);
         }
@@ -179,6 +216,8 @@ public class SourceAndConverterInspector {
             parent.add(nodeSpimSource);
             appendMetadata(nodeSpimSource, sac);
         }
+
+        return subSources;
     }
 
     /**
@@ -199,6 +238,18 @@ public class SourceAndConverterInspector {
     }
 
     public static SourceAndConverter getRootSourceAndConverter(SourceAndConverter sac) {
+        return getListToRootSourceAndConverter(sac, (SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getLast();
+    }
+
+    public static SourceAndConverter getRootSourceAndConverter(Source source) {
+        SourceAndConverter sac;
+        List<SourceAndConverter> sacs = SourceAndConverterServices.getSourceAndConverterService()
+                .getSourceAndConvertersFromSource(source);
+        if (sacs.size()==0) {
+            sac = SourceAndConverterUtils.createSourceAndConverter(source);
+        } else {
+            sac = sacs.get(0);
+        }
         return getListToRootSourceAndConverter(sac, (SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getLast();
     }
 

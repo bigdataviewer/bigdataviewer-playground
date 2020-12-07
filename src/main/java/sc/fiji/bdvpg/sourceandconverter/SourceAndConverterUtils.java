@@ -1,53 +1,77 @@
+/*-
+ * #%L
+ * BigDataViewer-Playground
+ * %%
+ * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
 package sc.fiji.bdvpg.sourceandconverter;
 
 import bdv.*;
+import bdv.img.WarpedSource;
 import bdv.spimdata.WrapBasicImgLoader;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.transformation.TransformedSource;
 import bdv.util.ARGBColorConverterSetup;
-import bdv.util.BdvHandle;
 import bdv.util.LUTConverterSetup;
+import bdv.util.ResampledSource;
+import bdv.util.UnmodifiableConverterSetup;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
-import mpicbg.spim.data.registration.ViewRegistration;
-import mpicbg.spim.data.registration.ViewTransform;
-import mpicbg.spim.data.registration.ViewTransformAffine;
 import mpicbg.spim.data.sequence.Angle;
 import mpicbg.spim.data.sequence.Channel;
-import net.imglib2.RealPoint;
-import net.imglib2.RealRandomAccess;
-import net.imglib2.RealRandomAccessible;
-import net.imglib2.Volatile;
+import net.imglib2.*;
 import net.imglib2.converter.Converter;
 import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.type.Type;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.util.Intervals;
+import org.scijava.vecmath.Point3d;
+import sc.fiji.bdvpg.bdv.BdvUtils;
 import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 import spimdata.util.Displaysettings;
+import spimdata.util.DisplaysettingsHelper;
 
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
 
 /**
  * Following the logic of the repository, i.e. dealing with SourceAndConverter objects only,
  * This class contains the main functions which allow to convert objects which can be
- * vizualized in BDV windows into SourceAndConverters objects
+ * visualized in BDV windows into SourceAndConverters objects
  * SourceAndConverters objects contains:
  * - a Source, non volatile, which holds the data
  * - a converter from the Source type to ARGBType, for display purpose
@@ -58,11 +82,15 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  * It can deal wth conversion of:
  * - Source to SourceAndConverter
  * - Spimdata to a List of SourceAndConverter
- * - TODO : RAI, ImagePLUS, etc... to SourceAndConverter
+ * - TODO : RAI etc... to SourceAndConverter
  *
- * Additionally, this class contains default function which allow to create a
- * ConverterSetup object. These objects can be used to adjust the B&C of the displayed
+ * Additionally, this class contains
+ * - default function which allow to create a
+ * ConverterSetup object. These objects can be used to adjust the B and C of the displayed
  * SourceAndConverter objects.
+ *
+ * - Some helper functions for ColorConverter and Displaysettings objects
+ *
  *
  * Limitations : TODO : think about CacheControls
  */
@@ -193,7 +221,7 @@ public class SourceAndConverterUtils {
                     // Applying display settings if some have been set
                     if (setup.getAttribute(Displaysettings.class)!=null) {
 
-                        Displaysettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(Displaysettings.class));
+                        DisplaysettingsHelper.PullDisplaySettings(out.get(setupId),setup.getAttribute(Displaysettings.class));
 
                     }
 
@@ -215,7 +243,7 @@ public class SourceAndConverterUtils {
                     SourceAndConverterServices.getSourceAndConverterService().register(out.get(setupId));
                     // Applying display settings if some have been set
                     if (setup.getAttribute(Displaysettings.class)!=null) {
-                        Displaysettings.PullDisplaySettings(out.get(setupId),setup.getAttribute(Displaysettings.class));
+                        DisplaysettingsHelper.PullDisplaySettings(out.get(setupId),setup.getAttribute(Displaysettings.class));
                     }
 
                 } else {
@@ -350,9 +378,12 @@ public class SourceAndConverterUtils {
                 setup = new LUTConverterSetup((RealLUTConverter) source.getConverter());
             }
         } else {
-            // Here different kinds of Converter can be supported
-            errlog.accept("Cannot build ConverterSetup for Converters of class "+source.getConverter().getClass());
-            setup = null;
+            log.accept( "Unsupported ConverterSetup for Converters of class " + source.getConverter().getClass() );
+            if (source.asVolatile() != null) {
+                setup = new UnmodifiableConverterSetup( source.getConverter(), source.asVolatile().getConverter());
+            } else {
+                setup = new UnmodifiableConverterSetup( source.getConverter());
+            }
         }
         return setup;
     }
@@ -441,12 +472,93 @@ public class SourceAndConverterUtils {
         return converter;
     }
 
+
+	/**
+	 * Checks whether a given point (calibrated global coordinate)
+	 * lies inside the voxel grid of the Source's underlying RandomAccessibleInterval.
+	 *
+	 * This can be used as an alternative to below method: isSourcePresentAt
+	 *
+	 * @param source
+	 * @param globalPosition
+	 * @param timepoint
+	 * @param sourceIs2d
+	 *
+	 * @return
+	 * 			boolean indicating whether the position falls within the source interval
+	 */
+	public static boolean isPositionWithinSourceInterval( SourceAndConverter< ? > source, RealPoint globalPosition, int timepoint, boolean sourceIs2d )
+	{
+		Source< ? > spimSource = source.getSpimSource();
+
+		final long[] voxelPositionInSource = getVoxelPositionInSource( spimSource, globalPosition, timepoint, 0 );
+		Interval sourceInterval = spimSource.getSource( 0, 0 );
+
+		if ( sourceIs2d )
+		{
+			final long[] min = new long[ 2 ];
+			final long[] max = new long[ 2 ];
+			final long[] positionInSource2D = new long[ 2 ];
+			for ( int d = 0; d < 2; d++ )
+			{
+				min[ d ] = sourceInterval.min( d );
+				max[ d ] = sourceInterval.max( d );
+				positionInSource2D[ d ] = voxelPositionInSource[ d ];
+			}
+
+			Interval interval2d = new FinalInterval( min, max );
+			Point point2d = new Point( positionInSource2D );
+
+			return Intervals.contains( interval2d, point2d ) ? true : false;
+		}
+		else
+		{
+			Interval interval3d = sourceInterval;
+			Point point3d = new Point( voxelPositionInSource );
+
+			return Intervals.contains( interval3d, point3d ) ? true : false;
+		}
+	}
+
+	/**
+	 * Given a calibrated global position, this function uses
+	 * the source transform to compute the position within the
+	 * voxel grid of the source.
+	 *
+	 * @param source
+	 * @param globalPosition
+	 * @param t
+	 * @param level
+	 * @return
+	 */
+	public static long[] getVoxelPositionInSource(
+			final Source source,
+			final RealPoint globalPosition,
+			final int t,
+			final int level )
+	{
+		final int numDimensions = 3;
+
+		final AffineTransform3D sourceTransform = BdvUtils.getSourceTransform( source, t, level );
+
+		final RealPoint voxelPositionInSource = new RealPoint( numDimensions );
+
+		sourceTransform.inverse().apply( globalPosition, voxelPositionInSource );
+
+		final long[] longPosition = new long[ numDimensions ];
+
+		for ( int d = 0; d < numDimensions; ++d )
+			longPosition[ d ] = (long) voxelPositionInSource.getFloatPosition( d );
+
+		return longPosition;
+	}
+
     /**
      * Is the point pt located inside the source  at a particular timepoint ?
      * Looks at highest resolution whether the alpha value of the displayed pixel is zero
-     * TODO TO think Alternative : looks whether R, G and B values equal zero -> source not present
+     * TODO TO think Alternative : looks whether R, G and B values equal zero - source not present
      * Another option : if the display RGB value is zero, then consider it's not displayed and thus not selected
-     * -> Convenient way to adjust whether a source should be selected or not ?
+     * - Convenient way to adjust whether a source should be selected or not ?
      * TODO : Time out if too long to access the data
      * @param sac
      * @param pt
@@ -624,19 +736,220 @@ public class SourceAndConverterUtils {
      * @return
      */
     public static RealPoint getSourceAndConverterCenterPoint(SourceAndConverter source) {
-        AffineTransform3D at3D = new AffineTransform3D();
-        at3D.identity();
-        //double[] m = at3D.getRowPackedCopy();
-        source.getSpimSource().getSourceTransform(0,0,at3D);
+        AffineTransform3D sourceTransform = new AffineTransform3D();
+        sourceTransform.identity();
+
+        source.getSpimSource().getSourceTransform(0,0,sourceTransform);
         long[] dims = new long[3];
         source.getSpimSource().getSource(0,0).dimensions(dims);
 
         RealPoint ptCenterGlobal = new RealPoint(3);
         RealPoint ptCenterPixel = new RealPoint((dims[0]-1.0)/2.0,(dims[1]-1.0)/2.0, (dims[2]-1.0)/2.0);
 
-        at3D.apply(ptCenterPixel, ptCenterGlobal);
+        sourceTransform.apply(ptCenterPixel, ptCenterGlobal);
 
         return ptCenterGlobal;
+    }
+
+
+    /**
+     * Applies the color converter settings from the src source to the dst sources
+     * color, min, max
+     * @param src
+     * @param dst
+     */
+    public static void transferColorConverters(SourceAndConverter src, SourceAndConverter dst) {
+        transferColorConverters(new SourceAndConverter[]{src}, new SourceAndConverter[]{dst});
+    }
+
+    /**
+     * Applies the color converter settings from the sources srcs source to the sources dsts
+     * color, min, max.
+     *
+     * If the number of sources is unequal, the transfer is applied up to the common number of sources
+     *
+     * If null is encountered for src or dst, nothing happens silently
+     *
+     * The transfer is performed for the volatile source as well if it exists.
+     * The volatile source converter of src is ignored
+     *
+     * @param srcs
+     * @param dsts
+     */
+    public static void transferColorConverters(SourceAndConverter[] srcs, SourceAndConverter[] dsts) {
+        if ((srcs!=null)&&(dsts!=null))
+        for (int i = 0;i<Math.min(srcs.length, dsts.length);i++) {
+            SourceAndConverter src = srcs[i];
+            SourceAndConverter dst = dsts[i];
+            if ((src!=null)&&(dst!=null))
+            if ((dst.getConverter() instanceof ColorConverter) && (src.getConverter() instanceof ColorConverter)) {
+                ColorConverter conv_src = (ColorConverter) src.getConverter();
+                ColorConverter conv_dst = (ColorConverter) dst.getConverter();
+                conv_dst.setColor(conv_src.getColor());
+                conv_dst.setMin(conv_src.getMin());
+                conv_dst.setMax(conv_src.getMax());
+                if (dst.asVolatile()!=null) {
+                    conv_dst = (ColorConverter) dst.asVolatile().getConverter();
+                    conv_dst.setColor(conv_src.getColor());
+                    conv_dst.setMin(conv_src.getMin());
+                    conv_dst.setMax(conv_src.getMax());
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns the most appropriate level of a multiresolution source for
+     * sampling it at a certain voxel size.
+     *
+     * To match the resolution, the 'middle dimension' of voxels is used to make comparison
+     * with the target size voxsize
+     *
+     * So if the voxel size is [1.2, 0.8, 50], the value 1.2 is used to compare the levels
+     * to the target resolution. This is a way to avoid the complexity of defining the correct
+     * pixel size while being also robust to comparing 2d and 3d sources. Indeed 2d sources may
+     * have aberrantly defined vox size along the third axis, either way too big or way too small
+     * in one case or the other, the missing dimension is ignored, which we hope works
+     * in most circumstances.
+     *
+     * Other complication : the sourceandconverter could be a warped source, or a warped source
+     * of a warped source of a transformed source, etc.
+     *
+     * The proper computation of the level required is complicated, and could be ill defined:
+     * Warping can cause local shrinking or expansion such that a single level won't be the
+     * best choice for all the image.
+     *
+     * Here the assumption that we make is that the transforms should not change drastically
+     * the scale of the image (which could be clearly wrong). Assuming this, we get to the 'root'
+     * of the source and converter and get the voxel value from this root source.
+     *
+     * Look at the {@link SourceAndConverterUtils#getRootSource(Source, AffineTransform3D)} implementation to
+     * see how this search is done
+     *
+     * So : the source root should be properly scaled from the beginning and weird transformation
+     * (like spherical transformed will give wrong results.
+     *
+     * @param src
+     * @param voxSize
+     * @return
+     */
+    public static int bestLevel(Source src, int t, double voxSize) {
+        List<Double> originVoxSize = new ArrayList<>();
+        AffineTransform3D chainedSourceTransform = new AffineTransform3D();
+        Source rootOrigin = getRootSource(src, chainedSourceTransform);
+
+        for (int l=0;l<rootOrigin.getNumMipmapLevels();l++) {
+            AffineTransform3D sourceTransform = new AffineTransform3D();
+            rootOrigin.getSourceTransform(t,l,sourceTransform);
+            double mid = getCharacteristicVoxelSize(sourceTransform.concatenate(chainedSourceTransform));
+            originVoxSize.add(mid);
+        }
+
+        int level = 0;
+        while((originVoxSize.get(level)<voxSize)&&(level<originVoxSize.size()-1)) {
+            level=level+1;
+        }
+
+        return Math.max(level-1,0);
+    }
+
+    /**
+     * See {@link SourceAndConverterUtils#bestLevel(Source, int, double)}
+     * @param sac
+     * @param t
+     * @param voxSize
+     * @return
+     */
+    public static int bestLevel(SourceAndConverter sac, int t, double voxSize) {
+        return bestLevel(sac.getSpimSource(), t, voxSize);
+    }
+    
+    /**
+     * See {@link SourceAndConverterUtils#bestLevel(Source, int, double)}
+     * for an example of the use of this function
+     * 
+     * What the 'root' means is actually the origin source from which is derived the source
+     * so if a source has been affine tranformed, warped, resampled, potentially in successive steps
+     * this function should return the source it was derived from.
+     * 
+     * This function is used (for the moment) only when a source needs to be resampled
+     * see {@link ResampledSource}, in order to get the origin voxel size  of the source root.
+     * 
+     * TODO : maybe use inspector to improve this root finding
+     *
+     * provide an AffineTransform which would  mutated and concatenated such as the voxel size changes can be taken
+     * into account, provided that the transform are affine. Is the source is transformed in a more
+     * complex way, then nothing can be done easily...
+     *
+     * @param source
+     * @return
+     */
+    public static Source getRootSource(Source source, AffineTransform3D chainedSourceTransform) {
+        Source rootOrigin = source;
+        while ((rootOrigin instanceof WarpedSource)
+                ||(rootOrigin instanceof TransformedSource)
+                ||(rootOrigin instanceof ResampledSource)) {
+            if (rootOrigin instanceof WarpedSource) {
+                rootOrigin = ((WarpedSource) rootOrigin).getWrappedSource();
+            } else if (rootOrigin instanceof TransformedSource) {
+                AffineTransform3D m = new AffineTransform3D();
+                ((TransformedSource) rootOrigin).getFixedTransform(m);
+                chainedSourceTransform.concatenate(m);
+                rootOrigin = ((TransformedSource) rootOrigin).getWrappedSource();
+            } else if (rootOrigin instanceof ResampledSource) {
+                rootOrigin = ((ResampledSource) rootOrigin).getModelResamplerSource();
+            }
+        }
+        return rootOrigin;
+    }
+
+    /**
+     * see {@link SourceAndConverterUtils#getCharacteristicVoxelSize(AffineTransform3D)}
+     * @param sac
+     * @param t
+     * @param level
+     * @return
+     */
+    public static double getCharacteristicVoxelSize(SourceAndConverter sac, int t, int level) {
+        return getCharacteristicVoxelSize(sac.getSpimSource(), t, level);
+    }
+
+    /**
+     * See {@link SourceAndConverterUtils#getCharacteristicVoxelSize(AffineTransform3D)}
+     * @param src
+     * @param t
+     * @param level
+     * @return
+     */
+    public static double getCharacteristicVoxelSize(Source src, int t, int level) {
+        AffineTransform3D chainedSourceTransform = new AffineTransform3D();
+        Source root = getRootSource(src, chainedSourceTransform);
+
+        AffineTransform3D sourceTransform = new AffineTransform3D();
+        root.getSourceTransform(t, level, sourceTransform);
+
+        return getCharacteristicVoxelSize(sourceTransform.concatenate(chainedSourceTransform));
+    }
+
+    /**
+     * See {@link SourceAndConverterUtils#bestLevel(Source, int, double)} 
+     * for a description of what the 'characteristic voxel size' means
+     * 
+     * @param sourceTransform
+     * @return
+     */
+    public static double getCharacteristicVoxelSize(AffineTransform3D sourceTransform) { // method also present in resampled source
+        // Gets three vectors
+        Point3d v1 = new Point3d(sourceTransform.get(0,0), sourceTransform.get(0,1), sourceTransform.get(0,2));
+        Point3d v2 = new Point3d(sourceTransform.get(1,0), sourceTransform.get(1,1), sourceTransform.get(1,2));
+        Point3d v3 = new Point3d(sourceTransform.get(2,0), sourceTransform.get(2,1), sourceTransform.get(2,2));
+
+        // 0 - Ensure v1 and v2 have the same norm
+        double a = Math.sqrt(v1.x*v1.x+v1.y*v1.y+v1.z*v1.z);
+        double b = Math.sqrt(v2.x*v2.x+v2.y*v2.y+v2.z*v2.z);
+        double c = Math.sqrt(v3.x*v3.x+v3.y*v3.y+v3.z*v3.z);
+
+        return Math.max(Math.min(a,b), Math.min(Math.max(a,b),c)); //https://stackoverflow.com/questions/1582356/fastest-way-of-finding-the-middle-value-of-a-triple
     }
 
 }

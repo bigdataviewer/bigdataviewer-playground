@@ -1,10 +1,38 @@
+/*-
+ * #%L
+ * BigDataViewer-Playground
+ * %%
+ * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
 package sc.fiji.bdvpg.bdv;
 
 import bdv.tools.transformation.TransformedSource;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
-import bdv.viewer.TransformListener;//net.imglib2.ui.TransformListener;
+import bdv.viewer.TransformListener;
 import org.scijava.vecmath.Point3d;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
@@ -13,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * BigDataViewer Playground Action -->
+ * BigDataViewer Playground Action --
  * Action which starts the manual registration of n SourceAndConverters
  * Works in coordination with ManualRegistrationStopper
  *
@@ -28,9 +56,13 @@ import java.util.List;
  * The ManualRegistrationStopper action does actually stores the registration once it is finished
  *
  * Note : all the selected sources will be registered ( parameter 'SourceAndConverter... sacs' in the constructor ),
- * however, only those who were displayed originally will be used for the intereactive manual registration,
+ * however, only those who were displayed originally will be used for the interactive manual registration,
  * this allows for a much stronger performance : you can actually register multiple
- * sources but only base your registration on a single displayed one.
+ * sources but only perform your registration based on a subset of them (those which are currently displayed).
+ *
+ * Limitation : if no other source is visible, you don't see waht's happening at all...
+ *
+ * @author : Nicolas Chiaruttini, BIOP, EPFL 2019
  *
  */
 public class ManualRegistrationStarter implements Runnable {
@@ -117,7 +149,7 @@ public class ManualRegistrationStarter implements Runnable {
     }
 
     /**
-     * Gets the listener -> useful to stop the registration
+     * Gets the listener, this is useful to stop the registration
      * @return
      */
     public TransformListener<AffineTransform3D> getListener() {

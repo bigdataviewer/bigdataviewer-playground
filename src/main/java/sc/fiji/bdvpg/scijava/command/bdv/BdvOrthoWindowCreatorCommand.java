@@ -1,3 +1,31 @@
+/*-
+ * #%L
+ * BigDataViewer-Playground
+ * %%
+ * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.*;
@@ -18,8 +46,8 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import javax.swing.*;
 import java.awt.*;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>Create Ortho BDV Frames",
-        label = "Creates 3 BDVs windows with synchronized orthogonal views")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Create Orthogonal Views",
+        description = "Creates 3 BDV windows with synchronized orthogonal views")
 public class BdvOrthoWindowCreatorCommand implements Command {
 
     @Parameter(label = "Title of BDV windows")
@@ -30,21 +58,6 @@ public class BdvOrthoWindowCreatorCommand implements Command {
 
     @Parameter(label = "Number of timepoints (1 for a single timepoint)")
     public int nTimepoints = 1;
-
-    @Parameter(label = "Synchronize time")
-    public boolean syncTime;
-
-    /**
-     * This triggers: BdvHandlePostprocessor
-     */
-    @Parameter(type = ItemIO.OUTPUT)
-    public BdvHandle bdvhX;
-
-    @Parameter(type = ItemIO.OUTPUT)
-    public BdvHandle bdvhY;
-
-    @Parameter(type = ItemIO.OUTPUT)
-    public BdvHandle bdvhZ;
 
     @Parameter(label = "Source Projection Mode", choices = { Projection.MIXED_PROJECTOR, Projection.SUM_PROJECTOR, Projection.AVERAGE_PROJECTOR})
     public String projector;
@@ -66,6 +79,21 @@ public class BdvOrthoWindowCreatorCommand implements Command {
 
     @Parameter(label = "Window Height")
     int sizeY = 500;
+
+    //@Parameter(label = "Synchronize time") // honestly no reason not to synchronize the time
+    public boolean syncTime = true;
+
+    /**
+     * This triggers: BdvHandlePostprocessor
+     */
+    @Parameter(type = ItemIO.OUTPUT)
+    public BdvHandle bdvhX;
+
+    @Parameter(type = ItemIO.OUTPUT)
+    public BdvHandle bdvhY;
+
+    @Parameter(type = ItemIO.OUTPUT)
+    public BdvHandle bdvhZ;
 
     @Override
     public void run() {

@@ -1,3 +1,31 @@
+/*-
+ * #%L
+ * BigDataViewer-Playground
+ * %%
+ * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
 package sc.fiji.bdvpg.bdv;
 
 import bdv.tools.brightness.ConverterSetup;
@@ -18,6 +46,48 @@ import net.imglib2.util.LinAlgHelpers;
  */
 public class BdvUtils
 {
+    /**
+     * Creates a viewer transform with a new center position.
+     *
+     * Author: @tischi
+     * - 11 2020
+     *
+     * @param bdvHandle
+     *          the bdvHandle, used to fetch the current viewerTransform and the current window size
+     * @param xyz
+     * 			target coordinates for the new center in physical units
+     * @return
+     *          viewerTransform that keeps the orientation of the current viewerTransform but with a shifted center
+     */
+    public static AffineTransform3D getViewerTransformWithNewCenter( BdvHandle bdvHandle, double[] xyz )
+    {
+        final AffineTransform3D currentViewerTransform = new AffineTransform3D();
+        bdvHandle.getViewerPanel().state().getViewerTransform( currentViewerTransform );
+
+        AffineTransform3D adaptedViewerTransform = currentViewerTransform.copy();
+
+        // ViewerTransform notes:
+        // - applyInverse: coordinates in viewer => coordinates in image
+        // - apply: coordinates in image => coordinates in viewer
+
+        final double[] targetPositionInViewerInPixels = new double[ 3 ];
+        currentViewerTransform.apply( xyz, targetPositionInViewerInPixels );
+
+        for ( int d = 0; d < 3; d++ )
+        {
+            targetPositionInViewerInPixels[ d ] *= -1;
+        }
+
+        adaptedViewerTransform.translate( targetPositionInViewerInPixels );
+
+        final double[] windowCentreInViewerInPixels = new double[ 3 ];
+        windowCentreInViewerInPixels[ 0 ] = bdvHandle.getViewerPanel().getDisplay().getWidth() / 2.0;
+        windowCentreInViewerInPixels[ 1 ] = bdvHandle.getViewerPanel().getDisplay().getHeight() / 2.0;
+
+        adaptedViewerTransform.translate( windowCentreInViewerInPixels );
+
+        return adaptedViewerTransform;
+    }
 
     public static double getViewerVoxelSpacing( BdvHandle bdv ) {
         final int windowWidth = bdv.getViewerPanel().getDisplay().getWidth();
@@ -114,12 +184,12 @@ public class BdvUtils
     }
 
     /**
-     * Returns the highest level where the sourceandconverter voxel spacings are <= the requested ones.
-     *
+     * Returns the highest level where the sourceandconverter voxel spacings
+     * are inferior or equals to the requested ones.
      *
      * @param source
      * @param voxelSpacings
-     * @return
+     * @return the optimal level for image visualization
      */
     public static int getLevel( Source< ? > source, double... voxelSpacings ) {
         final int numMipmapLevels = source.getNumMipmapLevels();

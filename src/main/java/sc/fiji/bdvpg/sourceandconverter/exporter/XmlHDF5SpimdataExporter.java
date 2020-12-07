@@ -1,3 +1,31 @@
+/*-
+ * #%L
+ * BigDataViewer-Playground
+ * %%
+ * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
 package sc.fiji.bdvpg.sourceandconverter.exporter;
 
 import bdv.export.*;
@@ -21,11 +49,9 @@ import mpicbg.spim.data.sequence.TimePoints;
 import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imglib2.FinalDimensions;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.display.ColorConverter;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.type.numeric.ARGBType;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import spimdata.util.Displaysettings;
+import spimdata.util.DisplaysettingsHelper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -69,6 +95,8 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
     int blockSizeZ;
 
+    int thresholdSizeForMipmap;
+
     File xmlFile;
 
     public XmlHDF5SpimdataExporter(List<SourceAndConverter> sources,
@@ -79,6 +107,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
                                    int blockSizeX,
                                    int blockSizeY,
                                    int blockSizeZ,
+                                   int thresholdSizeForMipmap,
                                    File xmlFile) {
         this.sources = sources;
         this.nThreads = nThreads;
@@ -89,6 +118,8 @@ public class XmlHDF5SpimdataExporter implements Runnable {
         this.blockSizeX = blockSizeX;
         this.blockSizeY = blockSizeY;
         this.blockSizeZ = blockSizeZ;
+
+        this.thresholdSizeForMipmap = thresholdSizeForMipmap;
 
         this.xmlFile = xmlFile;
 
@@ -142,13 +173,15 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
                 final BasicViewSetup basicviewsetup = new BasicViewSetup(idx_current_src, src.getName(), imageSize, voxelSize);
 
-                if (((imgDims[0] <= 2) || (imgDims[1] <= 2) || (imgDims[2] <= 2))) {//||(autoMipMap==false)) {// automipmap fails if one dimension is below or equal to 2
+                if (true){//((imgDims[0] <= 2) || (imgDims[1] <= 2) || (imgDims[2] <= 2))) {//||(autoMipMap==false)) {// automipmap fails if one dimension is below or equal to 2
                     int nLevels = 1;
                     long maxDimension = Math.max(Math.max(imgDims[0], imgDims[1]), imgDims[2]);
-                    while (maxDimension > 512) {
+
+                    while (maxDimension > thresholdSizeForMipmap) {
                         nLevels++;
                         maxDimension /= scaleFactor + 1;
                     }
+
                     int[][] resolutions = new int[nLevels][3];
                     int[][] subdivisions = new int[nLevels][3];
 
@@ -177,8 +210,10 @@ public class XmlHDF5SpimdataExporter implements Runnable {
                             scaleFactor=4;
                         }
                         int nLevels = 1;
+
                         long maxDimension = Math.max(Math.max(imgDims[0], imgDims[1]), imgDims[2]);
-                        while (maxDimension > 512) {
+
+                        while (maxDimension > thresholdSizeForMipmap) {
                             nLevels++;
                             maxDimension /= scaleFactor + 1;
                         }
@@ -212,7 +247,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
                 Displaysettings ds = new Displaysettings(idx_current_src);
 
-                Displaysettings.GetDisplaySettingsFromCurrentConverter(sac, ds);
+                DisplaysettingsHelper.GetDisplaySettingsFromCurrentConverter(sac, ds);
 
                 basicviewsetup.setAttribute(ds);
 
