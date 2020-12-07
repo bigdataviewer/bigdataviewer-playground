@@ -28,7 +28,6 @@
  */
 package bdv.util;
 
-import bdv.SpimSource;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import mpicbg.spim.data.sequence.VoxelDimensions;

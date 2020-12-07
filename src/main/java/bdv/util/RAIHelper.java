@@ -38,6 +38,7 @@ import net.imglib2.img.basictypeaccess.ArrayDataAccessFactory;
 import net.imglib2.img.cell.Cell;
 import net.imglib2.img.cell.CellGrid;
 import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.integer.GenericByteType;
 import net.imglib2.type.numeric.integer.GenericIntType;
 import net.imglib2.type.numeric.integer.GenericLongType;
@@ -90,7 +91,9 @@ public class RAIHelper {
             img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(FLOAT, AccessFlags.setOf(VOLATILE)));
         } else if (DoubleType.class.isInstance(type)) {
             img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(DOUBLE, AccessFlags.setOf(VOLATILE)));
-        } else {
+        } else if (ARGBType.class.isInstance(type)) {
+            img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(INT, AccessFlags.setOf(VOLATILE)));
+        }else {
             img = null;
         }
 

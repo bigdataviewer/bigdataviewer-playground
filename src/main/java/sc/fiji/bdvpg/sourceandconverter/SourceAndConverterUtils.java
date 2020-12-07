@@ -29,10 +29,13 @@
 package sc.fiji.bdvpg.sourceandconverter;
 
 import bdv.*;
+import bdv.img.WarpedSource;
 import bdv.spimdata.WrapBasicImgLoader;
 import bdv.tools.brightness.ConverterSetup;
+import bdv.tools.transformation.TransformedSource;
 import bdv.util.ARGBColorConverterSetup;
 import bdv.util.LUTConverterSetup;
+import bdv.util.ResampledSource;
 import bdv.util.UnmodifiableConverterSetup;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
@@ -52,6 +55,7 @@ import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Intervals;
+import org.scijava.vecmath.Point3d;
 import sc.fiji.bdvpg.bdv.BdvUtils;
 import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
@@ -732,17 +736,17 @@ public class SourceAndConverterUtils {
      * @return
      */
     public static RealPoint getSourceAndConverterCenterPoint(SourceAndConverter source) {
-        AffineTransform3D at3D = new AffineTransform3D();
-        at3D.identity();
-        //double[] m = at3D.getRowPackedCopy();
-        source.getSpimSource().getSourceTransform(0,0,at3D);
+        AffineTransform3D sourceTransform = new AffineTransform3D();
+        sourceTransform.identity();
+
+        source.getSpimSource().getSourceTransform(0,0,sourceTransform);
         long[] dims = new long[3];
         source.getSpimSource().getSource(0,0).dimensions(dims);
 
         RealPoint ptCenterGlobal = new RealPoint(3);
         RealPoint ptCenterPixel = new RealPoint((dims[0]-1.0)/2.0,(dims[1]-1.0)/2.0, (dims[2]-1.0)/2.0);
 
-        at3D.apply(ptCenterPixel, ptCenterGlobal);
+        sourceTransform.apply(ptCenterPixel, ptCenterGlobal);
 
         return ptCenterGlobal;
     }
@@ -792,6 +796,160 @@ public class SourceAndConverterUtils {
                 }
             }
         }
+    }
+
+    /**
+     * Returns the most appropriate level of a multiresolution source for
+     * sampling it at a certain voxel size.
+     *
+     * To match the resolution, the 'middle dimension' of voxels is used to make comparison
+     * with the target size voxsize
+     *
+     * So if the voxel size is [1.2, 0.8, 50], the value 1.2 is used to compare the levels
+     * to the target resolution. This is a way to avoid the complexity of defining the correct
+     * pixel size while being also robust to comparing 2d and 3d sources. Indeed 2d sources may
+     * have aberrantly defined vox size along the third axis, either way too big or way too small
+     * in one case or the other, the missing dimension is ignored, which we hope works
+     * in most circumstances.
+     *
+     * Other complication : the sourceandconverter could be a warped source, or a warped source
+     * of a warped source of a transformed source, etc.
+     *
+     * The proper computation of the level required is complicated, and could be ill defined:
+     * Warping can cause local shrinking or expansion such that a single level won't be the
+     * best choice for all the image.
+     *
+     * Here the assumption that we make is that the transforms should not change drastically
+     * the scale of the image (which could be clearly wrong). Assuming this, we get to the 'root'
+     * of the source and converter and get the voxel value from this root source.
+     *
+     * Look at the {@link SourceAndConverterUtils#getRootSource(Source, AffineTransform3D)} implementation to
+     * see how this search is done
+     *
+     * So : the source root should be properly scaled from the beginning and weird transformation
+     * (like spherical transformed will give wrong results.
+     *
+     * @param src
+     * @param voxSize
+     * @return
+     */
+    public static int bestLevel(Source src, int t, double voxSize) {
+        List<Double> originVoxSize = new ArrayList<>();
+        AffineTransform3D chainedSourceTransform = new AffineTransform3D();
+        Source rootOrigin = getRootSource(src, chainedSourceTransform);
+
+        for (int l=0;l<rootOrigin.getNumMipmapLevels();l++) {
+            AffineTransform3D sourceTransform = new AffineTransform3D();
+            rootOrigin.getSourceTransform(t,l,sourceTransform);
+            double mid = getCharacteristicVoxelSize(sourceTransform.concatenate(chainedSourceTransform));
+            originVoxSize.add(mid);
+        }
+
+        int level = 0;
+        while((originVoxSize.get(level)<voxSize)&&(level<originVoxSize.size()-1)) {
+            level=level+1;
+        }
+
+        return Math.max(level-1,0);
+    }
+
+    /**
+     * See {@link SourceAndConverterUtils#bestLevel(Source, int, double)}
+     * @param sac
+     * @param t
+     * @param voxSize
+     * @return
+     */
+    public static int bestLevel(SourceAndConverter sac, int t, double voxSize) {
+        return bestLevel(sac.getSpimSource(), t, voxSize);
+    }
+    
+    /**
+     * See {@link SourceAndConverterUtils#bestLevel(Source, int, double)}
+     * for an example of the use of this function
+     * 
+     * What the 'root' means is actually the origin source from which is derived the source
+     * so if a source has been affine tranformed, warped, resampled, potentially in successive steps
+     * this function should return the source it was derived from.
+     * 
+     * This function is used (for the moment) only when a source needs to be resampled
+     * see {@link ResampledSource}, in order to get the origin voxel size  of the source root.
+     * 
+     * TODO : maybe use inspector to improve this root finding
+     *
+     * provide an AffineTransform which would  mutated and concatenated such as the voxel size changes can be taken
+     * into account, provided that the transform are affine. Is the source is transformed in a more
+     * complex way, then nothing can be done easily...
+     *
+     * @param source
+     * @return
+     */
+    public static Source getRootSource(Source source, AffineTransform3D chainedSourceTransform) {
+        Source rootOrigin = source;
+        while ((rootOrigin instanceof WarpedSource)
+                ||(rootOrigin instanceof TransformedSource)
+                ||(rootOrigin instanceof ResampledSource)) {
+            if (rootOrigin instanceof WarpedSource) {
+                rootOrigin = ((WarpedSource) rootOrigin).getWrappedSource();
+            } else if (rootOrigin instanceof TransformedSource) {
+                AffineTransform3D m = new AffineTransform3D();
+                ((TransformedSource) rootOrigin).getFixedTransform(m);
+                chainedSourceTransform.concatenate(m);
+                rootOrigin = ((TransformedSource) rootOrigin).getWrappedSource();
+            } else if (rootOrigin instanceof ResampledSource) {
+                rootOrigin = ((ResampledSource) rootOrigin).getModelResamplerSource();
+            }
+        }
+        return rootOrigin;
+    }
+
+    /**
+     * see {@link SourceAndConverterUtils#getCharacteristicVoxelSize(AffineTransform3D)}
+     * @param sac
+     * @param t
+     * @param level
+     * @return
+     */
+    public static double getCharacteristicVoxelSize(SourceAndConverter sac, int t, int level) {
+        return getCharacteristicVoxelSize(sac.getSpimSource(), t, level);
+    }
+
+    /**
+     * See {@link SourceAndConverterUtils#getCharacteristicVoxelSize(AffineTransform3D)}
+     * @param src
+     * @param t
+     * @param level
+     * @return
+     */
+    public static double getCharacteristicVoxelSize(Source src, int t, int level) {
+        AffineTransform3D chainedSourceTransform = new AffineTransform3D();
+        Source root = getRootSource(src, chainedSourceTransform);
+
+        AffineTransform3D sourceTransform = new AffineTransform3D();
+        root.getSourceTransform(t, level, sourceTransform);
+
+        return getCharacteristicVoxelSize(sourceTransform.concatenate(chainedSourceTransform));
+    }
+
+    /**
+     * See {@link SourceAndConverterUtils#bestLevel(Source, int, double)} 
+     * for a description of what the 'characteristic voxel size' means
+     * 
+     * @param sourceTransform
+     * @return
+     */
+    public static double getCharacteristicVoxelSize(AffineTransform3D sourceTransform) { // method also present in resampled source
+        // Gets three vectors
+        Point3d v1 = new Point3d(sourceTransform.get(0,0), sourceTransform.get(0,1), sourceTransform.get(0,2));
+        Point3d v2 = new Point3d(sourceTransform.get(1,0), sourceTransform.get(1,1), sourceTransform.get(1,2));
+        Point3d v3 = new Point3d(sourceTransform.get(2,0), sourceTransform.get(2,1), sourceTransform.get(2,2));
+
+        // 0 - Ensure v1 and v2 have the same norm
+        double a = Math.sqrt(v1.x*v1.x+v1.y*v1.y+v1.z*v1.z);
+        double b = Math.sqrt(v2.x*v2.x+v2.y*v2.y+v2.z*v2.z);
+        double c = Math.sqrt(v3.x*v3.x+v3.y*v3.y+v3.z*v3.z);
+
+        return Math.max(Math.min(a,b), Math.min(Math.max(a,b),c)); //https://stackoverflow.com/questions/1582356/fastest-way-of-finding-the-middle-value-of-a-triple
     }
 
 }

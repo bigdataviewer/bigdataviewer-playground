@@ -95,6 +95,8 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
     int blockSizeZ;
 
+    int thresholdSizeForMipmap;
+
     File xmlFile;
 
     public XmlHDF5SpimdataExporter(List<SourceAndConverter> sources,
@@ -105,6 +107,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
                                    int blockSizeX,
                                    int blockSizeY,
                                    int blockSizeZ,
+                                   int thresholdSizeForMipmap,
                                    File xmlFile) {
         this.sources = sources;
         this.nThreads = nThreads;
@@ -115,6 +118,8 @@ public class XmlHDF5SpimdataExporter implements Runnable {
         this.blockSizeX = blockSizeX;
         this.blockSizeY = blockSizeY;
         this.blockSizeZ = blockSizeZ;
+
+        this.thresholdSizeForMipmap = thresholdSizeForMipmap;
 
         this.xmlFile = xmlFile;
 
@@ -168,13 +173,15 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
                 final BasicViewSetup basicviewsetup = new BasicViewSetup(idx_current_src, src.getName(), imageSize, voxelSize);
 
-                if (((imgDims[0] <= 2) || (imgDims[1] <= 2) || (imgDims[2] <= 2))) {//||(autoMipMap==false)) {// automipmap fails if one dimension is below or equal to 2
+                if (true){//((imgDims[0] <= 2) || (imgDims[1] <= 2) || (imgDims[2] <= 2))) {//||(autoMipMap==false)) {// automipmap fails if one dimension is below or equal to 2
                     int nLevels = 1;
                     long maxDimension = Math.max(Math.max(imgDims[0], imgDims[1]), imgDims[2]);
-                    while (maxDimension > 512) {
+
+                    while (maxDimension > thresholdSizeForMipmap) {
                         nLevels++;
                         maxDimension /= scaleFactor + 1;
                     }
+
                     int[][] resolutions = new int[nLevels][3];
                     int[][] subdivisions = new int[nLevels][3];
 
@@ -203,8 +210,10 @@ public class XmlHDF5SpimdataExporter implements Runnable {
                             scaleFactor=4;
                         }
                         int nLevels = 1;
+
                         long maxDimension = Math.max(Math.max(imgDims[0], imgDims[1]), imgDims[2]);
-                        while (maxDimension > 512) {
+
+                        while (maxDimension > thresholdSizeForMipmap) {
                             nLevels++;
                             maxDimension /= scaleFactor + 1;
                         }

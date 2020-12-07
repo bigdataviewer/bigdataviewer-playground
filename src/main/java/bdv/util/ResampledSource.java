@@ -28,6 +28,9 @@
  */
 package bdv.util;
 
+//import bdv.SpimSource;
+import bdv.img.WarpedSource;
+import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import mpicbg.spim.data.sequence.VoxelDimensions;
@@ -40,7 +43,12 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.Views;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -56,8 +64,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Note:
  * - To be present at a certain timepoint, both the origin and the model source need to exist
  * - There is no duplication of data, unless {@link ResampledSource#cache} is true
- *
- *  TODO : improve multiresolution resampling (see comments in the class)
+ * - proper reuse of mipmaps for model and origin work in certain conditions: see constructor documentation
  *
  * @param <T> Type of the output source, identical to the origin source
  *
@@ -104,9 +111,11 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
      * @param resamplingModel model source used for resampling the origin source
      *
      * @param reuseMipMaps allows to reuse mipmaps of both the origin and the model source in the resampling
-     *  Reusing mipmaps works well is the voxel size are approximately identical between
-     *  the model and the origin source
-     *  TODO : improve this to allow for a more clever mipmap reuse - check how it is done in multiresolution renderer
+     *  mipmap reuse tries to be clever by matching the voxel size between the model source and the origin source
+     *  so for instance the model source mipmap level 0 will resample the origin mipmap level 2, if the voxel size
+     *  of the origin is much smaller then the model (and provided that the origin is also a multiresolution source)
+     *  the way the matching is performed is specified in {@link SourceAndConverterUtils#bestLevel(Source, int, double)}.
+     *  For more details and limitation, please read the documentation in the linked method above
      *
      * @param cache specifies whether the result of the resampling should be cached.
      *  This allows for a fast access of resampled source after the first computation - but the synchronization with
@@ -126,6 +135,69 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         } else {
             this.originInterpolation = Interpolation.NEARESTNEIGHBOR;
         }
+        computeMipMapsCorrespondance();
+    }
+
+    Map<Integer, Integer> mipmapModelToOrigin = new HashMap();
+
+    List<Double> originVoxSize;
+
+    private int bestMatch(double voxSize) {
+        if (originVoxSize==null) {
+            computeOriginSize();
+        }
+        int level = 0;
+        while((originVoxSize.get(level)<voxSize)&&(level<originVoxSize.size()-1)) {
+            level=level+1;
+        }
+        return Math.max(level,0);
+    }
+
+    private void computeOriginSize() {
+        originVoxSize = new ArrayList<>();
+        Source rootOrigin = origin;
+
+        while ((rootOrigin instanceof WarpedSource)||(rootOrigin instanceof TransformedSource)) {
+            if (rootOrigin instanceof WarpedSource) {
+                rootOrigin = ((WarpedSource) rootOrigin).getWrappedSource();
+            } else if (rootOrigin instanceof TransformedSource) {
+                rootOrigin = ((TransformedSource) rootOrigin).getWrappedSource();
+            }
+        }
+
+        for (int l=0;l<rootOrigin.getNumMipmapLevels();l++) {
+            AffineTransform3D at3d = new AffineTransform3D();
+            rootOrigin.getSourceTransform(0,l,at3d);
+            double mid = SourceAndConverterUtils.getCharacteristicVoxelSize(at3d);
+            originVoxSize.add(mid);
+        }
+
+    }
+
+    private void computeMipMapsCorrespondance() {
+        AffineTransform3D at3D = new AffineTransform3D();
+        for (int l=0;l<resamplingModel.getNumMipmapLevels();l++) {
+            if (reuseMipMaps) {
+                resamplingModel.getSourceTransform(0,l, at3D);
+                double middleDim = SourceAndConverterUtils.getCharacteristicVoxelSize(at3D);
+                int match = bestMatch(middleDim);
+                mipmapModelToOrigin.put(l, match);
+            } else {
+                mipmapModelToOrigin.put(l, 0); // Always taking the highest resolution
+            }
+
+            // For debugging resampling issues, please keep it
+            /*System.out.println("Model mipmap level "+l+" correspond to origin mipmap level "+mipmapModelToOrigin.get(l));
+            System.out.println("Model mipmap level "+l+" has a characteristic voxel size of "+
+                    SourceAndConverterUtils.getCharacteristicVoxelSize(resamplingModel,0,l));
+            System.out.println("Origin level "+mipmapModelToOrigin.get(l)+" has a characteristic voxel size of "+
+                    SourceAndConverterUtils.getCharacteristicVoxelSize(origin,0,mipmapModelToOrigin.get(l)));*/
+
+        }
+    }
+
+    public int getModelToOriginMipMapLevel(int mipmapModel) {
+        return mipmapModelToOrigin.get(mipmapModel);
     }
 
     public Source getOriginalSource() {
@@ -185,21 +257,23 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
     public RandomAccessibleInterval<T> buildSource(int t, int level) {
         // Get current model source transformation
         AffineTransform3D at = new AffineTransform3D();
-        resamplingModel.getSourceTransform(t,reuseMipMaps?level:0,at);
+        resamplingModel.getSourceTransform(t,level,at);
+
+        //int mipmap = getModelToOriginMipMapLevel(level);
 
         // Get bounds of model source RAI
         // TODO check if -1 is necessary
-        long sx = resamplingModel.getSource(t,reuseMipMaps?level:0).dimension(0)-1;
-        long sy = resamplingModel.getSource(t,reuseMipMaps?level:0).dimension(1)-1;
-        long sz = resamplingModel.getSource(t,reuseMipMaps?level:0).dimension(2)-1;
+        long sx = resamplingModel.getSource(t,level).dimension(0)-1;
+        long sy = resamplingModel.getSource(t,level).dimension(1)-1;
+        long sz = resamplingModel.getSource(t,level).dimension(2)-1;
 
         // Get field of origin source
-        final RealRandomAccessible<T> ipimg = origin.getInterpolatedSource(t, reuseMipMaps?level:0, originInterpolation);
+        final RealRandomAccessible<T> ipimg = origin.getInterpolatedSource(t, getModelToOriginMipMapLevel(level), originInterpolation);
 
         // Gets randomAccessible... ( with appropriate transform )
         at = at.inverse();
         AffineTransform3D atOrigin = new AffineTransform3D();
-        origin.getSourceTransform(t, reuseMipMaps?level:0, atOrigin);
+        origin.getSourceTransform(t, getModelToOriginMipMapLevel(level), atOrigin);
         at.concatenate(atOrigin);
         RandomAccessible<T> ra = RealViews.affine(ipimg, at); // Gets the view
 
@@ -222,7 +296,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     @Override
     public void getSourceTransform(int t, int level, AffineTransform3D transform) {
-        resamplingModel.getSourceTransform(t,reuseMipMaps?level:0,transform);
+        resamplingModel.getSourceTransform(t,level,transform);
     }
 
     @Override
@@ -242,6 +316,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     @Override
     public int getNumMipmapLevels() {
-        return reuseMipMaps?origin.getNumMipmapLevels():1;
+        return resamplingModel.getNumMipmapLevels();
     }
+
 }
