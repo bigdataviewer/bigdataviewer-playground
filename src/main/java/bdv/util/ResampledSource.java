@@ -187,11 +187,11 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
             }
 
             // For debugging resampling issues, please keep it
-            System.out.println("Model mipmap level "+l+" correspond to origin mipmap level "+mipmapModelToOrigin.get(l));
+            /*System.out.println("Model mipmap level "+l+" correspond to origin mipmap level "+mipmapModelToOrigin.get(l));
             System.out.println("Model mipmap level "+l+" has a characteristic voxel size of "+
                     SourceAndConverterUtils.getCharacteristicVoxelSize(resamplingModel,0,l));
             System.out.println("Origin level "+mipmapModelToOrigin.get(l)+" has a characteristic voxel size of "+
-                    SourceAndConverterUtils.getCharacteristicVoxelSize(origin,0,mipmapModelToOrigin.get(l)));
+                    SourceAndConverterUtils.getCharacteristicVoxelSize(origin,0,mipmapModelToOrigin.get(l)));*/
 
         }
     }

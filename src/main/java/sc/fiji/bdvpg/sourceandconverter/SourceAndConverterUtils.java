@@ -823,7 +823,7 @@ public class SourceAndConverterUtils {
      * the scale of the image (which could be clearly wrong). Assuming this, we get to the 'root'
      * of the source and converter and get the voxel value from this root source.
      *
-     * Look at the {@link SourceAndConverterUtils#getRootSource(Source)} implementation to
+     * Look at the {@link SourceAndConverterUtils#getRootSource(Source, AffineTransform3D)} implementation to
      * see how this search is done
      *
      * So : the source root should be properly scaled from the beginning and weird transformation
@@ -835,12 +835,13 @@ public class SourceAndConverterUtils {
      */
     public static int bestLevel(Source src, int t, double voxSize) {
         List<Double> originVoxSize = new ArrayList<>();
-        Source rootOrigin = getRootSource(src);
+        AffineTransform3D at3dChainedTransform = new AffineTransform3D();
+        Source rootOrigin = getRootSource(src, at3dChainedTransform);
 
         for (int l=0;l<rootOrigin.getNumMipmapLevels();l++) {
             AffineTransform3D at3d = new AffineTransform3D();
             rootOrigin.getSourceTransform(t,l,at3d);
-            double mid = getCharacteristicVoxelSize(at3d);
+            double mid = getCharacteristicVoxelSize(at3d.concatenate(at3dChainedTransform));
             originVoxSize.add(mid);
         }
 
@@ -875,11 +876,15 @@ public class SourceAndConverterUtils {
      * see {@link ResampledSource}, in order to get the origin voxel size  of the source root.
      * 
      * TODO : maybe use inspector to improve this root finding
-     * 
+     *
+     * provide an AffineTransform which would  mutated and concatenated such as the voxel size changes can be taken
+     * into account, provided that the transform are affine. Is the source is transformed in a more
+     * complex way, then nothing can be done easily...
+     *
      * @param source
      * @return
      */
-    public static Source getRootSource(Source source) {
+    public static Source getRootSource(Source source, AffineTransform3D at3d) {
         Source rootOrigin = source;
         while ((rootOrigin instanceof WarpedSource)
                 ||(rootOrigin instanceof TransformedSource)
@@ -887,6 +892,9 @@ public class SourceAndConverterUtils {
             if (rootOrigin instanceof WarpedSource) {
                 rootOrigin = ((WarpedSource) rootOrigin).getWrappedSource();
             } else if (rootOrigin instanceof TransformedSource) {
+                AffineTransform3D m = new AffineTransform3D();
+                ((TransformedSource) rootOrigin).getFixedTransform(m);
+                at3d.concatenate(m);
                 rootOrigin = ((TransformedSource) rootOrigin).getWrappedSource();
             } else if (rootOrigin instanceof ResampledSource) {
                 rootOrigin = ((ResampledSource) rootOrigin).getModelResamplerSource();
@@ -914,10 +922,13 @@ public class SourceAndConverterUtils {
      * @return
      */
     public static double getCharacteristicVoxelSize(Source src, int t, int level) {
+        AffineTransform3D at3dChainedTransform = new AffineTransform3D();
+        Source root = getRootSource(src, at3dChainedTransform);
+
         AffineTransform3D m = new AffineTransform3D();
-        Source root = getRootSource(src);
         root.getSourceTransform(t, level, m);
-        return getCharacteristicVoxelSize(m);
+
+        return getCharacteristicVoxelSize(m.concatenate(at3dChainedTransform));
     }
 
     /**
