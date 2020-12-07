@@ -736,17 +736,17 @@ public class SourceAndConverterUtils {
      * @return
      */
     public static RealPoint getSourceAndConverterCenterPoint(SourceAndConverter source) {
-        AffineTransform3D at3D = new AffineTransform3D();
-        at3D.identity();
-        //double[] m = at3D.getRowPackedCopy();
-        source.getSpimSource().getSourceTransform(0,0,at3D);
+        AffineTransform3D sourceTransform = new AffineTransform3D();
+        sourceTransform.identity();
+
+        source.getSpimSource().getSourceTransform(0,0,sourceTransform);
         long[] dims = new long[3];
         source.getSpimSource().getSource(0,0).dimensions(dims);
 
         RealPoint ptCenterGlobal = new RealPoint(3);
         RealPoint ptCenterPixel = new RealPoint((dims[0]-1.0)/2.0,(dims[1]-1.0)/2.0, (dims[2]-1.0)/2.0);
 
-        at3D.apply(ptCenterPixel, ptCenterGlobal);
+        sourceTransform.apply(ptCenterPixel, ptCenterGlobal);
 
         return ptCenterGlobal;
     }
@@ -835,13 +835,13 @@ public class SourceAndConverterUtils {
      */
     public static int bestLevel(Source src, int t, double voxSize) {
         List<Double> originVoxSize = new ArrayList<>();
-        AffineTransform3D at3dChainedTransform = new AffineTransform3D();
-        Source rootOrigin = getRootSource(src, at3dChainedTransform);
+        AffineTransform3D chainedSourceTransform = new AffineTransform3D();
+        Source rootOrigin = getRootSource(src, chainedSourceTransform);
 
         for (int l=0;l<rootOrigin.getNumMipmapLevels();l++) {
-            AffineTransform3D at3d = new AffineTransform3D();
-            rootOrigin.getSourceTransform(t,l,at3d);
-            double mid = getCharacteristicVoxelSize(at3d.concatenate(at3dChainedTransform));
+            AffineTransform3D sourceTransform = new AffineTransform3D();
+            rootOrigin.getSourceTransform(t,l,sourceTransform);
+            double mid = getCharacteristicVoxelSize(sourceTransform.concatenate(chainedSourceTransform));
             originVoxSize.add(mid);
         }
 
@@ -884,7 +884,7 @@ public class SourceAndConverterUtils {
      * @param source
      * @return
      */
-    public static Source getRootSource(Source source, AffineTransform3D at3d) {
+    public static Source getRootSource(Source source, AffineTransform3D chainedSourceTransform) {
         Source rootOrigin = source;
         while ((rootOrigin instanceof WarpedSource)
                 ||(rootOrigin instanceof TransformedSource)
@@ -894,7 +894,7 @@ public class SourceAndConverterUtils {
             } else if (rootOrigin instanceof TransformedSource) {
                 AffineTransform3D m = new AffineTransform3D();
                 ((TransformedSource) rootOrigin).getFixedTransform(m);
-                at3d.concatenate(m);
+                chainedSourceTransform.concatenate(m);
                 rootOrigin = ((TransformedSource) rootOrigin).getWrappedSource();
             } else if (rootOrigin instanceof ResampledSource) {
                 rootOrigin = ((ResampledSource) rootOrigin).getModelResamplerSource();
@@ -922,27 +922,27 @@ public class SourceAndConverterUtils {
      * @return
      */
     public static double getCharacteristicVoxelSize(Source src, int t, int level) {
-        AffineTransform3D at3dChainedTransform = new AffineTransform3D();
-        Source root = getRootSource(src, at3dChainedTransform);
+        AffineTransform3D chainedSourceTransform = new AffineTransform3D();
+        Source root = getRootSource(src, chainedSourceTransform);
 
-        AffineTransform3D m = new AffineTransform3D();
-        root.getSourceTransform(t, level, m);
+        AffineTransform3D sourceTransform = new AffineTransform3D();
+        root.getSourceTransform(t, level, sourceTransform);
 
-        return getCharacteristicVoxelSize(m.concatenate(at3dChainedTransform));
+        return getCharacteristicVoxelSize(sourceTransform.concatenate(chainedSourceTransform));
     }
 
     /**
      * See {@link SourceAndConverterUtils#bestLevel(Source, int, double)} 
      * for a description of what the 'characteristic voxel size' means
      * 
-     * @param at3D
+     * @param sourceTransform
      * @return
      */
-    public static double getCharacteristicVoxelSize(AffineTransform3D at3D) { // method also present in resampled source
+    public static double getCharacteristicVoxelSize(AffineTransform3D sourceTransform) { // method also present in resampled source
         // Gets three vectors
-        Point3d v1 = new Point3d(at3D.get(0,0), at3D.get(0,1), at3D.get(0,2));
-        Point3d v2 = new Point3d(at3D.get(1,0), at3D.get(1,1), at3D.get(1,2));
-        Point3d v3 = new Point3d(at3D.get(2,0), at3D.get(2,1), at3D.get(2,2));
+        Point3d v1 = new Point3d(sourceTransform.get(0,0), sourceTransform.get(0,1), sourceTransform.get(0,2));
+        Point3d v2 = new Point3d(sourceTransform.get(1,0), sourceTransform.get(1,1), sourceTransform.get(1,2));
+        Point3d v3 = new Point3d(sourceTransform.get(2,0), sourceTransform.get(2,1), sourceTransform.get(2,2));
 
         // 0 - Ensure v1 and v2 have the same norm
         double a = Math.sqrt(v1.x*v1.x+v1.y*v1.y+v1.z*v1.z);
