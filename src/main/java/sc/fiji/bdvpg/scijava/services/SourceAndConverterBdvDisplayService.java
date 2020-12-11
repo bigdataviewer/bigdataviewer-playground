@@ -157,7 +157,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
     /**
      * Displays a Source, the last active bdvh is chosen since none is specified in this method
-     * @param sacs
+     * @param sacs sources to display
      */
     public void show(SourceAndConverter... sacs) {
          show(getActiveBdv(), sacs);
@@ -165,7 +165,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
     /**
      * Makes visible a source, makes it visible in all bdvs according to BdvhReferences
-     * @param sac
+     * @param sac source to display
      */
     public void makeVisible(SourceAndConverter sac) {
         getDisplaysOf(sac).forEach(bdvhr -> bdvhr.getViewerPanel().state().setSourceActive(sac, true));
@@ -173,7 +173,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
     /**
      * Makes visible a source, makes it visible in all BDVs according to BdvhReferences
-     * @param sac
+     * @param sac source to display
      */
     public boolean isVisible(SourceAndConverter sac, BdvHandle bdvh) {
         return bdvh.getViewerPanel().state().isSourceActive(sac);
@@ -181,7 +181,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
     /**
      * Makes invisible a source, makes it invisible in all BDVs according to BdvhReferences
-     * @param sac
+     * @param sac source to make invisible
      */
     public void makeInvisible(SourceAndConverter sac) {
         getDisplaysOf(sac).forEach(bdvhr -> bdvhr.getViewerPanel().state().setSourceActive(sac, false));
@@ -192,8 +192,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * This function really is the core of this service
      * It mimicks or copies the functions of BdvVisTools because it is responsible to
      * create converter, volatiles, convertersetups and so on
-     * @param sacs
-     * @param bdvh
+     * @param sacs sources to display
+     * @param bdvh bdvhandle to append the sources
      */
     public void show(BdvHandle bdvh, SourceAndConverter... sacs) {
 
@@ -230,7 +230,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     /**
      * Removes a sourceandconverter from all BdvHandle displaying this sourceandconverter
      * Updates all references of other Sources present
-     * @param sacs
+     * @param sacs sources to remove
      */
     public void removeFromAllBdvs(SourceAndConverter<?>... sacs) {
         getDisplaysOf(sacs).forEach(bdv -> bdv.getViewerPanel().state().removeSources(Arrays.asList(sacs)));
@@ -239,7 +239,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     /**
      * Removes a sourceandconverter from the active Bdv
      * Updates all references of other Sources present
-     * @param sacs
+     * @param sacs sources to remove from active bdv
      */
     public void removeFromActiveBdv(SourceAndConverter... sacs) {
         // This condition avoids creating a window for nothing
@@ -251,7 +251,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     /**
      * Removes a sourceandconverter from a BdvHandle
      * Updates all references of other Sources present
-     * @param bdvh
+     * @param bdvh bdvhandle
      * @param sacs Array of SourceAndConverter
      */
     public void remove(BdvHandle bdvh, SourceAndConverter<?>... sacs) {
@@ -263,7 +263,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * Gets or create the associated ConverterSetup of a Source
      * While several converters can be associated to a Source (volatile and non volatile),
      * only one ConverterSetup is associated to a Source
-     * @param sac
+     * @param sac source to get the convertersetup from
      * @return
      */
     public ConverterSetup getConverterSetup(SourceAndConverter sac) {
@@ -286,8 +286,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * While this is not important for most bdvhandle, this could affect the functionality
      * of BigWarp
      * LIMITATION : Cannot use LUT for ARGBType - TODO check type and send an error
-     * @param source
-     * @param cvt
+     * @param source source
+     * @param cvt converter
      */
     public void updateConverter(SourceAndConverter source, Converter cvt) {
         errlog.accept("Unsupported operation : a new SourceAndConverterObject should be built. (TODO) ");
@@ -308,7 +308,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     /**
      * Closes appropriately a BdvHandle which means that it updates
      * the callbacks for ConverterSetups and updates the ObjectService
-     * @param bdvh
+     * @param bdvh bdvhandle to close
      */
     public void closeBdv(BdvHandle bdvh) {
         os.removeObject(bdvh);
@@ -349,7 +349,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * Registers a sourceandconverter which has originated from a BdvHandle
      * Useful for BigWarp where the grid and the deformation magnitude sourceandconverter are created
      * into bigwarp
-     * @param bdvh_in
+     * @param bdvh_in bdvhandle fetched for registration
      */
     public void registerBdvSource(BdvHandle bdvh_in) {
         bdvh_in.getViewerPanel().state().getSources().forEach(sac -> {
@@ -365,7 +365,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     /**
      * Updates bdvHandles which are displaying at least one of this sacs
      * Potentially improvement is to check whether the timepoint need an update ?
-     * @param sacs
+     * @param sacs sources to update
      */
     public void updateDisplays(SourceAndConverter... sacs)
     {
@@ -377,7 +377,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * List is ordered by index in the BdvHandle - complexification to implement
      * the mixed projector
      * TODO : Avoid duplicates by returning a Set
-     * @param bdvHandle
+     * @param bdvHandle the bdvhandle
      * @return
      */
     public List<SourceAndConverter<?>> getSourceAndConverterOf(BdvHandle bdvHandle) {
@@ -387,7 +387,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     /**
      * Returns a List of BdvHandle which are currently displaying a sac
      * Returns an empty set in case the sac is not displayed
-     * @param sacs
+     * @param sacs the sources queried
      * @return
      */
     public Set<BdvHandle> getDisplaysOf(SourceAndConverter... sacs) {

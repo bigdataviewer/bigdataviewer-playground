@@ -69,9 +69,6 @@ import static sc.fiji.bdvpg.bdv.BdvUtils.*;
 /**
  * BigDataViewer Playground Action --
  * ScreenShotMaker
- * <p>
- * <p>
- * <p>
  * Author: @haesleinhuepf, @tischi
  *         December 2019
  */

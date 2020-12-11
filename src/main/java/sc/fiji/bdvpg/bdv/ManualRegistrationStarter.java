@@ -150,7 +150,7 @@ public class ManualRegistrationStarter implements Runnable {
 
     /**
      * Gets the listener, this is useful to stop the registration
-     * @return
+     * @return the listener, this is useful to stop the registration
      */
     public TransformListener<AffineTransform3D> getListener() {
         return manualRegistrationListener;
@@ -158,7 +158,7 @@ public class ManualRegistrationStarter implements Runnable {
 
     /**
      * Returns the transient wrapped transformed sources displayed (and then used by the user for the registration)
-     * @return
+     * @return the transient wrapped transformed sources displayed (and then used by the user for the registration)
      */
     public List<SourceAndConverter> getTransformedSourceAndConverterDisplayed() {
         return displayedSacsWrapped;
@@ -166,7 +166,7 @@ public class ManualRegistrationStarter implements Runnable {
 
     /**
      * Returns the sources that need to be registered
-     * @return
+     * @return the sources that need to be registered
      */
     public SourceAndConverter[] getOriginalSourceAndConverter() {
         return sacs;
@@ -174,7 +174,7 @@ public class ManualRegistrationStarter implements Runnable {
 
     /**
      * Returns the sources (within the sources that need to be transformed) that were originally displayed in the bdvHandle
-     * @return
+     * @return the sources (within the sources that need to be transformed) that were originally displayed in the bdvHandle
      */
     public List<SourceAndConverter> getOriginallyDisplayedSourceAndConverter() {
         return originallyDisplayedSacs;
@@ -183,7 +183,7 @@ public class ManualRegistrationStarter implements Runnable {
     /**
      * Gets the current registration state, based on the difference between the initial
      * bdvhandle view transform and its current view transform
-     * @return
+     * @return its current view transform
      */
     public AffineTransform3D getCurrentTransform() {
         return ensureOrthoNormalTransform(currentRegistration);

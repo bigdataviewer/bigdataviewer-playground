@@ -66,15 +66,15 @@ public interface ISourceAndConverterService
 
     /**
      * Test if a Source is already registered in the Service
-     * @param src
-     * @return
+     * @param src source
+     * @return if the source is already registered
      */
     boolean isRegistered(SourceAndConverter src);
 
     /**
      * Register a BDV Source in this Service.
      * Called in the BdvSourcePostProcessor
-     * @param src
+     * @param src source
      */
     void register(SourceAndConverter src);
 
@@ -97,7 +97,7 @@ public interface ISourceAndConverterService
     /**
      * Removes a BDV Source in this Service.
      * Called in the BdvSourcePostProcessor
-     * @param sac
+     * @param sac source
      */
     void remove(SourceAndConverter... sac);
 
@@ -119,7 +119,7 @@ public interface ISourceAndConverterService
     /**
      * Adds metadata for a sac
      *
-     * @return
+     * @return keys of metadata
      */
     Collection<String> getMetadataKeys(SourceAndConverter sac);
 
@@ -145,7 +145,7 @@ public interface ISourceAndConverterService
 
     /**
      * Removes an action from the registration
-     * @param actionName
+     * @param actionName action to remove
      */
     void removeAction(String actionName);
 
@@ -169,8 +169,8 @@ public interface ISourceAndConverterService
 
     /**
      * Attach a name to a SpimDataObject
-     * @param asd
-     * @param name
+     * @param asd spimdata
+     * @param name name of the spimdata
      */
     void setSpimDataName(AbstractSpimData asd, String name);
 
@@ -183,21 +183,21 @@ public interface ISourceAndConverterService
     /**
      * Adds metadata for a sac
      *
-     * @return
+     * @return the metadata object
      */
     Object getMetadata(AbstractSpimData asd, String key);
 
     /**
      * Adds metadata for a sac
      *
-     * @return
+     * @return the metadata of a spimdata
      */
     Collection<String> getMetadataKeys(AbstractSpimData asd);
 
     /**
      * Convenient method to know if a metadata for a sac exists
      *
-     * @return
+     * @return is the spimdata contains this metadata
      */
     boolean containsMetadata(AbstractSpimData asd, String key);
 

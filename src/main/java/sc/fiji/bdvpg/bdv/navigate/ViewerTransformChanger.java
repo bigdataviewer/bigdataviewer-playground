@@ -38,7 +38,7 @@ import net.imglib2.realtransform.AffineTransform3D;
  *
  * See ViewTransformSetAndLogDemo for usage examples
  *
- * @author @haesleinhuepf, @tischi
+ * @author haesleinhuepf, tischi
  * - 12 2019
  * - 11 2020 @tischi: add option to animate; add option to apply absolute or relative (concatenate)
  */

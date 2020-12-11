@@ -43,7 +43,7 @@ import org.scijava.ui.behaviour.InputTriggerMap;
 public class InputTriggerConfigHelper {
 
     /**
-     * @param config
+     * @param config the input trigger config obviously
      * @return {@link InputTriggerMap} associated to this input
      */
     public static InputTriggerMap getInputTriggerMap(InputTriggerConfig config) {

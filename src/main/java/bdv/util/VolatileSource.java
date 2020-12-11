@@ -144,8 +144,8 @@ public class VolatileSource<T extends NumericType<T>, V extends Volatile< T > & 
 
     /**
      * TODO : this helper class should be already somewhere else!
-     * @param t
-     * @return
+     * @param t a NumericType instance
+     * @return the volatile equivalent class of this NumericType instance
      */
 
     static public Volatile getVolatileOf(NumericType t) {

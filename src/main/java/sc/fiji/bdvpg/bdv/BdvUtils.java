@@ -38,9 +38,6 @@ import net.imglib2.util.LinAlgHelpers;
 
 /**
  * BDVUtils
- * <p>
- * <p>
- * <p>
  * Author: @haesleinhuepf, @tischi
  * 12 2019
  */
@@ -187,8 +184,8 @@ public class BdvUtils
      * Returns the highest level where the sourceandconverter voxel spacings
      * are inferior or equals to the requested ones.
      *
-     * @param source
-     * @param voxelSpacings
+     * @param source the source
+     * @param voxelSpacings voxel spacings of the source
      * @return the optimal level for image visualization
      */
     public static int getLevel( Source< ? > source, double... voxelSpacings ) {

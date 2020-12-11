@@ -62,11 +62,11 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
 
     /**
      * Simple constructor
-     * @param name
-     * @param at3D
-     * @param nx
-     * @param ny
-     * @param nz
+     * @param name name of the source
+     * @param at3D affine transform of the source
+     * @param nx number of voxels in x
+     * @param ny number of voxels in y
+     * @param nz number of voxels in z
      */
     public EmptySourceAndConverterCreator(
             String name,
@@ -84,12 +84,12 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
      * Constructor where the region and sampling is defined by a model source
      * This constructor translates information from the model source into
      * an affine transform and a number of voxels
-     * @param name
-     * @param model
-     * @param timePoint
-     * @param voxSizeX
-     * @param voxSizeY
-     * @param voxSizeZ
+     * @param name name of the source
+     * @param model model source and converter : defines the portion of space sampled
+     * @param timePoint timepoint of the model chosen for the model
+     * @param voxSizeX overrides the model voxel size for a new one  - in bdv current units (x)
+     * @param voxSizeY overrides the model voxel size for a new one - in bdv current units (y)
+     * @param voxSizeZ overrides the model voxel size for a new one - in bdv current units (z)
      */
     public EmptySourceAndConverterCreator(
             String name,

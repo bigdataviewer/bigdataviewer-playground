@@ -239,7 +239,7 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 	/**
 	 * For debugging:
 	 * - print actions and triggers of a bdv
-	 * @param bdv
+	 * @param bdv ze bdv
 	 */
 	public static void printBindings(BdvHandle bdv) {
 		System.out.println("--------------------- Behaviours");

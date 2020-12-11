@@ -176,35 +176,37 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
         this.maintainType = maintainType;
     }
 
-    /**
+    /*
      * Creates a new runtime type adapter using for {@code baseType} using {@code
      * typeFieldName} as the type field name. Type field names are case sensitive.
      * {@code maintainType} flag decide if the type will be stored in pojo or not.
+     * @param <T> todo
      */
     public static <T> RuntimeTypeAdapterFactory<T> of(Class<T> baseType, String typeFieldName, boolean maintainType) {
         return new RuntimeTypeAdapterFactory<T>(baseType, typeFieldName, maintainType);
     }
 
-    /**
+    /*
      * Creates a new runtime type adapter using for {@code baseType} using {@code
      * typeFieldName} as the type field name. Type field names are case sensitive.
+     * @param <T> todo
      */
     public static <T> RuntimeTypeAdapterFactory<T> of(Class<T> baseType, String typeFieldName) {
         return new RuntimeTypeAdapterFactory<T>(baseType, typeFieldName, false);
     }
 
-    /**
+    /*
      * Creates a new runtime type adapter for {@code baseType} using {@code "type"} as
      * the type field name.
+     * @param <T> todo
      */
     public static <T> RuntimeTypeAdapterFactory<T> of(Class<T> baseType) {
         return new RuntimeTypeAdapterFactory<T>(baseType, "type", false);
     }
 
-    /**
+    /*
      * Registers {@code type} identified by {@code label}. Labels are case
      * sensitive.
-     *
      * @throws IllegalArgumentException if either {@code type} or {@code label}
      *     have already been registered on this type adapter.
      */
@@ -220,7 +222,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
         return this;
     }
 
-    /**
+    /*
      * Registers {@code type} identified by its {@link Class#getSimpleName simple
      * name}. Labels are case sensitive.
      *
