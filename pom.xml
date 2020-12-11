@@ -132,7 +132,6 @@
 		<bigvolumeviewer.version>0.1.8</bigvolumeviewer.version>
 		<bigdataviewer-spimdata-extras.version>0.1.0</bigdataviewer-spimdata-extras.version>
 		<reflections.version>0.9.11</reflections.version>
-		<bigdataviewer-bioformats.version>0.2.12-SNAPSHOT</bigdataviewer-bioformats.version>
 	</properties>
 
 	<dependencies>

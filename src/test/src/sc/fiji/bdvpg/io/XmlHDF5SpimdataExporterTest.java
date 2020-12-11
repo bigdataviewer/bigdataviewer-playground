@@ -32,6 +32,7 @@ import bdv.viewer.SourceAndConverter;
 import net.imagej.ImageJ;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -48,7 +49,7 @@ public class XmlHDF5SpimdataExporterTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    @Test
+    @Test@Ignore // Ignore because of license issue
     public void run() throws Exception {
         // Need to initialize the services:
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
