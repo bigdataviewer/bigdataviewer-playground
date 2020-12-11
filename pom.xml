@@ -214,13 +214,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>ch.epfl.biop</groupId>
-			<artifactId>bigdataviewer-bioformats</artifactId>
-			<version>${bigdataviewer-bioformats.version}</version>
-			<scope>test</scope>
-		</dependency>
-
     </dependencies>
 
 </project>
