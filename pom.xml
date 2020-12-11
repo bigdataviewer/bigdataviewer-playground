@@ -132,6 +132,7 @@
 		<bigvolumeviewer.version>0.1.8</bigvolumeviewer.version>
 		<bigdataviewer-spimdata-extras.version>0.1.0</bigdataviewer-spimdata-extras.version>
 		<reflections.version>0.9.11</reflections.version>
+		<license.excludes>**/resources/**</license.excludes>
 	</properties>
 
 	<dependencies>
@@ -215,5 +216,5 @@
 		</dependency>
 
     </dependencies>
-
+    <!-- 	 -->
 </project>
