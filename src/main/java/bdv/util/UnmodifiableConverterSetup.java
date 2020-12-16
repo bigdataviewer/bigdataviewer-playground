@@ -30,7 +30,6 @@ package bdv.util;
 
 import bdv.tools.brightness.ConverterSetup;
 import net.imglib2.converter.Converter;
-import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.listeners.Listeners;
 

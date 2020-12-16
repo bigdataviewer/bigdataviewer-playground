@@ -57,7 +57,7 @@ public class ARGBColorConverterSetup implements ConverterSetup
 
     public ARGBColorConverterSetup( final ColorConverter ... converters )
     {
-        this( Arrays.< ColorConverter >asList( converters ) );
+        this( Arrays.asList( converters ) );
     }
 
     public ARGBColorConverterSetup( final List< ColorConverter > converters )

@@ -70,7 +70,7 @@ import static sc.fiji.bdvpg.bdv.projector.Projection.*;
 public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType, ARGBType >
 {
 	private final String[] projectionModes;
-	private int[] sourceOrder;
+	private final int[] sourceOrder;
 
 	public AccumulateMixedProjectorARGB(
 			final List< VolatileProjector > sourceProjectors,
@@ -160,7 +160,7 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 			final boolean isExclusive = projectionModes[ sourceIndex ].contains( PROJECTION_MODE_OCCLUDING );
 
-			if ( a != 0 && isExclusive ) skipNonExclusiveSources = true;
+			if ( isExclusive ) skipNonExclusiveSources = true;
 
 			if ( skipNonExclusiveSources && ! isExclusive ) continue;
 

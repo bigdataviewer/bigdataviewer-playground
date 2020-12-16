@@ -122,9 +122,8 @@ public class BvvHandleHelper {
                 e.printStackTrace();
             }
             String uTTest = uniqueTitle;
-            duplicateExist = bvvs.stream().filter(bvv ->
-                    (bvv.toString().equals(uTTest))||(getWindowTitle(bvv).equals(uTTest)))
-                    .findFirst().isPresent();
+            duplicateExist = bvvs.stream().anyMatch(bvv ->
+                    (bvv.toString().equals(uTTest))||(getWindowTitle(bvv).equals(uTTest)));
         }
         return uniqueTitle;
     }

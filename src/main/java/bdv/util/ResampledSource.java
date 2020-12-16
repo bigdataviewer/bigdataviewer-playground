@@ -138,7 +138,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         computeMipMapsCorrespondance();
     }
 
-    Map<Integer, Integer> mipmapModelToOrigin = new HashMap();
+    Map<Integer, Integer> mipmapModelToOrigin = new HashMap<>();
 
     List<Double> originVoxSize;
 
@@ -150,18 +150,18 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         while((originVoxSize.get(level)<voxSize)&&(level<originVoxSize.size()-1)) {
             level=level+1;
         }
-        return Math.max(level,0);
+        return level;
     }
 
     private void computeOriginSize() {
         originVoxSize = new ArrayList<>();
-        Source rootOrigin = origin;
+        Source<?> rootOrigin = origin;
 
         while ((rootOrigin instanceof WarpedSource)||(rootOrigin instanceof TransformedSource)) {
             if (rootOrigin instanceof WarpedSource) {
-                rootOrigin = ((WarpedSource) rootOrigin).getWrappedSource();
-            } else if (rootOrigin instanceof TransformedSource) {
-                rootOrigin = ((TransformedSource) rootOrigin).getWrappedSource();
+                rootOrigin = ((WarpedSource<?>) rootOrigin).getWrappedSource();
+            } else { // rootOrigin instanceof TransformedSource
+                rootOrigin = ((TransformedSource<?>) rootOrigin).getWrappedSource();
             }
         }
 
@@ -200,11 +200,11 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         return mipmapModelToOrigin.get(mipmapModel);
     }
 
-    public Source getOriginalSource() {
+    public Source<?> getOriginalSource() {
         return origin;
     }
 
-    public Source getModelResamplerSource() {
+    public Source<?> getModelResamplerSource() {
         return resamplingModel;
     }
 

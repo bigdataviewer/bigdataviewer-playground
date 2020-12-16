@@ -52,7 +52,7 @@ public class LUTConverterSetup implements ConverterSetup
 
     public LUTConverterSetup(final RealLUTConverter ... converters )
     {
-        this( Arrays.< RealLUTConverter >asList( converters ) );
+        this( Arrays.asList( converters ) );
     }
 
     public LUTConverterSetup(final List< RealLUTConverter > converters  )

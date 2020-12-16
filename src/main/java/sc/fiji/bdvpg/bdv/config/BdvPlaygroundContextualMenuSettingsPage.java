@@ -105,20 +105,20 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
             }
         }
 
-        SourceAndConverterPopupMenu.setDefaultSettings(filteredActions.toArray(new String[filteredActions.size()]));
+        SourceAndConverterPopupMenu.setDefaultSettings(filteredActions.toArray(new String[0]));
         // Stores
     }
 
-    class BdvPgContextMenuEditor extends JPanel {
-        private JTextArea contextMenuActions;
+    static class BdvPgContextMenuEditor extends JPanel {
+        private final JTextArea contextMenuActions;
         public BdvPgContextMenuEditor() {
             this.setLayout(new BorderLayout());
             String[] allActionKeys =
-                    new ArrayList<String>(SourceAndConverterServices
+                    new ArrayList<>(SourceAndConverterServices
                             .getSourceAndConverterService()
                             .getActionsKeys()).toArray(new String[0]);
 
-            JList allActions = new JList(allActionKeys);
+            JList<String> allActions = new JList<>(allActionKeys);
 
             contextMenuActions = new JTextArea();//<>(allActionKeys);
             contextMenuActions.setFont(contextMenuActions.getFont().deriveFont(10f));

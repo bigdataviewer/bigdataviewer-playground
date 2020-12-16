@@ -96,13 +96,9 @@ public class ViewerTransformChanger implements Runnable {
             transform = view.concatenate( transform );
         }
 
-        if ( animationDurationMillis <= 0 )
-        {
+        if ( animationDurationMillis <= 0 ) {
             bdvHandle.getViewerPanel().state().setViewerTransform( transform );
-            return;
-        }
-        else
-        {
+        } else {
             final AffineTransform3D currentViewerTransform = new AffineTransform3D();
             bdvHandle.getViewerPanel().state().getViewerTransform( currentViewerTransform );
 
