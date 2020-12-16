@@ -29,22 +29,19 @@
 package sc.fiji.bdvpg.scijava.processors;
 
 import bdv.util.BdvHandle;
-import bdv.viewer.ViewerStateChange;
-import bdv.viewer.ViewerStateChangeListener;
 import org.scijava.module.Module;
 import org.scijava.module.process.AbstractPostprocessorPlugin;
 import org.scijava.module.process.PostprocessorPlugin;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.BdvHandleHelper;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.BdvHandleFilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 
-import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
 import java.util.function.Consumer;
 

@@ -26,9 +26,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijava;
+package sc.fiji.bdvpg.bvv;
 
-import bdv.util.BdvHandle;
 import bvv.util.BvvHandle;
 import org.scijava.cache.CacheService;
 import org.scijava.object.ObjectService;
@@ -107,12 +106,11 @@ public class BvvHandleHelper {
         List<BvvHandle> bvvs = os.getObjects(BvvHandle.class);
         boolean duplicateExist;
         String uniqueTitle = iniTitle;
-        duplicateExist = bvvs.stream().filter(bvv ->
-                (bvv.toString().equals(iniTitle))||(getWindowTitle(bvv).equals(iniTitle)))
-                .findFirst().isPresent();
+        duplicateExist = bvvs.stream().anyMatch(bvv ->
+                (bvv.toString().equals(iniTitle))||(getWindowTitle(bvv).equals(iniTitle)));
         while (duplicateExist) {
             if (uniqueTitle.matches(".+(_)\\d+")) {
-                int idx = Integer.valueOf(uniqueTitle.substring(uniqueTitle.lastIndexOf("_")+1));
+                int idx = Integer.parseInt(uniqueTitle.substring(uniqueTitle.lastIndexOf("_")+1));
                 uniqueTitle = uniqueTitle.substring(0, uniqueTitle.lastIndexOf("_")+1);
                 uniqueTitle += String.format("%02d", idx+1);
             } else {

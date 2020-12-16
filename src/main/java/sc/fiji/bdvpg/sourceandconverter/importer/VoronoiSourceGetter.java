@@ -43,7 +43,7 @@ import net.imglib2.type.Type;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.Random;
 import java.util.function.Supplier;
@@ -96,7 +96,7 @@ public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverte
 
         Source s = new RandomAccessibleIntervalSource<>( voronoi, new FloatType(), new AffineTransform3D(), "Voronoi_"+numPts+" Pts_["+imgSize[0]+","+imgSize[1]+","+imgSize[2]+"]" );
 
-        return SourceAndConverterUtils.createSourceAndConverter(s);
+        return SourceAndConverterHelper.createSourceAndConverter(s);
 
     }
 

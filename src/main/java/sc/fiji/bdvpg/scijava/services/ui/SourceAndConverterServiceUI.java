@@ -37,11 +37,9 @@ import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.swingdnd.SourceAndConverterServiceUITransferHandler;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import javax.swing.*;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -542,7 +540,7 @@ public class SourceAndConverterServiceUI {
      * @return an array containing the list of all {@link SourceAndConverter} selected by the user:
      * - all children of a selected node are considered selected
      * - the list does not contain duplicates
-     * - the list is ordered according to {@link SourceAndConverterUtils#sortDefaultNoGeneric}
+     * - the list is ordered according to {@link SourceAndConverterHelper#sortDefaultNoGeneric}
      */
     public SourceAndConverter[] getSelectedSourceAndConverters() {
         Set<SourceAndConverter> sacList = new HashSet<>(); // A set avoids duplicate SourceAndConverter
@@ -554,7 +552,7 @@ public class SourceAndConverterServiceUI {
                 sacList.addAll(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) tp.getLastPathComponent()));
             }
         }
-        return SourceAndConverterUtils.sortDefaultNoGeneric(sacList).toArray(new SourceAndConverter[sacList.size()]);
+        return SourceAndConverterHelper.sortDefaultNoGeneric(sacList).toArray(new SourceAndConverter[sacList.size()]);
     }
 
     /**
@@ -638,12 +636,12 @@ public class SourceAndConverterServiceUI {
 
     /**
      * Used by {@link sc.fiji.bdvpg.scijava.converters.StringToSourceAndConverterArray}
-     * Note the sorting of SourceAndConverter by {@link SourceAndConverterUtils#sortDefaultNoGeneric}
+     * Note the sorting of SourceAndConverter by {@link SourceAndConverterHelper#sortDefaultNoGeneric}
      * @param path
      * @return
      */
     public List<SourceAndConverter> getSourceAndConvertersFromTreePath(TreePath path) {
-        return SourceAndConverterUtils.sortDefaultNoGeneric(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) path.getLastPathComponent()));
+        return SourceAndConverterHelper.sortDefaultNoGeneric(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) path.getLastPathComponent()));
     }
 
     public synchronized void addNode(DefaultMutableTreeNode node) {

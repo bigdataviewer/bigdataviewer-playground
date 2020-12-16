@@ -64,7 +64,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static sc.fiji.bdvpg.bdv.BdvUtils.*;
+import static sc.fiji.bdvpg.bdv.BdvHandleHelper.*;
 
 /**
  * BigDataViewer Playground Action --
@@ -160,7 +160,7 @@ public class ScreenShotMaker {
 
             final int level = getLevel( source, physicalPixelSpacingInXY );
             final AffineTransform3D sourceTransform =
-                    BdvUtils.getSourceTransform( source, t, level );
+                    BdvHandleHelper.getSourceTransform( source, t, level );
 
             AffineTransform3D viewerToSourceTransform = new AffineTransform3D();
             viewerToSourceTransform.preConcatenate( viewerTransform.inverse() );
@@ -215,7 +215,7 @@ public class ScreenShotMaker {
             rawCaptures.add( rawCapture );
             argbCaptures.add( argbCapture );
             // colors.add( getSourceColor( bdv, sourceIndex ) ); Not used, show GrayScale
-            displayRanges.add( BdvUtils.getDisplayRange( displayService.getConverterSetup( sac ) ) );
+            displayRanges.add( BdvHandleHelper.getDisplayRange( displayService.getConverterSetup( sac ) ) );
         }
 
         final double[] voxelSpacing = new double[ 3 ];

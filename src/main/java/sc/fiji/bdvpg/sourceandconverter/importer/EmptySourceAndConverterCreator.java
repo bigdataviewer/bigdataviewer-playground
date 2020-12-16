@@ -29,16 +29,11 @@
 package sc.fiji.bdvpg.sourceandconverter.importer;
 
 import bdv.util.EmptySource;
-import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.img.Img;
-import net.imglib2.img.ImgFactory;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.util.Util;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Supplier;
 
@@ -190,7 +185,7 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
 
         SourceAndConverter sac;
 
-        sac = SourceAndConverterUtils.createSourceAndConverter(src);
+        sac = SourceAndConverterHelper.createSourceAndConverter(src);
 
         return sac;
     }

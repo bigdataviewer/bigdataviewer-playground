@@ -42,14 +42,13 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
-import org.junit.Assert;
 import org.junit.Test;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStarter;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStopper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
@@ -98,7 +97,7 @@ public class ManualRegistrationDemo {
         BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getNewBdv();
 
         // Creates SourceAndConverter Reference
-        SourceAndConverter sacReference = SourceAndConverterUtils.createSourceAndConverter(source);
+        SourceAndConverter sacReference = SourceAndConverterHelper.createSourceAndConverter(source);
 
         //int demoMode = CreateNewTransformedSourceAndConverter;
         //int demoMode = MutateTransformedSourceAndConverter;
@@ -107,7 +106,7 @@ public class ManualRegistrationDemo {
         if (demoMode == CreateNewTransformedSourceAndConverter) {
 
             SourceAndConverter sacToTransform;
-            sacToTransform = SourceAndConverterUtils.createSourceAndConverter(source);
+            sacToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
             new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 0))).run();
 
             SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
@@ -132,7 +131,7 @@ public class ManualRegistrationDemo {
         } else if (demoMode == MutateTransformedSourceAndConverter) {
 
             SourceAndConverter sacToTransform;
-            sacToTransform = SourceAndConverterUtils.createSourceAndConverter(source);
+            sacToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
             sacToTransform = new SourceAffineTransformer(sacToTransform, new AffineTransform3D()).getSourceOut();
             new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 0))).run();
 

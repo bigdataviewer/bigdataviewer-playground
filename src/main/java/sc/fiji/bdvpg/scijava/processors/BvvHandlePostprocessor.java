@@ -28,7 +28,6 @@
  */
 package sc.fiji.bdvpg.scijava.processors;
 
-import bdv.util.BdvHandle;
 import bvv.util.BvvHandle;
 import org.scijava.module.Module;
 import org.scijava.module.process.AbstractPostprocessorPlugin;
@@ -36,8 +35,7 @@ import org.scijava.module.process.PostprocessorPlugin;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.BvvHandleHelper;
+import sc.fiji.bdvpg.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 

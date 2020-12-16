@@ -43,7 +43,7 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.Views;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -114,7 +114,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
      *  mipmap reuse tries to be clever by matching the voxel size between the model source and the origin source
      *  so for instance the model source mipmap level 0 will resample the origin mipmap level 2, if the voxel size
      *  of the origin is much smaller then the model (and provided that the origin is also a multiresolution source)
-     *  the way the matching is performed is specified in {@link SourceAndConverterUtils#bestLevel(Source, int, double)}.
+     *  the way the matching is performed is specified in {@link SourceAndConverterHelper#bestLevel(Source, int, double)}.
      *  For more details and limitation, please read the documentation in the linked method above
      *
      * @param cache specifies whether the result of the resampling should be cached.
@@ -168,7 +168,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         for (int l=0;l<rootOrigin.getNumMipmapLevels();l++) {
             AffineTransform3D at3d = new AffineTransform3D();
             rootOrigin.getSourceTransform(0,l,at3d);
-            double mid = SourceAndConverterUtils.getCharacteristicVoxelSize(at3d);
+            double mid = SourceAndConverterHelper.getCharacteristicVoxelSize(at3d);
             originVoxSize.add(mid);
         }
 
@@ -179,7 +179,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         for (int l=0;l<resamplingModel.getNumMipmapLevels();l++) {
             if (reuseMipMaps) {
                 resamplingModel.getSourceTransform(0,l, at3D);
-                double middleDim = SourceAndConverterUtils.getCharacteristicVoxelSize(at3D);
+                double middleDim = SourceAndConverterHelper.getCharacteristicVoxelSize(at3D);
                 int match = bestMatch(middleDim);
                 mipmapModelToOrigin.put(l, match);
             } else {

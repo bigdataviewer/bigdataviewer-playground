@@ -32,10 +32,9 @@ import bdv.util.Procedural3DImageShort;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.FinalInterval;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Supplier;
-import java.util.function.ToIntFunction;
 
 public class MandelbrotSourceGetter implements Runnable, Supplier<SourceAndConverter> {
 
@@ -65,7 +64,7 @@ public class MandelbrotSourceGetter implements Runnable, Supplier<SourceAndConve
                     }
                 ).getSource(new FinalInterval(new long[]{ -2, -1, -0}, new long[]{ 1, 1, 0 }), "Mandelbrot Set");
 
-        return SourceAndConverterUtils.createSourceAndConverter(s);
+        return SourceAndConverterHelper.createSourceAndConverter(s);
     }
 
 }

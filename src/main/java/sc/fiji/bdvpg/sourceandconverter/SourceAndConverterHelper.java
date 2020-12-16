@@ -56,7 +56,7 @@ import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Intervals;
 import org.scijava.vecmath.Point3d;
-import sc.fiji.bdvpg.bdv.BdvUtils;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
@@ -94,7 +94,7 @@ import java.util.function.Consumer;
  *
  * Limitations : TODO : think about CacheControls
  */
-public class SourceAndConverterUtils {
+public class SourceAndConverterHelper {
 
     /**
      * Standard logger
@@ -539,7 +539,7 @@ public class SourceAndConverterUtils {
 	{
 		final int numDimensions = 3;
 
-		final AffineTransform3D sourceTransform = BdvUtils.getSourceTransform( source, t, level );
+		final AffineTransform3D sourceTransform = BdvHandleHelper.getSourceTransform( source, t, level );
 
 		final RealPoint voxelPositionInSource = new RealPoint( numDimensions );
 
@@ -823,7 +823,7 @@ public class SourceAndConverterUtils {
      * the scale of the image (which could be clearly wrong). Assuming this, we get to the 'root'
      * of the source and converter and get the voxel value from this root source.
      *
-     * Look at the {@link SourceAndConverterUtils#getRootSource(Source, AffineTransform3D)} implementation to
+     * Look at the {@link SourceAndConverterHelper#getRootSource(Source, AffineTransform3D)} implementation to
      * see how this search is done
      *
      * So : the source root should be properly scaled from the beginning and weird transformation
@@ -854,7 +854,7 @@ public class SourceAndConverterUtils {
     }
 
     /**
-     * See {@link SourceAndConverterUtils#bestLevel(Source, int, double)}
+     * See {@link SourceAndConverterHelper#bestLevel(Source, int, double)}
      * @param sac
      * @param t
      * @param voxSize
@@ -865,7 +865,7 @@ public class SourceAndConverterUtils {
     }
     
     /**
-     * See {@link SourceAndConverterUtils#bestLevel(Source, int, double)}
+     * See {@link SourceAndConverterHelper#bestLevel(Source, int, double)}
      * for an example of the use of this function
      * 
      * What the 'root' means is actually the origin source from which is derived the source
@@ -904,7 +904,7 @@ public class SourceAndConverterUtils {
     }
 
     /**
-     * see {@link SourceAndConverterUtils#getCharacteristicVoxelSize(AffineTransform3D)}
+     * see {@link SourceAndConverterHelper#getCharacteristicVoxelSize(AffineTransform3D)}
      * @param sac
      * @param t
      * @param level
@@ -915,7 +915,7 @@ public class SourceAndConverterUtils {
     }
 
     /**
-     * See {@link SourceAndConverterUtils#getCharacteristicVoxelSize(AffineTransform3D)}
+     * See {@link SourceAndConverterHelper#getCharacteristicVoxelSize(AffineTransform3D)}
      * @param src
      * @param t
      * @param level
@@ -932,7 +932,7 @@ public class SourceAndConverterUtils {
     }
 
     /**
-     * See {@link SourceAndConverterUtils#bestLevel(Source, int, double)} 
+     * See {@link SourceAndConverterHelper#bestLevel(Source, int, double)}
      * for a description of what the 'characteristic voxel size' means
      * 
      * @param sourceTransform

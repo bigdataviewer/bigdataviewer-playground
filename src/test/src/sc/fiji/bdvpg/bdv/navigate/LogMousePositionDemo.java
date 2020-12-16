@@ -42,7 +42,7 @@ import net.imglib2.view.Views;
 import org.junit.Test;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 /**
  * ViewTransformSetAndLogDemo
@@ -67,7 +67,7 @@ public class LogMousePositionDemo {
 
         // Makes BDV Source
         Source source = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
-        SourceAndConverter sac = SourceAndConverterUtils.createSourceAndConverter(source);
+        SourceAndConverter sac = SourceAndConverterHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();

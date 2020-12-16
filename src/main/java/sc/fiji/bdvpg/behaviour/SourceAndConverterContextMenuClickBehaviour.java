@@ -34,7 +34,7 @@ import net.imglib2.RealPoint;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterPopupMenu;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,7 +66,7 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 
 			return SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverterOf(bdv)
 				.stream()
-				.filter(sac -> SourceAndConverterUtils.isSourcePresentAt(sac,timePoint, mousePosInBdv))
+				.filter(sac -> SourceAndConverterHelper.isSourcePresentAt(sac,timePoint, mousePosInBdv))
 				.filter(sac -> SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible(sac,bdv))
 				.collect(Collectors.toList());
 		});

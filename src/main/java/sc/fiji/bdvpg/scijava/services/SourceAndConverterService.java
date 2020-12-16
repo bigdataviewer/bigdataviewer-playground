@@ -48,15 +48,11 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.scijava.ui.UIService;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesShowCommand;
-import sc.fiji.bdvpg.scijava.command.bdv.ScreenShotMakerCommand;
 import sc.fiji.bdvpg.scijava.command.source.*;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -69,8 +65,6 @@ import java.util.stream.Collectors;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
-import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * Scijava Service which centralizes BDV Sources, independently of their display
@@ -216,7 +210,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             spimdataToMetadata.put(asd, sourceData);
         }
 
-        Map<Integer, SourceAndConverter> sacs = SourceAndConverterUtils.createSourceAndConverters(asd);
+        Map<Integer, SourceAndConverter> sacs = SourceAndConverterHelper.createSourceAndConverters(asd);
         this.register(sacs.values());
         sacs.forEach((id,sac) -> {
             this.linkToSpimData(sac, asd, id);

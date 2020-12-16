@@ -32,7 +32,7 @@ import bdv.util.ResampledSource;
 import bdv.util.VolatileSource;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Function;
 
@@ -90,12 +90,12 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
                         interpolate);
             }
             vsac = new SourceAndConverter(vsrcRsampled,
-                    SourceAndConverterUtils.cloneConverter(src.asVolatile().getConverter(), src.asVolatile()));
+                    SourceAndConverterHelper.cloneConverter(src.asVolatile().getConverter(), src.asVolatile()));
             sac = new SourceAndConverter<>(srcRsampled,
-                    SourceAndConverterUtils.cloneConverter(src.getConverter(), src),vsac);
+                    SourceAndConverterHelper.cloneConverter(src.getConverter(), src),vsac);
         } else {
             sac = new SourceAndConverter<>(srcRsampled,
-                    SourceAndConverterUtils.cloneConverter(src.getConverter(), src));
+                    SourceAndConverterHelper.cloneConverter(src.getConverter(), src));
         }
 
 

@@ -33,7 +33,7 @@ import org.scijava.convert.AbstractConverter;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.BdvHandleHelper;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 
 import java.util.Optional;
 

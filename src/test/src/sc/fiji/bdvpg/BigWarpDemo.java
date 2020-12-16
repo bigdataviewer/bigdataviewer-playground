@@ -30,25 +30,15 @@ package sc.fiji.bdvpg;
 
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
-import bdv.util.RandomAccessibleIntervalSource;
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import ij.IJ;
-import ij.ImagePlus;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.util.Util;
-import net.imglib2.view.Views;
 import org.junit.Ignore;
 import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.importer.MandelbrotSourceGetter;
 import sc.fiji.bdvpg.sourceandconverter.register.BigWarpLauncher;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
