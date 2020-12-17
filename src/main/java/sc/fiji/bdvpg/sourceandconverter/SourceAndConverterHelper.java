@@ -194,7 +194,7 @@ public class SourceAndConverterHelper {
 
                     final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
 
-                    Converter nonVolatileConverter = createConverterRealType(s.getType());
+                    Converter nonVolatileConverter = createConverterRealType((RealType)s.getType()); // IN FACT THE CASTING IS NECESSARY!!
 
                     if (!nonVolatile) {
 

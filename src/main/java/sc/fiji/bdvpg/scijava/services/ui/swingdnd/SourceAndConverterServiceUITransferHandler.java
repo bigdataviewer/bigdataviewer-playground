@@ -142,7 +142,10 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
                 SourceAndConverterServiceUI ui =
                         ((SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getUI();
                 List<SourceAndConverter<?>> sacs = new ArrayList<>();
-                Collections.addAll(sacs, ui.getSelectedSourceAndConverters());
+                for (SourceAndConverter sac : ui.getSelectedSourceAndConverters()) {
+                    sacs.add(sac);
+                }
+                //Collections.addAll(sacs, ui.getSelectedSourceAndConverters()); // Do not work, even if intellij suggests it
                 extT.setSourcesList(sacs);
             }
             return extT;
@@ -233,6 +236,7 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
             this.sourcesTransferable = new SourcesTransferable(sources);
         }
 
+        @NotNull
         @Override
         public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
             if (flavor.equals(nodesFlavor)) {
