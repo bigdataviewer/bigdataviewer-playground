@@ -119,7 +119,7 @@ public class BdvOrthoWindowCreatorCommand implements Command {
         BdvOptions opts = BdvOptions.options().frameTitle(windowTitle+suffix).preferredSize(sizeX,sizeY);
 
         // Create accumulate projector factory
-        AccumulateProjectorFactory<ARGBType> factory = null;
+        AccumulateProjectorFactory<ARGBType> factory;
         switch (projector) {
             case Projection.MIXED_PROJECTOR:
                 factory = new AccumulateMixedProjectorARGBFactory(  );

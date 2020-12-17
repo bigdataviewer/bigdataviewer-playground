@@ -29,19 +29,12 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.cache.img.DiskCachedCellImgFactory;
-import net.imglib2.cache.img.DiskCachedCellImgOptions;
-import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
 import org.scijava.ItemIO;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.sourceandconverter.importer.EmptySourceAndConverterCreator;
-
-import static net.imglib2.cache.img.DiskCachedCellImgOptions.options;
 
 /**
  * Command which creates an empty Source based on a model Source
@@ -80,19 +73,6 @@ public class NewSourceCommand implements Command {
 
     @Override
     public void run() {
-
-        // Make edge display on demand
-        final int[] cellDimensions = new int[] { 32, 32, 32 };
-
-        // Cached Image Factory Options
-        final DiskCachedCellImgOptions factoryOptions = options()
-                .cellDimensions( cellDimensions )
-                .cacheType( DiskCachedCellImgOptions.CacheType.BOUNDED )
-                .maxCacheSize( 1 );
-
-        // Creates cached image factory of Type UnsignedShort
-        final DiskCachedCellImgFactory<UnsignedShortType> factory = new DiskCachedCellImgFactory<>( new UnsignedShortType(), factoryOptions );
-
         newsource = new EmptySourceAndConverterCreator(name, model, timePoint, voxSizeX, voxSizeY, voxSizeZ).get();//, factory).get();
     }
 }

@@ -49,7 +49,7 @@ import java.util.function.Supplier;
 public class BvvCreator implements Runnable, Supplier<BvvHandle>
 {
 	private BvvOptions bvvOptions;
-	private int numTimePoints;
+	private final int numTimePoints;
 
 	public BvvCreator( ) {
 		this.bvvOptions = BvvOptions.options();
@@ -79,7 +79,7 @@ public class BvvCreator implements Runnable, Supplier<BvvHandle>
 
 		bvvOptions = bvvOptions.sourceTransform( new AffineTransform3D() );
 
-		BvvStackSource bss = BvvFunctions.show( dummyImg, "dummy", bvvOptions );
+		BvvStackSource<?> bss = BvvFunctions.show( dummyImg, "dummy", bvvOptions );
 
 		BvvHandle bvv = bss.getBvvHandle();
 

@@ -78,7 +78,7 @@ public class BigWarpLauncher implements Runnable {
     List<SourceAndConverter> movingSources;
     List<SourceAndConverter> fixedSources;
 
-    List<SourceAndConverter> allRegisteredSources;
+    //List<SourceAndConverter> allRegisteredSources;
 
     SourceAndConverter gridSource;
     SourceAndConverter warpMagnitudeSource;

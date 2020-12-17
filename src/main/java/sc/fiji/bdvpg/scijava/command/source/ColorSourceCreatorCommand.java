@@ -63,6 +63,7 @@ public class ColorSourceCreatorCommand implements Command {
             Converter vc = null;
             if (source_in.asVolatile() != null) {
                 vc = SourceAndConverterHelper.createConverter(source_in.asVolatile().getSpimSource());
+                assert vc != null;
                 ((ColorConverter) vc).setColor(imglib2color);
             }
 

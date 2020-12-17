@@ -28,7 +28,6 @@
  */
 package sc.fiji.bdvpg.services;
 
-import net.imagej.ImageJ;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 /**
@@ -40,8 +39,6 @@ public class SourceAndConverterServices
     private static ISourceAndConverterService sourceAndConverterService;
 
     private static SourceAndConverterBdvDisplayService sourceAndConverterBdvDisplayService;
-
-    private static ImageJ ij;
 
     public static ISourceAndConverterService getSourceAndConverterService() {
         return sourceAndConverterService;
@@ -58,11 +55,4 @@ public class SourceAndConverterServices
     public static void setSourceAndConverterDisplayService(SourceAndConverterBdvDisplayService sourceAndConverterBdvDisplayService) {
         SourceAndConverterServices.sourceAndConverterBdvDisplayService = sourceAndConverterBdvDisplayService;
     }
-
-    /**
-     * Creates Services Within SciJava context
-     */
-    /*static public void InitScijavaServices() {
-
-    }*/
 }

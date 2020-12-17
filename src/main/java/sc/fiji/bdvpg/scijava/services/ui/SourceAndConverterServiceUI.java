@@ -34,6 +34,7 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.base.Entity;
 import mpicbg.spim.data.generic.base.NamedEntity;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
+import mpicbg.spim.data.generic.sequence.BasicViewDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.swingdnd.SourceAndConverterServiceUITransferHandler;
@@ -44,14 +45,8 @@ import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.*;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Enumeration;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -133,7 +128,7 @@ public class SourceAndConverterServiceUI {
     /**
      * Tree model
      */
-    private DefaultTreeModel model;
+    private final DefaultTreeModel model;
 
     /**
      * Spimdata Filter nodes currently present in the tree
@@ -149,7 +144,7 @@ public class SourceAndConverterServiceUI {
      *
      * Initializes fields + standard actions
      *
-     * @param sourceAndConverterService
+     * @param sourceAndConverterService the service to which this UI is linked
      */
     public SourceAndConverterServiceUI(SourceAndConverterService sourceAndConverterService) {
         this.sourceAndConverterService = sourceAndConverterService;
@@ -256,7 +251,6 @@ public class SourceAndConverterServiceUI {
                         copiedNode = (SourceFilterNode) ((SourceFilterNode)(paths[0].getLastPathComponent())).clone();
                     } else {
                         errlog.accept("A source filter node should be selected");
-                        return;
                     }
 
                 }
@@ -276,7 +270,6 @@ public class SourceAndConverterServiceUI {
                         sfn.add(copiedNode);
                    } else {
                         errlog.accept("A source filter node should be selected");
-                        return;
                     }
                 }
         );
@@ -317,7 +310,6 @@ public class SourceAndConverterServiceUI {
 
                     } else {
                         errlog.accept("A source filter node should be selected");
-                        return;
                     }
                 }
         );
@@ -332,7 +324,7 @@ public class SourceAndConverterServiceUI {
     /**
      * Recursive source inspection of an array of {@link SourceAndConverter}
      * - adds a node per source which summarizes the results of the inspection
-     * @param sacs
+     * @param sacs sources that should be inspected
      */
     public void inspectSources(SourceAndConverter[] sacs) {
         for (SourceAndConverter sac:sacs) {
@@ -343,7 +335,7 @@ public class SourceAndConverterServiceUI {
     /**
      * Recursive source inspection of a {@link SourceAndConverter}
      * - adds a node per source which summarizes the results of the inspection
-     * @param sac
+     * @param sac source to inspect
      */
     public void inspectSource(SourceAndConverter sac) {
         if (!frame.isVisible()) {show();}
@@ -367,7 +359,7 @@ public class SourceAndConverterServiceUI {
 
     /**
      * TODO : understand is this method is really for update or only for creation...
-     * @param sac
+     * @param sac source which UI needs to be updated
      */
     public void update(SourceAndConverter sac) {
         if (!frame.isVisible()) {show();}
@@ -391,7 +383,7 @@ public class SourceAndConverterServiceUI {
             // Fetch All Spimdatas from all Sources
             Set<AbstractSpimData> currentSpimdatas = sourceAndConverterService.getSpimDatasets();
 
-            Set<SourceFilterNode> obsoleteSpimDataFilterNodes = new HashSet<>();
+            Set<SpimDataFilterNode> obsoleteSpimDataFilterNodes = new HashSet<>();
 
             // Check for obsolete spimdatafilternodes
             spimdataFilterNodes.forEach(fnode -> {
@@ -423,8 +415,8 @@ public class SourceAndConverterServiceUI {
 
     /**
      * Renames in the UI a SpimData node by another one
-     * @param asd_renamed
-     * @param name
+     * @param asd_renamed spimdata to rename
+     * @param name new name
      */
     public void updateSpimDataName(AbstractSpimData asd_renamed, String name) {
         synchronized (tree) {
@@ -443,8 +435,8 @@ public class SourceAndConverterServiceUI {
 
     /**
      * Applies an operation ({@link Consumer} on all nodes of the tree
-     * @param node
-     * @param processor
+     * @param node root node of the tree to be processed
+     * @param processor how to process the node
      */
     private static void visitAllNodesAndProcess(TreeNode node, Consumer<DefaultMutableTreeNode> processor) {
         if (node.getChildCount() >= 0) {
@@ -461,8 +453,8 @@ public class SourceAndConverterServiceUI {
     /**
      * Adds all the filtering nodes which are sorting the source contained in a SpimData
      * according to each {@link Entity} and before by class ( {@link Entity#getClass()} )
-     * @param nodeSpimData
-     * @param asd
+     * @param nodeSpimData spimdata node where to append the filter nodes
+     * @param asd spimdata to filter
      */
     private void addEntityFilterNodes(SpimDataFilterNode nodeSpimData, AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd) {
         // Gets all entities by class
@@ -472,7 +464,7 @@ public class SourceAndConverterServiceUI {
                 // Streams viewSetups
                 .values().stream()
                 // Filters if view is present
-                .filter(v -> v.isPresent())
+                .filter(BasicViewDescription::isPresent)
                 // Gets Entities associated to ViewSetup
                 .map(v -> v.getViewSetup().getAttributes().values())
                 // Reduce into a single list and stream
@@ -481,9 +473,9 @@ public class SourceAndConverterServiceUI {
                     return a;
                 }).stream()
                 // removes null entities
-                .filter(e -> e!=null)
+                .filter(Objects::nonNull)
                 // Collected and sorted by class
-                .collect(Collectors.groupingBy(e -> e.getClass(), Collectors.toList()));
+                .collect(Collectors.groupingBy(Entity::getClass, Collectors.toList()));
 
         Map<Class, SourceFilterNode> classNodes = new HashMap<>();
         entitiesByClass.keySet().forEach((c)-> {
@@ -492,9 +484,7 @@ public class SourceAndConverterServiceUI {
 
         List<SourceFilterNode> orderedNodes = new ArrayList<>(classNodes.values());
         orderedNodes.sort(Comparator.comparing(SourceFilterNode::getName));
-        orderedNodes.forEach((f) -> {
-                    nodeSpimData.add(f);
-        });
+        orderedNodes.forEach(nodeSpimData::add);
 
         Set<Entity> entitiesAlreadyRegistered = new HashSet<>();
         entitiesByClass.forEach((c,el) -> {
@@ -524,7 +514,7 @@ public class SourceAndConverterServiceUI {
 
     /**
      * Remove a {@link SourceAndConverter} from the UI of a SourceAndConverterService
-     * @param sac
+     * @param sac source to remove
      */
     public void remove(SourceAndConverter sac) {
         if (!frame.isVisible()) {show();}
@@ -556,7 +546,7 @@ public class SourceAndConverterServiceUI {
     }
 
     /**
-     * @param node
+     * @param node root node to get sources from
      * @return an array containing the list of all {@link SourceAndConverter} below the @param node:
      *     - the list does not contain duplicates
      *     - the list order can be considered random
@@ -579,7 +569,7 @@ public class SourceAndConverterServiceUI {
      * Method used by {@link sc.fiji.bdvpg.scijava.widget.SwingSourceAndConverterListWidget}
      * and {@link sc.fiji.bdvpg.scijava.widget.SwingSourceAndConverterWidget}
      * TAKE CARE TO MEMORY LEAKS IF YOU USE THIS! Check how memory leaks are avoided in the widgets linked above
-     * @return
+     * @return the model of the tree
      */
     public DefaultTreeModel getTreeModel() {
         return model;
@@ -593,8 +583,8 @@ public class SourceAndConverterServiceUI {
      *
      * Not the ideal situation where the UI is used to retrieve SourceAndConverter
      *
-     * @param path
-     * @return
+     * @param path path as string
+     * @return treepath fetched from the path
      */
     public TreePath getTreePathFromString(String path) {
 
@@ -621,7 +611,7 @@ public class SourceAndConverterServiceUI {
                     errlog.accept("Unmatched "+testNode.toString().trim());
                 }
             }
-            if (found==false) break;
+            if (!found) break;
         }
 
         if (currentDepth==stringPath.length) {
@@ -637,8 +627,8 @@ public class SourceAndConverterServiceUI {
     /**
      * Used by {@link sc.fiji.bdvpg.scijava.converters.StringToSourceAndConverterArray}
      * Note the sorting of SourceAndConverter by {@link SourceAndConverterHelper#sortDefaultNoGeneric}
-     * @param path
-     * @return
+     * @param path path
+     * @return the list of sources in the path
      */
     public List<SourceAndConverter> getSourceAndConvertersFromTreePath(TreePath path) {
         return SourceAndConverterHelper.sortDefaultNoGeneric(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) path.getLastPathComponent()));

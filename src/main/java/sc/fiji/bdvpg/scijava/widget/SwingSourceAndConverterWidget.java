@@ -161,7 +161,7 @@ public class SwingSourceAndConverterWidget extends SwingInputWidget<SourceAndCon
         // -------------------------------- All heads cut (hopefully)
     }
 
-    public class JTreeLeavesOnlySelectable extends JTree {
+    public static class JTreeLeavesOnlySelectable extends JTree {
 
         JTreeLeavesOnlySelectable(TreeModel model) {
             super(model);

@@ -29,7 +29,6 @@
 package sc.fiji.bdvpg.services.serializers.plugins;
 
 import bdv.img.WarpedSource;
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import net.imglib2.realtransform.RealTransform;
@@ -82,7 +81,7 @@ public class WarpedSourceAdapter implements ISourceAdapter<WarpedSource>{
     public SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
         int wrappedSourceId = obj.getAsJsonPrimitive("wrapped_source_id").getAsInt();
-        SourceAndConverter wrappedSac = null;
+        SourceAndConverter wrappedSac;
         if (sacSerializer.getIdToSac().containsKey(wrappedSourceId)) {
             // Already deserialized
             wrappedSac = sacSerializer.getIdToSac().get(wrappedSourceId);

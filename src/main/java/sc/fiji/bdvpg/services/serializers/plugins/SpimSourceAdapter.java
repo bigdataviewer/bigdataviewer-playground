@@ -46,7 +46,7 @@ import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_INFO;
 @Plugin(type = ISourceAdapter.class)
 public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 
-    SourceAndConverterSerializer sacSerializer;;
+    SourceAndConverterSerializer sacSerializer;
 
     @Override
     public void setSacSerializer(SourceAndConverterSerializer sacSerializer) {

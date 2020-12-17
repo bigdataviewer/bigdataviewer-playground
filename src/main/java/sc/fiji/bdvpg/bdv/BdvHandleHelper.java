@@ -128,7 +128,7 @@ public class BdvHandleHelper
         return viewerPhysicalVoxelSpacingX;
     }
 
-    public static boolean isSourceIntersectingCurrentView( BdvHandle bdv, Source source, boolean is2D ) {
+    public static boolean isSourceIntersectingCurrentView( BdvHandle bdv, Source<?> source, boolean is2D ) {
         if (source.getSource(0,0) == null) {
             // Overlays have no RAI -> discard them
             return false;
@@ -140,7 +140,7 @@ public class BdvHandleHelper
                 Intervals.smallestContainingInterval(
                         getViewerGlobalBoundingInterval( bdv ) );
 
-        boolean intersects = false;
+        boolean intersects;
         if (is2D) {
             intersects = !Intervals.isEmpty(
                     intersect2D(interval, viewerInterval));
@@ -172,17 +172,13 @@ public class BdvHandleHelper
         final long[] max = new long[ 3 ];
         max[ 0 ] = bdvHandle.getViewerPanel().getWidth();
         max[ 1 ] = bdvHandle.getViewerPanel().getHeight();
-        final FinalRealInterval realInterval
-                = viewerTransform.estimateBounds( new FinalInterval( min, max ) );
-        return realInterval;
+        return viewerTransform.estimateBounds( new FinalInterval( min, max ) );
     }
 
     public static Interval getSourceGlobalBoundingInterval( Source< ? > source, int timepoint ) {
         final AffineTransform3D sourceTransform = getSourceTransform( source, timepoint );
         final RandomAccessibleInterval< ? > rai = source.getSource(timepoint,0);
-        final Interval interval =
-                Intervals.smallestContainingInterval( sourceTransform.estimateBounds( rai ) );
-        return interval;
+        return Intervals.smallestContainingInterval( sourceTransform.estimateBounds( rai ) );
     }
 
     public static AffineTransform3D getSourceTransform( Source< ? > source, int timepoint ) {
@@ -209,8 +205,10 @@ public class BdvHandleHelper
 
             for ( int d = 0; d < numDimensions; d++ )
             {
-                if ( calibration[ d ] > voxelSpacings[ d ] )
+                if (calibration[d] > voxelSpacings[d]) {
                     allSpacingsSmallerThanRequested = false;
+                    break;
+                }
             }
 
             if ( allSpacingsSmallerThanRequested )
@@ -219,20 +217,18 @@ public class BdvHandleHelper
         return 0;
     }
 
-    public static AffineTransform3D getSourceTransform( Source source, int t, int level ) {
+    public static AffineTransform3D getSourceTransform( Source<?> source, int t, int level ) {
         AffineTransform3D sourceTransform = new AffineTransform3D();
         source.getSourceTransform( t, level, sourceTransform );
         return sourceTransform;
     }
 
-    public static double[] getCalibration( Source source, int level ) {
+    public static double[] getCalibration( Source<?> source, int level ) {
         final AffineTransform3D sourceTransform = new AffineTransform3D();
 
         source.getSourceTransform( 0, level, sourceTransform );
 
-        final double[] calibration = getScale( sourceTransform );
-
-        return calibration;
+        return getScale( sourceTransform );
     }
 
     public static double[] getScale(AffineTransform3D sourceTransform) {
@@ -327,12 +323,11 @@ public class BdvHandleHelper
         List<BdvHandle> bdvs = os.getObjects(BdvHandle.class);
         boolean duplicateExist;
         String uniqueTitle = iniTitle;
-        duplicateExist = bdvs.stream().filter(bdv ->
-                (bdv.toString().equals(iniTitle))||(getWindowTitle(bdv).equals(iniTitle)))
-                .findFirst().isPresent();
+        duplicateExist = bdvs.stream().anyMatch(bdv ->
+                (bdv.toString().equals(iniTitle))||(getWindowTitle(bdv).equals(iniTitle)));
         while (duplicateExist) {
             if (uniqueTitle.matches(".+(_)\\d+")) {
-                int idx = Integer.valueOf(uniqueTitle.substring(uniqueTitle.lastIndexOf("_")+1));
+                int idx = Integer.parseInt(uniqueTitle.substring(uniqueTitle.lastIndexOf("_")+1));
                 uniqueTitle = uniqueTitle.substring(0, uniqueTitle.lastIndexOf("_")+1);
                 uniqueTitle += String.format("%02d", idx+1);
             } else {
@@ -344,9 +339,8 @@ public class BdvHandleHelper
                 e.printStackTrace();
             }
             String uTTest = uniqueTitle;
-            duplicateExist = bdvs.stream().filter(bdv ->
-                    (bdv.toString().equals(uTTest))||(getWindowTitle(bdv).equals(uTTest)))
-                    .findFirst().isPresent();
+            duplicateExist = bdvs.stream().anyMatch(bdv ->
+                    (bdv.toString().equals(uTTest))||(getWindowTitle(bdv).equals(uTTest)));
         }
         return uniqueTitle;
     }

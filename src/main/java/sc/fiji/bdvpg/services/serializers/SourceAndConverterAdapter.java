@@ -30,13 +30,7 @@ package sc.fiji.bdvpg.services.serializers;
 
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.google.gson.*;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.InstantiableException;
@@ -49,7 +43,6 @@ import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConverter>,
         JsonDeserializer<SourceAndConverter> {

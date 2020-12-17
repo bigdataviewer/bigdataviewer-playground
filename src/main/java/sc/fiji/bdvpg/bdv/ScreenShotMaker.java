@@ -57,7 +57,6 @@ import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGB;
 import sc.fiji.bdvpg.bdv.projector.AccumulateSumProjectorARGB;
 import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.awt.*;
@@ -75,21 +74,21 @@ import static sc.fiji.bdvpg.bdv.BdvHandleHelper.*;
 
 public class ScreenShotMaker {
 
-    private BdvHandle bdvHandle;
+    private final BdvHandle bdvHandle;
     private double physicalPixelSpacingInXY = 1;
     private String physicalUnit = "Pixels";
     private boolean sourceInteractionWithViewerPlaneOnly2D = false; // TODO: maybe remove in the future
     ImagePlus screenShot = null;
     private CompositeImage rawImageData = null;
     private final SourceAndConverterBdvDisplayService displayService;
-    private final ISourceAndConverterService sacService;
+    //private final ISourceAndConverterService sacService;
     private long captureWidth;
     private long captureHeight;
 
     public  ScreenShotMaker(BdvHandle bdvHandle) {
         this.bdvHandle = bdvHandle;
         this.displayService = SourceAndConverterServices.getSourceAndConverterDisplayService();
-        this.sacService = SourceAndConverterServices.getSourceAndConverterService();
+        //this.sacService = SourceAndConverterServices.getSourceAndConverterService();
     }
 
     public void setPhysicalPixelSpacingInXY(double spacing, String unit) {
@@ -292,7 +291,7 @@ public class ScreenShotMaker {
 
     private RealRandomAccess< ? > getRealRandomAccess( int t, Source< ? > source, int level, boolean interpolate )
     {
-        RealRandomAccess< ? > access = null;
+        RealRandomAccess< ? > access;
         if ( interpolate )
             access = source.getInterpolatedSource( t, level, Interpolation.NLINEAR ).realRandomAccess();
         else
@@ -324,9 +323,7 @@ public class ScreenShotMaker {
                 break;
         }
 
-        final ImagePlus rgbImage = asImagePlus( argbCapture, physicalUnit, voxelSpacing );
-
-        return rgbImage;
+        return asImagePlus( argbCapture, physicalUnit, voxelSpacing );
     }
 
     private void projectUsingMixedProjector( ArrayList< RandomAccessibleInterval< ARGBType > > argbCaptures, RandomAccessibleInterval< ARGBType > argbCapture, String[] projectionModes )

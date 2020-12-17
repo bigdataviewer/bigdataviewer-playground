@@ -34,7 +34,6 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -157,8 +156,8 @@ public interface ISourceAndConverterService
 
     /**
      * Gets an action from its identifier
-     * @param actionName
-     * @return
+     * @param actionName identifier of the action
+     * @return the action
      */
     Consumer<SourceAndConverter[]> getAction(String actionName);
 

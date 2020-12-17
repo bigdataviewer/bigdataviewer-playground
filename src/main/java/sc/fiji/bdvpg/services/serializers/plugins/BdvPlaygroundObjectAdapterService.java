@@ -30,7 +30,6 @@ package sc.fiji.bdvpg.services.serializers.plugins;
 
 import org.scijava.plugin.PTService;
 import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.SciJavaPlugin;
 import org.scijava.service.SciJavaService;
 
 import java.util.List;

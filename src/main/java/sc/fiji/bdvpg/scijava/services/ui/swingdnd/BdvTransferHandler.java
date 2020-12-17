@@ -78,7 +78,7 @@ public class BdvTransferHandler extends TransferHandler {
         Optional<BdvHandle> bdvh = getBdvHandleFromViewerPanel(((bdv.viewer.ViewerPanel)support.getComponent()));
         if (bdvh.isPresent()) {
             SourceAndConverterServices.getSourceAndConverterDisplayService()
-                    .show(bdvh.get(), sacs.toArray(new SourceAndConverter[sacs.size()]));
+                    .show(bdvh.get(), sacs.toArray(new SourceAndConverter[0]));
         }
     }
 
@@ -92,8 +92,8 @@ public class BdvTransferHandler extends TransferHandler {
 
         if (support.getComponent() instanceof JComponent) {
             for (int i = 0, n = support.getDataFlavors().length; i < n; i++) {
-                for (int j = 0, m = flavors.length; j < m; j++) {
-                    if (support.getDataFlavors()[i].equals(flavors[j])) {
+                for (DataFlavor flavor : flavors) {
+                    if (support.getDataFlavors()[i].equals(flavor)) {
                         DropLocation dl = support.getDropLocation();
                         updateDropLocation(support, dl);
                         return true;
@@ -119,7 +119,7 @@ public class BdvTransferHandler extends TransferHandler {
                                 .getSources();
                 importSourcesAndConverters(support, sacs);
                 return true;
-            } catch (Exception e) {
+            } catch (Exception ignored) {
 
             }
         } else {
@@ -140,12 +140,12 @@ public class BdvTransferHandler extends TransferHandler {
                 SourceAndConverterServiceUI ui =
                         ((SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getUI();
 
-                for (int i = 0; i < nodes.length; i++) {
-                    DefaultMutableTreeNode unwraped = (DefaultMutableTreeNode) (nodes[i].getUserObject());
-                    if (unwraped.getUserObject() instanceof RenamableSourceAndConverter) {
-                        sacs.add(((RenamableSourceAndConverter) unwraped.getUserObject()).sac);
+                for (DefaultMutableTreeNode node : nodes) {
+                    DefaultMutableTreeNode unwrapped = (DefaultMutableTreeNode) (node.getUserObject());
+                    if (unwrapped.getUserObject() instanceof RenamableSourceAndConverter) {
+                        sacs.add(((RenamableSourceAndConverter) unwrapped.getUserObject()).sac);
                     } else {
-                        for (SourceAndConverter sac : ui.getSourceAndConvertersFromChildrenOf(unwraped)) {
+                        for (SourceAndConverter sac : ui.getSourceAndConvertersFromChildrenOf(unwrapped)) {
                             sacs.add(sac);
                         }
                     }

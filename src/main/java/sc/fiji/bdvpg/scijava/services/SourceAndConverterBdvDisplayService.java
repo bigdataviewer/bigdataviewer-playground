@@ -116,9 +116,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
                             "nTimepoints", 1,
                             "interpolate",false,
                             "projector", Projection.SUM_PROJECTOR).get().getOutput("bdvh");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         return null;
@@ -260,7 +258,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * While several converters can be associated to a Source (volatile and non volatile),
      * only one ConverterSetup is associated to a Source
      * @param sac source to get the convertersetup from
-     * @return
+     * @return the converter setup of the source
      */
     public ConverterSetup getConverterSetup(SourceAndConverter sac) {
         if (!bdvSourceAndConverterService.isRegistered(sac)) {
@@ -311,7 +309,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         displayToMetadata.invalidate(bdvh); // enables memory release on GC - even if it bdv was weekly referenced
 
         // Fix BigWarp closing issue
-        boolean isPaired = pairedBdvs.stream().filter(p -> (p.getA()==bdvh)||(p.getB()==bdvh)).findFirst().isPresent();
+        boolean isPaired = pairedBdvs.stream().anyMatch(p -> (p.getA()==bdvh)||(p.getB()==bdvh));
         if (isPaired) {
             Pair<BdvHandle, BdvHandle> pair = pairedBdvs.stream().filter(p -> (p.getA()==bdvh)||(p.getB()==bdvh)).findFirst().get();
             pairedBdvs.remove(pair);
@@ -374,7 +372,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * the mixed projector
      * TODO : Avoid duplicates by returning a Set
      * @param bdvHandle the bdvhandle
-     * @return
+     * @return all sources present in a bdvhandle
      */
     public List<SourceAndConverter<?>> getSourceAndConverterOf(BdvHandle bdvHandle) {
         return bdvHandle.getViewerPanel().state().getSources();
@@ -384,7 +382,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * Returns a List of BdvHandle which are currently displaying a sac
      * Returns an empty set in case the sac is not displayed
      * @param sacs the sources queried
-     * @return
+     * @return all bdvhandle which contain the source
      */
     public Set<BdvHandle> getDisplaysOf(SourceAndConverter... sacs) {
         if (sacs == null) {
@@ -399,7 +397,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
                         synchronized (bdv.getViewerPanel().state()) {
                             return bdv.getViewerPanel().state()
                                     .getSources().stream()
-                                    .anyMatch(sac -> sacList.contains(sac));
+                                    .anyMatch(sacList::contains);
                         }
                     }
                 )

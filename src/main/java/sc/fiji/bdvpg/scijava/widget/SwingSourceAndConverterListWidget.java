@@ -87,7 +87,7 @@ public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAn
                 sacList.addAll(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) tp.getLastPathComponent()));
             }
         }
-        return sacList.toArray(new SourceAndConverter[sacList.size()]);
+        return sacList.toArray(new SourceAndConverter[0]);
     }
 
     private Set<SourceAndConverter> getSourceAndConvertersFromChildrenOf(DefaultMutableTreeNode node) {

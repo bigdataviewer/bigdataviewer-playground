@@ -39,12 +39,12 @@ import sc.fiji.bdvpg.sourceandconverter.importer.SourceAndConverterDuplicator;
 public class SourcesDuplicatorCommand implements Command {
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sources_in;
+    SourceAndConverter[] sacs;
 
     @Override
     public void run() {
 
-        for (SourceAndConverter sac : sources_in) {
+        for (SourceAndConverter sac : sacs) {
             new SourceAndConverterDuplicator(sac).get();
         }
 

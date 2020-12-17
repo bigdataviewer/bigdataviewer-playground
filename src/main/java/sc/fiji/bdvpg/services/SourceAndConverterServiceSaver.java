@@ -82,12 +82,12 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
             // Makes sure each source is associated to at least one sourceAndConverter
             // this happens via recursive source inspection
 
-            sacs.forEach(sac -> {
+            sacs.forEach(sac ->
                 setOfSourcesNeedingSerialization.addAll(SourceAndConverterInspector.appendInspectorResult(new DefaultMutableTreeNode(),
                         sac,
                         SourceAndConverterServices.getSourceAndConverterService(),
-                        true));
-            });
+                        true))
+            );
 
             // Then let's get back all the sacs - they may have increase in number
             sacs = /*SourceAndConverterServices
@@ -110,9 +110,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
             // Serializes datasets - required to avoid serialization issues
             SourceAndConverterServices
                     .getSourceAndConverterService()
-                    .getSpimDatasets().forEach(asd -> {
-                gson.toJson(asd);
-            });
+                    .getSpimDatasets().forEach(gson::toJson);
 
             try {
                 //System.out.println(f.getAbsolutePath());

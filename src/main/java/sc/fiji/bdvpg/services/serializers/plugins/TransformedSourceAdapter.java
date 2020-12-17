@@ -42,7 +42,7 @@ import java.lang.reflect.Type;
 @Plugin(type = ISourceAdapter.class)
 public class TransformedSourceAdapter implements ISourceAdapter<TransformedSource> {
 
-    SourceAndConverterSerializer sacSerializer;;
+    SourceAndConverterSerializer sacSerializer;
 
     @Override
     public void setSacSerializer(SourceAndConverterSerializer sacSerializer) {
@@ -80,7 +80,7 @@ public class TransformedSourceAdapter implements ISourceAdapter<TransformedSourc
     public SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
         int wrappedSourceId = obj.getAsJsonPrimitive("wrapped_source_id").getAsInt();
-        SourceAndConverter wrappedSac = null;
+        SourceAndConverter wrappedSac;
         if (sacSerializer.getIdToSac().containsKey(wrappedSourceId)) {
             // Already deserialized
             wrappedSac = sacSerializer.getIdToSac().get(wrappedSourceId);

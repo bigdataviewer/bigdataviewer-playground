@@ -34,16 +34,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import mpicbg.spim.data.generic.AbstractSpimData;
-import net.imglib2.display.ColorConverter;
-import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.realtransform.RealTransform;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
-import sc.fiji.bdvpg.services.serializers.*;
+import sc.fiji.bdvpg.services.serializers.AbstractSpimdataAdapter;
+import sc.fiji.bdvpg.services.serializers.RuntimeTypeAdapterFactory;
+import sc.fiji.bdvpg.services.serializers.SourceAndConverterAdapter;
 import sc.fiji.bdvpg.services.serializers.plugins.BdvPlaygroundObjectAdapterService;
 import sc.fiji.bdvpg.services.serializers.plugins.IClassAdapter;
 import sc.fiji.bdvpg.services.serializers.plugins.IClassRuntimeAdapter;
-import sc.fiji.bdvpg.services.serializers.plugins.ISourceAdapter;
 
 import java.io.File;
 import java.util.*;
@@ -94,7 +92,7 @@ public class SourceAndConverterSerializer {
                     try {
                         IClassAdapter adapter = pi.createInstance();
                         log.accept("\t "+adapter.getAdapterClass());
-                        builder = builder.registerTypeHierarchyAdapter(adapter.getAdapterClass(), adapter);
+                        builder.registerTypeHierarchyAdapter(adapter.getAdapterClass(), adapter);
                     } catch (InstantiableException e) {
                         e.printStackTrace();
                     }
@@ -123,7 +121,7 @@ public class SourceAndConverterSerializer {
                 .forEach(pi -> {
                     try {
                         IClassRuntimeAdapter adapter = pi.createInstance();
-                        builder = builder.registerTypeHierarchyAdapter(adapter.getRunTimeClass(), adapter);
+                        builder.registerTypeHierarchyAdapter(adapter.getRunTimeClass(), adapter);
                     } catch (InstantiableException e) {
                         e.printStackTrace();
                     }
@@ -138,10 +136,10 @@ public class SourceAndConverterSerializer {
                 factory.registerSubtype(subClass);
                 log.accept("\t \t "+subClass);
             });
-            builder = builder.registerTypeAdapterFactory(factory);
+            builder.registerTypeAdapterFactory(factory);
         });
 
-        builder = builder
+        builder
                 .registerTypeHierarchyAdapter(SourceAndConverter.class, new SourceAndConverterAdapter(this))
                 .registerTypeHierarchyAdapter(AbstractSpimData.class, new AbstractSpimdataAdapter(this));
 

@@ -93,8 +93,7 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 	private void showPopupMenu( BdvHandle bdv, int x, int y )
 	{
 
-		final List< SourceAndConverter > sacs = new ArrayList<>();
-		sacs.addAll(sourcesSupplier.get());
+		final List<SourceAndConverter> sacs = new ArrayList<>(sourcesSupplier.get());
 
 		if ( sacs.size() == 0 )
 			return;
@@ -110,7 +109,7 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 
 		bdv.getViewerPanel().showMessage(message);
 
-		final SourceAndConverterPopupMenu popupMenu = new SourceAndConverterPopupMenu( () -> sacs.toArray(new SourceAndConverter[sacs.size()]), popupActions );
+		final SourceAndConverterPopupMenu popupMenu = new SourceAndConverterPopupMenu( () -> sacs.toArray(new SourceAndConverter[0]), popupActions );
 
 		popupMenu.getPopup().show( bdv.getViewerPanel().getDisplay(), x, y );
 	}

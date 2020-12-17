@@ -47,11 +47,7 @@ public class StringToBdvHandle<I extends String, O extends BdvHandle> extends Ab
         Optional<BdvHandle> ans =  os.getObjects(BdvHandle.class).stream().filter(bdvh ->
                 (bdvh.toString().equals(src))||(BdvHandleHelper.getWindowTitle(bdvh).equals(src))
         ).findFirst();
-        if (ans.isPresent()) {
-            return (T) ans.get();
-        } else {
-            return  null;
-        }
+        return (T) ans.orElse(null);
     }
 
     @Override

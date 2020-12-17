@@ -27,8 +27,8 @@
  * #L%
  */
 package spimdata.util;
+
 import bdv.viewer.SourceAndConverter;
-import mpicbg.spim.data.generic.base.NamedEntity;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.type.numeric.ARGBType;
@@ -48,7 +48,7 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 public class DisplaysettingsHelper {
     /**
      * Stores display settings currently in use by the SourceAndConverter into the link SpimData object
-     * @param sac
+     * @param sac source
      */
     public static void GetDisplaySettingsFromCurrentConverter(SourceAndConverter sac, Displaysettings ds) {
 
@@ -81,7 +81,7 @@ public class DisplaysettingsHelper {
 
     /**
      * Stores display settings currently in use by the SourceAndConverter into the link SpimData object
-     * @param sac
+     * @param sac source
      */
     public static void PushDisplaySettingsFromCurrentConverter(SourceAndConverter sac) {
         if (SourceAndConverterServices
@@ -110,7 +110,7 @@ public class DisplaysettingsHelper {
 
     /**
      * Apply the display settings to the SourceAndConverter object
-     * @param sac
+     * @param sac source
      */
     public static void PullDisplaySettings(SourceAndConverter sac, Displaysettings ds) {
 
@@ -144,8 +144,8 @@ public class DisplaysettingsHelper {
      *
      * Applies the Displaysettings to the volatile source, if any
      *
-     * @param sacs
-     * @param ds
+     * @param sacs sources
+     * @param ds display settings
      */
     public static void applyDisplaysettings(SourceAndConverter[] sacs, Displaysettings ds) {
         if ((sacs!=null)&&(ds!=null)) {
@@ -162,8 +162,8 @@ public class DisplaysettingsHelper {
      *
      * Applies the Displaysettings to the volatile source, if any
      *
-     * @param sac
-     * @param ds
+     * @param sac source
+     * @param ds display settings
      */
     public static void applyDisplaysettings(SourceAndConverter sac, Displaysettings ds) {
         if ((sac!=null)&&(ds!=null)) {

@@ -42,7 +42,7 @@ import java.lang.reflect.Type;
 @Plugin(type = ISourceAdapter.class)
 public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
 
-    SourceAndConverterSerializer sacSerializer;;
+    SourceAndConverterSerializer sacSerializer;
 
     @Override
     public void setSacSerializer(SourceAndConverterSerializer sacSerializer) {
@@ -95,8 +95,8 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
         boolean cache = obj.getAsJsonPrimitive("cache").getAsBoolean();
         boolean reuseMipMaps = obj.getAsJsonPrimitive("mipmaps_reused").getAsBoolean();
 
-        SourceAndConverter originSac = null;
-        SourceAndConverter modelSac = null;
+        SourceAndConverter originSac;
+        SourceAndConverter modelSac;
 
         if (sacSerializer.getIdToSac().containsKey(origin_source_id)) {
             // Already deserialized

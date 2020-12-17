@@ -75,7 +75,7 @@ public class BdvWindowCreatorCommand implements Command {
         if (is2D) opts = opts.is2D();
 
         // Create accumulate projector factory
-        AccumulateProjectorFactory< ARGBType > factory = null;
+        AccumulateProjectorFactory< ARGBType > factory;
         switch (projector) {
             case Projection.MIXED_PROJECTOR:
                 factory = new AccumulateMixedProjectorARGBFactory(  );

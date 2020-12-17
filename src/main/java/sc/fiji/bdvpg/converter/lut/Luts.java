@@ -49,7 +49,7 @@ public class Luts
 	 *
 	 * @return Glasbey lookup table
 	 */
-	private final static byte[][] glasbeyLut() {
+	private static byte[][] glasbeyLut() {
 		// initial values (copied from Fiji's Glasbey LUT)
 		int[] r = getGlasbeyRed();
 		int[] g = getGlasbeyGreen();
@@ -70,7 +70,7 @@ public class Luts
 	}
 
 
-	public final static LUT glasbeyLutIJ() {
+	public static LUT glasbeyLutIJ() {
 		// initial values (copied from Fiji's Glasbey LUT)
 		int[] r = getGlasbeyRed();
 		int[] g = getGlasbeyGreen();
@@ -145,7 +145,7 @@ public class Luts
 	 *
 	 * @return Glasbey lookup table
 	 */
-	public final static int[] argbGlasbeyIndicies()
+	public static int[] argbGlasbeyIndicies()
 	{
 		int[] r = getGlasbeyRed();
 		int[] g = getGlasbeyGreen();
@@ -218,7 +218,7 @@ public class Luts
 	 *
 	 * @return lookup table with golden-angled-based colors
 	 */
-	private final static byte[][] goldenAngleLut( )
+	private static byte[][] goldenAngleLut( )
 	{
 
 		// hue for assigning new color ([0.0-1.0])
@@ -260,7 +260,7 @@ public class Luts
 	}
 
 
-	private final static byte[][] grayscaleLut( )
+	private static byte[][] grayscaleLut( )
 	{
 
 		byte[][] lut = new byte[256][3];
@@ -276,7 +276,7 @@ public class Luts
 		return lut;
 	}
 
-	public final static byte[][] colorLut( Integer color )
+	public static byte[][] colorLut( Integer color )
 	{
 		byte[][] lut = new byte[256][3];
 
@@ -291,7 +291,7 @@ public class Luts
 	}
 
 
-	private final static byte[][] blueWhiteRedLut( )
+	private static byte[][] blueWhiteRedLut( )
 	{
 
 		byte[][] lut = new byte[256][3];

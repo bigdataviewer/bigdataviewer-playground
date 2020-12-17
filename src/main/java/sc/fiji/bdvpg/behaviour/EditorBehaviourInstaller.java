@@ -101,7 +101,7 @@ public class EditorBehaviourInstaller implements Runnable {
 
         ClickBehaviour delete = (x, y) -> bdvh.getViewerPanel().state().removeSources(ssb.getSelectedSources());
 
-        editor.behaviour(delete, "remove-sources-from-bdv", new String[]{"DELETE"});
+        editor.behaviour(delete, "remove-sources-from-bdv", "DELETE");
 
         editor.behaviour(new SourceAndConverterContextMenuClickBehaviour( bdvh, ssb::getSelectedSources, getEditorPopupActions() ), "Sources Context Menu", "button3");
 
@@ -126,7 +126,7 @@ public class EditorBehaviourInstaller implements Runnable {
         // The delete key will act only when the source selection mode is on
         ssb.addToggleListener(toggleListener);
 
-        // Provides a way to retrieve this installer -> can be used to deinstalling it {@link EditorBehaviourUninstaller}
+        // Provides a way to retrieve this installer -> can be used to uninstalling it {@link EditorBehaviourUninstaller}
         SourceAndConverterServices.getSourceAndConverterDisplayService().setDisplayMetadata(
                 bdvh, EditorBehaviourInstaller.class.getSimpleName(), this);
 

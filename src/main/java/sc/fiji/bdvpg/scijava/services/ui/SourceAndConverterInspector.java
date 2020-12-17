@@ -51,7 +51,7 @@ import java.util.function.Supplier;
 public class SourceAndConverterInspector {
 
     /**
-     * Appends all the metadata fo a SourceAndConverter into a tree structure
+     * Appends all the metadata of a SourceAndConverter into a tree structure
      */
     public static void appendMetadata(DefaultMutableTreeNode parent, SourceAndConverter sac) {
         SourceAndConverterServices.getSourceAndConverterService().getMetadataKeys(sac)
@@ -72,9 +72,9 @@ public class SourceAndConverterInspector {
      * - TransformedSource {@link TransformedSource}
      * - ResampledSource {@link ResampledSource}
      *
-     * @param parent
-     * @param sac
-     * @param sourceAndConverterService
+     * @param parent parent node
+     * @param sac source
+     * @param sourceAndConverterService source service
      * @return the set of sources that were necessary to build the sac (including itself)
      */
     public static Set<SourceAndConverter> appendInspectorResult(DefaultMutableTreeNode parent,
