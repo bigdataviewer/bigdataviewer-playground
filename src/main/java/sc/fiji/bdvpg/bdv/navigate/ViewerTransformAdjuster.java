@@ -51,10 +51,9 @@ import net.imglib2.util.LinAlgHelpers;
 public class ViewerTransformAdjuster implements Runnable
 {
 	private final BdvHandle bdvHandle;
-	private final SourceAndConverter source;
-	private boolean zoomedIn = false; // TODO: what's the point of this?
+	private final SourceAndConverter<?> source;
 
-	public ViewerTransformAdjuster( BdvHandle bdvHandle, SourceAndConverter source )
+	public ViewerTransformAdjuster( BdvHandle bdvHandle, SourceAndConverter<?> source )
 	{
 		this.bdvHandle = bdvHandle;
 		this.source = source;
@@ -134,10 +133,12 @@ public class ViewerTransformAdjuster implements Runnable
 		final double scaleX = cX / pScreen[ 0 ];
 		final double scaleY = cY / pScreen[ 1 ];
 		final double scale;
-		if ( zoomedIn )
+		// TODO: what's the point of this?
+		/*boolean zoomedIn = false;
+		if (zoomedIn)
 			scale = Math.max( scaleX, scaleY );
-		else
-			scale = Math.min( scaleX, scaleY );
+		else*/
+		scale = Math.min( scaleX, scaleY );
 		viewerTransform.scale( scale );
 
 		// window center offset

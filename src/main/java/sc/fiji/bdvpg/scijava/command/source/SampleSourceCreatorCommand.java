@@ -75,7 +75,6 @@ public class SampleSourceCreatorCommand implements Command {
 
             default:
                 new SystemLogger().err("Invalid sample name");
-                return;
         }
     }
 }

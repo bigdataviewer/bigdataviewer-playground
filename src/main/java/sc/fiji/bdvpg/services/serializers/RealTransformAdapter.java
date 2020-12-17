@@ -48,8 +48,7 @@ public class RealTransformAdapter implements JsonSerializer<RealTransform>,
         String realtransformClassName = obj.get(REALTRANSFORM_CLASS_KEY).getAsString();
         if (realtransformClassName.equals(ThinplateSplineTransform.class.getName())) {
             ThinPlateR2LogRSplineKernelTransform kernel = jsonDeserializationContext.deserialize(obj.get("kernel"), ThinPlateR2LogRSplineKernelTransform.class);
-            ThinplateSplineTransform realTransform = new ThinplateSplineTransform(kernel);
-            return realTransform;
+            return new ThinplateSplineTransform(kernel);
         } else {
             System.err.println("Could not deserialise RealTransform of class : "+realtransformClassName);
         }

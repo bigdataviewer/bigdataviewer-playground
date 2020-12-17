@@ -226,7 +226,7 @@ public class BdvSettingsGUISetter implements Runnable {
         // Are there subfolders ?
         try (Stream<Path> walk = Files.walk(Paths.get(pathDir))) {
             walk.filter(Files::isDirectory)
-                    .map(x -> x.toString())
+                    .map(Path::toString)
                     .filter(folderPath -> !(new File(folderPath).equals(new File(pathDir))))
                     .forEach(folderPath -> recursivelySearchAndAppend(subPath+">"+new File(folderPath).getName(), settings, folderPath));
         } catch (IOException e) {

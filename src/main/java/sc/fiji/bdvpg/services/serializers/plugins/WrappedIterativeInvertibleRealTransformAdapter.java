@@ -51,18 +51,14 @@ public class WrappedIterativeInvertibleRealTransformAdapter implements IClassRun
     public WrappedIterativeInvertibleRealTransform deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
         RealTransform rt = jsonDeserializationContext.deserialize(obj.get("wrappedTransform"), RealTransform.class);
-        WrappedIterativeInvertibleRealTransform invTransform =
-                new WrappedIterativeInvertibleRealTransform<>(rt);
-        return invTransform;
+        return new WrappedIterativeInvertibleRealTransform<>(rt);
     }
 
     @Override
     public JsonElement serialize(WrappedIterativeInvertibleRealTransform wrappedIterativeInvertibleRealTransform, Type type, JsonSerializationContext jsonSerializationContext) {
-        WrappedIterativeInvertibleRealTransform rt = wrappedIterativeInvertibleRealTransform;
         JsonObject obj = new JsonObject();
-
         obj.addProperty("type", WrappedIterativeInvertibleRealTransform.class.getSimpleName());
-        obj.add("wrappedTransform", jsonSerializationContext.serialize(rt.getTransform()));
+        obj.add("wrappedTransform", jsonSerializationContext.serialize(wrappedIterativeInvertibleRealTransform.getTransform()));
         return obj;
     }
 }

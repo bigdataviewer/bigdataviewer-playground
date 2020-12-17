@@ -186,7 +186,7 @@ public class ViewerOrthoSyncStarter implements Runnable {
         // but only if the two necessary objects are present (the origin BdvHandle and the transform
         if ((bdvHandleInitialReference != null) && (at3Dorigin != null)) {
             for (BdvHandle bdvh : bdvHandles) {
-                bdvh.getViewerPanel().setCurrentViewerTransform(at3Dorigin.copy());
+                bdvh.getViewerPanel().state().setViewerTransform(at3Dorigin.copy());
                 bdvh.getViewerPanel().requestRepaint();
                 if (synchronizeTime) {
                     bdvh.getViewerPanel().state().setCurrentTimepoint(
@@ -204,7 +204,7 @@ public class ViewerOrthoSyncStarter implements Runnable {
         double cur_wcx = currentBdvHandle.getViewerPanel().getWidth() / 2.0; // Current Window Center X
         double cur_wcy = currentBdvHandle.getViewerPanel().getHeight() / 2.0; // Current Window Center Y
 
-        RealPoint centerScreenCurrentBdv = new RealPoint(new double[]{cur_wcx, cur_wcy, 0});
+        RealPoint centerScreenCurrentBdv = new RealPoint(cur_wcx, cur_wcy, 0);
         RealPoint centerScreenGlobalCoord = new RealPoint(3);
 
         at3D.inverse().apply(centerScreenCurrentBdv, centerScreenGlobalCoord);
@@ -228,7 +228,7 @@ public class ViewerOrthoSyncStarter implements Runnable {
         double next_wcx = nextBdvHandle.getViewerPanel().getWidth() / 2.0; // Next Window Center X
         double next_wcy = nextBdvHandle.getViewerPanel().getHeight() / 2.0; // Next Window Center Y
 
-        RealPoint centerScreenNextBdv = new RealPoint(new double[]{next_wcx, next_wcy, 0});
+        RealPoint centerScreenNextBdv = new RealPoint(next_wcx, next_wcy, 0);
         RealPoint shiftNextBdv = new RealPoint(3);
 
         nextAffineTransform.inverse().apply(centerScreenNextBdv, shiftNextBdv);
@@ -237,7 +237,7 @@ public class ViewerOrthoSyncStarter implements Runnable {
         double sy = -centerScreenGlobalCoord.getDoublePosition(1) + shiftNextBdv.getDoublePosition(1);
         double sz = -centerScreenGlobalCoord.getDoublePosition(2) + shiftNextBdv.getDoublePosition(2);
 
-        RealPoint shiftWindow = new RealPoint(new double[]{sx, sy, sz});
+        RealPoint shiftWindow = new RealPoint(sx, sy, sz);
         RealPoint shiftMatrix = new RealPoint(3);
         nextAffineTransform.apply(shiftWindow, shiftMatrix);
 
@@ -305,12 +305,11 @@ public class ViewerOrthoSyncStarter implements Runnable {
      * A simple search to identify the view transform of the BdvHandle that will be used
      * for the initial synchronization (first reference)
      *
-     * @return
+     * @return the view transform of the BdvHandle that will be used for the initial synchronization
      */
     private AffineTransform3D getViewTransformForInitialSynchronization() {
         AffineTransform3D at3Dorigin = null;
-        for (int i = 0; i < bdvHandles.length; i++) {
-            BdvHandle bdvHandle = bdvHandles[i];
+        for (BdvHandle bdvHandle : bdvHandles) {
             // if the BdvHandle is the one that should be used for initial synchronization
             if (bdvHandle.equals(bdvHandleInitialReference)) {
                 // Storing the transform that will be used for first synchronization

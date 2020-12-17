@@ -60,7 +60,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 /**
  *
  * Export a set of Sources into a new Xml/Hdf5 BDV dataset
@@ -130,11 +129,11 @@ public class XmlHDF5SpimdataExporter implements Runnable {
     public void run() {
 
         // Gets Concrete SpimSource
-        List<Source> srcs = sources.stream().map(sac -> sac.getSpimSource()).collect(Collectors.toList());
+        List<Source> srcs = sources.stream().map(SourceAndConverter::getSpimSource).collect(Collectors.toList());
         Map<Source, Integer> idxSourceToSac = new HashMap<>();
 
         // Convert To UnsignedShortType (limitation of current xml/hdf5 implementation)
-        srcs.replaceAll(src -> SourceToUnsignedShortConverter.convertSource(src));
+        srcs.replaceAll(SourceToUnsignedShortConverter::convertSource);
 
         for (int i=0;i<srcs.size();i++) {
             idxSourceToSac.put(srcs.get(i), i);

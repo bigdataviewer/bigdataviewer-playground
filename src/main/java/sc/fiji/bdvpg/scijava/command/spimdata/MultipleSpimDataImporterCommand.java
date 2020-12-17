@@ -54,8 +54,8 @@ public class MultipleSpimDataImporterCommand implements Command {
     public File[] files;
 
     public void run() {
-        for ( int i = 0; i < files.length; ++i ) {
-            new SpimDataFromXmlImporter( files[i] ).get();
+        for (File file : files) {
+            new SpimDataFromXmlImporter(file).get();
         }
     }
 

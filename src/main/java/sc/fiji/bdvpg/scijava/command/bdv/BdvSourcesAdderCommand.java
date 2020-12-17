@@ -60,7 +60,7 @@ public class BdvSourcesAdderCommand implements Command {
         SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvh, sacs);
         if (autoContrast) {
             for (SourceAndConverter sac : sacs) {
-                int timepoint = bdvh.getViewerPanel().getState().getCurrentTimepoint();
+                int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
                 new BrightnessAutoAdjuster(sac, timepoint).run();
             }
         }

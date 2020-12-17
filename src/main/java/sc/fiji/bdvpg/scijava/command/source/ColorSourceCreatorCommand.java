@@ -37,7 +37,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.ColorRGB;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.sourceandconverter.display.ConverterChanger;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Create New Source (Set Color)",
@@ -56,13 +56,14 @@ public class ColorSourceCreatorCommand implements Command {
         for (SourceAndConverter source_in : sources_in) {
             ARGBType imglib2color = new ARGBType(ARGBType.rgba(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
 
-            Converter c = SourceAndConverterUtils.createConverter(source_in.getSpimSource());
+            Converter c = SourceAndConverterHelper.createConverter(source_in.getSpimSource());
             assert c instanceof ColorConverter;
             ((ColorConverter) c).setColor(imglib2color);
 
             Converter vc = null;
             if (source_in.asVolatile() != null) {
-                vc = SourceAndConverterUtils.createConverter(source_in.asVolatile().getSpimSource());
+                vc = SourceAndConverterHelper.createConverter(source_in.asVolatile().getSpimSource());
+                assert vc != null;
                 ((ColorConverter) vc).setColor(imglib2color);
             }
 

@@ -106,7 +106,7 @@ public class SourceAndConverterPopupMenu
 	}
 
 
-	private JPopupMenu createPopupMenu()
+	private void createPopupMenu()
 	{
 		popup = new JPopupMenu();
 
@@ -118,7 +118,6 @@ public class SourceAndConverterPopupMenu
 			}
 		}
 
-		return popup;
 	}
 
 	/**
@@ -131,8 +130,8 @@ public class SourceAndConverterPopupMenu
 	/**
 	 * Adds a line and an action which consumes all the selected SourceAndConverter objects
 	 * in the popup Menu
-	 * @param action
-	 * @param actionName
+	 * @param action action method
+	 * @param actionName action name
 	 */
 	public void addPopupAction( String actionName, Consumer<SourceAndConverter[]> action ) {
 		JMenuItem menuItem = new JMenuItem(actionName);

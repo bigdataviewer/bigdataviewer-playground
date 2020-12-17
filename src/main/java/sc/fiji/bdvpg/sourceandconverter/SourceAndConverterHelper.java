@@ -56,7 +56,7 @@ import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Intervals;
 import org.scijava.vecmath.Point3d;
-import sc.fiji.bdvpg.bdv.BdvUtils;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
@@ -94,7 +94,7 @@ import java.util.function.Consumer;
  *
  * Limitations : TODO : think about CacheControls
  */
-public class SourceAndConverterUtils {
+public class SourceAndConverterHelper {
 
     /**
      * Standard logger
@@ -109,8 +109,8 @@ public class SourceAndConverterUtils {
     /**
      * Core function : makes SourceAndConverter object out of a Source
      * Mainly duplicated functions from BdvVisTools
-     * @param source
-     * @return
+     * @param source source
+     * @return a sourceandconverter from the source
      */
     public static SourceAndConverter createSourceAndConverter(Source source) {
         Converter nonVolatileConverter;
@@ -118,8 +118,6 @@ public class SourceAndConverterUtils {
         if (source.getType() instanceof RealType) {
 
             nonVolatileConverter = createConverterRealType((RealType) source.getType());
-
-            assert nonVolatileConverter!=null;
 
             Source volatileSource = createVolatileRealType(source);
 
@@ -138,8 +136,6 @@ public class SourceAndConverterUtils {
         } else if (source.getType() instanceof ARGBType) {
 
             nonVolatileConverter = createConverterARGBType(source);
-
-            assert nonVolatileConverter!=null;
 
             Source volatileSource = createVolatileARGBType(source);
 
@@ -167,8 +163,8 @@ public class SourceAndConverterUtils {
 
     /**
      *
-     * @param asd
-     * @return
+     * @param asd spimdata
+     * @return all sources in a map : id to source
      */
     static public Map<Integer, SourceAndConverter> createSourceAndConverters(AbstractSpimData asd) {
 
@@ -194,13 +190,12 @@ public class SourceAndConverterUtils {
 
                 String sourceName = createSetupName(setup);
 
-                if ( RealType.class.isInstance( type ) ) {
+                if (type instanceof RealType) {
 
                     final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
 
-                    Converter nonVolatileConverter = createConverterRealType((RealType)s.getType());
+                    Converter nonVolatileConverter = createConverterRealType((RealType)s.getType()); // IN FACT THE CASTING IS NECESSARY!!
 
-                    assert nonVolatileConverter!=null;
                     if (!nonVolatile) {
 
                         final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
@@ -225,13 +220,12 @@ public class SourceAndConverterUtils {
 
                     }
 
-                } else if ( ARGBType.class.isInstance( type ) ) {
+                } else if (type instanceof ARGBType) {
 
                     final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
                     final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
 
                     Converter nonVolatileConverter = createConverterARGBType(s);
-                    assert nonVolatileConverter!=null;
                     if (vs!=null) {
                         Converter volatileConverter = createConverterARGBType(vs);
                         out.put(setupId, new SourceAndConverter(s, nonVolatileConverter,
@@ -260,8 +254,8 @@ public class SourceAndConverterUtils {
      * Creates default converters for a Source
      * Support Volatile or non Volatile
      * Support RealTyped or ARGBTyped
-     * @param source
-     * @return
+     * @param source source
+     * @return one converter for the source
      */
     public static Converter createConverter(Source source) {
         if (source.getType() instanceof RealType) {
@@ -277,7 +271,7 @@ public class SourceAndConverterUtils {
     /**
      * Clones a converter
      * TODO :
-     * @return
+     * @return the cloned converter
      */
     public static Converter cloneConverter(Converter converter, SourceAndConverter sac) {
         if (converter instanceof RealARGBColorConverter.Imp0) {
@@ -342,7 +336,7 @@ public class SourceAndConverterUtils {
 
     /**
      * Creates converters and convertersetup for a ARGB typed sourceandconverter
-     * @param source
+     * @param source source
      */
     static private ConverterSetup createConverterSetupARGBType(SourceAndConverter source) {
         ConverterSetup setup;
@@ -361,7 +355,7 @@ public class SourceAndConverterUtils {
 
     /**
      * Creates converters and convertersetup for a real typed sourceandconverter
-     * @param source
+     * @param source source
      */
     static private ConverterSetup createConverterSetupRealType(SourceAndConverter source) {
         final ConverterSetup setup;
@@ -415,8 +409,8 @@ public class SourceAndConverterUtils {
     /**
      * Here should go all the ways to build a Volatile Source
      * from a non Volatile Source, RealTyped
-     * @param source
-     * @return
+     * @param source source
+     * @return the volatile source
      */
     private static Source createVolatileRealType(Source source) {
         // TODO unsupported yet
@@ -426,7 +420,7 @@ public class SourceAndConverterUtils {
     /**
      * Here should go all the ways to build a Volatile Source
      * from a non Volatile Source, ARGBTyped
-     * @param source
+     * @param source the source
      * @return
      */
     private static Source createVolatileARGBType(Source source) {
@@ -437,8 +431,8 @@ public class SourceAndConverterUtils {
     /**
      * Creates ARGB converter from a RealTyped sourceandconverter.
      * Supports Volatile RealTyped or non volatile
-     * @param <T>
-     * @return
+     * @param <T> realtype class
+     * @return a suited converter
      */
     private static< T extends RealType< T >>  Converter createConverterRealType(final T type) {
         final double typeMin = Math.max( 0, Math.min( type.getMinValue(), 65535 ) );
@@ -457,8 +451,8 @@ public class SourceAndConverterUtils {
     /**
      * Creates ARGB converter from a RealTyped sourceandconverter.
      * Supports Volatile ARGBType or non volatile
-     * @param source
-     * @return
+     * @param source source
+     * @return a compatible converter
      */
     private static Converter createConverterARGBType(Source source) {
         final Converter converter ;
@@ -479,10 +473,10 @@ public class SourceAndConverterUtils {
 	 *
 	 * This can be used as an alternative to below method: isSourcePresentAt
 	 *
-	 * @param source
-	 * @param globalPosition
-	 * @param timepoint
-	 * @param sourceIs2d
+	 * @param source source
+	 * @param globalPosition position in global coordinate system
+	 * @param timepoint timepoint used
+	 * @param sourceIs2d is the source is 2d, avoids checking third dimension
 	 *
 	 * @return
 	 * 			boolean indicating whether the position falls within the source interval
@@ -509,14 +503,13 @@ public class SourceAndConverterUtils {
 			Interval interval2d = new FinalInterval( min, max );
 			Point point2d = new Point( positionInSource2D );
 
-			return Intervals.contains( interval2d, point2d ) ? true : false;
+			return Intervals.contains(interval2d, point2d);
 		}
 		else
 		{
-			Interval interval3d = sourceInterval;
-			Point point3d = new Point( voxelPositionInSource );
+            Point point3d = new Point( voxelPositionInSource );
 
-			return Intervals.contains( interval3d, point3d ) ? true : false;
+			return Intervals.contains(sourceInterval, point3d);
 		}
 	}
 
@@ -524,12 +517,14 @@ public class SourceAndConverterUtils {
 	 * Given a calibrated global position, this function uses
 	 * the source transform to compute the position within the
 	 * voxel grid of the source.
+     *
+     * Probably : do not work with warped sources
 	 *
-	 * @param source
-	 * @param globalPosition
-	 * @param t
-	 * @param level
-	 * @return
+	 * @param source source
+	 * @param globalPosition position in global coordinate
+	 * @param t time point
+	 * @param level mipmap level of the source
+	 * @return voxel coordinate
 	 */
 	public static long[] getVoxelPositionInSource(
 			final Source source,
@@ -539,7 +534,7 @@ public class SourceAndConverterUtils {
 	{
 		final int numDimensions = 3;
 
-		final AffineTransform3D sourceTransform = BdvUtils.getSourceTransform( source, t, level );
+		final AffineTransform3D sourceTransform = BdvHandleHelper.getSourceTransform( source, t, level );
 
 		final RealPoint voxelPositionInSource = new RealPoint( numDimensions );
 
@@ -560,9 +555,9 @@ public class SourceAndConverterUtils {
      * Another option : if the display RGB value is zero, then consider it's not displayed and thus not selected
      * - Convenient way to adjust whether a source should be selected or not ?
      * TODO : Time out if too long to access the data
-     * @param sac
-     * @param pt
-     * @return
+     * @param sac source
+     * @param pt point
+     * @return true if the source is present
      */
     public static boolean isSourcePresentAt(SourceAndConverter sac, int timePoint, RealPoint pt) {
 
@@ -588,9 +583,8 @@ public class SourceAndConverterUtils {
             int cValue = colorOut.get();
 
             // Alpha == 0 -> not present, otherwise it is present
-            boolean ans = ARGBType.alpha(cValue) != 0;
 
-            return ans;
+            return ARGBType.alpha(cValue) != 0;
         } else {
             return false;
         }
@@ -602,8 +596,8 @@ public class SourceAndConverterUtils {
      * Because sometimes we want some consistency in channel ordering when exporting / importing
      *
      * TODO : find a better way to order between spimdata
-     * @param sacs
-     * @return
+     * @param sacs sources
+     * @return sorted sources according to the default sorter
      */
     public static List<SourceAndConverter<?>> sortDefaultGeneric(Collection<SourceAndConverter<?>> sacs) {
         List<SourceAndConverter<?>> sortedList = new ArrayList<>(sacs.size());
@@ -668,8 +662,8 @@ public class SourceAndConverterUtils {
      * Because sometimes we want some consistency in channel ordering when exporting / importing
      *
      * TODO : find a better way to order between spimdata
-     * @param sacs
-     * @return
+     * @param sacs sources
+     * @return ordered sources
      */
     public static List<SourceAndConverter> sortDefaultNoGeneric(Collection<SourceAndConverter> sacs) {
         List<SourceAndConverter> sortedList = new ArrayList<>(sacs.size());
@@ -732,8 +726,8 @@ public class SourceAndConverterUtils {
     /**
      * Return the center point in global coordinates of the source
      * Do not expect this to work with WarpedSource
-     * @param source
-     * @return
+     * @param source source
+     * @return the center point of the source (assuming not warped)
      */
     public static RealPoint getSourceAndConverterCenterPoint(SourceAndConverter source) {
         AffineTransform3D sourceTransform = new AffineTransform3D();
@@ -755,8 +749,8 @@ public class SourceAndConverterUtils {
     /**
      * Applies the color converter settings from the src source to the dst sources
      * color, min, max
-     * @param src
-     * @param dst
+     * @param src converter source
+     * @param dst converter dest
      */
     public static void transferColorConverters(SourceAndConverter src, SourceAndConverter dst) {
         transferColorConverters(new SourceAndConverter[]{src}, new SourceAndConverter[]{dst});
@@ -773,8 +767,8 @@ public class SourceAndConverterUtils {
      * The transfer is performed for the volatile source as well if it exists.
      * The volatile source converter of src is ignored
      *
-     * @param srcs
-     * @param dsts
+     * @param srcs sources source
+     * @param dsts sources dest
      */
     public static void transferColorConverters(SourceAndConverter[] srcs, SourceAndConverter[] dsts) {
         if ((srcs!=null)&&(dsts!=null))
@@ -823,15 +817,15 @@ public class SourceAndConverterUtils {
      * the scale of the image (which could be clearly wrong). Assuming this, we get to the 'root'
      * of the source and converter and get the voxel value from this root source.
      *
-     * Look at the {@link SourceAndConverterUtils#getRootSource(Source, AffineTransform3D)} implementation to
+     * Look at the {@link SourceAndConverterHelper#getRootSource(Source, AffineTransform3D)} implementation to
      * see how this search is done
      *
      * So : the source root should be properly scaled from the beginning and weird transformation
      * (like spherical transformed will give wrong results.
      *
-     * @param src
-     * @param voxSize
-     * @return
+     * @param src source
+     * @param voxSize target voxel size
+     * @return mipmap level fitted for the voxel size
      */
     public static int bestLevel(Source src, int t, double voxSize) {
         List<Double> originVoxSize = new ArrayList<>();
@@ -854,18 +848,18 @@ public class SourceAndConverterUtils {
     }
 
     /**
-     * See {@link SourceAndConverterUtils#bestLevel(Source, int, double)}
-     * @param sac
-     * @param t
-     * @param voxSize
-     * @return
+     * See {@link SourceAndConverterHelper#bestLevel(Source, int, double)}
+     * @param sac source
+     * @param t timepoint
+     * @param voxSize target voxel size
+     * @return mipmap level chosen
      */
     public static int bestLevel(SourceAndConverter sac, int t, double voxSize) {
         return bestLevel(sac.getSpimSource(), t, voxSize);
     }
     
     /**
-     * See {@link SourceAndConverterUtils#bestLevel(Source, int, double)}
+     * See {@link SourceAndConverterHelper#bestLevel(Source, int, double)}
      * for an example of the use of this function
      * 
      * What the 'root' means is actually the origin source from which is derived the source
@@ -881,8 +875,8 @@ public class SourceAndConverterUtils {
      * into account, provided that the transform are affine. Is the source is transformed in a more
      * complex way, then nothing can be done easily...
      *
-     * @param source
-     * @return
+     * @param source source
+     * @return the root source : it's not derived from another source
      */
     public static Source getRootSource(Source source, AffineTransform3D chainedSourceTransform) {
         Source rootOrigin = source;
@@ -904,22 +898,22 @@ public class SourceAndConverterUtils {
     }
 
     /**
-     * see {@link SourceAndConverterUtils#getCharacteristicVoxelSize(AffineTransform3D)}
-     * @param sac
-     * @param t
-     * @param level
-     * @return
+     * see {@link SourceAndConverterHelper#getCharacteristicVoxelSize(AffineTransform3D)}
+     * @param sac source
+     * @param t timepoiont
+     * @param level mipmap level
+     * @return the characteristic voxel size for this level
      */
     public static double getCharacteristicVoxelSize(SourceAndConverter sac, int t, int level) {
         return getCharacteristicVoxelSize(sac.getSpimSource(), t, level);
     }
 
     /**
-     * See {@link SourceAndConverterUtils#getCharacteristicVoxelSize(AffineTransform3D)}
-     * @param src
-     * @param t
-     * @param level
-     * @return
+     * See {@link SourceAndConverterHelper#getCharacteristicVoxelSize(AffineTransform3D)}
+     * @param src source
+     * @param t timepoint
+     * @param level mipmap level
+     * @return the characteristic voxel size
      */
     public static double getCharacteristicVoxelSize(Source src, int t, int level) {
         AffineTransform3D chainedSourceTransform = new AffineTransform3D();
@@ -932,11 +926,11 @@ public class SourceAndConverterUtils {
     }
 
     /**
-     * See {@link SourceAndConverterUtils#bestLevel(Source, int, double)} 
+     * See {@link SourceAndConverterHelper#bestLevel(Source, int, double)}
      * for a description of what the 'characteristic voxel size' means
      * 
-     * @param sourceTransform
-     * @return
+     * @param sourceTransform affine transform of the source
+     * @return voxel size inferred from this transform
      */
     public static double getCharacteristicVoxelSize(AffineTransform3D sourceTransform) { // method also present in resampled source
         // Gets three vectors

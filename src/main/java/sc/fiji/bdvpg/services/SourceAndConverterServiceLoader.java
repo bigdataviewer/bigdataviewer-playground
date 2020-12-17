@@ -82,6 +82,7 @@ public class SourceAndConverterServiceLoader extends SourceAndConverterSerialize
                     idToJsonElement.put(rawSacsArray.get(i).getAsJsonObject().get("source_id").getAsInt(), rawSacsArray.get(i));
                 } else {
                     // Source couldn't be serialized
+                    System.err.println("Error : source "+i+" couldn't be serialized");
                 }
             }
 

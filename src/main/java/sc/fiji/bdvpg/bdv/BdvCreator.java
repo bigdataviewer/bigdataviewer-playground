@@ -37,7 +37,9 @@ import bdv.viewer.Interpolation;
 import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.type.numeric.integer.ByteType;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
@@ -73,9 +75,9 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 {
 
 	private BdvOptions bdvOptions;
-	private boolean interpolate;
-	private int numTimePoints;
-	private String pathToBindings;
+	private final boolean interpolate;
+	private final int numTimePoints;
+	private final String pathToBindings;
 
 	/**
 	 * @param bdvOptions holds a list of settings for creating options see {@link BdvOptions}
@@ -140,11 +142,11 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 	 */
 	public BdvHandle get()
 	{
-		ArrayImg dummyImg = ArrayImgs.bytes(2, 2, 2);
+		ArrayImg< ByteType, ByteArray> dummyImg = ArrayImgs.bytes(2, 2, 2);
 
 		bdvOptions = bdvOptions.sourceTransform( new AffineTransform3D() );
 
-		BdvStackSource bss = BdvFunctions.show( dummyImg, "dummy", bdvOptions );
+		BdvStackSource<ByteType> bss = BdvFunctions.show( dummyImg, "dummy", bdvOptions );
 
 		BdvHandle bdv = bss.getBdvHandle();
 
@@ -213,8 +215,8 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 	 * Install trigger bindings according to the path specified
 	 * See {@link BdvSettingsGUISetter}
 	 * Key bindings can not be overriden yet
-	 * @param bdv
-	 * @param pathToBindings
+	 * @param bdv bdvhandle
+	 * @param pathToBindings string path to the folder containing the yaml file
 	 */
 	void install(BdvHandle bdv, String pathToBindings) {
 		String yamlDataLocation = pathToBindings + File.separator + BdvSettingsGUISetter.defaultYamlFileName;
@@ -267,7 +269,7 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 		bdv.getViewerPanel().setTransferHandler(new BdvTransferHandler());
 	}
 
-	class DragNDSourcesBehaviour implements DragBehaviour {
+	static class DragNDSourcesBehaviour implements DragBehaviour {
 
 		final BdvHandle bdvh;
 

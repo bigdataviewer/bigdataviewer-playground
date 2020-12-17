@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,7 +73,7 @@ public class SpimdataBigDataServerImportCommand implements Command
         // Get JSON string from the server
         final URL url = new URL( remoteUrl + "/json/" );
         final InputStream is = url.openStream();
-        final JsonReader reader = new JsonReader( new InputStreamReader( is, "UTF-8" ) );
+        final JsonReader reader = new JsonReader( new InputStreamReader( is, StandardCharsets.UTF_8) );
 
         reader.beginObject();
         while ( reader.hasNext() )

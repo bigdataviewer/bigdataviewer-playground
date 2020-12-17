@@ -31,7 +31,7 @@ package sc.fiji.bdvpg.sourceandconverter.transform;
 import bdv.img.WarpedSource;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.RealTransform;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Function;
 
@@ -63,10 +63,10 @@ public class SourceRealTransformer implements Runnable, Function<SourceAndConver
             WarpedSource vsrc = new WarpedSource(in.asVolatile().getSpimSource(), "Transformed_"+in.asVolatile().getSpimSource().getName());//f.apply(in.asVolatile().getSpimSource());
             vsrc.updateTransform(rt);
             vsrc.setIsTransformed(true);
-            SourceAndConverter vout = new SourceAndConverter<>(vsrc, SourceAndConverterUtils.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));
-            return new SourceAndConverter(src, SourceAndConverterUtils.cloneConverter(in.getConverter(), in), vout);
+            SourceAndConverter vout = new SourceAndConverter<>(vsrc, SourceAndConverterHelper.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));
+            return new SourceAndConverter(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in), vout);
         } else {
-            return new SourceAndConverter(src, SourceAndConverterUtils.cloneConverter(in.getConverter(), in));
+            return new SourceAndConverter(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in));
         }
     }
 }

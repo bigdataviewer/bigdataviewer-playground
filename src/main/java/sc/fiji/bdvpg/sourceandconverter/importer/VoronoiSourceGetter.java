@@ -31,9 +31,9 @@ package sc.fiji.bdvpg.sourceandconverter.importer;
 import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imglib2.*;
 import net.imglib2.algorithm.util.Grids;
+import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.interpolation.neighborsearch.NearestNeighborSearchInterpolatorFactory;
 import net.imglib2.neighborsearch.NearestNeighborSearch;
@@ -43,7 +43,7 @@ import net.imglib2.type.Type;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.Random;
 import java.util.function.Supplier;
@@ -70,7 +70,7 @@ public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverte
     @Override
     public SourceAndConverter get() {
         RandomAccessibleInterval voronoi = getVoronoiTestLabelImage(imgSize, numPts, copyImg);
-        VoxelDimensions voxDimensions = new VoxelDimensions() {
+        /*VoxelDimensions voxDimensions = new VoxelDimensions() {
             @Override
             public String unit() {
                 return "undefined";
@@ -92,11 +92,11 @@ public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverte
             public int numDimensions() {
                 return 3;
             }
-        };
+        };*/
 
         Source s = new RandomAccessibleIntervalSource<>( voronoi, new FloatType(), new AffineTransform3D(), "Voronoi_"+numPts+" Pts_["+imgSize[0]+","+imgSize[1]+","+imgSize[2]+"]" );
 
-        return SourceAndConverterUtils.createSourceAndConverter(s);
+        return SourceAndConverterHelper.createSourceAndConverter(s);
 
     }
 
@@ -115,7 +115,7 @@ public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverte
 
         // make it into RealRandomAccessible using nearest neighbor search
         RealRandomAccessible< FloatType > realRandomAccessible =
-                Views.interpolate( search, new NearestNeighborSearchInterpolatorFactory< FloatType >() );
+                Views.interpolate( search, new NearestNeighborSearchInterpolatorFactory<>() );
 
         // convert it into a RandomAccessible which can be displayed
         RandomAccessible< FloatType > randomAccessible = Views.raster( realRandomAccessible );
@@ -124,14 +124,13 @@ public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverte
         RandomAccessibleInterval< FloatType > labelImage = Views.interval( randomAccessible, interval );
 
         if (copyImg) {
-            final RandomAccessibleInterval< FloatType > labelImageCopy = new ArrayImgFactory( Util.getTypeFromInterval( labelImage ) ).create( labelImage );
+            final ArrayImg labelImageCopy = new ArrayImgFactory( Util.getTypeFromInterval( labelImage ) ).create( labelImage );
 
             // Image copied to avoid computing it on the fly
             // https://github.com/imglib/imglib2-algorithm/blob/47cd6ed5c97cca4b316c92d4d3260086a335544d/src/main/java/net/imglib2/algorithm/util/Grids.java#L221 used for parallel copy
 
-            Grids.collectAllContainedIntervals(imgTestSize, new int[]{64, 64, 64}).stream().forEach(blockinterval -> {
-                copy(labelImage, Views.interval(labelImageCopy, blockinterval));
-            });
+            Grids.collectAllContainedIntervals(imgTestSize, new int[]{64, 64, 64})
+                    .forEach(blockinterval -> copy(labelImage, Views.interval(labelImageCopy, blockinterval)));
 
             // Alternative non parallel copy
             //LoopBuilder.setImages(labelImage, labelImageCopy).forEachPixel(Type::set);

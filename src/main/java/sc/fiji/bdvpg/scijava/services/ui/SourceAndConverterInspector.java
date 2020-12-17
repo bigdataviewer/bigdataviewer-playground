@@ -39,7 +39,7 @@ import net.imglib2.realtransform.RealTransform;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.HashSet;
@@ -51,7 +51,7 @@ import java.util.function.Supplier;
 public class SourceAndConverterInspector {
 
     /**
-     * Appends all the metadata fo a SourceAndConverter into a tree structure
+     * Appends all the metadata of a SourceAndConverter into a tree structure
      */
     public static void appendMetadata(DefaultMutableTreeNode parent, SourceAndConverter sac) {
         SourceAndConverterServices.getSourceAndConverterService().getMetadataKeys(sac)
@@ -72,9 +72,9 @@ public class SourceAndConverterInspector {
      * - TransformedSource {@link TransformedSource}
      * - ResampledSource {@link ResampledSource}
      *
-     * @param parent
-     * @param sac
-     * @param sourceAndConverterService
+     * @param parent parent node
+     * @param sac source
+     * @param sourceAndConverterService source service
      * @return the set of sources that were necessary to build the sac (including itself)
      */
     public static Set<SourceAndConverter> appendInspectorResult(DefaultMutableTreeNode parent,
@@ -99,7 +99,7 @@ public class SourceAndConverterInspector {
                 );
             } else {
                 // no source and converter exist for this source : creates it
-                SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getWrappedSource());
+                SourceAndConverter src = SourceAndConverterHelper.createSourceAndConverter(source.getWrappedSource());
                 if (registerIntermediateSources) {
                     sourceAndConverterService.register(src);
                 }
@@ -139,7 +139,7 @@ public class SourceAndConverterInspector {
                 );
             } else {
                 // no source and converter exist for this source : creates it
-                SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getWrappedSource());
+                SourceAndConverter src = SourceAndConverterHelper.createSourceAndConverter(source.getWrappedSource());
                 if (registerIntermediateSources) {
                     sourceAndConverterService.register(src);
                 }
@@ -178,7 +178,7 @@ public class SourceAndConverterInspector {
                 );
             } else {
                 // no source and converter exist for this source : creates it
-                SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getOriginalSource());
+                SourceAndConverter src = SourceAndConverterHelper.createSourceAndConverter(source.getOriginalSource());
                 if (registerIntermediateSources) {
                     sourceAndConverterService.register(src);
                 }
@@ -200,7 +200,7 @@ public class SourceAndConverterInspector {
                 );
             } else {
                 // no source and converter exist for this source : creates it
-                SourceAndConverter src = SourceAndConverterUtils.createSourceAndConverter(source.getModelResamplerSource());
+                SourceAndConverter src = SourceAndConverterHelper.createSourceAndConverter(source.getModelResamplerSource());
                 if (registerIntermediateSources) {
                     sourceAndConverterService.register(src);
                 }
@@ -246,7 +246,7 @@ public class SourceAndConverterInspector {
         List<SourceAndConverter> sacs = SourceAndConverterServices.getSourceAndConverterService()
                 .getSourceAndConvertersFromSource(source);
         if (sacs.size()==0) {
-            sac = SourceAndConverterUtils.createSourceAndConverter(source);
+            sac = SourceAndConverterHelper.createSourceAndConverter(source);
         } else {
             sac = sacs.get(0);
         }

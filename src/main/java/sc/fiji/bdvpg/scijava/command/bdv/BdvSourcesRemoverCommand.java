@@ -44,12 +44,12 @@ public class BdvSourcesRemoverCommand implements Command {
     BdvHandle bdvh;
 
     @Parameter(label="Select Source(s)")
-    SourceAndConverter[] srcs_in;
+    SourceAndConverter[] sacs;
 
     @Override
     public void run() {
-        for (SourceAndConverter src:srcs_in) {
-            SourceAndConverterServices.getSourceAndConverterDisplayService().remove(bdvh, src);
+        for (SourceAndConverter sac:sacs) {
+            SourceAndConverterServices.getSourceAndConverterDisplayService().remove(bdvh, sac);
         }
     }
 }

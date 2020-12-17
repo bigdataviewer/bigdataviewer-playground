@@ -30,6 +30,7 @@ package sc.fiji.bdvpg.scijava.services.ui.swingdnd;
 
 import bdv.ui.SourcesTransferable;
 import bdv.viewer.SourceAndConverter;
+import org.jetbrains.annotations.NotNull;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
@@ -47,6 +48,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -101,12 +103,12 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
         TreePath[] paths = tree.getSelectionPaths();
         if (paths != null) {
             List<DefaultMutableTreeNode> copies = new ArrayList<>();
-            List<DefaultMutableTreeNode> toRemove = new ArrayList<>();
+            //List<DefaultMutableTreeNode> toRemove = new ArrayList<>();
             DefaultMutableTreeNode node =
                     (DefaultMutableTreeNode) paths[0].getLastPathComponent();
             DefaultMutableTreeNode copy = copy(node);
             copies.add(copy);
-            toRemove.add(node);
+            //toRemove.add(node);
             for (int i = 1; i < paths.length; i++) {
                 DefaultMutableTreeNode next =
                         (DefaultMutableTreeNode) paths[i].getLastPathComponent();
@@ -118,13 +120,13 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
                     // node already contains child
                 } else {                                        // sibling
                     copies.add(copy(next));
-                    toRemove.add(next);
+                    //toRemove.add(next);
                 }
             }
             DefaultMutableTreeNode[] nodes =
-                    copies.toArray(new DefaultMutableTreeNode[copies.size()]);
-            DefaultMutableTreeNode[] nodesToRemove =
-                    toRemove.toArray(new DefaultMutableTreeNode[toRemove.size()]);
+                    copies.toArray(new DefaultMutableTreeNode[0]);
+            /*DefaultMutableTreeNode[] nodesToRemove =
+                    toRemove.toArray(new DefaultMutableTreeNode[toRemove.size()]);*/
             return new NodesTransferable(nodes);
         }
         return null;
@@ -143,12 +145,11 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
                 for (SourceAndConverter sac : ui.getSelectedSourceAndConverters()) {
                     sacs.add(sac);
                 }
+                //Collections.addAll(sacs, ui.getSelectedSourceAndConverters()); // Do not work, even if intellij suggests it
                 extT.setSourcesList(sacs);
             }
             return extT;
-        } catch (UnsupportedFlavorException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (UnsupportedFlavorException | IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -173,7 +174,7 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
         Transferable t = supp.getTransferable();
         try {
             if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-                List<File> files = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
+                List<File> files = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
                 for (File f : files) {
                     if (f.getAbsolutePath().endsWith(".xml")) {
                         new SpimDataFromXmlImporter(f).run();
@@ -206,16 +207,14 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
                 }
 
             }
-        } catch (UnsupportedFlavorException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (UnsupportedFlavorException | IOException e) {
             e.printStackTrace();
         }
 
         return true;
     }
 
-    public class ExtTransferable implements Transferable {
+    public static class ExtTransferable implements Transferable {
 
         @Override
         public DataFlavor[] getTransferDataFlavors() {
@@ -237,7 +236,7 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
             this.sourcesTransferable = new SourcesTransferable(sources);
         }
 
-
+        @NotNull
         @Override
         public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
             if (flavor.equals(nodesFlavor)) {

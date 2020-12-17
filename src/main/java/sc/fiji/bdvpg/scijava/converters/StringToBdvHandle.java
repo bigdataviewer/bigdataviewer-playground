@@ -33,7 +33,7 @@ import org.scijava.convert.AbstractConverter;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.BdvHandleHelper;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 
 import java.util.Optional;
 
@@ -47,11 +47,7 @@ public class StringToBdvHandle<I extends String, O extends BdvHandle> extends Ab
         Optional<BdvHandle> ans =  os.getObjects(BdvHandle.class).stream().filter(bdvh ->
                 (bdvh.toString().equals(src))||(BdvHandleHelper.getWindowTitle(bdvh).equals(src))
         ).findFirst();
-        if (ans.isPresent()) {
-            return (T) ans.get();
-        } else {
-            return  null;
-        }
+        return (T) ans.orElse(null);
     }
 
     @Override

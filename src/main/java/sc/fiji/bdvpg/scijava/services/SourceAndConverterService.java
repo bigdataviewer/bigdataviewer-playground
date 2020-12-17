@@ -48,15 +48,11 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.scijava.ui.UIService;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesShowCommand;
-import sc.fiji.bdvpg.scijava.command.bdv.ScreenShotMakerCommand;
 import sc.fiji.bdvpg.scijava.command.source.*;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -69,8 +65,6 @@ import java.util.stream.Collectors;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
-import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * Scijava Service which centralizes BDV Sources, independently of their display
@@ -132,15 +126,14 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
     /**
      * Test if a Source is already registered in the Service
-     * @param src
-     * @return
+     * @param src source
+     * @return true if a source is already registered
      */
     public boolean isRegistered(SourceAndConverter src) {
         return sacToMetadata.getIfPresent(src)!=null;
     }
 
     public void setDisplayService( SourceAndConverterBdvDisplayService bsds) {
-        assert bsds instanceof SourceAndConverterBdvDisplayService;
         this.bsds = bsds;
     }
 
@@ -174,7 +167,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     public Collection<String> getMetadataKeys(SourceAndConverter sac) {
         Map<String, Object> map = sacToMetadata.getIfPresent(sac);
         if (map==null) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } else {
             return map.keySet();
         }
@@ -188,14 +181,14 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     /**
      * Register a BDV Source in this Service.
      * Called in the BdvSourcePostProcessor
-     * @param sac
+     * @param sac source
      */
     public synchronized void register(SourceAndConverter sac) {
         if (objectService.getObjects(SourceAndConverter.class).contains(sac)) {
             log.accept("Source already registered");
             return;
         }
-        if (!(sacToMetadata.getIfPresent(sac)!=null)) {
+        if (sacToMetadata.getIfPresent(sac) == null) {
             Map<String, Object> sourceData = new HashMap<>();
             sacToMetadata.put(sac, sourceData);
         }
@@ -216,7 +209,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             spimdataToMetadata.put(asd, sourceData);
         }
 
-        Map<Integer, SourceAndConverter> sacs = SourceAndConverterUtils.createSourceAndConverters(asd);
+        Map<Integer, SourceAndConverter> sacs = SourceAndConverterHelper.createSourceAndConverters(asd);
         this.register(sacs.values());
         sacs.forEach((id,sac) -> {
             this.linkToSpimData(sac, asd, id);
@@ -277,13 +270,13 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     public List<SourceAndConverter> getSourceAndConverterFromSpimdata(AbstractSpimData asd) {
         return objectService.getObjects(SourceAndConverter.class)
                 .stream()
-                .filter(s -> ((SpimDataInfo)sacToMetadata.getIfPresent(s).get(SPIM_DATA_INFO)!=null))
+                .filter(s -> (sacToMetadata.getIfPresent(s).get(SPIM_DATA_INFO) !=null))
                 .filter(s -> ((SpimDataInfo)sacToMetadata.getIfPresent(s).get(SPIM_DATA_INFO)).asd.equals(asd))
                 .collect(Collectors.toList());
     }
 
     public void linkToSpimData( SourceAndConverter sac, AbstractSpimData asd, int idSetup) {
-        sacToMetadata.getIfPresent( sac ).put( SPIM_DATA_INFO, new SpimDataInfo(asd,idSetup));
+        sacToMetadata.getIfPresent( sac ).put( SPIM_DATA_INFO, new SpimDataInfo(asd, idSetup));
     }
 
 
@@ -366,7 +359,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         return actionMap.keySet();
     }
 
-    final public static String getCommandName(Class<? extends Command> c) {
+    public static String getCommandName(Class<? extends Command> c) {
         String menuPath = c.getDeclaredAnnotation(Plugin.class).menuPath();
         return menuPath.substring(menuPath.lastIndexOf(">")+1);
     }
@@ -376,39 +369,10 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             for (SourceAndConverter src:srcs){
                 System.out.println(src.getSpimSource().getName());
             }});
-        commandService.getCommands().forEach(ci -> {
-            registerScijavaCommandInfo(ci);
-        });
-
-        // BDV add and remove
-        /*registerScijavaCommand(BdvSourcesAdderCommand.class);
-        registerScijavaCommand(BdvSourcesShowCommand.class);
-        registerScijavaCommand(BdvSourcesRemoverCommand.class);
-        registerScijavaCommand(SourcesInvisibleMakerCommand.class);
-        registerScijavaCommand(SourcesVisibleMakerCommand.class);
-        registerScijavaCommand(BrightnessAdjusterCommand.class);
-        registerScijavaCommand(SourceColorChangerCommand.class);
-        registerScijavaCommand(SourceAndConverterProjectionModeChangerCommand.class);
-        registerScijavaCommand(SourcesDuplicatorCommand.class);
-        registerScijavaCommand(ManualTransformCommand.class);
-        registerScijavaCommand(TransformedSourceWrapperCommand.class);
-        registerScijavaCommand(ColorSourceCreatorCommand.class);
-        registerScijavaCommand(LUTSourceCreatorCommand.class);
-        registerScijavaCommand(SourcesRemoverCommand.class);
-        registerScijavaCommand(XmlHDF5ExporterCommand.class);
-        registerScijavaCommand(ScreenShotMakerCommand.class);
-        registerScijavaCommand(BasicTransformerCommand.class);*/
-
-        // registerScijavaCommand(SourcesResamplerCommand.class); Too many arguments -> need to define which one is used
+        commandService.getCommands().forEach(ci -> registerScijavaCommandInfo(ci));
         registerAction(getCommandName(SourcesResamplerCommand.class),
                 (sacs) -> {
-                    //try {
                     commandService.run(SourcesResamplerCommand.class, true, "sourcesToResample", sacs);//.get();
-                    //} catch (InterruptedException e) {
-                    //    e.printStackTrace();
-                    //} catch (ExecutionException e) {
-                    //    e.printStackTrace();
-                    //}
                 });
 
         /*File f = new File("bdvpgsettings"+File.separator+"ActionPackages.json");
@@ -497,40 +461,18 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                             registerAction(ci.getMenuPath().getLeaf().toString(),
                                     (sacs) -> {
                                         // Todo : improve by sending the parameters all over again
-                                        //try {
                                         for (SourceAndConverter sac : sacs) {
                                             commandService.run(ci, true, input.getName(), sac);//.get(); TODO understand why get is impossible
                                         }
-                                        //} catch (InterruptedException e) {
-                                        //    e.printStackTrace();
-                                        //} catch (ExecutionException e) {
-                                        //    e.printStackTrace();
-                                        //}
                                     });
-                           /* log.accept("name:"+ci.getName());
-                            log.accept("title:"+ci.getTitle());
-                            log.accept("tostring:"+ci.toString());
-                            log.accept("identifier:"+ci.getIdentifier());
-                            log.accept("classname:"+ci.getClassName());
-                            log.accept("menuroot:"+ci.getMenuRoot());
-                            log.accept("label:"+ci.getLabel());
-                            log.accept("location:"+ci.getLocation());
-                            log.accept("menustring:"+ci.getMenuPath().getMenuString());
-                            log.accept("menustring leaf:"+ci.getMenuPath().getLeaf().toString());*/
-                            log.accept("Registering action entitled " + ci.getMenuPath().getLeaf().toString() + " from command " + ci.getClassName());
+                            //log.accept("Registering action entitled " + ci.getMenuPath().getLeaf().toString() + " from command " + ci.getClassName());
 
                         }
                         if (input.getType().equals(SourceAndConverter[].class)) {
                             // It's an action which takes a SourceAndConverter List
                             registerAction(ci.getMenuPath().getLeaf().toString(),
                                     (sacs) -> {
-                                        //try {
                                         commandService.run(ci, true, input.getName(), sacs);//.get();
-                                        //} catch (InterruptedException e) {
-                                        //    e.printStackTrace();
-                                        //} catch (ExecutionException e) {
-                                        //    e.printStackTrace();
-                                        //}
                                     });
 
                             log.accept("Registering action entitled " + ci.getMenuPath().getLeaf().toString() + " from command " + ci.getClassName());
@@ -570,7 +512,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
     //------------------- SpimData specific informations
 
-   public class SpimDataInfo {
+   public static class SpimDataInfo {
 
         public final AbstractSpimData asd;
         public int setupId;
@@ -627,7 +569,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     public Collection<String> getMetadataKeys(AbstractSpimData asd) {
         Map<String, Object> map = spimdataToMetadata.getIfPresent(asd);
         if (map==null) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } else {
             return map.keySet();
         }

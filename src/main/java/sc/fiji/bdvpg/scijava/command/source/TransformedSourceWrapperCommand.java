@@ -38,17 +38,17 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Wrap as Transformed Source")
 public class TransformedSourceWrapperCommand implements Command {
+
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sources_in;
+    SourceAndConverter[] sacs;
 
     @Override
     public void run() {
         SourceAffineTransformer sat = new SourceAffineTransformer(null, new AffineTransform3D());
-        Arrays.asList(sources_in).stream().map(sat::apply).forEach(sac ->
+        Arrays.stream(sacs).map(sat).forEach(sac ->
                         SourceAndConverterServices.getSourceAndConverterService().register(sac)
                 );
     }

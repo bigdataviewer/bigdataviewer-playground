@@ -107,22 +107,22 @@ public class ManualRegistrationStarter implements Runnable {
     @Override
     public void run() {
 
-        for (int i=0;i<sacs.length;i++) {
+        for (SourceAndConverter sourceAndConverter : sacs) {
 
             // Wraps into a Transformed Source, if the source was displayed originally
-            if (SourceAndConverterServices.getSourceAndConverterDisplayService().getDisplaysOf(sacs[i]).contains(bdvHandle)) {
-                if (SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible(sacs[i], bdvHandle)) {
-                    displayedSacsWrapped.add(new SourceAffineTransformer(sacs[i], new AffineTransform3D()).getSourceOut());
-                    originallyDisplayedSacs.add(sacs[i]);
+            if (SourceAndConverterServices.getSourceAndConverterDisplayService().getDisplaysOf(sourceAndConverter).contains(bdvHandle)) {
+                if (SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible(sourceAndConverter, bdvHandle)) {
+                    displayedSacsWrapped.add(new SourceAffineTransformer(sourceAndConverter, new AffineTransform3D()).getSourceOut());
+                    originallyDisplayedSacs.add(sourceAndConverter);
                 }
             }
         }
 
         // Remove from display the originally displayed sources
-        SourceAndConverterServices.getSourceAndConverterDisplayService().remove(bdvHandle, originallyDisplayedSacs.toArray(new SourceAndConverter[originallyDisplayedSacs.size()]));
+        SourceAndConverterServices.getSourceAndConverterDisplayService().remove(bdvHandle, originallyDisplayedSacs.toArray(new SourceAndConverter[0]));
 
         // Shows the displayed wrapped Source
-        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, displayedSacsWrapped.toArray(new SourceAndConverter[displayedSacsWrapped.size()]));
+        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, displayedSacsWrapped.toArray(new SourceAndConverter[0]));
 
         // View of the BdvHandle before starting the registration
         AffineTransform3D originalViewTransform = new AffineTransform3D();
@@ -134,7 +134,7 @@ public class ManualRegistrationStarter implements Runnable {
                 // Global difference of transform is
                 currentRegistration = newView.copy();
                 currentRegistration = currentRegistration.inverse();
-                currentRegistration = currentRegistration.concatenate(originalViewTransform);
+                currentRegistration.concatenate(originalViewTransform);
 
                 // Sets view transform fo transiently wrapped source to maintain relative position
                 displayedSacsWrapped.forEach(sac -> ((TransformedSource) sac.getSpimSource()).setFixedTransform(currentRegistration));

@@ -40,7 +40,7 @@ public class ProjectionModeChanger implements Runnable, Consumer< SourceAndConve
 
     private String projectionMode;
     private final boolean showSourcesExclusively;
-    private SourceAndConverter[] sacs;
+    private final SourceAndConverter[] sacs;
 
     public ProjectionModeChanger( SourceAndConverter[] sacs, String projectionMode, boolean showSourcesExclusively ) {
         this.sacs = sacs;

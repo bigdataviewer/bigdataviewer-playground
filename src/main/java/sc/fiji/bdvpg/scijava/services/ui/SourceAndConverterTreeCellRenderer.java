@@ -40,10 +40,10 @@ public class SourceAndConverterTreeCellRenderer extends DefaultTreeCellRenderer 
 
     //static ImageIcon sourceIcon;
     static ImageIcon source2d;
-    static ImageIcon source2dwarped;
+    //static ImageIcon source2dwarped;
 
     static ImageIcon source3d;
-    static ImageIcon source3dwarped;
+    //static ImageIcon source3dwarped;
 
     static ImageIcon sourceFilterNode;
 
@@ -71,12 +71,6 @@ public class SourceAndConverterTreeCellRenderer extends DefaultTreeCellRenderer 
                 tree, value, sel,
                 expanded, leaf, row,
                 hasFocus);
-        /*if (leaf && isTutorialBook(value)) {
-            setIcon(tutorialIcon);
-            setToolTipText("This book is in the Tutorial series.");
-        } else {
-            setToolTipText(null); //no tool tip
-        }*/
         if (isSourceAndConverterNode(value)) {
             setIcon(source3d);
             String text = String.format(SPAN_FORMAT, "rgb(80,80,80)", getText());

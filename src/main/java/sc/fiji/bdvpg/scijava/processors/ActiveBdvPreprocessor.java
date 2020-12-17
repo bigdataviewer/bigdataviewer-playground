@@ -88,13 +88,12 @@ public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle>  {
                                 .run(module, true, module.getInputs())
                                 .get()
                                 .getOutput("bdvh");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
         }
 
+        assert bdvhs != null;
         if (bdvhs.size()==1) {
             return bdvhs.get(0);
         } else {

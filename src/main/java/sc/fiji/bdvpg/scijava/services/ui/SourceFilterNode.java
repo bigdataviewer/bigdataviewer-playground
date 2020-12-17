@@ -163,7 +163,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
 
     /**
      * Removes a source and converter from this node and children nodes
-     * @param sac
+     * @param sac source to remove
      */
     void remove(SourceAndConverter sac) {
         currentInputSacs.remove(sac);
@@ -188,7 +188,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
     /**
      * Very important method which recomputes the tree based on the {@link UpdateEvent} notified
      * ensures new and up to date recomputation of the whole tree
-     * @param event
+     * @param event casted event
      */
     public void update(UpdateEvent event) {
         if (event instanceof NodeAddedUpdateEvent) {
@@ -335,15 +335,13 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
     /**
      * Executes the model reloading actions in the EDT
      *
-     * @param runnable
+     * @param runnable method to run in the EDT
      */
     static public void safeModelReloadAction(Runnable runnable) {
         if (SwingUtilities.isEventDispatchThread()) {
             runnable.run();
         } else {
-            SwingUtilities.invokeLater(() -> {
-                runnable.run();
-            });
+            SwingUtilities.invokeLater(runnable);
         }
     }
 

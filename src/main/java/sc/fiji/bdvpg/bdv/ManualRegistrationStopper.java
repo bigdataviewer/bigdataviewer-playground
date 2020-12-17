@@ -93,7 +93,7 @@ public class ManualRegistrationStopper implements Runnable {
 
         // Removes temporary TransformedSourceAndConverter - a two step process in order to improve performance
         List<SourceAndConverter> tempSacs = starter.getTransformedSourceAndConverterDisplayed();
-        SourceAndConverterServices.getSourceAndConverterDisplayService().remove(starter.bdvHandle,tempSacs.toArray(new SourceAndConverter[tempSacs.size()]));
+        SourceAndConverterServices.getSourceAndConverterDisplayService().remove(starter.bdvHandle,tempSacs.toArray(new SourceAndConverter[0]));
 
         for (SourceAndConverter sac: tempSacs) {
             SourceAndConverterServices.getSourceAndConverterService().remove(sac);
@@ -115,7 +115,7 @@ public class ManualRegistrationStopper implements Runnable {
 
         // Calls display ( array for better performance )
         SourceAndConverterServices.getSourceAndConverterDisplayService().show(starter.getBdvHandle(),
-                transformedSacsToDisplay.toArray(new SourceAndConverter[transformedSacsToDisplay.size()]));
+                transformedSacsToDisplay.toArray(new SourceAndConverter[0]));
 
     }
 

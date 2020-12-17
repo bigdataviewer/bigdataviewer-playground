@@ -33,11 +33,8 @@ import org.scijava.convert.AbstractConverter;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
 
 import javax.swing.tree.TreePath;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * TODO : allows multiple Paths splitted by a character ? Not sure it's fool proof

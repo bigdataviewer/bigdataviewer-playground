@@ -59,18 +59,14 @@ public class Wrapped2DTransformAs3DRealTransformAdapter implements IClassRuntime
             return null;
         }
 
-        Wrapped2DTransformAs3D wrapped2DTransformAs3D =
-                new Wrapped2DTransformAs3D((InvertibleRealTransform) rt);
-        return wrapped2DTransformAs3D;
+        return new Wrapped2DTransformAs3D((InvertibleRealTransform) rt);
     }
 
     @Override
     public JsonElement serialize(Wrapped2DTransformAs3D wrapped2DTransformAs3D, Type type, JsonSerializationContext jsonSerializationContext) {
-        Wrapped2DTransformAs3D rt = wrapped2DTransformAs3D;
         JsonObject obj = new JsonObject();
-
         obj.addProperty("type", Wrapped2DTransformAs3D.class.getSimpleName());
-        obj.add("wrappedTransform", jsonSerializationContext.serialize(rt.getTransform()));
+        obj.add("wrappedTransform", jsonSerializationContext.serialize(wrapped2DTransformAs3D.getTransform()));
         return obj;
     }
 }

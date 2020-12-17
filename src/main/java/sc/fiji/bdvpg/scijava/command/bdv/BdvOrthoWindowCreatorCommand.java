@@ -36,11 +36,11 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.BdvCreator;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerOrthoSyncStarter;
 import sc.fiji.bdvpg.bdv.projector.AccumulateAverageProjectorARGB;
 import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGBFactory;
 import sc.fiji.bdvpg.bdv.projector.Projection;
-import sc.fiji.bdvpg.scijava.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 
 import javax.swing.*;
@@ -119,7 +119,7 @@ public class BdvOrthoWindowCreatorCommand implements Command {
         BdvOptions opts = BdvOptions.options().frameTitle(windowTitle+suffix).preferredSize(sizeX,sizeY);
 
         // Create accumulate projector factory
-        AccumulateProjectorFactory<ARGBType> factory = null;
+        AccumulateProjectorFactory<ARGBType> factory;
         switch (projector) {
             case Projection.MIXED_PROJECTOR:
                 factory = new AccumulateMixedProjectorARGBFactory(  );

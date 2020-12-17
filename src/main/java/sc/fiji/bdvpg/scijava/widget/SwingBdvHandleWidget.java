@@ -36,7 +36,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
-import sc.fiji.bdvpg.scijava.BdvHandleHelper;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import javax.swing.*;
@@ -81,8 +81,11 @@ public class SwingBdvHandleWidget extends SwingInputWidget<BdvHandle> implements
     @Override
     public void set(final WidgetModel model) {
         super.set(model);
-        List<RenamableBdvHandle> bdvhs = os.getObjects(BdvHandle.class).stream().map(bdvh -> new RenamableBdvHandle(bdvh)).collect(Collectors.toList());
-        RenamableBdvHandle[] data = bdvhs.toArray(new RenamableBdvHandle[bdvhs.size()]);
+        RenamableBdvHandle[] data =
+                os.getObjects(BdvHandle.class)
+                  .stream()
+                  .map(RenamableBdvHandle::new)
+                  .toArray(RenamableBdvHandle[]::new);
         list = new JList(data); //data has type Object[]
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane listScroller = new JScrollPane(list);

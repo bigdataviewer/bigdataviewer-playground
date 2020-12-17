@@ -71,15 +71,15 @@ public class VolatileSource<T extends NumericType<T>, V extends Volatile< T > & 
 
     final SharedQueue queue;
 
-    ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, RandomAccessibleInterval>> cachedRAIs = new ConcurrentHashMap<>();
+    ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, RandomAccessibleInterval<V>>> cachedRAIs = new ConcurrentHashMap<>();
 
-    public VolatileSource(final Source source) {
+    public VolatileSource(final Source<T> source) {
         this.originSource = source;
         queue = new SharedQueue(2);
     }
 
-    public VolatileSource(final Source resampledSource, final SharedQueue queue) {
-        this.originSource = resampledSource;
+    public VolatileSource(final Source<T> originSource, final SharedQueue queue) {
+        this.originSource = originSource;
         this.queue = queue;
     }
 

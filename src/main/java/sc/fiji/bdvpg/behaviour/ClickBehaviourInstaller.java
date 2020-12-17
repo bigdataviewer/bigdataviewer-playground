@@ -48,8 +48,8 @@ public class ClickBehaviourInstaller
 	/**
 	 * TODO: probably just create one behaviour for each BDV?
 	 *
-	 * @param name
-	 * @param trigger
+	 * @param name name of the behaviour
+	 * @param trigger how this behaviour is triggered, see wiki of behaviour ui scijava
 	 */
 	public void install( String name, String trigger )
 	{

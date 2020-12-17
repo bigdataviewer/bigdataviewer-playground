@@ -41,10 +41,10 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import org.junit.Test;
-import sc.fiji.bdvpg.bdv.BdvUtils;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 /**
  * ViewTransformSetAndLogDemo
@@ -69,7 +69,7 @@ public class ViewTransformSetAndLogDemo {
 
         // Makes BDV Source
         Source source = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
-        SourceAndConverter sac = SourceAndConverterUtils.createSourceAndConverter(source);
+        SourceAndConverter sac = SourceAndConverterHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
@@ -94,7 +94,7 @@ public class ViewTransformSetAndLogDemo {
         IJ.wait( animationDurationMillis );
 
         // set a new transform
-        AffineTransform3D adaptedCenterTransform = BdvUtils.getViewerTransformWithNewCenter( bdvHandle, new double[]{ 133, 133, 0 } );
+        AffineTransform3D adaptedCenterTransform = BdvHandleHelper.getViewerTransformWithNewCenter( bdvHandle, new double[]{ 133, 133, 0 } );
         new ViewerTransformChanger(bdvHandle, adaptedCenterTransform, false, animationDurationMillis ).run();
 
         // log transform

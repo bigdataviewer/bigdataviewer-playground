@@ -49,13 +49,12 @@ public class InputTriggerConfigHelper {
     public static InputTriggerMap getInputTriggerMap(InputTriggerConfig config) {
         InputTriggerMap inputMap = new InputTriggerMap();
 
-        config.actionToInputsMap.forEach((key, inputs) -> {
-
-            inputs.forEach(input -> {
-                inputMap.put(input.trigger, key);
-            });
-
-        });
+        config.actionToInputsMap.forEach(
+            (key, inputs) ->
+                inputs.forEach(
+                        input -> inputMap.put(input.trigger, key)
+                )
+        );
 
         return inputMap;
     }

@@ -112,7 +112,7 @@ public class BdvPrefsSettingsPage implements SettingsPage {
     /**
      * Inner panel containing checkboxes and colorchoosers
      */
-    class BdvPrefsEditorPanel extends JPanel {
+    static class BdvPrefsEditorPanel extends JPanel {
 
         JButton chooseScaleBarColor, chooseScaleBarBGColor;
 
