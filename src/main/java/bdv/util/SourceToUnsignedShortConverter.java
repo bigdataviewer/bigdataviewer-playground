@@ -48,8 +48,8 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 
 public class SourceToUnsignedShortConverter {
 
-    static public Source<UnsignedShortType> convertRealSource(Source<RealType> iniSrc) {
-        Converter<RealType, UnsignedShortType> cvt = (i, o) -> o.set((int) i.getRealDouble());
+    static public <T extends RealType< T >> Source<UnsignedShortType> convertRealSource(Source<T> iniSrc) {
+        Converter<T, UnsignedShortType> cvt = (i, o) -> o.set((int) i.getRealDouble());
         Source<UnsignedShortType> cvtSrc = new Source<UnsignedShortType>() {
             @Override
             public boolean isPresent(int t) {

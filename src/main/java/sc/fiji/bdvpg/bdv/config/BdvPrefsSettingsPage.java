@@ -110,7 +110,7 @@ public class BdvPrefsSettingsPage implements SettingsPage {
     }
 
     /**
-     * Inner panel containing checkboxes and colorchoosers
+     * Inner panel containing checkboxes and color choosers
      */
     static class BdvPrefsEditorPanel extends JPanel {
 

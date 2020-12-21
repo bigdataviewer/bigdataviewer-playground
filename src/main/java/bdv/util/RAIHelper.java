@@ -64,7 +64,7 @@ import static net.imglib2.type.PrimitiveType.DOUBLE;
 public class RAIHelper {
 
     @SuppressWarnings( { "unchecked", "rawtypes" } )
-    public static final <T extends NativeType<T>> RandomAccessibleInterval<T> wrapAsVolatileCachedCellImg(
+    public static <T extends NativeType<T>> RandomAccessibleInterval<T> wrapAsVolatileCachedCellImg(
             final RandomAccessibleInterval<T> source,
             final int[] blockSize) {
 
