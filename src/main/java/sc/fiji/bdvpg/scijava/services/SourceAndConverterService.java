@@ -207,14 +207,15 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         if (spimdataToMetadata.getIfPresent(asd)==null) {
             Map<String, Object> sourceData = new HashMap<>();
             spimdataToMetadata.put(asd, sourceData);
+
+            Map<Integer, SourceAndConverter<?>> sacs = SourceAndConverterHelper.createSourceAndConverters(asd);
+            this.register(sacs.values());
+            sacs.forEach((id,sac) -> {
+                this.linkToSpimData(sac, asd, id);
+                if (uiAvailable) ui.update(sac);
+            });
         }
 
-        Map<Integer, SourceAndConverter<?>> sacs = SourceAndConverterHelper.createSourceAndConverters(asd);
-        this.register(sacs.values());
-        sacs.forEach((id,sac) -> {
-            this.linkToSpimData(sac, asd, id);
-            if (uiAvailable) ui.update(sac);
-        });
     }
 
     @Override

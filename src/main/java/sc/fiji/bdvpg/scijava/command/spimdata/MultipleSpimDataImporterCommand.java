@@ -28,6 +28,8 @@
  */
 package sc.fiji.bdvpg.scijava.command.spimdata;
 
+import mpicbg.spim.data.generic.AbstractSpimData;
+import org.scijava.ItemIO;
 import org.scijava.ItemVisibility;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
@@ -53,9 +55,13 @@ public class MultipleSpimDataImporterCommand implements Command {
     @Parameter(style="extensions:xml")
     public File[] files;
 
+    @Parameter(type = ItemIO.OUTPUT)
+    public AbstractSpimData[] spimDataArray;
+
     public void run() {
-        for (File file : files) {
-            new SpimDataFromXmlImporter(file).get();
+        spimDataArray = new AbstractSpimData[files.length];
+        for (int i=0;i<files.length;i++) {
+            spimDataArray[i] = new SpimDataFromXmlImporter(files[i]).get();
         }
     }
 
