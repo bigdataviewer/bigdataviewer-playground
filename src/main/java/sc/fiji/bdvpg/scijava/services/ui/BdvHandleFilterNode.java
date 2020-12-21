@@ -51,7 +51,7 @@ public class BdvHandleFilterNode extends SourceFilterNode {
 
     ViewerStateChangeListener vscl;
 
-    public boolean filter(SourceAndConverter sac) {
+    public boolean filter(SourceAndConverter<?> sac) {
         return bdvh.getViewerPanel().state().getSources().contains(sac);
     }
 

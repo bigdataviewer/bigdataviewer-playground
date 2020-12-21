@@ -61,7 +61,7 @@ import java.util.Set;
  */
 
 @Plugin(type = InputWidget.class, priority = Priority.EXTREMELY_HIGH)
-public class SwingSourceAndConverterWidget extends SwingInputWidget<SourceAndConverter> implements
+public class SwingSourceAndConverterWidget extends SwingInputWidget<SourceAndConverter<?>> implements
         SourceAndConverterWidget<JPanel> {
 
     @Override
@@ -74,7 +74,7 @@ public class SwingSourceAndConverterWidget extends SwingInputWidget<SourceAndCon
     }
 
     @Override
-    public SourceAndConverter getValue() {
+    public SourceAndConverter<?> getValue() {
         return getSelectedSourceAndConverter();
     }
 
@@ -83,12 +83,12 @@ public class SwingSourceAndConverterWidget extends SwingInputWidget<SourceAndCon
 
     JTree tree;
 
-    public SourceAndConverter getSelectedSourceAndConverter() {
-        ArrayList<SourceAndConverter> sacList = new ArrayList<>(); // A set avoids duplicate SourceAndConverter
+    public SourceAndConverter<?> getSelectedSourceAndConverter() {
+        ArrayList<SourceAndConverter<?>> sacList = new ArrayList<>(); // A set avoids duplicate SourceAndConverter
         for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
             if (((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject() instanceof RenamableSourceAndConverter) {
                 Object userObj = ((RenamableSourceAndConverter) ((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject()).sac;
-                sacList.add((SourceAndConverter) userObj);
+                sacList.add((SourceAndConverter<?>) userObj);
             } else {
                 sacList.addAll(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) tp.getLastPathComponent()));
             }
@@ -100,13 +100,13 @@ public class SwingSourceAndConverterWidget extends SwingInputWidget<SourceAndCon
         }
     }
 
-    private Set<SourceAndConverter> getSourceAndConvertersFromChildrenOf(DefaultMutableTreeNode node) {
-        Set<SourceAndConverter> sacs = new HashSet<>();
+    private Set<SourceAndConverter<?>> getSourceAndConvertersFromChildrenOf(DefaultMutableTreeNode node) {
+        Set<SourceAndConverter<?>> sacs = new HashSet<>();
         for (int i=0;i<node.getChildCount();i++) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
             if (child.getUserObject() instanceof RenamableSourceAndConverter) {
                 Object userObj = ((RenamableSourceAndConverter) (child.getUserObject())).sac;
-                sacs.add((SourceAndConverter) userObj);
+                sacs.add((SourceAndConverter<?>) userObj);
             } else {
                 sacs.addAll(getSourceAndConvertersFromChildrenOf(child));
             }

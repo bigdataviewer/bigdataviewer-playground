@@ -78,7 +78,7 @@ import java.util.stream.Collectors;
 
 public class XmlHDF5SpimdataExporter implements Runnable {
 
-    List<SourceAndConverter> sources;
+    List<SourceAndConverter<?>> sources;
 
     int nThreads;
 
@@ -98,7 +98,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
     File xmlFile;
 
-    public XmlHDF5SpimdataExporter(List<SourceAndConverter> sources,
+    public XmlHDF5SpimdataExporter(List<SourceAndConverter<?>> sources,
                                    int nThreads,
                                    int timePointBegin,
                                    int timePointEnd,
@@ -242,7 +242,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
                 basicviewsetup.setAttribute(new Channel(1));
 
-                SourceAndConverter sac = sources.get(idxSourceToSac.get(src));
+                SourceAndConverter<?> sac = sources.get(idxSourceToSac.get(src));
 
                 Displaysettings ds = new Displaysettings(idx_current_src);
 

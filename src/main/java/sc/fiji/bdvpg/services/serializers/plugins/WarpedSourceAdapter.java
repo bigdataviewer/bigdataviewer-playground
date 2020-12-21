@@ -40,7 +40,7 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceRealTransformer;
 import java.lang.reflect.Type;
 
 @Plugin(type = ISourceAdapter.class)
-public class WarpedSourceAdapter implements ISourceAdapter<WarpedSource>{
+public class WarpedSourceAdapter implements ISourceAdapter<WarpedSource<?>>{
 
     SourceAndConverterSerializer sacSerializer;
 
@@ -55,9 +55,9 @@ public class WarpedSourceAdapter implements ISourceAdapter<WarpedSource>{
     }
 
     @Override
-    public JsonElement serialize(SourceAndConverter sac, Type type, JsonSerializationContext jsonSerializationContext) {
+    public JsonElement serialize(SourceAndConverter<?> sac, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
-        WarpedSource source = (WarpedSource) sac.getSpimSource();
+        WarpedSource<?> source = (WarpedSource<?>) sac.getSpimSource();
         obj.add("realtransform", jsonSerializationContext.serialize(source.getTransform()));
 
         /*if (sacSerializer.isObjectRegistered(Source.class, source.getWrappedSource())) {
@@ -78,10 +78,10 @@ public class WarpedSourceAdapter implements ISourceAdapter<WarpedSource>{
     }
 
     @Override
-    public SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public SourceAndConverter<?> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
         int wrappedSourceId = obj.getAsJsonPrimitive("wrapped_source_id").getAsInt();
-        SourceAndConverter wrappedSac;
+        SourceAndConverter<?> wrappedSac;
         if (sacSerializer.getIdToSac().containsKey(wrappedSourceId)) {
             // Already deserialized
             wrappedSac = sacSerializer.getIdToSac().get(wrappedSourceId);
@@ -100,7 +100,7 @@ public class WarpedSourceAdapter implements ISourceAdapter<WarpedSource>{
 
         SourceRealTransformer srt = new SourceRealTransformer(wrappedSac, rt);
         srt.run();
-        SourceAndConverter sac = srt.getSourceOut();
+        SourceAndConverter<?> sac = srt.getSourceOut();
 
         SourceAndConverterServices.getSourceAndConverterService()
                 .register(sac);

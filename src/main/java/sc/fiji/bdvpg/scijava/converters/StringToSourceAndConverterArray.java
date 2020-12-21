@@ -42,7 +42,7 @@ import javax.swing.tree.TreePath;
  */
 
 @Plugin(type = org.scijava.convert.Converter.class)
-public class StringToSourceAndConverterArray<I extends String> extends AbstractConverter<I, SourceAndConverter[]> {
+public class StringToSourceAndConverterArray<I extends String> extends AbstractConverter<I, SourceAndConverter<?>[]> {
 
     @Parameter
     SourceAndConverterService sacsService;
@@ -52,7 +52,7 @@ public class StringToSourceAndConverterArray<I extends String> extends AbstractC
         String str = (String) src;
         TreePath tp = sacsService.getUI().getTreePathFromString(str);
         if (tp!=null) {
-            return (T) sacsService.getUI().getSourceAndConvertersFromTreePath(tp).toArray(new SourceAndConverter[0]);//sacsService.getUI().getSourceAndConvertersFromTreePath(tp).toArray(new SourceAndConverter[0]);
+            return (T) sacsService.getUI().getSourceAndConvertersFromTreePath(tp).toArray(new SourceAndConverter<?>[0]);//sacsService.getUI().getSourceAndConvertersFromTreePath(tp).toArray(new SourceAndConverter[0]);
         } else {
             return null;
         }

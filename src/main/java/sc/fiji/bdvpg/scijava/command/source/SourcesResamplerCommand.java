@@ -57,7 +57,7 @@ public class SourcesResamplerCommand implements Command{
     @Override
     public void run() {
         // Should not be parallel
-        for (SourceAndConverter sourceAndConverter : sourcesToResample) {
+        for (SourceAndConverter<?> sourceAndConverter : sourcesToResample) {
             SourceAndConverterServices.getSourceAndConverterService().register(
                     new SourceResampler(sourceAndConverter, model, reuseMipMaps, cache, interpolate).get()
             );

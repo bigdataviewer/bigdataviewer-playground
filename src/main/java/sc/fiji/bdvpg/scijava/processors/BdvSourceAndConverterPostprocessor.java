@@ -52,7 +52,7 @@ public class BdvSourceAndConverterPostprocessor extends AbstractPostprocessorPlu
        module.getOutputs().forEach((name, object)-> {
            //log.accept("input:\t"+name+"\tclass:\t"+object.getClass().getSimpleName());
            if (object instanceof SourceAndConverter) {
-               SourceAndConverter sac = (SourceAndConverter) object;
+               SourceAndConverter<?> sac = (SourceAndConverter<?>) object;
                log.accept("Source found.");
                log.accept("Is it registered ? ");
                if (!bss.isRegistered(sac)) {
@@ -64,8 +64,8 @@ public class BdvSourceAndConverterPostprocessor extends AbstractPostprocessorPlu
                module.resolveOutput(name);
            }
            if (object instanceof SourceAndConverter[]) {
-               SourceAndConverter[] sacs = (SourceAndConverter[]) object;
-               for (SourceAndConverter sac:sacs) {
+               SourceAndConverter<?>[] sacs = (SourceAndConverter<?>[]) object;
+               for (SourceAndConverter<?> sac:sacs) {
                    log.accept("Source found.");
                    log.accept("Is it registered ? ");
                    if (!bss.isRegistered(sac)) {

@@ -30,7 +30,6 @@ package sc.fiji.bdvpg.scijava.services.ui.swingdnd;
 
 import bdv.ui.SourcesTransferable;
 import bdv.viewer.SourceAndConverter;
-import org.jetbrains.annotations.NotNull;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
@@ -48,7 +47,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -142,7 +140,7 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
                 SourceAndConverterServiceUI ui =
                         ((SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getUI();
                 List<SourceAndConverter<?>> sacs = new ArrayList<>();
-                for (SourceAndConverter sac : ui.getSelectedSourceAndConverters()) {
+                for (SourceAndConverter<?> sac : ui.getSelectedSourceAndConverters()) {
                     sacs.add(sac);
                 }
                 //Collections.addAll(sacs, ui.getSelectedSourceAndConverters()); // Do not work, even if intellij suggests it
@@ -236,7 +234,6 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
             this.sourcesTransferable = new SourcesTransferable(sources);
         }
 
-        @NotNull
         @Override
         public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
             if (flavor.equals(nodesFlavor)) {

@@ -40,7 +40,7 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 import java.lang.reflect.Type;
 
 @Plugin(type = ISourceAdapter.class)
-public class TransformedSourceAdapter implements ISourceAdapter<TransformedSource> {
+public class TransformedSourceAdapter implements ISourceAdapter<TransformedSource<?>> {
 
     SourceAndConverterSerializer sacSerializer;
 
@@ -55,10 +55,10 @@ public class TransformedSourceAdapter implements ISourceAdapter<TransformedSourc
     }
 
     @Override
-    public JsonElement serialize(SourceAndConverter sac, Type type, JsonSerializationContext jsonSerializationContext) {
+    public JsonElement serialize(SourceAndConverter<?> sac, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
 
-        TransformedSource source = (TransformedSource) sac.getSpimSource();
+        TransformedSource<?> source = (TransformedSource<?>) sac.getSpimSource();
         AffineTransform3D fixedTr = new AffineTransform3D();
         AffineTransform3D incrTr = new AffineTransform3D();
         source.getIncrementalTransform(incrTr);
@@ -77,10 +77,10 @@ public class TransformedSourceAdapter implements ISourceAdapter<TransformedSourc
     }
 
     @Override
-    public SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public SourceAndConverter<?> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
         int wrappedSourceId = obj.getAsJsonPrimitive("wrapped_source_id").getAsInt();
-        SourceAndConverter wrappedSac;
+        SourceAndConverter<?> wrappedSac;
         if (sacSerializer.getIdToSac().containsKey(wrappedSourceId)) {
             // Already deserialized
             wrappedSac = sacSerializer.getIdToSac().get(wrappedSourceId);
@@ -97,7 +97,7 @@ public class TransformedSourceAdapter implements ISourceAdapter<TransformedSourc
 
         AffineTransform3D at3d = jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("affinetransform_fixed"), AffineTransform3D.class);
 
-        SourceAndConverter sac = new SourceAffineTransformer(wrappedSac, at3d).getSourceOut();
+        SourceAndConverter<?> sac = new SourceAffineTransformer(wrappedSac, at3d).getSourceOut();
         SourceAndConverterServices.getSourceAndConverterService()
                 .register(sac);
 

@@ -44,7 +44,7 @@ public class SpimDataFilterNode extends SourceFilterNode {
     final AbstractSpimData asd;
     final SourceAndConverterService sourceAndConverterService;
 
-    public boolean filter(SourceAndConverter sac) {
+    public boolean filter(SourceAndConverter<?> sac) {
         return (sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO ))&&(( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).asd.equals(asd);
     }
 

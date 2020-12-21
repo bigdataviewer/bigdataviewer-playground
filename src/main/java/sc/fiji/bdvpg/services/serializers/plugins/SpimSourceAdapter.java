@@ -44,7 +44,7 @@ import java.util.Optional;
 import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_INFO;
 
 @Plugin(type = ISourceAdapter.class)
-public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
+public class SpimSourceAdapter implements ISourceAdapter<SpimSource<?>> {
 
     SourceAndConverterSerializer sacSerializer;
 
@@ -59,7 +59,7 @@ public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
     }
 
     @Override
-    public JsonElement serialize(SourceAndConverter sac, Type type, JsonSerializationContext jsonSerializationContext) {
+    public JsonElement serialize(SourceAndConverter<?> sac, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
 
         SourceAndConverterService.SpimDataInfo sdi =
@@ -77,7 +77,7 @@ public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
     }
 
     @Override
-    public SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public SourceAndConverter<?> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
         AbstractSpimData asd = jsonDeserializationContext.deserialize(obj.get("spimdata"), AbstractSpimData.class);
         if (asd == null) {
@@ -87,7 +87,7 @@ public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
             int setupId = obj.getAsJsonPrimitive("viewsetup").getAsInt();
             final ISourceAndConverterService sacservice = SourceAndConverterServices
                     .getSourceAndConverterService();
-            Optional<SourceAndConverter> futureSac = sacservice.getSourceAndConverters()
+            Optional<SourceAndConverter<?>> futureSac = sacservice.getSourceAndConverters()
                     .stream()
                     .filter(sac -> sacservice.containsMetadata(sac, SPIM_DATA_INFO))
                     .filter(sac -> {

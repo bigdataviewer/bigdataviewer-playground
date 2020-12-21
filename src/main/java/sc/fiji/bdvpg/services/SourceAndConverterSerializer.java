@@ -60,8 +60,8 @@ public class SourceAndConverterSerializer {
         return basePath;
     }
 
-    Map<Integer, SourceAndConverter> idToSac;
-    Map<SourceAndConverter, Integer> sacToId;
+    Map<Integer, SourceAndConverter<?>> idToSac;
+    Map<SourceAndConverter<?>, Integer> sacToId;
     Map<Integer, Source> idToSource;
     Map<Source, Integer> sourceToId;
 
@@ -146,11 +146,11 @@ public class SourceAndConverterSerializer {
         return builder.create();
     }
 
-    public synchronized Map<Integer, SourceAndConverter> getIdToSac() {
+    public synchronized Map<Integer, SourceAndConverter<?>> getIdToSac() {
         return idToSac;
     }
 
-    public synchronized Map<SourceAndConverter, Integer> getSacToId() {
+    public synchronized Map<SourceAndConverter<?>, Integer> getSacToId() {
         return sacToId;
     }
 

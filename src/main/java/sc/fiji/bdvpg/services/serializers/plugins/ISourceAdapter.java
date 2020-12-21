@@ -35,13 +35,13 @@ import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
 
 import java.lang.reflect.Type;
 
-public interface ISourceAdapter<S extends Source> extends IBdvPlaygroundObjectAdapter {
+public interface ISourceAdapter<S extends Source<?>> extends IBdvPlaygroundObjectAdapter {
 
     void setSacSerializer(SourceAndConverterSerializer sacSerializer);
 
-    Class<S> getSourceClass();
+    Class<?> getSourceClass();
 
-    JsonElement serialize(SourceAndConverter sac, Type type, JsonSerializationContext jsonSerializationContext);
+    JsonElement serialize(SourceAndConverter<?> sac, Type type, JsonSerializationContext jsonSerializationContext);
 
-    SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException;
+    SourceAndConverter<?> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException;
 }

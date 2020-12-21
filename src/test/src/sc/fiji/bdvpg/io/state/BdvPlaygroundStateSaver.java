@@ -40,7 +40,7 @@ import java.io.File;
 
 public class BdvPlaygroundStateSaver {
 
-    public static void main( String[] args )
+    public static void main( String... args )
     {
         // Initializes static SourceService and Display Service
         ImageJ ij = new ImageJ();
@@ -67,6 +67,6 @@ public class BdvPlaygroundStateSaver {
 
     @Test @Ignore // Ignore because of wrong bigwarp version
     public void demoRunOk() {
-        main(new String[]{""});
+        main();
     }
 }

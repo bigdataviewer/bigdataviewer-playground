@@ -33,6 +33,7 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Supplier;
@@ -47,7 +48,7 @@ import java.util.function.Supplier;
  * TimePoint 0 supported only TODO : improve timepoint support
  */
 
-public class EmptySourceAndConverterCreator implements Runnable, Supplier<SourceAndConverter> {
+public class EmptySourceAndConverterCreator implements Runnable, Supplier<SourceAndConverter<UnsignedShortType>> {
 
     AffineTransform3D at3D;
 
@@ -88,12 +89,12 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
      */
     public EmptySourceAndConverterCreator(
             String name,
-            SourceAndConverter model,
+            SourceAndConverter<?> model,
             int timePoint,
             double voxSizeX, double voxSizeY, double voxSizeZ
     ) {
         // Gets model RAI
-        RandomAccessibleInterval rai = model.getSpimSource().getSource(timePoint,0);
+        RandomAccessibleInterval<?> rai = model.getSpimSource().getSource(timePoint,0);
 
         long nPixModelX = rai.dimension(0);
         long nPixModelY = rai.dimension(1);
@@ -179,11 +180,11 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
     }
 
     @Override
-    public SourceAndConverter get() {
+    public SourceAndConverter<UnsignedShortType> get() {
 
         Source src = new EmptySource(nx,ny,nz,at3D,name);
 
-        SourceAndConverter sac;
+        SourceAndConverter<UnsignedShortType> sac;
 
         sac = SourceAndConverterHelper.createSourceAndConverter(src);
 

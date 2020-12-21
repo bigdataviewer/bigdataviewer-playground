@@ -71,7 +71,7 @@ public class BasicTransformerCommand implements Command {
 
     @Override
     public void run() {
-        for (SourceAndConverter sac : sources_in) {
+        for (SourceAndConverter<?> sac : sources_in) {
             {
                 AffineTransform3D at3D_global = new AffineTransform3D();
                 at3D_global.identity();

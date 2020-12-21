@@ -75,7 +75,7 @@ public class BrightnessAdjusterCommand extends InteractiveCommand {
         if ((!firstTimeCalled)&&(!secondTimeCalled)) {
             double minValue = min + minSlider/1000.0*(max-min);
             double maxValue = min + maxSlider/1000.0*(max-min);
-            for (SourceAndConverter source:sources) {
+            for (SourceAndConverter<?> source:sources) {
                 new BrightnessAdjuster(source, minValue, maxValue).run();
             }
         } else {

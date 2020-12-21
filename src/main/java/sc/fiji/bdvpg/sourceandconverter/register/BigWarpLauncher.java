@@ -35,7 +35,6 @@ import bdv.util.ViewerPanelHandle;
 import bdv.viewer.SourceAndConverter;
 import bigwarp.BigWarp;
 import mpicbg.spim.data.SpimDataException;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,11 +52,11 @@ import java.util.List;
  * In order to retrieve the transform, TODO
  */
 
-public class BigWarpLauncher implements Runnable {
+public  class  BigWarpLauncher<T> implements Runnable {
 
-    BigWarp.BigWarpData<?> bwData;
+    BigWarp.BigWarpData<T> bwData;
 
-    BigWarp<?> bigWarp;
+    BigWarp<T> bigWarp;
 
     String bigWarpName;
 
@@ -75,24 +74,24 @@ public class BigWarpLauncher implements Runnable {
     // Alternative maybe better option :
     // Use array : Source[] or SourceAndConverter[] (and maybe this issue was the reason for BigWarp choosing this in the beginning)
 
-    List<SourceAndConverter> movingSources;
-    List<SourceAndConverter> fixedSources;
+    List<SourceAndConverter<?>> movingSources;
+    List<SourceAndConverter<?>> fixedSources;
 
     //List<SourceAndConverter> allRegisteredSources;
 
-    SourceAndConverter gridSource;
-    SourceAndConverter warpMagnitudeSource;
+    SourceAndConverter<?> gridSource;
+    SourceAndConverter<?> warpMagnitudeSource;
 
-    SourceAndConverter[] warpedSources;
+    SourceAndConverter<?>[] warpedSources;
 
-    public BigWarpLauncher(List<SourceAndConverter> movingSources, List<SourceAndConverter> fixedSources, String bigWarpName, List<ConverterSetup> allConverterSetups) {
+    public BigWarpLauncher(List<SourceAndConverter<?>> movingSources, List<SourceAndConverter<?>> fixedSources, String bigWarpName, List<ConverterSetup> allConverterSetups) {
 
         this.movingSources = movingSources;
         this.fixedSources = fixedSources;
 
         this.bigWarpName = bigWarpName;
 
-            List<SourceAndConverter> allSources = new ArrayList<>();
+            List<SourceAndConverter<?>> allSources = new ArrayList<>();
             allSources.addAll(movingSources);
             allSources.addAll(fixedSources);
 
@@ -167,15 +166,15 @@ public class BigWarpLauncher implements Runnable {
         return bigWarp;
     }
 
-    public SourceAndConverter getGridSource() {
+    public SourceAndConverter<?> getGridSource() {
         return gridSource;
     }
 
-    public SourceAndConverter getWarpMagnitudeSource() {
+    public SourceAndConverter<?> getWarpMagnitudeSource() {
         return warpMagnitudeSource;
     }
 
-    public SourceAndConverter[] getWarpedSources() {
+    public SourceAndConverter<?>[] getWarpedSources() {
         return warpedSources;
     }
 

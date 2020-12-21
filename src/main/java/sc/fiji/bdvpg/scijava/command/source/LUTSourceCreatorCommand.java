@@ -75,7 +75,7 @@ public class LUTSourceCreatorCommand extends DynamicCommand {
     public void run() {
         Converter bdvLut = cs.convert(table, Converter.class);
 
-        for (SourceAndConverter sac:sources_in) {
+        for (SourceAndConverter<?> sac:sources_in) {
             ConverterChanger cc = new ConverterChanger(sac, bdvLut, bdvLut);
             cc.run();
             cc.get();

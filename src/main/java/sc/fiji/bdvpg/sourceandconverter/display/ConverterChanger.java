@@ -34,15 +34,16 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.function.Function;
 
-public class ConverterChanger implements Runnable, Function<SourceAndConverter, SourceAndConverter> {
+// TODO : fix generics!!
+public class ConverterChanger implements Runnable, Function<SourceAndConverter<?>, SourceAndConverter<?>> {
 
-    SourceAndConverter sac_in;
+    SourceAndConverter<?> sac_in;
 
     Converter nonVolatileConverter;
 
     Converter volatileConverter;
 
-    public ConverterChanger(SourceAndConverter sac, Converter cvtnv, Converter cvt) {
+    public ConverterChanger(SourceAndConverter<?> sac, Converter cvtnv, Converter cvt) {
         sac_in = sac;
         nonVolatileConverter = cvtnv;
         volatileConverter = cvt;
@@ -53,21 +54,21 @@ public class ConverterChanger implements Runnable, Function<SourceAndConverter, 
         // Nothing
     }
 
-    public SourceAndConverter get() {
+    public SourceAndConverter<?> get() {
         return apply(sac_in);
     }
 
     @Override
-    public SourceAndConverter apply(SourceAndConverter sourceAndConverter) {
-        SourceAndConverter sac;
+    public SourceAndConverter<?> apply(SourceAndConverter<?> sourceAndConverter) {
+        SourceAndConverter<?> sac;
         if (sourceAndConverter.asVolatile()!=null) {
-            sac = new SourceAndConverter(
+            sac = new SourceAndConverter<>(
                     sourceAndConverter.getSpimSource(),
                     nonVolatileConverter,
                     new SourceAndConverter<>(sourceAndConverter.asVolatile().getSpimSource(),volatileConverter)
             );
         } else {
-            sac = new SourceAndConverter(
+            sac = new SourceAndConverter<>(
                     sourceAndConverter.getSpimSource(),
                     nonVolatileConverter);
         }

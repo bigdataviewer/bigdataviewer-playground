@@ -48,7 +48,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getComman
 public class SourceAndConverterPopupMenu
 {
 	private JPopupMenu popup;
-	private final Supplier<SourceAndConverter[]> sacs_supplier;
+	private final Supplier<SourceAndConverter<?>[]> sacs_supplier;
 
 	 public static String[] defaultPopupActions = {
 			getCommandName(BdvSourcesAdderCommand.class),
@@ -81,7 +81,7 @@ public class SourceAndConverterPopupMenu
 		defaultPopupActions = newDefaults.clone();
 	}
 
-	public SourceAndConverterPopupMenu( Supplier<SourceAndConverter[]> sacs_supplier )
+	public SourceAndConverterPopupMenu( Supplier<SourceAndConverter<?>[]> sacs_supplier )
 	{
 		this.sacs_supplier = sacs_supplier;
 		this.popupActions = defaultPopupActions;
@@ -98,7 +98,7 @@ public class SourceAndConverterPopupMenu
 		createPopupMenu();
 	}
 
-	public SourceAndConverterPopupMenu( Supplier<SourceAndConverter[]> sacs_supplier, String[] actions )
+	public SourceAndConverterPopupMenu( Supplier<SourceAndConverter<?>[]> sacs_supplier, String[] actions )
 	{
 		this.sacs_supplier = sacs_supplier;
 		this.popupActions = actions;
@@ -133,7 +133,7 @@ public class SourceAndConverterPopupMenu
 	 * @param action action method
 	 * @param actionName action name
 	 */
-	public void addPopupAction( String actionName, Consumer<SourceAndConverter[]> action ) {
+	public void addPopupAction( String actionName, Consumer<SourceAndConverter<?>[]> action ) {
 		JMenuItem menuItem = new JMenuItem(actionName);
 		if (action == null) {
 			menuItem.addActionListener(e -> System.err.println("No action defined for action named "+actionName));

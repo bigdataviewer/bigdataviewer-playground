@@ -36,13 +36,13 @@ import java.util.function.Consumer;
 
 import static sc.fiji.bdvpg.bdv.projector.Projection.PROJECTION_MODE;
 
-public class ProjectionModeChanger implements Runnable, Consumer< SourceAndConverter[] > {
+public class ProjectionModeChanger implements Runnable, Consumer< SourceAndConverter<?>[] > {
 
     private String projectionMode;
     private final boolean showSourcesExclusively;
-    private final SourceAndConverter[] sacs;
+    private final SourceAndConverter<?>[] sacs;
 
-    public ProjectionModeChanger( SourceAndConverter[] sacs, String projectionMode, boolean showSourcesExclusively ) {
+    public ProjectionModeChanger( SourceAndConverter<?>[] sacs, String projectionMode, boolean showSourcesExclusively ) {
         this.sacs = sacs;
         this.projectionMode = projectionMode;
         this.showSourcesExclusively = showSourcesExclusively;
@@ -69,7 +69,7 @@ public class ProjectionModeChanger implements Runnable, Consumer< SourceAndConve
 
     private void changeProjectionMode()
     {
-        for ( SourceAndConverter sac : sacs )
+        for ( SourceAndConverter<?> sac : sacs )
         {
             if ( showSourcesExclusively )
                 projectionMode += Projection.PROJECTION_MODE_OCCLUDING;

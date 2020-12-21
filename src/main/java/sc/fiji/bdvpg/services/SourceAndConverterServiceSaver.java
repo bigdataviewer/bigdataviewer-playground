@@ -51,7 +51,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
 
     File f;
 
-    List<SourceAndConverter> sacs;
+    List<SourceAndConverter<?>> sacs;
 
     public SourceAndConverterServiceSaver(File f, Context ctx) {
         this(f, ctx, SourceAndConverterServices
@@ -59,7 +59,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
                 .getSourceAndConverters());
     }
 
-    public SourceAndConverterServiceSaver(File f, Context ctx, List<SourceAndConverter> sacs) {
+    public SourceAndConverterServiceSaver(File f, Context ctx, List<SourceAndConverter<?>> sacs) {
         super(ctx, f.getParentFile());
         this.sacs = sacs;
         this.f = f;
@@ -70,14 +70,11 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
     }
 
 
-    Set<SourceAndConverter> setOfSourcesNeedingSerialization = new HashSet<>();
+    Set<SourceAndConverter<?>> setOfSourcesNeedingSerialization = new HashSet<>();
 
     @Override
     public void run() {
         synchronized (SourceAndConverterServiceSaver.class) {
-            /*sacs = SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .getSourceAndConverters();*/
 
             // Makes sure each source is associated to at least one sourceAndConverter
             // this happens via recursive source inspection

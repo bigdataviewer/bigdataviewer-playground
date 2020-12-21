@@ -42,12 +42,12 @@ import java.util.function.Consumer;
  * One way around this is to create more generic converters from the beginning but this would have drawbacks:
  * - how to save the converter in spimdata ?
  */
-public class ColorChanger implements Runnable, Consumer<SourceAndConverter> {
+public class ColorChanger implements Runnable, Consumer<SourceAndConverter<?>> {
 
-    SourceAndConverter sac;
+    SourceAndConverter<?> sac;
     ARGBType color;
 
-    public ColorChanger(SourceAndConverter sac, ARGBType color) {
+    public ColorChanger(SourceAndConverter<?> sac, ARGBType color) {
         this.sac = sac;
         this.color = color;
     }

@@ -50,7 +50,7 @@ public class DisplaysettingsHelper {
      * Stores display settings currently in use by the SourceAndConverter into the link SpimData object
      * @param sac source
      */
-    public static void GetDisplaySettingsFromCurrentConverter(SourceAndConverter sac, Displaysettings ds) {
+    public static void GetDisplaySettingsFromCurrentConverter(SourceAndConverter<?> sac, Displaysettings ds) {
 
         // Color + min max
         if (sac.getConverter() instanceof ColorConverter) {
@@ -83,7 +83,7 @@ public class DisplaysettingsHelper {
      * Stores display settings currently in use by the SourceAndConverter into the link SpimData object
      * @param sac source
      */
-    public static void PushDisplaySettingsFromCurrentConverter(SourceAndConverter sac) {
+    public static void PushDisplaySettingsFromCurrentConverter(SourceAndConverter<?> sac) {
         if (SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)==null) {
@@ -112,7 +112,7 @@ public class DisplaysettingsHelper {
      * Apply the display settings to the SourceAndConverter object
      * @param sac source
      */
-    public static void PullDisplaySettings(SourceAndConverter sac, Displaysettings ds) {
+    public static void PullDisplaySettings(SourceAndConverter<?> sac, Displaysettings ds) {
 
         if (ds.isSet) {
             if (sac.getConverter() instanceof ColorConverter) {
@@ -147,9 +147,9 @@ public class DisplaysettingsHelper {
      * @param sacs sources
      * @param ds display settings
      */
-    public static void applyDisplaysettings(SourceAndConverter[] sacs, Displaysettings ds) {
+    public static void applyDisplaysettings(SourceAndConverter<?>[] sacs, Displaysettings ds) {
         if ((sacs!=null)&&(ds!=null)) {
-            for (SourceAndConverter sac : sacs) {
+            for (SourceAndConverter<?> sac : sacs) {
                 applyDisplaysettings(sac, ds);
             }
         }
@@ -165,7 +165,7 @@ public class DisplaysettingsHelper {
      * @param sac source
      * @param ds display settings
      */
-    public static void applyDisplaysettings(SourceAndConverter sac, Displaysettings ds) {
+    public static void applyDisplaysettings(SourceAndConverter<?> sac, Displaysettings ds) {
         if ((sac!=null)&&(ds!=null)) {
             if (sac.getConverter() instanceof ColorConverter) {
                 ColorConverter cc = (ColorConverter) sac.getConverter();

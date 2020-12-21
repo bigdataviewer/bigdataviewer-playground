@@ -49,7 +49,7 @@ public class SourceColorChangerCommand implements Command {
     @Override
     public void run() {
         ARGBType imglib2color = new ARGBType(ARGBType.rgba(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
-        for (SourceAndConverter sac : sacs) {
+        for (SourceAndConverter<?> sac : sacs) {
             new ColorChanger(sac, imglib2color).run();
         }
     }

@@ -45,7 +45,7 @@ import java.util.function.Consumer;
  *
  */
 
-public class SourceRemover implements Runnable, Consumer<SourceAndConverter[]>
+public class SourceRemover implements Runnable, Consumer<SourceAndConverter<?>[]>
 {
 	final SourceAndConverter<?> sacIn;
 	final BdvHandle bdvh;
@@ -70,7 +70,7 @@ public class SourceRemover implements Runnable, Consumer<SourceAndConverter[]>
 	}
 
 	@Override
-	public void accept(SourceAndConverter... sacs) {
+	public void accept(SourceAndConverter<?>... sacs) {
 		if (bdvh==null) {
 			// Remove from all displays
 			SourceAndConverterServices.getSourceAndConverterDisplayService().removeFromAllBdvs(sacs);

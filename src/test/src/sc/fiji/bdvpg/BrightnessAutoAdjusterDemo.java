@@ -66,18 +66,18 @@ public class BrightnessAutoAdjusterDemo
 
         AbstractSpimData asd = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
 
-        List<SourceAndConverter> sourcesFromSpimData = SourceAndConverterServices.getSourceAndConverterService()
+        List<SourceAndConverter<?>> sourcesFromSpimData = SourceAndConverterServices.getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(asd);
 
         addSource(bdvHandle, sourcesFromSpimData.get(0));
 
 		// Voronoi
-		final SourceAndConverter voronoiSource = new VoronoiSourceGetter( new long[]{ 512, 512, 1 }, 256, true ).get();
+		final SourceAndConverter<?> voronoiSource = new VoronoiSourceGetter( new long[]{ 512, 512, 1 }, 256, true ).get();
 		addSource( bdvHandle, voronoiSource );
 
 	}
 
-	public static void addSource(BdvHandle bdvHandle, SourceAndConverter sourceandconverter )
+	public static void addSource(BdvHandle bdvHandle, SourceAndConverter<?> sourceandconverter )
 	{
 		new SourceAdder( bdvHandle, sourceandconverter ).run();
 		new ViewerTransformAdjuster( bdvHandle, sourceandconverter ).run();

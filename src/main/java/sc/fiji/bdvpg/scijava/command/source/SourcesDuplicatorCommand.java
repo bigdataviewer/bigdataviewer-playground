@@ -44,7 +44,7 @@ public class SourcesDuplicatorCommand implements Command {
     @Override
     public void run() {
 
-        for (SourceAndConverter sac : sacs) {
+        for (SourceAndConverter<?> sac : sacs) {
             new SourceAndConverterDuplicator(sac).get();
         }
 

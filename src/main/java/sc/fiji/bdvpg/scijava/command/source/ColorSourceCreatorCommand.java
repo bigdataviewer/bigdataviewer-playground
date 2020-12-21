@@ -53,7 +53,7 @@ public class ColorSourceCreatorCommand implements Command {
 
     @Override
     public void run() {
-        for (SourceAndConverter source_in : sources_in) {
+        for (SourceAndConverter<?> source_in : sources_in) {
             ARGBType imglib2color = new ARGBType(ARGBType.rgba(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
 
             Converter c = SourceAndConverterHelper.createConverter(source_in.getSpimSource());

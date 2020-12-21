@@ -145,7 +145,7 @@ public class ScreenShotMaker {
 
         final int t = bdvHandle.getViewerPanel().state().getCurrentTimepoint();
 
-        for ( SourceAndConverter sac : visibleSacs )
+        for ( SourceAndConverter<?> sac : visibleSacs )
         {
             if ( ! isSourceIntersectingCurrentView( bdvHandle, sac.getSpimSource(), sourceInteractionWithViewerPlaneOnly2D ) ) continue;
 
@@ -239,7 +239,7 @@ public class ScreenShotMaker {
 
         final List< SourceAndConverter<?> > sacs = displayService.getSourceAndConverterOf( bdvHandle );
         List< SourceAndConverter<?> > visibleSacs = new ArrayList<>(  );
-        for ( SourceAndConverter sac : sacs )
+        for ( SourceAndConverter<?> sac : sacs )
         {
             // TODO: this does not evaluate to true for all visible sources
             if ( displayService.isVisible( sac, bdv ) )

@@ -40,7 +40,7 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
 import java.lang.reflect.Type;
 
 @Plugin(type = ISourceAdapter.class)
-public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
+public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource<?>> {
 
     SourceAndConverterSerializer sacSerializer;
 
@@ -50,15 +50,15 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
     }
 
     @Override
-    public Class<ResampledSource> getSourceClass() {
+    public Class<?> getSourceClass() {
         return ResampledSource.class;
     }
 
     @Override
-    public JsonElement serialize(SourceAndConverter sac, Type type, JsonSerializationContext jsonSerializationContext) {
+    public JsonElement serialize(SourceAndConverter<?> sac, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
 
-        ResampledSource source = (ResampledSource) sac.getSpimSource();
+        ResampledSource<?> source = (ResampledSource<?>) sac.getSpimSource();
 
         obj.addProperty("type", ResampledSource.class.getSimpleName());
 
@@ -86,7 +86,7 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
     }
 
     @Override
-    public SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public SourceAndConverter<?> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
         int origin_source_id = obj.getAsJsonPrimitive("origin_source_id").getAsInt();
         int model_source_id = obj.getAsJsonPrimitive("model_source_id").getAsInt();
@@ -95,8 +95,8 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
         boolean cache = obj.getAsJsonPrimitive("cache").getAsBoolean();
         boolean reuseMipMaps = obj.getAsJsonPrimitive("mipmaps_reused").getAsBoolean();
 
-        SourceAndConverter originSac;
-        SourceAndConverter modelSac;
+        SourceAndConverter<?> originSac;
+        SourceAndConverter<?> modelSac;
 
         if (sacSerializer.getIdToSac().containsKey(origin_source_id)) {
             // Already deserialized
@@ -126,7 +126,7 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
             return null;
         }
 
-        SourceAndConverter sac = new SourceResampler(originSac, modelSac, reuseMipMaps, cache, interpolation.equals(Interpolation.NLINEAR)).get();
+        SourceAndConverter<?> sac = new SourceResampler(originSac, modelSac, reuseMipMaps, cache, interpolation.equals(Interpolation.NLINEAR)).get();
 
         SourceAndConverterServices.getSourceAndConverterService()
                 .register(sac);

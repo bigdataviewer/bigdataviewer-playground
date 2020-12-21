@@ -29,6 +29,7 @@
 package sc.fiji.bdvpg.scijava.widget;
 
 import bdv.viewer.SourceAndConverter;
+import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.swing.widget.SwingInputWidget;
@@ -56,8 +57,8 @@ import java.util.Set;
  * @author Nicolas Chiaruttini
  */
 
-@Plugin(type = InputWidget.class)
-public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAndConverter[]> implements
+@Plugin(type = InputWidget.class, priority = Priority.EXTREMELY_HIGH)
+public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAndConverter<?>[]> implements
         SourceAndConverterListWidget<JPanel> {
 
     @Override
@@ -70,33 +71,33 @@ public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAn
     }
 
     @Override
-    public SourceAndConverter[] getValue() {
+    public SourceAndConverter<?>[] getValue() {
         return getSelectedSourceAndConverters();
     }
 
     @Parameter
 	SourceAndConverterService bss;
 
-    public SourceAndConverter[] getSelectedSourceAndConverters() {
-        Set<SourceAndConverter> sacList = new HashSet<>(); // A set avoids duplicate SourceAndConverter
+    public SourceAndConverter<?>[] getSelectedSourceAndConverters() {
+        Set<SourceAndConverter<?>> sacList = new HashSet<>(); // A set avoids duplicate SourceAndConverter
         for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
             if (((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject() instanceof RenamableSourceAndConverter) {
                 Object userObj = ((RenamableSourceAndConverter) ((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject()).sac;
-                sacList.add((SourceAndConverter) userObj);
+                sacList.add((SourceAndConverter<?>) userObj);
             } else {
                 sacList.addAll(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) tp.getLastPathComponent()));
             }
         }
-        return sacList.toArray(new SourceAndConverter[0]);
+        return sacList.toArray(new SourceAndConverter<?>[0]);
     }
 
-    private Set<SourceAndConverter> getSourceAndConvertersFromChildrenOf(DefaultMutableTreeNode node) {
-        Set<SourceAndConverter> sacs = new HashSet<>();
+    private Set<SourceAndConverter<?>> getSourceAndConvertersFromChildrenOf(DefaultMutableTreeNode node) {
+        Set<SourceAndConverter<?>> sacs = new HashSet<>();
         for (int i=0;i<node.getChildCount();i++) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
             if (child.getUserObject() instanceof RenamableSourceAndConverter) {
                 Object userObj = ((RenamableSourceAndConverter) (child.getUserObject())).sac;
-                sacs.add((SourceAndConverter) userObj);
+                sacs.add((SourceAndConverter<?>) userObj);
             } else {
                 sacs.addAll(getSourceAndConvertersFromChildrenOf(child));
             }

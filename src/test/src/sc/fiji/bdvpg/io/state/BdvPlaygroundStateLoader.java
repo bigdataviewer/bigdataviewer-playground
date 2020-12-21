@@ -34,7 +34,7 @@ import sc.fiji.bdvpg.services.SourceAndConverterServiceLoader;
 
 public class BdvPlaygroundStateLoader {
 
-    public static void main( String[] args )
+    public static void main( String... args )
     {
         ImageJ ij = new ImageJ();
         ij.ui().showUI();
@@ -43,6 +43,6 @@ public class BdvPlaygroundStateLoader {
 
     @Test
     public void demoRunOk() {
-        main(new String[]{""});
+        main();
     }
 }

@@ -48,7 +48,7 @@ public class BdvSourcesRemoverCommand implements Command {
 
     @Override
     public void run() {
-        for (SourceAndConverter sac:sacs) {
+        for (SourceAndConverter<?> sac:sacs) {
             SourceAndConverterServices.getSourceAndConverterDisplayService().remove(bdvh, sac);
         }
     }

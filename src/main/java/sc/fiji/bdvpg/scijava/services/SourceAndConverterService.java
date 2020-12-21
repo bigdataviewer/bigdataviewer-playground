@@ -122,14 +122,14 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      * Map containing objects that are 1 to 1 linked to a Source
      * Keys are Weakly referenced -> Metadata should be GCed if referenced only here
      */
-    Cache<SourceAndConverter, Map<String, Object>> sacToMetadata;
+    Cache<SourceAndConverter<?>, Map<String, Object>> sacToMetadata;
 
     /**
      * Test if a Source is already registered in the Service
      * @param src source
      * @return true if a source is already registered
      */
-    public boolean isRegistered(SourceAndConverter src) {
+    public boolean isRegistered(SourceAndConverter<?> src) {
         return sacToMetadata.getIfPresent(src)!=null;
     }
 
@@ -138,7 +138,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public void setMetadata( SourceAndConverter sac, String key, Object data )
+    public void setMetadata( SourceAndConverter<?> sac, String key, Object data )
     {
         if (sac == null) {
             System.err.println("Error : sac is null in setMetadata function! ");
@@ -154,7 +154,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public Object getMetadata( SourceAndConverter sac, String key )
+    public Object getMetadata( SourceAndConverter<?> sac, String key )
     {
         if (sacToMetadata.getIfPresent(sac)!=null) {
             return sacToMetadata.getIfPresent(sac).get(key);
@@ -164,7 +164,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public Collection<String> getMetadataKeys(SourceAndConverter sac) {
+    public Collection<String> getMetadataKeys(SourceAndConverter<?> sac) {
         Map<String, Object> map = sacToMetadata.getIfPresent(sac);
         if (map==null) {
             return new ArrayList<>();
@@ -174,7 +174,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public boolean containsMetadata(SourceAndConverter sac, String key) {
+    public boolean containsMetadata(SourceAndConverter<?> sac, String key) {
         return getMetadata(sac,key)!=null;
     }
 
@@ -183,7 +183,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      * Called in the BdvSourcePostProcessor
      * @param sac source
      */
-    public synchronized void register(SourceAndConverter sac) {
+    public synchronized void register(SourceAndConverter<?> sac) {
         if (objectService.getObjects(SourceAndConverter.class).contains(sac)) {
             log.accept("Source already registered");
             return;
@@ -196,7 +196,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         if (uiAvailable) ui.update(sac);
     }
 
-    public synchronized void register(Collection<SourceAndConverter> sources) {
+    public synchronized void register(Collection<SourceAndConverter<?>> sources) {
         for (SourceAndConverter sac:sources) {
             this.register(sac);
         }
@@ -209,7 +209,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             spimdataToMetadata.put(asd, sourceData);
         }
 
-        Map<Integer, SourceAndConverter> sacs = SourceAndConverterHelper.createSourceAndConverters(asd);
+        Map<Integer, SourceAndConverter<?>> sacs = SourceAndConverterHelper.createSourceAndConverters(asd);
         this.register(sacs.values());
         sacs.forEach((id,sac) -> {
             this.linkToSpimData(sac, asd, id);
@@ -218,13 +218,13 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public synchronized void remove(SourceAndConverter... sacs ) {
+    public synchronized void remove(SourceAndConverter<?>... sacs ) {
         // Remove displays
         if (sacs != null) {
             if (bsds!=null) {
                 bsds.removeFromAllBdvs( sacs );
             }
-            for (SourceAndConverter sac : sacs) {
+            for (SourceAndConverter<?> sac : sacs) {
                 // Checks if it's the last of a spimdataset -> should shutdown cache
                 // ----------------------------
                 AbstractSpimData asd = null;
@@ -262,20 +262,30 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public List<SourceAndConverter> getSourceAndConverters() {
-        return objectService.getObjects(SourceAndConverter.class);
+    public List<SourceAndConverter<?>> getSourceAndConverters() {
+        List<SourceAndConverter> sacs_nogeneric = objectService.getObjects(SourceAndConverter.class);
+        List<SourceAndConverter<?>> sacs_wildcard_generic = new ArrayList<>(); // Hum hum
+        for (SourceAndConverter sac : sacs_nogeneric) {
+            sacs_wildcard_generic.add(sac);
+        }
+        return sacs_wildcard_generic;
     }
 
     @Override
-    public List<SourceAndConverter> getSourceAndConverterFromSpimdata(AbstractSpimData asd) {
-        return objectService.getObjects(SourceAndConverter.class)
+    public List<SourceAndConverter<?>> getSourceAndConverterFromSpimdata(AbstractSpimData asd) {
+        List<SourceAndConverter> sacs_no_generics = objectService.getObjects(SourceAndConverter.class)
                 .stream()
                 .filter(s -> (sacToMetadata.getIfPresent(s).get(SPIM_DATA_INFO) !=null))
                 .filter(s -> ((SpimDataInfo)sacToMetadata.getIfPresent(s).get(SPIM_DATA_INFO)).asd.equals(asd))
                 .collect(Collectors.toList());
+        List<SourceAndConverter<?>> sacList = new ArrayList<>();
+
+        sacs_no_generics.forEach(sac -> sacList.add(sac));
+
+        return sacList;
     }
 
-    public void linkToSpimData( SourceAndConverter sac, AbstractSpimData asd, int idSetup) {
+    public void linkToSpimData( SourceAndConverter<?> sac, AbstractSpimData asd, int idSetup) {
         sacToMetadata.getIfPresent( sac ).put( SPIM_DATA_INFO, new SpimDataInfo(asd, idSetup));
     }
 
@@ -319,14 +329,14 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         log.accept("Service initialized.");
     }
 
-    public List<SourceAndConverter> getSourceAndConvertersFromSource(Source src) {
+    public List<SourceAndConverter<?>> getSourceAndConvertersFromSource(Source<?> src) {
         return getSourceAndConverters().stream().filter( sac -> sac.getSpimSource().equals(src)).collect(Collectors.toList());
     }
 
 
-    Map<String, Consumer<SourceAndConverter[]>> actionMap = new ConcurrentHashMap<>();
+    Map<String, Consumer<SourceAndConverter<?>[]>> actionMap = new ConcurrentHashMap<>();
 
-    public void registerAction(String actionName, Consumer<SourceAndConverter[]> action) {
+    public void registerAction(String actionName, Consumer<SourceAndConverter<?>[]> action) {
         if (actionMap.containsKey(actionName)) {
             System.err.println("Overriding action "+actionName);
         }
@@ -337,7 +347,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         actionMap.remove(actionName);
     }
 
-    public Consumer<SourceAndConverter[]> getAction(String actionName) {
+    public Consumer<SourceAndConverter<?>[]> getAction(String actionName) {
         return actionMap.get(actionName);
     }
 
@@ -366,7 +376,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
     void registerDefaultActions() {
         this.registerAction("Display names", (srcs) -> {
-            for (SourceAndConverter src:srcs){
+            for (SourceAndConverter<?> src:srcs){
                 System.out.println(src.getSpimSource().getName());
             }});
         commandService.getCommands().forEach(ci -> registerScijavaCommandInfo(ci));
@@ -461,7 +471,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                             registerAction(ci.getMenuPath().getLeaf().toString(),
                                     (sacs) -> {
                                         // Todo : improve by sending the parameters all over again
-                                        for (SourceAndConverter sac : sacs) {
+                                        for (SourceAndConverter<?> sac : sacs) {
                                             commandService.run(ci, true, input.getName(), sac);//.get(); TODO understand why get is impossible
                                         }
                                     });

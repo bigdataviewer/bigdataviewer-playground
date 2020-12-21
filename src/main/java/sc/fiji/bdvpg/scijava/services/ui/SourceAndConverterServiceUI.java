@@ -326,8 +326,8 @@ public class SourceAndConverterServiceUI {
      * - adds a node per source which summarizes the results of the inspection
      * @param sacs sources that should be inspected
      */
-    public void inspectSources(SourceAndConverter[] sacs) {
-        for (SourceAndConverter sac:sacs) {
+    public void inspectSources(SourceAndConverter<?>[] sacs) {
+        for (SourceAndConverter<?> sac:sacs) {
             inspectSource(sac);
         }
     }
@@ -337,7 +337,7 @@ public class SourceAndConverterServiceUI {
      * - adds a node per source which summarizes the results of the inspection
      * @param sac source to inspect
      */
-    public void inspectSource(SourceAndConverter sac) {
+    public void inspectSource(SourceAndConverter<?> sac) {
         if (!frame.isVisible()) {show();}
         DefaultMutableTreeNode parentNodeInspect = new DefaultMutableTreeNode("Inspect Results ["+sac.getSpimSource().getName()+"]");
         SourceAndConverterInspector.appendInspectorResult(parentNodeInspect, sac, sourceAndConverterService, false);
@@ -361,7 +361,7 @@ public class SourceAndConverterServiceUI {
      * TODO : understand is this method is really for update or only for creation...
      * @param sac source which UI needs to be updated
      */
-    public void update(SourceAndConverter sac) {
+    public void update(SourceAndConverter<?> sac) {
         if (!frame.isVisible()) {show();}
         synchronized (tree) {
             updateSpimDataFilterNodes();
@@ -516,7 +516,7 @@ public class SourceAndConverterServiceUI {
      * Remove a {@link SourceAndConverter} from the UI of a SourceAndConverterService
      * @param sac source to remove
      */
-    public void remove(SourceAndConverter sac) {
+    public void remove(SourceAndConverter<?> sac) {
         if (!frame.isVisible()) {show();}
         synchronized (tree) {
             if (top.currentInputSacs.contains(sac)) {
@@ -530,19 +530,19 @@ public class SourceAndConverterServiceUI {
      * @return an array containing the list of all {@link SourceAndConverter} selected by the user:
      * - all children of a selected node are considered selected
      * - the list does not contain duplicates
-     * - the list is ordered according to {@link SourceAndConverterHelper#sortDefaultNoGeneric}
+     * - the list is ordered according to {@link SourceAndConverterHelper#sortDefaultGeneric}
      */
-    public SourceAndConverter[] getSelectedSourceAndConverters() {
-        Set<SourceAndConverter> sacList = new HashSet<>(); // A set avoids duplicate SourceAndConverter
+    public SourceAndConverter<?>[] getSelectedSourceAndConverters() {
+        Set<SourceAndConverter<?>> sacList = new HashSet<>(); // A set avoids duplicate SourceAndConverter
         for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
             if (((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject() instanceof RenamableSourceAndConverter) {
                 Object userObj = ((RenamableSourceAndConverter) ((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject()).sac;
-                sacList.add((SourceAndConverter) userObj);
+                sacList.add((SourceAndConverter<?>) userObj);
             } else {
                 sacList.addAll(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) tp.getLastPathComponent()));
             }
         }
-        return SourceAndConverterHelper.sortDefaultNoGeneric(sacList).toArray(new SourceAndConverter[sacList.size()]);
+        return SourceAndConverterHelper.sortDefaultGeneric(sacList).toArray(new SourceAndConverter[sacList.size()]);
     }
 
     /**
@@ -551,13 +551,13 @@ public class SourceAndConverterServiceUI {
      *     - the list does not contain duplicates
      *     - the list order can be considered random
      */
-    public Set<SourceAndConverter> getSourceAndConvertersFromChildrenOf(DefaultMutableTreeNode node) {
-        Set<SourceAndConverter> sacs = new HashSet<>();
+    public Set<SourceAndConverter<?>> getSourceAndConvertersFromChildrenOf(DefaultMutableTreeNode node) {
+        Set<SourceAndConverter<?>> sacs = new HashSet<>();
         for (int i=0;i<node.getChildCount();i++) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
             if (child.getUserObject() instanceof RenamableSourceAndConverter) {
                 Object userObj = ((RenamableSourceAndConverter) (child.getUserObject())).sac;
-                sacs.add((SourceAndConverter) userObj);
+                sacs.add((SourceAndConverter<?>) userObj);
             } else {
                 sacs.addAll(getSourceAndConvertersFromChildrenOf(child));
             }
@@ -626,12 +626,12 @@ public class SourceAndConverterServiceUI {
 
     /**
      * Used by {@link sc.fiji.bdvpg.scijava.converters.StringToSourceAndConverterArray}
-     * Note the sorting of SourceAndConverter by {@link SourceAndConverterHelper#sortDefaultNoGeneric}
+     * Note the sorting of SourceAndConverter by {@link SourceAndConverterHelper#sortDefaultGeneric}
      * @param path path
      * @return the list of sources in the path
      */
-    public List<SourceAndConverter> getSourceAndConvertersFromTreePath(TreePath path) {
-        return SourceAndConverterHelper.sortDefaultNoGeneric(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) path.getLastPathComponent()));
+    public List<SourceAndConverter<?>> getSourceAndConvertersFromTreePath(TreePath path) {
+        return SourceAndConverterHelper.sortDefaultGeneric(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) path.getLastPathComponent()));
     }
 
     public synchronized void addNode(DefaultMutableTreeNode node) {

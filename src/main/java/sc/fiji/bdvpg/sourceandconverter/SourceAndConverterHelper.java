@@ -112,9 +112,9 @@ public class SourceAndConverterHelper {
      * @param source source
      * @return a sourceandconverter from the source
      */
-    public static SourceAndConverter createSourceAndConverter(Source source) {
+    public static <T> SourceAndConverter<T> createSourceAndConverter(Source<T> source) {
         Converter nonVolatileConverter;
-        SourceAndConverter out;
+        SourceAndConverter<T> out;
         if (source.getType() instanceof RealType) {
 
             nonVolatileConverter = createConverterRealType((RealType) source.getType());
@@ -124,12 +124,12 @@ public class SourceAndConverterHelper {
             if (volatileSource!=null) {
 
                 Converter volatileConverter = createConverterRealType((RealType) volatileSource.getType());
-                out = new SourceAndConverter(source, nonVolatileConverter,
+                out = new SourceAndConverter<>(source, nonVolatileConverter,
                         new SourceAndConverter<>(volatileSource, volatileConverter));
 
             } else {
 
-                out = new SourceAndConverter(source, nonVolatileConverter);
+                out = new SourceAndConverter<>(source, nonVolatileConverter);
 
             }
 
@@ -142,12 +142,12 @@ public class SourceAndConverterHelper {
             if (volatileSource!=null) {
 
                 Converter volatileConverter = createConverterARGBType(volatileSource);
-                out = new SourceAndConverter(source, nonVolatileConverter,
+                out = new SourceAndConverter<>(source, nonVolatileConverter,
                         new SourceAndConverter<>(volatileSource, volatileConverter));
 
             } else {
 
-                out = new SourceAndConverter(source, nonVolatileConverter);
+                out = new SourceAndConverter<>(source, nonVolatileConverter);
 
             }
 
@@ -166,9 +166,9 @@ public class SourceAndConverterHelper {
      * @param asd spimdata
      * @return all sources in a map : id to source
      */
-    static public Map<Integer, SourceAndConverter> createSourceAndConverters(AbstractSpimData asd) {
+    static public Map<Integer, SourceAndConverter<?>> createSourceAndConverters(AbstractSpimData asd) {
 
-        Map<Integer, SourceAndConverter> out = new HashMap<>();
+        Map<Integer, SourceAndConverter<?>> out = new HashMap<>();
 
         boolean nonVolatile = WrapBasicImgLoader.wrapImgLoaderIfNecessary( asd );
 
@@ -202,12 +202,12 @@ public class SourceAndConverterHelper {
 
                         Converter volatileConverter = createConverterRealType((RealType)vs.getType());
 
-                        out.put(setupId, new SourceAndConverter(s, nonVolatileConverter,
+                        out.put(setupId, new SourceAndConverter<>(s, nonVolatileConverter,
                                 new SourceAndConverter<>(vs, volatileConverter)));
 
                     } else {
 
-                        out.put(setupId, new SourceAndConverter(s, nonVolatileConverter));
+                        out.put(setupId, new SourceAndConverter<>(s, nonVolatileConverter));
                     }
                     // Metadata need to exist before the display settings (projection mode) are set
 
@@ -228,10 +228,10 @@ public class SourceAndConverterHelper {
                     Converter nonVolatileConverter = createConverterARGBType(s);
                     if (vs!=null) {
                         Converter volatileConverter = createConverterARGBType(vs);
-                        out.put(setupId, new SourceAndConverter(s, nonVolatileConverter,
+                        out.put(setupId, new SourceAndConverter<>(s, nonVolatileConverter,
                                 new SourceAndConverter<>(vs, volatileConverter)));
                     } else {
-                        out.put(setupId, new SourceAndConverter(s, nonVolatileConverter));
+                        out.put(setupId, new SourceAndConverter<>(s, nonVolatileConverter));
                     }
                     // Metadata need to exist before the display settings (projection mode) are set
                     SourceAndConverterServices.getSourceAndConverterService().register(out.get(setupId));
@@ -273,7 +273,7 @@ public class SourceAndConverterHelper {
      * TODO :
      * @return the cloned converter
      */
-    public static Converter cloneConverter(Converter converter, SourceAndConverter sac) {
+    public static Converter cloneConverter(Converter converter, SourceAndConverter<?> sac) {
         if (converter instanceof RealARGBColorConverter.Imp0) {
             RealARGBColorConverter.Imp0 out = new RealARGBColorConverter.Imp0<>( ((RealARGBColorConverter.Imp0) converter).getMin(), ((RealARGBColorConverter.Imp0) converter).getMax() );
             out.setColor(((RealARGBColorConverter.Imp0) converter).getColor());
@@ -315,15 +315,15 @@ public class SourceAndConverterHelper {
         }
     }
 
-    public static ConverterSetup createConverterSetup(SourceAndConverter sac) {
+    public static ConverterSetup createConverterSetup(SourceAndConverter<?> sac) {
         return  createConverterSetup(sac,-1);
     }
 
-    public static ConverterSetup createConverterSetup(SourceAndConverter sac, int legacyId) {
+    public static ConverterSetup createConverterSetup(SourceAndConverter<?> sac, int legacyId) {
         //return BigDataViewer.createConverterSetup(sac, legacyId);
         ConverterSetup setup;
         if (sac.getSpimSource().getType() instanceof RealType) {
-            setup = createConverterSetupRealType(sac);
+            setup = createConverterSetupRealType((SourceAndConverter<RealType>) sac);
         } else if (sac.getSpimSource().getType() instanceof ARGBType) {
             setup = createConverterSetupARGBType(sac);
         } else {
@@ -338,7 +338,7 @@ public class SourceAndConverterHelper {
      * Creates converters and convertersetup for a ARGB typed sourceandconverter
      * @param source source
      */
-    static private ConverterSetup createConverterSetupARGBType(SourceAndConverter source) {
+    static private ConverterSetup createConverterSetupARGBType(SourceAndConverter<?> source) {
         ConverterSetup setup;
         if (source.getConverter() instanceof ColorConverter) {
             if (source.asVolatile()!=null) {
@@ -357,7 +357,7 @@ public class SourceAndConverterHelper {
      * Creates converters and convertersetup for a real typed sourceandconverter
      * @param source source
      */
-    static private ConverterSetup createConverterSetupRealType(SourceAndConverter source) {
+    static private <T extends RealType<T>> ConverterSetup createConverterSetupRealType(SourceAndConverter<T> source) {
         final ConverterSetup setup;
         if (source.getConverter() instanceof ColorConverter) {
             if (source.asVolatile() != null) {
@@ -421,7 +421,7 @@ public class SourceAndConverterHelper {
      * Here should go all the ways to build a Volatile Source
      * from a non Volatile Source, ARGBTyped
      * @param source the source
-     * @return
+     * @return nothing - unsupported
      */
     private static Source createVolatileARGBType(Source source) {
         // TODO unsupported yet
@@ -559,7 +559,7 @@ public class SourceAndConverterHelper {
      * @param pt point
      * @return true if the source is present
      */
-    public static boolean isSourcePresentAt(SourceAndConverter sac, int timePoint, RealPoint pt) {
+    public static boolean isSourcePresentAt(SourceAndConverter<?> sac, int timePoint, RealPoint pt) {
 
         RealRandomAccessible rra_ible = sac.getSpimSource().getInterpolatedSource(timePoint, 0, Interpolation.NEARESTNEIGHBOR);
 
@@ -575,7 +575,7 @@ public class SourceAndConverterHelper {
             rra.setPosition(iPt);
 
             // Gets converter -> will decide based on ARGB value whether the source is present or not
-            Converter<Object, ARGBType> cvt = sac.getConverter();
+            Converter<Object, ARGBType> cvt = (Converter<Object, ARGBType>) (sac.getConverter());
             ARGBType colorOut = new ARGBType();
             cvt.convert(rra.get(), colorOut);
 
@@ -615,7 +615,7 @@ public class SourceAndConverterHelper {
             }
         });
 
-        Comparator<SourceAndConverter> sacComparator = (s1, s2) -> {
+        Comparator<SourceAndConverter<?>> sacComparator = (s1, s2) -> {
             // Those who do not belong to spimdata are last:
             SourceAndConverterService.SpimDataInfo sdi1 = null, sdi2 = null;
             if (SourceAndConverterServices
@@ -665,7 +665,7 @@ public class SourceAndConverterHelper {
      * @param sacs sources
      * @return ordered sources
      */
-    public static List<SourceAndConverter> sortDefaultNoGeneric(Collection<SourceAndConverter> sacs) {
+    /*public static List<SourceAndConverter> sortDefaultNoGeneric(Collection<SourceAndConverter> sacs) {
         List<SourceAndConverter> sortedList = new ArrayList<>(sacs.size());
         sortedList.addAll(sacs);
         Set<AbstractSpimData> spimData = new HashSet<>();
@@ -721,7 +721,7 @@ public class SourceAndConverterHelper {
 
         sortedList.sort(sacComparator);
         return sortedList;
-    }
+    }*/
 
     /**
      * Return the center point in global coordinates of the source
@@ -729,7 +729,7 @@ public class SourceAndConverterHelper {
      * @param source source
      * @return the center point of the source (assuming not warped)
      */
-    public static RealPoint getSourceAndConverterCenterPoint(SourceAndConverter source) {
+    public static RealPoint getSourceAndConverterCenterPoint(SourceAndConverter<?> source) {
         AffineTransform3D sourceTransform = new AffineTransform3D();
         sourceTransform.identity();
 
@@ -752,7 +752,7 @@ public class SourceAndConverterHelper {
      * @param src converter source
      * @param dst converter dest
      */
-    public static void transferColorConverters(SourceAndConverter src, SourceAndConverter dst) {
+    public static void transferColorConverters(SourceAndConverter<?> src, SourceAndConverter<?> dst) {
         transferColorConverters(new SourceAndConverter[]{src}, new SourceAndConverter[]{dst});
     }
 
@@ -770,11 +770,11 @@ public class SourceAndConverterHelper {
      * @param srcs sources source
      * @param dsts sources dest
      */
-    public static void transferColorConverters(SourceAndConverter[] srcs, SourceAndConverter[] dsts) {
+    public static void transferColorConverters(SourceAndConverter<?>[] srcs, SourceAndConverter<?>[] dsts) {
         if ((srcs!=null)&&(dsts!=null))
         for (int i = 0;i<Math.min(srcs.length, dsts.length);i++) {
-            SourceAndConverter src = srcs[i];
-            SourceAndConverter dst = dsts[i];
+            SourceAndConverter<?> src = srcs[i];
+            SourceAndConverter<?> dst = dsts[i];
             if ((src!=null)&&(dst!=null))
             if ((dst.getConverter() instanceof ColorConverter) && (src.getConverter() instanceof ColorConverter)) {
                 ColorConverter conv_src = (ColorConverter) src.getConverter();
@@ -854,7 +854,7 @@ public class SourceAndConverterHelper {
      * @param voxSize target voxel size
      * @return mipmap level chosen
      */
-    public static int bestLevel(SourceAndConverter sac, int t, double voxSize) {
+    public static int bestLevel(SourceAndConverter<?> sac, int t, double voxSize) {
         return bestLevel(sac.getSpimSource(), t, voxSize);
     }
     
@@ -904,7 +904,7 @@ public class SourceAndConverterHelper {
      * @param level mipmap level
      * @return the characteristic voxel size for this level
      */
-    public static double getCharacteristicVoxelSize(SourceAndConverter sac, int t, int level) {
+    public static double getCharacteristicVoxelSize(SourceAndConverter<?> sac, int t, int level) {
         return getCharacteristicVoxelSize(sac.getSpimSource(), t, level);
     }
 

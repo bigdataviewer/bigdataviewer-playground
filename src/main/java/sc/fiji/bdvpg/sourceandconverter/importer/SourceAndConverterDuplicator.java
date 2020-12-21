@@ -34,11 +34,11 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Function;
 
-    public class SourceAndConverterDuplicator implements Runnable, Function<SourceAndConverter, SourceAndConverter> {
+public class  SourceAndConverterDuplicator <T> implements Runnable, Function<SourceAndConverter<T>, SourceAndConverter<T>> {
 
-    SourceAndConverter sac_in;
+    SourceAndConverter<T> sac_in;
 
-    public SourceAndConverterDuplicator(SourceAndConverter sac) {
+    public SourceAndConverterDuplicator(SourceAndConverter<T> sac) {
         sac_in = sac;
     }
 
@@ -47,22 +47,22 @@ import java.util.function.Function;
         // Nothing
     }
 
-    public SourceAndConverter get() {
+    public SourceAndConverter<T> get() {
         return apply(sac_in);
     }
 
     @Override
-    public SourceAndConverter apply(SourceAndConverter sourceAndConverter) {
-        SourceAndConverter sac;
+    public SourceAndConverter<T> apply(SourceAndConverter<T> sourceAndConverter) {
+        SourceAndConverter<T> sac;
         if (sourceAndConverter.asVolatile() != null) {
-            sac = new SourceAndConverter(
+            sac = new SourceAndConverter<T>(
                     sourceAndConverter.getSpimSource(),
                     SourceAndConverterHelper.cloneConverter(sourceAndConverter.getConverter(), sourceAndConverter),
-                    new SourceAndConverter(sourceAndConverter.asVolatile().getSpimSource(),
+                    new SourceAndConverter<>(sourceAndConverter.asVolatile().getSpimSource(),
                             SourceAndConverterHelper.cloneConverter(sourceAndConverter.asVolatile().getConverter(), sourceAndConverter.asVolatile()))
             );
         } else {
-            sac = new SourceAndConverter(
+            sac = new SourceAndConverter<T>(
                     sourceAndConverter.getSpimSource(),
                     SourceAndConverterHelper.cloneConverter(sourceAndConverter.getConverter(), sourceAndConverter));
         }

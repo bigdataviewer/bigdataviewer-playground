@@ -53,7 +53,7 @@ public class BvvSourcesAdderCommand implements Command {
     @Override
     public void run() {
 
-        for (SourceAndConverter sac : sacs) {
+        for (SourceAndConverter<?> sac : sacs) {
             bvvh.getViewerPanel().addSource(sac, SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(sac));
         }
 

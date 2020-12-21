@@ -49,12 +49,12 @@ import java.util.function.Consumer;
  *
  */
 
-public class SourceAdder implements Runnable, Consumer<SourceAndConverter[]>
+public class SourceAdder implements Runnable, Consumer<SourceAndConverter<?>[]>
 {
-	SourceAndConverter[] sacsIn;
+	SourceAndConverter<?>[] sacsIn;
 	BdvHandle bdvh;
 
-	public SourceAdder(BdvHandle bdvh, SourceAndConverter... sacsIn) {
+	public SourceAdder(BdvHandle bdvh, SourceAndConverter<?>... sacsIn) {
 		this.sacsIn=sacsIn;
 		this.bdvh=bdvh;
 	}

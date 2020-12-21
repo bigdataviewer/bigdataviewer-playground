@@ -68,14 +68,14 @@ public interface ISourceAndConverterService
      * @param src source
      * @return if the source is already registered
      */
-    boolean isRegistered(SourceAndConverter src);
+    boolean isRegistered(SourceAndConverter<?> src);
 
     /**
      * Register a BDV Source in this Service.
      * Called in the BdvSourcePostProcessor
      * @param src source
      */
-    void register(SourceAndConverter src);
+    void register(SourceAndConverter<?> src);
 
     /**
      * Registers all sources contained with a SpimData Object in this Service.
@@ -86,61 +86,61 @@ public interface ISourceAndConverterService
     /**
      * @return list of all registered sources
      */
-    List<SourceAndConverter> getSourceAndConverters();
+    List<SourceAndConverter<?>> getSourceAndConverters();
 
     /**
      * Return sources assigned to a SpimDataObject
      */
-    List<SourceAndConverter> getSourceAndConverterFromSpimdata(AbstractSpimData asd);
+    List<SourceAndConverter<?>> getSourceAndConverterFromSpimdata(AbstractSpimData asd);
 
     /**
      * Removes a BDV Source in this Service.
      * Called in the BdvSourcePostProcessor
      * @param sac source
      */
-    void remove(SourceAndConverter... sac);
+    void remove(SourceAndConverter<?>... sac);
 
 
-    void linkToSpimData(SourceAndConverter sac, AbstractSpimData asd, int idSetup);
+    void linkToSpimData(SourceAndConverter<?> sac, AbstractSpimData asd, int idSetup);
 
     /**
      * Adds metadata for a sac
      */
-    void setMetadata(SourceAndConverter sac, String key, Object data);
+    void setMetadata(SourceAndConverter<?> sac, String key, Object data);
 
     /**
      * Adds metadata for a sac
      *
      * @return metadata object
      */
-    Object getMetadata(SourceAndConverter sac, String key);
+    Object getMetadata(SourceAndConverter<?> sac, String key);
 
     /**
      * Adds metadata for a sac
      *
      * @return keys of metadata
      */
-    Collection<String> getMetadataKeys(SourceAndConverter sac);
+    Collection<String> getMetadataKeys(SourceAndConverter<?> sac);
 
     /**
      * Convenient method to know if a metadata for a sac exists
      *
      * @return flag
      */
-    boolean containsMetadata(SourceAndConverter sac, String key);
+    boolean containsMetadata(SourceAndConverter<?> sac, String key);
 
     /**
      * Finds the list of corresponding registered sac for a source.
      */
-    List<SourceAndConverter> getSourceAndConvertersFromSource( Source source );
+    List<SourceAndConverter<?>> getSourceAndConvertersFromSource( Source<?> source );
 
     /**
      * Register an action ( a consumer of sourceandconverter array)
-     * @param actionName
-     * @param action
+     * @param actionName name of this action
+     * @param action consumer = action
      * TODO : link a description ?
      */
-    void registerAction(String actionName, Consumer<SourceAndConverter[]> action);
+    void registerAction(String actionName, Consumer<SourceAndConverter<?>[]> action);
 
     /**
      * Removes an action from the registration
@@ -159,7 +159,7 @@ public interface ISourceAndConverterService
      * @param actionName identifier of the action
      * @return the action
      */
-    Consumer<SourceAndConverter[]> getAction(String actionName);
+    Consumer<SourceAndConverter<?>[]> getAction(String actionName);
 
     /**
      * Gets All SpimDatas present in the service

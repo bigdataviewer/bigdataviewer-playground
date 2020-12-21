@@ -35,8 +35,8 @@ import bdv.viewer.SourceAndConverter;
  */
 
 public class RenamableSourceAndConverter {
-    public SourceAndConverter sac;
-    public RenamableSourceAndConverter(SourceAndConverter sac) {
+    public SourceAndConverter<?> sac;
+    public RenamableSourceAndConverter(SourceAndConverter<?> sac) {
         this.sac = sac;
     }
     public String toString() {

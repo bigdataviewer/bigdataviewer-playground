@@ -70,7 +70,7 @@ public class ProjectionModeChangerDemo
 		new SpimDataFromXmlImporter( "src/test/resources/mri-stack-shiftedY.xml" ).run();
 
 		// Get a handle on the sacs
-		final List< SourceAndConverter > sacs = SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();
+		final List< SourceAndConverter <?>> sacs = SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();
 
 		// Show all three sacs
 		sacs.forEach( sac -> {

@@ -93,7 +93,7 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 	private void showPopupMenu( BdvHandle bdv, int x, int y )
 	{
 
-		final List<SourceAndConverter> sacs = new ArrayList<>(sourcesSupplier.get());
+		final List<SourceAndConverter<?>> sacs = new ArrayList<>(sourcesSupplier.get());
 
 		if ( sacs.size() == 0 )
 			return;
@@ -102,7 +102,7 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 		if (sacs.size()>1) {
 			message +=  sacs.size()+" sources selected";
 		} else {
-			for (SourceAndConverter sac:sacs) {
+			for (SourceAndConverter<?> sac:sacs) {
 				message += sac.getSpimSource().getName(); //"["+sac.getSpimSource().getClass().getSimpleName()+"]");
 			}
 		}

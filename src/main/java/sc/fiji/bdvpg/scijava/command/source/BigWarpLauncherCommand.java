@@ -81,8 +81,8 @@ public class BigWarpLauncherCommand implements Command {
 	SourceAndConverterBdvDisplayService bsds;
 
     public void run() {
-        List<SourceAndConverter> movingSacs = Arrays.stream(movingSources).collect(Collectors.toList());
-        List<SourceAndConverter> fixedSacs = Arrays.stream(fixedSources).collect(Collectors.toList());
+        List<SourceAndConverter<?>> movingSacs = Arrays.stream(movingSources).map(sac -> (SourceAndConverter<?>) sac).collect(Collectors.toList());
+        List<SourceAndConverter<?>> fixedSacs = Arrays.stream(fixedSources).map(sac -> (SourceAndConverter<?>) sac).collect(Collectors.toList());
 
         List<ConverterSetup> converterSetups = Arrays.stream(movingSources).map(src -> bsds.getConverterSetup(src)).collect(Collectors.toList());
         converterSetups.addAll(Arrays.stream(fixedSources).map(src -> bsds.getConverterSetup(src)).collect(Collectors.toList()));

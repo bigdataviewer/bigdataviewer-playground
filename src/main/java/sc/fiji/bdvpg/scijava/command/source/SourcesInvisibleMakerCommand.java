@@ -47,7 +47,7 @@ public class SourcesInvisibleMakerCommand implements Command {
 
     @Override
     public void run() {
-        for (SourceAndConverter sac:sacs) {
+        for (SourceAndConverter<?> sac:sacs) {
             bsds.makeInvisible(sac);
         }
     }

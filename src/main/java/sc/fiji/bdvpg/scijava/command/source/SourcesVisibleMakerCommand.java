@@ -47,7 +47,7 @@ public class SourcesVisibleMakerCommand implements Command {
 
     @Override
     public void run() {
-        for (SourceAndConverter sac:sacs) {
+        for (SourceAndConverter<?> sac:sacs) {
             bsds.makeVisible(sac);
         }
     }

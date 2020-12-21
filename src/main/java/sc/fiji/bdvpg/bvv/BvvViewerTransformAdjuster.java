@@ -47,10 +47,10 @@ import net.imglib2.util.LinAlgHelpers;
 public class BvvViewerTransformAdjuster implements Runnable
 {
 	private final BvvHandle bvvHandle;
-	private final SourceAndConverter source;
+	private final SourceAndConverter<?> source;
 	private final boolean zoomedIn = false; // TODO: what's the point of this?
 
-	public BvvViewerTransformAdjuster(BvvHandle bvvHandle, SourceAndConverter source )
+	public BvvViewerTransformAdjuster(BvvHandle bvvHandle, SourceAndConverter<?> source )
 	{
 		this.bvvHandle = bvvHandle;
 		this.source = source;

@@ -68,7 +68,7 @@ public class ScreenShotDemo
 
         final ISourceAndConverterService sacService = SourceAndConverterServices.getSourceAndConverterService();
 
-        final List< SourceAndConverter > sacs = sacService.getSourceAndConverters();
+        final List< SourceAndConverter <?>> sacs = sacService.getSourceAndConverters();
 
         showSacs( bdvHandle, sacs );
 
@@ -80,7 +80,7 @@ public class ScreenShotDemo
         screenShotMaker.getRawScreenShot().show();
     }
 
-    public static void showSacs( BdvHandle bdvHandle, List< SourceAndConverter > sacs )
+    public static void showSacs( BdvHandle bdvHandle, List< SourceAndConverter <?>> sacs )
     {
         sacs.forEach( sac -> {
                 SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, sac );

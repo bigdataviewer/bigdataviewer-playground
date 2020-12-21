@@ -40,7 +40,7 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
+ * Author: haesleinhuepf
  * 12 2019
  */
 

@@ -45,7 +45,7 @@ public class SpimDataExporterCommand implements Command {
 
     // To get associated spimdata
     @Parameter(label = "Select source(s)")
-    SourceAndConverter sac;
+    SourceAndConverter<?> sac;
 
     @Parameter(label = "Output File (XML)")
     public File xmlFilePath;
