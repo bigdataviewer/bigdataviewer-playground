@@ -57,7 +57,7 @@ import java.util.Set;
  * @author Nicolas Chiaruttini
  */
 
-@Plugin(type = InputWidget.class, priority = Priority.EXTREMELY_HIGH)
+@Plugin(type = InputWidget.class)
 public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAndConverter<?>[]> implements
         SourceAndConverterListWidget<JPanel> {
 
