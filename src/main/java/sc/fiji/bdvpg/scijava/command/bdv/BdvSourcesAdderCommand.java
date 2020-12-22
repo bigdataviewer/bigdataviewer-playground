@@ -46,7 +46,7 @@ public class BdvSourcesAdderCommand implements Command {
     BdvHandle bdvh;
 
     @Parameter(label="Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter(label="Auto Contrast")
     boolean autoContrast;
@@ -56,7 +56,10 @@ public class BdvSourcesAdderCommand implements Command {
 
     @Override
     public void run() {
-
+        System.out.println("sacs l = "+sacs.length);
+        for (SourceAndConverter<?> sac : sacs) {
+            System.out.println("------------------"+sac.getSpimSource().getName());
+        }
         SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvh, sacs);
         if (autoContrast) {
             for (SourceAndConverter<?> sac : sacs) {
