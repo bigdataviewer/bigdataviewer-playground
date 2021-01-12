@@ -29,6 +29,7 @@
 package sc.fiji.bdvpg.io.state;
 
 import net.imagej.ImageJ;
+import org.junit.Ignore;
 import org.junit.Test;
 import sc.fiji.bdvpg.services.SourceAndConverterServiceLoader;
 
@@ -41,7 +42,7 @@ public class BdvPlaygroundStateLoader {
         new SourceAndConverterServiceLoader("src/test/resources/bdvplaygroundstate.json", "src/test/resources/", ij.context(), false).run();
     }
 
-    @Test
+    @Test @Ignore // Because of BigWarp snapshot dependency -> ignored
     public void demoRunOk() {
         main(new String[]{""});
     }

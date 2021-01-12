@@ -37,7 +37,7 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.io.File;
 
-@Plugin( type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>Open XML/HDF5 Files" )
+@Plugin( type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>Open XML BDV Datasets" )
 public class MultipleSpimDataImporterCommand implements Command {
 
     /**
@@ -48,7 +48,7 @@ public class MultipleSpimDataImporterCommand implements Command {
      * But then programmatically the message above is always shown...
      */
     @Parameter ( visibility = ItemVisibility.MESSAGE  )
-    private String message = "Please choose XML/HDF5 files:";
+    private String message = "Please choose XML files:";
 
     @Parameter(style="extensions:xml")
     public File[] files;
