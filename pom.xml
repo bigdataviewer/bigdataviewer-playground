@@ -125,7 +125,7 @@
 		<bigdataviewer-core.version>10.1.0</bigdataviewer-core.version>
 		<bigdataviewer-vistools.version>1.0.0-beta-26</bigdataviewer-vistools.version>
 		<imglib2-cache.version>1.0.0-beta-15</imglib2-cache.version>
-		<bigdataviewer-selector.version>0.1.5</bigdataviewer-selector.version>
+		<bigdataviewer-selector.version>0.1.6</bigdataviewer-selector.version>
 
 		<!--<mastodon.version>1.0.0-beta-17-SNAPSHOT</mastodon.version>-->
 		<mastodon.version>1.0.0-beta-16</mastodon.version>

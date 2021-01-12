@@ -1,5 +1,7 @@
 ["BDV - Show Sources (new Bdv window)",
+  "Show Sources (split) (IJ1)",
   "Basic Transformation",
+  "Manual Sources Transformation",
   "BDV - Remove Sources From BDV",
   "Inspect Sources",
   "Make Global Source Group",
@@ -9,5 +11,4 @@
   "Set Sources Color",
   "Set Sources Projection Mode",
   "PopupLine",
-  "Delete Sources",
-  "PopupLine"]
+  "Delete Sources"]
