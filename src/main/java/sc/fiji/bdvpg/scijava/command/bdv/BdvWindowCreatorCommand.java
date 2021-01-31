@@ -59,7 +59,7 @@ public class BdvWindowCreatorCommand implements Command {
     @Parameter(label = "Number of timepoints (1 for a single timepoint)")
     public int nTimepoints = 1;
 
-    @Parameter(choices = { Projection.MIXED_PROJECTOR, Projection.SUM_PROJECTOR, Projection.AVERAGE_PROJECTOR})
+    @Parameter(required = false, choices = { Projection.MIXED_PROJECTOR, Projection.SUM_PROJECTOR, Projection.AVERAGE_PROJECTOR})
     public String projector;
 
     /**
@@ -70,6 +70,8 @@ public class BdvWindowCreatorCommand implements Command {
 
     @Override
     public void run() {
+        if ((projector==null)||(projector.trim().equals(""))) projector = Projection.SUM_PROJECTOR; // Default mode if nothing is set
+
         //------------ BdvHandleFrame
         BdvOptions opts = BdvOptions.options().frameTitle(windowTitle);
         if (is2D) opts = opts.is2D();
