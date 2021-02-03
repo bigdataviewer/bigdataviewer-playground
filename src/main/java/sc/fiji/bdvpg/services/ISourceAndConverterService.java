@@ -116,6 +116,13 @@ public interface ISourceAndConverterService
     Object getMetadata(SourceAndConverter sac, String key);
 
     /**
+     * Removes metadata for a sac
+     *
+     * @return metadata object
+     */
+    void removeMetadata(SourceAndConverter sac, String key);
+
+    /**
      * Adds metadata for a sac
      *
      * @return keys of metadata

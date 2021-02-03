@@ -164,6 +164,14 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
+    public void removeMetadata(SourceAndConverter sac, String key) {
+        Map<String,Object> metadata = sacToMetadata.getIfPresent(sac);
+        if (metadata!=null) {
+            metadata.remove(key);
+        }
+    }
+
+    @Override
     public Collection<String> getMetadataKeys(SourceAndConverter sac) {
         Map<String, Object> map = sacToMetadata.getIfPresent(sac);
         if (map==null) {
