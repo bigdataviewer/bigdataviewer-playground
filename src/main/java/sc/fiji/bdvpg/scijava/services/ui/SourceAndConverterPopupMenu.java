@@ -72,7 +72,9 @@ public class SourceAndConverterPopupMenu
 			"PopupLine",
 			getCommandName(SourcesRemoverCommand.class),
 			getCommandName(XmlHDF5ExporterCommand.class),
-			"PopupLine"
+			"PopupLine",
+			getCommandName(MakeMetadataFilterNodeCommand.class)
+
 	 };
 
 	 String[] popupActions;
