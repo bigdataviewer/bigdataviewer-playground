@@ -103,7 +103,7 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 		this.bdvOptions = BdvOptions.options();
 		this.interpolate = false;
 		this.numTimePoints = 1;
-		this.pathToBindings = BdvSettingsGUISetter.defaultBdvPgSettingsRootPath;
+		this.pathToBindings = "";
 	}
 
 	public BdvCreator( BdvOptions bdvOptions  )
@@ -111,7 +111,7 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 		this.bdvOptions = bdvOptions;
 		this.interpolate = false;
 		this.numTimePoints = 1;
-		this.pathToBindings = BdvSettingsGUISetter.defaultBdvPgSettingsRootPath;
+		this.pathToBindings = "";
 	}
 
 	public BdvCreator( BdvOptions bdvOptions, boolean interpolate )
@@ -119,7 +119,7 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 		this.bdvOptions = bdvOptions;
 		this.interpolate = interpolate;
 		this.numTimePoints = 1;
-		this.pathToBindings = BdvSettingsGUISetter.defaultBdvPgSettingsRootPath;
+		this.pathToBindings = "";
 	}
 
 	public BdvCreator( BdvOptions bdvOptions, boolean interpolate, int numTimePoints )
@@ -127,7 +127,7 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 		this.bdvOptions = bdvOptions;
 		this.interpolate = interpolate;
 		this.numTimePoints = numTimePoints;
-		this.pathToBindings = BdvSettingsGUISetter.defaultBdvPgSettingsRootPath;
+		this.pathToBindings = "";
 	}
 
 	@Override
@@ -169,10 +169,6 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 
 		addBdvPlaygroundBehaviours(bdv);
 
-		/*bdv.getViewerPanel().addTransformListener(tl -> {
-			checkandmnotifyprojector();
-		});*/
-
 		return bdv;
 	}
 
@@ -199,7 +195,7 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 		SourceAndConverterServices.getSourceAndConverterDisplayService().setDisplayMetadata(
 				bdv, SourceSelectorBehaviour.class.getSimpleName(), ssb);
 
-		new EditorBehaviourInstaller(ssb).run();
+		new EditorBehaviourInstaller(ssb, pathToBindings).run();
 
 		// Custom Drag support
 		if (bdv.getViewerPanel().getTransferHandler() instanceof BdvTransferHandler) {

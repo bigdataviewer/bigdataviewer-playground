@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.bdv.config;
 import bdv.TransformEventHandler2D;
 import bdv.TransformEventHandler3D;
 import bdv.TransformState;
+import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SettingsPage;
@@ -48,6 +49,8 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -94,10 +97,10 @@ public class BdvSettingsGUISetter implements Runnable {
     final String rootPath;
 
     public final static String bdvKeyConfigFileName = "bdvkeyconfig.yaml";
-    public final static String editorActionsFileName = "bdvpg.editor.actions.json";
-    public final static String defaultEditorActionsFileName = "bdvpg.editor.actions.json.default";
-    public final static String treeActionsFileName = "bdvpg.tree.actions.json";
-    public final static String defaultTreeActionsFileName = "bdvpg.tree.actions.json.default";
+    public final static String editorActionsFileName = "bdvpg.editor.actions.txt";
+    public final static String defaultEditorActionsFileName = "bdvpg.editor.actions.txt.default.txt";
+    public final static String treeActionsFileName = "bdvpg.tree.actions.txt";
+    public final static String defaultTreeActionsFileName = "bdvpg.tree.actions.txt.default.txt";
     public final static String defaultBdvPgSettingsRootPath = "plugins"+File.separator+"bdvpgsettings";
 
     public BdvSettingsGUISetter(String path) {
@@ -214,7 +217,8 @@ public class BdvSettingsGUISetter implements Runnable {
     }
 
     static public File getActionFile(String path, String context) {
-        return new File(defaultBdvPgSettingsRootPath+File.separator+path+"bdvpg."+context+".actions.json");
+        if (!path.endsWith(File.separator)) {path+=File.separator;}
+        return new File(defaultBdvPgSettingsRootPath+File.separator+path+"bdvpg."+context+".actions.txt");
     }
 
     private void recursivelySearchAndAppend(String subPath, SettingsPanel settings, String pathDir) {
@@ -251,7 +255,7 @@ public class BdvSettingsGUISetter implements Runnable {
         File editorConfig = new File(pathEditorFile);
 
         if (!editorConfig.exists()) {
-            String pathDefaultEditorFile = pathDir+File.separator + editorActionsFileName;
+            String pathDefaultEditorFile = pathDir+File.separator + editorActionsFileName + ".default.txt";
             File editorDefaultConfig = new File(pathDefaultEditorFile);
             if (editorDefaultConfig.exists()) {
                 try {

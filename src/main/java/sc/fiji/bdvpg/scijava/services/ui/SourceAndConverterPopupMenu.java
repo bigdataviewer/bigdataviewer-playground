@@ -96,7 +96,7 @@ public class SourceAndConverterPopupMenu
 				e.printStackTrace();
 			}
 		} else {
-			File fdefault = new File(f.getAbsolutePath()+".default");
+			File fdefault = new File(f.getAbsolutePath()+".default.txt");
 			if (fdefault.exists()) {
 				try {
 					Gson gson = new Gson();
