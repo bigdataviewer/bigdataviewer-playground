@@ -29,17 +29,17 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.sourceandconverter.display.ProjectionModeChanger;
 
 import static sc.fiji.bdvpg.bdv.projector.Projection.PROJECTION_MODE_AVG;
 import static sc.fiji.bdvpg.bdv.projector.Projection.PROJECTION_MODE_SUM;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Projection Mode")
-public class SourceAndConverterProjectionModeChangerCommand implements Command {
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Projection Mode")
+public class SourceAndConverterProjectionModeChangerCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Projection Mode", choices = { PROJECTION_MODE_SUM, PROJECTION_MODE_AVG })
     String projectionMode = PROJECTION_MODE_SUM;

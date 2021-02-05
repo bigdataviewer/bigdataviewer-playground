@@ -30,17 +30,17 @@ package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Show Sources",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Show Sources",
         description = "Adds one or several sources to an existing BDV window")
-public class BdvSourcesAdderCommand implements Command {
+public class BdvSourcesAdderCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label="Select BDV Window")
     BdvHandle bdvh;

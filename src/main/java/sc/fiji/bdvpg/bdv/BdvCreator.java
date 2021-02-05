@@ -219,7 +219,7 @@ public class BdvCreator implements Runnable, Supplier<BdvHandle>
 	 * @param pathToBindings string path to the folder containing the yaml file
 	 */
 	void install(BdvHandle bdv, String pathToBindings) {
-		String yamlDataLocation = pathToBindings + File.separator + BdvSettingsGUISetter.defaultYamlFileName;
+		String yamlDataLocation = pathToBindings + File.separator + BdvSettingsGUISetter.bdvKeyConfigFileName;
 
 		InputTriggerConfig yamlConf = null;
 

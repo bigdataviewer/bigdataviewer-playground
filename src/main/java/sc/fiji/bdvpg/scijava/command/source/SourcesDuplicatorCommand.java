@@ -29,14 +29,14 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.sourceandconverter.importer.SourceAndConverterDuplicator;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Duplicate Sources")
-public class SourcesDuplicatorCommand implements Command {
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Duplicate Sources")
+public class SourcesDuplicatorCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sacs;

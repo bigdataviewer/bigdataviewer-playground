@@ -33,13 +33,13 @@ import net.imagej.display.ColorTables;
 import net.imagej.lut.LUTService;
 import net.imglib2.converter.Converter;
 import net.imglib2.display.ColorTable;
-import org.scijava.command.Command;
 import org.scijava.command.DynamicCommand;
 import org.scijava.convert.ConvertService;
 import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.sourceandconverter.display.ConverterChanger;
 
 import java.net.URL;
@@ -47,11 +47,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Create New Source (Set LUT)",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Create New Source (Set LUT)",
         initializer = "init",
         description = "Duplicate one or several sources and sets an (identical) Look Up Table for these duplicated sources")
 
-public class LUTSourceCreatorCommand extends DynamicCommand {
+public class LUTSourceCreatorCommand extends DynamicCommand implements BdvPlaygroundActionCommand {
 
     @Parameter
     LUTService lutService;

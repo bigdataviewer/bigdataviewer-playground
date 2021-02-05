@@ -32,11 +32,12 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Preferences - Set (Key) Bindings",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Preferences - Set (Key) Bindings",
         description = "Sets actions linked to key / mouse event in BDV (WIP, currently not working)")
 
-public class BdvSettingsCommand implements Command {
+public class BdvSettingsCommand implements BdvPlaygroundActionCommand {
 
     @Override
     public void run() {

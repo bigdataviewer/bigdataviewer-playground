@@ -33,6 +33,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 
@@ -40,10 +41,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Make Metadata Filter Node",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Make Metadata Filter Node",
 description = "Adds a node in the tree view which selects the sources which contain a certain key metadata and which matches a certain regular expression")
 
-public class MakeMetadataFilterNodeCommand implements Command {
+public class MakeMetadataFilterNodeCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Name of the node")
     String groupName;

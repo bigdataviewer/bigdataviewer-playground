@@ -29,10 +29,10 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 
@@ -40,10 +40,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Make Global Source Group",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Make Global Source Group",
 description = "Adds a node in the tree view which selects the sources specified in the command")
 
-public class MakeGroupCommand implements Command {
+public class MakeGroupCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Name of the group")
     String groupName;

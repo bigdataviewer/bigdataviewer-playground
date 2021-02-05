@@ -42,13 +42,14 @@ import sc.fiji.bdvpg.bdv.projector.AccumulateAverageProjectorARGB;
 import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGBFactory;
 import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 import javax.swing.*;
 import java.awt.*;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Create Orthogonal Views",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Create Orthogonal Views",
         description = "Creates 3 BDV windows with synchronized orthogonal views")
-public class BdvOrthoWindowCreatorCommand implements Command {
+public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Title of BDV windows")
     public String windowTitle = "BDV";

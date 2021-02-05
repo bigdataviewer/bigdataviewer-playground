@@ -29,21 +29,16 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Add Metadata To Sources",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Add Metadata To Sources",
 description = "Adds a metadata string to selected sources")
 
-public class AddMetadataCommand implements Command {
+public class AddMetadataCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sacs;

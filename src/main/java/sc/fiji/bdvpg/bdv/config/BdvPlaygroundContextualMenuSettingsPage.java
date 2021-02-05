@@ -112,7 +112,7 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
     static class BdvPgContextMenuEditor extends JPanel {
         private final JTextArea contextMenuActions;
         public BdvPgContextMenuEditor() {
-            this.setLayout(new BorderLayout());
+            this.setLayout(new GridLayout(0,2));
             String[] allActionKeys =
                     new ArrayList<>(SourceAndConverterServices
                             .getSourceAndConverterService()
@@ -120,13 +120,13 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
 
             JList<String> allActions = new JList<>(allActionKeys);
 
-            contextMenuActions = new JTextArea();//<>(allActionKeys);
+            contextMenuActions = new JTextArea();
             contextMenuActions.setFont(contextMenuActions.getFont().deriveFont(10f));
             allActions.setDragEnabled(true);
             contextMenuActions.setDragEnabled(true);
             contextMenuActions.setDropMode(DropMode.INSERT);
 
-            this.add(new JScrollPane(contextMenuActions), BorderLayout.CENTER);
+            this.add(new JScrollPane(contextMenuActions), BorderLayout.WEST);
             this.add(new JScrollPane(allActions), BorderLayout.EAST);
         }
 

@@ -34,6 +34,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.sourceandconverter.importer.EmptySourceAndConverterCreator;
 
 /**
@@ -44,11 +45,11 @@ import sc.fiji.bdvpg.sourceandconverter.importer.EmptySourceAndConverterCreator;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>New Source Based on Model Source",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>New Source Based on Model Source",
 description = "Defines an empty source which occupied the same volume as a model source but with a potentially" +
         " different voxel size. Works with a single timepoint.")
 
-public class NewSourceCommand implements Command {
+public class NewSourceCommand implements BdvPlaygroundActionCommand {
     
     @Parameter(label = "Model Source", description = "Defines the portion of space covered by the new source")
     SourceAndConverter model;

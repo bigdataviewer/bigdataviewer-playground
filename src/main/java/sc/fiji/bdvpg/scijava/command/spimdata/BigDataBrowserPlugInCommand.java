@@ -36,6 +36,7 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,9 +56,9 @@ import java.util.Map;
  * @author HongKee Moon &lt;moon@mpi-cbg.de&gt;
  * @author Nicolas Chiaruttini biop.epfl.ch
  */
-@Plugin(type = Command.class,
+@Plugin(type = BdvPlaygroundActionCommand.class,
         menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>List BigDataServer Datasets")
-public class BigDataBrowserPlugInCommand implements Command
+public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand
 {
     private final Map< String, ImageIcon > imageMap = new HashMap<>();
 

@@ -35,6 +35,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformChanger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 /**
  * ViewTransformLoggerCommand
@@ -45,9 +46,9 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
  * 12 2019
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Change view transform",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Change view transform",
     description = "Applies a simple view transform (translation / rotation) to a BDV window")
-public class ViewTransformatorCommand implements Command {
+public class ViewTransformatorCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select BDV Windows")
     BdvHandle bdvh;

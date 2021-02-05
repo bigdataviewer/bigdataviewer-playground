@@ -36,10 +36,11 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bvv.BvvCreator;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>Create Empty BVV Frame",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>Create Empty BVV Frame",
     description = "Creates an empty Bvv window")
-public class BvvWindowCreatorCommand implements Command {
+public class BvvWindowCreatorCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Title of the new BVV window")
     public String windowTitle = "BVV";

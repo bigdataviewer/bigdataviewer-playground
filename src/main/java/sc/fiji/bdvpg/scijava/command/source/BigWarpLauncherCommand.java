@@ -36,6 +36,7 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.sourceandconverter.register.BigWarpLauncher;
 
@@ -48,10 +49,10 @@ import java.util.stream.Collectors;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Register>Launch BigWarp",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Register>Launch BigWarp",
         description = "Starts BigWarp from existing sources")
 
-public class BigWarpLauncherCommand implements Command {
+public class BigWarpLauncherCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Window title for BigWarp")
     String bigWarpName;

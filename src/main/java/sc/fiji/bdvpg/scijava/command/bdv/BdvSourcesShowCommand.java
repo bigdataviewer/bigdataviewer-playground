@@ -31,18 +31,19 @@ package sc.fiji.bdvpg.scijava.command.bdv;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import org.scijava.ItemIO;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Show Sources (new Bdv window)",
+
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Show Sources (new Bdv window)",
         description = "Displays one or several sources into a new BDV window")
-public class BdvSourcesShowCommand implements Command {
+public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label="Select Source(s)")
     SourceAndConverter[] sacs;

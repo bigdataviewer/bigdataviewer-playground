@@ -32,10 +32,10 @@ import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAndTimeRange;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
@@ -48,12 +48,12 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Basic Transformation",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Basic Transformation",
 description = "Performs basic transformation (rotate / flip) along X Y Z axis for several sources. " +
         "If global is selected, the transformation is performed relative to the global origin (0,0,0). " +
         "If global is not selected, the center of each source is unchanged.")
 
-public class BasicTransformerCommand implements Command {
+public class BasicTransformerCommand implements BdvPlaygroundActionCommand {
     @Parameter(label = "Select source(s)")
     SourceAndConverter[] sources_in;
 

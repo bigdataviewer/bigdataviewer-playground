@@ -36,6 +36,7 @@ import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStarter;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStopper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.*;
@@ -55,10 +56,10 @@ import java.awt.event.WindowEvent;
  * author Nicolas Chiaruttini, BIOP, EPFL, 2020
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Synchronize Views",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Synchronize Views",
             description = "Synchronizes the view of a set of BDV windows. A window popup should be closed" +
                     " to stop the synchronization")
-public class ViewSynchronizerCommand implements Command {
+public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Windows to synchronize")
     BdvHandle[] bdvhs;

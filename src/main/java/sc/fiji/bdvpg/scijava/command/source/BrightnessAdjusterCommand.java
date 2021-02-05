@@ -29,11 +29,11 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
-import org.scijava.command.Command;
 import org.scijava.command.InteractiveCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
 
@@ -46,9 +46,8 @@ import static org.scijava.ItemVisibility.MESSAGE;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@Plugin(type = Command.class, initializer = "init",  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Brightness")
-
-public class BrightnessAdjusterCommand extends InteractiveCommand {
+@Plugin(type = BdvPlaygroundActionCommand.class, initializer = "init",  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Brightness")
+public class BrightnessAdjusterCommand extends InteractiveCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sources;

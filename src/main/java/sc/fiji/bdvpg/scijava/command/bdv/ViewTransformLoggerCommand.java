@@ -36,6 +36,7 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformLogger;
 import sc.fiji.bdvpg.log.Logger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 /**
  * ViewTransformLoggerCommand
@@ -46,10 +47,10 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
  * 12 2019
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Log view transform",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Log view transform",
         description = "Outputs the current view transfrom of a BDV window into the standard IJ logger")
 
-public class ViewTransformLoggerCommand implements Command {
+public class ViewTransformLoggerCommand implements BdvPlaygroundActionCommand {
 
     @Parameter
     BdvHandle bdvh;

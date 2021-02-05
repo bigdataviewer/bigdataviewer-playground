@@ -33,12 +33,13 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.io.File;
 
-@Plugin( type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>Open XML BDV Datasets" )
-public class MultipleSpimDataImporterCommand implements Command {
+@Plugin( type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>Open XML BDV Datasets" )
+public class MultipleSpimDataImporterCommand implements BdvPlaygroundActionCommand {
 
     /**
      * Note: Due to a bug in SciJava there needs to be some
