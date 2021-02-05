@@ -125,7 +125,7 @@
 		<bigdataviewer-vistools.version>1.0.0-beta-28</bigdataviewer-vistools.version>
 		<imglib2-cache.version>1.0.0-beta-16</imglib2-cache.version>
 		<bigdataviewer-selector.version>0.1.8</bigdataviewer-selector.version>
-        <bigwarp_fiji.version>6.0.2</bigwarp_fiji.version> <!--- SNAPSHOT Version for real case scenario -->
+        <bigwarp_fiji.version>6.0.2</bigwarp_fiji.version>
 		<mastodon.version>1.0.0-beta-16</mastodon.version>
 		<bigvolumeviewer.version>0.1.8</bigvolumeviewer.version>
 		<bigdataviewer-spimdata-extras.version>0.1.0</bigdataviewer-spimdata-extras.version>
