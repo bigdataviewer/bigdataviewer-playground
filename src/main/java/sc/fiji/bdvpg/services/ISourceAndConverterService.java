@@ -118,7 +118,6 @@ public interface ISourceAndConverterService
     /**
      * Removes metadata for a sac
      *
-     * @return metadata object
      */
     void removeMetadata(SourceAndConverter sac, String key);
 
