@@ -30,6 +30,7 @@ package sc.fiji.bdvpg.scijava.services.ui;
 
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.Gson;
+import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesShowCommand;
@@ -50,7 +51,7 @@ public class SourceAndConverterPopupMenu
 	private JPopupMenu popup;
 	private final Supplier<SourceAndConverter[]> sacs_supplier;
 
-	 public static String[] defaultPopupActions = {
+	 final public static String[] defaultPopupActions = {
 			getCommandName(BdvSourcesAdderCommand.class),
 			getCommandName(BdvSourcesShowCommand.class),
 			getCommandName(BdvSourcesRemoverCommand.class),
@@ -79,25 +80,46 @@ public class SourceAndConverterPopupMenu
 
 	 String[] popupActions;
 
-	public static synchronized void setDefaultSettings(String[] newDefaults) {
-		defaultPopupActions = newDefaults.clone();
-	}
-
-	public SourceAndConverterPopupMenu( Supplier<SourceAndConverter[]> sacs_supplier )
-	{
+	public SourceAndConverterPopupMenu( Supplier<SourceAndConverter[]> sacs_supplier, String path, String context ) {
 		this.sacs_supplier = sacs_supplier;
 		this.popupActions = defaultPopupActions;
 
-		File f = new File("bdvpgsettings"+File.separator+"DefaultPopupActions.json");
+		File f = BdvSettingsGUISetter.getActionFile(path,context);
 		if (f.exists()) {
 			try {
 				Gson gson = new Gson();
 				popupActions = gson.fromJson(new FileReader(f.getAbsoluteFile()), String[].class);
+				if ((popupActions== null)||(popupActions.length==0)) {
+					popupActions = new String[]{"Warning: Empty "+f.getAbsolutePath()+" config file."};
+				}
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
+		} else {
+			File fdefault = new File(f.getAbsolutePath()+".default");
+			if (fdefault.exists()) {
+				try {
+					Gson gson = new Gson();
+					popupActions = gson.fromJson(new FileReader(fdefault.getAbsoluteFile()), String[].class);
+					if ((popupActions== null)||(popupActions.length==0)) {
+						popupActions = new String[]{"Warning: Empty "+fdefault.getAbsolutePath()+" config file."};
+					}
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			} else {
+				System.err.println("Bdv Playground actions settings File "+f.getAbsolutePath()+" does not exist.");
+				System.err.println("Bdv Playground default actions settings File "+fdefault.getAbsolutePath()+" does not exist.");
+
+			}
 		}
+
 		createPopupMenu();
+	}
+
+	public SourceAndConverterPopupMenu( Supplier<SourceAndConverter[]> sacs_supplier )
+	{
+		this(sacs_supplier,"", "tree");
 	}
 
 	public SourceAndConverterPopupMenu( Supplier<SourceAndConverter[]> sacs_supplier, String[] actions )
@@ -119,7 +141,6 @@ public class SourceAndConverterPopupMenu
 				this.addPopupAction(actionName, SourceAndConverterServices.getSourceAndConverterService().getAction(actionName));
 			}
 		}
-
 	}
 
 	/**

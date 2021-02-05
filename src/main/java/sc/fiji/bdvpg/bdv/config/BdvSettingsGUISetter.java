@@ -203,7 +203,7 @@ public class BdvSettingsGUISetter implements Runnable {
         }
 
         if (treeActionsConfigFile.exists()) {
-            SettingsPage spTreeActions = new BdvPlaygroundContextualMenuSettingsPage("tree actions");
+            SettingsPage spTreeActions = new BdvPlaygroundContextualMenuSettingsPage("tree actions", treeActionsConfigFile);
             settings.addPage(spTreeActions);
         }
 
@@ -211,6 +211,10 @@ public class BdvSettingsGUISetter implements Runnable {
         dialog.getContentPane().add( settings, BorderLayout.CENTER );
         dialog.pack();
         dialog.setVisible( true );
+    }
+
+    static public File getActionFile(String path, String context) {
+        return new File(defaultBdvPgSettingsRootPath+File.separator+path+"bdvpg."+context+".actions.json");
     }
 
     private void recursivelySearchAndAppend(String subPath, SettingsPanel settings, String pathDir) {
@@ -242,6 +246,27 @@ public class BdvSettingsGUISetter implements Runnable {
             }
         }
 
+        // Is there an editor config file ?
+        String pathEditorFile = pathDir+File.separator + editorActionsFileName;
+        File editorConfig = new File(pathEditorFile);
+
+        if (!editorConfig.exists()) {
+            String pathDefaultEditorFile = pathDir+File.separator + editorActionsFileName;
+            File editorDefaultConfig = new File(pathDefaultEditorFile);
+            if (editorDefaultConfig.exists()) {
+                try {
+                    FileUtils.copyFile(editorDefaultConfig, editorConfig);
+                } catch (IOException e) {
+                    System.err.println("Error : couldn't duplicate bdvpg default config file");
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if (editorConfig.exists()) {
+            settings.addPage(new BdvPlaygroundContextualMenuSettingsPage(subPath+"> editor", editorConfig));
+        }
+
         // ----------------------- TODO the key bindings...
 
         // Are there subfolders ?
@@ -253,7 +278,6 @@ public class BdvSettingsGUISetter implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
     }
 

@@ -28,6 +28,8 @@
  */
 package sc.fiji.bdvpg.bdv.config;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SettingsPage;
 import org.scijava.listeners.Listeners;
@@ -36,6 +38,10 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,12 +59,28 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
 
     private final Listeners.List<ModificationListener> modificationListeners;
 
+    final File jsonActionFile;
 
-    public BdvPlaygroundContextualMenuSettingsPage( final String treePath )
+    public BdvPlaygroundContextualMenuSettingsPage( final String treePath, File jsonEditorActions )
     {
         this.treePath = treePath;
-        panel = new BdvPgContextMenuEditor();
+        jsonActionFile = jsonEditorActions;
+        String[] iniActions = new String[]{};
+        if (jsonActionFile.exists()) {
+            try {
+                Gson gson = new Gson();
+                iniActions = gson.fromJson(new FileReader(jsonActionFile.getAbsoluteFile()), String[].class);
+                if (iniActions==null) iniActions = new String[]{};
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.err.println("Bdv Playground actions settings File "+jsonActionFile.getAbsolutePath()+" does not exist.");
+        }
+
+        panel = new BdvPgContextMenuEditor(iniActions);
         modificationListeners = new Listeners.SynchronizedList<>();
+
     }
 
     @Override
@@ -85,7 +107,7 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
     }
 
     /**
-     * Stores current panel settings in bigdataviewer.properties file if it exists,
+     * Stores current panel settings in the specified input file if it exists,
      * to default ones otherwise
      */
     @Override
@@ -105,13 +127,22 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
             }
         }
 
-        SourceAndConverterPopupMenu.setDefaultSettings(filteredActions.toArray(new String[0]));
-        // Stores
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String actionsString = gson.toJson(filteredActions.toArray(new String[0]));
+
+        try {
+            PrintWriter out = new PrintWriter(jsonActionFile);
+            out.println(actionsString);
+            out.close();
+        } catch (FileNotFoundException e) {
+            System.err.println("Could not print actions settings file "+jsonActionFile.getAbsolutePath());
+            e.printStackTrace();
+        }
     }
 
     static class BdvPgContextMenuEditor extends JPanel {
         private final JTextArea contextMenuActions;
-        public BdvPgContextMenuEditor() {
+        public BdvPgContextMenuEditor(String[] initialState) {
             this.setLayout(new GridLayout(0,2));
             String[] allActionKeys =
                     new ArrayList<>(SourceAndConverterServices
@@ -125,6 +156,11 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
             allActions.setDragEnabled(true);
             contextMenuActions.setDragEnabled(true);
             contextMenuActions.setDropMode(DropMode.INSERT);
+            StringBuilder sb = new StringBuilder();
+            for (String action:initialState) {
+                sb.append(action+"\n");
+            }
+            contextMenuActions.setText(sb.toString());
 
             this.add(new JScrollPane(contextMenuActions), BorderLayout.WEST);
             this.add(new JScrollPane(allActions), BorderLayout.EAST);

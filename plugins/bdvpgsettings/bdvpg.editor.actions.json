@@ -1,0 +1,23 @@
+[
+  "Create Sample Source",
+  "Show Bdv Playground Window",
+  "Make Metadata Filter Node",
+  "Create New Source (Set LUT)",
+  "Save Bdv Playground State (experimental)",
+  "BDV - Preferences - Set (Key) Bindings",
+  "BDV - Create Orthogonal Views",
+  "BDV - Show Sources (new Bdv window)",
+  "Launch BigWarp",
+  "Save BDVDataset",
+  "BDV - Set Number Of Timepoints",
+  "Add Metadata To Sources",
+  "Make Sources Invisible",
+  "BDV - Create empty BDV window",
+  "Load Bdv Playground State (experimental)",
+  "Inspect Sources",
+  "BDV - Change view transform",
+  "BDVDataset [BigDataServer]",
+  "List BigDataServer Datasets",
+  "Set Sources Brightness",
+  "Export Sources to XML/HDF5 Spimdataset"
+]
