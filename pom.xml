@@ -88,7 +88,6 @@
 		</repository>
 	</repositories>
 
-	<!-- TODO -->
 	<scm>
 		<connection>scm:git:git://github.com/bigdataviewer/bigdataviewer-playground</connection>
 		<developerConnection>scm:git:git@github.com:bigdataviewer/bigdataviewer-playground</developerConnection>

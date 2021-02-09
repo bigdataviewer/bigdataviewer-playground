@@ -33,6 +33,7 @@ import bdv.img.cache.VolatileGlobalCellCache;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import net.imagej.patcher.LegacyInjector;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
 import org.scijava.command.Command;
@@ -81,6 +82,11 @@ import com.google.common.cache.CacheBuilder;
 @Plugin(type=Service.class)
 public class SourceAndConverterService extends AbstractService implements SciJavaService, ISourceAndConverterService
 {
+
+    static {
+        LegacyInjector.preinit();
+    }
+
     /**
      * Logger
      */
