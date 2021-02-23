@@ -2,8 +2,6 @@
 [![Gitter](https://badges.gitter.im/bigdataviewer-playground/community.svg)](https://gitter.im/bigdataviewer-playground/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 
-# THIS REPOSITORY IS IN ACTIVE DEVELOPMENT. ITS API IS NOT STABLE. ACTIVATING ITS UPDATE SITE CAN BREAK THE FUNCTIONALITIES OF OTHER UPDATE SITES (BigStitcher)
-
 ## BDV playground / toolbox / actions
 
 In this repository, we collect useful additions for the [BigDataViewer](https://imagej.net/BigDataViewer) in [Fiji](https://fiji.sc). These functionalities are accessible by enabling the FIJI update site : https://biop.epfl.ch/Fiji-Bdv-Playground/
