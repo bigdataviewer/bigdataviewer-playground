@@ -65,7 +65,7 @@ public class BdvPlaygroundStateSaver {
        ResamplingDemo.demo();
     }
 
-    @Test @Ignore // Ignore because of wrong bigwarp version
+    @Test
     public void demoRunOk() {
         main(new String[]{""});
     }

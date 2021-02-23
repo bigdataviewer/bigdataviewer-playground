@@ -182,7 +182,6 @@ public class BigWarpDemo {
         }
     }
 
-    @Ignore // Needs BigWarp Fiji v > 6.0.3, but as of today, it is only 6.0.3 - SNAPSHOT - not ready for release
     @Test
     public void demoRunOk() {
         main(new String[]{""});

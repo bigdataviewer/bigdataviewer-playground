@@ -42,6 +42,8 @@ import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +51,7 @@ public class XmlHDF5SpimdataExporterTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    @Test@Ignore // Ignore because of license issue
+    @Test
     public void run() throws Exception {
         // Need to initialize the services:
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
@@ -71,7 +73,7 @@ public class XmlHDF5SpimdataExporterTest {
         exporter.run();
 
         // Assert
-        File fileXmlControl = new File("src/test/resources/testVoronoi.txt");
+        File fileXmlControl = new File("src/test/resources/testVoronoi.xml");
         File fileH5Control = new File("src/test/resources/testVoronoi.h5");
 
 
@@ -93,7 +95,7 @@ public class XmlHDF5SpimdataExporterTest {
 
         // -------------------------------------- End of uncomment
 
-        Assert.assertTrue(FileUtils.contentEquals(fileXmlGen, fileXmlControl));
+        Assert.assertTrue(FileUtils.contentEqualsIgnoreEOL(fileXmlGen, fileXmlControl, "UTF8"));
         //Assert.assertTrue(fileH5Gen.length() == fileH5Control.length()); //Fails and I don't know why
 
 

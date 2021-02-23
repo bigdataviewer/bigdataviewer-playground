@@ -89,9 +89,9 @@ public class PerfOpenMultipleSpimDataTest
 		System.out.println("It took "+timeElapsedInS+" s to open 300 datasets");
 	}
 
-	@Test@Ignore
+	@Test
 	public void demoRunOk() {
 		main(new String[]{""});
-		Assert.assertTrue(timeElapsedInS<8);
+		Assert.assertTrue(timeElapsedInS<10);
 	}
 }

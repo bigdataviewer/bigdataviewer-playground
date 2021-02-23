@@ -42,7 +42,7 @@ public class BdvPlaygroundStateLoader {
         new SourceAndConverterServiceLoader("src/test/resources/bdvplaygroundstate.json", "src/test/resources/", ij.context(), false).run();
     }
 
-    @Test @Ignore // Because of BigWarp snapshot dependency -> ignored
+    @Test
     public void demoRunOk() {
         main(new String[]{""});
     }

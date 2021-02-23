@@ -30,7 +30,9 @@ package sc.fiji.bdvpg;
 
 import loci.common.DebugTools;
 import net.imagej.ImageJ;
+import net.imglib2.RandomAccessibleInterval;
 import org.junit.Test;
+import org.scijava.util.VersionUtils;
 
 public class SimpleIJLaunch {
 
