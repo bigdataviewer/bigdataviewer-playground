@@ -30,7 +30,6 @@ package sc.fiji.bdvpg.io.state;
 
 import net.imagej.ImageJ;
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.services.SourceAndConverterServiceLoader;
