@@ -32,6 +32,7 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
+import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.sourceandconverter.SourceAdder;
@@ -55,9 +56,11 @@ public class BrightnessAutoAdjusterDemo
 
     static BdvHandle bdvHandle;
 
+	static ImageJ ij;
+
 	public static void main( String[] args ) {
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-        ImageJ ij = new ImageJ();
+        ij = new ImageJ();
         ij.ui().showUI();
 
 		// Creates a BdvHandle
@@ -87,7 +90,11 @@ public class BrightnessAutoAdjusterDemo
 	@Test
     public void demoRunOk() {
 	    main(new String[]{""});
-	    bdvHandle.close();
     }
+
+	@After
+	public void closeFiji() {
+		TestHelper.closeFijiAndBdvs(ij);
+	}
 
 }

@@ -29,6 +29,7 @@
 package sc.fiji.bdvpg;
 
 import bdv.BigDataViewer;
+import bdv.img.WarpedSource;
 import bdv.util.BdvHandle;
 import bigwarp.BigWarp;
 import net.imagej.ImageJ;
@@ -37,6 +38,8 @@ import net.imglib2.cache.img.CachedCellImg;
 import org.scijava.util.VersionUtils;
 
 public class ShowVersions {
+
+    static ImageJ ij;
 
     static public void main(String... args) {
         // create the ImageJ application context with all available services
@@ -50,6 +53,7 @@ public class ShowVersions {
         System.out.println("bdv vistools version = "+VersionUtils.getVersion(BdvHandle.class)); // bigwarp
         System.out.println("bdv version = "+VersionUtils.getVersion(BigDataViewer.class)); // bdv
         System.out.println("imglib2-cache version = "+VersionUtils.getVersion(CachedCellImg.class)); // bdv
+        System.out.println("imglib2-realtransform version = "+VersionUtils.getVersion(WarpedSource.class)); // imglib2
 
     }
 

@@ -30,7 +30,9 @@ package sc.fiji.bdvpg.io;
 
 import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
+import org.junit.After;
 import org.junit.Test;
+import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -42,10 +44,13 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
  */
 public class SpimDataDisplayDemo
 {
+
+	static ImageJ ij;
+
 	public static void main( String[] args )
 	{
 		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ImageJ ij = new ImageJ();
+		ij = new ImageJ();
 		ij.ui().showUI();
 
 		// Gets active BdvHandle instance
@@ -66,5 +71,10 @@ public class SpimDataDisplayDemo
 	@Test
 	public void demoRunOk() {
 		main(new String[]{""});
+	}
+
+	@After
+	public void closeFiji() {
+		TestHelper.closeFijiAndBdvs(ij);
 	}
 }

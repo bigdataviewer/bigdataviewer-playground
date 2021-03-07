@@ -32,7 +32,9 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import net.imagej.ImageJ;
 import net.imglib2.type.numeric.ARGBType;
+import org.junit.After;
 import org.junit.Test;
+import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -45,10 +47,13 @@ import java.util.List;
 
 public class ProjectionModeChangerDemo
 {
+
+	static ImageJ ij;
+
 	public static void main( String[] args )
 	{
 		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ImageJ ij = new ImageJ();
+		ij = new ImageJ();
 		ij.ui().showUI();
 
 		demo();
@@ -57,6 +62,11 @@ public class ProjectionModeChangerDemo
 	@Test
 	public void demoRunOk() {
 		main(new String[]{""});
+	}
+
+	@After
+	public void closeFiji() {
+		TestHelper.closeFijiAndBdvs(ij);
 	}
 
 	public static void demo() {

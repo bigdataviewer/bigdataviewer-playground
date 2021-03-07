@@ -38,11 +38,19 @@ import java.util.function.Function;
 public class SourceRealTransformer implements Runnable, Function<SourceAndConverter,SourceAndConverter> {
 
     SourceAndConverter sourceIn;
-    RealTransform rt;
+    final RealTransform rt;
     SourceAndConverter sourceOut;
 
     public SourceRealTransformer(SourceAndConverter src, RealTransform rt) {
         this.sourceIn = src;
+        this.rt = rt;
+    }
+
+    /**
+     * Constructor without any source argument in order to use the functional interface only
+     * @param rt
+     */
+    public SourceRealTransformer(RealTransform rt) {
         this.rt = rt;
     }
 
@@ -56,11 +64,11 @@ public class SourceRealTransformer implements Runnable, Function<SourceAndConver
     }
 
     public SourceAndConverter apply(SourceAndConverter in) {
-        WarpedSource src = new WarpedSource(in.getSpimSource(), "Transformed_"+in.getSpimSource().getName());
+        WarpedSource src = new WarpedSource(in.getSpimSource(), "Transformed_"+in.getSpimSource().getName(), () -> false);
         src.updateTransform(rt);
         src.setIsTransformed(true);
         if (in.asVolatile()!=null) {
-            WarpedSource vsrc = new WarpedSource(in.asVolatile().getSpimSource(), "Transformed_"+in.asVolatile().getSpimSource().getName());//f.apply(in.asVolatile().getSpimSource());
+            WarpedSource vsrc = new WarpedSource(in.asVolatile().getSpimSource(), "Transformed_"+in.asVolatile().getSpimSource().getName(), () -> false);//f.apply(in.asVolatile().getSpimSource());
             vsrc.updateTransform(rt);
             vsrc.setIsTransformed(true);
             SourceAndConverter vout = new SourceAndConverter<>(vsrc, SourceAndConverterHelper.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));

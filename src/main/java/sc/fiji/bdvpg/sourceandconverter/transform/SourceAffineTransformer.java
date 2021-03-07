@@ -51,11 +51,19 @@ import java.util.function.Function;
 public class SourceAffineTransformer implements Runnable, Function<SourceAndConverter, SourceAndConverter> {
 
     SourceAndConverter sourceIn;
-    AffineTransform3D at3D;
+    final AffineTransform3D at3D;
     SourceAndConverter sourceOut;
 
     public SourceAffineTransformer(SourceAndConverter src, AffineTransform3D at3D) {
         this.sourceIn = src;
+        this.at3D = at3D;
+    }
+
+    /**
+     * Constructor without any source argument in order to use the functional interface only
+     * @param at3D
+     */
+    public SourceAffineTransformer(AffineTransform3D at3D) {
         this.at3D = at3D;
     }
 

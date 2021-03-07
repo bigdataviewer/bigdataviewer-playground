@@ -31,14 +31,17 @@ package sc.fiji.bdvpg;
 import loci.common.DebugTools;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
+import org.junit.After;
 import org.junit.Test;
 import org.scijava.util.VersionUtils;
 
 public class SimpleIJLaunch {
 
+    static ImageJ ij;
+
     static public void main(String... args) {
         // create the ImageJ application context with all available services
-        final ImageJ ij = new ImageJ();
+        ij = new ImageJ();
         ij.ui().showUI();
         DebugTools.setRootLevel("INFO");
     }
@@ -46,6 +49,11 @@ public class SimpleIJLaunch {
     @Test
     public void demoRunOk() {
         main(new String[]{""});
+    }
+
+    @After
+    public void closeFiji() {
+        TestHelper.closeFijiAndBdvs(ij);
     }
 
 }

@@ -34,6 +34,7 @@ import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import net.imglib2.type.numeric.ARGBType;
+import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
@@ -48,9 +49,11 @@ import java.util.stream.Collectors;
 
 public class BigWarpDemo {
 
+    static ImageJ ij;
+
     public static void main(String... args) {
         // Initializes static SourceService and Display Service
-        ImageJ ij = new ImageJ();
+        ij = new ImageJ();
         ij.ui().showUI();
 
         demo2d();
@@ -185,5 +188,10 @@ public class BigWarpDemo {
     @Test
     public void demoRunOk() {
         main(new String[]{""});
+    }
+
+    @After
+    public void closeFiji() {
+        TestHelper.closeFijiAndBdvs(ij);
     }
 }

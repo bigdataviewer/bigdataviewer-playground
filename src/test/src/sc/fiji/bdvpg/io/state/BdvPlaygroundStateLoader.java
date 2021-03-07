@@ -29,15 +29,19 @@
 package sc.fiji.bdvpg.io.state;
 
 import net.imagej.ImageJ;
+import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
+import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.services.SourceAndConverterServiceLoader;
 
 public class BdvPlaygroundStateLoader {
 
+    static ImageJ ij;
+
     public static void main( String[] args )
     {
-        ImageJ ij = new ImageJ();
+        ij = new ImageJ();
         ij.ui().showUI();
         new SourceAndConverterServiceLoader("src/test/resources/bdvplaygroundstate.json", "src/test/resources/", ij.context(), false).run();
     }
@@ -45,5 +49,10 @@ public class BdvPlaygroundStateLoader {
     @Test
     public void demoRunOk() {
         main(new String[]{""});
+    }
+
+    @After
+    public void closeFiji() {
+        TestHelper.closeFijiAndBdvs(ij);
     }
 }

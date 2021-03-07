@@ -29,21 +29,21 @@
 package sc.fiji.bdvpg.io.state;
 
 import net.imagej.ImageJ;
-import org.junit.Ignore;
+import org.junit.After;
 import org.junit.Test;
-import sc.fiji.bdvpg.BigWarpDemo;
-import sc.fiji.bdvpg.ResamplingDemo;
-import sc.fiji.bdvpg.AffineTransformSourceDemo;
+import sc.fiji.bdvpg.*;
 import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
 
 import java.io.File;
 
 public class BdvPlaygroundStateSaver {
 
+    static ImageJ ij;
+
     public static void main( String[] args )
     {
         // Initializes static SourceService and Display Service
-        ImageJ ij = new ImageJ();
+        ij = new ImageJ();
         ij.ui().showUI();
 
         createSacs();
@@ -63,10 +63,20 @@ public class BdvPlaygroundStateSaver {
        BigWarpDemo.demo3d();
        AffineTransformSourceDemo.demo(2);
        ResamplingDemo.demo();
+       try {
+           WarpedSourceDemo.demo();
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
     }
 
     @Test
     public void demoRunOk() {
         main(new String[]{""});
+    }
+
+    @After
+    public void closeFiji() {
+        TestHelper.closeFijiAndBdvs(ij);
     }
 }

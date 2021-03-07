@@ -42,6 +42,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
+import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStarter;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStopper;
@@ -67,6 +68,8 @@ import java.util.List;
  */
 public class ManualRegistrationDemo {
 
+    static ImageJ ij;
+
     final public static int CreateNewTransformedSourceAndConverter = 0;
     final public static int MutateTransformedSourceAndConverter = 1;
 
@@ -81,7 +84,7 @@ public class ManualRegistrationDemo {
     public static void main(String[] args) {
 
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-        ImageJ ij = new ImageJ();
+        ij = new ImageJ();
         ij.ui().showUI();
 
         // load and convert an image
@@ -234,6 +237,11 @@ public class ManualRegistrationDemo {
     @Test
     public void demoRunOk() {
         main(new String[]{""});
+    }
+
+    @After
+    public void closeFiji() {
+        TestHelper.closeFijiAndBdvs(ij);
     }
 
 }
