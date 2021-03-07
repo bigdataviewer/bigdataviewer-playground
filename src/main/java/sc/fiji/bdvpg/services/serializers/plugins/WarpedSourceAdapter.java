@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.services.serializers.plugins;
 import bdv.img.WarpedSource;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
+import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
@@ -95,8 +96,15 @@ public class WarpedSourceAdapter implements ISourceAdapter<WarpedSource>{
             System.err.println("Couldn't deserialize wrapped source of Warped Source");
             return null;
         }
+        JsonElement transformElement = jsonElement.getAsJsonObject().get("realtransform");
 
-        RealTransform rt = jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("realtransform"), RealTransform.class);
+        RealTransform rt;
+
+        if (transformElement.getAsJsonObject().has("affinetransform3d")) {
+            rt = jsonDeserializationContext.deserialize(transformElement, AffineTransform3D.class);
+        } else {
+            rt = jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("realtransform"), RealTransform.class);
+        }
 
         SourceRealTransformer srt = new SourceRealTransformer(wrappedSac, rt);
         srt.run();
