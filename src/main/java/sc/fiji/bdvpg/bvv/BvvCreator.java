@@ -32,12 +32,14 @@ import bvv.util.BvvFunctions;
 import bvv.util.BvvHandle;
 import bvv.util.BvvOptions;
 import bvv.util.BvvStackSource;
+import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 
+import java.util.Random;
 import java.util.function.Supplier;
 
 /**
@@ -73,9 +75,12 @@ public class BvvCreator implements Runnable, Supplier<BvvHandle>
 	/**
 	 * Hack: add an image and remove it after the
 	 * bvvHandle has been created.
+	 * - not done for bvv
 	 */
 	public BvvHandle get() {
-		ArrayImg< UnsignedShortType, ShortArray> dummyImg = ArrayImgs.unsignedShorts(2, 2, 2);
+		//Random random = new Random();
+		Img<UnsignedShortType> dummyImg = ArrayImgs.unsignedShorts(2, 2, 2);
+		dummyImg.forEach(t -> t.set(0));
 
 		bvvOptions = bvvOptions.sourceTransform( new AffineTransform3D() );
 
