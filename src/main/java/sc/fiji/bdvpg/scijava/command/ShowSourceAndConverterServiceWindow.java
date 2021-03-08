@@ -40,7 +40,11 @@ public class ShowSourceAndConverterServiceWindow implements BdvPlaygroundActionC
     SourceAndConverterService sacs;
 
     public void run() {
-        sacs.getUI().show();
+        if (sacs.getUI()!=null) {
+            sacs.getUI().show();
+        } else {
+            System.err.println("Error : no UI available");
+        }
     }
 
 }

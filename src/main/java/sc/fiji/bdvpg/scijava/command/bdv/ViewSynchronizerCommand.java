@@ -29,7 +29,6 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
@@ -75,7 +74,7 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
             return;
         }
 
-        // Starting synchronnization of selected bdvhandles
+        // Starting synchronization of selected bdvhandles
         sync = new ViewerTransformSyncStarter(bdvhs, synchronizeTime);
         sync.setBdvHandleInitialReference( SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv());
         sync.run();

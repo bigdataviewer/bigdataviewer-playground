@@ -30,7 +30,6 @@ package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
 import net.imglib2.realtransform.AffineTransform3D;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformChanger;

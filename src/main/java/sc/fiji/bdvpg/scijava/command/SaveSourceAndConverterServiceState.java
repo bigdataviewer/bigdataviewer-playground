@@ -40,7 +40,7 @@ import java.io.File;
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Save Bdv Playground State (experimental)")
 public class SaveSourceAndConverterServiceState implements BdvPlaygroundActionCommand {
 
-    @Parameter
+    @Parameter(label = "Save state file (json)", style = "save")
     File file;
 
     @Parameter

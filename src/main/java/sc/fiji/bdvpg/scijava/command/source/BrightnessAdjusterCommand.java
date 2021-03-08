@@ -49,6 +49,9 @@ import static org.scijava.ItemVisibility.MESSAGE;
 @Plugin(type = BdvPlaygroundActionCommand.class, initializer = "init",  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Brightness")
 public class BrightnessAdjusterCommand extends InteractiveCommand implements BdvPlaygroundActionCommand {
 
+    @Parameter(label = "Sources :", required = false, description = "Label the sources controlled by this window", persist = false)
+    String customSourceLabel = "Label your sources here";
+
     @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sources;
 
@@ -68,6 +71,7 @@ public class BrightnessAdjusterCommand extends InteractiveCommand implements Bdv
     double maxSlider;
 
     boolean firstTimeCalled = true;
+
     boolean secondTimeCalled = true;
 
     public void run() {

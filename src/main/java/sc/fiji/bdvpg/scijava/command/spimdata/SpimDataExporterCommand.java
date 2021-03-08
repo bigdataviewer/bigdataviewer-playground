@@ -48,7 +48,7 @@ public class SpimDataExporterCommand implements BdvPlaygroundActionCommand {
     @Parameter(label = "Select source(s)")
     SourceAndConverter sac;
 
-    @Parameter(label = "Output File (XML)")
+    @Parameter(label = "Output File (XML)", style = "save")
     public File xmlFilePath;
 
     public void run() {

@@ -40,13 +40,13 @@ import java.io.File;
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Load Bdv Playground State (experimental)")
 public class LoadSourceAndConverterServiceState implements BdvPlaygroundActionCommand {
 
-    @Parameter
+    @Parameter(label = "Open state file (json)", style = "open")
     File file;
 
     @Parameter
     Context ctx;
 
-    @Parameter
+    @Parameter(label = "Erase current state")
     Boolean erasePreviousState;
 
     @Override
