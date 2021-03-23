@@ -161,8 +161,18 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * Makes visible a source, makes it visible in all bdvs according to BdvhReferences
      * @param sac source to display
      */
+    @Deprecated // Use setVisible instead
     public void makeVisible(SourceAndConverter sac) {
         getDisplaysOf(sac).forEach(bdvhr -> bdvhr.getViewerPanel().state().setSourceActive(sac, true));
+    }
+
+    /**
+     * Makes visible or invisible a source, applies this to all bdvs according to BdvhReferences
+     * @param sac source
+     * @param visible whether to set it visible
+     */
+    public void setVisible(SourceAndConverter sac, boolean visible) {
+        getDisplaysOf(sac).forEach(bdvhr -> bdvhr.getViewerPanel().state().setSourceActive(sac, visible));
     }
 
     /**
@@ -177,6 +187,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * Makes invisible a source, makes it invisible in all BDVs according to BdvhReferences
      * @param sac source to make invisible
      */
+    @Deprecated // Use setVisible instead
     public void makeInvisible(SourceAndConverter sac) {
         getDisplaysOf(sac).forEach(bdvhr -> bdvhr.getViewerPanel().state().setSourceActive(sac, false));
     }
