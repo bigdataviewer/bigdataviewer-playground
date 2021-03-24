@@ -48,7 +48,7 @@ public class SourcesInvisibleMakerCommand implements BdvPlaygroundActionCommand 
     @Override
     public void run() {
         for (SourceAndConverter sac:sacs) {
-            bsds.makeInvisible(sac);
+            bsds.setVisible(sac,false);
         }
     }
 }
