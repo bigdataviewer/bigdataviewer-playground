@@ -223,7 +223,7 @@ public class ScreenShotMaker {
         if ( rawCaptures.size() > 0 )
         {
             final BlendingMode[] projectionModes = AccumulateMixedProjectorARGB.getBlendingModes( visibleSacs );
-            final String projector = ( String ) displayService.getDisplayMetadata( bdvHandle, Projection.PROJECTOR );
+            final String projector = ( String ) displayService.getDisplayMetadata( bdvHandle, Projector.PROJECTOR );
             screenShot = createImagePlus( physicalUnit, argbCaptures, voxelSpacing, projectionModes, projector );
             rawImageData  = createCompositeImage(
                     voxelSpacing, physicalUnit, rawCaptures, colors, displayRanges );
@@ -307,13 +307,13 @@ public class ScreenShotMaker {
 
         switch ( projector )
         {
-            case Projection.MIXED_PROJECTOR:
+            case Projector.MIXED_PROJECTOR:
                 projectUsingMixedProjector( argbCaptures, argbCapture, blendingModes );
                 break;
-            case Projection.SUM_PROJECTOR:
+            case Projector.SUM_PROJECTOR:
                 projectUsingSumProjector( argbCaptures, argbCapture );
                 break;
-            case Projection.AVERAGE_PROJECTOR:
+            case Projector.AVERAGE_PROJECTOR:
                 projectUsingAverageProjector( argbCaptures, argbCapture );
                 break;
             default:

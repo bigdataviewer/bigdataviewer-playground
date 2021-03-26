@@ -41,8 +41,6 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-import static sc.fiji.bdvpg.bdv.projector.Projection.*;
-
 /**
  * BDV Projector which allows some flexibility in the way sources are combined
  * when displayed in a BDV window.
@@ -56,7 +54,7 @@ import static sc.fiji.bdvpg.bdv.projector.Projection.*;
  * The final pixel value is the result of the sum and/or average of sources based
  * on their metadata + an occluding layer can be used to cover completely some sources
  *
- * See also {@link Projection} for extra details about the mechanism
+ * See also {@link Projector} for extra details about the mechanism
  *
  * TODO : implement multilayered projection see https://github.com/bigdataviewer/bigdataviewer-playground/issues/95
  *
