@@ -73,38 +73,11 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
     public void process(Module module) {
 
         module.getOutputs().forEach((name, object)-> {
-            if (object instanceof BdvHandle) {
-                BdvHandle bdvh = (BdvHandle) object;
-                log.accept("BdvHandle found.");
-                //------------ Register BdvHandle in ObjectService
-                if (!os.getObjects(BdvHandle.class).contains(bdvh)) { // adds it only if not already present in ObjectService
-                    os.addObject(bdvh);
-
-                    //------------ Renames window to ensure unicity
-                    String windowTitle = BdvHandleHelper.getWindowTitle(bdvh);
-                    windowTitle = BdvHandleHelper.getUniqueWindowTitle(os, windowTitle);
-                    BdvHandleHelper.setWindowTitle(bdvh, windowTitle);
-
-                    //------------ Event handling in bdv sourceandconverterserviceui
-                    DefaultTreeModel model = sacsService.getUI().getTreeModel();
-                    BdvHandleFilterNode node = new BdvHandleFilterNode(model, windowTitle, bdvh);
-                    node.add(new SourceFilterNode(model, "All Sources", (sac) -> true, true));
-
-                    //------------ Allows to remove the BdvHandle from the objectService when closed by the user
-                    BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService,  bsds, true,
-                            () -> {
-                                //bdvh.getViewerPanel().state().changeListeners().remove(vscl); // TODO : check no memory leak
-                                sacsService.getUI().removeBdvHandleNodes(bdvh);
-                            });
-
-                    ((SourceFilterNode)sacsService.getUI().getTreeModel().getRoot()).insert(node,0);
-                    /*SwingUtilities.invokeLater(()->
-                            sacsService.getUI().getTreeModel().nodeStructureChanged(node.getParent())//.reload()
-                    );*/
-                }
-
-                module.resolveOutput(name);
+            if (object instanceof BdvHandle)
+            {
+                bsds.registerBdvHandle( (BdvHandle) object );
             }
+            module.resolveOutput(name);
         });
 
     }
