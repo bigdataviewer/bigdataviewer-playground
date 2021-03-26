@@ -31,18 +31,16 @@ package sc.fiji.bdvpg.scijava.command.source;
 import bdv.viewer.SourceAndConverter;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.bdv.projector.BlendingMode;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.sourceandconverter.display.ProjectionModeChanger;
-
-import static sc.fiji.bdvpg.bdv.projector.Projection.PROJECTION_MODE_AVG;
-import static sc.fiji.bdvpg.bdv.projector.Projection.PROJECTION_MODE_SUM;
+import sc.fiji.bdvpg.sourceandconverter.display.BlendingModeChanger;
 
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Projection Mode")
-public class SourceAndConverterProjectionModeChangerCommand implements BdvPlaygroundActionCommand {
+public class SourceAndConverterBlendingModeChangerCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(label = "Projection Mode", choices = { PROJECTION_MODE_SUM, PROJECTION_MODE_AVG })
-    String projectionMode = PROJECTION_MODE_SUM;
+    @Parameter(label = "Blending Mode", choices = { BlendingMode.AVERAGE, BlendingMode.SUM })
+    String blendingMode = BlendingMode.AVERAGE;
 
     @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sacs;
@@ -52,7 +50,7 @@ public class SourceAndConverterProjectionModeChangerCommand implements BdvPlaygr
 
     @Override
     public void run() {
-        new ProjectionModeChanger( sacs, projectionMode, addToOccludingLayer ).run();
+        new BlendingModeChanger( sacs, BlendingMode.valueOf( blendingMode ), addToOccludingLayer ).run();
     }
 
 }

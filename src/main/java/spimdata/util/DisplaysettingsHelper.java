@@ -32,7 +32,7 @@ import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.type.numeric.ARGBType;
-import sc.fiji.bdvpg.bdv.projector.Projection;
+import sc.fiji.bdvpg.bdv.projector.BlendingMode;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
@@ -71,11 +71,11 @@ public class DisplaysettingsHelper {
 
         if (SourceAndConverterServices
                 .getSourceAndConverterService()
-                .getMetadata(sac, Projection.PROJECTION_MODE)!=null) {
+                .getMetadata(sac, BlendingMode.BLENDING_MODE )!=null) {
             // A projection mode is set
             ds.projectionMode = (String) (SourceAndConverterServices
                     .getSourceAndConverterService()
-                    .getMetadata(sac, Projection.PROJECTION_MODE));
+                    .getMetadata(sac, BlendingMode.BLENDING_MODE ));
         }
     }
 
@@ -132,7 +132,7 @@ public class DisplaysettingsHelper {
 
             SourceAndConverterServices
                     .getSourceAndConverterService()
-                    .setMetadata(sac, Projection.PROJECTION_MODE, ds.projectionMode);
+                    .setMetadata(sac, BlendingMode.BLENDING_MODE, ds.projectionMode);
 
         }
     }

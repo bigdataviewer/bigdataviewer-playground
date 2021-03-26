@@ -36,18 +36,18 @@ import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.bdv.projector.BlendingMode;
 import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
-import sc.fiji.bdvpg.sourceandconverter.display.ProjectionModeChanger;
+import sc.fiji.bdvpg.sourceandconverter.display.BlendingModeChanger;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.util.List;
 
-public class ProjectionModeChangerDemo
+public class BlendingModeChangerDemo
 {
-
 	static ImageJ ij;
 
 	public static void main( String[] args )
@@ -96,6 +96,6 @@ public class ProjectionModeChangerDemo
 		final SourceAndConverter[] averageProjectionSacs = new SourceAndConverter[ 2 ];
 		averageProjectionSacs[ 0 ] = sacs.get( 0 );
 		averageProjectionSacs[ 1 ] = sacs.get( 1 );
-		new ProjectionModeChanger( averageProjectionSacs, Projection.PROJECTION_MODE_AVG, false ).run();
+		new BlendingModeChanger( averageProjectionSacs, BlendingMode.Average, false ).run();
 	}
 }

@@ -29,22 +29,22 @@
 package sc.fiji.bdvpg.sourceandconverter.display;
 
 import bdv.viewer.SourceAndConverter;
-import sc.fiji.bdvpg.bdv.projector.Projection;
+import sc.fiji.bdvpg.bdv.projector.BlendingMode;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.function.Consumer;
 
-import static sc.fiji.bdvpg.bdv.projector.Projection.PROJECTION_MODE;
+import static sc.fiji.bdvpg.bdv.projector.BlendingMode.BLENDING_MODE;
 
-public class ProjectionModeChanger implements Runnable, Consumer< SourceAndConverter[] > {
+public class BlendingModeChanger implements Runnable, Consumer< SourceAndConverter[] > {
 
-    private String projectionMode;
+    private BlendingMode blendingMode;
     private final boolean showSourcesExclusively;
     private final SourceAndConverter[] sacs;
 
-    public ProjectionModeChanger( SourceAndConverter[] sacs, String projectionMode, boolean showSourcesExclusively ) {
+    public BlendingModeChanger( SourceAndConverter[] sacs, BlendingMode blendingMode, boolean showSourcesExclusively ) {
         this.sacs = sacs;
-        this.projectionMode = projectionMode;
+        this.blendingMode = blendingMode;
         this.showSourcesExclusively = showSourcesExclusively;
     }
 
@@ -72,9 +72,14 @@ public class ProjectionModeChanger implements Runnable, Consumer< SourceAndConve
         for ( SourceAndConverter sac : sacs )
         {
             if ( showSourcesExclusively )
-                projectionMode += Projection.PROJECTION_MODE_OCCLUDING;
+            {
+                if ( blendingMode.equals( BlendingMode.Average ) )
+                    blendingMode = BlendingMode.AverageOccluding;
+                else if ( blendingMode.equals( BlendingMode.Sum ) )
+                    blendingMode = BlendingMode.SumOccluding;
+            }
 
-            SourceAndConverterServices.getSourceAndConverterService().setMetadata( sac, PROJECTION_MODE, projectionMode );
+            SourceAndConverterServices.getSourceAndConverterService().setMetadata( sac, BLENDING_MODE, blendingMode );
         }
     }
 }

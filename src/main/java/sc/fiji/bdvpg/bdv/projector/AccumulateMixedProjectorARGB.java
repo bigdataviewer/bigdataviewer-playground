@@ -51,7 +51,7 @@ import static sc.fiji.bdvpg.bdv.projector.Projection.*;
  * should be displayed.
  *
  * Their metadata are accessed through {@link sc.fiji.bdvpg.scijava.services.SourceAndConverterService#getMetadata(SourceAndConverter, String)}
- * where the key is {@link sc.fiji.bdvpg.bdv.projector.Projection#PROJECTION_MODE}
+ * where the key is {@link BlendingMode#BLENDING_MODE}
  *
  * The final pixel value is the result of the sum and/or average of sources based
  * on their metadata + an occluding layer can be used to cover completely some sources
@@ -69,7 +69,7 @@ import static sc.fiji.bdvpg.bdv.projector.Projection.*;
 
 public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType, ARGBType >
 {
-	private final String[] projectionModes;
+	private final BlendingMode[] blendingModes;
 	private final int[] sourceOrder;
 
 	public AccumulateMixedProjectorARGB(
@@ -81,46 +81,38 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 			final ExecutorService executorService )
 	{
 		super( sourceProjectors, sourceScreenImages, target, numThreads, executorService );
-		this.projectionModes = getProjectionModes( sources );
-		sourceOrder = getSourcesOrder( projectionModes );
+		this.blendingModes = getBlendingModes( sources );
+		sourceOrder = getSourcesOrder( blendingModes );
 	}
 
-	public static String[] getProjectionModes( List< SourceAndConverter<?> > visibleSacs )
+	public static BlendingMode[] getBlendingModes( List< SourceAndConverter<?> > visibleSacs )
 	{
 		final ISourceAndConverterService sacService = SourceAndConverterServices.getSourceAndConverterService();
 		return visibleSacs.stream()
-				.map(sac ->(String) sacService.getMetadata( sac, PROJECTION_MODE ))
-				.map(it -> it==null?Projection.PROJECTION_MODE_SUM:it)
-				.toArray(String[]::new);
+				.map(sac ->(String) sacService.getMetadata( sac, BlendingMode.BLENDING_MODE ))
+				.map(it -> it==null? BlendingMode.SUM:it)
+				.toArray(BlendingMode[]::new);
 	}
 
-	public static int[] getSourcesOrder( String[] projectionModes )
+	public static int[] getSourcesOrder( BlendingMode[] blendingModes )
 	{
-		boolean containsExclusiveProjectionMode = false;
-		for ( String projectionMode : projectionModes )
-		{
-			if ( projectionMode.contains( Projection.PROJECTION_MODE_OCCLUDING ) )
-			{
-				containsExclusiveProjectionMode = true;
-				break;
-			}
-		}
+		boolean containsExclusiveBlendingMode = containsExclusiveBlendingMode( blendingModes );
 
-		final int numSources = projectionModes.length;
+		final int numSources = blendingModes.length;
 
 		int[] sourceOrder = new int[ numSources ];
-		if ( containsExclusiveProjectionMode )
+		if ( containsExclusiveBlendingMode )
 		{
 			int j = 0;
 
 			// first the exclusive ones
 			for ( int i = 0; i < numSources; i++ )
-				if ( projectionModes[ i ].contains( Projection.PROJECTION_MODE_OCCLUDING ) )
+				if ( BlendingMode.isOccluding(  blendingModes[ i ] ) )
 					sourceOrder[ j++ ] = i;
 
 			// then the others
 			for ( int i = 0; i < numSources; i++ )
-				if ( ! projectionModes[ i ].contains( Projection.PROJECTION_MODE_OCCLUDING ) )
+				if ( ! BlendingMode.isOccluding(  blendingModes[ i ] ) )
 					sourceOrder[ j++ ] = i;
 		}
 		else
@@ -132,16 +124,30 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 		return sourceOrder;
 	}
 
+	public static boolean containsExclusiveBlendingMode( BlendingMode[] blendingModes )
+	{
+		boolean containsExclusiveBlendingMode = false;
+		for ( BlendingMode blendingMode : blendingModes )
+		{
+			if ( BlendingMode.isOccluding( blendingMode ) )
+			{
+				containsExclusiveBlendingMode = true;
+				break;
+			}
+		}
+		return containsExclusiveBlendingMode;
+	}
+
 	@Override
 	protected void accumulate(
 			final Cursor< ? extends ARGBType >[] accesses,
 			final ARGBType target )
 	{
-		final int argbIndex = getArgbIndex( accesses, sourceOrder, projectionModes );
+		final int argbIndex = getArgbIndex( accesses, sourceOrder, blendingModes );
 		target.set( argbIndex );
 	}
 
-	public static int getArgbIndex( Cursor< ? extends ARGBType >[] accesses, int[] sourceOrder, String[] projectionModes )
+	public static int getArgbIndex( Cursor< ? extends ARGBType >[] accesses, int[] sourceOrder, BlendingMode[] blendingModes )
 	{
 		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, n = 0;
 		int aAccu = 0, rAccu = 0, gAccu = 0, bAccu = 0;
@@ -158,20 +164,20 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 			if ( a == 0 ) continue;
 
-			final boolean isExclusive = projectionModes[ sourceIndex ].contains( PROJECTION_MODE_OCCLUDING );
+			final boolean isExclusive = BlendingMode.isOccluding( blendingModes[ sourceIndex ] );
 
 			if ( isExclusive ) skipNonExclusiveSources = true;
 
 			if ( skipNonExclusiveSources && ! isExclusive ) continue;
 
-			if ( projectionModes[ sourceIndex ].contains( Projection.PROJECTION_MODE_SUM ) )
+			if ( blendingModes[ sourceIndex ].equals( BlendingMode.Sum ) )
 			{
 				aAccu += a;
 				rAccu += r;
 				gAccu += g;
 				bAccu += b;
 			}
-			else if ( projectionModes[ sourceIndex ].contains( Projection.PROJECTION_MODE_AVG ) )
+			else if ( blendingModes[ sourceIndex ].equals( BlendingMode.Average ) )
 			{
 				aAvg += a;
 				rAvg += r;

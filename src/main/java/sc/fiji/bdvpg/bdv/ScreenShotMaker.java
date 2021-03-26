@@ -52,10 +52,7 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.util.Intervals;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
-import sc.fiji.bdvpg.bdv.projector.AccumulateAverageProjectorARGB;
-import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGB;
-import sc.fiji.bdvpg.bdv.projector.AccumulateSumProjectorARGB;
-import sc.fiji.bdvpg.bdv.projector.Projection;
+import sc.fiji.bdvpg.bdv.projector.*;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
@@ -225,7 +222,7 @@ public class ScreenShotMaker {
 
         if ( rawCaptures.size() > 0 )
         {
-            final String[] projectionModes = AccumulateMixedProjectorARGB.getProjectionModes( visibleSacs );
+            final BlendingMode[] projectionModes = AccumulateMixedProjectorARGB.getBlendingModes( visibleSacs );
             final String projector = ( String ) displayService.getDisplayMetadata( bdvHandle, Projection.PROJECTOR );
             screenShot = createImagePlus( physicalUnit, argbCaptures, voxelSpacing, projectionModes, projector );
             rawImageData  = createCompositeImage(
@@ -303,7 +300,7 @@ public class ScreenShotMaker {
             String physicalUnit,
             ArrayList< RandomAccessibleInterval< ARGBType > > argbCaptures,
             double[] voxelSpacing,
-            String[] projectionModes,
+            BlendingMode[] blendingModes,
             String projector )
     {
         final RandomAccessibleInterval< ARGBType > argbCapture = ArrayImgs.argbs( captureWidth, captureHeight );
@@ -311,7 +308,7 @@ public class ScreenShotMaker {
         switch ( projector )
         {
             case Projection.MIXED_PROJECTOR:
-                projectUsingMixedProjector( argbCaptures, argbCapture, projectionModes );
+                projectUsingMixedProjector( argbCaptures, argbCapture, blendingModes );
                 break;
             case Projection.SUM_PROJECTOR:
                 projectUsingSumProjector( argbCaptures, argbCapture );
@@ -326,7 +323,7 @@ public class ScreenShotMaker {
         return asImagePlus( argbCapture, physicalUnit, voxelSpacing );
     }
 
-    private void projectUsingMixedProjector( ArrayList< RandomAccessibleInterval< ARGBType > > argbCaptures, RandomAccessibleInterval< ARGBType > argbCapture, String[] projectionModes )
+    private void projectUsingMixedProjector( ArrayList< RandomAccessibleInterval< ARGBType > > argbCaptures, RandomAccessibleInterval< ARGBType > argbCapture, BlendingMode[] projectionModes )
     {
         final int[] sourcesOrder = AccumulateMixedProjectorARGB.getSourcesOrder( projectionModes );
 
