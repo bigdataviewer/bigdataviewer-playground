@@ -30,6 +30,7 @@ package sc.fiji.bdvpg.bdv;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import ij.IJ;
 import net.imagej.ImageJ;
 import net.imglib2.type.numeric.ARGBType;
 import org.junit.After;
@@ -37,6 +38,8 @@ import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.projector.BlendingMode;
+import sc.fiji.bdvpg.bdv.projector.Projector;
+import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
@@ -44,12 +47,13 @@ import sc.fiji.bdvpg.sourceandconverter.display.BlendingModeChanger;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class BlendingModeChangerDemo
 {
 	static ImageJ ij;
 
-	public static void main( String[] args )
+	public static void main( String[] args ) throws ExecutionException, InterruptedException
 	{
 		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
 		ij = new ImageJ();
@@ -59,7 +63,8 @@ public class BlendingModeChangerDemo
 	}
 
 	@Test
-	public void demoRunOk() {
+	public void demoRunOk() throws ExecutionException, InterruptedException
+	{
 		main(new String[]{""});
 	}
 
@@ -68,9 +73,17 @@ public class BlendingModeChangerDemo
 		TestHelper.closeFijiAndBdvs(ij);
 	}
 
-	public static void demo() {
+	public static void demo() throws ExecutionException, InterruptedException
+	{
+		// Create BDV with MixedProjector, supporting various blending modes
+		ij.command().run( BdvWindowCreatorCommand.class,
+				true,
+				"is2D", false,
+				"windowTitle", "Bdv",
+				"nTimepoints", 1,
+				"interpolate", false,
+				"projector", Projector.MIXED_PROJECTOR ).get().getOutput("bdvh");
 
-		// Gets active BdvHandle instance
 		BdvHandle bdv = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
 
 		// Import SpimData
@@ -92,9 +105,9 @@ public class BlendingModeChangerDemo
 		new ColorChanger( sacs.get( 2 ), new ARGBType( ARGBType.rgba( 0, 255, 0, 255 ) ) ).run();
 
 		// For the first two, change the projection mode to avg (default is sum, if it is not set)
-		final SourceAndConverter[] averageProjectionSacs = new SourceAndConverter[ 2 ];
-		averageProjectionSacs[ 0 ] = sacs.get( 0 );
-		averageProjectionSacs[ 1 ] = sacs.get( 1 );
-		new BlendingModeChanger( averageProjectionSacs, BlendingMode.Average, false ).run();
+		final SourceAndConverter[] averageBlendingSacs = new SourceAndConverter[ 2 ];
+		averageBlendingSacs[ 0 ] = sacs.get( 0 );
+		averageBlendingSacs[ 1 ] = sacs.get( 1 );
+		new BlendingModeChanger( averageBlendingSacs, BlendingMode.Average, false ).run();
 	}
 }

@@ -86,10 +86,11 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 	public static BlendingMode[] getBlendingModes( List< SourceAndConverter<?> > visibleSacs )
 	{
 		final ISourceAndConverterService sacService = SourceAndConverterServices.getSourceAndConverterService();
+
 		return visibleSacs.stream()
-				.map(sac ->(String) sacService.getMetadata( sac, BlendingMode.BLENDING_MODE ))
-				.map(it -> it==null? BlendingMode.SUM:it)
-				.toArray(BlendingMode[]::new);
+				.map(sac -> sacService.getMetadata( sac, BlendingMode.BLENDING_MODE ) )
+				.map(it -> it==null ? BlendingMode.Sum:it)
+				.toArray( BlendingMode[]::new );
 	}
 
 	public static int[] getSourcesOrder( BlendingMode[] blendingModes )
