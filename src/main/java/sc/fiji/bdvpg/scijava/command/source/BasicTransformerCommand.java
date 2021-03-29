@@ -55,7 +55,7 @@ description = "Performs basic transformation (rotate / flip) along X Y Z axis fo
 
 public class BasicTransformerCommand implements BdvPlaygroundActionCommand {
     @Parameter(label = "Select source(s)")
-    SourceAndConverter[] sources_in;
+    SourceAndConverter[] sacs;
 
     @Parameter(choices = {"Flip", "Rot90", "Rot180", "Rot270"})
     String type;
@@ -71,7 +71,7 @@ public class BasicTransformerCommand implements BdvPlaygroundActionCommand {
 
     @Override
     public void run() {
-        for (SourceAndConverter sac : sources_in) {
+        for (SourceAndConverter sac : sacs) {
             {
                 AffineTransform3D at3D_global = new AffineTransform3D();
                 at3D_global.identity();
@@ -131,7 +131,7 @@ public class BasicTransformerCommand implements BdvPlaygroundActionCommand {
             }
         }
         SourceAndConverterServices.getSourceAndConverterDisplayService()
-                .updateDisplays(sources_in);
+                .updateDisplays(sacs);
     }
 
     private void flip(AffineTransform3D at3D) {
