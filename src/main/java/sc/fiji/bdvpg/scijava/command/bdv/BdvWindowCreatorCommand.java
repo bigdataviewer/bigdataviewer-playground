@@ -37,7 +37,7 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.BdvCreator;
 import sc.fiji.bdvpg.bdv.projector.AccumulateAverageProjectorARGB;
 import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGBFactory;
-import sc.fiji.bdvpg.bdv.projector.Projection;
+import sc.fiji.bdvpg.bdv.projector.Projector;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
@@ -59,7 +59,7 @@ public class BdvWindowCreatorCommand implements BdvPlaygroundActionCommand {
     @Parameter(label = "Number of timepoints (1 for a single timepoint)")
     public int nTimepoints = 1;
 
-    @Parameter(required = false, choices = { Projection.MIXED_PROJECTOR, Projection.SUM_PROJECTOR, Projection.AVERAGE_PROJECTOR})
+    @Parameter(required = false, choices = { Projector.MIXED_PROJECTOR, Projector.SUM_PROJECTOR, Projector.AVERAGE_PROJECTOR})
     public String projector;
 
     /**
@@ -70,7 +70,7 @@ public class BdvWindowCreatorCommand implements BdvPlaygroundActionCommand {
 
     @Override
     public void run() {
-        if ((projector==null)||(projector.trim().equals(""))) projector = Projection.SUM_PROJECTOR; // Default mode if nothing is set
+        if ((projector==null)||(projector.trim().equals(""))) projector = Projector.SUM_PROJECTOR; // Default mode if nothing is set
 
         //------------ BdvHandleFrame
         BdvOptions opts = BdvOptions.options().frameTitle(windowTitle);
@@ -79,13 +79,13 @@ public class BdvWindowCreatorCommand implements BdvPlaygroundActionCommand {
         // Create accumulate projector factory
         AccumulateProjectorFactory< ARGBType > factory;
         switch (projector) {
-            case Projection.MIXED_PROJECTOR:
+            case Projector.MIXED_PROJECTOR:
                 factory = new AccumulateMixedProjectorARGBFactory(  );
                 opts = opts.accumulateProjectorFactory(factory);
-            case Projection.SUM_PROJECTOR:
+            case Projector.SUM_PROJECTOR:
                 // Default projector
                 break;
-            case Projection.AVERAGE_PROJECTOR:
+            case Projector.AVERAGE_PROJECTOR:
                 factory = AccumulateAverageProjectorARGB.factory;
                 opts = opts.accumulateProjectorFactory(factory);
                 break;
@@ -99,14 +99,14 @@ public class BdvWindowCreatorCommand implements BdvPlaygroundActionCommand {
         final SourceAndConverterBdvDisplayService displayService = SourceAndConverterServices.getSourceAndConverterDisplayService();
 
         switch (projector) {
-            case Projection.MIXED_PROJECTOR:
-                displayService.setDisplayMetadata( bdvh, Projection.PROJECTOR, Projection.MIXED_PROJECTOR );
+            case Projector.MIXED_PROJECTOR:
+                displayService.setDisplayMetadata( bdvh, Projector.PROJECTOR, Projector.MIXED_PROJECTOR );
                 break;
-            case Projection.SUM_PROJECTOR:
-                displayService.setDisplayMetadata( bdvh, Projection.PROJECTOR, Projection.SUM_PROJECTOR );
+            case Projector.SUM_PROJECTOR:
+                displayService.setDisplayMetadata( bdvh, Projector.PROJECTOR, Projector.SUM_PROJECTOR );
                 break;
-            case Projection.AVERAGE_PROJECTOR:
-                displayService.setDisplayMetadata( bdvh, Projection.PROJECTOR, Projection.AVERAGE_PROJECTOR );
+            case Projector.AVERAGE_PROJECTOR:
+                displayService.setDisplayMetadata( bdvh, Projector.PROJECTOR, Projector.AVERAGE_PROJECTOR );
                 break;
             default:
         }

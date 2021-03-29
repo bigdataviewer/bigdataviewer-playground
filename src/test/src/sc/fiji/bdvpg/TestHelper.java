@@ -53,7 +53,7 @@ public class TestHelper {
             ij.context().close();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 }

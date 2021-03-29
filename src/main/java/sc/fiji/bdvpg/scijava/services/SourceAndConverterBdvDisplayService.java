@@ -41,12 +41,11 @@ import org.scijava.script.ScriptService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
+import sc.fiji.bdvpg.bdv.projector.Projector;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.bdv.projector.Projection;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import sc.fiji.bdvpg.scijava.services.ui.BdvHandleFilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
-import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
@@ -121,7 +120,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
                             "windowTitle", "Bdv",
                             "nTimepoints", 1,
                             "interpolate",false,
-                            "projector", Projection.SUM_PROJECTOR).get().getOutput("bdvh");
+                            "projector", Projector.SUM_PROJECTOR).get().getOutput("bdvh");
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }

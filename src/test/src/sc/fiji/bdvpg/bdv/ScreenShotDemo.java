@@ -34,13 +34,12 @@ import net.imagej.ImageJ;
 import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
-import sc.fiji.bdvpg.bdv.ScreenShotMaker;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.bdv.projector.Projection;
+import sc.fiji.bdvpg.bdv.projector.BlendingMode;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.display.ProjectionModeChanger;
+import sc.fiji.bdvpg.sourceandconverter.display.BlendingModeChanger;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.util.List;
@@ -55,7 +54,6 @@ import java.util.List;
  */
 public class ScreenShotDemo
 {
-
     static ImageJ ij;
 
     public static void main(String[] args)
@@ -77,7 +75,7 @@ public class ScreenShotDemo
 
         showSacs( bdvHandle, sacs );
 
-        new ProjectionModeChanger( new SourceAndConverter[]{ sacs.get( 0 ) }, Projection.PROJECTION_MODE_AVG, true ).run();
+        new BlendingModeChanger( new SourceAndConverter[]{ sacs.get( 0 ) }, BlendingMode.Average, true ).run();
 
         ScreenShotMaker screenShotMaker = new ScreenShotMaker( bdvHandle );
         screenShotMaker.setPhysicalPixelSpacingInXY( 0.5, "micron" );
