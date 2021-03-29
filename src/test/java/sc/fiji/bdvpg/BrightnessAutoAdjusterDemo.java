@@ -43,6 +43,7 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.util.List;
 
+
 /**
  *
  * Demo of opening two sources, adjusting the location of the Bdv Window + adjusting brightness and contrast
