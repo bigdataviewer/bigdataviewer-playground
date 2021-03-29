@@ -52,7 +52,11 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.util.Intervals;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
-import sc.fiji.bdvpg.bdv.projector.*;
+import sc.fiji.bdvpg.bdv.projector.AccumulateAverageProjectorARGB;
+import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGB;
+import sc.fiji.bdvpg.bdv.projector.AccumulateSumProjectorARGB;
+import sc.fiji.bdvpg.bdv.projector.BlendingMode;
+import sc.fiji.bdvpg.bdv.projector.Projector;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
