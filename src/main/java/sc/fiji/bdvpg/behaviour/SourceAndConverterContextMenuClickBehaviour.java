@@ -30,17 +30,14 @@ package sc.fiji.bdvpg.behaviour;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import net.imglib2.RealPoint;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterPopupMenu;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Behaviour that shows the context menu of actions available that will act on the sources
@@ -59,16 +56,7 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 	{
 		this(bdv,
 		() -> {
-			// Gets mouse location in space (global 3D coordinates) and time
-			final RealPoint mousePosInBdv = new RealPoint( 3 );
-			bdv.getBdvHandle().getViewerPanel().getGlobalMouseCoordinates( mousePosInBdv );
-			int timePoint = bdv.getViewerPanel().state().getCurrentTimepoint();
-
-			return SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverterOf(bdv)
-				.stream()
-				.filter(sac -> SourceAndConverterHelper.isSourcePresentAt(sac,timePoint, mousePosInBdv))
-				.filter(sac -> SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible(sac,bdv))
-				.collect(Collectors.toList());
+			return SourceAndConverterHelper.getSourceAndConvertersAtCurrentMousePosition( bdv );
 		});
 	}
 
