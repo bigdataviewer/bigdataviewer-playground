@@ -96,7 +96,7 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 	// TODO: is this actually necessary??
 	public static int[] getSourcesOrder( BlendingMode[] blendingModes )
 	{
-		boolean containsExclusiveBlendingMode = containsExclusiveBlendingMode( blendingModes );
+		boolean containsExclusiveBlendingMode = containsOccludingBlendingMode( blendingModes );
 
 		final int numSources = blendingModes.length;
 
@@ -124,7 +124,7 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 		return sourceOrder;
 	}
 
-	public static boolean containsExclusiveBlendingMode( BlendingMode[] blendingModes )
+	public static boolean containsOccludingBlendingMode( BlendingMode[] blendingModes )
 	{
 		for ( BlendingMode blendingMode : blendingModes )
 		{
@@ -150,7 +150,7 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, n = 0;
 		int aAccu = 0, rAccu = 0, gAccu = 0, bAccu = 0;
 
-		boolean skipNonOccludingSources = containsExclusiveBlendingMode( blendingModes );
+		boolean skipNonOccludingSources = containsOccludingBlendingMode( blendingModes );
 
 		for ( int sourceIndex : sourceOrder )
 		{
