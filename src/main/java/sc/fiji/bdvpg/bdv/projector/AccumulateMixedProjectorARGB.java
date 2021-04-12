@@ -148,7 +148,7 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 	public static int getArgbIndex( Cursor< ? extends ARGBType >[] accesses, int[] sourceOrder, BlendingMode[] blendingModes )
 	{
-		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, n = 0;
+		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, numAvg = 0;
 		int aAccu = 0, rAccu = 0, gAccu = 0, bAccu = 0;
 
 		boolean containsOccludingSources = containsOccludingBlendingMode( blendingModes );
@@ -189,16 +189,16 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 				rAvg += r;
 				gAvg += g;
 				bAvg += b;
-				n++;
+				numAvg++;
 			}
 		}
 
-		if ( n > 0 )
+		if ( numAvg > 1 )
 		{
-			aAvg /= n;
-			rAvg /= n;
-			gAvg /= n;
-			bAvg /= n;
+			aAvg /= numAvg;
+			rAvg /= numAvg;
+			gAvg /= numAvg;
+			bAvg /= numAvg;
 		}
 
 		aAccu += aAvg;
