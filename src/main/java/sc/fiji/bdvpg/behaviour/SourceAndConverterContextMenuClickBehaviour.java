@@ -30,6 +30,7 @@ package sc.fiji.bdvpg.behaviour;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import org.apache.commons.lang.ArrayUtils;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterPopupMenu;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
@@ -104,5 +105,20 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 
 		popupMenu.getPopup().show( bdv.getViewerPanel().getDisplay(), x, y );
 	}
+
+	public synchronized void removeAction( String name )
+	{
+		final int index = ArrayUtils.indexOf( popupActions, name );
+		if ( index != -1 )
+			ArrayUtils.remove( popupActions, index );
+	}
+
+	public synchronized void addAction( String name )
+	{
+		final int index = ArrayUtils.indexOf( popupActions, name );
+		if ( index == -1 )
+			ArrayUtils.add( popupActions, name );
+	}
+
 
 }
