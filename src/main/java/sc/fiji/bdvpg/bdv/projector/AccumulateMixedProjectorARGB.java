@@ -162,7 +162,9 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 			if ( a == 0 ) continue;
 
-			final boolean isOccluding = BlendingMode.isOccluding( blendingModes[ sourceIndex ] );
+			final BlendingMode blendingMode = blendingModes[ sourceIndex ];
+
+			final boolean isOccluding = BlendingMode.isOccluding( blendingMode );
 
 			if ( skipNonOccludingSources && ! isOccluding )
 			{
@@ -170,14 +172,14 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 				continue;
 			}
 
-			if ( blendingModes[ sourceIndex ].equals( BlendingMode.Sum ) )
+			if ( blendingMode.equals( BlendingMode.Sum ) || blendingMode.equals( BlendingMode.SumOccluding ) )
 			{
 				aAccu += a;
 				rAccu += r;
 				gAccu += g;
 				bAccu += b;
 			}
-			else if ( blendingModes[ sourceIndex ].equals( BlendingMode.Average ) )
+			else if ( blendingMode.equals( BlendingMode.Average ) || blendingMode.equals( BlendingMode.AverageOccluding ) )
 			{
 				aAvg += a;
 				rAvg += r;
