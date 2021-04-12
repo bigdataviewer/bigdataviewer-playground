@@ -178,14 +178,14 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 			if ( blendingMode.equals( BlendingMode.Sum ) || blendingMode.equals( BlendingMode.SumOccluding ) )
 			{
-				aAccu += a;
+				aAccu += a; // does this make sense??
 				rAccu += r;
 				gAccu += g;
 				bAccu += b;
 			}
 			else if ( blendingMode.equals( BlendingMode.Average ) || blendingMode.equals( BlendingMode.AverageOccluding ) )
 			{
-				aAvg += a;
+				aAvg += a; // does this make sense??
 				rAvg += r;
 				gAvg += g;
 				bAvg += b;
