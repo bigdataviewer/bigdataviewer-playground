@@ -80,6 +80,7 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 	{
 		super( sourceProjectors, sourceScreenImages, target, numThreads, executorService );
 		this.blendingModes = getBlendingModes( sources );
+		// TODO: remove sourceOrder
 		sourceOrder = getSourcesOrder( blendingModes );
 	}
 
@@ -150,27 +151,30 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, n = 0;
 		int aAccu = 0, rAccu = 0, gAccu = 0, bAccu = 0;
 
-		boolean skipNonOccludingSources = containsOccludingBlendingMode( blendingModes );
+		boolean containsOccludingSources = containsOccludingBlendingMode( blendingModes );
 
+		// TODO: get rid of the source order?
 		for ( int sourceIndex : sourceOrder )
 		{
-			final int argb = accesses[ sourceIndex ].get().get(); // is this expensive ?
+			final BlendingMode blendingMode = blendingModes[ sourceIndex ];
+
+			if ( containsOccludingSources )
+			{
+				if ( BlendingMode.isOccluding( blendingMode ) )
+				{
+					// non-occluding sources are not considered
+					// if they are occluded by others.
+					continue;
+				}
+			}
+
+			final int argb = accesses[ sourceIndex ].get().get();
 			final int a = ARGBType.alpha( argb );
 			final int r = ARGBType.red( argb );
 			final int g = ARGBType.green( argb );
 			final int b = ARGBType.blue( argb );
 
 			if ( a == 0 ) continue;
-
-			final BlendingMode blendingMode = blendingModes[ sourceIndex ];
-
-			final boolean isOccluding = BlendingMode.isOccluding( blendingMode );
-
-			if ( skipNonOccludingSources && ! isOccluding )
-			{
-				// non-occluding sources are not considered
-				continue;
-			}
 
 			if ( blendingMode.equals( BlendingMode.Sum ) || blendingMode.equals( BlendingMode.SumOccluding ) )
 			{
