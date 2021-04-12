@@ -125,16 +125,14 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 	public static boolean containsExclusiveBlendingMode( BlendingMode[] blendingModes )
 	{
-		boolean containsExclusiveBlendingMode = false;
 		for ( BlendingMode blendingMode : blendingModes )
 		{
 			if ( BlendingMode.isOccluding( blendingMode ) )
 			{
-				containsExclusiveBlendingMode = true;
-				break;
+				return true;
 			}
 		}
-		return containsExclusiveBlendingMode;
+		return false;
 	}
 
 	@Override
@@ -151,7 +149,10 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, n = 0;
 		int aAccu = 0, rAccu = 0, gAccu = 0, bAccu = 0;
 
-		boolean skipNonExclusiveSources = false;
+		// The sources are ordered such that occluding ones
+		// come first. Thus we check if the first source is occluding,
+		// and, if yes, we do not show any of the non-occluding sources
+		boolean skipNonOccludingSources = containsExclusiveBlendingMode( blendingModes );
 
 		for ( int sourceIndex : sourceOrder )
 		{
@@ -163,11 +164,13 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 			if ( a == 0 ) continue;
 
-			final boolean isExclusive = BlendingMode.isOccluding( blendingModes[ sourceIndex ] );
+			final boolean isOccluding = BlendingMode.isOccluding( blendingModes[ sourceIndex ] );
 
-			if ( isExclusive ) skipNonExclusiveSources = true;
-
-			if ( skipNonExclusiveSources && ! isExclusive ) continue;
+			if ( skipNonOccludingSources && ! isOccluding )
+			{
+				// non-occluding sources are not considered
+				continue;
+			}
 
 			if ( blendingModes[ sourceIndex ].equals( BlendingMode.Sum ) )
 			{
@@ -184,7 +187,6 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 				bAvg += b;
 				n++;
 			}
-
 		}
 
 		if ( n > 0 )
@@ -211,5 +213,4 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 		return ARGBType.rgba( rAccu, gAccu, bAccu, aAccu );
 	}
-
 }
