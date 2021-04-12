@@ -93,6 +93,7 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 				.toArray( BlendingMode[]::new );
 	}
 
+	// TODO: is this actually necessary??
 	public static int[] getSourcesOrder( BlendingMode[] blendingModes )
 	{
 		boolean containsExclusiveBlendingMode = containsExclusiveBlendingMode( blendingModes );
