@@ -149,9 +149,6 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, n = 0;
 		int aAccu = 0, rAccu = 0, gAccu = 0, bAccu = 0;
 
-		// The sources are ordered such that occluding ones
-		// come first. Thus we check if the first source is occluding,
-		// and, if yes, we do not show any of the non-occluding sources
 		boolean skipNonOccludingSources = containsExclusiveBlendingMode( blendingModes );
 
 		for ( int sourceIndex : sourceOrder )
