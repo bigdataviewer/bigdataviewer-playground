@@ -54,12 +54,12 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 
 	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv )
 	{
-		this(bdv, () -> SourceAndConverterHelper.getSourceAndConvertersAtCurrentMousePosition( bdv ) );
+		this( bdv, () -> SourceAndConverterHelper.getSourceAndConvertersAtCurrentMousePosition( bdv ) );
 	}
 
 	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv, String[] popupActions )
 	{
-		this(bdv, () -> SourceAndConverterHelper.getSourceAndConvertersAtCurrentMousePosition( bdv ), popupActions );
+		this( bdv, () -> SourceAndConverterHelper.getSourceAndConvertersAtCurrentMousePosition( bdv ), popupActions );
 	}
 
 	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv, Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier )
