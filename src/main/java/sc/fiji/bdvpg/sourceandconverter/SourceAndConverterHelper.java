@@ -950,7 +950,7 @@ public class SourceAndConverterHelper {
 
     /**
      * Determines all visible sources at the current mouse position in the Bdv window.
-     *
+     * Note: this method can be slow as it needs an actual random access on the source data.
      * @param bdvHandle
      * @return List of SourceAndConverters
      */
