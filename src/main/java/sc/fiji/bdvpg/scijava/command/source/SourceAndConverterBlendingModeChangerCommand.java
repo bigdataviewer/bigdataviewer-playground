@@ -36,10 +36,8 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.sourceandconverter.display.BlendingModeChanger;
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+ "Sources>Display>" + SourceAndConverterBlendingModeChangerCommand.NAME )
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Projection Mode")
 public class SourceAndConverterBlendingModeChangerCommand implements BdvPlaygroundActionCommand {
-
-    public static final String NAME = "Set Sources Projection Mode";
 
     @Parameter(label = "Blending Mode", choices = { BlendingMode.AVERAGE, BlendingMode.SUM })
     String blendingMode = BlendingMode.AVERAGE;
