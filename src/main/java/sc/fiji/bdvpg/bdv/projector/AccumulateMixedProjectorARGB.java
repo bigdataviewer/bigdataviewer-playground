@@ -80,6 +80,7 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 	{
 		super( sourceProjectors, sourceScreenImages, target, numThreads, executorService );
 		this.blendingModes = getBlendingModes( sources );
+		// TODO: remove sourceOrder
 		sourceOrder = getSourcesOrder( blendingModes );
 	}
 
@@ -93,9 +94,10 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 				.toArray( BlendingMode[]::new );
 	}
 
+	// TODO: is this actually necessary??
 	public static int[] getSourcesOrder( BlendingMode[] blendingModes )
 	{
-		boolean containsExclusiveBlendingMode = containsExclusiveBlendingMode( blendingModes );
+		boolean containsExclusiveBlendingMode = containsOccludingBlendingMode( blendingModes );
 
 		final int numSources = blendingModes.length;
 
@@ -123,18 +125,16 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 		return sourceOrder;
 	}
 
-	public static boolean containsExclusiveBlendingMode( BlendingMode[] blendingModes )
+	public static boolean containsOccludingBlendingMode( BlendingMode[] blendingModes )
 	{
-		boolean containsExclusiveBlendingMode = false;
 		for ( BlendingMode blendingMode : blendingModes )
 		{
 			if ( BlendingMode.isOccluding( blendingMode ) )
 			{
-				containsExclusiveBlendingMode = true;
-				break;
+				return true;
 			}
 		}
-		return containsExclusiveBlendingMode;
+		return false;
 	}
 
 	@Override
@@ -148,14 +148,27 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 	public static int getArgbIndex( Cursor< ? extends ARGBType >[] accesses, int[] sourceOrder, BlendingMode[] blendingModes )
 	{
-		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, n = 0;
+		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, numAvg = 0;
 		int aAccu = 0, rAccu = 0, gAccu = 0, bAccu = 0;
 
-		boolean skipNonExclusiveSources = false;
+		boolean containsOccludingSources = containsOccludingBlendingMode( blendingModes );
 
+		// TODO: get rid of the source order?
 		for ( int sourceIndex : sourceOrder )
 		{
-			final int argb = accesses[ sourceIndex ].get().get(); // is this expensive ?
+			final BlendingMode blendingMode = blendingModes[ sourceIndex ];
+
+			if ( containsOccludingSources )
+			{
+				if ( BlendingMode.isOccluding( blendingMode ) )
+				{
+					// non-occluding sources are not considered
+					// if they are occluded by others.
+					continue;
+				}
+			}
+
+			final int argb = accesses[ sourceIndex ].get().get();
 			final int a = ARGBType.alpha( argb );
 			final int r = ARGBType.red( argb );
 			final int g = ARGBType.green( argb );
@@ -163,36 +176,29 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 			if ( a == 0 ) continue;
 
-			final boolean isExclusive = BlendingMode.isOccluding( blendingModes[ sourceIndex ] );
-
-			if ( isExclusive ) skipNonExclusiveSources = true;
-
-			if ( skipNonExclusiveSources && ! isExclusive ) continue;
-
-			if ( blendingModes[ sourceIndex ].equals( BlendingMode.Sum ) )
+			if ( blendingMode.equals( BlendingMode.Sum ) || blendingMode.equals( BlendingMode.SumOccluding ) )
 			{
-				aAccu += a;
+				aAccu += a; // does this make sense??
 				rAccu += r;
 				gAccu += g;
 				bAccu += b;
 			}
-			else if ( blendingModes[ sourceIndex ].equals( BlendingMode.Average ) )
+			else if ( blendingMode.equals( BlendingMode.Average ) || blendingMode.equals( BlendingMode.AverageOccluding ) )
 			{
-				aAvg += a;
+				aAvg += a; // does this make sense??
 				rAvg += r;
 				gAvg += g;
 				bAvg += b;
-				n++;
+				numAvg++;
 			}
-
 		}
 
-		if ( n > 0 )
+		if ( numAvg > 1 )
 		{
-			aAvg /= n;
-			rAvg /= n;
-			gAvg /= n;
-			bAvg /= n;
+			aAvg /= numAvg;
+			rAvg /= numAvg;
+			gAvg /= numAvg;
+			bAvg /= numAvg;
 		}
 
 		aAccu += aAvg;
@@ -211,5 +217,4 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 		return ARGBType.rgba( rAccu, gAccu, bAccu, aAccu );
 	}
-
 }
