@@ -169,6 +169,7 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 			}
 
 			final int argb = accesses[ sourceIndex ].get().get();
+
 			final int a = ARGBType.alpha( argb );
 			final int r = ARGBType.red( argb );
 			final int g = ARGBType.green( argb );

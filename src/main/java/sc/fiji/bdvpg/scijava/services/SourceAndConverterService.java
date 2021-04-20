@@ -532,4 +532,8 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         return getMetadata(asd,key)!=null;
     }
 
+    public static String getCommandName( Command command )
+    {
+        return command.getClass().getAnnotation( Plugin.class ).name();
+    }
 }

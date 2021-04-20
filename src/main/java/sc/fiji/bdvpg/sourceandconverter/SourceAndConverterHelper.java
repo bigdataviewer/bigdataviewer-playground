@@ -34,6 +34,7 @@ import bdv.spimdata.WrapBasicImgLoader;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.transformation.TransformedSource;
 import bdv.util.ARGBColorConverterSetup;
+import bdv.util.BdvHandle;
 import bdv.util.LUTConverterSetup;
 import bdv.util.ResampledSource;
 import bdv.util.UnmodifiableConverterSetup;
@@ -66,6 +67,7 @@ import spimdata.util.DisplaysettingsHelper;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 
 /**
@@ -946,4 +948,25 @@ public class SourceAndConverterHelper {
         return Math.max(Math.min(a,b), Math.min(Math.max(a,b),c)); //https://stackoverflow.com/questions/1582356/fastest-way-of-finding-the-middle-value-of-a-triple
     }
 
+    /**
+     * Determines all visible sources at the current mouse position in the Bdv window.
+     * Note: this method can be slow as it needs an actual random access on the source data.
+     * @param bdvHandle
+     * @return List of SourceAndConverters
+     */
+    public static List< SourceAndConverter< ? > > getSourceAndConvertersAtCurrentMousePosition( BdvHandle bdvHandle )
+    {
+        // Gets mouse location in space (global 3D coordinates) and time
+        final RealPoint mousePosInBdv = new RealPoint( 3 );
+        bdvHandle.getBdvHandle().getViewerPanel().getGlobalMouseCoordinates( mousePosInBdv );
+        int timePoint = bdvHandle.getViewerPanel().state().getCurrentTimepoint();
+
+        final List< SourceAndConverter< ? > > sourceAndConverters = SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverterOf( bdvHandle )
+                .stream()
+                .filter( sac -> isSourcePresentAt( sac, timePoint, mousePosInBdv ) )
+                .filter( sac -> SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible( sac, bdvHandle ) )
+                .collect( Collectors.toList() );
+
+        return sourceAndConverters;
+    }
 }

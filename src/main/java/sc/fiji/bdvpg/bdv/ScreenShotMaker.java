@@ -86,7 +86,7 @@ public class ScreenShotMaker {
     private long captureWidth;
     private long captureHeight;
 
-    public  ScreenShotMaker(BdvHandle bdvHandle) {
+    public ScreenShotMaker(BdvHandle bdvHandle) {
         this.bdvHandle = bdvHandle;
         this.displayService = SourceAndConverterServices.getSourceAndConverterDisplayService();
         //this.sacService = SourceAndConverterServices.getSourceAndConverterService();

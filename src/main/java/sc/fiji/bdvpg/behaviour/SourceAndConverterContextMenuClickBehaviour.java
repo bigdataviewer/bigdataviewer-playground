@@ -30,17 +30,15 @@ package sc.fiji.bdvpg.behaviour;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import net.imglib2.RealPoint;
+import org.apache.commons.lang.ArrayUtils;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterPopupMenu;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Behaviour that shows the context menu of actions available that will act on the sources
@@ -53,23 +51,17 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 {
 	final BdvHandle bdv;
 	final Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier;
-	final String[] popupActions;
+	String[] popupActions;
 
 	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv )
 	{
 		this(bdv,
-		() -> {
-			// Gets mouse location in space (global 3D coordinates) and time
-			final RealPoint mousePosInBdv = new RealPoint( 3 );
-			bdv.getBdvHandle().getViewerPanel().getGlobalMouseCoordinates( mousePosInBdv );
-			int timePoint = bdv.getViewerPanel().state().getCurrentTimepoint();
+		() -> SourceAndConverterHelper.getSourceAndConvertersAtCurrentMousePosition( bdv ) );
+	}
 
-			return SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverterOf(bdv)
-				.stream()
-				.filter(sac -> SourceAndConverterHelper.isSourcePresentAt(sac,timePoint, mousePosInBdv))
-				.filter(sac -> SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible(sac,bdv))
-				.collect(Collectors.toList());
-		});
+	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv, String[] popupActions )
+	{
+		this(bdv, () -> SourceAndConverterHelper.getSourceAndConvertersAtCurrentMousePosition( bdv ), popupActions);
 	}
 
 	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv, Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier )
@@ -92,7 +84,6 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 
 	private void showPopupMenu( BdvHandle bdv, int x, int y )
 	{
-
 		final List<SourceAndConverter> sacs = new ArrayList<>(sourcesSupplier.get());
 
 		//if ( sacs.size() == 0 )
@@ -113,5 +104,20 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 
 		popupMenu.getPopup().show( bdv.getViewerPanel().getDisplay(), x, y );
 	}
+
+	public synchronized void removeAction( String name )
+	{
+		final int index = ArrayUtils.indexOf( popupActions, name );
+		if ( index != -1 )
+			popupActions = ( String[] ) ArrayUtils.remove( popupActions, index );
+	}
+
+	public synchronized void addAction( String name )
+	{
+		final int index = ArrayUtils.indexOf( popupActions, name );
+		if ( index == -1 )
+			popupActions = ( String[] ) ArrayUtils.add( popupActions, name );
+	}
+
 
 }

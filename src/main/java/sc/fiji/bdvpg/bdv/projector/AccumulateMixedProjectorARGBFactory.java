@@ -44,11 +44,6 @@ import java.util.concurrent.ExecutorService;
 
 public class AccumulateMixedProjectorARGBFactory implements AccumulateProjectorFactory< ARGBType >
 {
-
-	public AccumulateMixedProjectorARGBFactory()
-	{
-	}
-
 	public VolatileProjector createProjector(
 			List< VolatileProjector > sourceProjectors,
 			List<SourceAndConverter< ? >> sources,
