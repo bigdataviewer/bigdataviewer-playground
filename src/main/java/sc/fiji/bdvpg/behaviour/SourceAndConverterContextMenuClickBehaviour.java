@@ -51,7 +51,7 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 {
 	final BdvHandle bdv;
 	final Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier;
-	final String[] popupActions;
+	String[] popupActions;
 
 	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv )
 	{
@@ -84,7 +84,6 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 
 	private void showPopupMenu( BdvHandle bdv, int x, int y )
 	{
-
 		final List<SourceAndConverter> sacs = new ArrayList<>(sourcesSupplier.get());
 
 		if ( sacs.size() == 0 )
@@ -110,14 +109,14 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 	{
 		final int index = ArrayUtils.indexOf( popupActions, name );
 		if ( index != -1 )
-			ArrayUtils.remove( popupActions, index );
+			popupActions = ( String[] ) ArrayUtils.remove( popupActions, index );
 	}
 
 	public synchronized void addAction( String name )
 	{
 		final int index = ArrayUtils.indexOf( popupActions, name );
 		if ( index == -1 )
-			ArrayUtils.add( popupActions, name );
+			popupActions = ( String[] ) ArrayUtils.add( popupActions, name );
 	}
 
 
