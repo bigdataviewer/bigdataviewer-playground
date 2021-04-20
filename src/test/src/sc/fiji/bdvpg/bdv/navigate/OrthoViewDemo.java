@@ -30,9 +30,11 @@ package sc.fiji.bdvpg.bdv.navigate;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import bigwarp.BigWarp;
 import net.imagej.ImageJ;
 import org.junit.After;
 import org.junit.Test;
+import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -62,6 +64,7 @@ public class OrthoViewDemo {
         ij.ui().showUI();
 
         // Makes BDV Source
+        System.out.println(VersionUtils.getVersion(BigWarp.class));
 
         new SpimDataFromXmlImporter( "src/test/resources/mri-stack.xml" ).run();
 
