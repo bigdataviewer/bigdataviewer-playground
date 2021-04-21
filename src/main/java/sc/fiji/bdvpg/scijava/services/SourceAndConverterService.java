@@ -51,6 +51,7 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.scijava.ui.UIService;
+import sc.fiji.bdvpg.PlaygroundPrefs;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -329,9 +330,12 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
         registerDefaultActions();
         if (uiService!=null) {
-            log.accept("uiService detected : Constructing JPanel for BdvSourceAndConverterService");
-            ui = new SourceAndConverterServiceUI(this);
-            uiAvailable = true;
+            if(PlaygroundPrefs.getSourceAndConverterUIVisibility())
+            {
+                log.accept( "uiService detected : Constructing JPanel for BdvSourceAndConverterService" );
+                ui = new SourceAndConverterServiceUI( this );
+                uiAvailable = true;
+            }
         }
 
         SourceAndConverterServices.setSourceAndConverterService(this);
