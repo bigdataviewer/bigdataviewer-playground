@@ -330,12 +330,9 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
         registerDefaultActions();
         if (uiService!=null) {
-            if(PlaygroundPrefs.getSourceAndConverterUIVisibility())
-            {
-                log.accept( "uiService detected : Constructing JPanel for BdvSourceAndConverterService" );
-                ui = new SourceAndConverterServiceUI( this );
-                uiAvailable = true;
-            }
+            log.accept( "uiService detected : Constructing JPanel for BdvSourceAndConverterService" );
+            ui = new SourceAndConverterServiceUI( this );
+            uiAvailable = true;
         }
 
         SourceAndConverterServices.setSourceAndConverterService(this);
