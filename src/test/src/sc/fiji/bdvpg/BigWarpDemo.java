@@ -31,12 +31,14 @@ package sc.fiji.bdvpg;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import bigwarp.BigWarp;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import net.imglib2.type.numeric.ARGBType;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
@@ -55,7 +57,7 @@ public class BigWarpDemo {
         // Initializes static SourceService and Display Service
         ij = new ImageJ();
         ij.ui().showUI();
-
+        System.out.println("BigWarp version:"+VersionUtils.getVersion(BigWarp.class));
         demo2d();
     }
 
