@@ -31,7 +31,6 @@ package sc.fiji.bdvpg.bdv.config;
 import bdv.TransformEventHandler2D;
 import bdv.TransformEventHandler3D;
 import bdv.TransformState;
-import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SettingsPage;
@@ -49,8 +48,6 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -236,7 +233,7 @@ public class BdvSettingsGUISetter implements Runnable {
                 final VisualEditorPanel yaml_keyconfEditor = new VisualEditorPanel(yamlConf);
                 yaml_keyconfEditor.setButtonPanelVisible(false);
                 settings.addPage(new DefaultSettingsPage(subPath+"> settings", yaml_keyconfEditor));
-                yaml_keyconfEditor.addConfigChangeListener( () -> {
+                yaml_keyconfEditor.modelChangedListeners().add( () -> {
                     yaml_keyconfEditor.modelToConfig();
                     try {
                         YamlConfigIO.write(new InputTriggerDescriptionsBuilder(yamlConf).getDescriptions(), pathDir+File.separator+ bdvKeyConfigFileName);
