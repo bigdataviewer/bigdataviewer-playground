@@ -36,6 +36,7 @@ import mpicbg.spim.data.generic.base.NamedEntity;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
+import sc.fiji.bdvpg.PlaygroundPrefs;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.swingdnd.SourceAndConverterServiceUITransferHandler;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
@@ -215,7 +216,9 @@ public class SourceAndConverterServiceUI {
     }
 
     public void show() {
-        frame.setVisible(true);
+        if(PlaygroundPrefs.getSourceAndConverterUIVisibility()) {
+            frame.setVisible(true);
+        }
     }
 
     public void hide() {
@@ -361,7 +364,8 @@ public class SourceAndConverterServiceUI {
      * TODO : understand is this method is really for update or only for creation...
      * @param sac source which UI needs to be updated
      */
-    public void update(SourceAndConverter sac) {
+    public void update(SourceAndConverter sac)
+    {
         if (!frame.isVisible()) {show();}
         synchronized (tree) {
             updateSpimDataFilterNodes();
