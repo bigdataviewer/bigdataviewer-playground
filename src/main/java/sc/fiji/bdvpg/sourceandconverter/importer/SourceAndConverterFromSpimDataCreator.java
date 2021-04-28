@@ -25,12 +25,14 @@ import java.util.Map;
 public class SourceAndConverterFromSpimDataCreator
 {
 	private final AbstractSpimData asd;
-	private Map< Integer, SourceAndConverter > setupIdToSourceAndConverter;
-	private Map< SourceAndConverter, Map< String, Object > > sourceAndConverterToMetadata;
+	private final Map< Integer, SourceAndConverter > setupIdToSourceAndConverter;
+	private final Map< SourceAndConverter, Map< String, Object > > sourceAndConverterToMetadata;
 
 	public SourceAndConverterFromSpimDataCreator( AbstractSpimData asd )
 	{
 		this.asd = asd;
+		setupIdToSourceAndConverter = new HashMap<>();
+		sourceAndConverterToMetadata = new HashMap<>();
 		createSourceAndConverters();
 	}
 
@@ -46,9 +48,6 @@ public class SourceAndConverterFromSpimDataCreator
 
 	private void createSourceAndConverters()
 	{
-		setupIdToSourceAndConverter = new HashMap<>();
-		sourceAndConverterToMetadata = new HashMap<>();
-
 		boolean nonVolatile = WrapBasicImgLoader.wrapImgLoaderIfNecessary( asd );
 
 		if ( nonVolatile )
