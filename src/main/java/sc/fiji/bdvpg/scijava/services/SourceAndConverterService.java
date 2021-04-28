@@ -236,12 +236,9 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         final SourceAndConverterFromSpimDataCreator creator = new SourceAndConverterFromSpimDataCreator( asd );
         Map<Integer, SourceAndConverter> sacs = creator.getSetupIdToSourceAndConverter();
         this.register(sacs.values());
+        final ISourceAndConverterService service = SourceAndConverterServices.getSourceAndConverterService();
         sacs.forEach((id,sac) -> {
-            final String blendingMode = creator.getBlendingMode(sac);
-            if ( blendingMode != null )
-                SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .setMetadata(sac, BlendingMode.BLENDING_MODE, blendingMode );
+            creator.getMetadata( sac ).forEach( (key,value) -> service.setMetadata(sac, key, value) );
             this.linkToSpimData(sac, asd, id);
             if (uiAvailable) ui.update(sac);
         });

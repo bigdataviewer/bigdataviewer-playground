@@ -14,6 +14,7 @@ import mpicbg.spim.data.sequence.Channel;
 import net.imglib2.converter.Converter;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
+import sc.fiji.bdvpg.bdv.projector.BlendingMode;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import spimdata.util.Displaysettings;
 import spimdata.util.DisplaysettingsHelper;
@@ -25,7 +26,7 @@ public class SourceAndConverterFromSpimDataCreator
 {
 	private final AbstractSpimData asd;
 	private Map< Integer, SourceAndConverter > setupIdToSourceAndConverter;
-	private Map< SourceAndConverter, String > sourceAndConverterToBlendingMode;
+	private Map< SourceAndConverter, Map< String, Object > > sourceAndConverterToMetadata;
 
 	public SourceAndConverterFromSpimDataCreator( AbstractSpimData asd )
 	{
@@ -38,15 +39,15 @@ public class SourceAndConverterFromSpimDataCreator
 		return setupIdToSourceAndConverter;
 	}
 
-	public String getBlendingMode( SourceAndConverter< ? > sourceAndConverter)
+	public Map< String, Object > getMetadata( SourceAndConverter< ? > sourceAndConverter)
 	{
-		return sourceAndConverterToBlendingMode.get( sourceAndConverter );
+		return sourceAndConverterToMetadata.get( sourceAndConverter );
 	}
 
 	private void createSourceAndConverters()
 	{
 		setupIdToSourceAndConverter = new HashMap<>();
-		sourceAndConverterToBlendingMode = new HashMap<>();
+		sourceAndConverterToMetadata = new HashMap<>();
 
 		boolean nonVolatile = WrapBasicImgLoader.wrapImgLoaderIfNecessary( asd );
 
@@ -58,6 +59,7 @@ public class SourceAndConverterFromSpimDataCreator
 		final AbstractSequenceDescription< ?, ?, ? > seq = asd.getSequenceDescription();
 
 		final ViewerImgLoader imgLoader = ( ViewerImgLoader ) seq.getImgLoader();
+
 		for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() ) {
 
 			final int setupId = setup.getId();
@@ -80,6 +82,7 @@ public class SourceAndConverterFromSpimDataCreator
 				SourceAndConverterHelper.errlog.accept("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
 			}
 
+			sourceAndConverterToMetadata.put( setupIdToSourceAndConverter.get( setupId ), new HashMap<>() );
 			fetchAndApplyDisplaySettings( setup, setupId );
 		}
 
@@ -124,7 +127,8 @@ public class SourceAndConverterFromSpimDataCreator
 	{
 		if ( setup.getAttribute(Displaysettings.class)!=null) {
 			final String blendingMode = DisplaysettingsHelper.PullDisplaySettings( setupIdToSourceAndConverter.get( setupId ), setup.getAttribute(Displaysettings.class));
-			sourceAndConverterToBlendingMode.put( setupIdToSourceAndConverter.get( setupId ), blendingMode );
+			if ( blendingMode != null)
+				sourceAndConverterToMetadata.get( setupIdToSourceAndConverter.get( setupId ) ).put(  BlendingMode.BLENDING_MODE, blendingMode );
 		}
 	}
 
