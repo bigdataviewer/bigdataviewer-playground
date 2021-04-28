@@ -111,8 +111,9 @@ public class DisplaysettingsHelper {
     /**
      * Apply the display settings to the SourceAndConverter object
      * @param sac source
+     * @return
      */
-    public static void PullDisplaySettings(SourceAndConverter sac, Displaysettings ds) {
+    public static String PullDisplaySettings( SourceAndConverter sac, Displaysettings ds) {
 
         if (ds.isSet) {
             if (sac.getConverter() instanceof ColorConverter) {
@@ -130,11 +131,10 @@ public class DisplaysettingsHelper {
                 System.err.println("Converter is of class :" + sac.getConverter().getClass().getSimpleName() + " -> Display settings cannot be reapplied.");
             }
 
-            SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .setMetadata(sac, BlendingMode.BLENDING_MODE, ds.projectionMode);
-
+            return ds.projectionMode;
         }
+
+        return null;
     }
 
     /**

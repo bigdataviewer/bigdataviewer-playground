@@ -53,11 +53,12 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.scijava.ui.UIService;
+import sc.fiji.bdvpg.bdv.projector.BlendingMode;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
+import sc.fiji.bdvpg.sourceandconverter.importer.SourceAndConverterFromSpimDataCreator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -232,9 +233,15 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             spimdataToMetadata.put(asd, sourceData);
         }
 
-        Map<Integer, SourceAndConverter> sacs = SourceAndConverterHelper.createSourceAndConverters(asd);
+        final SourceAndConverterFromSpimDataCreator creator = new SourceAndConverterFromSpimDataCreator( asd );
+        Map<Integer, SourceAndConverter> sacs = creator.getSetupIdToSourceAndConverter();
         this.register(sacs.values());
         sacs.forEach((id,sac) -> {
+            final String blendingMode = creator.getBlendingMode(sac);
+            if ( blendingMode != null )
+                SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .setMetadata(sac, BlendingMode.BLENDING_MODE, blendingMode );
             this.linkToSpimData(sac, asd, id);
             if (uiAvailable) ui.update(sac);
         });

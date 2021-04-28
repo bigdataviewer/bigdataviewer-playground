@@ -60,9 +60,6 @@ public class BlendingModeChangerDemo
 		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
 		ij = new ImageJ();
 		ij.ui().showUI();
-
-		final SourceAndConverterService service = ( SourceAndConverterService ) SourceAndConverterServices.getSourceAndConverterService();
-
 		demo();
 	}
 
