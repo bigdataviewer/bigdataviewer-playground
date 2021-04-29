@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -41,9 +41,20 @@ import net.imglib2.view.Views;
 import java.io.Serializable;
 import java.util.function.BiConsumer;
 
+/**
+ * An EmptySource is a source that is empty, but located in space thanks to
+ * its 3D affine transform and also with a defined voxel size.
+ *
+ * This source can be thus used to define a template in order to Resample another source
+ * with new bounds and voxel size, for instance as a model in {@link ResampledSource}
+ *
+ * Also this source can be serialized with the gson adapter {@link sc.fiji.bdvpg.services.serializers.plugins.EmptySourceAdapter}
+ * which is helpful to save such source easily.
+ *
+ */
 public class EmptySource implements Source<UnsignedShortType>, Serializable {
 
-    transient final RandomAccessibleInterval rai;
+    transient final RandomAccessibleInterval<UnsignedShortType> rai;
 
     EmptySourceParams params;
 
@@ -66,7 +77,7 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
 
         BiConsumer<Localizable, UnsignedShortType > fun = (l,t) -> t.set(0);
 
-        RandomAccessible ra = new FunctionRandomAccessible<UnsignedShortType>(3,
+        RandomAccessible<UnsignedShortType> ra = new FunctionRandomAccessible<>(3,
                 fun, UnsignedShortType::new);
 
         this.rai = Views.interval(ra, new FinalInterval(nx,ny,nz));
@@ -88,8 +99,7 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
     public RealRandomAccessible<UnsignedShortType> getInterpolatedSource(int t, int level, Interpolation method) {
         ExtendedRandomAccessibleInterval<UnsignedShortType, RandomAccessibleInterval< UnsignedShortType >>
                 eView = Views.extendZero(getSource( t, level ));
-        RealRandomAccessible< UnsignedShortType > realRandomAccessible = Views.interpolate( eView, interpolators.get(method) );
-        return realRandomAccessible;
+        return Views.interpolate( eView, interpolators.get(method) );
     }
 
     @Override

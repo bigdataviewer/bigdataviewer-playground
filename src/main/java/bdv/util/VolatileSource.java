@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -71,15 +71,15 @@ public class VolatileSource<T extends NumericType<T>, V extends Volatile< T > & 
 
     final SharedQueue queue;
 
-    ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, RandomAccessibleInterval>> cachedRAIs = new ConcurrentHashMap<>();
+    ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, RandomAccessibleInterval<V>>> cachedRAIs = new ConcurrentHashMap<>();
 
-    public VolatileSource(final Source source) {
+    public VolatileSource(final Source<T> source) {
         this.originSource = source;
         queue = new SharedQueue(2);
     }
 
-    public VolatileSource(final Source resampledSource, final SharedQueue queue) {
-        this.originSource = resampledSource;
+    public VolatileSource(final Source<T> originSource, final SharedQueue queue) {
+        this.originSource = originSource;
         this.queue = queue;
     }
 
@@ -144,8 +144,8 @@ public class VolatileSource<T extends NumericType<T>, V extends Volatile< T > & 
 
     /**
      * TODO : this helper class should be already somewhere else!
-     * @param t
-     * @return
+     * @param t a NumericType instance
+     * @return the volatile equivalent class of this NumericType instance
      */
 
     static public Volatile getVolatileOf(NumericType t) {

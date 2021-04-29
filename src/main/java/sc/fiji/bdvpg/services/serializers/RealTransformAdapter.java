@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -48,8 +48,7 @@ public class RealTransformAdapter implements JsonSerializer<RealTransform>,
         String realtransformClassName = obj.get(REALTRANSFORM_CLASS_KEY).getAsString();
         if (realtransformClassName.equals(ThinplateSplineTransform.class.getName())) {
             ThinPlateR2LogRSplineKernelTransform kernel = jsonDeserializationContext.deserialize(obj.get("kernel"), ThinPlateR2LogRSplineKernelTransform.class);
-            ThinplateSplineTransform realTransform = new ThinplateSplineTransform(kernel);
-            return realTransform;
+            return new ThinplateSplineTransform(kernel);
         } else {
             System.err.println("Could not deserialise RealTransform of class : "+realtransformClassName);
         }

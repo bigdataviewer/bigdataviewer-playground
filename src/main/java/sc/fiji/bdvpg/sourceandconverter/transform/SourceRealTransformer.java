@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -31,18 +31,26 @@ package sc.fiji.bdvpg.sourceandconverter.transform;
 import bdv.img.WarpedSource;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.RealTransform;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Function;
 
 public class SourceRealTransformer implements Runnable, Function<SourceAndConverter,SourceAndConverter> {
 
     SourceAndConverter sourceIn;
-    RealTransform rt;
+    final RealTransform rt;
     SourceAndConverter sourceOut;
 
     public SourceRealTransformer(SourceAndConverter src, RealTransform rt) {
         this.sourceIn = src;
+        this.rt = rt;
+    }
+
+    /**
+     * Constructor without any source argument in order to use the functional interface only
+     * @param rt
+     */
+    public SourceRealTransformer(RealTransform rt) {
         this.rt = rt;
     }
 
@@ -56,17 +64,17 @@ public class SourceRealTransformer implements Runnable, Function<SourceAndConver
     }
 
     public SourceAndConverter apply(SourceAndConverter in) {
-        WarpedSource src = new WarpedSource(in.getSpimSource(), "Transformed_"+in.getSpimSource().getName());
+        WarpedSource src = new WarpedSource(in.getSpimSource(), "Transformed_"+in.getSpimSource().getName(), () -> false);
         src.updateTransform(rt);
         src.setIsTransformed(true);
         if (in.asVolatile()!=null) {
-            WarpedSource vsrc = new WarpedSource(in.asVolatile().getSpimSource(), "Transformed_"+in.asVolatile().getSpimSource().getName());//f.apply(in.asVolatile().getSpimSource());
+            WarpedSource vsrc = new WarpedSource(in.asVolatile().getSpimSource(), "Transformed_"+in.asVolatile().getSpimSource().getName(), () -> false);//f.apply(in.asVolatile().getSpimSource());
             vsrc.updateTransform(rt);
             vsrc.setIsTransformed(true);
-            SourceAndConverter vout = new SourceAndConverter<>(vsrc, SourceAndConverterUtils.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));
-            return new SourceAndConverter(src, SourceAndConverterUtils.cloneConverter(in.getConverter(), in), vout);
+            SourceAndConverter vout = new SourceAndConverter<>(vsrc, SourceAndConverterHelper.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));
+            return new SourceAndConverter(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in), vout);
         } else {
-            return new SourceAndConverter(src, SourceAndConverterUtils.cloneConverter(in.getConverter(), in));
+            return new SourceAndConverter(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in));
         }
     }
 }

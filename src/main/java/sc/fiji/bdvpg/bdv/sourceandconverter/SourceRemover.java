@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -47,26 +47,26 @@ import java.util.function.Consumer;
 
 public class SourceRemover implements Runnable, Consumer<SourceAndConverter[]>
 {
-	SourceAndConverter sacsIn;
-	BdvHandle bdvh;
+	final SourceAndConverter<?> sacIn;
+	final BdvHandle bdvh;
 
-	public SourceRemover(BdvHandle bdvh, SourceAndConverter sacsIn) {
-		this.sacsIn=sacsIn;
+	public SourceRemover(BdvHandle bdvh, SourceAndConverter<?> sacIn) {
+		this.sacIn =sacIn;
 		this.bdvh=bdvh;
 	}
 
-	public SourceRemover(SourceAndConverter sacsIn) {
-		this.sacsIn=sacsIn;
+	public SourceRemover(SourceAndConverter<?> sacIn) {
+		this.sacIn =sacIn;
 		this.bdvh=null;
 	}
 
 	public SourceRemover() {
-		this.sacsIn=null;
+		this.sacIn =null;
 		this.bdvh=null;
 	}
 
 	public void run() {
-		accept(sacsIn);
+		accept(sacIn);
 	}
 
 	@Override

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,36 +29,37 @@
 package sc.fiji.bdvpg.scijava.command.spimdata;
 
 import com.google.gson.stream.JsonReader;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>BDVDataset [BigDataServer]",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>BDVDataset [BigDataServer]",
         label = "Command that opens a BDV dataset from a BigDataServer. Click on Show to display it.")
-public class SpimdataBigDataServerImportCommand implements Command
+public class SpimdataBigDataServerImportCommand implements BdvPlaygroundActionCommand
 {
     @Parameter(label = "Big Data Server URL")
-    String urlServer = "http://tomancak-srv1.mpi-cbg.de:8081";
+    String urlserver = "http://tomancak-srv1.mpi-cbg.de:8081";
 
     @Parameter(label = "Dataset Name")
-    String datasetName = "Drosophila";
+    String datasetname = "Drosophila";
 
     @Override
     public void run()
     {
         try {
-            Map<String,String> BDSList = getDatasetList(urlServer);
-            final String urlString = BDSList.get(datasetName);
+            Map<String,String> BDSList = getDatasetList(urlserver);
+            final String urlString = BDSList.get(datasetname);
             new SpimDataFromXmlImporter(urlString).get();
         } catch (IOException e) {
             e.printStackTrace();
@@ -72,7 +73,7 @@ public class SpimdataBigDataServerImportCommand implements Command
         // Get JSON string from the server
         final URL url = new URL( remoteUrl + "/json/" );
         final InputStream is = url.openStream();
-        final JsonReader reader = new JsonReader( new InputStreamReader( is, "UTF-8" ) );
+        final JsonReader reader = new JsonReader( new InputStreamReader( is, StandardCharsets.UTF_8) );
 
         reader.beginObject();
         while ( reader.hasNext() )

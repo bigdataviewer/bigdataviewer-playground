@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -43,19 +43,18 @@ import org.scijava.ui.behaviour.InputTriggerMap;
 public class InputTriggerConfigHelper {
 
     /**
-     * @param config
+     * @param config the input trigger config obviously
      * @return {@link InputTriggerMap} associated to this input
      */
     public static InputTriggerMap getInputTriggerMap(InputTriggerConfig config) {
         InputTriggerMap inputMap = new InputTriggerMap();
 
-        config.actionToInputsMap.forEach((key, inputs) -> {
-
-            inputs.forEach(input -> {
-                inputMap.put(input.trigger, key);
-            });
-
-        });
+        config.actionToInputsMap.forEach(
+            (key, inputs) ->
+                inputs.forEach(
+                        input -> inputMap.put(input.trigger, key)
+                )
+        );
 
         return inputMap;
     }

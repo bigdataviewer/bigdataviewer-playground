@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,12 +30,12 @@ package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStarter;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStopper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
 
 import javax.swing.*;
@@ -46,12 +46,12 @@ import java.awt.event.WindowEvent;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Manual Sources Transformation",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Manual Sources Transformation",
 description = "Manual transformation of selected sources. Works only with a single bdv window (the active one)." +
         "The sources that are not displayed but selected are transformed. During the registration, the user is" +
         "placed in the reference of the moving sources. That's why they are not moving during the registration.")
 
-public class ManualTransformCommand implements Command {
+public class ManualTransformCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(choices = {"Mutate", "Append"})
     String mode = "Mutate";
@@ -60,10 +60,10 @@ public class ManualTransformCommand implements Command {
     SourceAndConverter[] sacs;
 
     @Parameter
-    BdvHandle bdvHandle;
+    BdvHandle bdvh;
 
     public void run() {
-        ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacs);
+        ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvh, sacs);
         ManualRegistrationStopper manualRegistrationStopper;
 
         if (mode.equals("Mutate")) {

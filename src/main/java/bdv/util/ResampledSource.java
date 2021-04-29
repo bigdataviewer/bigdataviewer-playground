@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -43,7 +43,7 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.Views;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -114,7 +114,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
      *  mipmap reuse tries to be clever by matching the voxel size between the model source and the origin source
      *  so for instance the model source mipmap level 0 will resample the origin mipmap level 2, if the voxel size
      *  of the origin is much smaller then the model (and provided that the origin is also a multiresolution source)
-     *  the way the matching is performed is specified in {@link SourceAndConverterUtils#bestLevel(Source, int, double)}.
+     *  the way the matching is performed is specified in {@link SourceAndConverterHelper#bestLevel(Source, int, double)}.
      *  For more details and limitation, please read the documentation in the linked method above
      *
      * @param cache specifies whether the result of the resampling should be cached.
@@ -138,7 +138,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         computeMipMapsCorrespondance();
     }
 
-    Map<Integer, Integer> mipmapModelToOrigin = new HashMap();
+    Map<Integer, Integer> mipmapModelToOrigin = new HashMap<>();
 
     List<Double> originVoxSize;
 
@@ -150,25 +150,25 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         while((originVoxSize.get(level)<voxSize)&&(level<originVoxSize.size()-1)) {
             level=level+1;
         }
-        return Math.max(level,0);
+        return level;
     }
 
     private void computeOriginSize() {
         originVoxSize = new ArrayList<>();
-        Source rootOrigin = origin;
+        Source<?> rootOrigin = origin;
 
         while ((rootOrigin instanceof WarpedSource)||(rootOrigin instanceof TransformedSource)) {
             if (rootOrigin instanceof WarpedSource) {
-                rootOrigin = ((WarpedSource) rootOrigin).getWrappedSource();
-            } else if (rootOrigin instanceof TransformedSource) {
-                rootOrigin = ((TransformedSource) rootOrigin).getWrappedSource();
+                rootOrigin = ((WarpedSource<?>) rootOrigin).getWrappedSource();
+            } else { // rootOrigin instanceof TransformedSource
+                rootOrigin = ((TransformedSource<?>) rootOrigin).getWrappedSource();
             }
         }
 
         for (int l=0;l<rootOrigin.getNumMipmapLevels();l++) {
             AffineTransform3D at3d = new AffineTransform3D();
             rootOrigin.getSourceTransform(0,l,at3d);
-            double mid = SourceAndConverterUtils.getCharacteristicVoxelSize(at3d);
+            double mid = SourceAndConverterHelper.getCharacteristicVoxelSize(at3d);
             originVoxSize.add(mid);
         }
 
@@ -179,7 +179,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         for (int l=0;l<resamplingModel.getNumMipmapLevels();l++) {
             if (reuseMipMaps) {
                 resamplingModel.getSourceTransform(0,l, at3D);
-                double middleDim = SourceAndConverterUtils.getCharacteristicVoxelSize(at3D);
+                double middleDim = SourceAndConverterHelper.getCharacteristicVoxelSize(at3D);
                 int match = bestMatch(middleDim);
                 mipmapModelToOrigin.put(l, match);
             } else {
@@ -200,11 +200,11 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         return mipmapModelToOrigin.get(mipmapModel);
     }
 
-    public Source getOriginalSource() {
+    public Source<?> getOriginalSource() {
         return origin;
     }
 
-    public Source getModelResamplerSource() {
+    public Source<?> getModelResamplerSource() {
         return resamplingModel;
     }
 

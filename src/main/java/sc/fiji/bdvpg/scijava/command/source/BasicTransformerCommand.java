@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,10 +32,10 @@ import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAndTimeRange;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
@@ -48,14 +48,14 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Basic Transformation",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Basic Transformation",
 description = "Performs basic transformation (rotate / flip) along X Y Z axis for several sources. " +
         "If global is selected, the transformation is performed relative to the global origin (0,0,0). " +
         "If global is not selected, the center of each source is unchanged.")
 
-public class BasicTransformerCommand implements Command {
+public class BasicTransformerCommand implements BdvPlaygroundActionCommand {
     @Parameter(label = "Select source(s)")
-    SourceAndConverter[] sources_in;
+    SourceAndConverter[] sacs;
 
     @Parameter(choices = {"Flip", "Rot90", "Rot180", "Rot270"})
     String type;
@@ -66,12 +66,12 @@ public class BasicTransformerCommand implements Command {
     @Parameter
     int timepoint;
 
-    @Parameter
-    boolean globalChange;
+    @Parameter(label = "Global transform (relative to the origin of the world)")
+    boolean globalchange;
 
     @Override
     public void run() {
-        for (SourceAndConverter sac : sources_in) {
+        for (SourceAndConverter sac : sacs) {
             {
                 AffineTransform3D at3D_global = new AffineTransform3D();
                 at3D_global.identity();
@@ -85,7 +85,7 @@ public class BasicTransformerCommand implements Command {
                     case "Rot270": rot(3, at3D_global );
                     break;
                 }
-                if (globalChange) {
+                if (globalchange) {
                     if (sac.getSpimSource() instanceof TransformedSource) {
                         SourceTransformHelper.mutate(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
                     } else {
@@ -131,7 +131,7 @@ public class BasicTransformerCommand implements Command {
             }
         }
         SourceAndConverterServices.getSourceAndConverterDisplayService()
-                .updateDisplays(sources_in);
+                .updateDisplays(sacs);
     }
 
     private void flip(AffineTransform3D at3D) {

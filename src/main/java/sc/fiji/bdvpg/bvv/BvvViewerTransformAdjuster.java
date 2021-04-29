@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -48,7 +48,7 @@ public class BvvViewerTransformAdjuster implements Runnable
 {
 	private final BvvHandle bvvHandle;
 	private final SourceAndConverter source;
-	private boolean zoomedIn = false; // TODO: what's the point of this?
+	private final boolean zoomedIn = false; // TODO: what's the point of this?
 
 	public BvvViewerTransformAdjuster(BvvHandle bvvHandle, SourceAndConverter source )
 	{

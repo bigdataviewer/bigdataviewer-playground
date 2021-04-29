@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -40,11 +40,13 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
+import org.junit.After;
 import org.junit.Test;
-import sc.fiji.bdvpg.bdv.BdvUtils;
+import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 /**
  * ViewTransformSetAndLogDemo
@@ -55,10 +57,13 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
  * 12 2019
  */
 public class ViewTransformSetAndLogDemo {
+
+    static ImageJ ij;
+
     public static void main(String[] args) {
 
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-        ImageJ ij = new ImageJ();
+        ij = new ImageJ();
         ij.ui().showUI();
 
         // load and convert an image
@@ -69,7 +74,7 @@ public class ViewTransformSetAndLogDemo {
 
         // Makes BDV Source
         Source source = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
-        SourceAndConverter sac = SourceAndConverterUtils.createSourceAndConverter(source);
+        SourceAndConverter sac = SourceAndConverterHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
@@ -94,7 +99,7 @@ public class ViewTransformSetAndLogDemo {
         IJ.wait( animationDurationMillis );
 
         // set a new transform
-        AffineTransform3D adaptedCenterTransform = BdvUtils.getViewerTransformWithNewCenter( bdvHandle, new double[]{ 133, 133, 0 } );
+        AffineTransform3D adaptedCenterTransform = BdvHandleHelper.getViewerTransformWithNewCenter( bdvHandle, new double[]{ 133, 133, 0 } );
         new ViewerTransformChanger(bdvHandle, adaptedCenterTransform, false, animationDurationMillis ).run();
 
         // log transform
@@ -105,5 +110,10 @@ public class ViewTransformSetAndLogDemo {
     @Test
     public void demoRunOk() {
         main(new String[]{""});
+    }
+
+    @After
+    public void closeFiji() {
+        TestHelper.closeFijiAndBdvs(ij);
     }
 }

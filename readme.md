@@ -2,11 +2,11 @@
 [![Gitter](https://badges.gitter.im/bigdataviewer-playground/community.svg)](https://gitter.im/bigdataviewer-playground/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 
-# THIS REPOSITORY IS IN ACTIVE DEVELOPMENT. ITS API IS NOT STABLE. ACTIVATING ITS UPDATE SITE CAN BREAK THE FUNCTIONALITIES OF OTHER UPDATE SITES (BigStitcher)
-
 ## BDV playground / toolbox / actions
 
-In this repository, we collect useful additions for the [BigDataViewer](https://imagej.net/BigDataViewer) in [Fiji](https://fiji.sc). These functionalities are accessible by enabling the FIJI update site : https://biop.epfl.ch/Fiji-Bdv-Playground/
+In this repository, we collect useful additions for the [BigDataViewer](https://imagej.net/BigDataViewer) in [Fiji](https://fiji.sc). These functionalities are accessible by enabling the `BigDataViewer-Playground` Fiji update site, accessible via `Help>Update>Manage Update Sites`.
+
+User documentation is located can be found at [https://imagej.github.io/plugins/bdv/playground](https://imagej.github.io/plugins/bdv/playground)
 
 ## Coding guides
 We tried to follow these general guide lines:
@@ -26,13 +26,7 @@ Pseudo code example:
   }
 ```
 
-* Furthermore, [Demo code](https://github.com/haesleinhuepf/bigdataviewer-playground/tree/master/src/test/src/sc/fiji/bdv) in the test sources directory should demonstrate
-  * the individual functionality, 
-  * how to add it as key listeners to the BigDataViewer,
-  * how to add it to the right-click menu of the BigDataViewer 
-  * how to add it to the BigDataViewer menu
-  * and how to be called programmatically.
-  
+* Furthermore, [Demo code](https://github.com/bigdataviewer/bigdataviewer-playground/tree/master/src/test/src/sc/fiji/bdvpg) in the test sources directory should demonstrate the individual functionality, and how to be called programmatically.
   
 * Higher level functions, which may execute several actions sequentially, are implemented as [SciJava Commands](https://javadoc.scijava.org/SciJava/org/scijava/command/Command.html).
 This enables additional user access.
@@ -402,6 +396,5 @@ Command that opens a BDV dataset from a BigDataServer. Click on Show to display 
 Here we document actions we would like to have. If you know similar functionality in other repositories, feel free to contribute it here or send us a link where we can adopt code! Thanks :-)
 * Log intensity in current source at mouse position
 * 
-* 
-* 
+
 

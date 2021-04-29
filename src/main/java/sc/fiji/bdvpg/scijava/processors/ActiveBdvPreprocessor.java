@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -88,13 +88,12 @@ public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle>  {
                                 .run(module, true, module.getInputs())
                                 .get()
                                 .getOutput("bdvh");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
         }
 
+        assert bdvhs != null;
         if (bdvhs.size()==1) {
             return bdvhs.get(0);
         } else {

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -33,13 +33,13 @@ import net.imagej.display.ColorTables;
 import net.imagej.lut.LUTService;
 import net.imglib2.converter.Converter;
 import net.imglib2.display.ColorTable;
-import org.scijava.command.Command;
 import org.scijava.command.DynamicCommand;
 import org.scijava.convert.ConvertService;
 import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.sourceandconverter.display.ConverterChanger;
 
 import java.net.URL;
@@ -47,14 +47,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Create New Source (Set LUT)",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Create New Source (Set LUT)",
         initializer = "init",
         description = "Duplicate one or several sources and sets an (identical) Look Up Table for these duplicated sources")
 
-public class LUTSourceCreatorCommand extends DynamicCommand {
+public class LUTSourceCreatorCommand extends DynamicCommand implements BdvPlaygroundActionCommand {
 
     @Parameter
-    LUTService lutService;
+    LUTService lutservice;
 
     @Parameter(label = "LUT name", persist = false, callback = "nameChanged")
     String choice = "Gray";
@@ -69,13 +69,13 @@ public class LUTSourceCreatorCommand extends DynamicCommand {
     private Map<String, URL> luts = null;
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sources_in;
+    SourceAndConverter[] sacs;
 
     @Override
     public void run() {
         Converter bdvLut = cs.convert(table, Converter.class);
 
-        for (SourceAndConverter sac:sources_in) {
+        for (SourceAndConverter sac: sacs) {
             ConverterChanger cc = new ConverterChanger(sac, bdvLut, bdvLut);
             cc.run();
             cc.get();
@@ -85,7 +85,7 @@ public class LUTSourceCreatorCommand extends DynamicCommand {
     // -- initializers --
 
     protected void init() {
-        luts = lutService.findLUTs();
+        luts = lutservice.findLUTs();
         final ArrayList<String> choices = new ArrayList<>();
         for (final Map.Entry<String, URL> entry : luts.entrySet()) {
             choices.add(entry.getKey());
@@ -102,7 +102,7 @@ public class LUTSourceCreatorCommand extends DynamicCommand {
 
     protected void nameChanged() {
         try {
-            table = lutService.loadLUT(luts.get(choice));
+            table = lutservice.loadLUT(luts.get(choice));
         }
         catch (final Exception e) {
             // nada

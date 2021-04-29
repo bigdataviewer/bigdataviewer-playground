@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -37,20 +37,20 @@ import sc.fiji.bdvpg.services.SourceAndConverterServiceLoader;
 
 import java.io.File;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Load Bdv Playground State (experimental)")
-public class LoadSourceAndConverterServiceState implements Command {
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Load Bdv Playground State (experimental)")
+public class LoadSourceAndConverterServiceState implements BdvPlaygroundActionCommand {
 
-    @Parameter
+    @Parameter(label = "Open state file (json)", style = "open")
     File file;
 
     @Parameter
     Context ctx;
 
-    @Parameter
-    Boolean erasePreviousState;
+    @Parameter(label = "Erase current state")
+    Boolean erasepreviousstate;
 
     @Override
     public void run() {
-        new SourceAndConverterServiceLoader(file.getAbsolutePath(), file.getParent(), ctx, erasePreviousState).run();
+        new SourceAndConverterServiceLoader(file.getAbsolutePath(), file.getParent(), ctx, erasepreviousstate).run();
     }
 }

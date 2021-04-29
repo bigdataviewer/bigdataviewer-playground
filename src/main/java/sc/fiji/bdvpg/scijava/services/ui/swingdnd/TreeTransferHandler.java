@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -62,9 +62,9 @@ public class TreeTransferHandler extends TransferHandler {
 
     //TransferHandler
     @Override public boolean canImport(JComponent comp, DataFlavor flavor[]) {
-        for (int i = 0, n = flavor.length; i < n; i++) {
-            for (int j = 0, m = flavors.length; j < m; j++) {
-                if (flavor[i].equals(flavors[j])) {
+        for (DataFlavor dataFlavor : flavor) {
+            for (DataFlavor value : flavors) {
+                if (dataFlavor.equals(value)) {
                     return true;
                 }
             }
@@ -99,9 +99,9 @@ public class TreeTransferHandler extends TransferHandler {
                 }
             }
             DefaultMutableTreeNode[] nodes =
-                    copies.toArray(new DefaultMutableTreeNode[copies.size()]);
-            DefaultMutableTreeNode[] nodesToRemove =
-                    toRemove.toArray(new DefaultMutableTreeNode[toRemove.size()]);
+                    copies.toArray(new DefaultMutableTreeNode[0]);
+            //DefaultMutableTreeNode[] nodesToRemove =
+            //        toRemove.toArray(new DefaultMutableTreeNode[toRemove.size()]);
             return new NodesTransferable(nodes);
         }
         return null;
@@ -138,6 +138,7 @@ public class TreeTransferHandler extends TransferHandler {
             JTree tree = (JTree) support.getComponent();
             dest = tree.getSelectionPath();
         }
+        assert dest != null;
         DefaultMutableTreeNode parent
                 = (DefaultMutableTreeNode) dest.getLastPathComponent();
         JTree tree = (JTree) support.getComponent();
@@ -148,9 +149,10 @@ public class TreeTransferHandler extends TransferHandler {
             index = parent.getChildCount();
         }
         // Add data to model.
-        for (int i = 0; i < nodes.length; i++) {
+        assert nodes != null;
+        for (DefaultMutableTreeNode node : nodes) {
             // ArrayIndexOutOfBoundsException
-            model.insertNodeInto(nodes[i], parent, index++);
+            model.insertNodeInto(node, parent, index++);
         }
         return true;
     }

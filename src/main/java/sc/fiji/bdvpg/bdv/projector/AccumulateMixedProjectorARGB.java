@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -41,8 +41,6 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-import static sc.fiji.bdvpg.bdv.projector.Projection.*;
-
 /**
  * BDV Projector which allows some flexibility in the way sources are combined
  * when displayed in a BDV window.
@@ -51,12 +49,12 @@ import static sc.fiji.bdvpg.bdv.projector.Projection.*;
  * should be displayed.
  *
  * Their metadata are accessed through {@link sc.fiji.bdvpg.scijava.services.SourceAndConverterService#getMetadata(SourceAndConverter, String)}
- * where the key is {@link sc.fiji.bdvpg.bdv.projector.Projection#PROJECTION_MODE}
+ * where the key is {@link BlendingMode#BLENDING_MODE}
  *
  * The final pixel value is the result of the sum and/or average of sources based
  * on their metadata + an occluding layer can be used to cover completely some sources
  *
- * See also {@link Projection} for extra details about the mechanism
+ * See also {@link Projector} for extra details about the mechanism
  *
  * TODO : implement multilayered projection see https://github.com/bigdataviewer/bigdataviewer-playground/issues/95
  *
@@ -69,8 +67,8 @@ import static sc.fiji.bdvpg.bdv.projector.Projection.*;
 
 public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType, ARGBType >
 {
-	private final String[] projectionModes;
-	private int[] sourceOrder;
+	private final BlendingMode[] blendingModes;
+	private final int[] sourceOrder;
 
 	public AccumulateMixedProjectorARGB(
 			final List< VolatileProjector > sourceProjectors,
@@ -81,46 +79,41 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 			final ExecutorService executorService )
 	{
 		super( sourceProjectors, sourceScreenImages, target, numThreads, executorService );
-		this.projectionModes = getProjectionModes( sources );
-		sourceOrder = getSourcesOrder( projectionModes );
+		this.blendingModes = getBlendingModes( sources );
+		// TODO: remove sourceOrder
+		sourceOrder = getSourcesOrder( blendingModes );
 	}
 
-	public static String[] getProjectionModes( List< SourceAndConverter<?> > visibleSacs )
+	public static BlendingMode[] getBlendingModes( List< SourceAndConverter<?> > visibleSacs )
 	{
 		final ISourceAndConverterService sacService = SourceAndConverterServices.getSourceAndConverterService();
+
 		return visibleSacs.stream()
-				.map(sac ->(String) sacService.getMetadata( sac, PROJECTION_MODE ))
-				.map(it -> it==null?Projection.PROJECTION_MODE_SUM:it)
-				.toArray(String[]::new);
+				.map(sac -> sacService.getMetadata( sac, BlendingMode.BLENDING_MODE ) )
+				.map(it -> it==null ? BlendingMode.Sum:it)
+				.toArray( BlendingMode[]::new );
 	}
 
-	public static int[] getSourcesOrder( String[] projectionModes )
+	// TODO: is this actually necessary??
+	public static int[] getSourcesOrder( BlendingMode[] blendingModes )
 	{
-		boolean containsExclusiveProjectionMode = false;
-		for ( String projectionMode : projectionModes )
-		{
-			if ( projectionMode.contains( Projection.PROJECTION_MODE_OCCLUDING ) )
-			{
-				containsExclusiveProjectionMode = true;
-				break;
-			}
-		}
+		boolean containsExclusiveBlendingMode = containsOccludingBlendingMode( blendingModes );
 
-		final int numSources = projectionModes.length;
+		final int numSources = blendingModes.length;
 
 		int[] sourceOrder = new int[ numSources ];
-		if ( containsExclusiveProjectionMode )
+		if ( containsExclusiveBlendingMode )
 		{
 			int j = 0;
 
 			// first the exclusive ones
 			for ( int i = 0; i < numSources; i++ )
-				if ( projectionModes[ i ].contains( Projection.PROJECTION_MODE_OCCLUDING ) )
+				if ( BlendingMode.isOccluding(  blendingModes[ i ] ) )
 					sourceOrder[ j++ ] = i;
 
 			// then the others
 			for ( int i = 0; i < numSources; i++ )
-				if ( ! projectionModes[ i ].contains( Projection.PROJECTION_MODE_OCCLUDING ) )
+				if ( ! BlendingMode.isOccluding(  blendingModes[ i ] ) )
 					sourceOrder[ j++ ] = i;
 		}
 		else
@@ -132,25 +125,51 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 		return sourceOrder;
 	}
 
+	public static boolean containsOccludingBlendingMode( BlendingMode[] blendingModes )
+	{
+		for ( BlendingMode blendingMode : blendingModes )
+		{
+			if ( BlendingMode.isOccluding( blendingMode ) )
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@Override
 	protected void accumulate(
 			final Cursor< ? extends ARGBType >[] accesses,
 			final ARGBType target )
 	{
-		final int argbIndex = getArgbIndex( accesses, sourceOrder, projectionModes );
+		final int argbIndex = getArgbIndex( accesses, sourceOrder, blendingModes );
 		target.set( argbIndex );
 	}
 
-	public static int getArgbIndex( Cursor< ? extends ARGBType >[] accesses, int[] sourceOrder, String[] projectionModes )
+	public static int getArgbIndex( Cursor< ? extends ARGBType >[] accesses, int[] sourceOrder, BlendingMode[] blendingModes )
 	{
-		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, n = 0;
+		int aAvg = 0, rAvg = 0, gAvg = 0, bAvg = 0, numAvg = 0;
 		int aAccu = 0, rAccu = 0, gAccu = 0, bAccu = 0;
 
-		boolean skipNonExclusiveSources = false;
+		boolean containsOccludingSources = containsOccludingBlendingMode( blendingModes );
 
+		// TODO: get rid of the source order?
 		for ( int sourceIndex : sourceOrder )
 		{
-			final int argb = accesses[ sourceIndex ].get().get(); // is this expensive ?
+			final BlendingMode blendingMode = blendingModes[ sourceIndex ];
+
+			if ( containsOccludingSources )
+			{
+				if ( BlendingMode.isOccluding( blendingMode ) )
+				{
+					// non-occluding sources are not considered
+					// if they are occluded by others.
+					continue;
+				}
+			}
+
+			final int argb = accesses[ sourceIndex ].get().get();
+
 			final int a = ARGBType.alpha( argb );
 			final int r = ARGBType.red( argb );
 			final int g = ARGBType.green( argb );
@@ -158,36 +177,29 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 			if ( a == 0 ) continue;
 
-			final boolean isExclusive = projectionModes[ sourceIndex ].contains( PROJECTION_MODE_OCCLUDING );
-
-			if ( a != 0 && isExclusive ) skipNonExclusiveSources = true;
-
-			if ( skipNonExclusiveSources && ! isExclusive ) continue;
-
-			if ( projectionModes[ sourceIndex ].contains( Projection.PROJECTION_MODE_SUM ) )
+			if ( blendingMode.equals( BlendingMode.Sum ) || blendingMode.equals( BlendingMode.SumOccluding ) )
 			{
-				aAccu += a;
+				aAccu += a; // does this make sense??
 				rAccu += r;
 				gAccu += g;
 				bAccu += b;
 			}
-			else if ( projectionModes[ sourceIndex ].contains( Projection.PROJECTION_MODE_AVG ) )
+			else if ( blendingMode.equals( BlendingMode.Average ) || blendingMode.equals( BlendingMode.AverageOccluding ) )
 			{
-				aAvg += a;
+				aAvg += a; // does this make sense??
 				rAvg += r;
 				gAvg += g;
 				bAvg += b;
-				n++;
+				numAvg++;
 			}
-
 		}
 
-		if ( n > 0 )
+		if ( numAvg > 1 )
 		{
-			aAvg /= n;
-			rAvg /= n;
-			gAvg /= n;
-			bAvg /= n;
+			aAvg /= numAvg;
+			rAvg /= numAvg;
+			gAvg /= numAvg;
+			bAvg /= numAvg;
 		}
 
 		aAccu += aAvg;
@@ -206,5 +218,4 @@ public class AccumulateMixedProjectorARGB extends AccumulateProjector< ARGBType,
 
 		return ARGBType.rgba( rAccu, gAccu, bAccu, aAccu );
 	}
-
 }

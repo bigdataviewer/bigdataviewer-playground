@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,13 +29,13 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStarter;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStopper;
-import sc.fiji.bdvpg.scijava.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.*;
@@ -55,16 +55,16 @@ import java.awt.event.WindowEvent;
  * author Nicolas Chiaruttini, BIOP, EPFL, 2020
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Synchronize Views",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Synchronize Views",
             description = "Synchronizes the view of a set of BDV windows. A window popup should be closed" +
                     " to stop the synchronization")
-public class ViewSynchronizerCommand implements Command {
+public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Windows to synchronize")
     BdvHandle[] bdvhs;
 
     @Parameter(label = "Synchronize timepoints")
-    boolean synchronizeTime = true;
+    boolean synchronizetime = true;
 
     ViewerTransformSyncStarter sync;
 
@@ -74,8 +74,8 @@ public class ViewSynchronizerCommand implements Command {
             return;
         }
 
-        // Starting synchronnization of selected bdvhandles
-        sync = new ViewerTransformSyncStarter(bdvhs, synchronizeTime);
+        // Starting synchronization of selected bdvhandles
+        sync = new ViewerTransformSyncStarter(bdvhs, synchronizetime);
         sync.setBdvHandleInitialReference( SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv());
         sync.run();
 

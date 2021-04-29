@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,9 @@ import mpicbg.spim.data.SpimDataException;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Can launch BigWarp with:
@@ -78,12 +80,15 @@ public class BigWarpLauncher implements Runnable {
     List<SourceAndConverter> movingSources;
     List<SourceAndConverter> fixedSources;
 
-    List<SourceAndConverter> allRegisteredSources;
+    //List<SourceAndConverter> allRegisteredSources;
 
     SourceAndConverter gridSource;
     SourceAndConverter warpMagnitudeSource;
 
     SourceAndConverter[] warpedSources;
+
+
+    final Map<ConverterSetup, double[]> displaysettings = new HashMap<>();
 
     public BigWarpLauncher(List<SourceAndConverter> movingSources, List<SourceAndConverter> fixedSources, String bigWarpName, List<ConverterSetup> allConverterSetups) {
 
@@ -109,6 +114,9 @@ public class BigWarpLauncher implements Runnable {
             if (allConverterSetups==null) {
                 allConverterSetups = new ArrayList<>();
             }
+
+            // Stores display settings before BigWarp
+            allConverterSetups.forEach(setup -> displaysettings.put(setup, new double[]{setup.getDisplayRangeMin(), setup.getDisplayRangeMax()}));
 
             bwData = new BigWarp.BigWarpData(allSources, allConverterSetups, null, mvSrcIndices, fxSrcIndices);
 
@@ -142,11 +150,10 @@ public class BigWarpLauncher implements Runnable {
             gridSource = bdvHandleP.getViewerPanel().state().getSources().get(nSources-1);
             warpMagnitudeSource = bdvHandleP.getViewerPanel().state().getSources().get(nSources-2);
 
-            /*SourceAndConverterServices.getSourceAndConverterService().register(gridSource);
-            SourceAndConverterServices.getSourceAndConverterService().register(warpMagnitudeSource);
-            for (SourceAndConverter sac : warpedSources) {
-                SourceAndConverterServices.getSourceAndConverterService().register(sac);
-            }*/
+            // Restores display settings
+            displaysettings.keySet().forEach(setup ->
+                    setup.setDisplayRange(displaysettings.get(setup)[0], displaysettings.get(setup)[1])
+            );
 
         } catch (SpimDataException e) {
             e.printStackTrace();

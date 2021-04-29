@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -48,8 +48,8 @@ public class ClickBehaviourInstaller
 	/**
 	 * TODO: probably just create one behaviour for each BDV?
 	 *
-	 * @param name
-	 * @param trigger
+	 * @param name name of the behaviour
+	 * @param trigger how this behaviour is triggered, see wiki of behaviour ui scijava
 	 */
 	public void install( String name, String trigger )
 	{

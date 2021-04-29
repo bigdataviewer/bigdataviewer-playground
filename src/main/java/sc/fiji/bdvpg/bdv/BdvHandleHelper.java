@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -35,16 +35,22 @@ import net.imglib2.*;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Intervals;
 import net.imglib2.util.LinAlgHelpers;
+import org.scijava.cache.CacheService;
+import org.scijava.object.ObjectService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+
+import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.lang.ref.WeakReference;
+import java.util.List;
 
 /**
  * BDVUtils
- * <p>
- * <p>
- * <p>
- * Author: @haesleinhuepf, @tischi
+ * Author: haesleinhuepf, tischi, nicokiaru
  * 12 2019
  */
-public class BdvUtils
+public class BdvHandleHelper
 {
     /**
      * Creates a viewer transform with a new center position.
@@ -122,7 +128,7 @@ public class BdvUtils
         return viewerPhysicalVoxelSpacingX;
     }
 
-    public static boolean isSourceIntersectingCurrentView( BdvHandle bdv, Source source, boolean is2D ) {
+    public static boolean isSourceIntersectingCurrentView( BdvHandle bdv, Source<?> source, boolean is2D ) {
         if (source.getSource(0,0) == null) {
             // Overlays have no RAI -> discard them
             return false;
@@ -134,7 +140,7 @@ public class BdvUtils
                 Intervals.smallestContainingInterval(
                         getViewerGlobalBoundingInterval( bdv ) );
 
-        boolean intersects = false;
+        boolean intersects;
         if (is2D) {
             intersects = !Intervals.isEmpty(
                     intersect2D(interval, viewerInterval));
@@ -166,17 +172,13 @@ public class BdvUtils
         final long[] max = new long[ 3 ];
         max[ 0 ] = bdvHandle.getViewerPanel().getWidth();
         max[ 1 ] = bdvHandle.getViewerPanel().getHeight();
-        final FinalRealInterval realInterval
-                = viewerTransform.estimateBounds( new FinalInterval( min, max ) );
-        return realInterval;
+        return viewerTransform.estimateBounds( new FinalInterval( min, max ) );
     }
 
     public static Interval getSourceGlobalBoundingInterval( Source< ? > source, int timepoint ) {
         final AffineTransform3D sourceTransform = getSourceTransform( source, timepoint );
         final RandomAccessibleInterval< ? > rai = source.getSource(timepoint,0);
-        final Interval interval =
-                Intervals.smallestContainingInterval( sourceTransform.estimateBounds( rai ) );
-        return interval;
+        return Intervals.smallestContainingInterval( sourceTransform.estimateBounds( rai ) );
     }
 
     public static AffineTransform3D getSourceTransform( Source< ? > source, int timepoint ) {
@@ -187,8 +189,8 @@ public class BdvUtils
      * Returns the highest level where the sourceandconverter voxel spacings
      * are inferior or equals to the requested ones.
      *
-     * @param source
-     * @param voxelSpacings
+     * @param source the source
+     * @param voxelSpacings voxel spacings of the source
      * @return the optimal level for image visualization
      */
     public static int getLevel( Source< ? > source, double... voxelSpacings ) {
@@ -203,8 +205,10 @@ public class BdvUtils
 
             for ( int d = 0; d < numDimensions; d++ )
             {
-                if ( calibration[ d ] > voxelSpacings[ d ] )
+                if (calibration[d] > voxelSpacings[d]) {
                     allSpacingsSmallerThanRequested = false;
+                    break;
+                }
             }
 
             if ( allSpacingsSmallerThanRequested )
@@ -213,20 +217,18 @@ public class BdvUtils
         return 0;
     }
 
-    public static AffineTransform3D getSourceTransform( Source source, int t, int level ) {
+    public static AffineTransform3D getSourceTransform( Source<?> source, int t, int level ) {
         AffineTransform3D sourceTransform = new AffineTransform3D();
         source.getSourceTransform( t, level, sourceTransform );
         return sourceTransform;
     }
 
-    public static double[] getCalibration( Source source, int level ) {
+    public static double[] getCalibration( Source<?> source, int level ) {
         final AffineTransform3D sourceTransform = new AffineTransform3D();
 
         source.getSourceTransform( 0, level, sourceTransform );
 
-        final double[] calibration = getScale( sourceTransform );
-
-        return calibration;
+        return getScale( sourceTransform );
     }
 
     public static double[] getScale(AffineTransform3D sourceTransform) {
@@ -252,4 +254,94 @@ public class BdvUtils
         return new double[]{ displayRangeMin, displayRangeMax };
     }
 
+    public static JFrame getJFrame(BdvHandle bdvh) {
+        return (JFrame) SwingUtilities.getWindowAncestor(bdvh.getViewerPanel());
+    }
+
+    public static void setBdvHandleCloseOperation(BdvHandle bdvh, CacheService cs, SourceAndConverterBdvDisplayService bdvsds, boolean putWindowOnTop, Runnable runnable) {
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bdvh.getViewerPanel());
+        WindowAdapter wa;
+        wa = new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                bdvsds.closeBdv(bdvh);
+                if (runnable!=null) {
+                    runnable.run();
+                }
+                topFrame.removeWindowListener(this); // Avoid memory leak
+                e.getWindow().dispose();
+                bdvh.close();
+                /*if (Recorder.record) {
+                    // run("Select Bdv Window", "bdvh=bdv.util.BdvHandleFrame@e6c7718");
+                    String cmdrecord = "run(\"Close Bdv Window\", \"bdvh=" + getWindowTitle(bdvh) + "\");\n";
+                    Recorder.recordString(cmdrecord);
+                }*/
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+                super.windowActivated(e);
+                cs.put("LAST_ACTIVE_BDVH", new WeakReference<>(bdvh));
+                // Very old school
+                /*if (Recorder.record) {
+                    // run("Select Bdv Window", "bdvh=bdv.util.BdvHandleFrame@e6c7718");
+                    String cmdrecord = "run(\"Select Bdv Window\", \"bdvh=" + getWindowTitle(bdvh) + "\");\n";
+                    Recorder.recordString(cmdrecord);
+                }*/
+            }
+        };
+        topFrame.addWindowListener(wa);
+
+        if (putWindowOnTop) {
+            cs.put("LAST_ACTIVE_BDVH", new WeakReference<>(bdvh));// why a weak reference ? because we want to dispose the bdvhandle if it is closed
+        }
+    }
+
+    public static void activateWindow(BdvHandle bdvh) {
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bdvh.getViewerPanel());
+        topFrame.toFront();
+        topFrame.requestFocus();
+    }
+
+    public static void closeWindow(BdvHandle bdvh) {
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bdvh.getViewerPanel());
+        topFrame.dispatchEvent( new WindowEvent(topFrame, WindowEvent.WINDOW_CLOSING));
+    }
+
+    public static void setWindowTitle(BdvHandle bdvh, String title) {
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bdvh.getViewerPanel());
+        topFrame.setTitle(title);
+    }
+
+    public static String getWindowTitle(BdvHandle bdvh) {
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bdvh.getViewerPanel());
+        return topFrame.getTitle();
+    }
+
+    public static String getUniqueWindowTitle(ObjectService os, String iniTitle) {
+        List<BdvHandle> bdvs = os.getObjects(BdvHandle.class);
+        boolean duplicateExist;
+        String uniqueTitle = iniTitle;
+        duplicateExist = bdvs.stream().anyMatch(bdv ->
+                (bdv.toString().equals(iniTitle))||(getWindowTitle(bdv).equals(iniTitle)));
+        while (duplicateExist) {
+            if (uniqueTitle.matches(".+(_)\\d+")) {
+                int idx = Integer.parseInt(uniqueTitle.substring(uniqueTitle.lastIndexOf("_")+1));
+                uniqueTitle = uniqueTitle.substring(0, uniqueTitle.lastIndexOf("_")+1);
+                uniqueTitle += String.format("%02d", idx+1);
+            } else {
+                uniqueTitle+="_00";
+            }
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            String uTTest = uniqueTitle;
+            duplicateExist = bdvs.stream().anyMatch(bdv ->
+                    (bdv.toString().equals(uTTest))||(getWindowTitle(bdv).equals(uTTest)));
+        }
+        return uniqueTitle;
+    }
 }

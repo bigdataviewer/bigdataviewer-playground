@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,25 +29,25 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Set Number Of Timepoints",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Set Number Of Timepoints",
     description = "Sets the number of timepoints in one or several BDV Windows")
 
-public class BdvSetTimepointsNumberCommand implements Command {
+public class BdvSetTimepointsNumberCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select BDV Windows")
     BdvHandle[] bdvhs;
 
     @Parameter(label = "Number of timepoints, min = 1", min = "1")
-    int numberOfTimePoints;
+    int numberoftimepoints;
 
     public void run() {
         for (BdvHandle bdvh : bdvhs) {
-            bdvh.getViewerPanel().setNumTimepoints(numberOfTimePoints);
+            bdvh.getViewerPanel().setNumTimepoints(numberoftimepoints);
         }
     }
 

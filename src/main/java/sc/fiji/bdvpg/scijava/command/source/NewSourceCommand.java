@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,19 +29,12 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.cache.img.DiskCachedCellImgFactory;
-import net.imglib2.cache.img.DiskCachedCellImgOptions;
-import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
 import org.scijava.ItemIO;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.sourceandconverter.importer.EmptySourceAndConverterCreator;
-
-import static net.imglib2.cache.img.DiskCachedCellImgOptions.options;
 
 /**
  * Command which creates an empty Source based on a model Source
@@ -51,11 +44,11 @@ import static net.imglib2.cache.img.DiskCachedCellImgOptions.options;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>New Source Based on Model Source",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>New Source Based on Model Source",
 description = "Defines an empty source which occupied the same volume as a model source but with a potentially" +
         " different voxel size. Works with a single timepoint.")
 
-public class NewSourceCommand implements Command {
+public class NewSourceCommand implements BdvPlaygroundActionCommand {
     
     @Parameter(label = "Model Source", description = "Defines the portion of space covered by the new source")
     SourceAndConverter model;
@@ -64,35 +57,22 @@ public class NewSourceCommand implements Command {
     String name;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter newsource;
+    SourceAndConverter sac;
     
     @Parameter(label = "Voxel Size X")
-    double voxSizeX;
+    double voxsizex;
 
     @Parameter(label = "Voxel Size Y")
-    double voxSizeY;
+    double voxsizey;
 
     @Parameter(label = "Voxel Size Z")
-    double voxSizeZ;
+    double voxsizez;
 
     @Parameter(label = "Timepoint (0 based index)")
-    int timePoint;
+    int timepoint;
 
     @Override
     public void run() {
-
-        // Make edge display on demand
-        final int[] cellDimensions = new int[] { 32, 32, 32 };
-
-        // Cached Image Factory Options
-        final DiskCachedCellImgOptions factoryOptions = options()
-                .cellDimensions( cellDimensions )
-                .cacheType( DiskCachedCellImgOptions.CacheType.BOUNDED )
-                .maxCacheSize( 1 );
-
-        // Creates cached image factory of Type UnsignedShort
-        final DiskCachedCellImgFactory<UnsignedShortType> factory = new DiskCachedCellImgFactory<>( new UnsignedShortType(), factoryOptions );
-
-        newsource = new EmptySourceAndConverterCreator(name, model, timePoint, voxSizeX, voxSizeY, voxSizeZ).get();//, factory).get();
+        sac = new EmptySourceAndConverterCreator(name, model, timepoint, voxsizex, voxsizey, voxsizez).get();//, factory).get();
     }
 }

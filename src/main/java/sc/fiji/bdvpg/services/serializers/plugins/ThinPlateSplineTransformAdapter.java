@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -55,30 +55,29 @@ public class ThinPlateSplineTransformAdapter implements IClassRuntimeAdapter<Rea
         JsonObject obj = jsonElement.getAsJsonObject();
         double[][] srcPts = context.deserialize(obj.get("srcPts"), double[][].class);
         double[][] tgtPts = context.deserialize(obj.get("tgtPts"), double[][].class);
-        ThinplateSplineTransform realTransform = new ThinplateSplineTransform(srcPts, tgtPts);
-        return realTransform;
+        return new ThinplateSplineTransform(srcPts, tgtPts);
     }
 
     @Override
     public JsonElement serialize(ThinplateSplineTransform thinplateSplineTransform, Type type, JsonSerializationContext jsonSerializationContext) {
-            ThinPlateR2LogRSplineKernelTransform kernel = getKernel(thinplateSplineTransform);
+        ThinPlateR2LogRSplineKernelTransform kernel = getKernel(thinplateSplineTransform);
 
-            double[][] srcPts = getSrcPts(kernel);
-            double[][] tgtPts = getTgtPts(kernel);
+        assert kernel != null;
+        double[][] srcPts = getSrcPts(kernel);
+        double[][] tgtPts = getTgtPts(kernel);
 
-            JsonObject obj = new JsonObject();
-            obj.addProperty("type", ThinplateSplineTransform.class.getSimpleName());
-            obj.add("srcPts", jsonSerializationContext.serialize(srcPts));
-            obj.add("tgtPts", jsonSerializationContext.serialize(tgtPts));
-            return obj;
+        JsonObject obj = new JsonObject();
+        obj.addProperty("type", ThinplateSplineTransform.class.getSimpleName());
+        obj.add("srcPts", jsonSerializationContext.serialize(srcPts));
+        obj.add("tgtPts", jsonSerializationContext.serialize(tgtPts));
+        return obj;
     }
 
     public static ThinPlateR2LogRSplineKernelTransform getKernel(ThinplateSplineTransform thinplateSplineTransform) {
         try {
             Field kernelField = ThinplateSplineTransform.class.getDeclaredField("tps");
             kernelField.setAccessible(true);
-            ThinPlateR2LogRSplineKernelTransform kernel = (ThinPlateR2LogRSplineKernelTransform) kernelField.get(thinplateSplineTransform);
-            return kernel;
+            return (ThinPlateR2LogRSplineKernelTransform) kernelField.get(thinplateSplineTransform);
         } catch (Exception e) {
             e.printStackTrace();
         }

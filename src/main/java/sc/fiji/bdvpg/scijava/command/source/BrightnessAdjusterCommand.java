@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,11 +29,11 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
-import org.scijava.command.Command;
 import org.scijava.command.InteractiveCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
 
@@ -46,9 +46,11 @@ import static org.scijava.ItemVisibility.MESSAGE;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@Plugin(type = Command.class, initializer = "init",  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Brightness")
+@Plugin(type = BdvPlaygroundActionCommand.class, initializer = "init",  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Brightness")
+public class BrightnessAdjusterCommand extends InteractiveCommand implements BdvPlaygroundActionCommand {
 
-public class BrightnessAdjusterCommand extends InteractiveCommand {
+    @Parameter(label = "Sources :", required = false, description = "Label the sources controlled by this window", persist = false)
+    String customsourcelabel = "Label your sources here";
 
     @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sources;
@@ -63,18 +65,19 @@ public class BrightnessAdjusterCommand extends InteractiveCommand {
     double max;
 
     @Parameter(label = "relative Minimum", style = "slider", min = "0", max = "1000", callback = "updateMessage")
-    double minSlider;
+    double minslider;
 
     @Parameter(label = "relative Maximum", style = "slider", min = "0", max = "1000", callback = "updateMessage")
-    double maxSlider;
+    double maxslider;
 
     boolean firstTimeCalled = true;
+
     boolean secondTimeCalled = true;
 
     public void run() {
         if ((!firstTimeCalled)&&(!secondTimeCalled)) {
-            double minValue = min + minSlider/1000.0*(max-min);
-            double maxValue = min + maxSlider/1000.0*(max-min);
+            double minValue = min + minslider /1000.0*(max-min);
+            double maxValue = min + maxslider /1000.0*(max-min);
             for (SourceAndConverter source:sources) {
                 new BrightnessAdjuster(source, minValue, maxValue).run();
             }
@@ -92,8 +95,8 @@ public class BrightnessAdjusterCommand extends InteractiveCommand {
 
     public void updateMessage() {
         formatter.setMinimumFractionDigits(3);
-        double minValue = min + minSlider/1000.0*(max-min);
-        double maxValue = min + maxSlider/1000.0*(max-min);
+        double minValue = min + minslider /1000.0*(max-min);
+        double maxValue = min + maxslider /1000.0*(max-min);
         message = "Display Range ["+ formatter.format(minValue) +" - "+ formatter.format(maxValue) +"]";
     }
 
@@ -118,8 +121,8 @@ public class BrightnessAdjusterCommand extends InteractiveCommand {
             } else {
                 max = 1;
             }
-            minSlider = (minSource-min)/(max-min)*1000;
-            maxSlider = (maxSource-min)/(max-min)*1000;
+            minslider = (minSource-min)/(max-min)*1000;
+            maxslider = (maxSource-min)/(max-min)*1000;
             message = "Display Range [ NaN - NaN ]";
         }
     }

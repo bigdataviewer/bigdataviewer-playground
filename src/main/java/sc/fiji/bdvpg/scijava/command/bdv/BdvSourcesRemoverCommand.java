@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,26 +30,26 @@ package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Remove Sources From BDV",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Remove Sources From BDV",
         description = "Removes one or several sources from an existing BDV window")
-public class BdvSourcesRemoverCommand implements Command {
+public class BdvSourcesRemoverCommand implements BdvPlaygroundActionCommand {
 
     @Parameter
     BdvHandle bdvh;
 
     @Parameter(label="Select Source(s)")
-    SourceAndConverter[] srcs_in;
+    SourceAndConverter[] sacs;
 
     @Override
     public void run() {
-        for (SourceAndConverter src:srcs_in) {
-            SourceAndConverterServices.getSourceAndConverterDisplayService().remove(bdvh, src);
+        for (SourceAndConverter sac:sacs) {
+            SourceAndConverterServices.getSourceAndConverterDisplayService().remove(bdvh, sac);
         }
     }
 }

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -31,39 +31,40 @@ package sc.fiji.bdvpg.scijava.command.bdv;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import org.scijava.ItemIO;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.bdv.projector.Projection;
+import sc.fiji.bdvpg.bdv.projector.Projector;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Show Sources (new Bdv window)",
+
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Show Sources (new Bdv window)",
         description = "Displays one or several sources into a new BDV window")
-public class BdvSourcesShowCommand implements Command {
+public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label="Select Source(s)")
     SourceAndConverter[] sacs;
 
     @Parameter(label="Auto Contrast")
-    boolean autoContrast;
+    boolean autocontrast;
 
     @Parameter(label="Adjust View on Source")
-    boolean adjustViewOnSource;
+    boolean adjustviewonsource;
 
     @Parameter(label = "Create a 2D BDV window")
-    public boolean is2D = false;
+    public boolean is2d = false;
 
     @Parameter(label = "Title of the new BDV window")
-    public String windowTitle = "BDV";
+    public String windowtitle = "BDV";
 
     @Parameter(label = "Interpolate")
     public boolean interpolate = false;
 
     @Parameter(label = "Number of timepoints (1 for a single timepoint)")
-    public int nTimepoints = 1;
+    public int ntimepoints = 1;
 
     /**
      * This triggers: BdvHandlePostprocessor
@@ -71,7 +72,7 @@ public class BdvSourcesShowCommand implements Command {
     @Parameter(type = ItemIO.OUTPUT)
     public BdvHandle bdvh;
 
-    @Parameter(choices = { Projection.MIXED_PROJECTOR, Projection.SUM_PROJECTOR, Projection.AVERAGE_PROJECTOR})
+    @Parameter(choices = { Projector.MIXED_PROJECTOR, Projector.SUM_PROJECTOR, Projector.AVERAGE_PROJECTOR})
     public String projector;
 
     @Override
@@ -79,21 +80,21 @@ public class BdvSourcesShowCommand implements Command {
         BdvWindowCreatorCommand creator = new BdvWindowCreatorCommand();
         creator.interpolate = interpolate;
         creator.projector = projector;
-        creator.is2D = is2D;
-        creator.nTimepoints = nTimepoints;
-        creator.windowTitle = windowTitle;
+        creator.is2d = is2d;
+        creator.ntimepoints = ntimepoints;
+        creator.windowtitle = windowtitle;
         creator.run();
         bdvh = creator.bdvh;
 
         SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvh, sacs);
-        if (autoContrast) {
+        if (autocontrast) {
             for (SourceAndConverter sac : sacs) {
-                int timepoint = bdvh.getViewerPanel().getState().getCurrentTimepoint();
+                int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
                 new BrightnessAutoAdjuster(sac, timepoint).run();
             }
         }
 
-        if ((adjustViewOnSource) && (sacs.length>0)) {
+        if ((adjustviewonsource) && (sacs.length>0)) {
             new ViewerTransformAdjuster(bdvh, sacs[0]).run();
         }
     }

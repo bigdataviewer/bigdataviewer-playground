@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -33,20 +33,21 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Resample Source Based on Model Source")
-public class SourcesResamplerCommand implements Command{
+public class SourcesResamplerCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sourcesToResample;
+    SourceAndConverter[] sacs;
 
     @Parameter
     SourceAndConverter model;
 
     @Parameter(label="Re-use MipMaps")
-    boolean reuseMipMaps;
+    boolean reusemipmaps;
 
     @Parameter
     boolean interpolate;
@@ -57,9 +58,9 @@ public class SourcesResamplerCommand implements Command{
     @Override
     public void run() {
         // Should not be parallel
-        for (int i=0;i<sourcesToResample.length;i++) {
+        for (SourceAndConverter sourceAndConverter : sacs) {
             SourceAndConverterServices.getSourceAndConverterService().register(
-                new SourceResampler(sourcesToResample[i], model, reuseMipMaps, cache, interpolate).get()
+                    new SourceResampler(sourceAndConverter, model, reusemipmaps, cache, interpolate).get()
             );
         }
 

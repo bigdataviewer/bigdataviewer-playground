@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,22 +29,19 @@
 package sc.fiji.bdvpg.scijava.processors;
 
 import bdv.util.BdvHandle;
-import bdv.viewer.ViewerStateChange;
-import bdv.viewer.ViewerStateChangeListener;
 import org.scijava.module.Module;
 import org.scijava.module.process.AbstractPostprocessorPlugin;
 import org.scijava.module.process.PostprocessorPlugin;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.BdvHandleHelper;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.BdvHandleFilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 
-import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
 import java.util.function.Consumer;
 
@@ -76,38 +73,11 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
     public void process(Module module) {
 
         module.getOutputs().forEach((name, object)-> {
-            if (object instanceof BdvHandle) {
-                BdvHandle bdvh = (BdvHandle) object;
-                log.accept("BdvHandle found.");
-                //------------ Register BdvHandle in ObjectService
-                if (!os.getObjects(BdvHandle.class).contains(bdvh)) { // adds it only if not already present in ObjectService
-                    os.addObject(bdvh);
-
-                    //------------ Renames window to ensure unicity
-                    String windowTitle = BdvHandleHelper.getWindowTitle(bdvh);
-                    windowTitle = BdvHandleHelper.getUniqueWindowTitle(os, windowTitle);
-                    BdvHandleHelper.setWindowTitle(bdvh, windowTitle);
-
-                    //------------ Event handling in bdv sourceandconverterserviceui
-                    DefaultTreeModel model = sacsService.getUI().getTreeModel();
-                    BdvHandleFilterNode node = new BdvHandleFilterNode(model, windowTitle, bdvh);
-                    node.add(new SourceFilterNode(model, "All Sources", (sac) -> true, true));
-
-                    //------------ Allows to remove the BdvHandle from the objectService when closed by the user
-                    BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService,  bsds, true,
-                            () -> {
-                                //bdvh.getViewerPanel().state().changeListeners().remove(vscl); // TODO : check no memory leak
-                                sacsService.getUI().removeBdvHandleNodes(bdvh);
-                            });
-
-                    ((SourceFilterNode)sacsService.getUI().getTreeModel().getRoot()).insert(node,0);
-                    /*SwingUtilities.invokeLater(()->
-                            sacsService.getUI().getTreeModel().nodeStructureChanged(node.getParent())//.reload()
-                    );*/
-                }
-
-                module.resolveOutput(name);
+            if (object instanceof BdvHandle)
+            {
+                bsds.registerBdvHandle( (BdvHandle) object );
             }
+            module.resolveOutput(name);
         });
 
     }

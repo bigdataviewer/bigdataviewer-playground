@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,12 +30,12 @@ package sc.fiji.bdvpg.scijava.command.spimdata;
 
 import com.google.gson.stream.JsonReader;
 import org.apache.commons.lang.StringUtils;
-import org.scijava.command.Command;
 import org.scijava.command.CommandService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,16 +55,16 @@ import java.util.Map;
  * @author HongKee Moon &lt;moon@mpi-cbg.de&gt;
  * @author Nicolas Chiaruttini biop.epfl.ch
  */
-@Plugin(type = Command.class,
+@Plugin(type = BdvPlaygroundActionCommand.class,
         menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>List BigDataServer Datasets")
-public class BigDataBrowserPlugInCommand implements Command
+public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand
 {
     private final Map< String, ImageIcon > imageMap = new HashMap<>();
 
     private final Map< String, String > datasetUrlMap = new HashMap<>();
 
     @Parameter(required = false)
-    String serverUrl = "http://tomancak-srv1.mpi-cbg.de:8081";
+    String serverurl = "http://tomancak-srv1.mpi-cbg.de:8081";
 
     @Parameter
     CommandService cs;
@@ -77,15 +78,15 @@ public class BigDataBrowserPlugInCommand implements Command
         final ArrayList< String > nameList = new ArrayList<>();
         try
         {
-            getDatasetList( serverUrl, nameList );
+            getDatasetList(serverurl, nameList );
         }
         catch ( final IOException e )
         {
-            ls.error("Error connecting to server at " + serverUrl);
+            ls.error("Error connecting to server at " + serverurl);
             e.printStackTrace();
             return;
         }
-        createDatasetListUI( serverUrl, nameList.toArray() );
+        createDatasetListUI(serverurl, nameList.toArray() );
     }
 
     private boolean getDatasetList( final String remoteUrl, final ArrayList< String > nameList ) throws IOException
@@ -94,7 +95,7 @@ public class BigDataBrowserPlugInCommand implements Command
         final URL url = new URL( remoteUrl + "/json/" );
 
         final InputStream is = url.openStream();
-        final JsonReader reader = new JsonReader( new InputStreamReader( is, "UTF-8" ) );
+        final JsonReader reader = new JsonReader( new InputStreamReader( is, StandardCharsets.UTF_8) );
 
         reader.beginObject();
 
@@ -160,8 +161,8 @@ public class BigDataBrowserPlugInCommand implements Command
                     final String title = new File( filename ).getName();
 
                     cs.run(SpimdataBigDataServerImportCommand.class,true,
-                            "urlServer",remoteUrl,
-                            "datasetName", title);
+                            "urlserver",remoteUrl,
+                            "datasetname", title);
                 }
             }
         } );
@@ -192,7 +193,7 @@ public class BigDataBrowserPlugInCommand implements Command
 
             final JLabel label = ( JLabel ) super.getListCellRendererComponent(
                     list, value, index, isSelected, cellHasFocus );
-            label.setIcon( imageMap.get( value ) );
+            label.setIcon( imageMap.get(value) );
             label.setHorizontalTextPosition( JLabel.RIGHT );
             label.setFont( font );
             return label;

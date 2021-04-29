@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
-import sc.fiji.bdvpg.scijava.BdvHandleHelper;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -67,7 +67,7 @@ public class SwingBdvHandleListWidget extends SwingInputWidget<BdvHandle[]> impl
         return getSelectedBdvHandles();
     }
 
-    JList list;
+    JList<RenamableBdvHandle> list;
 
     public BdvHandle[] getSelectedBdvHandles() {
         List<RenamableBdvHandle> selected = list.getSelectedValuesList();
@@ -81,8 +81,11 @@ public class SwingBdvHandleListWidget extends SwingInputWidget<BdvHandle[]> impl
     @Override
     public void set(final WidgetModel model) {
         super.set(model);
-        List<RenamableBdvHandle> bdvhs = os.getObjects(BdvHandle.class).stream().map(bdvh -> new RenamableBdvHandle(bdvh)).collect(Collectors.toList());
-        RenamableBdvHandle[] data = bdvhs.toArray(new RenamableBdvHandle[bdvhs.size()]);
+        RenamableBdvHandle[] data =
+                os.getObjects(BdvHandle.class)
+                        .stream()
+                        .map(RenamableBdvHandle::new)
+                        .toArray(RenamableBdvHandle[]::new);
         list = new JList(data); //data has type Object[]
         list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         JScrollPane listScroller = new JScrollPane(list);
@@ -91,7 +94,7 @@ public class SwingBdvHandleListWidget extends SwingInputWidget<BdvHandle[]> impl
         getComponent().add(listScroller);
     }
 
-    public class RenamableBdvHandle {
+    public static class RenamableBdvHandle {
 
         public BdvHandle bdvh;
 

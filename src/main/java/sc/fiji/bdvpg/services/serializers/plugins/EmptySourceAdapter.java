@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,16 +28,12 @@
  */
 package sc.fiji.bdvpg.services.serializers.plugins;
 
-import bdv.img.WarpedSource;
 import bdv.util.EmptySource;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
-import net.imglib2.realtransform.RealTransform;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceRealTransformer;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.lang.reflect.Type;
 
@@ -69,6 +65,6 @@ public class EmptySourceAdapter implements ISourceAdapter<EmptySource>{
         JsonObject obj = jsonElement.getAsJsonObject();
         EmptySource.EmptySourceParams sourceParams = jsonDeserializationContext.deserialize(obj.get("empty_source_parameters"), EmptySource.EmptySourceParams.class);
 
-        return SourceAndConverterUtils.createSourceAndConverter(new EmptySource(sourceParams));
+        return SourceAndConverterHelper.createSourceAndConverter(new EmptySource(sourceParams));
     }
 }

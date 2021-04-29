@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -93,7 +93,7 @@ public class ManualRegistrationStopper implements Runnable {
 
         // Removes temporary TransformedSourceAndConverter - a two step process in order to improve performance
         List<SourceAndConverter> tempSacs = starter.getTransformedSourceAndConverterDisplayed();
-        SourceAndConverterServices.getSourceAndConverterDisplayService().remove(starter.bdvHandle,tempSacs.toArray(new SourceAndConverter[tempSacs.size()]));
+        SourceAndConverterServices.getSourceAndConverterDisplayService().remove(starter.bdvHandle,tempSacs.toArray(new SourceAndConverter[0]));
 
         for (SourceAndConverter sac: tempSacs) {
             SourceAndConverterServices.getSourceAndConverterService().remove(sac);
@@ -115,7 +115,7 @@ public class ManualRegistrationStopper implements Runnable {
 
         // Calls display ( array for better performance )
         SourceAndConverterServices.getSourceAndConverterDisplayService().show(starter.getBdvHandle(),
-                transformedSacsToDisplay.toArray(new SourceAndConverter[transformedSacsToDisplay.size()]));
+                transformedSacsToDisplay.toArray(new SourceAndConverter[0]));
 
     }
 

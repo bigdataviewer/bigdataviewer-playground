@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,30 +29,33 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.sourceandconverter.display.ProjectionModeChanger;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
-import static sc.fiji.bdvpg.bdv.projector.Projection.PROJECTION_MODE_AVG;
-import static sc.fiji.bdvpg.bdv.projector.Projection.PROJECTION_MODE_SUM;
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Add Metadata To Sources",
+description = "Adds a metadata string to selected sources")
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Projection Mode")
-public class SourceAndConverterProjectionModeChangerCommand implements Command {
-
-    @Parameter(label = "Projection Mode", choices = { PROJECTION_MODE_SUM, PROJECTION_MODE_AVG })
-    String projectionMode = PROJECTION_MODE_SUM;
+public class AddMetadataCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sacs;
 
-    @Parameter(label="Add Source(s) to occluding layer")
-    boolean addToOccludingLayer = false;
+    @Parameter(label = "Key")
+    String key;
+
+    @Parameter(label = "Value")
+    String value;
+
+    @Parameter
+    SourceAndConverterService sac_service;
 
     @Override
     public void run() {
-        new ProjectionModeChanger( sacs, projectionMode, addToOccludingLayer ).run();
+        for (SourceAndConverter sac : sacs) {
+            sac_service.setMetadata(sac, key, value);
+        }
     }
-
 }

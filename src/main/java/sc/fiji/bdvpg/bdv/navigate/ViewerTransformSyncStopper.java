@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -60,13 +60,13 @@ public class ViewerTransformSyncStopper implements Runnable {
 
     @Override
     public void run() {
-        bdvHandleToTransformListener.forEach((bdvHandle, listener) -> {
-            bdvHandle.getViewerPanel().removeTransformListener(listener);
-        });
+        bdvHandleToTransformListener.forEach((bdvHandle, listener) ->
+            bdvHandle.getViewerPanel().removeTransformListener(listener)
+        );
         if (bdvHandleToTimePointListener!=null) {
-            bdvHandleToTimePointListener.forEach((bdvHandle, listener) -> {
-                bdvHandle.getViewerPanel().removeTimePointListener(listener);
-            });
+            bdvHandleToTimePointListener.forEach((bdvHandle, listener) ->
+                bdvHandle.getViewerPanel().removeTimePointListener(listener)
+            );
         }
     }
 
@@ -77,7 +77,7 @@ public class ViewerTransformSyncStopper implements Runnable {
      *
      * @param m1 first matrix of double
      * @param m2 second matrix of double
-     * @return
+     * @return if these matrix are approx equal
      */
     public static boolean MatrixApproxEquals(double[] m1, double[] m2) {
         assert m1.length == m2.length;

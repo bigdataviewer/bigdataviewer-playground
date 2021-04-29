@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,16 +29,11 @@
 package sc.fiji.bdvpg.sourceandconverter.importer;
 
 import bdv.util.EmptySource;
-import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.img.Img;
-import net.imglib2.img.ImgFactory;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.util.Util;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterUtils;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Supplier;
 
@@ -62,11 +57,11 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
 
     /**
      * Simple constructor
-     * @param name
-     * @param at3D
-     * @param nx
-     * @param ny
-     * @param nz
+     * @param name name of the source
+     * @param at3D affine transform of the source
+     * @param nx number of voxels in x
+     * @param ny number of voxels in y
+     * @param nz number of voxels in z
      */
     public EmptySourceAndConverterCreator(
             String name,
@@ -84,12 +79,12 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
      * Constructor where the region and sampling is defined by a model source
      * This constructor translates information from the model source into
      * an affine transform and a number of voxels
-     * @param name
-     * @param model
-     * @param timePoint
-     * @param voxSizeX
-     * @param voxSizeY
-     * @param voxSizeZ
+     * @param name name of the source
+     * @param model model source and converter : defines the portion of space sampled
+     * @param timePoint timepoint of the model chosen for the model
+     * @param voxSizeX overrides the model voxel size for a new one  - in bdv current units (x)
+     * @param voxSizeY overrides the model voxel size for a new one - in bdv current units (y)
+     * @param voxSizeZ overrides the model voxel size for a new one - in bdv current units (z)
      */
     public EmptySourceAndConverterCreator(
             String name,
@@ -190,7 +185,7 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
 
         SourceAndConverter sac;
 
-        sac = SourceAndConverterUtils.createSourceAndConverter(src);
+        sac = SourceAndConverterHelper.createSourceAndConverter(src);
 
         return sac;
     }

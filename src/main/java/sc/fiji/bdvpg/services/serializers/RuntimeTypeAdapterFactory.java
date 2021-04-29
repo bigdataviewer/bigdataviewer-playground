@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -163,8 +163,8 @@ import com.google.gson.stream.JsonWriter;
 public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
     private final Class<?> baseType;
     private final String typeFieldName;
-    private final Map<String, Class<?>> labelToSubtype = new LinkedHashMap<String, Class<?>>();
-    private final Map<Class<?>, String> subtypeToLabel = new LinkedHashMap<Class<?>, String>();
+    private final Map<String, Class<?>> labelToSubtype = new LinkedHashMap<>();
+    private final Map<Class<?>, String> subtypeToLabel = new LinkedHashMap<>();
     private final boolean maintainType;
 
     private RuntimeTypeAdapterFactory(Class<?> baseType, String typeFieldName, boolean maintainType) {
@@ -176,35 +176,37 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
         this.maintainType = maintainType;
     }
 
-    /**
+    /*
      * Creates a new runtime type adapter using for {@code baseType} using {@code
      * typeFieldName} as the type field name. Type field names are case sensitive.
      * {@code maintainType} flag decide if the type will be stored in pojo or not.
+     * @param <T> todo
      */
     public static <T> RuntimeTypeAdapterFactory<T> of(Class<T> baseType, String typeFieldName, boolean maintainType) {
-        return new RuntimeTypeAdapterFactory<T>(baseType, typeFieldName, maintainType);
+        return new RuntimeTypeAdapterFactory<>(baseType, typeFieldName, maintainType);
     }
 
-    /**
+    /*
      * Creates a new runtime type adapter using for {@code baseType} using {@code
      * typeFieldName} as the type field name. Type field names are case sensitive.
+     * @param <T> todo
      */
     public static <T> RuntimeTypeAdapterFactory<T> of(Class<T> baseType, String typeFieldName) {
-        return new RuntimeTypeAdapterFactory<T>(baseType, typeFieldName, false);
+        return new RuntimeTypeAdapterFactory<>(baseType, typeFieldName, false);
     }
 
-    /**
+    /*
      * Creates a new runtime type adapter for {@code baseType} using {@code "type"} as
      * the type field name.
+     * @param <T> todo
      */
     public static <T> RuntimeTypeAdapterFactory<T> of(Class<T> baseType) {
-        return new RuntimeTypeAdapterFactory<T>(baseType, "type", false);
+        return new RuntimeTypeAdapterFactory<>(baseType, "type", false);
     }
 
-    /**
+    /*
      * Registers {@code type} identified by {@code label}. Labels are case
      * sensitive.
-     *
      * @throws IllegalArgumentException if either {@code type} or {@code label}
      *     have already been registered on this type adapter.
      */
@@ -220,7 +222,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
         return this;
     }
 
-    /**
+    /*
      * Registers {@code type} identified by its {@link Class#getSimpleName simple
      * name}. Labels are case sensitive.
      *
@@ -237,9 +239,9 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
         }
 
         final Map<String, TypeAdapter<?>> labelToDelegate
-                = new LinkedHashMap<String, TypeAdapter<?>>();
+                = new LinkedHashMap<>();
         final Map<Class<?>, TypeAdapter<?>> subtypeToDelegate
-                = new LinkedHashMap<Class<?>, TypeAdapter<?>>();
+                = new LinkedHashMap<>();
         for (Map.Entry<String, Class<?>> entry : labelToSubtype.entrySet()) {
             TypeAdapter<?> delegate = gson.getDelegateAdapter(this, TypeToken.get(entry.getValue()));
             labelToDelegate.put(entry.getKey(), delegate);

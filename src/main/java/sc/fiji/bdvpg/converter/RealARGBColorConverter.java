@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,14 +38,14 @@ import java.util.Map;
 
 /**
  * TODO : documentation - why is this here ? Is it for the transparency ?
- * @param <R>
+ * @param <R> RealType
  */
 
 public abstract class RealARGBColorConverter< R extends RealType< ? > > implements ColorConverter, Converter< R, ARGBType >
 {
-	protected double min = 0;
+	protected double min;
 
-	protected double max = 1;
+	protected double max;
 
 	protected final ARGBType color = new ARGBType( ARGBType.rgba( 255, 255, 255, 255 ) );
 

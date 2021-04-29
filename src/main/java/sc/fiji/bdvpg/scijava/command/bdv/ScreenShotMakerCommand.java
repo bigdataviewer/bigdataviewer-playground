@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,11 +29,11 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.ScreenShotMaker;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 /**
  * ScreenShotMakerCommand
@@ -44,29 +44,29 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
  * 12 2019
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Screenshot",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Screenshot",
         description = "Creates a screenshot of a BDV view, the resolution can be chosen to upscale or downscale" +
                 " the image compared to the original window. A single RGB image resulting from the projection" +
                 " of all sources is displayed. Raw image data can also be exported in grayscale.")
-public class ScreenShotMakerCommand implements Command {
+public class ScreenShotMakerCommand implements BdvPlaygroundActionCommand {
 
     @Parameter
     BdvHandle bdvh;
 
     @Parameter(label="Target Pixel Size (in XY)")
-    public double targetPixelSizeInXY = 1;
+    public double targetpixelsizeinxy = 1;
 
     @Parameter(label="Pixel Size Unit")
-    public String targetPixelUnit = "Pixels";
+    public String targetpixelunit = "Pixels";
 
     @Parameter(label="Show Raw Data")
-    public boolean showRawData = false;
+    public boolean showrawdata = false;
 
     @Override
     public void run() {
         ScreenShotMaker screenShotMaker = new ScreenShotMaker(bdvh);
-        screenShotMaker.setPhysicalPixelSpacingInXY(targetPixelSizeInXY, targetPixelUnit);
+        screenShotMaker.setPhysicalPixelSpacingInXY(targetpixelsizeinxy, targetpixelunit);
         screenShotMaker.getRgbScreenShot().show();
-        if(showRawData) screenShotMaker.getRawScreenShot().show();
+        if(showrawdata) screenShotMaker.getRawScreenShot().show();
     }
 }

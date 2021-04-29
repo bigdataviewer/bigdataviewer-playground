@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,29 +29,26 @@
 package sc.fiji.bdvpg.scijava.command.spimdata;
 
 import bdv.viewer.SourceAndConverter;
-import mpicbg.spim.data.SpimData;
 import mpicbg.spim.data.generic.AbstractSpimData;
-import org.scijava.ItemVisibility;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.exporter.XmlFromSpimDataExporter;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.io.File;
 
-@Plugin( type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>Save BDVDataset" )
-public class SpimDataExporterCommand implements Command {
+@Plugin( type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>Save BDVDataset" )
+public class SpimDataExporterCommand implements BdvPlaygroundActionCommand {
 
     // To get associated spimdata
     @Parameter(label = "Select source(s)")
     SourceAndConverter sac;
 
-    @Parameter(label = "Output File (XML)")
-    public File xmlFilePath;
+    @Parameter(label = "Output File (XML)", style = "save")
+    public File xmlfilepath;
 
     public void run() {
 
@@ -65,7 +62,7 @@ public class SpimDataExporterCommand implements Command {
                 ((SourceAndConverterService.SpimDataInfo)SourceAndConverterServices.getSourceAndConverterService()
                 .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)).asd;
 
-        new XmlFromSpimDataExporter(asd, xmlFilePath.getAbsolutePath()).run();
+        new XmlFromSpimDataExporter(asd, xmlfilepath.getAbsolutePath()).run();
     }
 
 }

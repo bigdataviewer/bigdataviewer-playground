@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,11 +30,11 @@ package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
 import org.scijava.ItemIO;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.log.SystemLogger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.sourceandconverter.importer.MandelbrotSourceGetter;
 import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
 import sc.fiji.bdvpg.sourceandconverter.importer.Wave3DSourceGetter;
@@ -44,38 +44,37 @@ import sc.fiji.bdvpg.sourceandconverter.importer.Wave3DSourceGetter;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Create Sample Source")
-public class SampleSourceCreatorCommand implements Command {
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Create Sample Source")
+public class SampleSourceCreatorCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label="Sample name", choices = {"Mandelbrot", "Wave3D", "Voronoi", "Big Voronoi"})
-    String sampleName;
+    String samplename;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter sampleSource;
+    SourceAndConverter sac;
 
     @Override
     public void run() {
-        switch(sampleName) {
+        switch(samplename) {
 
             case "Mandelbrot":
-                sampleSource = (new MandelbrotSourceGetter()).get();
+                sac = (new MandelbrotSourceGetter()).get();
                 break;
 
             case "Wave3D":
-                sampleSource = (new Wave3DSourceGetter()).get();
+                sac = (new Wave3DSourceGetter()).get();
                 break;
 
             case "Voronoi":
-                sampleSource = (new VoronoiSourceGetter(new long[]{512, 512, 1}, 256, true).get());
+                sac = (new VoronoiSourceGetter(new long[]{512, 512, 1}, 256, true).get());
                 break;
 
             case "Big Voronoi":
-                sampleSource = (new VoronoiSourceGetter(new long[]{2048, 2048, 2048}, 65536, false).get());
+                sac = (new VoronoiSourceGetter(new long[]{2048, 2048, 2048}, 65536, false).get());
                 break;
 
             default:
                 new SystemLogger().err("Invalid sample name");
-                return;
         }
     }
 }

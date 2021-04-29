@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,10 +29,10 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 
@@ -40,19 +40,19 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Make Global Source Group",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Make Global Source Group",
 description = "Adds a node in the tree view which selects the sources specified in the command")
 
-public class MakeGroupCommand implements Command {
+public class MakeGroupCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Name of the group")
-    String groupName;
+    String groupname;
 
     @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sacs;
 
     @Parameter(label = "Display Sources")
-    boolean displaySources;
+    boolean displaysources;
 
     @Parameter
     SourceAndConverterService sac_service;
@@ -60,7 +60,7 @@ public class MakeGroupCommand implements Command {
     @Override
     public void run() {
         final Set<SourceAndConverter> sacs_set = new HashSet<>(Arrays.asList(sacs));
-        SourceFilterNode sfn = new SourceFilterNode(sac_service.getUI().getTreeModel(), groupName, sacs_set::contains, displaySources);
+        SourceFilterNode sfn = new SourceFilterNode(sac_service.getUI().getTreeModel(), groupname, sacs_set::contains, displaysources);
         sac_service.getUI().addNode(sfn);
     }
 }

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ import net.imglib2.realtransform.AffineTransform3D;
  *
  * See ViewTransformSetAndLogDemo for usage examples
  *
- * @author @haesleinhuepf, @tischi
+ * @author haesleinhuepf, tischi
  * - 12 2019
  * - 11 2020 @tischi: add option to animate; add option to apply absolute or relative (concatenate)
  */
@@ -96,13 +96,9 @@ public class ViewerTransformChanger implements Runnable {
             transform = view.concatenate( transform );
         }
 
-        if ( animationDurationMillis <= 0 )
-        {
+        if ( animationDurationMillis <= 0 ) {
             bdvHandle.getViewerPanel().state().setViewerTransform( transform );
-            return;
-        }
-        else
-        {
+        } else {
             final AffineTransform3D currentViewerTransform = new AffineTransform3D();
             bdvHandle.getViewerPanel().state().getViewerTransform( currentViewerTransform );
 

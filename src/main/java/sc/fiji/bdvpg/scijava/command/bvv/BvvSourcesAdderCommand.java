@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,22 +30,22 @@ package sc.fiji.bdvpg.scijava.command.bvv;
 
 import bdv.viewer.SourceAndConverter;
 import bvv.util.BvvHandle;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bvv.BvvViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>Show Sources in BVV",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>Show Sources in BVV",
     description = "Show sources in a BigVolumeViewer window - limited to 16 bit images")
-public class BvvSourcesAdderCommand implements Command {
+public class BvvSourcesAdderCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select BVV Window(s)")
     BvvHandle bvvh;
 
     @Parameter(label="Adjust View on Source")
-    boolean adjustViewOnSource;
+    boolean adjustviewonsource;
 
     @Parameter(label = "Select source(s)")
     SourceAndConverter[] sacs;
@@ -54,10 +54,15 @@ public class BvvSourcesAdderCommand implements Command {
     public void run() {
 
         for (SourceAndConverter sac : sacs) {
-            bvvh.getViewerPanel().addSource(sac, SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(sac));
+            bvvh.getConverterSetups()
+                    .put(sac,SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(sac));
+            bvvh.getViewerPanel()
+                    .state().addSource(sac);
+
+            bvvh.getViewerPanel().state().setSourceActive(sac, true);
         }
 
-        if ((adjustViewOnSource) && (sacs.length>0)) {
+        if ((adjustviewonsource) && (sacs.length>0)) {
             new BvvViewerTransformAdjuster(bvvh, sacs[0]).run();
         }
 

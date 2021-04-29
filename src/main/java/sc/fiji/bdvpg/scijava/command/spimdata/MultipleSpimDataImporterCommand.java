@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -33,12 +33,13 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.io.File;
 
-@Plugin( type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>Open XML/HDF5 Files" )
-public class MultipleSpimDataImporterCommand implements Command {
+@Plugin( type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>Open XML BDV Datasets" )
+public class MultipleSpimDataImporterCommand implements BdvPlaygroundActionCommand {
 
     /**
      * Note: Due to a bug in SciJava there needs to be some
@@ -48,14 +49,14 @@ public class MultipleSpimDataImporterCommand implements Command {
      * But then programmatically the message above is always shown...
      */
     @Parameter ( visibility = ItemVisibility.MESSAGE  )
-    private String message = "Please choose XML/HDF5 files:";
+    private String message = "Please choose XML files:";
 
     @Parameter(style="extensions:xml")
     public File[] files;
 
     public void run() {
-        for ( int i = 0; i < files.length; ++i ) {
-            new SpimDataFromXmlImporter( files[i] ).get();
+        for (File file : files) {
+            new SpimDataFromXmlImporter(file).get();
         }
     }
 

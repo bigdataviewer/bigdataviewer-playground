@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,13 +30,7 @@ package sc.fiji.bdvpg.services.serializers;
 
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.google.gson.*;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.InstantiableException;
@@ -49,7 +43,6 @@ import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConverter>,
         JsonDeserializer<SourceAndConverter> {
@@ -98,9 +91,23 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
                 obj.addProperty("converter_setup_max", max);
             }
 
+            Map<String, String> stringMetaData = new HashMap<>();
+
+            SourceAndConverterServices
+                    .getSourceAndConverterService()
+                    .getMetadataKeys(sourceAndConverter)
+                    .forEach(key -> {
+                        Object o = SourceAndConverterServices
+                                    .getSourceAndConverterService()
+                                    .getMetadata(sourceAndConverter, key);
+                        if ((o!=null) && (o instanceof String)) {
+                            stringMetaData.put(key,(String)o);
+                        }
+                    });
+
             JsonElement element = serializeSubClass(sourceAndConverter, SourceAndConverter.class, jsonSerializationContext);
             obj.add("sac", element);
-
+            obj.add("string_metadata",jsonSerializationContext.serialize(stringMetaData));
             return obj;
         } catch (UnsupportedOperationException e) {
             System.err.println("Could not serialize source "+ sourceAndConverter.getSpimSource().getName() + " of class "+ sourceAndConverter.getSpimSource().getClass().getName());
@@ -154,6 +161,16 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
             sacSerializer.getSourceToId().put(sac.getSpimSource(), idSource);
             sacSerializer.getIdToSource().put(idSource, sac.getSpimSource());
             sacSerializer.alreadyDeSerializedSacs.add(idSource);
+
+            Map<String,String> stringMetaData = jsonDeserializationContext
+            .deserialize(jsonObject.get("string_metadata"), Map.class);//,jsonSerializationContext.serialize(stringMetaData));
+
+            stringMetaData.keySet().forEach(key -> {
+                SourceAndConverterServices
+                        .getSourceAndConverterService()
+                        .setMetadata(sac,key,stringMetaData.get(key));
+            });
+
             return sac;
         }
 

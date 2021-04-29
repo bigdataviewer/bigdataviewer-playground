@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -43,10 +43,7 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.registration.ViewRegistration;
 import mpicbg.spim.data.registration.ViewRegistrations;
-import mpicbg.spim.data.sequence.Channel;
-import mpicbg.spim.data.sequence.TimePoint;
-import mpicbg.spim.data.sequence.TimePoints;
-import mpicbg.spim.data.sequence.VoxelDimensions;
+import mpicbg.spim.data.sequence.*;
 import net.imglib2.FinalDimensions;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -59,7 +56,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 
 /**
  *
@@ -99,7 +95,10 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
     File xmlFile;
 
+    String entityType;
+
     public XmlHDF5SpimdataExporter(List<SourceAndConverter> sources,
+                                   String entityType,
                                    int nThreads,
                                    int timePointBegin,
                                    int timePointEnd,
@@ -110,6 +109,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
                                    int thresholdSizeForMipmap,
                                    File xmlFile) {
         this.sources = sources;
+        this.entityType = entityType;
         this.nThreads = nThreads;
         this.timePointBegin = timePointBegin;
         this.timePointEnd = timePointEnd;
@@ -130,11 +130,11 @@ public class XmlHDF5SpimdataExporter implements Runnable {
     public void run() {
 
         // Gets Concrete SpimSource
-        List<Source> srcs = sources.stream().map(sac -> sac.getSpimSource()).collect(Collectors.toList());
+        List<Source> srcs = sources.stream().map(SourceAndConverter::getSpimSource).collect(Collectors.toList());
         Map<Source, Integer> idxSourceToSac = new HashMap<>();
 
         // Convert To UnsignedShortType (limitation of current xml/hdf5 implementation)
-        srcs.replaceAll(src -> SourceToUnsignedShortConverter.convertSource(src));
+        srcs.replaceAll(SourceToUnsignedShortConverter::convertSource);
 
         for (int i=0;i<srcs.size();i++) {
             idxSourceToSac.put(srcs.get(i), i);
@@ -158,7 +158,6 @@ public class XmlHDF5SpimdataExporter implements Runnable {
         Map<Integer, ExportMipmapInfo> perSetupExportMipmapInfo = new HashMap<>();
 
         int idx_current_src = 0;
-
 
         for (Source<?> src: srcs) {
             RandomAccessibleInterval<?> refRai = src.getSource(0, 0);
@@ -241,7 +240,11 @@ public class XmlHDF5SpimdataExporter implements Runnable {
                     }
                 }
 
-                basicviewsetup.setAttribute(new Channel(1));
+                if (entityType.equals("Channel")) {
+                    basicviewsetup.setAttribute(new Channel(idx_current_src+1));
+                } else if (entityType.equals("Tile")) {
+                    basicviewsetup.setAttribute(new Tile(idx_current_src+1));
+                }
 
                 SourceAndConverter sac = sources.get(idxSourceToSac.get(src));
 

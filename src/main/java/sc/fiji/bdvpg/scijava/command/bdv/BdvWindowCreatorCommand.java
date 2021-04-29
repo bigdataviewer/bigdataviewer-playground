@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,34 +32,34 @@ import bdv.util.*;
 import bdv.viewer.render.AccumulateProjectorFactory;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.ItemIO;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.BdvCreator;
 import sc.fiji.bdvpg.bdv.projector.AccumulateAverageProjectorARGB;
 import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGBFactory;
-import sc.fiji.bdvpg.bdv.projector.Projection;
+import sc.fiji.bdvpg.bdv.projector.Projector;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Create empty BDV window",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Create empty BDV window",
     description = "Creates an empty BDV window")
-public class BdvWindowCreatorCommand implements Command {
+public class BdvWindowCreatorCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Create a 2D BDV window")
-    public boolean is2D = false;
+    public boolean is2d = false;
 
     @Parameter(label = "Title of the new BDV window")
-    public String windowTitle = "BDV";
+    public String windowtitle = "BDV";
 
     @Parameter(label = "Interpolate")
     public boolean interpolate = false;
 
     @Parameter(label = "Number of timepoints (1 for a single timepoint)")
-    public int nTimepoints = 1;
+    public int ntimepoints = 1;
 
-    @Parameter(choices = { Projection.MIXED_PROJECTOR, Projection.SUM_PROJECTOR, Projection.AVERAGE_PROJECTOR})
+    @Parameter(required = false, choices = { Projector.MIXED_PROJECTOR, Projector.SUM_PROJECTOR, Projector.AVERAGE_PROJECTOR})
     public String projector;
 
     /**
@@ -70,41 +70,43 @@ public class BdvWindowCreatorCommand implements Command {
 
     @Override
     public void run() {
+        if ((projector==null)||(projector.trim().equals(""))) projector = Projector.SUM_PROJECTOR; // Default mode if nothing is set
+
         //------------ BdvHandleFrame
-        BdvOptions opts = BdvOptions.options().frameTitle(windowTitle);
-        if (is2D) opts = opts.is2D();
+        BdvOptions opts = BdvOptions.options().frameTitle(windowtitle);
+        if (is2d) opts = opts.is2D();
 
         // Create accumulate projector factory
-        AccumulateProjectorFactory< ARGBType > factory = null;
+        AccumulateProjectorFactory< ARGBType > factory;
         switch (projector) {
-            case Projection.MIXED_PROJECTOR:
+            case Projector.MIXED_PROJECTOR:
                 factory = new AccumulateMixedProjectorARGBFactory(  );
                 opts = opts.accumulateProjectorFactory(factory);
-            case Projection.SUM_PROJECTOR:
+            case Projector.SUM_PROJECTOR:
                 // Default projector
                 break;
-            case Projection.AVERAGE_PROJECTOR:
+            case Projector.AVERAGE_PROJECTOR:
                 factory = AccumulateAverageProjectorARGB.factory;
                 opts = opts.accumulateProjectorFactory(factory);
                 break;
             default:
         }
 
-        BdvCreator creator = new BdvCreator(opts, interpolate, nTimepoints);
+        BdvCreator creator = new BdvCreator(opts, interpolate, ntimepoints);
         creator.run();
         bdvh = creator.get();
 
         final SourceAndConverterBdvDisplayService displayService = SourceAndConverterServices.getSourceAndConverterDisplayService();
 
         switch (projector) {
-            case Projection.MIXED_PROJECTOR:
-                displayService.setDisplayMetadata( bdvh, Projection.PROJECTOR, Projection.MIXED_PROJECTOR );
+            case Projector.MIXED_PROJECTOR:
+                displayService.setDisplayMetadata( bdvh, Projector.PROJECTOR, Projector.MIXED_PROJECTOR );
                 break;
-            case Projection.SUM_PROJECTOR:
-                displayService.setDisplayMetadata( bdvh, Projection.PROJECTOR, Projection.SUM_PROJECTOR );
+            case Projector.SUM_PROJECTOR:
+                displayService.setDisplayMetadata( bdvh, Projector.PROJECTOR, Projector.SUM_PROJECTOR );
                 break;
-            case Projection.AVERAGE_PROJECTOR:
-                displayService.setDisplayMetadata( bdvh, Projection.PROJECTOR, Projection.AVERAGE_PROJECTOR );
+            case Projector.AVERAGE_PROJECTOR:
+                displayService.setDisplayMetadata( bdvh, Projector.PROJECTOR, Projector.AVERAGE_PROJECTOR );
                 break;
             default:
         }

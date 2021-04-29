@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.bdv.config;
 import bdv.TransformEventHandler2D;
 import bdv.TransformEventHandler3D;
 import bdv.TransformState;
+import org.apache.commons.io.FileUtils;
 import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SettingsPage;
 import org.mastodon.app.ui.settings.SettingsPanel;
@@ -67,22 +68,22 @@ import java.util.stream.Stream;
  *
  * The settings are stored as files following this hierarchy:
  * bigdataviewer.properties
- * bdvpgsettings/
+ * plugins/bdvpgsettings/
  *  bdvkeyconfig.yaml (behaviour bindings)
- *  contextmenubdv.json
- *  contextmenutree.json // only one
+ *  bdvpg.editor.actions.json
+ *  bdvpg.tree.actions.json // only one
  *  context1/
  *    bdvkeyconfig.yaml (behaviour bindings)
- *    contextmenubdv.json
+ *    bdvpg.editor.actions.json
  *    context1a/
  *      bdvkeyconfig.yaml (behaviour bindings)
- *      contextmenubdv.json
+ *      bdvpg.editor.actions.json
  *    context1b/
  *      bdvkeyconfig.yaml (behaviour bindings)
- *      contextmenubdv.json
+ *      bdvpg.editor.actions.json
  *  context2/
  *    bdvkeyconfig.yaml (behaviour bindings)
- *    contextmenubdv.json
+ *    bdvpg.editor.actions.json
  *
  * TODO : have a look at https://github.com/bigdataviewer/bigdataviewer-vistools/blob/master/src/main/java/bdv/util/BehaviourTransformEventHandlerPlanar.java
  * work in progress
@@ -92,13 +93,15 @@ public class BdvSettingsGUISetter implements Runnable {
 
     final String rootPath;
 
-    public final static String defaultYamlFileName = "bdvkeyconfig.yaml";
-    public final static String defaultContextMenuFileName = "contextmenu.txt";
+    public final static String bdvKeyConfigFileName = "bdvkeyconfig.yaml";
+    public final static String editorActionsFileName = "bdvpg.editor.actions.txt";
+    public final static String defaultEditorActionsFileName = "bdvpg.editor.actions.txt.default.txt";
+    public final static String treeActionsFileName = "bdvpg.tree.actions.txt";
+    public final static String defaultTreeActionsFileName = "bdvpg.tree.actions.txt.default.txt";
+    public final static String defaultBdvPgSettingsRootPath = "plugins"+File.separator+"bdvpgsettings";
 
-    public final static String defaultBdvPgSettingsRootPath = "bdvpgsettings";
-
-    public BdvSettingsGUISetter(String yamlDataLocation) {
-        this.rootPath = yamlDataLocation;
+    public BdvSettingsGUISetter(String path) {
+        this.rootPath = path;
     }
 
     @Override
@@ -130,7 +133,7 @@ public class BdvSettingsGUISetter implements Runnable {
             }
         }
 
-        String pathDefaultYaml = dirDefaultSettings.getAbsolutePath()+File.separator+defaultYamlFileName;
+        String pathDefaultYaml = dirDefaultSettings.getAbsolutePath()+File.separator+ bdvKeyConfigFileName;
         File defaultKeyConfig = new File(pathDefaultYaml);
 
         if (!defaultKeyConfig.exists()) {
@@ -180,10 +183,28 @@ public class BdvSettingsGUISetter implements Runnable {
         // ----------------------- TODO the key bindings...
 
         // Is there a sourceandconverter context menu file ?
-        String pathDefaultContextMenuSettings = dirDefaultSettings.getAbsolutePath()+File.separator+defaultContextMenuFileName;
-        File defaultContextMenuConfig = new File(pathDefaultContextMenuSettings);
-        if (defaultContextMenuConfig.exists()) {
-            // TODO
+        String pathDefaultContextMenuSettings = dirDefaultSettings.getAbsolutePath()+File.separator+ treeActionsFileName;
+        File treeActionsConfigFile = new File(pathDefaultContextMenuSettings);
+        if (treeActionsConfigFile.exists()) {
+            System.out.println("Actions tree config file already exists.");
+        } else {
+            System.out.println("Actions tree config file not present. Duplicate default config file");
+            String defaultFile = dirDefaultSettings.getAbsolutePath()+File.separator+ defaultTreeActionsFileName;
+            if (new File(defaultFile).exists()) {
+                try {
+                    FileUtils.copyFile(new File(defaultFile), new File(pathDefaultContextMenuSettings));
+                } catch (IOException e) {
+                    System.err.println("Error : couldn't duplicate bdvpg default config file");
+                    e.printStackTrace();
+                }
+            } else {
+                System.err.println("Default tree actions config file for bigdataviewer-playground not present!");
+            }
+        }
+
+        if (treeActionsConfigFile.exists()) {
+            SettingsPage spTreeActions = new BdvPlaygroundContextualMenuSettingsPage("tree actions", treeActionsConfigFile);
+            settings.addPage(spTreeActions);
         }
 
         final JDialog dialog = new JDialog( (Frame) null, "BDV Playground Settings" );
@@ -192,13 +213,18 @@ public class BdvSettingsGUISetter implements Runnable {
         dialog.setVisible( true );
     }
 
+    static public File getActionFile(String path, String context) {
+        if (!path.endsWith(File.separator)) {path+=File.separator;}
+        return new File(defaultBdvPgSettingsRootPath+File.separator+path+"bdvpg."+context+".actions.txt");
+    }
+
     private void recursivelySearchAndAppend(String subPath, SettingsPanel settings, String pathDir) {
         File currentDir = new File(pathDir);
         assert currentDir.exists();
         assert currentDir.isDirectory();
 
         // Is there a key config file ?
-        String pathYamlFile = pathDir+File.separator+defaultYamlFileName;
+        String pathYamlFile = pathDir+File.separator+ bdvKeyConfigFileName;
         File keyConfig = new File(pathYamlFile);
 
         if (keyConfig.exists()) {
@@ -207,10 +233,10 @@ public class BdvSettingsGUISetter implements Runnable {
                 final VisualEditorPanel yaml_keyconfEditor = new VisualEditorPanel(yamlConf);
                 yaml_keyconfEditor.setButtonPanelVisible(false);
                 settings.addPage(new DefaultSettingsPage(subPath+"> settings", yaml_keyconfEditor));
-                yaml_keyconfEditor.addConfigChangeListener( () -> {
+                yaml_keyconfEditor.modelChangedListeners().add( () -> {
                     yaml_keyconfEditor.modelToConfig();
                     try {
-                        YamlConfigIO.write(new InputTriggerDescriptionsBuilder(yamlConf).getDescriptions(), pathDir+File.separator+defaultYamlFileName);
+                        YamlConfigIO.write(new InputTriggerDescriptionsBuilder(yamlConf).getDescriptions(), pathDir+File.separator+ bdvKeyConfigFileName);
                     } catch (Exception e) {
                         System.err.println("Could not create yaml file : settings will not be saved.");
                     }
@@ -221,18 +247,38 @@ public class BdvSettingsGUISetter implements Runnable {
             }
         }
 
+        // Is there an editor config file ?
+        String pathEditorFile = pathDir+File.separator + editorActionsFileName;
+        File editorConfig = new File(pathEditorFile);
+
+        if (!editorConfig.exists()) {
+            String pathDefaultEditorFile = pathDir+File.separator + editorActionsFileName + ".default.txt";
+            File editorDefaultConfig = new File(pathDefaultEditorFile);
+            if (editorDefaultConfig.exists()) {
+                try {
+                    FileUtils.copyFile(editorDefaultConfig, editorConfig);
+                } catch (IOException e) {
+                    System.err.println("Error : couldn't duplicate bdvpg default config file");
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if (editorConfig.exists()) {
+            settings.addPage(new BdvPlaygroundContextualMenuSettingsPage(subPath+"> editor", editorConfig));
+        }
+
         // ----------------------- TODO the key bindings...
 
         // Are there subfolders ?
         try (Stream<Path> walk = Files.walk(Paths.get(pathDir))) {
             walk.filter(Files::isDirectory)
-                    .map(x -> x.toString())
+                    .map(Path::toString)
                     .filter(folderPath -> !(new File(folderPath).equals(new File(pathDir))))
                     .forEach(folderPath -> recursivelySearchAndAppend(subPath+">"+new File(folderPath).getName(), settings, folderPath));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
     }
 

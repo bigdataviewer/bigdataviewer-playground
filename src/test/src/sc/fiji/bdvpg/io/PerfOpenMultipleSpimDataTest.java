@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,9 +29,16 @@
 package sc.fiji.bdvpg.io;
 
 import bdv.util.BdvHandle;
+import bdv.viewer.SourceAndConverter;
 import net.imagej.ImageJ;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.scijava.Context;
+import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
@@ -54,14 +61,17 @@ import java.time.Instant;
 
 public class PerfOpenMultipleSpimDataTest
 {
+	static ImageJ ij;
+
 	public static void main( String[] args )
 	{
 		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ImageJ ij = new ImageJ();
+		ij = new ImageJ();
 		ij.ui().showUI();
 
-		// Gets active BdvHandle instance
-		BdvHandle bdv = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+		// Gets an active BdvHandle instance
+		// SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+
 		tic();
 		for (int i=0;i<100;i++) {
 			// Import SpimData
@@ -88,9 +98,15 @@ public class PerfOpenMultipleSpimDataTest
 		System.out.println("It took "+timeElapsedInS+" s to open 300 datasets");
 	}
 
-	@Test
+	@Test // Takes too much memory when all tests run at the same time
 	public void demoRunOk() {
 		main(new String[]{""});
-		Assert.assertTrue(timeElapsedInS<4);
+		Assert.assertTrue(timeElapsedInS<10);
 	}
+
+	@After
+	public void closeFiji() {
+		TestHelper.closeFijiAndBdvs(ij);
+	}
+
 }

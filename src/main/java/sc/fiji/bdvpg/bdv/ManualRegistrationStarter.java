@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -107,22 +107,22 @@ public class ManualRegistrationStarter implements Runnable {
     @Override
     public void run() {
 
-        for (int i=0;i<sacs.length;i++) {
+        for (SourceAndConverter sourceAndConverter : sacs) {
 
             // Wraps into a Transformed Source, if the source was displayed originally
-            if (SourceAndConverterServices.getSourceAndConverterDisplayService().getDisplaysOf(sacs[i]).contains(bdvHandle)) {
-                if (SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible(sacs[i], bdvHandle)) {
-                    displayedSacsWrapped.add(new SourceAffineTransformer(sacs[i], new AffineTransform3D()).getSourceOut());
-                    originallyDisplayedSacs.add(sacs[i]);
+            if (SourceAndConverterServices.getSourceAndConverterDisplayService().getDisplaysOf(sourceAndConverter).contains(bdvHandle)) {
+                if (SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible(sourceAndConverter, bdvHandle)) {
+                    displayedSacsWrapped.add(new SourceAffineTransformer(sourceAndConverter, new AffineTransform3D()).getSourceOut());
+                    originallyDisplayedSacs.add(sourceAndConverter);
                 }
             }
         }
 
         // Remove from display the originally displayed sources
-        SourceAndConverterServices.getSourceAndConverterDisplayService().remove(bdvHandle, originallyDisplayedSacs.toArray(new SourceAndConverter[originallyDisplayedSacs.size()]));
+        SourceAndConverterServices.getSourceAndConverterDisplayService().remove(bdvHandle, originallyDisplayedSacs.toArray(new SourceAndConverter[0]));
 
         // Shows the displayed wrapped Source
-        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, displayedSacsWrapped.toArray(new SourceAndConverter[displayedSacsWrapped.size()]));
+        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, displayedSacsWrapped.toArray(new SourceAndConverter[0]));
 
         // View of the BdvHandle before starting the registration
         AffineTransform3D originalViewTransform = new AffineTransform3D();
@@ -134,7 +134,7 @@ public class ManualRegistrationStarter implements Runnable {
                 // Global difference of transform is
                 currentRegistration = newView.copy();
                 currentRegistration = currentRegistration.inverse();
-                currentRegistration = currentRegistration.concatenate(originalViewTransform);
+                currentRegistration.concatenate(originalViewTransform);
 
                 // Sets view transform fo transiently wrapped source to maintain relative position
                 displayedSacsWrapped.forEach(sac -> ((TransformedSource) sac.getSpimSource()).setFixedTransform(currentRegistration));
@@ -150,7 +150,7 @@ public class ManualRegistrationStarter implements Runnable {
 
     /**
      * Gets the listener, this is useful to stop the registration
-     * @return
+     * @return the listener, this is useful to stop the registration
      */
     public TransformListener<AffineTransform3D> getListener() {
         return manualRegistrationListener;
@@ -158,7 +158,7 @@ public class ManualRegistrationStarter implements Runnable {
 
     /**
      * Returns the transient wrapped transformed sources displayed (and then used by the user for the registration)
-     * @return
+     * @return the transient wrapped transformed sources displayed (and then used by the user for the registration)
      */
     public List<SourceAndConverter> getTransformedSourceAndConverterDisplayed() {
         return displayedSacsWrapped;
@@ -166,7 +166,7 @@ public class ManualRegistrationStarter implements Runnable {
 
     /**
      * Returns the sources that need to be registered
-     * @return
+     * @return the sources that need to be registered
      */
     public SourceAndConverter[] getOriginalSourceAndConverter() {
         return sacs;
@@ -174,7 +174,7 @@ public class ManualRegistrationStarter implements Runnable {
 
     /**
      * Returns the sources (within the sources that need to be transformed) that were originally displayed in the bdvHandle
-     * @return
+     * @return the sources (within the sources that need to be transformed) that were originally displayed in the bdvHandle
      */
     public List<SourceAndConverter> getOriginallyDisplayedSourceAndConverter() {
         return originallyDisplayedSacs;
@@ -183,7 +183,7 @@ public class ManualRegistrationStarter implements Runnable {
     /**
      * Gets the current registration state, based on the difference between the initial
      * bdvhandle view transform and its current view transform
-     * @return
+     * @return its current view transform
      */
     public AffineTransform3D getCurrentTransform() {
         return ensureOrthoNormalTransform(currentRegistration);
