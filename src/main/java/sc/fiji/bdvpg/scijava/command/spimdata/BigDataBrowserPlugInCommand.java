@@ -161,8 +161,8 @@ public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand
                     final String title = new File( filename ).getName();
 
                     cs.run(SpimdataBigDataServerImportCommand.class,true,
-                            "urlServer",remoteUrl,
-                            "datasetName", title);
+                            "urlserver",remoteUrl,
+                            "datasetname", title);
                 }
             }
         } );
