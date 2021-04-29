@@ -30,7 +30,6 @@ package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
 import org.scijava.ItemIO;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.log.SystemLogger;
@@ -49,29 +48,29 @@ import sc.fiji.bdvpg.sourceandconverter.importer.Wave3DSourceGetter;
 public class SampleSourceCreatorCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label="Sample name", choices = {"Mandelbrot", "Wave3D", "Voronoi", "Big Voronoi"})
-    String sampleName;
+    String samplename;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter sampleSource;
+    SourceAndConverter sac;
 
     @Override
     public void run() {
-        switch(sampleName) {
+        switch(samplename) {
 
             case "Mandelbrot":
-                sampleSource = (new MandelbrotSourceGetter()).get();
+                sac = (new MandelbrotSourceGetter()).get();
                 break;
 
             case "Wave3D":
-                sampleSource = (new Wave3DSourceGetter()).get();
+                sac = (new Wave3DSourceGetter()).get();
                 break;
 
             case "Voronoi":
-                sampleSource = (new VoronoiSourceGetter(new long[]{512, 512, 1}, 256, true).get());
+                sac = (new VoronoiSourceGetter(new long[]{512, 512, 1}, 256, true).get());
                 break;
 
             case "Big Voronoi":
-                sampleSource = (new VoronoiSourceGetter(new long[]{2048, 2048, 2048}, 65536, false).get());
+                sac = (new VoronoiSourceGetter(new long[]{2048, 2048, 2048}, 65536, false).get());
                 break;
 
             default:

@@ -29,7 +29,6 @@
 package sc.fiji.bdvpg.scijava.command.spimdata;
 
 import com.google.gson.stream.JsonReader;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -50,17 +49,17 @@ import java.util.Map;
 public class SpimdataBigDataServerImportCommand implements BdvPlaygroundActionCommand
 {
     @Parameter(label = "Big Data Server URL")
-    String urlServer = "http://tomancak-srv1.mpi-cbg.de:8081";
+    String urlserver = "http://tomancak-srv1.mpi-cbg.de:8081";
 
     @Parameter(label = "Dataset Name")
-    String datasetName = "Drosophila";
+    String datasetname = "Drosophila";
 
     @Override
     public void run()
     {
         try {
-            Map<String,String> BDSList = getDatasetList(urlServer);
-            final String urlString = BDSList.get(datasetName);
+            Map<String,String> BDSList = getDatasetList(urlserver);
+            final String urlString = BDSList.get(datasetname);
             new SpimDataFromXmlImporter(urlString).get();
         } catch (IOException e) {
             e.printStackTrace();

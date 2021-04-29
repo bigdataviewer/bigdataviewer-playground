@@ -116,9 +116,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
             return (BdvHandle)
                     cs.run(BdvWindowCreatorCommand.class,
                             true,
-                            "is2D", false,
-                            "windowTitle", "Bdv",
-                            "nTimepoints", 1,
+                            "is2d", false,
+                            "windowtitle", "Bdv",
+                            "ntimepoints", 1,
                             "interpolate",false,
                             "projector", Projector.SUM_PROJECTOR).get().getOutput("bdvh");
         } catch (InterruptedException | ExecutionException e) {

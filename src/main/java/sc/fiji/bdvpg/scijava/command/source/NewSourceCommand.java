@@ -30,7 +30,6 @@ package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
 import org.scijava.ItemIO;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -58,22 +57,22 @@ public class NewSourceCommand implements BdvPlaygroundActionCommand {
     String name;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter newsource;
+    SourceAndConverter sac;
     
     @Parameter(label = "Voxel Size X")
-    double voxSizeX;
+    double voxsizex;
 
     @Parameter(label = "Voxel Size Y")
-    double voxSizeY;
+    double voxsizey;
 
     @Parameter(label = "Voxel Size Z")
-    double voxSizeZ;
+    double voxsizez;
 
     @Parameter(label = "Timepoint (0 based index)")
-    int timePoint;
+    int timepoint;
 
     @Override
     public void run() {
-        newsource = new EmptySourceAndConverterCreator(name, model, timePoint, voxSizeX, voxSizeY, voxSizeZ).get();//, factory).get();
+        sac = new EmptySourceAndConverterCreator(name, model, timepoint, voxsizex, voxsizey, voxsizez).get();//, factory).get();
     }
 }

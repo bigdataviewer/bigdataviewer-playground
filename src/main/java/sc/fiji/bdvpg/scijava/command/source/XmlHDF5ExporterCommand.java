@@ -45,40 +45,40 @@ public class XmlHDF5ExporterCommand implements BdvPlaygroundActionCommand {
     SourceAndConverter[] sacs;
 
     @Parameter(label = "Each source is an independent", choices = {"Channel", "Tile"})
-    String entityType;
+    String entitytype;
 
     @Parameter(label="# of Threads")
-    int nThreads = 4;
+    int nthreads = 4;
 
     @Parameter(label="Timepoint start (0 = first timepoint)")
-    int timePointBegin = 0;
+    int timepointbegin = 0;
 
     @Parameter(label="Number of timepoint to export (minimum 1)", min = "1")
-    int numberOfTimePointToExport = 1;
-    int timePointEnd = -1;
+    int numberoftimepointtoexport = 1;
+    int timepointend = -1;
+
+    @Parameter(label = "Scale factor between pyramid levels")
+    int scalefactor = 4;
 
     @Parameter
-    int scaleFactor = 4;
+    int blocksizex = 64;
 
     @Parameter
-    int blockSizeX = 64;
+    int blocksizey = 64;
 
     @Parameter
-    int blockSizeY = 64;
-
-    @Parameter
-    int blockSizeZ = 64;
+    int blocksizez = 64;
 
     @Parameter(label = "Dimensions in pixel above which a new resolution level should be created")
-    int thresholdForMipmap = 512;
+    int thresholdformipmap = 512;
 
     @Parameter(label="Output file (XML)", style = "save")
-    File xmlFile;
+    File xmlfile;
 
     @Override
     public void run() {
-        timePointEnd = timePointBegin + numberOfTimePointToExport;
-        new XmlHDF5SpimdataExporter(Arrays.asList(sacs),entityType,nThreads,timePointBegin,timePointEnd,scaleFactor,blockSizeX,blockSizeY,blockSizeZ, thresholdForMipmap,xmlFile).run();
+        timepointend = timepointbegin + numberoftimepointtoexport;
+        new XmlHDF5SpimdataExporter(Arrays.asList(sacs), entitytype, nthreads, timepointbegin, timepointend, scalefactor, blocksizex, blocksizey, blocksizez, thresholdformipmap, xmlfile).run();
     }
 
 }

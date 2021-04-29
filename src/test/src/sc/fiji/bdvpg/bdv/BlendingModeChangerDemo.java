@@ -79,9 +79,9 @@ public class BlendingModeChangerDemo
 		// Create BDV with MixedProjector, supporting various blending modes
 		ij.command().run( BdvWindowCreatorCommand.class,
 				true,
-				"is2D", false,
-				"windowTitle", "Bdv",
-				"nTimepoints", 1,
+				"is2d", false,
+				"windowtitle", "Bdv",
+				"ntimepoints", 1,
 				"interpolate", false,
 				"projector", Projector.MIXED_PROJECTOR ).get().getOutput("bdvh");
 

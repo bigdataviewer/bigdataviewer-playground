@@ -45,7 +45,7 @@ public class BvvSourcesAdderCommand implements BdvPlaygroundActionCommand {
     BvvHandle bvvh;
 
     @Parameter(label="Adjust View on Source")
-    boolean adjustViewOnSource;
+    boolean adjustviewonsource;
 
     @Parameter(label = "Select source(s)")
     SourceAndConverter[] sacs;
@@ -62,7 +62,7 @@ public class BvvSourcesAdderCommand implements BdvPlaygroundActionCommand {
             bvvh.getViewerPanel().state().setSourceActive(sac, true);
         }
 
-        if ((adjustViewOnSource) && (sacs.length>0)) {
+        if ((adjustviewonsource) && (sacs.length>0)) {
             new BvvViewerTransformAdjuster(bvvh, sacs[0]).run();
         }
 

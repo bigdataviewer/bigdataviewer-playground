@@ -64,7 +64,7 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
     BdvHandle[] bdvhs;
 
     @Parameter(label = "Synchronize timepoints")
-    boolean synchronizeTime = true;
+    boolean synchronizetime = true;
 
     ViewerTransformSyncStarter sync;
 
@@ -75,7 +75,7 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
         }
 
         // Starting synchronization of selected bdvhandles
-        sync = new ViewerTransformSyncStarter(bdvhs, synchronizeTime);
+        sync = new ViewerTransformSyncStarter(bdvhs, synchronizetime);
         sync.setBdvHandleInitialReference( SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv());
         sync.run();
 

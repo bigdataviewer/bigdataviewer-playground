@@ -60,10 +60,10 @@ public class ManualTransformCommand implements BdvPlaygroundActionCommand {
     SourceAndConverter[] sacs;
 
     @Parameter
-    BdvHandle bdvHandle;
+    BdvHandle bdvh;
 
     public void run() {
-        ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacs);
+        ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvh, sacs);
         ManualRegistrationStopper manualRegistrationStopper;
 
         if (mode.equals("Mutate")) {

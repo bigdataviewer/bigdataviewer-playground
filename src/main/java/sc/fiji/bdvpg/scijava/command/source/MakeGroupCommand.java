@@ -47,13 +47,13 @@ description = "Adds a node in the tree view which selects the sources specified 
 public class MakeGroupCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Name of the group")
-    String groupName;
+    String groupname;
 
     @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sacs;
 
     @Parameter(label = "Display Sources")
-    boolean displaySources;
+    boolean displaysources;
 
     @Parameter
     SourceAndConverterService sac_service;
@@ -61,7 +61,7 @@ public class MakeGroupCommand implements BdvPlaygroundActionCommand {
     @Override
     public void run() {
         final Set<SourceAndConverter<?>> sacs_set = new HashSet<>(Arrays.asList(sacs).stream().map(sac -> (SourceAndConverter<?>) sac).collect(Collectors.toList()));
-        SourceFilterNode sfn = new SourceFilterNode(sac_service.getUI().getTreeModel(), groupName, sacs_set::contains, displaySources);
+        SourceFilterNode sfn = new SourceFilterNode(sac_service.getUI().getTreeModel(), groupname, sacs_set::contains, displaysources);
         sac_service.getUI().addNode(sfn);
     }
 }

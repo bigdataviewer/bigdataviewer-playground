@@ -48,16 +48,16 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 public class BdvWindowCreatorCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Create a 2D BDV window")
-    public boolean is2D = false;
+    public boolean is2d = false;
 
     @Parameter(label = "Title of the new BDV window")
-    public String windowTitle = "BDV";
+    public String windowtitle = "BDV";
 
     @Parameter(label = "Interpolate")
     public boolean interpolate = false;
 
     @Parameter(label = "Number of timepoints (1 for a single timepoint)")
-    public int nTimepoints = 1;
+    public int ntimepoints = 1;
 
     @Parameter(required = false, choices = { Projector.MIXED_PROJECTOR, Projector.SUM_PROJECTOR, Projector.AVERAGE_PROJECTOR})
     public String projector;
@@ -73,8 +73,8 @@ public class BdvWindowCreatorCommand implements BdvPlaygroundActionCommand {
         if ((projector==null)||(projector.trim().equals(""))) projector = Projector.SUM_PROJECTOR; // Default mode if nothing is set
 
         //------------ BdvHandleFrame
-        BdvOptions opts = BdvOptions.options().frameTitle(windowTitle);
-        if (is2D) opts = opts.is2D();
+        BdvOptions opts = BdvOptions.options().frameTitle(windowtitle);
+        if (is2d) opts = opts.is2D();
 
         // Create accumulate projector factory
         AccumulateProjectorFactory< ARGBType > factory;
@@ -92,7 +92,7 @@ public class BdvWindowCreatorCommand implements BdvPlaygroundActionCommand {
             default:
         }
 
-        BdvCreator creator = new BdvCreator(opts, interpolate, nTimepoints);
+        BdvCreator creator = new BdvCreator(opts, interpolate, ntimepoints);
         creator.run();
         bdvh = creator.get();
 
