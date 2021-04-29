@@ -14,18 +14,18 @@ import java.util.HashMap;
 public class SciviewSourceAndConverterAdderCommand implements Command {
 
     @Parameter
-    SciView sciView;
+    SciView sciview;
 
     @Parameter
     SourceAndConverter[] sacs;
 
     @Parameter
-    int numTimepoints;
+    int numtimepoints;
 
     @Override
     public void run() {
         for (SourceAndConverter sac : sacs) {
-            sciView.addVolume(sac,numTimepoints,sac.getSpimSource().getName());
+            sciview.addVolume(sac, numtimepoints,sac.getSpimSource().getName());
         }
     }
 
