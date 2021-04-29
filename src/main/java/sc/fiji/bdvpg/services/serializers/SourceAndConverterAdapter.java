@@ -36,7 +36,7 @@ import net.imglib2.type.numeric.ARGBType;
 import org.scijava.InstantiableException;
 import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.services.serializers.plugins.BdvPlaygroundObjectAdapterService;
+import sc.fiji.serializers.IObjectScijavaAdapterService;
 import sc.fiji.bdvpg.services.serializers.plugins.ISourceAdapter;
 import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
 
@@ -54,7 +54,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
 
     public SourceAndConverterAdapter(SourceAndConverterSerializer sacSerializer) {
         this.sacSerializer = sacSerializer;
-        sacSerializer.getScijavaContext().getService(BdvPlaygroundObjectAdapterService.class)
+        sacSerializer.getScijavaContext().getService(IObjectScijavaAdapterService.class)
                 .getAdapters(ISourceAdapter.class)
                 .forEach(pi -> {
                     try {

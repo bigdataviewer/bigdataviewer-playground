@@ -33,6 +33,7 @@ import net.imglib2.realtransform.InvertibleRealTransform;
 import net.imglib2.realtransform.RealTransform;
 import net.imglib2.realtransform.Wrapped2DTransformAs3D;
 import org.scijava.plugin.Plugin;
+import sc.fiji.serializers.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
 

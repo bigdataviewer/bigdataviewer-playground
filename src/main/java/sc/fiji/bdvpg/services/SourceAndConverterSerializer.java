@@ -37,11 +37,8 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import sc.fiji.bdvpg.services.serializers.AbstractSpimdataAdapter;
-import sc.fiji.bdvpg.services.serializers.RuntimeTypeAdapterFactory;
+import sc.fiji.serializers.*;
 import sc.fiji.bdvpg.services.serializers.SourceAndConverterAdapter;
-import sc.fiji.bdvpg.services.serializers.plugins.BdvPlaygroundObjectAdapterService;
-import sc.fiji.bdvpg.services.serializers.plugins.IClassAdapter;
-import sc.fiji.bdvpg.services.serializers.plugins.IClassRuntimeAdapter;
 
 import java.io.File;
 import java.util.*;
@@ -74,76 +71,16 @@ public class SourceAndConverterSerializer {
         return ctx;
     }
 
-    GsonBuilder builder;
-
     public static Consumer<String> log = (str) -> System.out.println(SourceAndConverterSerializer.class+":"+str);
 
     public Gson getGson() {
+        GsonBuilder builder = ScijavaGsonHelper.getGsonBuilder(ctx, true);
 
-        Map<Class, List<Class>> runTimeAdapters = new HashMap<>();
-
-        builder = new GsonBuilder()
-                .setPrettyPrinting();
-
-        log.accept("IClassAdapters : ");
-        ctx.getService(BdvPlaygroundObjectAdapterService.class)
-                .getAdapters(IClassAdapter.class)
-                .forEach(pi -> {
-                    try {
-                        IClassAdapter adapter = pi.createInstance();
-                        log.accept("\t "+adapter.getAdapterClass());
-                        builder.registerTypeHierarchyAdapter(adapter.getAdapterClass(), adapter);
-                    } catch (InstantiableException e) {
-                        e.printStackTrace();
-                    }
-               });
-
-        ctx.getService(BdvPlaygroundObjectAdapterService.class)
-                .getAdapters(IClassRuntimeAdapter.class)
-                .forEach(pi -> {
-                            try {
-                                IClassRuntimeAdapter adapter = pi.createInstance();
-                                if (runTimeAdapters.containsKey(adapter.getBaseClass())) {
-                                    runTimeAdapters.get(adapter.getBaseClass()).add(adapter.getRunTimeClass());
-                                } else {
-                                    List<Class> subClasses = new ArrayList<>();
-                                    subClasses.add(adapter.getRunTimeClass());
-                                    runTimeAdapters.put(adapter.getBaseClass(), subClasses);
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                );
-
-        ctx.getService(BdvPlaygroundObjectAdapterService.class)
-                .getAdapters(IClassRuntimeAdapter.class)
-                .forEach(pi -> {
-                    try {
-                        IClassRuntimeAdapter adapter = pi.createInstance();
-                        builder.registerTypeHierarchyAdapter(adapter.getRunTimeClass(), adapter);
-                    } catch (InstantiableException e) {
-                        e.printStackTrace();
-                    }
-                });
-
-
-        log.accept("IRunTimeClassAdapters : ");
-        runTimeAdapters.keySet().forEach(baseClass -> {
-            log.accept("\t "+baseClass);
-            RuntimeTypeAdapterFactory factory = RuntimeTypeAdapterFactory.of(baseClass);
-            runTimeAdapters.get(baseClass).forEach(subClass -> {
-                factory.registerSubtype(subClass);
-                log.accept("\t \t "+subClass);
-            });
-            builder.registerTypeAdapterFactory(factory);
-        });
-
-        builder
-                .registerTypeHierarchyAdapter(SourceAndConverter.class, new SourceAndConverterAdapter(this))
+        builder .registerTypeHierarchyAdapter(SourceAndConverter.class, new SourceAndConverterAdapter(this))
                 .registerTypeHierarchyAdapter(AbstractSpimData.class, new AbstractSpimdataAdapter(this));
 
         return builder.create();
+
     }
 
     public synchronized Map<Integer, SourceAndConverter> getIdToSac() {

@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  *
  * In contrast to {@link BdvCreator} it does not add any Behaviours.
  */
-public class MinimalBdvCreator implements Supplier< BdvHandle  >
+public class MinimalBdvCreator implements Supplier< BdvHandle >
 {
 	private String windowTitle;
 	private boolean is2D;

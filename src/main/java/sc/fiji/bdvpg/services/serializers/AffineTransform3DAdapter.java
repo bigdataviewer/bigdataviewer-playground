@@ -31,7 +31,7 @@ package sc.fiji.bdvpg.services.serializers;
 import com.google.gson.*;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.services.serializers.plugins.IClassAdapter;
+import sc.fiji.serializers.IClassAdapter;
 
 import java.lang.reflect.Type;
 

@@ -26,14 +26,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.services.serializers.plugins;
+package sc.fiji.serializers;
 
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonSerializer;
+import org.scijava.plugin.SciJavaPlugin;
 
-public interface IClassAdapter<T> extends IBdvPlaygroundObjectAdapter, JsonSerializer<T>,
-        JsonDeserializer<T> {
+/**
+ * Top level class for plugins which can serialize object using gson and the scijava context.
+ *
+ * The scijava context may provide adapters (potentially runtime adapters) auto-discovered via the scijava
+ * extensibility mechanism.
+ *
+ * Q: Is it a pandora box ?
+ *
+ * @author Nicolas Chiaruttini, EPFL, 2021
+ *
+ */
 
-    Class<? extends T> getAdapterClass();
-
+public interface IObjectScijavaAdapter extends SciJavaPlugin {
 }

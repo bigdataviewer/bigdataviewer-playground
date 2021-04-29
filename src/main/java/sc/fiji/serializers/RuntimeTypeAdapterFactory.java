@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.services.serializers;
+package sc.fiji.serializers;
 /*
  * Copyright (C) 2011 Google Inc.
  *

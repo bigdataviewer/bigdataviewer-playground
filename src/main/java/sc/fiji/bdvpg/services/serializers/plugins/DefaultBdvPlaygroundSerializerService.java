@@ -32,14 +32,17 @@ import org.scijava.Context;
 import org.scijava.Priority;
 import org.scijava.plugin.*;
 import org.scijava.service.Service;
+import sc.fiji.serializers.IObjectScijavaAdapter;
+import sc.fiji.serializers.IObjectScijavaAdapterService;
+
 import java.util.List;
 
 @Plugin(type = Service.class)
-public class DefaultBdvPlaygroundSerializerService extends AbstractPTService<IBdvPlaygroundObjectAdapter> implements BdvPlaygroundObjectAdapterService {
+public class DefaultBdvPlaygroundSerializerService extends AbstractPTService<IObjectScijavaAdapter> implements IObjectScijavaAdapterService {
 
     @Override
-    public Class<IBdvPlaygroundObjectAdapter> getPluginType() {
-        return IBdvPlaygroundObjectAdapter.class;
+    public Class<IObjectScijavaAdapter> getPluginType() {
+        return IObjectScijavaAdapter.class;
     }
 
     @Parameter
@@ -68,7 +71,7 @@ public class DefaultBdvPlaygroundSerializerService extends AbstractPTService<IBd
     }
 
     @Override
-    public <PT extends IBdvPlaygroundObjectAdapter> List<PluginInfo<PT>> getAdapters(Class<PT> adapterClass) {
+    public <PT extends IObjectScijavaAdapter> List<PluginInfo<PT>> getAdapters(Class<PT> adapterClass) {
         return pluginService().getPluginsOfType(adapterClass);
     }
 }

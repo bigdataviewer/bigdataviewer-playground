@@ -26,16 +26,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.services.serializers.plugins;
+package sc.fiji.serializers;
 
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonSerializer;
+import org.scijava.plugin.PTService;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.service.SciJavaService;
 
-public interface IClassRuntimeAdapter<B, T extends B> extends IBdvPlaygroundObjectAdapter, JsonSerializer<T>,
-        JsonDeserializer<T> {
+import java.util.List;
 
-    Class<? extends B> getBaseClass();
-
-    Class<? extends T> getRunTimeClass();
-
+public interface IObjectScijavaAdapterService extends PTService<IObjectScijavaAdapter>, SciJavaService {
+    <PT extends IObjectScijavaAdapter> List<PluginInfo<PT>> getAdapters(Class<PT> adapterClass);
 }

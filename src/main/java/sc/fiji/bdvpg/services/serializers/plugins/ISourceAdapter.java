@@ -32,10 +32,11 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
+import sc.fiji.serializers.IObjectScijavaAdapter;
 
 import java.lang.reflect.Type;
 
-public interface ISourceAdapter<S extends Source> extends IBdvPlaygroundObjectAdapter {
+public interface ISourceAdapter<S extends Source> extends IObjectScijavaAdapter {
 
     void setSacSerializer(SourceAndConverterSerializer sacSerializer);
 

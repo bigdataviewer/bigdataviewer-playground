@@ -33,6 +33,7 @@ import jitk.spline.ThinPlateR2LogRSplineKernelTransform;
 import net.imglib2.realtransform.RealTransform;
 import net.imglib2.realtransform.ThinplateSplineTransform;
 import org.scijava.plugin.Plugin;
+import sc.fiji.serializers.IClassRuntimeAdapter;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;

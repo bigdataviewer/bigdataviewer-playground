@@ -30,7 +30,7 @@ package net.imglib2.realtransform;
 
 import com.google.gson.*;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.services.serializers.plugins.IClassRuntimeAdapter;
+import sc.fiji.serializers.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
 

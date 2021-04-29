@@ -30,6 +30,7 @@ package sc.fiji.bdvpg.scijava.services;
 
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
+import bdv.util.BdvOptions;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.converter.Converter;
 import net.imglib2.util.Pair;
@@ -47,12 +48,16 @@ import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import sc.fiji.bdvpg.scijava.services.ui.BdvHandleFilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.services.serializers.bdv.DefaultBdvSupplier;
+import sc.fiji.bdvpg.services.serializers.bdv.SerializableBdvOptions;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.google.common.cache.Cache;
@@ -96,12 +101,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     SourceAndConverterService bdvSourceAndConverterService;
 
     /**
-     * Used to create BDV Windows when necessary
-     **/
-    @Parameter
-    CommandService cs;
-
-    /**
      * Used to retrieved the last active BDV Windows (if the activated callback has been set right)
      **/
     @Parameter
@@ -110,21 +109,20 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     @Parameter
     ObjectService os;
 
+    Supplier<BdvHandle> bdvSupplier = new DefaultBdvSupplier(new SerializableBdvOptions());
+
+    /**
+     * Can be used to change how Bdv Windows are created
+     * @param bdvSupplier
+     */
+    public void setDefaultBdvSupplier(Supplier<BdvHandle> bdvSupplier) {
+        this.bdvSupplier = bdvSupplier;
+    }
+
     public BdvHandle getNewBdv() {
-        try
-        {
-            return (BdvHandle)
-                    cs.run(BdvWindowCreatorCommand.class,
-                            true,
-                            "is2d", false,
-                            "windowtitle", "Bdv",
-                            "ntimepoints", 1,
-                            "interpolate",false,
-                            "projector", Projector.SUM_PROJECTOR).get().getOutput("bdvh");
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return null;
+        BdvHandle bdvh = bdvSupplier.get();
+        this.registerBdvHandle(bdvh); // We always want it to be registered
+        return bdvh;
     }
 
     /**
@@ -437,7 +435,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
     public void registerBdvHandle( BdvHandle bdvh )
     {
-        log.accept("BdvHandle found.");
         //------------ Register BdvHandle in ObjectService
         if (!os.getObjects(BdvHandle.class).contains(bdvh))
         { // adds it only if not already present in ObjectService
@@ -457,14 +454,10 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
             //------------ Allows to remove the BdvHandle from the objectService when closed by the user
             BdvHandleHelper.setBdvHandleCloseOperation( bdvh, cacheService, this, true,
                     () -> {
-                        //bdvh.getViewerPanel().state().changeListeners().remove(vscl); // TODO : check no memory leak
                         sacService.getUI().removeBdvHandleNodes( bdvh );
                     } );
 
             ( ( SourceFilterNode ) sacService.getUI().getTreeModel().getRoot() ).insert( node, 0 );
-                    /*SwingUtilities.invokeLater(()->
-                            sacsService.getUI().getTreeModel().nodeStructureChanged(node.getParent())//.reload()
-                    );*/
         }
     }
 
