@@ -128,8 +128,8 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
 
         SourceAndConverter sac = new SourceResampler(originSac, modelSac, reuseMipMaps, cache, interpolation.equals(Interpolation.NLINEAR)).get();
 
-        SourceAndConverterServices.getSourceAndConverterService()
-                .register(sac);
+        /*SourceAndConverterServices.getSourceAndConverterService()
+                .register(sac);*/
 
         return sac;
     }

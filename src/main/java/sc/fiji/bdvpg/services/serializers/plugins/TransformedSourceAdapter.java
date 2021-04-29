@@ -98,8 +98,8 @@ public class TransformedSourceAdapter implements ISourceAdapter<TransformedSourc
         AffineTransform3D at3d = jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("affinetransform_fixed"), AffineTransform3D.class);
 
         SourceAndConverter sac = new SourceAffineTransformer(wrappedSac, at3d).getSourceOut();
-        SourceAndConverterServices.getSourceAndConverterService()
-                .register(sac);
+        /*SourceAndConverterServices.getSourceAndConverterService()
+                .register(sac);*/
 
         return sac;
     }
