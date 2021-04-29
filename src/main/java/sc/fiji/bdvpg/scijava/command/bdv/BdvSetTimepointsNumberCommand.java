@@ -29,7 +29,6 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -44,11 +43,11 @@ public class BdvSetTimepointsNumberCommand implements BdvPlaygroundActionCommand
     BdvHandle[] bdvhs;
 
     @Parameter(label = "Number of timepoints, min = 1", min = "1")
-    int numberOfTimePoints;
+    int numberoftimepoints;
 
     public void run() {
         for (BdvHandle bdvh : bdvhs) {
-            bdvh.getViewerPanel().setNumTimepoints(numberOfTimePoints);
+            bdvh.getViewerPanel().setNumTimepoints(numberoftimepoints);
         }
     }
 

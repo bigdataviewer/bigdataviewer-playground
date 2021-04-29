@@ -51,72 +51,72 @@ import java.awt.*;
 public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Title of BDV windows")
-    public String windowTitle = "BDV";
+    public String windowtitle = "BDV";
 
     @Parameter(label = "Interpolate")
     public boolean interpolate = false;
 
     @Parameter(label = "Number of timepoints (1 for a single timepoint)")
-    public int nTimepoints = 1;
+    public int ntimepoints = 1;
 
     @Parameter(label = "Source Projection Mode", choices = { Projector.MIXED_PROJECTOR, Projector.SUM_PROJECTOR, Projector.AVERAGE_PROJECTOR})
     public String projector;
 
     @Parameter(label = "Add cross overlay to show view plane locations")
-    public boolean drawCrosses;
+    public boolean drawcrosses;
 
     @Parameter(label = "Display (0 if you have one screen)")
     int screen = 0;
 
     @Parameter(label = "X Front Window location")
-    int locationX = 150;
+    int locationx = 150;
 
     @Parameter(label = "Y Front Window location")
-    int locationY = 150;
+    int locationy = 150;
 
     @Parameter(label = "Window Width")
-    int sizeX = 500;
+    int sizex = 500;
 
     @Parameter(label = "Window Height")
-    int sizeY = 500;
+    int sizey = 500;
 
     //@Parameter(label = "Synchronize time") // honestly no reason not to synchronize the time
-    public boolean syncTime = true;
+    public boolean synctime = true;
 
     /**
      * This triggers: BdvHandlePostprocessor
      */
     @Parameter(type = ItemIO.OUTPUT)
-    public BdvHandle bdvhX;
+    public BdvHandle bdvhx;
 
     @Parameter(type = ItemIO.OUTPUT)
-    public BdvHandle bdvhY;
+    public BdvHandle bdvhy;
 
     @Parameter(type = ItemIO.OUTPUT)
-    public BdvHandle bdvhZ;
+    public BdvHandle bdvhz;
 
     @Override
     public void run() {
 
-        bdvhX = createBdv("-Front", locationX, locationY);
+        bdvhx = createBdv("-Front", locationx, locationy);
 
-        bdvhY = createBdv("-Right", locationX+sizeX+10, locationY);
+        bdvhy = createBdv("-Right", locationx + sizex +10, locationy);
 
-        bdvhZ = createBdv("-Bottom", locationX, locationY+sizeY+40);
+        bdvhz = createBdv("-Bottom", locationx, locationy + sizey +40);
 
-        new ViewerOrthoSyncStarter(bdvhX, bdvhZ, bdvhY, syncTime).run();
+        new ViewerOrthoSyncStarter(bdvhx, bdvhz, bdvhy, synctime).run();
 
-       if (drawCrosses) {
-           addCross(bdvhX);
-           addCross(bdvhY);
-           addCross(bdvhZ);
+       if (drawcrosses) {
+           addCross(bdvhx);
+           addCross(bdvhy);
+           addCross(bdvhz);
        }
     }
 
     BdvHandle createBdv(String suffix, double locX, double locY) {
 
         //------------ BdvHandleFrame
-        BdvOptions opts = BdvOptions.options().frameTitle(windowTitle+suffix).preferredSize(sizeX,sizeY);
+        BdvOptions opts = BdvOptions.options().frameTitle(windowtitle +suffix).preferredSize(sizex, sizey);
 
         // Create accumulate projector factory
         AccumulateProjectorFactory<ARGBType> factory;
@@ -134,7 +134,7 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
             default:
         }
 
-        BdvCreator creator = new BdvCreator(opts, interpolate, nTimepoints);
+        BdvCreator creator = new BdvCreator(opts, interpolate, ntimepoints);
         creator.run();
         BdvHandle bdvh = creator.get();
 
@@ -169,7 +169,7 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
         };
 
         BdvFunctions.showOverlay( overlay, "cross_overlay", BdvOptions.options().addTo( bdvh ) );
-        bdvh.getViewerPanel().setTimepoint(nTimepoints);
+        bdvh.getViewerPanel().setTimepoint(ntimepoints);
     }
 
 }

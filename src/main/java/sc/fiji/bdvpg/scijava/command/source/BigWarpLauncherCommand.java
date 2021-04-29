@@ -54,52 +54,52 @@ import java.util.stream.Collectors;
 public class BigWarpLauncherCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Window title for BigWarp")
-    String bigWarpName;
+    String bigwarpname;
 
     @Parameter(label = "Moving Source(s)")
-    SourceAndConverter[] movingSources;
+    SourceAndConverter[] movingsources;
 
     @Parameter(label = "Fixed Source(s)")
-    SourceAndConverter[] fixedSources;
+    SourceAndConverter[] fixedsources;
 
     @Parameter(type = ItemIO.OUTPUT)
-    BdvHandle bdvhQ;
+    BdvHandle bdvhq;
 
     @Parameter(type = ItemIO.OUTPUT)
-    BdvHandle bdvhP;
+    BdvHandle bdvhp;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter[] warpedSources;
+    SourceAndConverter[] warpedsources;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter gridSource;
+    SourceAndConverter gridsource;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter warpMagnitudeSource;
+    SourceAndConverter warpmagnitudesource;
 
     @Parameter
 	SourceAndConverterBdvDisplayService bsds;
 
     public void run() {
-        List<SourceAndConverter> movingSacs = Arrays.stream(movingSources).collect(Collectors.toList());
-        List<SourceAndConverter> fixedSacs = Arrays.stream(fixedSources).collect(Collectors.toList());
+        List<SourceAndConverter> movingSacs = Arrays.stream(movingsources).collect(Collectors.toList());
+        List<SourceAndConverter> fixedSacs = Arrays.stream(fixedsources).collect(Collectors.toList());
 
-        List<ConverterSetup> converterSetups = Arrays.stream(movingSources).map(src -> bsds.getConverterSetup(src)).collect(Collectors.toList());
-        converterSetups.addAll(Arrays.stream(fixedSources).map(src -> bsds.getConverterSetup(src)).collect(Collectors.toList()));
+        List<ConverterSetup> converterSetups = Arrays.stream(movingsources).map(src -> bsds.getConverterSetup(src)).collect(Collectors.toList());
+        converterSetups.addAll(Arrays.stream(fixedsources).map(src -> bsds.getConverterSetup(src)).collect(Collectors.toList()));
 
         // Launch BigWarp
-        BigWarpLauncher bwl = new BigWarpLauncher(movingSacs, fixedSacs, bigWarpName, converterSetups);
+        BigWarpLauncher bwl = new BigWarpLauncher(movingSacs, fixedSacs, bigwarpname, converterSetups);
         bwl.run();
 
         // Output bdvh handles -> will be put in the object service
-        bdvhQ = bwl.getBdvHandleQ();
-        bdvhP = bwl.getBdvHandleP();
+        bdvhq = bwl.getBdvHandleQ();
+        bdvhp = bwl.getBdvHandleP();
 
-        bsds.pairClosing(bdvhQ,bdvhP);
+        bsds.pairClosing(bdvhq, bdvhp);
 
-        gridSource = bwl.getGridSource();
-        warpMagnitudeSource = bwl.getWarpMagnitudeSource();
-        warpedSources = bwl.getWarpedSources();
+        gridsource = bwl.getGridSource();
+        warpmagnitudesource = bwl.getWarpMagnitudeSource();
+        warpedsources = bwl.getWarpedSources();
 
     }
 

@@ -33,20 +33,21 @@ import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Resample Source Based on Model Source")
-public class SourcesResamplerCommand implements Command{
+public class SourcesResamplerCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sourcesToResample;
+    SourceAndConverter[] sacs;
 
     @Parameter
     SourceAndConverter model;
 
     @Parameter(label="Re-use MipMaps")
-    boolean reuseMipMaps;
+    boolean reusemipmaps;
 
     @Parameter
     boolean interpolate;
@@ -57,9 +58,9 @@ public class SourcesResamplerCommand implements Command{
     @Override
     public void run() {
         // Should not be parallel
-        for (SourceAndConverter sourceAndConverter : sourcesToResample) {
+        for (SourceAndConverter sourceAndConverter : sacs) {
             SourceAndConverterServices.getSourceAndConverterService().register(
-                    new SourceResampler(sourceAndConverter, model, reuseMipMaps, cache, interpolate).get()
+                    new SourceResampler(sourceAndConverter, model, reusemipmaps, cache, interpolate).get()
             );
         }
 

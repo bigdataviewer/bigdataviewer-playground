@@ -50,7 +50,7 @@ import static org.scijava.ItemVisibility.MESSAGE;
 public class BrightnessAdjusterCommand extends InteractiveCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Sources :", required = false, description = "Label the sources controlled by this window", persist = false)
-    String customSourceLabel = "Label your sources here";
+    String customsourcelabel = "Label your sources here";
 
     @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sources;
@@ -65,10 +65,10 @@ public class BrightnessAdjusterCommand extends InteractiveCommand implements Bdv
     double max;
 
     @Parameter(label = "relative Minimum", style = "slider", min = "0", max = "1000", callback = "updateMessage")
-    double minSlider;
+    double minslider;
 
     @Parameter(label = "relative Maximum", style = "slider", min = "0", max = "1000", callback = "updateMessage")
-    double maxSlider;
+    double maxslider;
 
     boolean firstTimeCalled = true;
 
@@ -76,8 +76,8 @@ public class BrightnessAdjusterCommand extends InteractiveCommand implements Bdv
 
     public void run() {
         if ((!firstTimeCalled)&&(!secondTimeCalled)) {
-            double minValue = min + minSlider/1000.0*(max-min);
-            double maxValue = min + maxSlider/1000.0*(max-min);
+            double minValue = min + minslider /1000.0*(max-min);
+            double maxValue = min + maxslider /1000.0*(max-min);
             for (SourceAndConverter source:sources) {
                 new BrightnessAdjuster(source, minValue, maxValue).run();
             }
@@ -95,8 +95,8 @@ public class BrightnessAdjusterCommand extends InteractiveCommand implements Bdv
 
     public void updateMessage() {
         formatter.setMinimumFractionDigits(3);
-        double minValue = min + minSlider/1000.0*(max-min);
-        double maxValue = min + maxSlider/1000.0*(max-min);
+        double minValue = min + minslider /1000.0*(max-min);
+        double maxValue = min + maxslider /1000.0*(max-min);
         message = "Display Range ["+ formatter.format(minValue) +" - "+ formatter.format(maxValue) +"]";
     }
 
@@ -121,8 +121,8 @@ public class BrightnessAdjusterCommand extends InteractiveCommand implements Bdv
             } else {
                 max = 1;
             }
-            minSlider = (minSource-min)/(max-min)*1000;
-            maxSlider = (maxSource-min)/(max-min)*1000;
+            minslider = (minSource-min)/(max-min)*1000;
+            maxslider = (maxSource-min)/(max-min)*1000;
             message = "Display Range [ NaN - NaN ]";
         }
     }

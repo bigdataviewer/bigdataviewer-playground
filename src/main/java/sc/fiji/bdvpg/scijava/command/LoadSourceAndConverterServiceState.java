@@ -47,10 +47,10 @@ public class LoadSourceAndConverterServiceState implements BdvPlaygroundActionCo
     Context ctx;
 
     @Parameter(label = "Erase current state")
-    Boolean erasePreviousState;
+    Boolean erasepreviousstate;
 
     @Override
     public void run() {
-        new SourceAndConverterServiceLoader(file.getAbsolutePath(), file.getParent(), ctx, erasePreviousState).run();
+        new SourceAndConverterServiceLoader(file.getAbsolutePath(), file.getParent(), ctx, erasepreviousstate).run();
     }
 }

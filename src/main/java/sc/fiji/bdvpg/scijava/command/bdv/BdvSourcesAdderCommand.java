@@ -49,23 +49,23 @@ public class BdvSourcesAdderCommand implements BdvPlaygroundActionCommand {
     SourceAndConverter[] sacs;
 
     @Parameter(label="Auto Contrast")
-    boolean autoContrast;
+    boolean autocontrast;
 
     @Parameter(label="Adjust View on Source")
-    boolean adjustViewOnSource;
+    boolean adjustviewonsource;
 
     @Override
     public void run() {
 
         SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvh, sacs);
-        if (autoContrast) {
+        if (autocontrast) {
             for (SourceAndConverter sac : sacs) {
                 int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
                 new BrightnessAutoAdjuster(sac, timepoint).run();
             }
         }
 
-        if ((adjustViewOnSource) && (sacs.length>0)) {
+        if ((adjustviewonsource) && (sacs.length>0)) {
             new ViewerTransformAdjuster(bdvh, sacs[0]).run();
         }
     }

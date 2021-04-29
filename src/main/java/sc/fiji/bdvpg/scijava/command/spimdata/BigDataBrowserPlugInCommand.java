@@ -30,7 +30,6 @@ package sc.fiji.bdvpg.scijava.command.spimdata;
 
 import com.google.gson.stream.JsonReader;
 import org.apache.commons.lang.StringUtils;
-import org.scijava.command.Command;
 import org.scijava.command.CommandService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
@@ -65,7 +64,7 @@ public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand
     private final Map< String, String > datasetUrlMap = new HashMap<>();
 
     @Parameter(required = false)
-    String serverUrl = "http://tomancak-srv1.mpi-cbg.de:8081";
+    String serverurl = "http://tomancak-srv1.mpi-cbg.de:8081";
 
     @Parameter
     CommandService cs;
@@ -79,15 +78,15 @@ public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand
         final ArrayList< String > nameList = new ArrayList<>();
         try
         {
-            getDatasetList( serverUrl, nameList );
+            getDatasetList(serverurl, nameList );
         }
         catch ( final IOException e )
         {
-            ls.error("Error connecting to server at " + serverUrl);
+            ls.error("Error connecting to server at " + serverurl);
             e.printStackTrace();
             return;
         }
-        createDatasetListUI( serverUrl, nameList.toArray() );
+        createDatasetListUI(serverurl, nameList.toArray() );
     }
 
     private boolean getDatasetList( final String remoteUrl, final ArrayList< String > nameList ) throws IOException
@@ -162,8 +161,8 @@ public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand
                     final String title = new File( filename ).getName();
 
                     cs.run(SpimdataBigDataServerImportCommand.class,true,
-                            "urlServer",remoteUrl,
-                            "datasetName", title);
+                            "urlserver",remoteUrl,
+                            "datasetname", title);
                 }
             }
         } );
