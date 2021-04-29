@@ -44,7 +44,7 @@ public class BdvSourceAndConverterPostprocessor extends AbstractPostprocessorPlu
     @Parameter
     SourceAndConverterService bss;
 
-    public static Consumer<String> log = (str) -> System.out.println(BdvSourceAndConverterPostprocessor.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = (str) -> {};//System.out.println(BdvSourceAndConverterPostprocessor.class.getSimpleName()+":"+str);
 
     @Override
     public void process(Module module) {

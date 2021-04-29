@@ -29,6 +29,7 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
+import org.scijava.ItemIO;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -55,14 +56,17 @@ public class SourcesResamplerCommand implements BdvPlaygroundActionCommand {
     @Parameter
     boolean cache;
 
+    @Parameter(type = ItemIO.OUTPUT)
+    SourceAndConverter[] sacs_out;
+
     @Override
     public void run() {
         // Should not be parallel
-        for (SourceAndConverter sourceAndConverter : sacs) {
-            SourceAndConverterServices.getSourceAndConverterService().register(
-                    new SourceResampler(sourceAndConverter, model, reusemipmaps, cache, interpolate).get()
-            );
+        sacs_out = new SourceAndConverter[sacs.length];
+        for (int i=0;i< sacs.length;i++) {
+            SourceAndConverter sac = sacs[i];
+            sacs_out[i] = new SourceResampler(sac, model, reusemipmaps, cache, interpolate).get();
         }
-
     }
+
 }
