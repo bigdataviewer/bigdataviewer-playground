@@ -36,6 +36,7 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
+import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
 
 import java.util.Arrays;
 
@@ -45,11 +46,16 @@ public class TransformedSourceWrapperCommand implements BdvPlaygroundActionComma
     @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sacs;
 
+    @Parameter
+    SourceAndConverter[] sacs_out;
+
     @Override
     public void run() {
         SourceAffineTransformer sat = new SourceAffineTransformer(null, new AffineTransform3D());
-        Arrays.stream(sacs).map(sat).forEach(sac ->
-                        SourceAndConverterServices.getSourceAndConverterService().register(sac)
-                );
+        sacs_out = new SourceAndConverter[sacs.length];
+        for (int i=0;i< sacs.length;i++) {
+            SourceAndConverter sac = sacs[i];
+            sacs_out[i] = sat.apply(sac);
+        }
     }
 }

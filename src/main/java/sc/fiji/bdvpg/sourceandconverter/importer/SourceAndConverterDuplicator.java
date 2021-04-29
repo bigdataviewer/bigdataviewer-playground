@@ -66,7 +66,7 @@ import java.util.function.Function;
                     sourceAndConverter.getSpimSource(),
                     SourceAndConverterHelper.cloneConverter(sourceAndConverter.getConverter(), sourceAndConverter));
         }
-        SourceAndConverterServices.getSourceAndConverterService().register(sac);
+        //SourceAndConverterServices.getSourceAndConverterService().register(sac);
         return sac;
     }
 

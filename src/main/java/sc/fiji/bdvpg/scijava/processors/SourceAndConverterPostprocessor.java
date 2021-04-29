@@ -39,12 +39,12 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import java.util.function.Consumer;
 
 @Plugin(type = PostprocessorPlugin.class)
-public class BdvSourceAndConverterPostprocessor extends AbstractPostprocessorPlugin {
+public class SourceAndConverterPostprocessor extends AbstractPostprocessorPlugin {
 
     @Parameter
     SourceAndConverterService bss;
 
-    public static Consumer<String> log = (str) -> System.out.println(BdvSourceAndConverterPostprocessor.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = (str) -> {};//System.out.println(BdvSourceAndConverterPostprocessor.class.getSimpleName()+":"+str);
 
     @Override
     public void process(Module module) {

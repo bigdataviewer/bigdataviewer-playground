@@ -39,14 +39,14 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import java.util.function.Consumer;
 
 @Plugin(type = PostprocessorPlugin.class)
-public class BdvSpimDataPostprocessor extends AbstractPostprocessorPlugin {
+public class SpimDataPostprocessor extends AbstractPostprocessorPlugin {
 
     @Parameter
 	SourceAndConverterService bss;
 
-    public static Consumer<String> log = (str) -> System.out.println( BdvSpimDataPostprocessor.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = (str) -> System.out.println( SpimDataPostprocessor.class.getSimpleName()+":"+str);
 
-    public static Consumer<String> errlog = (str) -> System.err.println( BdvSpimDataPostprocessor.class.getSimpleName()+":"+str);
+    public static Consumer<String> errlog = (str) -> System.err.println( SpimDataPostprocessor.class.getSimpleName()+":"+str);
 
     @Override
     public void process(Module module) {
