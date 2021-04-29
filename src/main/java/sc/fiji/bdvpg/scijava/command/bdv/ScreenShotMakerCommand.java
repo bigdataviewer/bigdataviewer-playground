@@ -29,7 +29,6 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.ScreenShotMaker;
@@ -55,19 +54,19 @@ public class ScreenShotMakerCommand implements BdvPlaygroundActionCommand {
     BdvHandle bdvh;
 
     @Parameter(label="Target Pixel Size (in XY)")
-    public double targetPixelSizeInXY = 1;
+    public double targetpixelsizeinxy = 1;
 
     @Parameter(label="Pixel Size Unit")
-    public String targetPixelUnit = "Pixels";
+    public String targetpixelunit = "Pixels";
 
     @Parameter(label="Show Raw Data")
-    public boolean showRawData = false;
+    public boolean showrawdata = false;
 
     @Override
     public void run() {
         ScreenShotMaker screenShotMaker = new ScreenShotMaker(bdvh);
-        screenShotMaker.setPhysicalPixelSpacingInXY(targetPixelSizeInXY, targetPixelUnit);
+        screenShotMaker.setPhysicalPixelSpacingInXY(targetpixelsizeinxy, targetpixelunit);
         screenShotMaker.getRgbScreenShot().show();
-        if(showRawData) screenShotMaker.getRawScreenShot().show();
+        if(showrawdata) screenShotMaker.getRawScreenShot().show();
     }
 }

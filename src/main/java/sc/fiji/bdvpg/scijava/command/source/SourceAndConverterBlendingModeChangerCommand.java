@@ -40,17 +40,17 @@ import sc.fiji.bdvpg.sourceandconverter.display.BlendingModeChanger;
 public class SourceAndConverterBlendingModeChangerCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Blending Mode", choices = { BlendingMode.AVERAGE, BlendingMode.SUM })
-    String blendingMode = BlendingMode.AVERAGE;
+    String blendingmode = BlendingMode.AVERAGE;
 
     @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sacs;
 
     @Parameter(label="Add Source(s) to occluding layer")
-    boolean addToOccludingLayer = false;
+    boolean addtooccludinglayer = false;
 
     @Override
     public void run() {
-        new BlendingModeChanger( sacs, BlendingMode.valueOf( blendingMode ), addToOccludingLayer ).run();
+        new BlendingModeChanger( sacs, BlendingMode.valueOf(blendingmode), addtooccludinglayer).run();
     }
 
 }

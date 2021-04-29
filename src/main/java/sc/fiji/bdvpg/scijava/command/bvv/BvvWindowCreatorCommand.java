@@ -42,10 +42,10 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 public class BvvWindowCreatorCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Title of the new BVV window")
-    public String windowTitle = "BVV";
+    public String windowtitle = "BVV";
 
     @Parameter(label = "Number of timepoints (1 for a single timepoint)")
-    public int nTimepoints = 1;
+    public int ntimepoints = 1;
 
     /**
      * TODO This triggers: BvvHandlePostprocessor
@@ -56,9 +56,9 @@ public class BvvWindowCreatorCommand implements BdvPlaygroundActionCommand {
     @Override
     public void run() {
         //------------ BdvHandleFrame
-        BvvOptions opts = BvvOptions.options().frameTitle(windowTitle);
+        BvvOptions opts = BvvOptions.options().frameTitle(windowtitle);
 
-        BvvCreator creator = new BvvCreator(opts, nTimepoints);
+        BvvCreator creator = new BvvCreator(opts, ntimepoints);
         creator.run();
         bvvh = creator.get();
     }

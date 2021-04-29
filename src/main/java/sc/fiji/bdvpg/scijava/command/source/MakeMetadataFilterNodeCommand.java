@@ -41,13 +41,13 @@ description = "Adds a node in the tree view which selects the sources which cont
 public class MakeMetadataFilterNodeCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Name of the node")
-    String groupName;
+    String groupname;
 
     @Parameter(label = "Select Metadata Key")
-    String metadata_key;
+    String key;
 
     @Parameter(label = "Regular expression for Metadata Value (\".*\" matches everything)")
-    String metadata_value_regex = ".*";
+    String valueregex = ".*";
 
     @Parameter
     SourceAndConverterService sac_service;
@@ -55,13 +55,13 @@ public class MakeMetadataFilterNodeCommand implements BdvPlaygroundActionCommand
     @Override
     public void run() {
         SourceFilterNode sfn = new SourceFilterNode(sac_service.getUI().getTreeModel(),
-                groupName,
+                groupname,
                 (sac) -> {
-                    if (sac_service.containsMetadata(sac, metadata_key)) {
-                        Object o = sac_service.getMetadata(sac, metadata_key);
+                    if (sac_service.containsMetadata(sac, key)) {
+                        Object o = sac_service.getMetadata(sac, key);
                         if ((o!=null)||(o instanceof String)) {
                             String str = (String) o;
-                            return str.matches(metadata_value_regex);
+                            return str.matches(valueregex);
                         } else return false;
                     } else return false;
                 },

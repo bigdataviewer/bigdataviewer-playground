@@ -54,7 +54,7 @@ import java.util.Map;
 public class LUTSourceCreatorCommand extends DynamicCommand implements BdvPlaygroundActionCommand {
 
     @Parameter
-    LUTService lutService;
+    LUTService lutservice;
 
     @Parameter(label = "LUT name", persist = false, callback = "nameChanged")
     String choice = "Gray";
@@ -69,13 +69,13 @@ public class LUTSourceCreatorCommand extends DynamicCommand implements BdvPlaygr
     private Map<String, URL> luts = null;
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sources_in;
+    SourceAndConverter[] sacs;
 
     @Override
     public void run() {
         Converter bdvLut = cs.convert(table, Converter.class);
 
-        for (SourceAndConverter sac:sources_in) {
+        for (SourceAndConverter sac: sacs) {
             ConverterChanger cc = new ConverterChanger(sac, bdvLut, bdvLut);
             cc.run();
             cc.get();
@@ -85,7 +85,7 @@ public class LUTSourceCreatorCommand extends DynamicCommand implements BdvPlaygr
     // -- initializers --
 
     protected void init() {
-        luts = lutService.findLUTs();
+        luts = lutservice.findLUTs();
         final ArrayList<String> choices = new ArrayList<>();
         for (final Map.Entry<String, URL> entry : luts.entrySet()) {
             choices.add(entry.getKey());
@@ -102,7 +102,7 @@ public class LUTSourceCreatorCommand extends DynamicCommand implements BdvPlaygr
 
     protected void nameChanged() {
         try {
-            table = lutService.loadLUT(luts.get(choice));
+            table = lutservice.loadLUT(luts.get(choice));
         }
         catch (final Exception e) {
             // nada

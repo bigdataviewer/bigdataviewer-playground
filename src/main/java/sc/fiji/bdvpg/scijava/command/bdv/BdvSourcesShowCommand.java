@@ -49,22 +49,22 @@ public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
     SourceAndConverter[] sacs;
 
     @Parameter(label="Auto Contrast")
-    boolean autoContrast;
+    boolean autocontrast;
 
     @Parameter(label="Adjust View on Source")
-    boolean adjustViewOnSource;
+    boolean adjustviewonsource;
 
     @Parameter(label = "Create a 2D BDV window")
-    public boolean is2D = false;
+    public boolean is2d = false;
 
     @Parameter(label = "Title of the new BDV window")
-    public String windowTitle = "BDV";
+    public String windowtitle = "BDV";
 
     @Parameter(label = "Interpolate")
     public boolean interpolate = false;
 
     @Parameter(label = "Number of timepoints (1 for a single timepoint)")
-    public int nTimepoints = 1;
+    public int ntimepoints = 1;
 
     /**
      * This triggers: BdvHandlePostprocessor
@@ -80,21 +80,21 @@ public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
         BdvWindowCreatorCommand creator = new BdvWindowCreatorCommand();
         creator.interpolate = interpolate;
         creator.projector = projector;
-        creator.is2D = is2D;
-        creator.nTimepoints = nTimepoints;
-        creator.windowTitle = windowTitle;
+        creator.is2d = is2d;
+        creator.ntimepoints = ntimepoints;
+        creator.windowtitle = windowtitle;
         creator.run();
         bdvh = creator.bdvh;
 
         SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvh, sacs);
-        if (autoContrast) {
+        if (autocontrast) {
             for (SourceAndConverter sac : sacs) {
                 int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
                 new BrightnessAutoAdjuster(sac, timepoint).run();
             }
         }
 
-        if ((adjustViewOnSource) && (sacs.length>0)) {
+        if ((adjustviewonsource) && (sacs.length>0)) {
             new ViewerTransformAdjuster(bdvh, sacs[0]).run();
         }
     }
