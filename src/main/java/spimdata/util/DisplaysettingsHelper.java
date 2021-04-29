@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.type.numeric.ARGBType;
-import sc.fiji.bdvpg.bdv.projector.Projection;
+import sc.fiji.bdvpg.bdv.projector.BlendingMode;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
@@ -71,11 +71,11 @@ public class DisplaysettingsHelper {
 
         if (SourceAndConverterServices
                 .getSourceAndConverterService()
-                .getMetadata(sac, Projection.PROJECTION_MODE)!=null) {
+                .getMetadata(sac, BlendingMode.BLENDING_MODE )!=null) {
             // A projection mode is set
             ds.projectionMode = (String) (SourceAndConverterServices
                     .getSourceAndConverterService()
-                    .getMetadata(sac, Projection.PROJECTION_MODE));
+                    .getMetadata(sac, BlendingMode.BLENDING_MODE ));
         }
     }
 
@@ -111,8 +111,9 @@ public class DisplaysettingsHelper {
     /**
      * Apply the display settings to the SourceAndConverter object
      * @param sac source
+     * @return
      */
-    public static void PullDisplaySettings(SourceAndConverter<?> sac, Displaysettings ds) {
+    public static String PullDisplaySettings( SourceAndConverter<?> sac, Displaysettings ds) {
 
         if (ds.isSet) {
             if (sac.getConverter() instanceof ColorConverter) {
@@ -130,11 +131,10 @@ public class DisplaysettingsHelper {
                 System.err.println("Converter is of class :" + sac.getConverter().getClass().getSimpleName() + " -> Display settings cannot be reapplied.");
             }
 
-            SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .setMetadata(sac, Projection.PROJECTION_MODE, ds.projectionMode);
-
+            return ds.projectionMode;
         }
+
+        return null;
     }
 
     /**

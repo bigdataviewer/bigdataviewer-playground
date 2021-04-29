@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,15 +29,19 @@
 package sc.fiji.bdvpg.bdv;
 
 import net.imagej.ImageJ;
+import org.junit.After;
 import org.junit.Test;
+import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 public class BdvCreatorDemo
 {
+
+	static ImageJ ij;
 	public static void main( String[] args )
 	{
 		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ImageJ ij = new ImageJ();
+		ij = new ImageJ();
 		ij.ui().showUI();
 
 		// Creates a BDV since none exists yet
@@ -47,5 +51,10 @@ public class BdvCreatorDemo
 	@Test
 	public void demoRunOk() {
 		main(new String[]{""});
+	}
+
+	@After
+	public void closeFiji() {
+		TestHelper.closeFijiAndBdvs(ij);
 	}
 }

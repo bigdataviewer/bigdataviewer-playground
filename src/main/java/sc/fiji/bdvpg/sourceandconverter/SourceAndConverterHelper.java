@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,7 @@ import bdv.spimdata.WrapBasicImgLoader;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.transformation.TransformedSource;
 import bdv.util.ARGBColorConverterSetup;
+import bdv.util.BdvHandle;
 import bdv.util.LUTConverterSetup;
 import bdv.util.ResampledSource;
 import bdv.util.UnmodifiableConverterSetup;
@@ -66,6 +67,7 @@ import spimdata.util.DisplaysettingsHelper;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 
 /**
@@ -157,95 +159,6 @@ public class SourceAndConverterHelper {
             return null;
 
         }
-
-        return out;
-    }
-
-    /**
-     *
-     * @param asd spimdata
-     * @return all sources in a map : id to source
-     */
-    static public Map<Integer, SourceAndConverter<?>> createSourceAndConverters(AbstractSpimData asd) {
-
-        Map<Integer, SourceAndConverter<?>> out = new HashMap<>();
-
-        boolean nonVolatile = WrapBasicImgLoader.wrapImgLoaderIfNecessary( asd );
-
-        if ( nonVolatile )
-        {
-            System.err.println( "WARNING:\nOpening <SpimData> dataset that is not suited for interactive browsing.\nConsider resaving as HDF5 for better performance." );
-        }
-
-        final AbstractSequenceDescription< ?, ?, ? > seq = asd.getSequenceDescription();
-
-            final ViewerImgLoader imgLoader = ( ViewerImgLoader ) seq.getImgLoader();
-            for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() ) {
-                final int setupId = setup.getId();
-
-                ViewerSetupImgLoader vsil = imgLoader.getSetupImgLoader(setupId);
-
-                final Object type = vsil.getImageType();
-
-
-                String sourceName = createSetupName(setup);
-
-                if (type instanceof RealType) {
-
-                    final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
-
-                    Converter nonVolatileConverter = createConverterRealType((RealType)s.getType()); // IN FACT THE CASTING IS NECESSARY!!
-
-                    if (!nonVolatile) {
-
-                        final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
-
-                        Converter volatileConverter = createConverterRealType((RealType)vs.getType());
-
-                        out.put(setupId, new SourceAndConverter<>(s, nonVolatileConverter,
-                                new SourceAndConverter<>(vs, volatileConverter)));
-
-                    } else {
-
-                        out.put(setupId, new SourceAndConverter<>(s, nonVolatileConverter));
-                    }
-                    // Metadata need to exist before the display settings (projection mode) are set
-
-                    SourceAndConverterServices.getSourceAndConverterService().register(out.get(setupId));
-
-                    // Applying display settings if some have been set
-                    if (setup.getAttribute(Displaysettings.class)!=null) {
-
-                        DisplaysettingsHelper.PullDisplaySettings(out.get(setupId),setup.getAttribute(Displaysettings.class));
-
-                    }
-
-                } else if (type instanceof ARGBType) {
-
-                    final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
-                    final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
-
-                    Converter nonVolatileConverter = createConverterARGBType(s);
-                    if (vs!=null) {
-                        Converter volatileConverter = createConverterARGBType(vs);
-                        out.put(setupId, new SourceAndConverter<>(s, nonVolatileConverter,
-                                new SourceAndConverter<>(vs, volatileConverter)));
-                    } else {
-                        out.put(setupId, new SourceAndConverter<>(s, nonVolatileConverter));
-                    }
-                    // Metadata need to exist before the display settings (projection mode) are set
-                    SourceAndConverterServices.getSourceAndConverterService().register(out.get(setupId));
-                    // Applying display settings if some have been set
-                    if (setup.getAttribute(Displaysettings.class)!=null) {
-                        DisplaysettingsHelper.PullDisplaySettings(out.get(setupId),setup.getAttribute(Displaysettings.class));
-                    }
-
-                } else {
-                    errlog.accept("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
-                }
-            }
-
-        WrapBasicImgLoader.removeWrapperIfPresent( asd );
 
         return out;
     }
@@ -382,31 +295,7 @@ public class SourceAndConverterHelper {
         return setup;
     }
 
-    private static String createSetupName( final BasicViewSetup setup ) {
-        if ( setup.hasName() ) {
-            if (!setup.getName().trim().equals("")) {
-                return setup.getName();
-            }
-        }
-
-        String name = "";
-
-        final Angle angle = setup.getAttribute( Angle.class );
-        if ( angle != null )
-            name += ( name.isEmpty() ? "" : " " ) + "a " + angle.getName();
-
-        final Channel channel = setup.getAttribute( Channel.class );
-        if ( channel != null )
-            name += ( name.isEmpty() ? "" : " " ) + "c " + channel.getName();
-
-        if ((channel == null)&&(angle == null)) {
-            name += "id "+setup.getId();
-        }
-
-        return name;
-    }
-
-    /**
+	/**
      * Here should go all the ways to build a Volatile Source
      * from a non Volatile Source, RealTyped
      * @param source source
@@ -434,7 +323,7 @@ public class SourceAndConverterHelper {
      * @param <T> realtype class
      * @return a suited converter
      */
-    private static< T extends RealType< T >>  Converter createConverterRealType(final T type) {
+    public static< T extends RealType< T >>  Converter createConverterRealType( final T type ) {
         final double typeMin = Math.max( 0, Math.min( type.getMinValue(), 65535 ) );
         final double typeMax = Math.max( 0, Math.min( type.getMaxValue(), 65535 ) );
         final RealARGBColorConverter< T > converter ;
@@ -454,7 +343,7 @@ public class SourceAndConverterHelper {
      * @param source source
      * @return a compatible converter
      */
-    private static Converter createConverterARGBType(Source source) {
+    public static Converter createConverterARGBType( Source source ) {
         final Converter converter ;
         if ( source.getType() instanceof Volatile)
             converter = new ScaledARGBConverter.VolatileARGB( 0, 255 );
@@ -946,4 +835,25 @@ public class SourceAndConverterHelper {
         return Math.max(Math.min(a,b), Math.min(Math.max(a,b),c)); //https://stackoverflow.com/questions/1582356/fastest-way-of-finding-the-middle-value-of-a-triple
     }
 
+    /**
+     * Determines all visible sources at the current mouse position in the Bdv window.
+     * Note: this method can be slow as it needs an actual random access on the source data.
+     * @param bdvHandle
+     * @return List of SourceAndConverters
+     */
+    public static List< SourceAndConverter< ? > > getSourceAndConvertersAtCurrentMousePosition( BdvHandle bdvHandle )
+    {
+        // Gets mouse location in space (global 3D coordinates) and time
+        final RealPoint mousePosInBdv = new RealPoint( 3 );
+        bdvHandle.getBdvHandle().getViewerPanel().getGlobalMouseCoordinates( mousePosInBdv );
+        int timePoint = bdvHandle.getViewerPanel().state().getCurrentTimepoint();
+
+        final List< SourceAndConverter< ? > > sourceAndConverters = SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverterOf( bdvHandle )
+                .stream()
+                .filter( sac -> isSourcePresentAt( sac, timePoint, mousePosInBdv ) )
+                .filter( sac -> SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible( sac, bdvHandle ) )
+                .collect( Collectors.toList() );
+
+        return sourceAndConverters;
+    }
 }

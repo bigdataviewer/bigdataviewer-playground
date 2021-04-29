@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,6 @@ import bdv.util.*;
 import bdv.viewer.render.AccumulateProjectorFactory;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.ItemIO;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.BdvCreator;
@@ -40,15 +39,16 @@ import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerOrthoSyncStarter;
 import sc.fiji.bdvpg.bdv.projector.AccumulateAverageProjectorARGB;
 import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGBFactory;
-import sc.fiji.bdvpg.bdv.projector.Projection;
+import sc.fiji.bdvpg.bdv.projector.Projector;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 import javax.swing.*;
 import java.awt.*;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Create Orthogonal Views",
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Create Orthogonal Views",
         description = "Creates 3 BDV windows with synchronized orthogonal views")
-public class BdvOrthoWindowCreatorCommand implements Command {
+public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Title of BDV windows")
     public String windowTitle = "BDV";
@@ -59,7 +59,7 @@ public class BdvOrthoWindowCreatorCommand implements Command {
     @Parameter(label = "Number of timepoints (1 for a single timepoint)")
     public int nTimepoints = 1;
 
-    @Parameter(label = "Source Projection Mode", choices = { Projection.MIXED_PROJECTOR, Projection.SUM_PROJECTOR, Projection.AVERAGE_PROJECTOR})
+    @Parameter(label = "Source Projection Mode", choices = { Projector.MIXED_PROJECTOR, Projector.SUM_PROJECTOR, Projector.AVERAGE_PROJECTOR})
     public String projector;
 
     @Parameter(label = "Add cross overlay to show view plane locations")
@@ -121,13 +121,13 @@ public class BdvOrthoWindowCreatorCommand implements Command {
         // Create accumulate projector factory
         AccumulateProjectorFactory<ARGBType> factory;
         switch (projector) {
-            case Projection.MIXED_PROJECTOR:
+            case Projector.MIXED_PROJECTOR:
                 factory = new AccumulateMixedProjectorARGBFactory(  );
                 opts = opts.accumulateProjectorFactory(factory);
-            case Projection.SUM_PROJECTOR:
+            case Projector.SUM_PROJECTOR:
                 // Default projector
                 break;
-            case Projection.AVERAGE_PROJECTOR:
+            case Projector.AVERAGE_PROJECTOR:
                 factory = AccumulateAverageProjectorARGB.factory;
                 opts = opts.accumulateProjectorFactory(factory);
                 break;

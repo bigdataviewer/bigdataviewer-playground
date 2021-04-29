@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -31,11 +31,14 @@ package sc.fiji.bdvpg;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import bigwarp.BigWarp;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import net.imglib2.type.numeric.ARGBType;
+import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
@@ -48,28 +51,20 @@ import java.util.stream.Collectors;
 
 public class BigWarpDemo {
 
+    static ImageJ ij;
+
     public static void main(String... args) {
         // Initializes static SourceService and Display Service
-        ImageJ ij = new ImageJ();
+        ij = new ImageJ();
         ij.ui().showUI();
-
+        System.out.println("BigWarp version:"+VersionUtils.getVersion(BigWarp.class));
         demo2d();
     }
 
     public static void demo3d() {
-        // load and convert an image
-        //ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
-        //RandomAccessibleInterval rai = ImageJFunctions.wrapReal(imp);
-        // Adds a third dimension because BDV needs 3D
-        //rai = Views.addDimension( rai, 0, 0 );
-
-        // Makes BDV Source
-        // Source blobs = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
-
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
-        //importer.run();
 
         AbstractSpimData spimData = importer.get();
 
@@ -79,7 +74,6 @@ public class BigWarpDemo {
                 .get(0);
 
         importer = new SpimDataFromXmlImporter(filePath);
-        //importer.run();
 
         spimData = importer.get();
 
@@ -91,9 +85,6 @@ public class BigWarpDemo {
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
-
-        // Creates SourceAndConverter Reference
-        //SourceAndConverter sacBlobs = SourceAndConverterUtils.createSourceAndConverter(blobs);
 
         // Show the sourceandconverter
         SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacFixed);
@@ -132,14 +123,8 @@ public class BigWarpDemo {
 
 
     public static void demo2d() {
-        // load and convert an image
-        //ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
-        //RandomAccessibleInterval rai = ImageJFunctions.wrapReal(imp);
-        // Adds a third dimension because BDV needs 3D
-        //rai = Views.addDimension( rai, 0, 0 );
 
         // Makes BDV Source
-        // Source blobs = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
 
         final String filePath = "src/test/resources/demoSlice.xml";
         // Import SpimData
@@ -166,9 +151,6 @@ public class BigWarpDemo {
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
-
-        // Creates SourceAndConverter Reference
-        //SourceAndConverter sacBlobs = SourceAndConverterUtils.createSourceAndConverter(blobs);
 
         // Show the sourceandconverter
         SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacFixed);
@@ -205,9 +187,13 @@ public class BigWarpDemo {
         }
     }
 
-    @Ignore // Needs BigWarp Fiji v > 6.0.3, but as of today, it is only 6.0.3 - SNAPSHOT - not ready for release
     @Test
     public void demoRunOk() {
         main(new String[]{""});
+    }
+
+    @After
+    public void closeFiji() {
+        TestHelper.closeFijiAndBdvs(ij);
     }
 }

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,7 @@ import bdv.viewer.*;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import net.imglib2.realtransform.AffineTransform3D;
+import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -44,10 +45,12 @@ import java.util.ArrayList;
 
 public class AffineTransformSourceDemo {
 
+    static ImageJ ij;
+
     public static void main(String... args) {
         // Initializes static SourceService and Display Service
 
-        ImageJ ij = new ImageJ();
+        ij = new ImageJ();
         ij.ui().showUI();
 
         demo(20);
@@ -57,6 +60,11 @@ public class AffineTransformSourceDemo {
     @Test
     public void demoRunOk() {
         main(new String[]{""});
+    }
+
+    @After
+    public void closeFiji() {
+        TestHelper.closeFijiAndBdvs(ij);
     }
 
     public static void demo(int numberOfSourcesInOneAxis) {

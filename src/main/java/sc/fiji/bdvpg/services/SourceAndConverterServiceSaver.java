@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,7 @@ package sc.fiji.bdvpg.services;
 
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
+import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.Context;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterInspector;
 
@@ -37,6 +38,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /** Big Objective : save the state of all open sources
  * By Using Gson and specific serialization depending on SourceAndConverter classes
@@ -105,9 +107,21 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
             // Let's launch serialization of all SpimDatasets first
             // This forces a saving of all datasets before they can be required by other sourceAdnConverters
             // Serializes datasets - required to avoid serialization issues
-            SourceAndConverterServices
+            Set<AbstractSpimData> asds = SourceAndConverterServices
                     .getSourceAndConverterService()
-                    .getSpimDatasets().forEach(gson::toJson);
+                    .getSpimDatasets();
+
+            // Avoid unnecessary serialization of unneeded spimdata
+            asds = asds.stream()
+                .filter(asd -> {
+                    List<SourceAndConverter<?>> sacs_in_asd = SourceAndConverterServices
+                            .getSourceAndConverterService()
+                            .getSourceAndConverterFromSpimdata(asd);
+                    return sacs_in_asd.stream()
+                            .anyMatch(sac -> sacs.contains(sac));
+                }).collect(Collectors.toSet());
+
+            asds.forEach(gson::toJson);
 
             try {
                 //System.out.println(f.getAbsolutePath());

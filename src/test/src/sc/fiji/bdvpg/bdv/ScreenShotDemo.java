@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -31,14 +31,15 @@ package sc.fiji.bdvpg.bdv;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import net.imagej.ImageJ;
+import org.junit.After;
 import org.junit.Test;
-import sc.fiji.bdvpg.bdv.ScreenShotMaker;
+import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.bdv.projector.Projection;
+import sc.fiji.bdvpg.bdv.projector.BlendingMode;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.display.ProjectionModeChanger;
+import sc.fiji.bdvpg.sourceandconverter.display.BlendingModeChanger;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.util.List;
@@ -53,10 +54,12 @@ import java.util.List;
  */
 public class ScreenShotDemo
 {
+    static ImageJ ij;
+
     public static void main(String[] args)
     {
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-        ImageJ ij = new ImageJ();
+        ij = new ImageJ();
         ij.ui().showUI();
 
         // Gets active BdvHandle instance
@@ -72,7 +75,7 @@ public class ScreenShotDemo
 
         showSacs( bdvHandle, sacs );
 
-        new ProjectionModeChanger( new SourceAndConverter[]{ sacs.get( 0 ) }, Projection.PROJECTION_MODE_AVG, true ).run();
+        new BlendingModeChanger( new SourceAndConverter[]{ sacs.get( 0 ) }, BlendingMode.Average, true ).run();
 
         ScreenShotMaker screenShotMaker = new ScreenShotMaker( bdvHandle );
         screenShotMaker.setPhysicalPixelSpacingInXY( 0.5, "micron" );
@@ -92,5 +95,10 @@ public class ScreenShotDemo
     @Test
     public void demoRunOk() {
         main(new String[]{""});
+    }
+
+    @After
+    public void closeFiji() {
+        TestHelper.closeFijiAndBdvs(ij);
     }
 }

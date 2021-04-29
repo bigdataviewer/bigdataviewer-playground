@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -41,8 +41,11 @@ import org.scijava.script.ScriptService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
-import sc.fiji.bdvpg.bdv.projector.Projection;
+import sc.fiji.bdvpg.bdv.projector.Projector;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
+import sc.fiji.bdvpg.scijava.services.ui.BdvHandleFilterNode;
+import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
@@ -54,6 +57,8 @@ import java.util.stream.Collectors;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+
+import javax.swing.tree.DefaultTreeModel;
 
 /**
  * Scijava Service which handles the Display of BDV SourceAndConverters in one or multiple BDV Windows
@@ -115,7 +120,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
                             "windowTitle", "Bdv",
                             "nTimepoints", 1,
                             "interpolate",false,
-                            "projector", Projection.SUM_PROJECTOR).get().getOutput("bdvh");
+                            "projector", Projector.SUM_PROJECTOR).get().getOutput("bdvh");
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -158,11 +163,12 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Makes visible a source, makes it visible in all bdvs according to BdvhReferences
-     * @param sac source to display
+     * Makes visible or invisible a source, applies this to all bdvs according to BdvhReferences
+     * @param sac source
+     * @param visible whether to set it visible
      */
-    public void makeVisible(SourceAndConverter<?> sac) {
-        getDisplaysOf(sac).forEach(bdvhr -> bdvhr.getViewerPanel().state().setSourceActive(sac, true));
+    public void setVisible(SourceAndConverter sac, boolean visible) {
+        getDisplaysOf(sac).forEach(bdvhr -> bdvhr.getViewerPanel().state().setSourceActive(sac, visible));
     }
 
     /**
@@ -174,6 +180,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
+<<<<<<< HEAD
      * Makes invisible a source, makes it invisible in all BDVs according to BdvhReferences
      * @param sac source to make invisible
      */
@@ -182,6 +189,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
+=======
+>>>>>>> master
      * Displays a BDV sourceandconverter into the specified BdvHandle
      * This function really is the core of this service
      * It mimicks or copies the functions of BdvVisTools because it is responsible to
@@ -434,6 +443,39 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
             return displayToMetadata.getIfPresent(bdvh).get(key);
         } else {
             return null;
+        }
+    }
+
+    public void registerBdvHandle( BdvHandle bdvh )
+    {
+        log.accept("BdvHandle found.");
+        //------------ Register BdvHandle in ObjectService
+        if (!os.getObjects(BdvHandle.class).contains(bdvh))
+        { // adds it only if not already present in ObjectService
+            os.addObject( bdvh );
+
+            //------------ Renames window to ensure unicity
+            String windowTitle = BdvHandleHelper.getWindowTitle( bdvh );
+            windowTitle = BdvHandleHelper.getUniqueWindowTitle( os, windowTitle );
+            BdvHandleHelper.setWindowTitle( bdvh, windowTitle );
+
+            //------------ Event handling in bdv sourceandconverterserviceui
+            final SourceAndConverterService sacService = ( SourceAndConverterService ) SourceAndConverterServices.getSourceAndConverterService();
+            DefaultTreeModel model = sacService.getUI().getTreeModel();
+            BdvHandleFilterNode node = new BdvHandleFilterNode( model, windowTitle, bdvh );
+            node.add( new SourceFilterNode( model, "All Sources", ( sac ) -> true, true ) );
+
+            //------------ Allows to remove the BdvHandle from the objectService when closed by the user
+            BdvHandleHelper.setBdvHandleCloseOperation( bdvh, cacheService, this, true,
+                    () -> {
+                        //bdvh.getViewerPanel().state().changeListeners().remove(vscl); // TODO : check no memory leak
+                        sacService.getUI().removeBdvHandleNodes( bdvh );
+                    } );
+
+            ( ( SourceFilterNode ) sacService.getUI().getTreeModel().getRoot() ).insert( node, 0 );
+                    /*SwingUtilities.invokeLater(()->
+                            sacsService.getUI().getTreeModel().nodeStructureChanged(node.getParent())//.reload()
+                    );*/
         }
     }
 

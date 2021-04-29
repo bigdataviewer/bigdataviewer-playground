@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,11 +29,11 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
-import org.scijava.command.Command;
 import org.scijava.command.InteractiveCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
 
@@ -46,9 +46,11 @@ import static org.scijava.ItemVisibility.MESSAGE;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@Plugin(type = Command.class, initializer = "init",  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Brightness")
+@Plugin(type = BdvPlaygroundActionCommand.class, initializer = "init",  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Brightness")
+public class BrightnessAdjusterCommand extends InteractiveCommand implements BdvPlaygroundActionCommand {
 
-public class BrightnessAdjusterCommand extends InteractiveCommand {
+    @Parameter(label = "Sources :", required = false, description = "Label the sources controlled by this window", persist = false)
+    String customSourceLabel = "Label your sources here";
 
     @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sources;
@@ -69,6 +71,7 @@ public class BrightnessAdjusterCommand extends InteractiveCommand {
     double maxSlider;
 
     boolean firstTimeCalled = true;
+
     boolean secondTimeCalled = true;
 
     public void run() {

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,6 +32,7 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
+import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.sourceandconverter.SourceAdder;
@@ -41,6 +42,7 @@ import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.util.List;
+
 
 /**
  *
@@ -55,9 +57,11 @@ public class BrightnessAutoAdjusterDemo
 
     static BdvHandle bdvHandle;
 
+	static ImageJ ij;
+
 	public static void main( String[] args ) {
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-        ImageJ ij = new ImageJ();
+        ij = new ImageJ();
         ij.ui().showUI();
 
 		// Creates a BdvHandle
@@ -87,7 +91,11 @@ public class BrightnessAutoAdjusterDemo
 	@Test
     public void demoRunOk() {
 	    main(new String[]{""});
-	    bdvHandle.close();
     }
+
+	@After
+	public void closeFiji() {
+		TestHelper.closeFijiAndBdvs(ij);
+	}
 
 }

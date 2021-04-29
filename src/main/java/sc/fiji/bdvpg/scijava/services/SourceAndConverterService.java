@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2020 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,39 +32,45 @@ import bdv.ViewerImgLoader;
 import bdv.img.cache.VolatileGlobalCellCache;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import com.google.gson.Gson;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import net.imagej.patcher.LegacyInjector;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
 import org.scijava.command.Command;
 import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;
+import org.scijava.log.LogLevel;
+import org.scijava.log.LogService;
 import org.scijava.module.ModuleItem;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginService;
 import org.scijava.script.ScriptService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.scijava.ui.UIService;
-import sc.fiji.bdvpg.scijava.command.source.*;
+import sc.fiji.bdvpg.bdv.projector.BlendingMode;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
+import sc.fiji.bdvpg.sourceandconverter.importer.SourceAndConverterFromSpimDataCreator;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 /**
  * Scijava Service which centralizes BDV Sources, independently of their display
@@ -77,23 +83,34 @@ import com.google.common.cache.CacheBuilder;
  * The most interesting of these objects are actually created by the BdvSourceAndConverterDisplayService:
  * - Converter to ARGBType, ConverterSetup, and Volatile view
  *
- * TODO : Think more carefully : maybe the volatile sourceandconverter should be done here...
- * Because when multiply wrapped sourceandconverter end up here, it maybe isn't possible to make the volatile view
- */
+ * */
 
 @Plugin(type=Service.class)
 public class SourceAndConverterService extends AbstractService implements SciJavaService, ISourceAndConverterService
 {
 
+    static {
+        LegacyInjector.preinit();
+    }
+
+    /**
+     * Logger
+     */
+    @Parameter
+    LogService ls;
+    LogService logger() {
+        return ls;
+    }
+
     /**
      * Standard logger
      */
-    public static Consumer<String> log = (str) -> System.out.println( SourceAndConverterService.class.getSimpleName()+":"+str);
+    public Consumer<String> log = (str) -> logger().log(LogLevel.INFO,str);//System.out.println( SourceAndConverterService.class.getSimpleName()+":"+str);
 
     /**
      * Error logger
      */
-    public static Consumer<String> errlog = (str) -> System.err.println( SourceAndConverterService.class.getSimpleName()+":"+str);
+    public Consumer<String> errlog = (str) -> logger().log(LogLevel.ERROR,str);//System.err.println( SourceAndConverterService.class.getSimpleName()+":"+str);
 
     /**
      * Scijava Object Service : will contain all the sourceAndConverters
@@ -164,7 +181,15 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public Collection<String> getMetadataKeys(SourceAndConverter<?> sac) {
+    public void removeMetadata(SourceAndConverter sac, String key) {
+        Map<String,Object> metadata = sacToMetadata.getIfPresent(sac);
+        if (metadata!=null) {
+            metadata.remove(key);
+        }
+    }
+
+    @Override
+    public Collection<String> getMetadataKeys(SourceAndConverter sac) {
         Map<String, Object> map = sacToMetadata.getIfPresent(sac);
         if (map==null) {
             return new ArrayList<>();
@@ -207,15 +232,17 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         if (spimdataToMetadata.getIfPresent(asd)==null) {
             Map<String, Object> sourceData = new HashMap<>();
             spimdataToMetadata.put(asd, sourceData);
-
-            Map<Integer, SourceAndConverter<?>> sacs = SourceAndConverterHelper.createSourceAndConverters(asd);
-            this.register(sacs.values());
-            sacs.forEach((id,sac) -> {
-                this.linkToSpimData(sac, asd, id);
-                if (uiAvailable) ui.update(sac);
-            });
         }
 
+        final SourceAndConverterFromSpimDataCreator creator = new SourceAndConverterFromSpimDataCreator( asd );
+        Map<Integer, SourceAndConverter<?>> sacs = creator.getSetupIdToSourceAndConverter();
+        this.register(sacs.values());
+        final ISourceAndConverterService service = SourceAndConverterServices.getSourceAndConverterService();
+        sacs.forEach((id,sac) -> {
+            creator.getMetadata( sac ).forEach( (key,value) -> service.setMetadata(sac, key, value) );
+            this.linkToSpimData(sac, asd, id);
+            if (uiAvailable) ui.update(sac);
+        });
     }
 
     @Override
@@ -321,8 +348,8 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
         registerDefaultActions();
         if (uiService!=null) {
-            log.accept("uiService detected : Constructing JPanel for BdvSourceAndConverterService");
-            ui = new SourceAndConverterServiceUI(this);
+            log.accept( "uiService detected : Constructing JPanel for BdvSourceAndConverterService" );
+            ui = new SourceAndConverterServiceUI( this );
             uiAvailable = true;
         }
 
@@ -380,128 +407,61 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             for (SourceAndConverter<?> src:srcs){
                 System.out.println(src.getSpimSource().getName());
             }});
-        commandService.getCommands().forEach(ci -> registerScijavaCommandInfo(ci));
-        registerAction(getCommandName(SourcesResamplerCommand.class),
-                (sacs) -> {
-                    commandService.run(SourcesResamplerCommand.class, true, "sourcesToResample", sacs);//.get();
-                });
 
-        /*File f = new File("bdvpgsettings"+File.separator+"ActionPackages.json");
-        if (f.exists()) {
-            try {
-                Gson gson = new Gson();
-                String[] extraActions = gson.fromJson(new FileReader(f.getAbsoluteFile()), String[].class);
-
-                for (String actionClass : extraActions) {
-                    registerScijavaCommandInfo(commandService.getCommand(actionClass));
-                }
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }*/
+        context().getService(PluginService.class)
+                .getPluginsOfType(BdvPlaygroundActionCommand.class)
+                .forEach(ci ->
+                    registerScijavaCommandInfo(commandService.getCommand(ci.getClassName()))
+                );
 
     }
 
     @Parameter
     CommandService commandService;
 
-    static String[] allowedPackagesPaths = null;
-    static String[] defaultAllowedPackagesPaths = {"command:sc.fiji.bdvpg"};//, "command:ch.epfl.biop"};
-
-    static {
-        File f = new File("bdvpgsettings"+File.separator+"ActionPackages.json");
-        if (f.exists()) {
-            try {
-                Gson gson = new Gson();
-                allowedPackagesPaths = gson.fromJson(new FileReader(f.getAbsoluteFile()), String[].class);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static boolean isContainedInPackagesToRegister(String commandClass) {
-
-        for (String packagePath : defaultAllowedPackagesPaths) {
-            if (commandClass.startsWith(packagePath)) {
-                //System.out.println("is "+commandClass+" contained ? Yes");
-                return true;
-            }
-        }
-
-        if (allowedPackagesPaths!=null) {
-            for (String packagePath : allowedPackagesPaths) {
-                if (commandClass.startsWith(packagePath)) {
-                    //System.out.println(" Yes");
-                    return true;
-                }
-            }
-        }
-
-        //System.out.println(" No");
-        return false;
-    }
-
     public void registerScijavaCommandInfo(CommandInfo ci) {
         int nCountSourceAndConverter = 0;
         int nCountSourceAndConverterList = 0;
-        // ci.getDelegateClassName();
-        //System.out.println(ci.getIdentifier());
-        //isContainedInPackagesToRegister(ci.getIdentifier());
-        // System.out.println(ci.getTitle());
-
-        //System.out.println("before registration "+ci.getIdentifier());
         try {
-
-            if (isContainedInPackagesToRegister(ci.getIdentifier())){// && (ci.inputs() != null)) {
-
+            for (ModuleItem input : ci.inputs()) {
+                if (input.getType().equals(SourceAndConverter.class)) {
+                    nCountSourceAndConverter++;
+                }
+                if (input.getType().equals(SourceAndConverter[].class)) {
+                    nCountSourceAndConverterList++;
+                }
+            }
+            if (nCountSourceAndConverter + nCountSourceAndConverterList == 1) {
+                // Can be automatically mapped to popup action
                 for (ModuleItem input : ci.inputs()) {
                     if (input.getType().equals(SourceAndConverter.class)) {
-                        nCountSourceAndConverter++;
+                        // It's an action which takes a SourceAndConverter
+                        registerAction(ci.getMenuPath().getLeaf().toString(),
+                                (sacs) -> {
+                                    // Todo : improve by sending the parameters all over again
+                                    for (SourceAndConverter sac : sacs) {
+                                        commandService.run(ci, true, input.getName(), sac);//.get(); TODO understand why get is impossible
+                                    }
+                                });
+                        //log.accept("Registering action entitled " + ci.getMenuPath().getLeaf().toString() + " from command " + ci.getClassName());
+
                     }
                     if (input.getType().equals(SourceAndConverter[].class)) {
-                        nCountSourceAndConverterList++;
+                        // It's an action which takes a SourceAndConverter List
+                        registerAction(ci.getMenuPath().getLeaf().toString(),
+                                (sacs) -> {
+                                    commandService.run(ci, true, input.getName(), sacs);//.get();
+                                });
+
+                        //log.accept("Registering action entitled " + ci.getMenuPath().getLeaf().toString() + " from command " + ci.getClassName());
                     }
                 }
-                if (nCountSourceAndConverter + nCountSourceAndConverterList == 1) {
-                    // Can be automatically mapped to popup action
-                    for (ModuleItem input : ci.inputs()) {
-                        if (input.getType().equals(SourceAndConverter.class)) {
-                            // It's an action which takes a SourceAndConverter
-                            registerAction(ci.getMenuPath().getLeaf().toString(),
-                                    (sacs) -> {
-                                        // Todo : improve by sending the parameters all over again
-                                        for (SourceAndConverter<?> sac : sacs) {
-                                            commandService.run(ci, true, input.getName(), sac);//.get(); TODO understand why get is impossible
-                                        }
-                                    });
-                            //log.accept("Registering action entitled " + ci.getMenuPath().getLeaf().toString() + " from command " + ci.getClassName());
-
-                        }
-                        if (input.getType().equals(SourceAndConverter[].class)) {
-                            // It's an action which takes a SourceAndConverter List
-                            registerAction(ci.getMenuPath().getLeaf().toString(),
-                                    (sacs) -> {
-                                        commandService.run(ci, true, input.getName(), sacs);//.get();
-                                    });
-
-                            log.accept("Registering action entitled " + ci.getMenuPath().getLeaf().toString() + " from command " + ci.getClassName());
-                        }
-                    }
-                } else {
-                    registerAction(ci.getMenuPath().getMenuString(),
-                            (sacs) -> {
-                                //try {
-                                commandService.run(ci, true);//.get();
-                                //} catch (InterruptedException e) {
-                                //    e.printStackTrace();
-                                //} catch (ExecutionException e) {
-                                //    e.printStackTrace();
-                                //}
-                            });
-                    log.accept("Registering action entitled " + ci.getMenuPath().getMenuString() + " from command " + ci.getClassName() + " sacs ignored");
-                }
+            } else {
+                registerAction(ci.getMenuPath().getLeaf().toString(),
+                        (sacs) -> {
+                            commandService.run(ci, true);
+                        });
+                log.accept("Registering action entitled " + ci.getMenuPath().getMenuString() + " from command " + ci.getClassName() + " sacs ignored");
             }
         } catch (NullPointerException npe) {
             errlog.accept("Error on scijava commands registrations");
@@ -591,4 +551,8 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         return getMetadata(asd,key)!=null;
     }
 
+    public static String getCommandName( Command command )
+    {
+        return command.getClass().getAnnotation( Plugin.class ).name();
+    }
 }
