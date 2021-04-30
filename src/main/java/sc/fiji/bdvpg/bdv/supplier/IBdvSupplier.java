@@ -1,7 +1,8 @@
-package sc.fiji.bdvpg.services.serializers.bdv;
+package sc.fiji.bdvpg.bdv.supplier;
 
 import bdv.util.BdvHandle;
 import org.scijava.plugin.SciJavaPlugin;
+import sc.fiji.bdvpg.scijava.adapter.bdv.DefaultBdvSupplierAdapter;
 
 import java.util.function.Supplier;
 

@@ -35,20 +35,18 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.Context;
-import org.scijava.InstantiableException;
-import sc.fiji.bdvpg.services.serializers.AbstractSpimdataAdapter;
+import sc.fiji.bdvpg.scijava.adapter.AbstractSpimdataAdapter;
 import sc.fiji.serializers.*;
-import sc.fiji.bdvpg.services.serializers.SourceAndConverterAdapter;
 
 import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class SourceAndConverterSerializer {
+public class SourceAndConverterAdapter {
 
     final File basePath;
 
-    public SourceAndConverterSerializer(Context ctx, File basePath) {
+    public SourceAndConverterAdapter(Context ctx, File basePath) {
         this.ctx = ctx;
         this.basePath = basePath;
     }
@@ -71,12 +69,12 @@ public class SourceAndConverterSerializer {
         return ctx;
     }
 
-    public static Consumer<String> log = (str) -> System.out.println(SourceAndConverterSerializer.class+":"+str);
+    public static Consumer<String> log = (str) -> System.out.println(SourceAndConverterAdapter.class+":"+str);
 
     public Gson getGson() {
         GsonBuilder builder = ScijavaGsonHelper.getGsonBuilder(ctx, true);
 
-        builder .registerTypeHierarchyAdapter(SourceAndConverter.class, new SourceAndConverterAdapter(this))
+        builder .registerTypeHierarchyAdapter(SourceAndConverter.class, new sc.fiji.bdvpg.scijava.adapter.SourceAndConverterAdapter(this))
                 .registerTypeHierarchyAdapter(AbstractSpimData.class, new AbstractSpimdataAdapter(this));
 
         return builder.create();

@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.services.serializers.plugins;
+package sc.fiji.bdvpg.scijava.adapter.source;
 
 import bdv.SpimSource;
 import bdv.viewer.SourceAndConverter;
@@ -35,7 +35,7 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
-import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
+import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.lang.reflect.Type;
@@ -46,10 +46,10 @@ import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_INFO;
 @Plugin(type = ISourceAdapter.class)
 public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 
-    SourceAndConverterSerializer sacSerializer;
+    SourceAndConverterAdapter sacSerializer;
 
     @Override
-    public void setSacSerializer(SourceAndConverterSerializer sacSerializer) {
+    public void setSacSerializer(SourceAndConverterAdapter sacSerializer) {
         this.sacSerializer = sacSerializer;
     }
 

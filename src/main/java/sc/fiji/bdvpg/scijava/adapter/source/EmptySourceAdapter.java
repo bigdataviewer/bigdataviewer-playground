@@ -26,36 +26,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.services.serializers;
+package sc.fiji.bdvpg.scijava.adapter.source;
 
+import bdv.util.EmptySource;
+import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
-import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.plugin.Plugin;
-import sc.fiji.serializers.IClassAdapter;
+import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.lang.reflect.Type;
 
-@Plugin(type = IClassAdapter.class)
-public class AffineTransform3DAdapter implements IClassAdapter<AffineTransform3D> {
+@Plugin(type = ISourceAdapter.class)
+public class EmptySourceAdapter implements ISourceAdapter<EmptySource>{
+
+    SourceAndConverterAdapter sacSerializer;
 
     @Override
-    public AffineTransform3D deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        double[] rowPackedCopy =
-        jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("affinetransform3d"), double[].class);
-        AffineTransform3D at3d = new AffineTransform3D();
-        at3d.set(rowPackedCopy);
-        return at3d;
+    public void setSacSerializer(SourceAndConverterAdapter sacSerializer) {
+        this.sacSerializer = sacSerializer;
     }
 
     @Override
-    public JsonElement serialize(AffineTransform3D affineTransform3D, Type type, JsonSerializationContext jsonSerializationContext) {
+    public Class<EmptySource> getSourceClass() {
+        return EmptySource.class;
+    }
+
+    @Override
+    public JsonElement serialize(SourceAndConverter sac, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
-        obj.add("affinetransform3d", jsonSerializationContext.serialize(affineTransform3D.getRowPackedCopy()));
+        EmptySource source = (EmptySource) sac.getSpimSource();
+        obj.add("empty_source_parameters", jsonSerializationContext.serialize(source.getParameters()));
         return obj;
     }
 
     @Override
-    public Class<? extends AffineTransform3D> getAdapterClass() {
-        return AffineTransform3D.class;
+    public SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        JsonObject obj = jsonElement.getAsJsonObject();
+        EmptySource.EmptySourceParams sourceParams = jsonDeserializationContext.deserialize(obj.get("empty_source_parameters"), EmptySource.EmptySourceParams.class);
+
+        return SourceAndConverterHelper.createSourceAndConverter(new EmptySource(sourceParams));
     }
 }

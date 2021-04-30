@@ -26,45 +26,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.services.serializers.plugins;
+package sc.fiji.bdvpg.scijava.adapter.source;
 
-import bdv.tools.transformation.TransformedSource;
+import bdv.img.WarpedSource;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.realtransform.RealTransform;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
+import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
+import sc.fiji.bdvpg.sourceandconverter.transform.SourceRealTransformer;
 
 import java.lang.reflect.Type;
 
 @Plugin(type = ISourceAdapter.class)
-public class TransformedSourceAdapter implements ISourceAdapter<TransformedSource> {
+public class WarpedSourceAdapter implements ISourceAdapter<WarpedSource>{
 
-    SourceAndConverterSerializer sacSerializer;
+    SourceAndConverterAdapter sacSerializer;
 
     @Override
-    public void setSacSerializer(SourceAndConverterSerializer sacSerializer) {
+    public void setSacSerializer(SourceAndConverterAdapter sacSerializer) {
         this.sacSerializer = sacSerializer;
     }
 
     @Override
-    public Class<TransformedSource> getSourceClass() {
-        return TransformedSource.class;
+    public Class<WarpedSource> getSourceClass() {
+        return WarpedSource.class;
     }
 
     @Override
     public JsonElement serialize(SourceAndConverter sac, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
+        WarpedSource source = (WarpedSource) sac.getSpimSource();
+        obj.add("realtransform", jsonSerializationContext.serialize(source.getTransform()));
 
-        TransformedSource source = (TransformedSource) sac.getSpimSource();
-        AffineTransform3D fixedTr = new AffineTransform3D();
-        AffineTransform3D incrTr = new AffineTransform3D();
-        source.getIncrementalTransform(incrTr);
-        source.getFixedTransform(fixedTr);
+        /*if (sacSerializer.isObjectRegistered(Source.class, source.getWrappedSource())) {
+            int idWrapped = sacSerializer.getObjectIndex()
+        } else {
 
-        obj.add("affinetransform_fixed", jsonSerializationContext.serialize(fixedTr));
+        }*/
+
         Integer idWrapped = sacSerializer.getSourceToId().get(source.getWrappedSource());
 
         if (idWrapped==null) {
@@ -91,13 +92,23 @@ public class TransformedSourceAdapter implements ISourceAdapter<TransformedSourc
         }
 
         if (wrappedSac == null) {
-            System.err.println("Couldn't deserialize wrapped source");
+            System.err.println("Couldn't deserialize wrapped source of Warped Source");
             return null;
         }
+        JsonElement transformElement = jsonElement.getAsJsonObject().get("realtransform");
 
-        AffineTransform3D at3d = jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("affinetransform_fixed"), AffineTransform3D.class);
+        RealTransform rt;
 
-        SourceAndConverter sac = new SourceAffineTransformer(wrappedSac, at3d).getSourceOut();
+        if (transformElement.getAsJsonObject().has("affinetransform3d")) {
+            rt = jsonDeserializationContext.deserialize(transformElement, AffineTransform3D.class);
+        } else {
+            rt = jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("realtransform"), RealTransform.class);
+        }
+
+        SourceRealTransformer srt = new SourceRealTransformer(wrappedSac, rt);
+        srt.run();
+        SourceAndConverter sac = srt.getSourceOut();
+
         /*SourceAndConverterServices.getSourceAndConverterService()
                 .register(sac);*/
 

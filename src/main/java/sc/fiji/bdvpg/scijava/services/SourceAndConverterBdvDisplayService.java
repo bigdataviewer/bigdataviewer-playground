@@ -30,14 +30,12 @@ package sc.fiji.bdvpg.scijava.services;
 
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
-import bdv.util.BdvOptions;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.Gson;
 import ij.Prefs;
 import net.imglib2.converter.Converter;
 import net.imglib2.util.Pair;
 import org.scijava.Context;
-import org.scijava.command.CommandService;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -45,22 +43,18 @@ import org.scijava.script.ScriptService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
-import sc.fiji.bdvpg.bdv.projector.Projector;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import sc.fiji.bdvpg.scijava.services.ui.BdvHandleFilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.services.serializers.bdv.DefaultBdvSupplier;
-import sc.fiji.bdvpg.services.serializers.bdv.IBdvSupplier;
-import sc.fiji.bdvpg.services.serializers.bdv.SerializableBdvOptions;
+import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
+import sc.fiji.bdvpg.bdv.supplier.IBdvSupplier;
+import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -130,7 +124,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     public BdvHandle getNewBdv() {
 
         if (bdvSupplier==null) {
-            log.accept(" --- Generating default bdv window");
+            log.accept(" --- Fetching or generating default bdv window");
             Gson gson = ScijavaGsonHelper.getGson(ctx);
             String defaultBdvViewer = gson.toJson(new DefaultBdvSupplier(new SerializableBdvOptions()));
             String  bdvSupplierJson = Prefs.get("default_bigdataviewer", defaultBdvViewer);

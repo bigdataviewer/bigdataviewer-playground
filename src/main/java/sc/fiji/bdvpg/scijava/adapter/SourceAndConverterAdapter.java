@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.services.serializers;
+package sc.fiji.bdvpg.scijava.adapter;
 
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
@@ -34,10 +34,9 @@ import com.google.gson.*;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.InstantiableException;
-import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.serializers.IObjectScijavaAdapterService;
-import sc.fiji.bdvpg.services.serializers.plugins.ISourceAdapter;
+import sc.fiji.bdvpg.scijava.adapter.source.ISourceAdapter;
 import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
 
 import java.lang.reflect.Type;
@@ -47,12 +46,12 @@ import java.util.Map;
 public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConverter>,
         JsonDeserializer<SourceAndConverter> {
 
-    SourceAndConverterSerializer sacSerializer;
+    sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer;
 
     Map<Class<? extends Source>, ISourceAdapter> sourceSerializers = new HashMap<>();
     Map<String, ISourceAdapter> sourceSerializersFromName = new HashMap<>();
 
-    public SourceAndConverterAdapter(SourceAndConverterSerializer sacSerializer) {
+    public SourceAndConverterAdapter(sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer) {
         this.sacSerializer = sacSerializer;
         sacSerializer.getScijavaContext().getService(IObjectScijavaAdapterService.class)
                 .getAdapters(ISourceAdapter.class)

@@ -1,9 +1,10 @@
-package sc.fiji.bdvpg.services.serializers.bdv;
+package sc.fiji.bdvpg.bdv.supplier;
 
 import bdv.util.AxisOrder;
 import bdv.util.BdvOptions;
 import bdv.viewer.render.AccumulateProjectorFactory;
 import net.imglib2.type.numeric.ARGBType;
+import sc.fiji.bdvpg.bdv.projector.DefaultAccumulatorFactory;
 
 /**
  * Because BdvOptions is not directly serializable

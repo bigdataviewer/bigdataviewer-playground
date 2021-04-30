@@ -26,15 +26,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.services.serializers.plugins;
+package sc.fiji.bdvpg.scijava.adapter.source;
 
 import bdv.util.ResampledSource;
 import bdv.viewer.Interpolation;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
 
 import java.lang.reflect.Type;
@@ -42,10 +41,10 @@ import java.lang.reflect.Type;
 @Plugin(type = ISourceAdapter.class)
 public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
 
-    SourceAndConverterSerializer sacSerializer;
+    SourceAndConverterAdapter sacSerializer;
 
     @Override
-    public void setSacSerializer(SourceAndConverterSerializer sacSerializer) {
+    public void setSacSerializer(SourceAndConverterAdapter sacSerializer) {
         this.sacSerializer = sacSerializer;
     }
 

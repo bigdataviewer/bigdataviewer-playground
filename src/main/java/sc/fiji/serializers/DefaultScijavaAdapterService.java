@@ -26,23 +26,52 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.services.serializers.plugins;
+package sc.fiji.serializers;
 
-import bdv.viewer.Source;
-import bdv.viewer.SourceAndConverter;
-import com.google.gson.*;
-import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
+import org.scijava.Context;
+import org.scijava.Priority;
+import org.scijava.plugin.*;
+import org.scijava.service.Service;
 import sc.fiji.serializers.IObjectScijavaAdapter;
+import sc.fiji.serializers.IObjectScijavaAdapterService;
 
-import java.lang.reflect.Type;
+import java.util.List;
 
-public interface ISourceAdapter<S extends Source> extends IObjectScijavaAdapter {
+@Plugin(type = Service.class)
+public class DefaultScijavaAdapterService extends AbstractPTService<IObjectScijavaAdapter> implements IObjectScijavaAdapterService {
 
-    void setSacSerializer(SourceAndConverterSerializer sacSerializer);
+    @Override
+    public Class<IObjectScijavaAdapter> getPluginType() {
+        return IObjectScijavaAdapter.class;
+    }
 
-    Class<S> getSourceClass();
+    @Parameter
+    Context ctx;
 
-    JsonElement serialize(SourceAndConverter sac, Type type, JsonSerializationContext jsonSerializationContext);
+    @Override
+    public Context context() {
+        return ctx;
+    }
 
-    SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException;
+    @Override
+    public Context getContext() {
+        return ctx;
+    }
+
+    double priority = Priority.NORMAL;
+
+    @Override
+    public double getPriority() {
+        return priority;
+    }
+
+    @Override
+    public void setPriority(double priority) {
+        this.priority = priority;
+    }
+
+    @Override
+    public <PT extends IObjectScijavaAdapter> List<PluginInfo<PT>> getAdapters(Class<PT> adapterClass) {
+        return pluginService().getPluginsOfType(adapterClass);
+    }
 }

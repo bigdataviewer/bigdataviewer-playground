@@ -1,6 +1,5 @@
 package sc.fiji.bdvpg.serialization;
 
-import bdv.util.Prefs;
 import com.google.gson.Gson;
 import net.imagej.ImageJ;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -9,8 +8,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
-import sc.fiji.bdvpg.services.serializers.bdv.DefaultBdvSupplier;
-import sc.fiji.bdvpg.services.serializers.bdv.SerializableBdvOptions;
+import sc.fiji.bdvpg.scijava.adapter.transform.AffineTransform3DAdapter;
+import sc.fiji.bdvpg.scijava.adapter.bdv.DefaultBdvSupplierAdapter;
+import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
+import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
 import sc.fiji.serializers.ScijavaGsonHelper;
 
 public class SerializationTests {
@@ -33,7 +34,7 @@ public class SerializationTests {
 
     /**
      * Test:
-     * {@link sc.fiji.bdvpg.services.serializers.bdv.DefaultBdvSupplierAdapter}
+     * {@link DefaultBdvSupplierAdapter}
      */
     @Test
     public void testBdvSupplierSerialization() {
@@ -43,7 +44,7 @@ public class SerializationTests {
 
     /**
      * Test:
-     * {@link sc.fiji.bdvpg.services.serializers.AffineTransform3DAdapter}
+     * {@link AffineTransform3DAdapter}
      */
     @Test
     public void testAffineTransformSerialization() {

@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.services.serializers.plugins;
+package sc.fiji.bdvpg.scijava.adapter.transform;
 
 import com.google.gson.*;
 import jitk.spline.ThinPlateR2LogRSplineKernelTransform;

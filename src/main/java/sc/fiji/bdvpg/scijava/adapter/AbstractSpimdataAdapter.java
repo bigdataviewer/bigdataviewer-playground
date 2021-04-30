@@ -26,11 +26,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.services.serializers;
+package sc.fiji.bdvpg.scijava.adapter;
 
 import com.google.gson.*;
 import mpicbg.spim.data.generic.AbstractSpimData;
-import sc.fiji.bdvpg.services.SourceAndConverterSerializer;
+import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.exporter.XmlFromSpimDataExporter;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
@@ -45,11 +45,11 @@ import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_LOCATI
 public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData>,
         JsonDeserializer<AbstractSpimData> {
 
-    SourceAndConverterSerializer sacSerializer;
+    SourceAndConverterAdapter sacSerializer;
 
     int spimdataCounter = 0;
 
-    public AbstractSpimdataAdapter(SourceAndConverterSerializer sacSerializer) {
+    public AbstractSpimdataAdapter(SourceAndConverterAdapter sacSerializer) {
         this.sacSerializer = sacSerializer;
     }
 

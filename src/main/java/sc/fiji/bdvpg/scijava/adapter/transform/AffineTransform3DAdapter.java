@@ -26,52 +26,36 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.services.serializers.plugins;
+package sc.fiji.bdvpg.scijava.adapter.transform;
 
-import org.scijava.Context;
-import org.scijava.Priority;
-import org.scijava.plugin.*;
-import org.scijava.service.Service;
-import sc.fiji.serializers.IObjectScijavaAdapter;
-import sc.fiji.serializers.IObjectScijavaAdapterService;
+import com.google.gson.*;
+import net.imglib2.realtransform.AffineTransform3D;
+import org.scijava.plugin.Plugin;
+import sc.fiji.serializers.IClassAdapter;
 
-import java.util.List;
+import java.lang.reflect.Type;
 
-@Plugin(type = Service.class)
-public class DefaultBdvPlaygroundSerializerService extends AbstractPTService<IObjectScijavaAdapter> implements IObjectScijavaAdapterService {
+@Plugin(type = IClassAdapter.class)
+public class AffineTransform3DAdapter implements IClassAdapter<AffineTransform3D> {
 
     @Override
-    public Class<IObjectScijavaAdapter> getPluginType() {
-        return IObjectScijavaAdapter.class;
-    }
-
-    @Parameter
-    Context ctx;
-
-    @Override
-    public Context context() {
-        return ctx;
+    public AffineTransform3D deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        double[] rowPackedCopy =
+        jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("affinetransform3d"), double[].class);
+        AffineTransform3D at3d = new AffineTransform3D();
+        at3d.set(rowPackedCopy);
+        return at3d;
     }
 
     @Override
-    public Context getContext() {
-        return ctx;
-    }
-
-    double priority = Priority.NORMAL;
-
-    @Override
-    public double getPriority() {
-        return priority;
+    public JsonElement serialize(AffineTransform3D affineTransform3D, Type type, JsonSerializationContext jsonSerializationContext) {
+        JsonObject obj = new JsonObject();
+        obj.add("affinetransform3d", jsonSerializationContext.serialize(affineTransform3D.getRowPackedCopy()));
+        return obj;
     }
 
     @Override
-    public void setPriority(double priority) {
-        this.priority = priority;
-    }
-
-    @Override
-    public <PT extends IObjectScijavaAdapter> List<PluginInfo<PT>> getAdapters(Class<PT> adapterClass) {
-        return pluginService().getPluginsOfType(adapterClass);
+    public Class<? extends AffineTransform3D> getAdapterClass() {
+        return AffineTransform3D.class;
     }
 }

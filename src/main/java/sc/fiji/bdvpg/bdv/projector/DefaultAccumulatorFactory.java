@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.services.serializers.bdv;
+package sc.fiji.bdvpg.bdv.projector;
 
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.render.AccumulateProjectorARGB;

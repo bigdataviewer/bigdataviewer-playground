@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.services.serializers.bdv;
+package sc.fiji.bdvpg.bdv.supplier;
 
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;

@@ -38,7 +38,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
 
-public class SourceAndConverterServiceLoader extends SourceAndConverterSerializer implements Runnable{
+public class SourceAndConverterServiceLoader extends SourceAndConverterAdapter implements Runnable{
 
     String filePath;
     Context ctx;
