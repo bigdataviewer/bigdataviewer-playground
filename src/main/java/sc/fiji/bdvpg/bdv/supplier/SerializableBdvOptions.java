@@ -11,30 +11,30 @@ import sc.fiji.bdvpg.bdv.projector.DefaultAccumulatorFactory;
  */
 public class SerializableBdvOptions {
 
-    int width = -1;
+    public int width = -1;
 
-    int height = -1;
+    public int height = -1;
 
-    double[] screenScales = new double[] { 1, 0.75, 0.5, 0.25, 0.125 };
+    public double[] screenScales = new double[] { 1, 0.75, 0.5, 0.25, 0.125 };
 
-    long targetRenderNanos = 30 * 1000000l;
+    public long targetRenderNanos = 30 * 1000000l;
 
-    int numRenderingThreads = 3;
+    public int numRenderingThreads = 3;
 
-    int numSourceGroups = 10;
+    public int numSourceGroups = 10;
 
-    String frameTitle = "BigDataViewer";
+    public String frameTitle = "BigDataViewer";
 
-    boolean is2D = false;
+    public boolean is2D = false;
 
-    AxisOrder axisOrder = AxisOrder.DEFAULT;
+    public AxisOrder axisOrder = AxisOrder.DEFAULT;
 
     // Extra for the playground
-    boolean interpolate = false;
+    public boolean interpolate = false;
 
-    int numTimePoints = 1;
+    public int numTimePoints = 1;
 
-    AccumulateProjectorFactory<ARGBType> accumulateProjectorFactory = new DefaultAccumulatorFactory();
+    public AccumulateProjectorFactory<ARGBType> accumulateProjectorFactory = new DefaultAccumulatorFactory();
 
     // Not serialized
     //private TransformEventHandlerFactory transformEventHandlerFactory = TransformEventHandler3D::new;
