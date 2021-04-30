@@ -32,8 +32,11 @@ import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
 import bdv.viewer.SourceAndConverter;
+import com.google.gson.Gson;
+import ij.Prefs;
 import net.imglib2.converter.Converter;
 import net.imglib2.util.Pair;
+import org.scijava.Context;
 import org.scijava.command.CommandService;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
@@ -49,6 +52,7 @@ import sc.fiji.bdvpg.scijava.services.ui.BdvHandleFilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.services.serializers.bdv.DefaultBdvSupplier;
+import sc.fiji.bdvpg.services.serializers.bdv.IBdvSupplier;
 import sc.fiji.bdvpg.services.serializers.bdv.SerializableBdvOptions;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
@@ -62,6 +66,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import sc.fiji.serializers.ScijavaGsonHelper;
 
 import javax.swing.tree.DefaultTreeModel;
 
@@ -109,7 +114,10 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     @Parameter
     ObjectService os;
 
-    Supplier<BdvHandle> bdvSupplier = new DefaultBdvSupplier(new SerializableBdvOptions());
+    @Parameter
+    Context ctx;
+
+    Supplier<BdvHandle> bdvSupplier;  // = new DefaultBdvSupplier(new SerializableBdvOptions());
 
     /**
      * Can be used to change how Bdv Windows are created
@@ -120,6 +128,15 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     public BdvHandle getNewBdv() {
+
+        if (bdvSupplier==null) {
+            log.accept(" --- Generating default bdv window");
+            Gson gson = ScijavaGsonHelper.getGson(ctx);
+            String defaultBdvViewer = gson.toJson(new DefaultBdvSupplier(new SerializableBdvOptions()));
+            String  bdvSupplierJson = Prefs.get("default_bigdataviewer", defaultBdvViewer);
+            bdvSupplier = gson.fromJson(bdvSupplierJson, IBdvSupplier.class);
+        }
+
         BdvHandle bdvh = bdvSupplier.get();
         this.registerBdvHandle(bdvh); // We always want it to be registered
         return bdvh;
@@ -292,7 +309,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         displayToMetadata = CacheBuilder.newBuilder().weakKeys().build();//new HashMap<>();
         bdvSourceAndConverterService.setDisplayService(this);
         SourceAndConverterServices.setSourceAndConverterDisplayService(this);
-        log.accept("Service initialized.");
+        // Catching bdv supplier from Prefs
+        log.accept("Bdv Playground Display Service initialized.");
     }
 
     /**

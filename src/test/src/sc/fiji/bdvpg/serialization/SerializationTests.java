@@ -1,5 +1,6 @@
 package sc.fiji.bdvpg.serialization;
 
+import bdv.util.Prefs;
 import com.google.gson.Gson;
 import net.imagej.ImageJ;
 import net.imglib2.realtransform.AffineTransform3D;

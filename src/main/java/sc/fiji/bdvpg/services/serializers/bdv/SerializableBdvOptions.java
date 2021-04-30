@@ -2,16 +2,8 @@ package sc.fiji.bdvpg.services.serializers.bdv;
 
 import bdv.util.AxisOrder;
 import bdv.util.BdvOptions;
-import bdv.viewer.SourceAndConverter;
-import bdv.viewer.render.AccumulateProjectorARGB;
 import bdv.viewer.render.AccumulateProjectorFactory;
-import bdv.viewer.render.VolatileProjector;
-import net.imglib2.RandomAccessible;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.ARGBType;
-
-import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Because BdvOptions is not directly serializable
@@ -49,7 +41,6 @@ public class SerializableBdvOptions {
     //private final AffineTransform3D sourceTransform = new AffineTransform3D();
 
     public SerializableBdvOptions() {
-
     }
 
     public BdvOptions getBdvOptions() {
