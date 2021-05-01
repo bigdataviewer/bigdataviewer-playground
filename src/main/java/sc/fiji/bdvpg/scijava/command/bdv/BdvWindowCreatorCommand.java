@@ -28,39 +28,17 @@
  */
 package sc.fiji.bdvpg.scijava.command.bdv;
 
-import bdv.util.*;
-import bdv.viewer.render.AccumulateProjectorFactory;
-import net.imglib2.type.numeric.ARGBType;
+import bdv.util.BdvHandle;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.BdvCreator;
-import sc.fiji.bdvpg.bdv.projector.AccumulateAverageProjectorARGB;
-import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGBFactory;
-import sc.fiji.bdvpg.bdv.projector.Projector;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Create empty BDV window",
     description = "Creates an empty BDV window")
 public class BdvWindowCreatorCommand implements BdvPlaygroundActionCommand {
-
-    @Parameter(label = "Create a 2D BDV window")
-    public boolean is2d = false;
-
-    @Parameter(label = "Title of the new BDV window")
-    public String windowtitle = "BDV";
-
-    @Parameter(label = "Interpolate")
-    public boolean interpolate = false;
-
-    @Parameter(label = "Number of timepoints (1 for a single timepoint)")
-    public int ntimepoints = 1;
-
-    @Parameter(required = false, choices = { Projector.MIXED_PROJECTOR, Projector.SUM_PROJECTOR, Projector.AVERAGE_PROJECTOR})
-    public String projector;
 
     /**
      * This triggers: {@link sc.fiji.bdvpg.scijava.processors.BdvHandlePostprocessor}
@@ -68,48 +46,12 @@ public class BdvWindowCreatorCommand implements BdvPlaygroundActionCommand {
     @Parameter(type = ItemIO.OUTPUT)
     public BdvHandle bdvh;
 
+    @Parameter
+    SourceAndConverterBdvDisplayService sacDisplayService;
+
     @Override
     public void run() {
-        if ((projector==null)||(projector.trim().equals(""))) projector = Projector.SUM_PROJECTOR; // Default mode if nothing is set
-
-        //------------ BdvHandleFrame
-        BdvOptions opts = BdvOptions.options().frameTitle(windowtitle);
-        if (is2d) opts = opts.is2D();
-
-        // Create accumulate projector factory
-        AccumulateProjectorFactory< ARGBType > factory;
-        switch (projector) {
-            case Projector.MIXED_PROJECTOR:
-                factory = new AccumulateMixedProjectorARGBFactory(  );
-                opts = opts.accumulateProjectorFactory(factory);
-            case Projector.SUM_PROJECTOR:
-                // Default projector
-                break;
-            case Projector.AVERAGE_PROJECTOR:
-                factory = AccumulateAverageProjectorARGB.factory;
-                opts = opts.accumulateProjectorFactory(factory);
-                break;
-            default:
-        }
-
-        BdvCreator creator = new BdvCreator(opts, interpolate, ntimepoints);
-        creator.run();
-        bdvh = creator.get();
-
-        final SourceAndConverterBdvDisplayService displayService = SourceAndConverterServices.getSourceAndConverterDisplayService();
-
-        switch (projector) {
-            case Projector.MIXED_PROJECTOR:
-                displayService.setDisplayMetadata( bdvh, Projector.PROJECTOR, Projector.MIXED_PROJECTOR );
-                break;
-            case Projector.SUM_PROJECTOR:
-                displayService.setDisplayMetadata( bdvh, Projector.PROJECTOR, Projector.SUM_PROJECTOR );
-                break;
-            case Projector.AVERAGE_PROJECTOR:
-                displayService.setDisplayMetadata( bdvh, Projector.PROJECTOR, Projector.AVERAGE_PROJECTOR );
-                break;
-            default:
-        }
+        bdvh = sacDisplayService.getNewBdv();
     }
 
 }

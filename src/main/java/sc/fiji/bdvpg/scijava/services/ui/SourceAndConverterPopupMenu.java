@@ -61,7 +61,6 @@ public class SourceAndConverterPopupMenu
 			getCommandName(SourcesVisibleMakerCommand.class),
 			getCommandName(BrightnessAdjusterCommand.class),
 			getCommandName(SourceColorChangerCommand.class),
-			getCommandName( SourceAndConverterBlendingModeChangerCommand.class),
 			"PopupLine",
 			getCommandName(BasicTransformerCommand.class),
 			getCommandName(SourcesDuplicatorCommand.class),

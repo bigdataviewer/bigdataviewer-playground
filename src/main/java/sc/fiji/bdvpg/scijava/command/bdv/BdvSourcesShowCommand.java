@@ -34,9 +34,9 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.bdv.projector.Projector;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 
@@ -54,17 +54,8 @@ public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
     @Parameter(label="Adjust View on Source")
     boolean adjustviewonsource;
 
-    @Parameter(label = "Create a 2D BDV window")
-    public boolean is2d = false;
-
-    @Parameter(label = "Title of the new BDV window")
-    public String windowtitle = "BDV";
-
     @Parameter(label = "Interpolate")
     public boolean interpolate = false;
-
-    @Parameter(label = "Number of timepoints (1 for a single timepoint)")
-    public int ntimepoints = 1;
 
     /**
      * This triggers: BdvHandlePostprocessor
@@ -72,19 +63,12 @@ public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
     @Parameter(type = ItemIO.OUTPUT)
     public BdvHandle bdvh;
 
-    @Parameter(choices = { Projector.MIXED_PROJECTOR, Projector.SUM_PROJECTOR, Projector.AVERAGE_PROJECTOR})
-    public String projector;
+    @Parameter
+    SourceAndConverterBdvDisplayService sacDisplayService;
 
     @Override
     public void run() {
-        BdvWindowCreatorCommand creator = new BdvWindowCreatorCommand();
-        creator.interpolate = interpolate;
-        creator.projector = projector;
-        creator.is2d = is2d;
-        creator.ntimepoints = ntimepoints;
-        creator.windowtitle = windowtitle;
-        creator.run();
-        bdvh = creator.bdvh;
+        bdvh = sacDisplayService.getNewBdv();
 
         SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvh, sacs);
         if (autocontrast) {

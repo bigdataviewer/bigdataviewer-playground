@@ -1,7 +1,6 @@
 [
   "BDV - Set Number Of Timepoints",
   "BDV - Show Sources (new Bdv window)",
-  "BDV - Screenshot",
   "PopupLine",
   "BDV - Remove Sources From BDV",
   "Set Sources Color",

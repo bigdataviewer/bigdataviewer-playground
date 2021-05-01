@@ -73,7 +73,6 @@ public class EditorBehaviourInstaller implements Runnable {
                 getCommandName(SourcesInvisibleMakerCommand.class),
                 getCommandName(BrightnessAdjusterCommand.class),
                 getCommandName(SourceColorChangerCommand.class),
-                getCommandName( SourceAndConverterBlendingModeChangerCommand.class),
                 "PopupLine",
                 getCommandName(SourcesRemoverCommand.class)};
 
