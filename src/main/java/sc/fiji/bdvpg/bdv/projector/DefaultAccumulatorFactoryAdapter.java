@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.scijava.adapter.bdv;
+package sc.fiji.bdvpg.bdv.projector;
 
 import bdv.viewer.render.AccumulateProjectorFactory;
 import com.google.gson.*;

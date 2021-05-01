@@ -122,7 +122,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
         log.accept(" --- Serializing to save default bdv window of class "+bdvSupplier.getClass().getSimpleName());
         Gson gson = ScijavaGsonHelper.getGson(ctx);
-        String bdvSupplierSerialized = gson.toJson(bdvSupplier);
+        String bdvSupplierSerialized = gson.toJson(bdvSupplier, IBdvSupplier.class);
         // Saved in prefs for next session
         Prefs.set("default_bigdataviewer", bdvSupplierSerialized);
     }
@@ -132,7 +132,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         if (bdvSupplier==null) {
             log.accept(" --- Fetching or generating default bdv window");
             Gson gson = ScijavaGsonHelper.getGson(ctx);
-            String defaultBdvViewer = gson.toJson(new DefaultBdvSupplier(new SerializableBdvOptions()));
+            String defaultBdvViewer = gson.toJson(new DefaultBdvSupplier(new SerializableBdvOptions()), IBdvSupplier.class);
             String  bdvSupplierJson = Prefs.get("default_bigdataviewer", defaultBdvViewer);
             bdvSupplier = gson.fromJson(bdvSupplierJson, IBdvSupplier.class);
         }

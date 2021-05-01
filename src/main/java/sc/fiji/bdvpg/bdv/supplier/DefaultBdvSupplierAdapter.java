@@ -1,4 +1,4 @@
-package sc.fiji.bdvpg.scijava.adapter.bdv;
+package sc.fiji.bdvpg.bdv.supplier;
 
 import com.google.gson.*;
 import org.scijava.plugin.Plugin;

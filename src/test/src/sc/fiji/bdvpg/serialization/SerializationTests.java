@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.scijava.adapter.transform.AffineTransform3DAdapter;
-import sc.fiji.bdvpg.scijava.adapter.bdv.DefaultBdvSupplierAdapter;
+import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplierAdapter;
 import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
 import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
 import sc.fiji.serializers.ScijavaGsonHelper;
