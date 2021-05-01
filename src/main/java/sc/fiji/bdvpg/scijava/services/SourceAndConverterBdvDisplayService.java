@@ -119,6 +119,12 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      */
     public void setDefaultBdvSupplier(Supplier<BdvHandle> bdvSupplier) {
         this.bdvSupplier = bdvSupplier;
+
+        log.accept(" --- Serializing to save default bdv window of class "+bdvSupplier.getClass().getSimpleName());
+        Gson gson = ScijavaGsonHelper.getGson(ctx);
+        String bdvSupplierSerialized = gson.toJson(bdvSupplier);
+        // Saved in prefs for next session
+        Prefs.set("default_bigdataviewer", bdvSupplierSerialized);
     }
 
     public BdvHandle getNewBdv() {
