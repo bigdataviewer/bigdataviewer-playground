@@ -117,14 +117,15 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * Can be used to change how Bdv Windows are created
      * @param bdvSupplier
      */
-    public void setDefaultBdvSupplier(Supplier<BdvHandle> bdvSupplier) {
+    public void setDefaultBdvSupplier(IBdvSupplier bdvSupplier) {
         this.bdvSupplier = bdvSupplier;
 
         log.accept(" --- Serializing to save default bdv window of class "+bdvSupplier.getClass().getSimpleName());
-        Gson gson = ScijavaGsonHelper.getGson(ctx);
+        Gson gson = ScijavaGsonHelper.getGson(ctx, true);
         String bdvSupplierSerialized = gson.toJson(bdvSupplier, IBdvSupplier.class);
+        System.out.println("Bdv Supplier serialized into : "+bdvSupplierSerialized);
         // Saved in prefs for next session
-        Prefs.set("default_bigdataviewer", bdvSupplierSerialized);
+        Prefs.set("bigdataviewer.playground.supplier", bdvSupplierSerialized);
     }
 
     public BdvHandle getNewBdv() {
@@ -133,7 +134,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
             log.accept(" --- Fetching or generating default bdv window");
             Gson gson = ScijavaGsonHelper.getGson(ctx);
             String defaultBdvViewer = gson.toJson(new DefaultBdvSupplier(new SerializableBdvOptions()), IBdvSupplier.class);
-            String  bdvSupplierJson = Prefs.get("default_bigdataviewer", defaultBdvViewer);
+            String  bdvSupplierJson = Prefs.get("bigdataviewer.playground.supplier", defaultBdvViewer);
             bdvSupplier = gson.fromJson(bdvSupplierJson, IBdvSupplier.class);
         }
 
