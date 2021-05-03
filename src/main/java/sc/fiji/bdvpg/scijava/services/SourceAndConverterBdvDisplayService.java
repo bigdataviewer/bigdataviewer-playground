@@ -135,7 +135,17 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
             Gson gson = ScijavaGsonHelper.getGson(ctx);
             String defaultBdvViewer = gson.toJson(new DefaultBdvSupplier(new SerializableBdvOptions()), IBdvSupplier.class);
             String  bdvSupplierJson = Prefs.get("bigdataviewer.playground.supplier", defaultBdvViewer);
-            bdvSupplier = gson.fromJson(bdvSupplierJson, IBdvSupplier.class);
+            try {
+                bdvSupplier = gson.fromJson(bdvSupplierJson, IBdvSupplier.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("Restoring default bdv supplier");
+                bdvSupplier = new DefaultBdvSupplier(new SerializableBdvOptions());
+                String bdvSupplierSerialized = gson.toJson(bdvSupplier, IBdvSupplier.class);
+                System.out.println("Bdv Supplier serialized into : "+bdvSupplierSerialized);
+                // Saved in prefs for next session
+                Prefs.set("bigdataviewer.playground.supplier", bdvSupplierSerialized);
+            }
         }
 
         BdvHandle bdvh = bdvSupplier.get();

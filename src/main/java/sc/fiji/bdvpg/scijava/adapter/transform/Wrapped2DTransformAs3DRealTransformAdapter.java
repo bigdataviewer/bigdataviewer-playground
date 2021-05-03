@@ -50,6 +50,11 @@ public class Wrapped2DTransformAs3DRealTransformAdapter implements IClassRuntime
     }
 
     @Override
+    public boolean useCustomAdapter() {
+        return true;
+    }
+
+    @Override
     public Wrapped2DTransformAs3D deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
         RealTransform rt = jsonDeserializationContext.deserialize(obj.get("wrappedTransform"), RealTransform.class);
@@ -66,8 +71,9 @@ public class Wrapped2DTransformAs3DRealTransformAdapter implements IClassRuntime
     @Override
     public JsonElement serialize(Wrapped2DTransformAs3D wrapped2DTransformAs3D, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
-        obj.addProperty("type", Wrapped2DTransformAs3D.class.getSimpleName());
-        obj.add("wrappedTransform", jsonSerializationContext.serialize(wrapped2DTransformAs3D.getTransform()));
+        //obj.addProperty("type", Wrapped2DTransformAs3D.class.getSimpleName());
+        obj.add("wrappedTransform", jsonSerializationContext.serialize(wrapped2DTransformAs3D.getTransform(), RealTransform.class));
+
         return obj;
     }
 }

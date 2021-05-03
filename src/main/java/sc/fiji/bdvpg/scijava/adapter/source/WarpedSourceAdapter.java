@@ -58,7 +58,7 @@ public class WarpedSourceAdapter implements ISourceAdapter<WarpedSource>{
     public JsonElement serialize(SourceAndConverter sac, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
         WarpedSource source = (WarpedSource) sac.getSpimSource();
-        obj.add("realtransform", jsonSerializationContext.serialize(source.getTransform()));
+        obj.add("realtransform", jsonSerializationContext.serialize(source.getTransform(), RealTransform.class));
 
         /*if (sacSerializer.isObjectRegistered(Source.class, source.getWrappedSource())) {
             int idWrapped = sacSerializer.getObjectIndex()

@@ -26,6 +26,11 @@ public class DefaultAccumulatorFactoryAdapter implements IClassRuntimeAdapter<Ac
     }
 
     @Override
+    public boolean useCustomAdapter() {
+        return false;
+    }
+
+    /*@Override
     public DefaultAccumulatorFactory deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         return new DefaultAccumulatorFactory();
     }
@@ -35,5 +40,5 @@ public class DefaultAccumulatorFactoryAdapter implements IClassRuntimeAdapter<Ac
         JsonObject obj = new JsonObject();
         //obj.addProperty("type", DefaultAccumulatorFactory.class.getSimpleName());
         return obj;
-    }
+    }*/
 }

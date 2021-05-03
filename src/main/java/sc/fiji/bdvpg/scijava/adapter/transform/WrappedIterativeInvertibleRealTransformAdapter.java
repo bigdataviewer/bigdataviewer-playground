@@ -49,6 +49,11 @@ public class WrappedIterativeInvertibleRealTransformAdapter implements IClassRun
     }
 
     @Override
+    public boolean useCustomAdapter() {
+        return true;
+    }
+
+    @Override
     public WrappedIterativeInvertibleRealTransform deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
         RealTransform rt = jsonDeserializationContext.deserialize(obj.get("wrappedTransform"), RealTransform.class);
@@ -58,8 +63,9 @@ public class WrappedIterativeInvertibleRealTransformAdapter implements IClassRun
     @Override
     public JsonElement serialize(WrappedIterativeInvertibleRealTransform wrappedIterativeInvertibleRealTransform, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
-        obj.addProperty("type", WrappedIterativeInvertibleRealTransform.class.getSimpleName());
-        obj.add("wrappedTransform", jsonSerializationContext.serialize(wrappedIterativeInvertibleRealTransform.getTransform()));
+        //obj.addProperty("type", WrappedIterativeInvertibleRealTransform.class.getSimpleName());
+        obj.add("wrappedTransform", jsonSerializationContext.serialize(wrappedIterativeInvertibleRealTransform.getTransform(), RealTransform.class));
+
         return obj;
     }
 }

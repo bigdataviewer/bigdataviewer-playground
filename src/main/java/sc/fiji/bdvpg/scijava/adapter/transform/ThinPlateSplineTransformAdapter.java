@@ -52,6 +52,11 @@ public class ThinPlateSplineTransformAdapter implements IClassRuntimeAdapter<Rea
     }
 
     @Override
+    public boolean useCustomAdapter() {
+        return true;
+    }
+
+    @Override
     public ThinplateSplineTransform deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
         double[][] srcPts = context.deserialize(obj.get("srcPts"), double[][].class);
@@ -62,13 +67,12 @@ public class ThinPlateSplineTransformAdapter implements IClassRuntimeAdapter<Rea
     @Override
     public JsonElement serialize(ThinplateSplineTransform thinplateSplineTransform, Type type, JsonSerializationContext jsonSerializationContext) {
         ThinPlateR2LogRSplineKernelTransform kernel = getKernel(thinplateSplineTransform);
-
         assert kernel != null;
         double[][] srcPts = getSrcPts(kernel);
         double[][] tgtPts = getTgtPts(kernel);
 
         JsonObject obj = new JsonObject();
-        obj.addProperty("type", ThinplateSplineTransform.class.getSimpleName());
+        //obj.addProperty("type", ThinplateSplineTransform.class.getSimpleName());
         obj.add("srcPts", jsonSerializationContext.serialize(srcPts));
         obj.add("tgtPts", jsonSerializationContext.serialize(tgtPts));
         return obj;

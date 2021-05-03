@@ -32,6 +32,7 @@ import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.realtransform.RealTransform;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
@@ -63,7 +64,7 @@ public class TransformedSourceAdapter implements ISourceAdapter<TransformedSourc
         source.getIncrementalTransform(incrTr);
         source.getFixedTransform(fixedTr);
 
-        obj.add("affinetransform_fixed", jsonSerializationContext.serialize(fixedTr));
+        obj.add("affinetransform_fixed", jsonSerializationContext.serialize(fixedTr, RealTransform.class));
         Integer idWrapped = sacSerializer.getSourceToId().get(source.getWrappedSource());
 
         if (idWrapped==null) {
@@ -94,7 +95,7 @@ public class TransformedSourceAdapter implements ISourceAdapter<TransformedSourc
             return null;
         }
 
-        AffineTransform3D at3d = jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("affinetransform_fixed"), AffineTransform3D.class);
+        AffineTransform3D at3d = jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("affinetransform_fixed"), RealTransform.class);
 
         SourceAndConverter sac = new SourceAffineTransformer(wrappedSac, at3d).getSourceOut();
         /*SourceAndConverterServices.getSourceAndConverterService()

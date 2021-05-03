@@ -11,9 +11,7 @@ public interface IClassRuntimeAdapter<B, T extends B> extends IObjectScijavaAdap
 
     Class<? extends T> getRunTimeClass();
 
-    default boolean useCustomAdapter() {
-        return false;
-    }
+    boolean useCustomAdapter();
 
     @Override
     default T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {

@@ -27,6 +27,11 @@ public class DefaultBdvSupplierAdapter implements IClassRuntimeAdapter<IBdvSuppl
     }
 
     @Override
+    public boolean useCustomAdapter() {
+        return false;
+    }
+
+    /*@Override
     public DefaultBdvSupplier deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject obj = json.getAsJsonObject();
         SerializableBdvOptions options = context.deserialize(obj.get("options"), SerializableBdvOptions.class);
@@ -39,5 +44,5 @@ public class DefaultBdvSupplierAdapter implements IClassRuntimeAdapter<IBdvSuppl
         obj.addProperty("type", DefaultBdvSupplier.class.getSimpleName());
         obj.add("options", context.serialize(bdvSupplier.sOptions));
         return obj;
-    }
+    }*/
 }
