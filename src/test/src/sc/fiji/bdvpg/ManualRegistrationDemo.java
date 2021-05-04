@@ -110,7 +110,7 @@ public class ManualRegistrationDemo {
 
             SourceAndConverter sacToTransform;
             sacToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
-            new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 0))).run();
+            new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
 
             SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
             SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacToTransform);
@@ -136,7 +136,7 @@ public class ManualRegistrationDemo {
             SourceAndConverter sacToTransform;
             sacToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
             sacToTransform = new SourceAffineTransformer(sacToTransform, new AffineTransform3D()).getSourceOut();
-            new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 0))).run();
+            new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
 
             SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
             SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacToTransform);

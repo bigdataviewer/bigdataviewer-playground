@@ -118,7 +118,7 @@ public class ResamplingDemo {
 
         SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, resampledMandelbrot );
 
-        new ColorChanger(resampledMandelbrot, new ARGBType(ARGBType.rgba(255, 0,0,0))).run();
+        new ColorChanger(resampledMandelbrot, new ARGBType(ARGBType.rgba(255, 0,0,255))).run();
 
         // ------------------- USE CASE 2 :
         // ---- Downsample a source
@@ -148,7 +148,7 @@ public class ResamplingDemo {
         SourceAndConverter downsampledSource = sr.get();
 
         SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, downsampledSource );
-        new ColorChanger( downsampledSource, new ARGBType(ARGBType.rgba(255, 120,0,0))).run();
+        new ColorChanger( downsampledSource, new ARGBType(ARGBType.rgba(255, 120,0,255))).run();
 
         // DOWNSAMPLING With Mipmap Reuse
 
@@ -156,7 +156,7 @@ public class ResamplingDemo {
         SourceAndConverter downsampledSourceWithMipmaps = sr.get();
 
         SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, downsampledSourceWithMipmaps );
-        new ColorChanger( downsampledSourceWithMipmaps, new ARGBType(ARGBType.rgba(120, 120,0,0))).run();
+        new ColorChanger( downsampledSourceWithMipmaps, new ARGBType(ARGBType.rgba(120, 120,0,255))).run();
 
         // UPSAMPLING
         EmptySourceAndConverterCreator upSampledModel = new EmptySourceAndConverterCreator("UpSampled",sac,0,0.2,0.2,0.2);//, factory);
@@ -166,6 +166,6 @@ public class ResamplingDemo {
 
         SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, upsampledSource );
 
-        new ColorChanger( upsampledSource, new ARGBType(ARGBType.rgba(0, 0,255,0))).run();
+        new ColorChanger( upsampledSource, new ARGBType(ARGBType.rgba(0, 0,255,255))).run();
     }
 }

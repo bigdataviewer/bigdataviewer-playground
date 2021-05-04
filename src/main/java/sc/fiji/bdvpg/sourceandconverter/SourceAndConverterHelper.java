@@ -30,26 +30,18 @@ package sc.fiji.bdvpg.sourceandconverter;
 
 import bdv.*;
 import bdv.img.WarpedSource;
-import bdv.spimdata.WrapBasicImgLoader;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.transformation.TransformedSource;
-import bdv.util.ARGBColorConverterSetup;
-import bdv.util.BdvHandle;
-import bdv.util.LUTConverterSetup;
-import bdv.util.ResampledSource;
-import bdv.util.UnmodifiableConverterSetup;
+import bdv.util.*;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
-import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
-import mpicbg.spim.data.generic.sequence.BasicViewSetup;
-import mpicbg.spim.data.sequence.Angle;
-import mpicbg.spim.data.sequence.Channel;
 import net.imglib2.*;
 import net.imglib2.converter.Converter;
 import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.display.ColorConverter;
+import net.imglib2.display.RealARGBColorConverter;
 import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
@@ -58,12 +50,9 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Intervals;
 import org.scijava.vecmath.Point3d;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.converter.RealARGBColorConverter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import spimdata.util.Displaysettings;
-import spimdata.util.DisplaysettingsHelper;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -187,21 +176,7 @@ public class SourceAndConverterHelper {
      * @return the cloned converter
      */
     public static Converter cloneConverter(Converter converter, SourceAndConverter sac) {
-        if (converter instanceof RealARGBColorConverter.Imp0) {
-            RealARGBColorConverter.Imp0 out = new RealARGBColorConverter.Imp0<>( ((RealARGBColorConverter.Imp0) converter).getMin(), ((RealARGBColorConverter.Imp0) converter).getMax() );
-            out.setColor(((RealARGBColorConverter.Imp0) converter).getColor());
-            // For averaging
-            // TODO : modularizes this / set as optional
-            out.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
-            return out;
-        } else if (converter instanceof RealARGBColorConverter.Imp1) {
-            RealARGBColorConverter.Imp1 out = new RealARGBColorConverter.Imp1<>( ((RealARGBColorConverter.Imp1) converter).getMin(), ((RealARGBColorConverter.Imp1) converter).getMax() );
-            out.setColor(((RealARGBColorConverter.Imp1) converter).getColor());
-            // For averaging
-            // TODO : modularizes this / set as optional
-            out.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
-            return out;
-        } else if (converter instanceof ScaledARGBConverter.VolatileARGB) {
+        if (converter instanceof ScaledARGBConverter.VolatileARGB) {
             return new ScaledARGBConverter.VolatileARGB(((ScaledARGBConverter.VolatileARGB) converter).getMin(), ((ScaledARGBConverter.VolatileARGB) converter).getMax());
         } else if (converter instanceof ScaledARGBConverter.ARGB) {
             return new ScaledARGBConverter.ARGB(((ScaledARGBConverter.ARGB) converter).getMin(),((ScaledARGBConverter.ARGB) converter).getMax());
@@ -273,11 +248,13 @@ public class SourceAndConverterHelper {
     static private ConverterSetup createConverterSetupRealType(SourceAndConverter source) {
         final ConverterSetup setup;
         if (source.getConverter() instanceof ColorConverter) {
-            if (source.asVolatile() != null) {
+            setup = BigDataViewer.createConverterSetup(source, -1);
+            /*if (source.asVolatile() != null) {
+                setup = BigDataViewer.createConverterSetup()
                 setup = new ARGBColorConverterSetup((ColorConverter) source.getConverter(), (ColorConverter) source.asVolatile().getConverter());
             } else {
                 setup = new ARGBColorConverterSetup((ColorConverter) source.getConverter());
-            }
+            }*/
         } else if (source.getConverter() instanceof RealLUTConverter) {
             if (source.asVolatile() != null) {
                 setup = new LUTConverterSetup((RealLUTConverter) source.getConverter(), (RealLUTConverter) source.asVolatile().getConverter());
@@ -327,13 +304,8 @@ public class SourceAndConverterHelper {
         final double typeMin = Math.max( 0, Math.min( type.getMinValue(), 65535 ) );
         final double typeMax = Math.max( 0, Math.min( type.getMaxValue(), 65535 ) );
         final RealARGBColorConverter< T > converter ;
-        if ( type instanceof Volatile)
-            converter = new RealARGBColorConverter.Imp0<>( typeMin, typeMax );
-        else
-            converter = new RealARGBColorConverter.Imp1<>( typeMin, typeMax );
+        converter = RealARGBColorConverter.create(type, typeMin, typeMax );
         converter.setColor( new ARGBType( 0xffffffff ) );
-
-        ((RealARGBColorConverter)converter).getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
         return converter;
     }
 
