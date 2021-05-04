@@ -180,7 +180,6 @@ public class SourceAndConverterHelper {
 
     /**
      * Clones a converter
-     * TODO :
      * @return the cloned converter
      */
     public static Converter cloneConverter(Converter converter, SourceAndConverter sac) {
@@ -195,6 +194,7 @@ public class SourceAndConverterHelper {
         } else {
             //RealARGBColorConverter
             Converter cvt = BigDataViewer.createConverterToARGB((NumericType)sac.getSpimSource().getType());
+
             if ((converter instanceof ColorConverter)&&(cvt instanceof ColorConverter)) {
                 ((ColorConverter) cvt).setColor(((ColorConverter)converter).getColor());
             }
