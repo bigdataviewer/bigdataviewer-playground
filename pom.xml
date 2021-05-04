@@ -194,12 +194,6 @@
 			<artifactId>imglib2</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>ch.epfl.biop</groupId>
-			<artifactId>bigdataviewer-spimdata-extras</artifactId>
-			<version>${bigdataviewer-spimdata-extras.version}</version>
-		</dependency>
-
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>

@@ -35,7 +35,6 @@ import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import spimdata.util.DisplaysettingsHelper;
 
 import java.io.File;
 import java.nio.file.InvalidPathException;
@@ -71,10 +70,6 @@ public class XmlFromSpimDataExporter implements Runnable {
     @Override
     public void run() {
         try {
-            // Loops through all sources in order to push display settings
-            SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .getSourceAndConverterFromSpimdata(spimData).forEach(DisplaysettingsHelper::PushDisplaySettingsFromCurrentConverter);
 
             if (spimData instanceof SpimData) {
                 (new XmlIoSpimData()).save((SpimData) spimData, dataLocation);
