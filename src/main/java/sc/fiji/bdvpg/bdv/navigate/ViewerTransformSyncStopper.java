@@ -60,12 +60,16 @@ public class ViewerTransformSyncStopper implements Runnable {
 
     @Override
     public void run() {
-        bdvHandleToTransformListener.forEach((bdvHandle, listener) ->
-            bdvHandle.getViewerPanel().removeTransformListener(listener)
+        bdvHandleToTransformListener.forEach((bdvHandle, listener) -> {
+            if ((bdvHandle != null) && (bdvHandle.getViewerPanel() != null))
+                    bdvHandle.getViewerPanel().removeTransformListener(listener);
+            }
         );
         if (bdvHandleToTimePointListener!=null) {
-            bdvHandleToTimePointListener.forEach((bdvHandle, listener) ->
-                bdvHandle.getViewerPanel().removeTimePointListener(listener)
+            bdvHandleToTimePointListener.forEach((bdvHandle, listener) -> {
+                    if ((bdvHandle != null) && (bdvHandle.getViewerPanel() != null))
+                        bdvHandle.getViewerPanel().removeTimePointListener(listener);
+                }
             );
         }
     }

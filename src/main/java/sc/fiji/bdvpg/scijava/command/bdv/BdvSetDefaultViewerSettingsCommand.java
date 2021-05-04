@@ -17,7 +17,7 @@ import java.util.Arrays;
 
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Set BDV window (default)",
         description = "Set preferences of Bdv Window")
-public class BdvSetViewerCommand implements BdvPlaygroundActionCommand{
+public class BdvSetDefaultViewerSettingsCommand implements BdvPlaygroundActionCommand{
 
     @Parameter(label = "Click this checkbox to ignore all parameters and reset the default viewer", persist = false)
     boolean resetToDefault = false;

@@ -172,19 +172,12 @@ public class SourceAndConverterHelper {
     }
 
     /**
-     * Empty interface which allows to duplicate custom converters in dependent repositories
-     */
-    public static interface ICloneableConverter {
-        Converter getDuplicatedConverter(Converter converter, SourceAndConverter source);
-    }
-
-    /**
      * Clones a converter
      * @return the cloned converter
      */
     public static Converter cloneConverter(Converter converter, SourceAndConverter sac) {
         if (converter instanceof ICloneableConverter) { // Extensibility of converters which implements ICloneableConverter
-            return ((ICloneableConverter) converter).getDuplicatedConverter(converter, sac);
+            return ((ICloneableConverter) converter).duplicateConverter(sac);
         } else if (converter instanceof ScaledARGBConverter.VolatileARGB) {
             return new ScaledARGBConverter.VolatileARGB(((ScaledARGBConverter.VolatileARGB) converter).getMin(), ((ScaledARGBConverter.VolatileARGB) converter).getMax());
         } else if (converter instanceof ScaledARGBConverter.ARGB) {
