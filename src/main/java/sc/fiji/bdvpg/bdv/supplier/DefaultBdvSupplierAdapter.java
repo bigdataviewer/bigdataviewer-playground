@@ -1,13 +1,7 @@
 package sc.fiji.bdvpg.bdv.supplier;
 
-import com.google.gson.*;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
-import sc.fiji.bdvpg.bdv.supplier.IBdvSupplier;
-import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
-import sc.fiji.serializers.IClassRuntimeAdapter;
-
-import java.lang.reflect.Type;
+import sc.fiji.persist.IClassRuntimeAdapter;
 
 /**
  * For serialization of {@link DefaultBdvSupplier} objects

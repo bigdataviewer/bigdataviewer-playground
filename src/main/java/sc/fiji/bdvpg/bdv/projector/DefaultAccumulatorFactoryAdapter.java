@@ -1,12 +1,8 @@
 package sc.fiji.bdvpg.bdv.projector;
 
 import bdv.viewer.render.AccumulateProjectorFactory;
-import com.google.gson.*;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.projector.DefaultAccumulatorFactory;
-import sc.fiji.serializers.IClassRuntimeAdapter;
-
-import java.lang.reflect.Type;
+import sc.fiji.persist.IClassRuntimeAdapter;
 
 /**
  * For serialization of {@link DefaultAccumulatorFactory} objects

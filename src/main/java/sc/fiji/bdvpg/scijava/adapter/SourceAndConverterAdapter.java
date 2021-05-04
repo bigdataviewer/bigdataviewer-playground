@@ -35,7 +35,7 @@ import net.imglib2.display.ColorConverter;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.InstantiableException;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.serializers.IObjectScijavaAdapterService;
+import sc.fiji.persist.IObjectScijavaAdapterService;
 import sc.fiji.bdvpg.scijava.adapter.source.ISourceAdapter;
 import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
 

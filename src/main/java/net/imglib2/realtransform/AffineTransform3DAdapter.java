@@ -29,15 +29,14 @@
 package net.imglib2.realtransform;
 
 import com.google.gson.*;
-import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.realtransform.RealTransform;
-import net.imglib2.realtransform.ThinplateSplineTransform;
 import org.scijava.plugin.Plugin;
-import sc.fiji.serializers.IClassAdapter;
-import sc.fiji.serializers.IClassRuntimeAdapter;
+import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
 
+/**
+ * Affine transform 3D adapter
+ */
 @Plugin(type = IClassRuntimeAdapter.class)
 public class AffineTransform3DAdapter implements IClassRuntimeAdapter<RealTransform, AffineTransform3D> {
 
@@ -73,8 +72,4 @@ public class AffineTransform3DAdapter implements IClassRuntimeAdapter<RealTransf
         return obj;
     }
 
-    //@Override
-    //public Class<? extends AffineTransform3D> getAdapterClass() {
-    //    return AffineTransform3D.class;
-    //}
 }

@@ -30,7 +30,7 @@ package net.imglib2.realtransform;
 
 import com.google.gson.*;
 import org.scijava.plugin.Plugin;
-import sc.fiji.serializers.IClassRuntimeAdapter;
+import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
 
@@ -94,15 +94,10 @@ public class InvertibleRealTransformSequenceAdapter implements IClassRuntimeAdap
     @Override
     public JsonElement serialize(InvertibleRealTransformSequence irts, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
-
-       //obj.addProperty("type", InvertibleRealTransformSequence.class.getSimpleName());
-
         obj.addProperty("size", irts.transforms.size());
-
         for (int iTransform = 0; iTransform<irts.transforms.size(); iTransform++) {
             obj.add("realTransform_"+iTransform, jsonSerializationContext.serialize(irts.transforms.get(iTransform), RealTransform.class));
         }
-
         return obj;
     }
 }

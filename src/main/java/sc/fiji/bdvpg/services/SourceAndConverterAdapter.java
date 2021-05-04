@@ -36,7 +36,7 @@ import com.google.gson.JsonElement;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.Context;
 import sc.fiji.bdvpg.scijava.adapter.AbstractSpimdataAdapter;
-import sc.fiji.serializers.*;
+import sc.fiji.persist.*;
 
 import java.io.File;
 import java.util.*;

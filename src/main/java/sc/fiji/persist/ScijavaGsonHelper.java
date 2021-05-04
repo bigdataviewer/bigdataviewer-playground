@@ -1,4 +1,4 @@
-package sc.fiji.serializers;
+package sc.fiji.persist;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -32,7 +32,7 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
-import sc.fiji.serializers.IObjectScijavaAdapter;
+import sc.fiji.persist.IObjectScijavaAdapter;
 
 import java.lang.reflect.Type;
 

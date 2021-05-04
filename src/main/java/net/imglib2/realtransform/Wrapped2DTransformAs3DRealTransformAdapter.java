@@ -29,13 +29,14 @@
 package net.imglib2.realtransform;
 
 import com.google.gson.*;
-import net.imglib2.realtransform.InvertibleRealTransform;
-import net.imglib2.realtransform.RealTransform;
-import net.imglib2.realtransform.Wrapped2DTransformAs3D;
 import org.scijava.plugin.Plugin;
-import sc.fiji.serializers.IClassRuntimeAdapter;
+import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
+
+/**
+ * Adapter of an 2D transformed wrapped as 3D
+ */
 
 @Plugin(type = IClassRuntimeAdapter.class)
 public class Wrapped2DTransformAs3DRealTransformAdapter implements IClassRuntimeAdapter<RealTransform, Wrapped2DTransformAs3D> {
@@ -71,9 +72,7 @@ public class Wrapped2DTransformAs3DRealTransformAdapter implements IClassRuntime
     @Override
     public JsonElement serialize(Wrapped2DTransformAs3D wrapped2DTransformAs3D, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
-        //obj.addProperty("type", Wrapped2DTransformAs3D.class.getSimpleName());
         obj.add("wrappedTransform", jsonSerializationContext.serialize(wrapped2DTransformAs3D.getTransform(), RealTransform.class));
-
         return obj;
     }
 }

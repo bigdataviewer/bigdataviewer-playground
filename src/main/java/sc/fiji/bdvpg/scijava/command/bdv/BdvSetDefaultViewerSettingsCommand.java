@@ -1,7 +1,5 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
-import com.google.gson.Gson;
-import ij.Prefs;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -11,7 +9,6 @@ import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.serializers.ScijavaGsonHelper;
 
 import java.util.Arrays;
 

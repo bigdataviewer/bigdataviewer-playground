@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.serializers;
+package sc.fiji.persist;
 /*
  * Copyright (C) 2011 Google Inc.
  *

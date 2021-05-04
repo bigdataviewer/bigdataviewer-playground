@@ -30,14 +30,15 @@ package net.imglib2.realtransform;
 
 import com.google.gson.*;
 import jitk.spline.ThinPlateR2LogRSplineKernelTransform;
-import net.imglib2.realtransform.RealTransform;
-import net.imglib2.realtransform.ThinplateSplineTransform;
 import org.scijava.plugin.Plugin;
-import sc.fiji.serializers.IClassRuntimeAdapter;
+import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
+/**
+ * Adapter for ThinPlateSplineTransform Objects
+ */
 @Plugin(type = IClassRuntimeAdapter.class)
 public class ThinPlateSplineTransformAdapter implements IClassRuntimeAdapter<RealTransform, ThinplateSplineTransform> {
 
@@ -72,7 +73,6 @@ public class ThinPlateSplineTransformAdapter implements IClassRuntimeAdapter<Rea
         double[][] tgtPts = getTgtPts(kernel);
 
         JsonObject obj = new JsonObject();
-        //obj.addProperty("type", ThinplateSplineTransform.class.getSimpleName());
         obj.add("srcPts", jsonSerializationContext.serialize(srcPts));
         obj.add("tgtPts", jsonSerializationContext.serialize(tgtPts));
         return obj;

@@ -29,10 +29,9 @@
 package net.imglib2.realtransform;
 
 import com.google.gson.*;
-import net.imglib2.realtransform.RealTransform;
 import net.imglib2.realtransform.inverse.WrappedIterativeInvertibleRealTransform;
 import org.scijava.plugin.Plugin;
-import sc.fiji.serializers.IClassRuntimeAdapter;
+import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
 
@@ -63,9 +62,10 @@ public class WrappedIterativeInvertibleRealTransformAdapter implements IClassRun
     @Override
     public JsonElement serialize(WrappedIterativeInvertibleRealTransform wrappedIterativeInvertibleRealTransform, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
-        //obj.addProperty("type", WrappedIterativeInvertibleRealTransform.class.getSimpleName());
         obj.add("wrappedTransform", jsonSerializationContext.serialize(wrappedIterativeInvertibleRealTransform.getTransform(), RealTransform.class));
-
+        // TODO : get tolerance and maxiter wrappedIterativeInvertibleRealTransform.getOptimzer().getError().setTolerance();
+        // wrappedIterativeInvertibleRealTransform.getOptimzer().setTolerance().setTolerance( 0.000001 );   // keeps running until error is < 0.000001
+        // ixfm.getOptimzer().setMaxIters( 1000 ); // or 1000 iterations
         return obj;
     }
 }

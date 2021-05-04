@@ -12,7 +12,7 @@ import net.imglib2.realtransform.AffineTransform3DAdapter;
 import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplierAdapter;
 import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
 import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
-import sc.fiji.serializers.ScijavaGsonHelper;
+import sc.fiji.persist.ScijavaGsonHelper;
 
 public class SerializationTests {
 
