@@ -26,27 +26,26 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijava.adapter.transform;
+package net.imglib2.realtransform;
 
 import com.google.gson.*;
-import net.imglib2.realtransform.InvertibleRealTransform;
 import net.imglib2.realtransform.RealTransform;
-import net.imglib2.realtransform.Wrapped2DTransformAs3D;
+import net.imglib2.realtransform.inverse.WrappedIterativeInvertibleRealTransform;
 import org.scijava.plugin.Plugin;
 import sc.fiji.serializers.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
 
 @Plugin(type = IClassRuntimeAdapter.class)
-public class Wrapped2DTransformAs3DRealTransformAdapter implements IClassRuntimeAdapter<RealTransform, Wrapped2DTransformAs3D> {
+public class WrappedIterativeInvertibleRealTransformAdapter implements IClassRuntimeAdapter<RealTransform, WrappedIterativeInvertibleRealTransform> {
     @Override
     public Class<? extends RealTransform> getBaseClass() {
         return RealTransform.class;
     }
 
     @Override
-    public Class<? extends Wrapped2DTransformAs3D> getRunTimeClass() {
-        return Wrapped2DTransformAs3D.class;
+    public Class<? extends WrappedIterativeInvertibleRealTransform> getRunTimeClass() {
+        return WrappedIterativeInvertibleRealTransform.class;
     }
 
     @Override
@@ -55,24 +54,17 @@ public class Wrapped2DTransformAs3DRealTransformAdapter implements IClassRuntime
     }
 
     @Override
-    public Wrapped2DTransformAs3D deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public WrappedIterativeInvertibleRealTransform deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
         RealTransform rt = jsonDeserializationContext.deserialize(obj.get("wrappedTransform"), RealTransform.class);
-
-        if (!(rt instanceof InvertibleRealTransform)) {
-            System.err.println("Wrapped transform not invertible -> deserialization impossible...");
-            // TODO : see if autowrapping works ?
-            return null;
-        }
-
-        return new Wrapped2DTransformAs3D((InvertibleRealTransform) rt);
+        return new WrappedIterativeInvertibleRealTransform<>(rt);
     }
 
     @Override
-    public JsonElement serialize(Wrapped2DTransformAs3D wrapped2DTransformAs3D, Type type, JsonSerializationContext jsonSerializationContext) {
+    public JsonElement serialize(WrappedIterativeInvertibleRealTransform wrappedIterativeInvertibleRealTransform, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
-        //obj.addProperty("type", Wrapped2DTransformAs3D.class.getSimpleName());
-        obj.add("wrappedTransform", jsonSerializationContext.serialize(wrapped2DTransformAs3D.getTransform(), RealTransform.class));
+        //obj.addProperty("type", WrappedIterativeInvertibleRealTransform.class.getSimpleName());
+        obj.add("wrappedTransform", jsonSerializationContext.serialize(wrappedIterativeInvertibleRealTransform.getTransform(), RealTransform.class));
 
         return obj;
     }

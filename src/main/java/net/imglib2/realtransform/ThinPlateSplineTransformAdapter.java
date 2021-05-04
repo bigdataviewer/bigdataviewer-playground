@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijava.adapter.transform;
+package net.imglib2.realtransform;
 
 import com.google.gson.*;
 import jitk.spline.ThinPlateR2LogRSplineKernelTransform;

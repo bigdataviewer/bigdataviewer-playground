@@ -8,7 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
-import sc.fiji.bdvpg.scijava.adapter.transform.AffineTransform3DAdapter;
+import net.imglib2.realtransform.AffineTransform3DAdapter;
 import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplierAdapter;
 import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
 import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;

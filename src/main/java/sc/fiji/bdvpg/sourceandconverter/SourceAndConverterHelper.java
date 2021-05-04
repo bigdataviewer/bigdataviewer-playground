@@ -36,6 +36,7 @@ import bdv.util.*;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
+import bdv.viewer.SourceGroup;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imglib2.*;
 import net.imglib2.converter.Converter;
@@ -171,12 +172,21 @@ public class SourceAndConverterHelper {
     }
 
     /**
+     * Empty interface which allows to duplicate custom converters in dependent repositories
+     */
+    public static interface ICloneableConverter {
+        Converter getDuplicatedConverter(Converter converter, SourceAndConverter source);
+    }
+
+    /**
      * Clones a converter
      * TODO :
      * @return the cloned converter
      */
     public static Converter cloneConverter(Converter converter, SourceAndConverter sac) {
-        if (converter instanceof ScaledARGBConverter.VolatileARGB) {
+        if (converter instanceof ICloneableConverter) { // Extensibility of converters which implements ICloneableConverter
+            return ((ICloneableConverter) converter).getDuplicatedConverter(converter, sac);
+        } else if (converter instanceof ScaledARGBConverter.VolatileARGB) {
             return new ScaledARGBConverter.VolatileARGB(((ScaledARGBConverter.VolatileARGB) converter).getMin(), ((ScaledARGBConverter.VolatileARGB) converter).getMax());
         } else if (converter instanceof ScaledARGBConverter.ARGB) {
             return new ScaledARGBConverter.ARGB(((ScaledARGBConverter.ARGB) converter).getMin(),((ScaledARGBConverter.ARGB) converter).getMax());
@@ -229,11 +239,7 @@ public class SourceAndConverterHelper {
     static private ConverterSetup createConverterSetupARGBType(SourceAndConverter source) {
         ConverterSetup setup;
         if (source.getConverter() instanceof ColorConverter) {
-            if (source.asVolatile()!=null) {
-                setup = new ARGBColorConverterSetup( (ColorConverter) source.getConverter(), (ColorConverter) source.asVolatile().getConverter() );
-            } else {
-                setup = new ARGBColorConverterSetup( (ColorConverter) source.getConverter());
-            }
+            setup = BigDataViewer.createConverterSetup(source, -1);
         } else {
             errlog.accept("Cannot build ConverterSetup for Converters of class "+source.getConverter().getClass());
             setup = null;
@@ -249,12 +255,6 @@ public class SourceAndConverterHelper {
         final ConverterSetup setup;
         if (source.getConverter() instanceof ColorConverter) {
             setup = BigDataViewer.createConverterSetup(source, -1);
-            /*if (source.asVolatile() != null) {
-                setup = BigDataViewer.createConverterSetup()
-                setup = new ARGBColorConverterSetup((ColorConverter) source.getConverter(), (ColorConverter) source.asVolatile().getConverter());
-            } else {
-                setup = new ARGBColorConverterSetup((ColorConverter) source.getConverter());
-            }*/
         } else if (source.getConverter() instanceof RealLUTConverter) {
             if (source.asVolatile() != null) {
                 setup = new LUTConverterSetup((RealLUTConverter) source.getConverter(), (RealLUTConverter) source.asVolatile().getConverter());

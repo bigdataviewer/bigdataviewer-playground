@@ -26,29 +26,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijava.adapter.transform;
+package net.imglib2.realtransform;
 
 import com.google.gson.*;
-import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.realtransform.InvertibleRealTransform;
 import net.imglib2.realtransform.RealTransform;
-import net.imglib2.realtransform.ThinplateSplineTransform;
+import net.imglib2.realtransform.Wrapped2DTransformAs3D;
 import org.scijava.plugin.Plugin;
-import sc.fiji.serializers.IClassAdapter;
 import sc.fiji.serializers.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
 
 @Plugin(type = IClassRuntimeAdapter.class)
-public class AffineTransform3DAdapter implements IClassRuntimeAdapter<RealTransform, AffineTransform3D> {
-
+public class Wrapped2DTransformAs3DRealTransformAdapter implements IClassRuntimeAdapter<RealTransform, Wrapped2DTransformAs3D> {
     @Override
     public Class<? extends RealTransform> getBaseClass() {
         return RealTransform.class;
     }
 
     @Override
-    public Class<? extends AffineTransform3D> getRunTimeClass() {
-        return AffineTransform3D.class;
+    public Class<? extends Wrapped2DTransformAs3D> getRunTimeClass() {
+        return Wrapped2DTransformAs3D.class;
     }
 
     @Override
@@ -57,24 +55,25 @@ public class AffineTransform3DAdapter implements IClassRuntimeAdapter<RealTransf
     }
 
     @Override
-    public AffineTransform3D deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        double[] rowPackedCopy =
-        jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("affinetransform3d"), double[].class);
-        AffineTransform3D at3d = new AffineTransform3D();
-        at3d.set(rowPackedCopy);
-        return at3d;
+    public Wrapped2DTransformAs3D deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        JsonObject obj = jsonElement.getAsJsonObject();
+        RealTransform rt = jsonDeserializationContext.deserialize(obj.get("wrappedTransform"), RealTransform.class);
+
+        if (!(rt instanceof InvertibleRealTransform)) {
+            System.err.println("Wrapped transform not invertible -> deserialization impossible...");
+            // TODO : see if autowrapping works ?
+            return null;
+        }
+
+        return new Wrapped2DTransformAs3D((InvertibleRealTransform) rt);
     }
 
     @Override
-    public JsonElement serialize(AffineTransform3D affineTransform3D, Type type, JsonSerializationContext jsonSerializationContext) {
+    public JsonElement serialize(Wrapped2DTransformAs3D wrapped2DTransformAs3D, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
-        System.out.println("Serializing affine transform 3d");
-        obj.add("affinetransform3d", jsonSerializationContext.serialize(affineTransform3D.getRowPackedCopy()));
+        //obj.addProperty("type", Wrapped2DTransformAs3D.class.getSimpleName());
+        obj.add("wrappedTransform", jsonSerializationContext.serialize(wrapped2DTransformAs3D.getTransform(), RealTransform.class));
+
         return obj;
     }
-
-    //@Override
-    //public Class<? extends AffineTransform3D> getAdapterClass() {
-    //    return AffineTransform3D.class;
-    //}
 }
