@@ -338,8 +338,9 @@ public class BdvHandleHelper
         List<BdvHandle> bdvs = os.getObjects(BdvHandle.class);
         boolean duplicateExist;
         String uniqueTitle = iniTitle;
-        duplicateExist = bdvs.stream().anyMatch(bdv ->
-                (bdv.toString().equals(iniTitle))||(getWindowTitle(bdv).equals(iniTitle)));
+        duplicateExist = bdvs.stream().filter(bdv ->
+            (bdv.toString().equals(iniTitle)) || (getWindowTitle(bdv).equals(iniTitle))
+        ).count()>1;
         while (duplicateExist) {
             if (uniqueTitle.matches(".+(_)\\d+")) {
                 int idx = Integer.parseInt(uniqueTitle.substring(uniqueTitle.lastIndexOf("_")+1));
