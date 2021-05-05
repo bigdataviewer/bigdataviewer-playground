@@ -69,7 +69,7 @@ public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData>
             }
             spimdataCounter++;
             System.out.println("Previously unsaved bdv dataset, saving it to "+dataLocation);
-            new XmlFromSpimDataExporter(asd, dataLocation ).run();
+            new XmlFromSpimDataExporter(asd, dataLocation, sacSerializer.getScijavaContext() ).run();
         }
         obj.addProperty("datalocation", dataLocation);
         return obj;

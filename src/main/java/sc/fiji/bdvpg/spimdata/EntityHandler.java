@@ -46,7 +46,7 @@ public interface EntityHandler extends SciJavaPlugin {
      * @param sac sourceand converter being saved
      * @return true if this entity was written, the entity is not always necessarily written when saving the data
      */
-    boolean writeEntity(ViewSetup viewSetup, SourceAndConverter<?> sac);
+    boolean writeEntity(BasicViewSetup viewSetup, SourceAndConverter<?> sac);
 
     /**
      * This method is called before the SourceAndConverter object is created
