@@ -28,36 +28,28 @@
  */
 package net.imglib2.realtransform;
 
-import com.google.gson.*;
 import org.scijava.plugin.Plugin;
-import sc.fiji.persist.IClassAdapter;
-import java.lang.reflect.Type;
+import sc.fiji.persist.IClassRuntimeAdapter;
 
 /**
- * Affine transform 3D adapter
+ * Runtime adapter for RealTransform
  */
-@Plugin(type = IClassAdapter.class)
-public class AffineTransform3DAdapter implements IClassAdapter<AffineTransform3D> {
+@Plugin(type = IClassRuntimeAdapter.class)
+public class AffineTransform3DRunTimeAdapter implements IClassRuntimeAdapter<RealTransform, AffineTransform3D> {
 
     @Override
-    public AffineTransform3D deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        double[] rowPackedCopy =
-        jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("affinetransform3d"), double[].class);
-        AffineTransform3D at3d = new AffineTransform3D();
-        at3d.set(rowPackedCopy);
-        return at3d;
+    public Class<? extends RealTransform> getBaseClass() {
+        return RealTransform.class;
     }
 
     @Override
-    public JsonElement serialize(AffineTransform3D affineTransform3D, Type type, JsonSerializationContext jsonSerializationContext) {
-        JsonObject obj = new JsonObject();
-        obj.add("affinetransform3d", jsonSerializationContext.serialize(affineTransform3D.getRowPackedCopy()));
-        return obj;
-    }
-
-    @Override
-    public Class<? extends AffineTransform3D> getAdapterClass() {
+    public Class<? extends AffineTransform3D> getRunTimeClass() {
         return AffineTransform3D.class;
+    }
+
+    @Override
+    public boolean useCustomAdapter() {
+        return false;
     }
 
 }

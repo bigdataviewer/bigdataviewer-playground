@@ -3,12 +3,13 @@ package sc.fiji.bdvpg.serialization;
 import com.google.gson.Gson;
 import net.imagej.ImageJ;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.realtransform.RealTransform;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
-import net.imglib2.realtransform.AffineTransform3DAdapter;
+import net.imglib2.realtransform.AffineTransform3DRunTimeAdapter;
 import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplierAdapter;
 import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
 import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
@@ -44,13 +45,14 @@ public class SerializationTests {
 
     /**
      * Test:
-     * {@link AffineTransform3DAdapter}
+     * {@link AffineTransform3DRunTimeAdapter}
      */
     @Test
     public void testAffineTransformSerialization() {
         AffineTransform3D at3D = new AffineTransform3D();
         at3D.scale(2);
-        testSerialization(gson, at3D, AffineTransform3D.class);
+        testSerialization(gson, at3D, AffineTransform3D.class); // This needs to work
+        testSerialization(gson, at3D, RealTransform.class); // This needs to work
     }
 
     // TODO : more unit serialization tests!
@@ -64,11 +66,12 @@ public class SerializationTests {
      * @param c class of the object
      */
     public static void testSerialization(Gson gson, Object o, Class c) {
-        String json = gson.toJson(o);
+        String json = gson.toJson(o, c);
         System.out.println(json);
         Object oRestored = gson.fromJson(json, c);
-        String json2 = gson.toJson(oRestored);
+        String json2 = gson.toJson(oRestored, c);
         System.out.println(json2);
         Assert.assertEquals(json, json2);
     }
+
 }

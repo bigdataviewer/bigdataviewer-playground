@@ -42,22 +42,7 @@ public class ScijavaGsonHelper {
             log = (str) -> {};
         }
 
-        // First, we register all adapters which are directly serializing/deserializing classes, without the need
-        // of runtime class serialization customisation
-        log.accept("IClassAdapters : ");
-        ctx.getService(IObjectScijavaAdapterService.class)
-                .getAdapters(IClassAdapter.class) // Gets all scijava class adapters (no runtime)
-                .forEach(pi -> {
-                    try {
-                        IClassAdapter<?> adapter = pi.createInstance(); // Instanciate the adapter (no argument should be present in the constructor, but auto filled scijava parameters are allowed)
-                        log.accept("\t "+adapter.getAdapterClass());
-                        builder.registerTypeHierarchyAdapter(adapter.getAdapterClass(), adapter); // Register gson adapter
-                    } catch (InstantiableException e) {
-                        e.printStackTrace();
-                    }
-                });
-
-        // Next, we need to get all serializers which require custom adapters. This typically happens
+        // We need to get all serializers which require custom adapters. This typically happens
         // when serialiazing interfaces or abstract classes (typical scenario : imglib2 RealTransform objects)
         // The interface or abstract class is the Base class, and runtime classes are
         // implementing the base interface class or extending the abstract base class
@@ -75,11 +60,13 @@ public class ScijavaGsonHelper {
                                         throw new RuntimeException("Presence of conflicting adapters for class "+adapter.getRunTimeClass());
                                     } else {
                                         runTimeAdapters.get(adapter.getBaseClass()).subClasses.add(adapter.getRunTimeClass());
+                                        //builder.registerTypeHierarchyAdapter(adapter.getRunTimeClass(), adapter); // Register gson adapter
                                     }
                                 } else {
                                     ClassTypesAndSubTypes<?> element = new ClassTypesAndSubTypes<>(adapter.getBaseClass());
                                     element.subClasses.add(adapter.getRunTimeClass());
                                     runTimeAdapters.put(adapter.getBaseClass(), element);
+                                    //builder.registerTypeHierarchyAdapter(adapter.getRunTimeClass(), adapter); // Register gson adapter
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -98,6 +85,21 @@ public class ScijavaGsonHelper {
                         if (adapter.useCustomAdapter()) { // Overrides default adapter only if needed
                             builder.registerTypeHierarchyAdapter(adapter.getRunTimeClass(), adapter);
                         }
+                    } catch (InstantiableException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+        // First, we register all adapters which are directly serializing/deserializing classes, without the need
+        // of runtime class serialization customisation
+        log.accept("IClassAdapters : ");
+        ctx.getService(IObjectScijavaAdapterService.class)
+                .getAdapters(IClassAdapter.class) // Gets all scijava class adapters (no runtime)
+                .forEach(pi -> {
+                    try {
+                        IClassAdapter<?> adapter = pi.createInstance(); // Instanciate the adapter (no argument should be present in the constructor, but auto filled scijava parameters are allowed)
+                        log.accept("\t "+adapter.getAdapterClass());
+                        builder.registerTypeHierarchyAdapter(adapter.getAdapterClass(), adapter); // Register gson adapter
                     } catch (InstantiableException e) {
                         e.printStackTrace();
                     }
