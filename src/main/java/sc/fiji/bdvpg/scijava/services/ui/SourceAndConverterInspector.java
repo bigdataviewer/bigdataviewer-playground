@@ -232,15 +232,29 @@ public class SourceAndConverterInspector {
      * it shouldn't fall on a {@link ResampledSource} nor on a
      * {@link TransformedSource} nor on a {@link WarpedSource}
      * because these three class are wrappers
+     *
+     * @param sac source to check
+     * @param sacService source and converter service, useful to find the root
+     * @return root source and converer object
      */
     public static SourceAndConverter getRootSourceAndConverter(SourceAndConverter sac, SourceAndConverterService sacService) {
         return getListToRootSourceAndConverter(sac, sacService).getLast();
     }
 
+    /**
+     *
+     * @param sac the source to investigate
+     * @return the root source
+     */
     public static SourceAndConverter getRootSourceAndConverter(SourceAndConverter sac) {
         return getListToRootSourceAndConverter(sac, (SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getLast();
     }
 
+    /**
+     *
+     * @param source the source to investigate
+     * @return the root source
+     */
     public static SourceAndConverter getRootSourceAndConverter(Source source) {
         SourceAndConverter sac;
         List<SourceAndConverter> sacs = SourceAndConverterServices.getSourceAndConverterService()
@@ -253,6 +267,12 @@ public class SourceAndConverterInspector {
         return getListToRootSourceAndConverter(sac, (SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getLast();
     }
 
+    /**
+     * TODO
+     * @param sac TODO
+     * @param sacService TODO
+     * @return TODO
+     */
     public static LinkedList<SourceAndConverter> getListToRootSourceAndConverter(SourceAndConverter sac, SourceAndConverterService sacService) {
 
         LinkedList<SourceAndConverter> chain = new LinkedList<>();

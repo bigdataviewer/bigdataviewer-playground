@@ -38,9 +38,6 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 /**
  * ViewTransformLoggerCommand
- * <p>
- * <p>
- * <p>
  * Author: @haesleinhuepf
  * 12 2019
  */

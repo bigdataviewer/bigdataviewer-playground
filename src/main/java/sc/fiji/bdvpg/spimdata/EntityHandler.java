@@ -99,8 +99,7 @@ public interface EntityHandler extends SciJavaPlugin {
      * entity enters in conflict with this one, one the first one is called, and a warning
      * message should appear TODO
      * @param spimData object being opened
-     * @param viewSetup
-     * @param source
+     * @param viewSetup viewsetup - helps to identify attributes and setup id
      * @return the SourceAndConverter newly created
      */
     default SourceAndConverter<?> makeSourceAndConverter(AbstractSpimData spimData, BasicViewSetup viewSetup) {

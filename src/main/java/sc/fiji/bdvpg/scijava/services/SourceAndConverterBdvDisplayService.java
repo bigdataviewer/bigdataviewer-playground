@@ -115,7 +115,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
     /**
      * Can be used to change how Bdv Windows are created
-     * @param bdvSupplier
+     * @param bdvSupplier supplier of bdv window
      */
     public void setDefaultBdvSupplier(IBdvSupplier bdvSupplier) {
         this.bdvSupplier = bdvSupplier;
@@ -154,7 +154,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Returns the last active BDV or create a new one
+     * @return the last active BDV or create a new one
      */
     public BdvHandle getActiveBdv() {
         List<BdvHandle> bdvhs = os.getObjects(BdvHandle.class);
@@ -198,8 +198,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Makes visible a source, makes it visible in all BDVs according to BdvhReferences
      * @param sac source to display
+     * @param bdvh bdv window where to check this property
+     * @return true if the source is visible
      */
     public boolean isVisible(SourceAndConverter sac, BdvHandle bdvh) {
         return bdvh.getViewerPanel().state().isSourceActive(sac);

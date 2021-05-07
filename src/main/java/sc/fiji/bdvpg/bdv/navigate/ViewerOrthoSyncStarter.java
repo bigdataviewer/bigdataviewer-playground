@@ -43,15 +43,15 @@ import static sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStopper.MatrixApprox
 /**
  * BigDataViewer Playground Action --
  * Action which synchronizes the display location of 3 {@link BdvHandle}
- * <p>
+ *
  * Works in combination with the action {@link ViewerTransformSyncStopper}
- * <p>
- * <p>
+ *
+ *
  * Principle : for every changed view transform of a specific BdvHandle,
  * the view transform change is triggered to the following BdvHandle in a closed loop manner
- * <p>
+ *
  * Each transform is passed to next one by rolling the axes so that 3 swaps lead to an identical transform:
- * <p>
+ *
  * // For ortho view : switches axis:
  * //  X, Y, Z (bdvHandle[0])
  * //  X,-Z, Y (bdvHandle[1]) Right View

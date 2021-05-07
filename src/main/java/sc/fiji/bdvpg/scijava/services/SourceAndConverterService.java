@@ -246,7 +246,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
     /**
      * TODO nice documentation about {@link EntityHandler} and scijava extension mechanism
-     * @param asd
+     * @param asd spimdata object to register
      */
     public synchronized void register(AbstractSpimData asd) {
 

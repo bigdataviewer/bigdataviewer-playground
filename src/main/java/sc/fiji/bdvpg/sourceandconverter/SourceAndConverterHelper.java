@@ -171,8 +171,10 @@ public class SourceAndConverterHelper {
     }
 
     /**
-     * Clones a converter
-     * @return the cloned converter
+     * @param converter to clone
+     * @param sac source using this converter, useful to retrieve extra information
+     *            if necessary to clone the converter
+     * @return a cloned converter ( could be the same instance ?)
      */
     public static Converter cloneConverter(Converter converter, SourceAndConverter sac) {
         if (converter instanceof ICloneableConverter) { // Extensibility of converters which implements ICloneableConverter
@@ -677,6 +679,7 @@ public class SourceAndConverterHelper {
      * (like spherical transformed will give wrong results.
      *
      * @param src source
+     * @param t timepoint
      * @param voxSize target voxel size
      * @return mipmap level fitted for the voxel size
      */
@@ -728,6 +731,7 @@ public class SourceAndConverterHelper {
      * into account, provided that the transform are affine. Is the source is transformed in a more
      * complex way, then nothing can be done easily...
      *
+     * @param chainedSourceTransform TODO
      * @param source source
      * @return the root source : it's not derived from another source
      */

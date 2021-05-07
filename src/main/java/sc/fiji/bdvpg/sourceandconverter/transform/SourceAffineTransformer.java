@@ -61,7 +61,7 @@ public class SourceAffineTransformer implements Runnable, Function<SourceAndConv
 
     /**
      * Constructor without any source argument in order to use the functional interface only
-     * @param at3D
+     * @param at3D affine transform 3d
      */
     public SourceAffineTransformer(AffineTransform3D at3D) {
         this.at3D = at3D;

@@ -48,7 +48,7 @@ public class SourceRealTransformer implements Runnable, Function<SourceAndConver
 
     /**
      * Constructor without any source argument in order to use the functional interface only
-     * @param rt
+     * @param rt real transform object
      */
     public SourceRealTransformer(RealTransform rt) {
         this.rt = rt;

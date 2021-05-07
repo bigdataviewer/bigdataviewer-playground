@@ -57,9 +57,9 @@ public class SourceTransformHelper {
      *
      * branch between mutateTransformedSourceAndConverter and mutateLastSpimdataTransformation depending  on the source class
      *
-     * @param affineTransform3D
-     * @param sacTR
-     * @return
+     * @param affineTransform3D affine transform 3d
+     * @param sacTR source to transform
+     * @return transformed source
      */
     public static SourceAndConverter mutate(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
         if (sacTR.sac.getSpimSource() instanceof AbstractSpimSource) {
@@ -82,9 +82,9 @@ public class SourceTransformHelper {
     /**
      *  branch between createNewTransformedSourceAndConverter and appendNewSpimdataTransformation depending on the source class
      *
-     * @param affineTransform3D
-     * @param sacTR
-     * @return
+     * @param affineTransform3D affine transform to append
+     * @param sacTR source to transform
+     * @return a transformed source ( same as the input for append, unless it's not possible )
      */
     public static SourceAndConverter append(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
         if (sacTR.sac.getSpimSource() instanceof AbstractSpimSource) {
@@ -104,9 +104,9 @@ public class SourceTransformHelper {
      *
      * branch between setTransformedSourceAndConverter and setLastSpimdataTransformation depending on the source class
      *
-     * @param affineTransform3D
-     * @param sacTR
-     * @return
+     * @param affineTransform3D affine transform 3d
+     * @param sacTR source to transform
+     * @return transformed source
      */
     public static SourceAndConverter set(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
         if (sacTR.sac.getSpimSource() instanceof AbstractSpimSource) {
@@ -128,8 +128,8 @@ public class SourceTransformHelper {
 
     /**
      * Ignores registration
-     * @param affineTransform3D
-     * @return
+     * @param affineTransform3D affine transform 3D
+     * @return the untransformed source, because the transformation has been canceled
      */
     public static SourceAndConverter cancel(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
         return sacTR.sac;
@@ -137,9 +137,9 @@ public class SourceTransformHelper {
 
     /**
      * if a source has a linked spimdata, mutates the last registration to account for changes
-     * @param affineTransform3D
-     * @param sacTR
-     * @return
+     * @param affineTransform3D affine transform
+     * @param sacTR source to transform
+     * @return the transformed source (equals to the input, the underlying spimdata object has been modified)
      */
     public static SourceAndConverter mutateLastSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
         assert SourceAndConverterServices
@@ -193,9 +193,9 @@ public class SourceTransformHelper {
      * if a source has a linked spimdata, mutates the last registration to account for changes
      *
      * contrary to mutate, the previous transform is erased and not preconcatenates
-     * @param affineTransform3D
-     * @param sacTR
-     * @return
+     * @param affineTransform3D affine transform 3d
+     * @param sacTR source to transform
+     * @return transformed source
      */
     public static SourceAndConverter setLastSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
         assert SourceAndConverterServices
@@ -242,9 +242,9 @@ public class SourceTransformHelper {
 
     /**
      * if a source has a linked spimdata, appends a new transformation in the registration model
-     * @param affineTransform3D
-     * @param sacTR
-     * @return
+     * @param affineTransform3D affine transform 3d
+     * @param sacTR source to transform
+     * @return transformed source
      */
     public static SourceAndConverter appendNewSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
         assert SourceAndConverterServices
@@ -287,9 +287,9 @@ public class SourceTransformHelper {
     /**
      * Wraps into transformed sources the registered sources
      * Note : time range is ignored (using TransformedSource)
-     * @param affineTransform3D
-     * @param sacTR
-     * @return
+     * @param affineTransform3D affine transform 3d
+     * @param sacTR source to transform
+     * @return transformed source
      */
     public static SourceAndConverter createNewTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
         SourceAndConverter transformedSac = new SourceAffineTransformer(sacTR.sac, affineTransform3D).getSourceOut();
@@ -299,9 +299,9 @@ public class SourceTransformHelper {
     /**
      * provided a source was already a transformed source, updates the inner affineTransform3D
      * Note : timerange ignored
-     * @param affineTransform3D
-     * @param sacTR
-     * @return
+     * @param affineTransform3D affine transform 3d
+     * @param sacTR source to transform
+     * @return mutated transformed source, if possible
      */
     public static SourceAndConverter mutateTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
         assert sacTR.sac.getSpimSource() instanceof TransformedSource;
@@ -315,9 +315,9 @@ public class SourceTransformHelper {
      * provided a source was already a transformed source, sets the inner affineTransform3D
      * Contrary to mutateTransformedSourceAndConverter, the original transform is not preconcatenated
      * Note : timerange ignored
-     * @param affineTransform3D
-     * @param sacTR
-     * @return
+     * @param affineTransform3D affine transform 3d
+     * @param sacTR source to transform
+     * @return transformed source
      */
     public static SourceAndConverter setTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
         assert sacTR.sac.getSpimSource() instanceof TransformedSource;
