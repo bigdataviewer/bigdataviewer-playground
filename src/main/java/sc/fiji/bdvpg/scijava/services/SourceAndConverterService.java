@@ -360,7 +360,6 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         this.register(setupIdToSourceAndConverter.values()); // Necessary ? Yes!
 
         setupIdToSourceAndConverter.keySet().forEach(id -> {
-            System.out.println("id = "+id);
             linkToSpimData(setupIdToSourceAndConverter.get(id), asd, id);
         });
 
@@ -542,7 +541,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     void registerDefaultActions() {
         this.registerAction("Display names", (srcs) -> {
             for (SourceAndConverter src:srcs){
-                System.out.println(src.getSpimSource().getName());
+                log.accept(src.getSpimSource().getName());
             }});
 
         context().getService(PluginService.class)

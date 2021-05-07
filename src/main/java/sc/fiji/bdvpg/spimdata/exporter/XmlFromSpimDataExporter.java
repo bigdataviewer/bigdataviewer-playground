@@ -88,7 +88,7 @@ public class XmlFromSpimDataExporter implements Runnable {
         try {
 
             if (context!=null) {
-                System.out.println(" Handling scijava extra attributes");
+                //System.out.println(" Handling scijava extra attributes");
                 // We can handle the extra attributes, see {@link IEntityHandlerService}
                 Map<Class<? extends Entity>, EntityHandler> entityClassToHandler = new HashMap<>();
 

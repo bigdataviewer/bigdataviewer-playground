@@ -58,7 +58,7 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
     @Parameter
     SourceAndConverterBdvDisplayService bsds;
 
-    public static Consumer<String> log = (str) -> System.out.println(BdvHandlePostprocessor.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = (str) -> {};//System.out.println(BdvHandlePostprocessor.class.getSimpleName()+":"+str);
 
     @Override
     public void process(Module module) {

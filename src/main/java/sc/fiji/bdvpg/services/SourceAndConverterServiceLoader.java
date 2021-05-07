@@ -75,7 +75,7 @@ public class SourceAndConverterServiceLoader extends SourceAndConverterAdapter i
 
             Gson gson = new Gson();
             JsonArray rawSacsArray = gson.fromJson(fileReader, JsonArray.class);
-            System.out.println(rawSacsArray.size());
+            //System.out.println(rawSacsArray.size());
 
             for (int i = 0;i<rawSacsArray.size();i++) {
                 if (rawSacsArray.get(i).isJsonObject()) {

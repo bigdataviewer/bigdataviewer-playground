@@ -78,7 +78,7 @@ public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData>
     @Override
     public AbstractSpimData deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         String datalocation = jsonElement.getAsJsonObject().get("datalocation").getAsString();
-        System.out.println("Deserialization of "+datalocation);
+        //System.out.println("Deserialization of "+datalocation);
         if (datalocation.endsWith(".qpath")) {
             System.err.println("qpath project unhandled in deserialization!");
         }

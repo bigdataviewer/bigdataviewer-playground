@@ -59,7 +59,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
                     try {
                         ISourceAdapter adapter = pi.createInstance();
                         adapter.setSacSerializer(sacSerializer);
-                        System.out.println("adapter.getSourceClass()= "+adapter.getSourceClass());
+                        //System.out.println("adapter.getSourceClass()= "+adapter.getSourceClass());
                         sourceSerializers.put(adapter.getSourceClass(), adapter);
                         sourceSerializersFromName.put(adapter.getSourceClass().getName(), adapter);
                     } catch (InstantiableException e) {
