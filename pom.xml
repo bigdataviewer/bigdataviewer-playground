@@ -11,7 +11,7 @@
 
 	<groupId>sc.fiji</groupId>
 	<artifactId>bigdataviewer-playground</artifactId>
-	<version>0.3.0-SNAPSHOT</version>
+	<version>0.3.1-SNAPSHOT</version>
 
 	<name>bigdataviewer-playground</name>
 	<description>BigDataViewer Actions and GUI</description>
@@ -92,6 +92,7 @@
 		<connection>scm:git:git://github.com/bigdataviewer/bigdataviewer-playground</connection>
 		<developerConnection>scm:git:git@github.com:bigdataviewer/bigdataviewer-playground</developerConnection>
 		<url>https://github.com/bigdataviewer/bigdataviewer-playground/</url>
+    <tag>HEAD</tag>
   </scm>
 
 	<issueManagement>
