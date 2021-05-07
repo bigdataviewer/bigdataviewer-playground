@@ -30,7 +30,7 @@ package net.imglib2.realtransform;
 
 import com.google.gson.*;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.services.serializers.plugins.IClassRuntimeAdapter;
+import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
 
@@ -57,6 +57,11 @@ public class RealTransformSequenceAdapter implements IClassRuntimeAdapter<RealTr
     }
 
     @Override
+    public boolean useCustomAdapter() {
+        return true;
+    }
+
+    @Override
     public RealTransformSequence deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
 
@@ -65,16 +70,8 @@ public class RealTransformSequenceAdapter implements IClassRuntimeAdapter<RealTr
         RealTransformSequence rts = new RealTransformSequence();
 
         for (int iTransform = 0; iTransform<nTransform; iTransform++) {
-            // Special case in order to deserialize directly
-            // affine transforms to AffineTransform3D objects
-            JsonObject jsonObj = obj.get("realTransform_"+iTransform).getAsJsonObject();
-            if (jsonObj.has("affinetransform3d")) {
-                AffineTransform3D at3D = jsonDeserializationContext.deserialize(obj.get("realTransform_"+iTransform), AffineTransform3D.class);
-                rts.add(at3D);
-            } else {
-                RealTransform transform = jsonDeserializationContext.deserialize(obj.get("realTransform_"+iTransform), RealTransform.class);
-                rts.add(transform);
-            }
+            RealTransform transform = jsonDeserializationContext.deserialize(obj.get("realTransform_"+iTransform), RealTransform.class);
+            rts.add(transform);
         }
 
         return rts;
@@ -85,12 +82,10 @@ public class RealTransformSequenceAdapter implements IClassRuntimeAdapter<RealTr
 
         JsonObject obj = new JsonObject();
 
-        obj.addProperty("type", RealTransformSequence.class.getSimpleName());
-
         obj.addProperty("size", rts.transforms.size());
 
         for (int iTransform = 0; iTransform<rts.transforms.size(); iTransform++) {
-            obj.add("realTransform_"+iTransform, jsonSerializationContext.serialize(rts.transforms.get(iTransform)));
+            obj.add("realTransform_"+iTransform, jsonSerializationContext.serialize(rts.transforms.get(iTransform), RealTransform.class));
         }
 
         return obj;

@@ -57,7 +57,7 @@ public class BdvSourcesAdderCommand implements BdvPlaygroundActionCommand {
     @Override
     public void run() {
 
-        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvh, sacs);
+        SourceAndConverterServices.getBdvDisplayService().show(bdvh, sacs);
         if (autocontrast) {
             for (SourceAndConverter sac : sacs) {
                 int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();

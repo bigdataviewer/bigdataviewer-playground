@@ -47,14 +47,12 @@ import mpicbg.spim.data.sequence.*;
 import net.imglib2.FinalDimensions;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.realtransform.AffineTransform3D;
-import spimdata.util.Displaysettings;
-import spimdata.util.DisplaysettingsHelper;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -70,6 +68,8 @@ import java.util.stream.Collectors;
  * https://github.com/tischi/bdv-utils/blob/master/src/main/java/de/embl/cba/bdv/utils/io/BdvRaiVolumeExport.java#L38
  *
  * This export does not take advantage of potentially already computed mipmaps TODO take advantage of this, whenever possible
+ *
+ * An attributeAdder can be used in order to append extra attributes retrievable from the sourceandconverter object
  *
  */
 
@@ -108,6 +108,27 @@ public class XmlHDF5SpimdataExporter implements Runnable {
                                    int blockSizeZ,
                                    int thresholdSizeForMipmap,
                                    File xmlFile) {
+        this(sources,entityType,nThreads,
+                timePointBegin,timePointEnd,
+                scaleFactor,
+                blockSizeX, blockSizeY, blockSizeZ, thresholdSizeForMipmap,
+                xmlFile, (source, viewsetup) -> {});
+
+    }
+
+    public XmlHDF5SpimdataExporter(List<SourceAndConverter> sources,
+                                   String entityType,
+                                   int nThreads,
+                                   int timePointBegin,
+                                   int timePointEnd,
+                                   int scaleFactor,
+                                   int blockSizeX,
+                                   int blockSizeY,
+                                   int blockSizeZ,
+                                   int thresholdSizeForMipmap,
+                                   File xmlFile,
+                                   BiConsumer<SourceAndConverter<?>, BasicViewSetup> attributeAdder
+                                   ) {
         this.sources = sources;
         this.entityType = entityType;
         this.nThreads = nThreads;
@@ -122,10 +143,13 @@ public class XmlHDF5SpimdataExporter implements Runnable {
         this.thresholdSizeForMipmap = thresholdSizeForMipmap;
 
         this.xmlFile = xmlFile;
+        this.attributeAdder = attributeAdder;
 
     }
 
     AbstractSpimData spimData;
+
+    BiConsumer<SourceAndConverter<?>, BasicViewSetup> attributeAdder;
 
     public void run() {
 
@@ -248,11 +272,11 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
                 SourceAndConverter sac = sources.get(idxSourceToSac.get(src));
 
-                Displaysettings ds = new Displaysettings(idx_current_src);
+                attributeAdder.accept(sac, basicviewsetup);
 
+                /*Displaysettings ds = new Displaysettings(idx_current_src);
                 DisplaysettingsHelper.GetDisplaySettingsFromCurrentConverter(sac, ds);
-
-                basicviewsetup.setAttribute(ds);
+                basicviewsetup.setAttribute(ds);*/
 
                 setups.put(idx_current_src, basicviewsetup); // Hum hum, order according to hashmap size TODO check
 

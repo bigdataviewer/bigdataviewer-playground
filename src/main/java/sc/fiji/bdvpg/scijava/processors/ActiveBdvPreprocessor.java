@@ -39,6 +39,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -49,19 +50,13 @@ import java.util.concurrent.ExecutionException;
  * Fills single, unresolved module inputs with the active {@link BdvHandle},
  * <em>or a newly created one if none</em>.
  *
- * @author Curtis Rueden, Nicolas Chiaruttini
+ * @author Nicolas Chiaruttini
  */
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_HIGH)
 public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle>  {
 
     @Parameter
-    ObjectService os;
-
-    @Parameter
-    CommandService cs;
-
-    @Parameter
-    GuavaWeakCacheService cacheService;
+    SourceAndConverterBdvDisplayService sacDisplayService;
 
     public ActiveBdvPreprocessor() {
         super( BdvHandle.class );
@@ -72,45 +67,8 @@ public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle>  {
     @Override
     public BdvHandle getValue() {
 
-        List<BdvHandle> bdvhs = os.getObjects(BdvHandle.class);
+        return sacDisplayService.getActiveBdv();
 
-        if ((bdvhs == null)||(bdvhs.size()==0)) {
-             try
-            {
-
-                Module module = cs.moduleService()
-                        .createModule(cs.getCommand(BdvWindowCreatorCommand.class));
-
-                cs.moduleService().loadInputs(module);
-
-                return (BdvHandle)
-                        cs.moduleService()
-                                .run(module, true, module.getInputs())
-                                .get()
-                                .getOutput("bdvh");
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-
-        assert bdvhs != null;
-        if (bdvhs.size()==1) {
-            return bdvhs.get(0);
-        } else {
-
-            // Get the one with the most recent focus ?
-            Optional<BdvHandle> bdvh = bdvhs.stream().filter(b -> b.getViewerPanel().hasFocus()).findFirst();
-            if (bdvh.isPresent()) {
-                return bdvh.get();
-            } else {
-                if (cacheService.get("LAST_ACTIVE_BDVH")!=null) {
-                    WeakReference<BdvHandle> wr_bdv_h = (WeakReference<BdvHandle>) cacheService.get("LAST_ACTIVE_BDVH");
-                    return wr_bdv_h.get();
-                } else {
-                    return null;
-                }
-            }
-        }
     }
 
 }

@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  *
  */
 
-public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer implements Runnable {
+public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter implements Runnable {
 
     File f;
 

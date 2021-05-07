@@ -28,16 +28,29 @@
  */
 package sc.fiji.bdvpg.scijava.services;
 
+import bdv.SpimSource;
 import bdv.ViewerImgLoader;
+import bdv.ViewerSetupImgLoader;
+import bdv.VolatileSpimSource;
 import bdv.img.cache.VolatileGlobalCellCache;
+import bdv.spimdata.WrapBasicImgLoader;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import mpicbg.spim.data.generic.base.Entity;
+import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
+import mpicbg.spim.data.generic.sequence.BasicViewSetup;
+import mpicbg.spim.data.sequence.Angle;
+import mpicbg.spim.data.sequence.Channel;
 import net.imagej.patcher.LegacyInjector;
+import net.imglib2.converter.Converter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
+import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.RealType;
+import org.scijava.InstantiableException;
 import org.scijava.command.Command;
 import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;
@@ -53,12 +66,14 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.scijava.ui.UIService;
-import sc.fiji.bdvpg.bdv.projector.BlendingMode;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.sourceandconverter.importer.SourceAndConverterFromSpimDataCreator;
+import sc.fiji.bdvpg.spimdata.EntityHandler;
+import sc.fiji.bdvpg.spimdata.IEntityHandlerService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -226,6 +241,13 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         }
     }
 
+    @Parameter
+    IEntityHandlerService entityHandlerService;
+
+    /**
+     * TODO nice documentation about {@link EntityHandler} and scijava extension mechanism
+     * @param asd
+     */
     public synchronized void register(AbstractSpimData asd) {
 
         if (spimdataToMetadata.getIfPresent(asd)==null) {
@@ -233,15 +255,140 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             spimdataToMetadata.put(asd, sourceData);
         }
 
-        final SourceAndConverterFromSpimDataCreator creator = new SourceAndConverterFromSpimDataCreator( asd );
-        Map<Integer, SourceAndConverter> sacs = creator.getSetupIdToSourceAndConverter();
-        this.register(sacs.values());
-        final ISourceAndConverterService service = SourceAndConverterServices.getSourceAndConverterService();
-        sacs.forEach((id,sac) -> {
-            creator.getMetadata( sac ).forEach( (key,value) -> service.setMetadata(sac, key, value) );
-            this.linkToSpimData(sac, asd, id);
-            if (uiAvailable) ui.update(sac);
+        Map<Class<? extends Entity>, EntityHandler> entityClassToHandler = new HashMap<>();
+
+        entityHandlerService.getHandlers(EntityHandler.class).forEach(pi -> {
+            try {
+                EntityHandler handler = pi.createInstance();
+                entityClassToHandler.put(handler.getEntityType(), handler);
+                log.accept("Plugin found for entity class "+handler.getEntityType().getSimpleName());
+            } catch (InstantiableException e) {
+                e.printStackTrace();
+            }
         });
+
+        boolean nonVolatile = WrapBasicImgLoader.wrapImgLoaderIfNecessary( asd );
+
+        if ( nonVolatile )
+        {
+            System.err.println( "WARNING:\nOpening <SpimData> dataset that is not suited for interactive browsing.\nConsider resaving as HDF5 for better performance." );
+        }
+
+        final AbstractSequenceDescription< ?, ?, ? > seq = asd.getSequenceDescription();
+
+        final ViewerImgLoader imgLoader = ( ViewerImgLoader ) seq.getImgLoader();
+
+        final Map< Integer, SourceAndConverter > setupIdToSourceAndConverter = new HashMap<>();
+
+        for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() ) {
+
+            // Execute {@link EntityHandler}, if a compatible entity is found in the spimdata, compatible with a entity class handler
+            entityClassToHandler.keySet().forEach(entityClass -> {
+                Entity e = setup.getAttribute(entityClass);
+                if (e!=null) {
+                    entityClassToHandler.get(entityClass).loadEntity(asd, setup);
+                }
+            });
+
+            final int setupId = setup.getId();
+
+            ViewerSetupImgLoader vsil = imgLoader.getSetupImgLoader(setupId);
+
+            String sourceName = createSetupName(setup);
+
+            final Object type = vsil.getImageType();
+
+            entityClassToHandler.keySet().forEach(entityClass -> {
+                Entity e = setup.getAttribute(entityClass);
+                if (e!=null) {
+                    if (entityClassToHandler.get(entityClass).canCreateSourceAndConverter()) {
+                        setupIdToSourceAndConverter.put(setupId, entityClassToHandler.get(entityClass).makeSourceAndConverter(asd, setup));
+                    }
+                }
+            });
+
+            if (!setupIdToSourceAndConverter.containsKey(setupId)) {
+                if (type instanceof RealType) {
+
+                    //createRealTypeSourceAndConverter( nonVolatile, setupId, sourceName );
+                    final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
+
+                    Converter nonVolatileConverter = SourceAndConverterHelper.createConverterRealType((RealType)s.getType()); // IN FACT THE CASTING IS NECESSARY!!
+
+                    if (!nonVolatile ) {
+
+                        final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
+
+                        Converter volatileConverter = SourceAndConverterHelper.createConverterRealType((RealType)vs.getType());
+
+                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
+
+                    } else {
+
+                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter));
+                    }
+
+                } else if (type instanceof ARGBType) {
+
+                    //createARGBTypeSourceAndConverter( setupId, sourceName );
+                    final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
+                    final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
+
+                    Converter nonVolatileConverter = SourceAndConverterHelper.createConverterARGBType(s);
+                    if (vs!=null) {
+                        Converter volatileConverter = SourceAndConverterHelper.createConverterARGBType(vs);
+                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
+                    } else {
+                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter));
+                    }
+
+                } else {
+                    SourceAndConverterHelper.errlog.accept("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
+                }
+
+            }
+
+            // Execute {@link EntityHandler}, if a compatible entity is found
+            entityClassToHandler.keySet().forEach(entityClass -> {
+                Entity e = setup.getAttribute(entityClass);
+                if (e!=null) {
+                    entityClassToHandler.get(entityClass).loadEntity(asd, setup, setupIdToSourceAndConverter.get(setupId) );
+                }
+            });
+
+        }
+        this.register(setupIdToSourceAndConverter.values()); // Necessary ? Yes!
+
+        setupIdToSourceAndConverter.keySet().forEach(id -> {
+            linkToSpimData(setupIdToSourceAndConverter.get(id), asd, id);
+        });
+
+        WrapBasicImgLoader.removeWrapperIfPresent( asd );
+
+    }
+
+    private static String createSetupName( final BasicViewSetup setup ) {
+        if ( setup.hasName() ) {
+            if (!setup.getName().trim().equals("")) {
+                return setup.getName();
+            }
+        }
+
+        String name = "";
+
+        final Angle angle = setup.getAttribute( Angle.class );
+        if ( angle != null )
+            name += ( name.isEmpty() ? "" : " " ) + "a " + angle.getName();
+
+        final Channel channel = setup.getAttribute( Channel.class );
+        if ( channel != null )
+            name += ( name.isEmpty() ? "" : " " ) + "c " + channel.getName();
+
+        if ((channel == null)&&(angle == null)) {
+            name += "id "+setup.getId();
+        }
+
+        return name;
     }
 
     @Override
@@ -394,7 +541,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     void registerDefaultActions() {
         this.registerAction("Display names", (srcs) -> {
             for (SourceAndConverter src:srcs){
-                System.out.println(src.getSpimSource().getName());
+                log.accept(src.getSpimSource().getName());
             }});
 
         context().getService(PluginService.class)

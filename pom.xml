@@ -11,7 +11,7 @@
 
 	<groupId>sc.fiji</groupId>
 	<artifactId>bigdataviewer-playground</artifactId>
-	<version>0.2.15-SNAPSHOT</version>
+	<version>0.3.0-SNAPSHOT</version>
 
 	<name>bigdataviewer-playground</name>
 	<description>BigDataViewer Actions and GUI</description>
@@ -92,7 +92,6 @@
 		<connection>scm:git:git://github.com/bigdataviewer/bigdataviewer-playground</connection>
 		<developerConnection>scm:git:git@github.com:bigdataviewer/bigdataviewer-playground</developerConnection>
 		<url>https://github.com/bigdataviewer/bigdataviewer-playground/</url>
-    <tag>bigdataviewer-playground-0.2.7</tag>
   </scm>
 
 	<issueManagement>
@@ -118,12 +117,12 @@
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>
 
 		<scijava.deleteOtherVersions>true</scijava.deleteOtherVersions>
-		<scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory>
+		<!-- <scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory> -->
 
 		<bigdataviewer-selector.version>0.1.8</bigdataviewer-selector.version>
 		<bigvolumeviewer.version>0.2.0</bigvolumeviewer.version>
-		<mastodon.version>1.0.0-beta-16</mastodon.version>
-		<bigdataviewer-spimdata-extras.version>0.1.0</bigdataviewer-spimdata-extras.version>
+		<mastodon.version>1.0.0-beta-17</mastodon.version>
+		<bigdataviewer-spimdata-extras.version>0.1.1</bigdataviewer-spimdata-extras.version>
 		<reflections.version>0.9.11</reflections.version>
 
 		<!-- package version below are determined by the parent pom but need to be upgraded -->
@@ -193,12 +192,6 @@
 		<dependency>
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>ch.epfl.biop</groupId>
-			<artifactId>bigdataviewer-spimdata-extras</artifactId>
-			<version>${bigdataviewer-spimdata-extras.version}</version>
 		</dependency>
 
 		<!-- Test dependencies -->

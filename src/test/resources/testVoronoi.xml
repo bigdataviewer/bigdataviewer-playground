@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <SpimData version="0.2">
   <BasePath type="relative">.</BasePath>
   <SequenceDescription>
@@ -16,7 +15,6 @@
         </voxelSize>
         <attributes>
           <channel>1</channel>
-          <displaysettings>0</displaysettings>
         </attributes>
       </ViewSetup>
       <Attributes name="channel">
@@ -24,16 +22,6 @@
           <id>1</id>
           <name>1</name>
         </Channel>
-      </Attributes>
-      <Attributes name="displaysettings">
-        <Displaysettings>
-          <id>0</id>
-          <isset>true</isset>
-          <color>255 255 255 255</color>
-          <min>0.0</min>
-          <max>65535.0</max>
-          <Projection_Mode>Sum</Projection_Mode>
-        </Displaysettings>
       </Attributes>
     </ViewSetups>
     <Timepoints type="range">

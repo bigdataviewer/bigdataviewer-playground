@@ -50,10 +50,10 @@ public class EditorBehaviourUnInstaller implements Runnable {
     @Override
     public void run() {
 
-        SourceSelectorBehaviour ssb = (SourceSelectorBehaviour) SourceAndConverterServices.getSourceAndConverterDisplayService().getDisplayMetadata(
+        SourceSelectorBehaviour ssb = (SourceSelectorBehaviour) SourceAndConverterServices.getBdvDisplayService().getDisplayMetadata(
                 bdvh, SourceSelectorBehaviour.class.getSimpleName());
 
-        EditorBehaviourInstaller ebi = (EditorBehaviourInstaller) SourceAndConverterServices.getSourceAndConverterDisplayService().getDisplayMetadata(
+        EditorBehaviourInstaller ebi = (EditorBehaviourInstaller) SourceAndConverterServices.getBdvDisplayService().getDisplayMetadata(
                 bdvh, EditorBehaviourInstaller.class.getSimpleName());
 
         if ((ssb==null)||(ebi==null)) {
@@ -65,7 +65,7 @@ public class EditorBehaviourUnInstaller implements Runnable {
         ssb.removeToggleListener(ebi.getToggleListener());
 
         // Cleans the MetaData hashMap
-        SourceAndConverterServices.getSourceAndConverterDisplayService().setDisplayMetadata(
+        SourceAndConverterServices.getBdvDisplayService().setDisplayMetadata(
                 bdvh, EditorBehaviourInstaller.class.getSimpleName(), null);
 
     }

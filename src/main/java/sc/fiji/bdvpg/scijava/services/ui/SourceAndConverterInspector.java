@@ -269,20 +269,20 @@ public class SourceAndConverterInspector {
         DefaultMutableTreeNode current = nodeSac;
 
         while (current.getChildCount() > 0) {
-            System.out.println(">>>>");
+            //System.out.println(">>>>");
             current = (DefaultMutableTreeNode) current.getFirstChild();
             if (current.getUserObject() instanceof RenamableSourceAndConverter) {
 
-                System.out.println("RSAC");
+                //System.out.println("RSAC");
                 chain.add(((RenamableSourceAndConverter) (current.getUserObject())).sac);
-                System.out.println("Renamable SourceAndConverter found");
-                System.out.println(">"+chain.getLast());
+                //System.out.println("Renamable SourceAndConverter found");
+                //System.out.println(">"+chain.getLast());
             } else {
-                System.out.println("NO RSAC");
-                System.out.println("RenamableSourceAndConverter not contained " +
-                        "in first node of inspector result");
-                System.out.println("Class found = "+current.getUserObject().getClass().getSimpleName());
-                System.out.println("Object found = "+current.getUserObject());
+                //System.out.println("NO RSAC");
+                //System.out.println("RenamableSourceAndConverter not contained " +
+                //        "in first node of inspector result");
+                //System.out.println("Class found = "+current.getUserObject().getClass().getSimpleName());
+                //System.out.println("Object found = "+current.getUserObject());
 
                 //return null;
             }

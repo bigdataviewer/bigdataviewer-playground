@@ -34,14 +34,11 @@ import net.imglib2.type.numeric.ARGBType;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.BdvCreator;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerOrthoSyncStarter;
-import sc.fiji.bdvpg.bdv.projector.AccumulateAverageProjectorARGB;
-import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGBFactory;
-import sc.fiji.bdvpg.bdv.projector.Projector;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,17 +47,11 @@ import java.awt.*;
         description = "Creates 3 BDV windows with synchronized orthogonal views")
 public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(label = "Title of BDV windows")
-    public String windowtitle = "BDV";
-
     @Parameter(label = "Interpolate")
     public boolean interpolate = false;
 
     @Parameter(label = "Number of timepoints (1 for a single timepoint)")
     public int ntimepoints = 1;
-
-    @Parameter(label = "Source Projection Mode", choices = { Projector.MIXED_PROJECTOR, Projector.SUM_PROJECTOR, Projector.AVERAGE_PROJECTOR})
-    public String projector;
 
     @Parameter(label = "Add cross overlay to show view plane locations")
     public boolean drawcrosses;
@@ -95,6 +86,9 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
     @Parameter(type = ItemIO.OUTPUT)
     public BdvHandle bdvhz;
 
+    @Parameter
+    SourceAndConverterBdvDisplayService sacDisplayService;
+
     @Override
     public void run() {
 
@@ -115,28 +109,8 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
 
     BdvHandle createBdv(String suffix, double locX, double locY) {
 
-        //------------ BdvHandleFrame
-        BdvOptions opts = BdvOptions.options().frameTitle(windowtitle +suffix).preferredSize(sizex, sizey);
-
-        // Create accumulate projector factory
-        AccumulateProjectorFactory<ARGBType> factory;
-        switch (projector) {
-            case Projector.MIXED_PROJECTOR:
-                factory = new AccumulateMixedProjectorARGBFactory(  );
-                opts = opts.accumulateProjectorFactory(factory);
-            case Projector.SUM_PROJECTOR:
-                // Default projector
-                break;
-            case Projector.AVERAGE_PROJECTOR:
-                factory = AccumulateAverageProjectorARGB.factory;
-                opts = opts.accumulateProjectorFactory(factory);
-                break;
-            default:
-        }
-
-        BdvCreator creator = new BdvCreator(opts, interpolate, ntimepoints);
-        creator.run();
-        BdvHandle bdvh = creator.get();
+        BdvHandle bdvh = sacDisplayService.getNewBdv();
+        BdvHandleHelper.setWindowTitle(bdvh, BdvHandleHelper.getWindowTitle(bdvh)+suffix);
 
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice[] gd = ge.getScreenDevices();

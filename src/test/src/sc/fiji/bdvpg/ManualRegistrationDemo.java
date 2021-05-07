@@ -97,7 +97,7 @@ public class ManualRegistrationDemo {
         Source source = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getNewBdv();
+        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
 
         // Creates SourceAndConverter Reference
         SourceAndConverter sacReference = SourceAndConverterHelper.createSourceAndConverter(source);
@@ -110,10 +110,10 @@ public class ManualRegistrationDemo {
 
             SourceAndConverter sacToTransform;
             sacToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
-            new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 0))).run();
+            new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
 
-            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
-            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacToTransform);
+            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacReference);
+            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacToTransform);
 
             // Adjust view on sourceandconverter
             new ViewerTransformAdjuster(bdvHandle, sacReference).run();
@@ -136,10 +136,10 @@ public class ManualRegistrationDemo {
             SourceAndConverter sacToTransform;
             sacToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
             sacToTransform = new SourceAffineTransformer(sacToTransform, new AffineTransform3D()).getSourceOut();
-            new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 0))).run();
+            new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
 
-            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
-            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacToTransform);
+            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacReference);
+            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacToTransform);
 
             // Adjust view on sourceandconverter
             new ViewerTransformAdjuster(bdvHandle, sacReference).run();
@@ -166,11 +166,11 @@ public class ManualRegistrationDemo {
 
             // Show all SourceAndConverter associated with above SpimData
             SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
-                SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+                SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
                 new BrightnessAutoAdjuster(sac, 0).run();
             });
 
-            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
+            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacReference);
             new ViewerTransformAdjuster(bdvHandle, sacReference).run();
 
             List<SourceAndConverter> sacList = SourceAndConverterServices.getSourceAndConverterService()
@@ -201,11 +201,11 @@ public class ManualRegistrationDemo {
 
             // Show all SourceAndConverter associated with above SpimData
             SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
-                SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+                SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
                 new BrightnessAutoAdjuster(sac, 0).run();
             });
 
-            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacReference);
+            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacReference);
             new ViewerTransformAdjuster(bdvHandle, sacReference).run();
 
             List<SourceAndConverter> sacList = SourceAndConverterServices.getSourceAndConverterService()

@@ -73,7 +73,6 @@ public class EditorBehaviourInstaller implements Runnable {
                 getCommandName(SourcesInvisibleMakerCommand.class),
                 getCommandName(BrightnessAdjusterCommand.class),
                 getCommandName(SourceColorChangerCommand.class),
-                getCommandName( SourceAndConverterBlendingModeChangerCommand.class),
                 "PopupLine",
                 getCommandName(SourcesRemoverCommand.class)};
 
@@ -149,7 +148,7 @@ public class EditorBehaviourInstaller implements Runnable {
         ssb.addToggleListener(toggleListener);
 
         // Provides a way to retrieve this installer -> can be used to uninstalling it {@link EditorBehaviourUninstaller}
-        SourceAndConverterServices.getSourceAndConverterDisplayService().setDisplayMetadata(
+        SourceAndConverterServices.getBdvDisplayService().setDisplayMetadata(
                 bdvh, EditorBehaviourInstaller.class.getSimpleName(), this);
 
     }

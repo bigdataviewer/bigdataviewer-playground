@@ -30,6 +30,7 @@ package sc.fiji.bdvpg.scijava.command.spimdata;
 
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -50,6 +51,9 @@ public class SpimDataExporterCommand implements BdvPlaygroundActionCommand {
     @Parameter(label = "Output File (XML)", style = "save")
     public File xmlfilepath;
 
+    @Parameter
+    Context context;
+
     public void run() {
 
         if (SourceAndConverterServices.getSourceAndConverterService()
@@ -62,7 +66,7 @@ public class SpimDataExporterCommand implements BdvPlaygroundActionCommand {
                 ((SourceAndConverterService.SpimDataInfo)SourceAndConverterServices.getSourceAndConverterService()
                 .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)).asd;
 
-        new XmlFromSpimDataExporter(asd, xmlfilepath.getAbsolutePath()).run();
+        new XmlFromSpimDataExporter(asd, xmlfilepath.getAbsolutePath(), context).run();
     }
 
 }

@@ -37,6 +37,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.Views;
+import sc.fiji.bdvpg.scijava.adapter.source.EmptySourceAdapter;
 
 import java.io.Serializable;
 import java.util.function.BiConsumer;
@@ -48,7 +49,7 @@ import java.util.function.BiConsumer;
  * This source can be thus used to define a template in order to Resample another source
  * with new bounds and voxel size, for instance as a model in {@link ResampledSource}
  *
- * Also this source can be serialized with the gson adapter {@link sc.fiji.bdvpg.services.serializers.plugins.EmptySourceAdapter}
+ * Also this source can be serialized with the gson adapter {@link EmptySourceAdapter}
  * which is helpful to save such source easily.
  *
  */

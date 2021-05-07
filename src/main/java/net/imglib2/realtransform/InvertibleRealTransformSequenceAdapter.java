@@ -30,7 +30,7 @@ package net.imglib2.realtransform;
 
 import com.google.gson.*;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.services.serializers.plugins.IClassRuntimeAdapter;
+import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
 
@@ -58,6 +58,11 @@ public class InvertibleRealTransformSequenceAdapter implements IClassRuntimeAdap
     }
 
     @Override
+    public boolean useCustomAdapter() {
+        return true;
+    }
+
+    @Override
     public InvertibleRealTransformSequence deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
 
@@ -77,7 +82,7 @@ public class InvertibleRealTransformSequenceAdapter implements IClassRuntimeAdap
                 if (transform instanceof InvertibleRealTransform) {
                     irts.add((InvertibleRealTransform) transform);
                 } else {
-                    System.err.println("Deserialization eroor: "+transform+" of class "+transform.getClass().getSimpleName()+" is not invertible!");
+                    System.err.println("Deserialization error: "+transform+" of class "+transform.getClass().getSimpleName()+" is not invertible!");
                     return null;
                 }
             }
@@ -89,15 +94,10 @@ public class InvertibleRealTransformSequenceAdapter implements IClassRuntimeAdap
     @Override
     public JsonElement serialize(InvertibleRealTransformSequence irts, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
-
-        obj.addProperty("type", InvertibleRealTransformSequence.class.getSimpleName());
-
         obj.addProperty("size", irts.transforms.size());
-
         for (int iTransform = 0; iTransform<irts.transforms.size(); iTransform++) {
-            obj.add("realTransform_"+iTransform, jsonSerializationContext.serialize(irts.transforms.get(iTransform)));
+            obj.add("realTransform_"+iTransform, jsonSerializationContext.serialize(irts.transforms.get(iTransform), RealTransform.class));
         }
-
         return obj;
     }
 }

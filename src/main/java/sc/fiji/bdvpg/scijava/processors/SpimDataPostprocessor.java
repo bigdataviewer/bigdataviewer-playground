@@ -44,7 +44,7 @@ public class SpimDataPostprocessor extends AbstractPostprocessorPlugin {
     @Parameter
 	SourceAndConverterService bss;
 
-    public static Consumer<String> log = (str) -> System.out.println( SpimDataPostprocessor.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = (str) -> {};//System.out.println( SpimDataPostprocessor.class.getSimpleName()+":"+str);
 
     public static Consumer<String> errlog = (str) -> System.err.println( SpimDataPostprocessor.class.getSimpleName()+":"+str);
 

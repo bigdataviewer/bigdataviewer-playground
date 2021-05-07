@@ -81,13 +81,13 @@ public class WarpedSourceDemo {
                 .get(0);
 
         SourceAndConverterServices
-                .getSourceAndConverterDisplayService()
+                .getBdvDisplayService()
                 .show(sac);
 
         // Gets active BdvHandle instance
-        BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
-        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+        SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
         new ViewerTransformAdjuster(bdvHandle, sac).run();
         new BrightnessAutoAdjuster(sac, 0).run();
 
@@ -133,7 +133,7 @@ public class WarpedSourceDemo {
                     .register(transformed_source);
 
             SourceAndConverterServices
-                    .getSourceAndConverterDisplayService()
+                    .getBdvDisplayService()
                     .show(bdvHandle, transformed_source);
 
         }

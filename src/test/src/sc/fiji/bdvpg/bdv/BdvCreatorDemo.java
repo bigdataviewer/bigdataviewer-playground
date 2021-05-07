@@ -45,7 +45,7 @@ public class BdvCreatorDemo
 		ij.ui().showUI();
 
 		// Creates a BDV since none exists yet
-		SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+		SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 	}
 
 	@Test

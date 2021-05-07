@@ -72,11 +72,11 @@ public class OrthoViewDemo {
         //SourceAndConverter sac = SourceAndConverterUtils.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandleX = SourceAndConverterServices.getSourceAndConverterDisplayService().getNewBdv();
+        BdvHandle bdvHandleX = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
         // Creates a BdvHandle
-        BdvHandle bdvHandleY = SourceAndConverterServices.getSourceAndConverterDisplayService().getNewBdv();
+        BdvHandle bdvHandleY = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
         // Creates a BdvHandles
-        BdvHandle bdvHandleZ = SourceAndConverterServices.getSourceAndConverterDisplayService().getNewBdv();
+        BdvHandle bdvHandleZ = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
 
         BdvHandle[] bdvhs = new BdvHandle[]{bdvHandleX,bdvHandleY,bdvHandleZ};
 
@@ -92,7 +92,7 @@ public class OrthoViewDemo {
         for (BdvHandle bdvHandle:bdvhs) {
 
             sacs.forEach( sac -> {
-                SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+                SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
                 new ViewerTransformAdjuster(bdvHandle, sac).run();
                 new BrightnessAutoAdjuster(sac, 0).run();
             });

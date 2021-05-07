@@ -38,7 +38,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
 
-public class SourceAndConverterServiceLoader extends SourceAndConverterSerializer implements Runnable{
+public class SourceAndConverterServiceLoader extends SourceAndConverterAdapter implements Runnable{
 
     String filePath;
     Context ctx;
@@ -75,7 +75,7 @@ public class SourceAndConverterServiceLoader extends SourceAndConverterSerialize
 
             Gson gson = new Gson();
             JsonArray rawSacsArray = gson.fromJson(fileReader, JsonArray.class);
-            System.out.println(rawSacsArray.size());
+            //System.out.println(rawSacsArray.size());
 
             for (int i = 0;i<rawSacsArray.size();i++) {
                 if (rawSacsArray.get(i).isJsonObject()) {

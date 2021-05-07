@@ -29,19 +29,34 @@
 package sc.fiji.bdvpg.bdv;
 
 import bdv.tools.brightness.ConverterSetup;
+import bdv.ui.SourcesTransferable;
 import bdv.util.BdvHandle;
 import bdv.viewer.Source;
+import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
 import net.imglib2.*;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Intervals;
 import net.imglib2.util.LinAlgHelpers;
 import org.scijava.cache.CacheService;
 import org.scijava.object.ObjectService;
+import org.scijava.ui.behaviour.ClickBehaviour;
+import org.scijava.ui.behaviour.DragBehaviour;
+import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.io.InputTriggerConfigHelper;
+import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
+import org.scijava.ui.behaviour.util.Behaviours;
+import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
+import sc.fiji.bdvpg.behaviour.EditorBehaviourInstaller;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.ui.swingdnd.BdvTransferHandler;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.*;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
@@ -323,8 +338,9 @@ public class BdvHandleHelper
         List<BdvHandle> bdvs = os.getObjects(BdvHandle.class);
         boolean duplicateExist;
         String uniqueTitle = iniTitle;
-        duplicateExist = bdvs.stream().anyMatch(bdv ->
-                (bdv.toString().equals(iniTitle))||(getWindowTitle(bdv).equals(iniTitle)));
+        duplicateExist = bdvs.stream().filter(bdv ->
+            (bdv.toString().equals(iniTitle)) || (getWindowTitle(bdv).equals(iniTitle))
+        ).count()>1;
         while (duplicateExist) {
             if (uniqueTitle.matches(".+(_)\\d+")) {
                 int idx = Integer.parseInt(uniqueTitle.substring(uniqueTitle.lastIndexOf("_")+1));
@@ -344,4 +360,59 @@ public class BdvHandleHelper
         }
         return uniqueTitle;
     }
+
+    /**
+     * For debugging:
+     * - print actions and triggers of a bdv
+     * @param bdv ze bdv
+     */
+    public static void printBindings(BdvHandle bdv) {
+        System.out.println("--------------------- Behaviours");
+        bdv.getTriggerbindings().getConcatenatedBehaviourMap().getAllBindings().forEach((label,behaviour) -> {
+            System.out.println(label);
+            System.out.println("\t"+behaviour.getClass().getSimpleName());
+        });
+        System.out.println("--------------------- Triggers");
+        bdv.getTriggerbindings().getConcatenatedInputTriggerMap().getAllBindings().forEach((trigger, actions) -> {
+            System.out.println(trigger);
+            for (String action : actions)
+                System.out.println("\t"+action);
+        });
+        System.out.println("--------------------- Key Action");
+        for (Object o : bdv.getKeybindings().getConcatenatedActionMap().allKeys()) {
+            System.out.println("\t"+o);
+        }
+        System.out.println("--------------------- Key Triggers");
+        for (KeyStroke ks : bdv.getKeybindings().getConcatenatedInputMap().allKeys()) {
+            System.out.println("\t"+ks+":"+bdv.getKeybindings().getConcatenatedInputMap().get(ks));
+        }
+    }
+
+    /**
+     * Install trigger bindings according to the path specified
+     * See {@link BdvSettingsGUISetter}
+     * Key bindings can not be overriden yet
+     * @param bdv bdvhandle
+     * @param pathToBindings string path to the folder containing the yaml file
+     */
+    static void install(BdvHandle bdv, String pathToBindings) {
+        String yamlDataLocation = pathToBindings + File.separator + BdvSettingsGUISetter.bdvKeyConfigFileName;
+
+        InputTriggerConfig yamlConf = null;
+
+        try {
+            yamlConf = new InputTriggerConfig( YamlConfigIO.read( yamlDataLocation ) );
+        } catch (final Exception e) {
+            System.err.println("Could not create "+yamlDataLocation+" file. Using defaults instead.");
+        }
+
+        if (yamlConf!=null) {
+
+            bdv.getTriggerbindings().addInputTriggerMap(pathToBindings, InputTriggerConfigHelper.getInputTriggerMap(yamlConf), "transform");
+
+            // TODO : support replacement of key bindings bdv.getKeybindings().addInputMap("bdvpg", new InputMap(), "bdv", "navigation");
+        }
+
+    }
+
 }

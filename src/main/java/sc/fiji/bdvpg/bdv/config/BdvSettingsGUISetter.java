@@ -42,7 +42,6 @@ import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
 import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.scijava.ui.behaviour.util.Behaviours;
-import sc.fiji.bdvpg.scijava.command.bdv.ScreenShotMakerCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import javax.swing.*;
@@ -151,11 +150,11 @@ public class BdvSettingsGUISetter implements Runnable {
             // ---- Bdv Playground specific bindings
 
             InputTriggerConfig itc_bdvpg = new InputTriggerConfig();
-            String actionScreenshotName = SourceAndConverterService.getCommandName(ScreenShotMakerCommand.class);
+            //String actionScreenshotName = SourceAndConverterService.getCommandName(ScreenShotMakerCommand.class);
             String actionContextMenu = "Sources Context Menu";
 
             itc_bdvpg.add("not mapped", actionContextMenu, "bdvpg"); // default bindings
-            itc_bdvpg.add("not mapped", actionScreenshotName, "bdvpg"); // default bindings
+            //itc_bdvpg.add("not mapped", actionScreenshotName, "bdvpg"); // default bindings
 
             // Create default key bindings
             // Initialise it with the default transforms bindings for 2d and 3d transformatino handlers

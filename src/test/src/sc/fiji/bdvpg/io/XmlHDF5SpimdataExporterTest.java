@@ -51,7 +51,7 @@ public class XmlHDF5SpimdataExporterTest {
 
     static ImageJ ij;
 
-    @Test
+    @Test@Ignore
     public void run() throws Exception {
         // Need to initialize the services:
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation

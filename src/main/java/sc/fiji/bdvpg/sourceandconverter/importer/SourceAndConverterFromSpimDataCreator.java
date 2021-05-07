@@ -42,10 +42,7 @@ import mpicbg.spim.data.sequence.Channel;
 import net.imglib2.converter.Converter;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
-import sc.fiji.bdvpg.bdv.projector.BlendingMode;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-import spimdata.util.Displaysettings;
-import spimdata.util.DisplaysettingsHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -110,7 +107,7 @@ public class SourceAndConverterFromSpimDataCreator
 			}
 
 			sourceAndConverterToMetadata.put( setupIdToSourceAndConverter.get( setupId ), new HashMap<>() );
-			fetchAndApplyDisplaySettings( setup, setupId );
+
 		}
 
 		WrapBasicImgLoader.removeWrapperIfPresent( asd );
@@ -147,15 +144,6 @@ public class SourceAndConverterFromSpimDataCreator
 			setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
 		} else {
 			setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter));
-		}
-	}
-
-	private void fetchAndApplyDisplaySettings( BasicViewSetup setup, int setupId )
-	{
-		if ( setup.getAttribute(Displaysettings.class)!=null) {
-			final String blendingMode = DisplaysettingsHelper.PullDisplaySettings( setupIdToSourceAndConverter.get( setupId ), setup.getAttribute(Displaysettings.class));
-			if ( blendingMode != null)
-				sourceAndConverterToMetadata.get( setupIdToSourceAndConverter.get( setupId ) ).put(  BlendingMode.BLENDING_MODE, blendingMode );
 		}
 	}
 

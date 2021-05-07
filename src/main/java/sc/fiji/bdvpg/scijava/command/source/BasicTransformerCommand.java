@@ -130,7 +130,7 @@ public class BasicTransformerCommand implements BdvPlaygroundActionCommand {
                 }
             }
         }
-        SourceAndConverterServices.getSourceAndConverterDisplayService()
+        SourceAndConverterServices.getBdvDisplayService()
                 .updateDisplays(sacs);
     }
 

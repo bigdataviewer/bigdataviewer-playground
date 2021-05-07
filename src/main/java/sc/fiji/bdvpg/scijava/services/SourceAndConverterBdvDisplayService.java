@@ -31,9 +31,11 @@ package sc.fiji.bdvpg.scijava.services;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import com.google.gson.Gson;
+import ij.Prefs;
 import net.imglib2.converter.Converter;
 import net.imglib2.util.Pair;
-import org.scijava.command.CommandService;
+import org.scijava.Context;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -41,22 +43,24 @@ import org.scijava.script.ScriptService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
-import sc.fiji.bdvpg.bdv.projector.Projector;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import sc.fiji.bdvpg.scijava.services.ui.BdvHandleFilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
+import sc.fiji.bdvpg.bdv.supplier.IBdvSupplier;
+import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import sc.fiji.persist.ScijavaGsonHelper;
 
 import javax.swing.tree.DefaultTreeModel;
 
@@ -96,12 +100,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     SourceAndConverterService bdvSourceAndConverterService;
 
     /**
-     * Used to create BDV Windows when necessary
-     **/
-    @Parameter
-    CommandService cs;
-
-    /**
      * Used to retrieved the last active BDV Windows (if the activated callback has been set right)
      **/
     @Parameter
@@ -110,21 +108,49 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     @Parameter
     ObjectService os;
 
+    @Parameter
+    Context ctx;
+
+    Supplier<BdvHandle> bdvSupplier;  // = new DefaultBdvSupplier(new SerializableBdvOptions());
+
+    /**
+     * Can be used to change how Bdv Windows are created
+     * @param bdvSupplier
+     */
+    public void setDefaultBdvSupplier(IBdvSupplier bdvSupplier) {
+        this.bdvSupplier = bdvSupplier;
+
+        log.accept(" --- Serializing to save default bdv window of class "+bdvSupplier.getClass().getSimpleName());
+        Gson gson = ScijavaGsonHelper.getGson(ctx, true);
+        String bdvSupplierSerialized = gson.toJson(bdvSupplier, IBdvSupplier.class);
+        log.accept("Bdv Supplier serialized into : "+bdvSupplierSerialized);
+        // Saved in prefs for next session
+        Prefs.set("bigdataviewer.playground.supplier", bdvSupplierSerialized);
+    }
+
     public BdvHandle getNewBdv() {
-        try
-        {
-            return (BdvHandle)
-                    cs.run(BdvWindowCreatorCommand.class,
-                            true,
-                            "is2d", false,
-                            "windowtitle", "Bdv",
-                            "ntimepoints", 1,
-                            "interpolate",false,
-                            "projector", Projector.SUM_PROJECTOR).get().getOutput("bdvh");
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+
+        if (bdvSupplier==null) {
+            log.accept(" --- Fetching or generating default bdv window");
+            Gson gson = ScijavaGsonHelper.getGson(ctx);
+            String defaultBdvViewer = gson.toJson(new DefaultBdvSupplier(new SerializableBdvOptions()), IBdvSupplier.class);
+            String  bdvSupplierJson = Prefs.get("bigdataviewer.playground.supplier", defaultBdvViewer);
+            try {
+                bdvSupplier = gson.fromJson(bdvSupplierJson, IBdvSupplier.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+                errlog.accept("Restoring default bdv supplier");
+                bdvSupplier = new DefaultBdvSupplier(new SerializableBdvOptions());
+                String bdvSupplierSerialized = gson.toJson(bdvSupplier, IBdvSupplier.class);
+                log.accept("Bdv Supplier serialized into : "+bdvSupplierSerialized);
+                // Saved in prefs for next session
+                Prefs.set("bigdataviewer.playground.supplier", bdvSupplierSerialized);
+            }
         }
-        return null;
+
+        BdvHandle bdvh = bdvSupplier.get();
+        this.registerBdvHandle(bdvh); // We always want it to be registered
+        return bdvh;
     }
 
     /**
@@ -293,8 +319,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         scriptService.addAlias(BdvHandle.class);
         displayToMetadata = CacheBuilder.newBuilder().weakKeys().build();//new HashMap<>();
         bdvSourceAndConverterService.setDisplayService(this);
-        SourceAndConverterServices.setSourceAndConverterDisplayService(this);
-        log.accept("Service initialized.");
+        SourceAndConverterServices.setBdvDisplayService(this);
+        // Catching bdv supplier from Prefs
+        log.accept("Bdv Playground Display Service initialized.");
     }
 
     /**
@@ -437,7 +464,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
     public void registerBdvHandle( BdvHandle bdvh )
     {
-        log.accept("BdvHandle found.");
         //------------ Register BdvHandle in ObjectService
         if (!os.getObjects(BdvHandle.class).contains(bdvh))
         { // adds it only if not already present in ObjectService
@@ -457,14 +483,10 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
             //------------ Allows to remove the BdvHandle from the objectService when closed by the user
             BdvHandleHelper.setBdvHandleCloseOperation( bdvh, cacheService, this, true,
                     () -> {
-                        //bdvh.getViewerPanel().state().changeListeners().remove(vscl); // TODO : check no memory leak
                         sacService.getUI().removeBdvHandleNodes( bdvh );
                     } );
 
             ( ( SourceFilterNode ) sacService.getUI().getTreeModel().getRoot() ).insert( node, 0 );
-                    /*SwingUtilities.invokeLater(()->
-                            sacsService.getUI().getTreeModel().nodeStructureChanged(node.getParent())//.reload()
-                    );*/
         }
     }
 

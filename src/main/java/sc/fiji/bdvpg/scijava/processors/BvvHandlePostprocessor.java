@@ -60,7 +60,7 @@ public class BvvHandlePostprocessor extends AbstractPostprocessorPlugin {
     @Parameter
     GuavaWeakCacheService cacheService;
 
-    public static Consumer<String> log = (str) -> System.out.println(BvvHandlePostprocessor.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = (str) -> {};//System.out.println(BvvHandlePostprocessor.class.getSimpleName()+":"+str);
 
     @Override
     public void process(Module module) {
