@@ -36,7 +36,6 @@ import bdv.util.*;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import bdv.viewer.SourceGroup;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imglib2.*;
 import net.imglib2.converter.Converter;
@@ -813,10 +812,10 @@ public class SourceAndConverterHelper {
         bdvHandle.getBdvHandle().getViewerPanel().getGlobalMouseCoordinates( mousePosInBdv );
         int timePoint = bdvHandle.getViewerPanel().state().getCurrentTimepoint();
 
-        final List< SourceAndConverter< ? > > sourceAndConverters = SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverterOf( bdvHandle )
+        final List< SourceAndConverter< ? > > sourceAndConverters = SourceAndConverterServices.getBdvDisplayService().getSourceAndConverterOf( bdvHandle )
                 .stream()
                 .filter( sac -> isSourcePresentAt( sac, timePoint, mousePosInBdv ) )
-                .filter( sac -> SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible( sac, bdvHandle ) )
+                .filter( sac -> SourceAndConverterServices.getBdvDisplayService().isVisible( sac, bdvHandle ) )
                 .collect( Collectors.toList() );
 
         return sourceAndConverters;

@@ -70,7 +70,7 @@ public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
     public void run() {
         bdvh = sacDisplayService.getNewBdv();
 
-        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvh, sacs);
+        SourceAndConverterServices.getBdvDisplayService().show(bdvh, sacs);
         if (autocontrast) {
             for (SourceAndConverter sac : sacs) {
                 int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();

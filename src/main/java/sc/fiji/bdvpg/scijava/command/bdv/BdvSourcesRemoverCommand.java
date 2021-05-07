@@ -49,7 +49,7 @@ public class BdvSourcesRemoverCommand implements BdvPlaygroundActionCommand {
     @Override
     public void run() {
         for (SourceAndConverter sac:sacs) {
-            SourceAndConverterServices.getSourceAndConverterDisplayService().remove(bdvh, sac);
+            SourceAndConverterServices.getBdvDisplayService().remove(bdvh, sac);
         }
     }
 }

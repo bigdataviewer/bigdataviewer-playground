@@ -77,10 +77,10 @@ public class ViewTransformSetAndLogDemo {
         SourceAndConverter sac = SourceAndConverterHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
         // Show the sourceandconverter
-        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+        SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
 
         // Adjust view on sourceandconverter
         new ViewerTransformAdjuster(bdvHandle, sac).run();

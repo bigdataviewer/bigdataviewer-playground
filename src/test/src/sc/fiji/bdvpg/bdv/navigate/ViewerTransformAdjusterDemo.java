@@ -34,7 +34,6 @@ import net.imagej.ImageJ;
 import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
@@ -56,7 +55,7 @@ public class ViewerTransformAdjusterDemo
         ij.ui().showUI();
 
         // Gets active BdvHandle instance
-        BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
         // Import SpimData object
         SpimDataFromXmlImporter sdix = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml");
@@ -67,7 +66,7 @@ public class ViewerTransformAdjusterDemo
         SourceAndConverterServices.getSourceAndConverterService().register(asd);
 
         SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source -> {
-            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, source);
+            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source);
         });
 
         // Import SpimData object
@@ -79,7 +78,7 @@ public class ViewerTransformAdjusterDemo
         SourceAndConverterServices.getSourceAndConverterService().register(asd);
 
         SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source -> {
-            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, source);
+            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source);
         });
 
         new ViewerTransformAdjuster(bdvHandle, SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).get(0)).run();

@@ -55,7 +55,7 @@ public class BvvSourcesAdderCommand implements BdvPlaygroundActionCommand {
 
         for (SourceAndConverter sac : sacs) {
             bvvh.getConverterSetups()
-                    .put(sac,SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(sac));
+                    .put(sac,SourceAndConverterServices.getBdvDisplayService().getConverterSetup(sac));
             bvvh.getViewerPanel()
                     .state().addSource(sac);
 

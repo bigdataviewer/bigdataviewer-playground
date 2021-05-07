@@ -48,11 +48,11 @@ public class SourceAndConverterServices
         SourceAndConverterServices.sourceAndConverterService = sourceAndConverterService;
     }
 
-    public static SourceAndConverterBdvDisplayService getSourceAndConverterDisplayService() {
+    public static SourceAndConverterBdvDisplayService getBdvDisplayService() {
         return sourceAndConverterBdvDisplayService;
     }
 
-    public static void setSourceAndConverterDisplayService(SourceAndConverterBdvDisplayService sourceAndConverterBdvDisplayService) {
+    public static void setBdvDisplayService(SourceAndConverterBdvDisplayService sourceAndConverterBdvDisplayService) {
         SourceAndConverterServices.sourceAndConverterBdvDisplayService = sourceAndConverterBdvDisplayService;
     }
 }

@@ -76,7 +76,7 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 
         // Starting synchronization of selected bdvhandles
         sync = new ViewerTransformSyncStarter(bdvhs, synchronizetime);
-        sync.setBdvHandleInitialReference( SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv());
+        sync.setBdvHandleInitialReference( SourceAndConverterServices.getBdvDisplayService().getActiveBdv());
         sync.run();
 
         // JFrame serving the purpose of stopping synchronization when it is being closed

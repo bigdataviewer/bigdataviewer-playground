@@ -49,7 +49,7 @@ public class MultiBdvSourcesAdderCommand implements BdvPlaygroundActionCommand {
     @Override
     public void run() {
         for (BdvHandle bdvh : bdvhs) {
-            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvh, sacs);
+            SourceAndConverterServices.getBdvDisplayService().show(bdvh, sacs);
         }
     }
 }

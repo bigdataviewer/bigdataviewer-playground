@@ -71,7 +71,7 @@ public class AffineTransformSourceDemo {
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = SourceAndConverterServices
-                .getSourceAndConverterDisplayService().getActiveBdv();
+                .getBdvDisplayService().getActiveBdv();
 
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData
@@ -109,7 +109,7 @@ public class AffineTransformSourceDemo {
         }
 
         SourceAndConverterServices
-                .getSourceAndConverterDisplayService()
+                .getBdvDisplayService()
                 .show(bdvHandle, sacs.toArray(new SourceAndConverter[0]));
 
         SourceGroup sg = bdvHandle.getViewerPanel().state().getGroups().get(1);

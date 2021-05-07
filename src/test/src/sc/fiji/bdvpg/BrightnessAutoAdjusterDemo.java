@@ -65,7 +65,7 @@ public class BrightnessAutoAdjusterDemo
         ij.ui().showUI();
 
 		// Creates a BdvHandle
-		bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+		bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
 
         AbstractSpimData asd = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();

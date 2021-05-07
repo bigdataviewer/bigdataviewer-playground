@@ -104,8 +104,8 @@ public class BrightnessAdjusterCommand extends InteractiveCommand implements Bdv
     public void init() {
         if (sources!=null)
         if (sources.length>0) {
-            double minSource = SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(sources[0]).getDisplayRangeMin();
-            double maxSource = SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(sources[0]).getDisplayRangeMax();
+            double minSource = SourceAndConverterServices.getBdvDisplayService().getConverterSetup(sources[0]).getDisplayRangeMin();
+            double maxSource = SourceAndConverterServices.getBdvDisplayService().getConverterSetup(sources[0]).getDisplayRangeMax();
 
             if (minSource>=0) {
                 min = 0;

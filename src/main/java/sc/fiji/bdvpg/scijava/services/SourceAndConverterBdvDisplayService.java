@@ -319,7 +319,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         scriptService.addAlias(BdvHandle.class);
         displayToMetadata = CacheBuilder.newBuilder().weakKeys().build();//new HashMap<>();
         bdvSourceAndConverterService.setDisplayService(this);
-        SourceAndConverterServices.setSourceAndConverterDisplayService(this);
+        SourceAndConverterServices.setBdvDisplayService(this);
         // Catching bdv supplier from Prefs
         log.accept("Bdv Playground Display Service initialized.");
     }

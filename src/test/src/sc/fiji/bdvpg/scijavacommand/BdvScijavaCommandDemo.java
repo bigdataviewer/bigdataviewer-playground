@@ -20,7 +20,7 @@ public class BdvScijavaCommandDemo {
         ij.ui().showUI();
 
         // Creates a BDV since none exists yet
-        BdvHandle bdvh = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+        BdvHandle bdvh = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
         // Adds a scijava Command in the menu bar
         BdvScijavaHelper
