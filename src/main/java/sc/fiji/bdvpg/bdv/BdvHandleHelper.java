@@ -59,6 +59,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * BDVUtils
@@ -366,25 +367,29 @@ public class BdvHandleHelper
      * - print actions and triggers of a bdv
      * @param bdv ze bdv
      */
-    public static void printBindings(BdvHandle bdv) {
-        System.out.println("--------------------- Behaviours");
+    public static void printBindings(BdvHandle bdv, Consumer<String> stringEater) {
+        stringEater.accept("--------------------- Behaviours");
         bdv.getTriggerbindings().getConcatenatedBehaviourMap().getAllBindings().forEach((label,behaviour) -> {
-            System.out.println(label);
-            System.out.println("\t"+behaviour.getClass().getSimpleName());
+            stringEater.accept("Label: "+label);
+            stringEater.accept("\t"+behaviour.getClass().getSimpleName());
         });
-        System.out.println("--------------------- Triggers");
+        stringEater.accept("--------------------- Triggers");
         bdv.getTriggerbindings().getConcatenatedInputTriggerMap().getAllBindings().forEach((trigger, actions) -> {
-            System.out.println(trigger);
+            stringEater.accept("Trigger: "+trigger.toString());
             for (String action : actions)
-                System.out.println("\t"+action);
+                stringEater.accept("\t"+action);
         });
-        System.out.println("--------------------- Key Action");
+        stringEater.accept("--------------------- Key Action");
         for (Object o : bdv.getKeybindings().getConcatenatedActionMap().allKeys()) {
-            System.out.println("\t"+o);
+            stringEater.accept("\t"+o);
         }
-        System.out.println("--------------------- Key Triggers");
-        for (KeyStroke ks : bdv.getKeybindings().getConcatenatedInputMap().allKeys()) {
-            System.out.println("\t"+ks+":"+bdv.getKeybindings().getConcatenatedInputMap().get(ks));
+        stringEater.accept("--------------------- Key Triggers");
+        if (bdv.getKeybindings().getConcatenatedInputMap()!=null) {
+            for (KeyStroke ks : bdv.getKeybindings().getConcatenatedInputMap().allKeys()) {
+                stringEater.accept("\t" + ks + ":" + bdv.getKeybindings().getConcatenatedInputMap().get(ks));
+            }
+        } else {
+            stringEater.accept("Null Keybindings InputMap!");
         }
     }
 
