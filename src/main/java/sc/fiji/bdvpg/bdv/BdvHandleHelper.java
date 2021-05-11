@@ -385,8 +385,11 @@ public class BdvHandleHelper
         }
         stringEater.accept("--------------------- Key Triggers");
         if (bdv.getKeybindings().getConcatenatedInputMap()!=null) {
-            for (KeyStroke ks : bdv.getKeybindings().getConcatenatedInputMap().allKeys()) {
-                stringEater.accept("\t" + ks + ":" + bdv.getKeybindings().getConcatenatedInputMap().get(ks));
+            if (bdv.getKeybindings().getConcatenatedInputMap().allKeys()!=null) {
+                for (KeyStroke ks : bdv.getKeybindings().getConcatenatedInputMap().allKeys()) {
+                    stringEater.accept("\t" + ks + ":" + bdv.getKeybindings().getConcatenatedInputMap().get(ks));
+                }
+                stringEater.accept("Null keys in Keybindings ConcatenatedInputMap!");
             }
         } else {
             stringEater.accept("Null Keybindings InputMap!");
