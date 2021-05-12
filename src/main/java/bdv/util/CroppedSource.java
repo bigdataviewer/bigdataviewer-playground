@@ -35,6 +35,7 @@ import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imglib2.FinalInterval;
+import net.imglib2.FinalRealInterval;
 import net.imglib2.Interval;
 import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
@@ -61,18 +62,21 @@ public class CroppedSource< T extends NumericType<T> & NativeType<T>> implements
     private final Source<T> wrappedSource;
     private final String name;
     private final RealInterval crop;
+    private final boolean cropMinToZero;
     protected final DefaultInterpolators< T > interpolators;
     private HashMap< Integer, Interval > levelToVoxelInterval;
 
-    public CroppedSource( Source<T> source, String name, RealInterval crop )
+    public CroppedSource( Source<T> source, String name, RealInterval crop, boolean cropMinToZero )
     {
         this.wrappedSource = source;
         this.name = name;
         this.crop = crop;
+        this.cropMinToZero = cropMinToZero;
         this.interpolators = new DefaultInterpolators();
 
         initCropIntervals( source, crop );
     }
+
 
     private void initCropIntervals( Source< T > source, RealInterval crop )
     {
@@ -81,7 +85,7 @@ public class CroppedSource< T extends NumericType<T> & NativeType<T>> implements
         for ( int l = 0; l < source.getNumMipmapLevels(); l++ )
         {
             source.getSourceTransform( 0, l, transform3D );
-            final Interval voxelInterval = Intervals.smallestContainingInterval( transform3D.estimateBounds( crop ) );
+            final Interval voxelInterval = Intervals.smallestContainingInterval( transform3D.inverse().estimateBounds( crop ) );
             levelToVoxelInterval.put( l, voxelInterval );
         }
     }
@@ -99,8 +103,11 @@ public class CroppedSource< T extends NumericType<T> & NativeType<T>> implements
     public RandomAccessibleInterval<T> getSource(int t, int level)
     {
         final IntervalView< T > intervalView = Views.interval( wrappedSource.getSource( t, level ), levelToVoxelInterval.get( level ) );
-        final IntervalView< T > zeroMin = Views.zeroMin( intervalView );
-        return zeroMin;
+
+        if ( cropMinToZero )
+            return Views.zeroMin( intervalView );
+        else
+            return intervalView;
     }
 
     @Override
