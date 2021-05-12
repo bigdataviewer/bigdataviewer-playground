@@ -36,6 +36,8 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -49,6 +51,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public class SourceAndConverterInspector {
+
+    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterInspector.class);
 
     /**
      * Appends all the metadata of a SourceAndConverter into a tree structure
@@ -282,29 +286,19 @@ public class SourceAndConverterInspector {
 
         chain.add(sac);
 
-        appendInspectorResult(nodeSac,
-                sac, sacService, // Hum, why the casting ?
-                false);
+        appendInspectorResult(nodeSac, sac, sacService,false);
 
         DefaultMutableTreeNode current = nodeSac;
 
         while (current.getChildCount() > 0) {
-            //System.out.println(">>>>");
             current = (DefaultMutableTreeNode) current.getFirstChild();
             if (current.getUserObject() instanceof RenamableSourceAndConverter) {
-
-                //System.out.println("RSAC");
                 chain.add(((RenamableSourceAndConverter) (current.getUserObject())).sac);
-                //System.out.println("Renamable SourceAndConverter found");
-                //System.out.println(">"+chain.getLast());
             } else {
-                //System.out.println("NO RSAC");
-                //System.out.println("RenamableSourceAndConverter not contained " +
-                //        "in first node of inspector result");
-                //System.out.println("Class found = "+current.getUserObject().getClass().getSimpleName());
-                //System.out.println("Object found = "+current.getUserObject());
-
-                //return null;
+                logger.debug("No renamable source found");
+                logger.debug("RenamableSourceAndConverter not contained in first node of inspector result");
+                logger.debug("Class found = "+current.getUserObject().getClass().getSimpleName());
+                logger.debug("Object found = "+current.getUserObject());
             }
         }
 

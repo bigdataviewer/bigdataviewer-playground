@@ -28,6 +28,10 @@
  */
 package sc.fiji.bdvpg.scijava.services.ui.swingdnd;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.behaviour.EditorBehaviourUnInstaller;
+
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -40,6 +44,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TreeTransferHandler extends TransferHandler {
+
+    protected static Logger logger = LoggerFactory.getLogger(TreeTransferHandler.class);
+
     DataFlavor nodesFlavor;
     DataFlavor[] flavors = new DataFlavor[1];
     //DefaultMutableTreeNode[] nodesToRemove;
@@ -51,7 +58,7 @@ public class TreeTransferHandler extends TransferHandler {
             nodesFlavor = new DataFlavor(mimeType);
             flavors[0] = nodesFlavor;
         } catch(ClassNotFoundException e) {
-            System.out.println("ClassNotFound: " + e.getMessage());
+            logger.error("ClassNotFound: " + e.getMessage());
         }
     }
 
@@ -122,9 +129,9 @@ public class TreeTransferHandler extends TransferHandler {
             Transferable t = support.getTransferable();
             nodes = (DefaultMutableTreeNode[]) t.getTransferData(nodesFlavor);
         } catch (UnsupportedFlavorException ufe) {
-            System.out.println("UnsupportedFlavor: " + ufe.getMessage());
+            logger.debug("UnsupportedFlavor: " + ufe.getMessage());
         } catch (java.io.IOException ioe) {
-            System.out.println("I/O error: " + ioe.getMessage());
+            logger.error("I/O error: " + ioe.getMessage());
         }
         // Get drop location info.
         int childIndex;

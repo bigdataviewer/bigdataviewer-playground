@@ -32,6 +32,9 @@ import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.scijava.processors.BvvHandlePostprocessor;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterInspector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -50,6 +53,8 @@ import java.util.stream.Collectors;
  */
 
 public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter implements Runnable {
+
+    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterServiceSaver.class);
 
     File f;
 
@@ -127,12 +132,13 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter im
             asds.forEach(gson::toJson);
 
             try {
-                //System.out.println(f.getAbsolutePath());
+                logger.info("Writing state file "+f.getAbsolutePath());
                 FileWriter writer = new FileWriter(f.getAbsolutePath());
                 gson.toJson(sacs, writer);
                 writer.flush();
                 writer.close();
             } catch (Exception e) {
+                logger.error("Couldn't write state file: "+e.getMessage());
                 e.printStackTrace();
             }
         }

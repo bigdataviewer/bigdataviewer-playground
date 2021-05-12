@@ -130,11 +130,9 @@ public class BigWarpHelper {
         for (int i = 0;i<nbLandmarks;i++) {
             for (int d = 0; d<nbDimensions; d++) {
                 fPts[d][i] = fixed_pts.get(i).getDoublePosition(d);
-                //System.out.println("fPts["+d+"]["+i+"]=" +fPts[d][i]);
             }
             for (int d = 0; d<nbDimensions; d++) {
                 mPts[d][i] = moving_pts.get(i).getDoublePosition(d);
-                //System.out.println("mPts["+d+"]["+i+"]=" +mPts[d][i]);
             }
         }
 

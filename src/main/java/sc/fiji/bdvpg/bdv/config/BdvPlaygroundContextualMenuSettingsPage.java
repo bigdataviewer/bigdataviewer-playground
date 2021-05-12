@@ -33,6 +33,9 @@ import com.google.gson.GsonBuilder;
 import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SettingsPage;
 import org.scijava.listeners.Listeners;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterPopupMenu;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
@@ -52,6 +55,8 @@ import java.util.List;
  */
 
 public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
+
+    protected static Logger logger = LoggerFactory.getLogger(BdvPlaygroundContextualMenuSettingsPage.class);
 
     private final String treePath;
 
@@ -75,7 +80,7 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
                 e.printStackTrace();
             }
         } else {
-            System.err.println("Bdv Playground actions settings File "+jsonActionFile.getAbsolutePath()+" does not exist.");
+            logger.warn("Bdv Playground actions settings File "+jsonActionFile.getAbsolutePath()+" does not exist.");
         }
 
         panel = new BdvPgContextMenuEditor(iniActions);
@@ -135,7 +140,7 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
             out.println(actionsString);
             out.close();
         } catch (FileNotFoundException e) {
-            System.err.println("Could not print actions settings file "+jsonActionFile.getAbsolutePath());
+            logger.error("Could not print actions settings file "+jsonActionFile.getAbsolutePath());
             e.printStackTrace();
         }
     }

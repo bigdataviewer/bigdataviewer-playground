@@ -31,6 +31,8 @@ package sc.fiji.bdvpg.spimdata.importer;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.io.File;
@@ -40,6 +42,8 @@ import java.util.regex.Pattern;
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_LOCATION;
 
 public class SpimDataFromXmlImporter implements Runnable, Function<String, AbstractSpimData> {
+
+    protected static Logger logger = LoggerFactory.getLogger(SpimDataFromXmlImporter.class);
 
     String dataLocation;
 
@@ -72,10 +76,10 @@ public class SpimDataFromXmlImporter implements Runnable, Function<String, Abstr
                 if (parts[parts.length - 1]!=null) {
                     SourceAndConverterServices.getSourceAndConverterService().setSpimDataName(sd, parts[parts.length - 1]);
                 } else {
-                    System.err.println("Wrong parsing of spimdata name (not enough parts) : "+dataLocation);
+                    logger.error("Wrong parsing of spimdata name (not enough parts) : "+dataLocation);
                 }
             } else {
-                System.err.println("Wrong parsing of spimdata name (can't be splitted): "+dataLocation);
+                logger.error("Wrong parsing of spimdata name (can't be splitted): "+dataLocation);
             }
             SourceAndConverterServices.getSourceAndConverterService().setMetadata(sd, SPIM_DATA_LOCATION, dataLocation);
         } catch (SpimDataException e) {

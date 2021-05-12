@@ -30,6 +30,9 @@ package sc.fiji.bdvpg.behaviour;
 
 import bdv.util.BdvHandle;
 import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.scijava.adapter.SourceAndConverterAdapter;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 /**
@@ -40,6 +43,8 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
  */
 
 public class EditorBehaviourUnInstaller implements Runnable {
+
+    protected static Logger logger = LoggerFactory.getLogger(EditorBehaviourUnInstaller.class);
 
     BdvHandle bdvh;
 
@@ -57,7 +62,7 @@ public class EditorBehaviourUnInstaller implements Runnable {
                 bdvh, EditorBehaviourInstaller.class.getSimpleName());
 
         if ((ssb==null)||(ebi==null)) {
-            System.err.println("SourceSelectorBehaviour or EditorBehaviourInstaller cannot be retrieved. Cannot uninstall EditorBehaviour");
+            logger.error("SourceSelectorBehaviour or EditorBehaviourInstaller cannot be retrieved. Cannot uninstall EditorBehaviour");
             return;
         }
 

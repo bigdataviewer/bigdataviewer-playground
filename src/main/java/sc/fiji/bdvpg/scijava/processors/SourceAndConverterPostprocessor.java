@@ -34,6 +34,8 @@ import org.scijava.module.process.AbstractPostprocessorPlugin;
 import org.scijava.module.process.PostprocessorPlugin;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import java.util.function.Consumer;
@@ -41,10 +43,12 @@ import java.util.function.Consumer;
 @Plugin(type = PostprocessorPlugin.class)
 public class SourceAndConverterPostprocessor extends AbstractPostprocessorPlugin {
 
+    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterPostprocessor.class);
+
     @Parameter
     SourceAndConverterService bss;
 
-    public static Consumer<String> log = (str) -> {};//System.out.println(BdvSourceAndConverterPostprocessor.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = logger::debug;
 
     @Override
     public void process(Module module) {

@@ -32,6 +32,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,6 +53,8 @@ import java.util.function.Consumer;
 
 public class ScijavaGsonHelper {
 
+    protected static Logger logger = LoggerFactory.getLogger(ScijavaGsonHelper.class);
+
     public static Gson getGson(Context ctx) {
         return getGson(ctx, false);
     }
@@ -65,9 +70,9 @@ public class ScijavaGsonHelper {
     public static GsonBuilder getGsonBuilder(Context ctx, GsonBuilder builder, boolean verbose) {
         Consumer<String> log;
         if (verbose) {
-            log = System.out::println;
+            log = logger::info;
         } else {
-            log = (str) -> {};
+            log = logger::debug;
         }
 
         // We need to get all serializers which require custom adapters. This typically happens

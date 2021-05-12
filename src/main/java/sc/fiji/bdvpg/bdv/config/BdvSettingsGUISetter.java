@@ -42,6 +42,9 @@ import org.scijava.ui.behaviour.io.InputTriggerDescriptionsBuilder;
 import org.scijava.ui.behaviour.io.gui.VisualEditorPanel;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.scijava.ui.behaviour.util.Behaviours;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.behaviour.EditorBehaviourInstaller;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import javax.swing.*;
@@ -90,6 +93,8 @@ import java.util.stream.Stream;
 
 public class BdvSettingsGUISetter implements Runnable {
 
+    protected static Logger logger = LoggerFactory.getLogger(BdvSettingsGUISetter.class);
+
     final String rootPath;
 
     public final static String bdvKeyConfigFileName = "bdvkeyconfig.yaml";
@@ -125,9 +130,9 @@ public class BdvSettingsGUISetter implements Runnable {
         if (!dirDefaultSettings.exists()) {
             boolean bool = dirDefaultSettings.mkdir();
             if(bool){
-                System.out.println("BDV Playground Directory for default settings created successfully");
+                logger.info("BDV Playground Directory for default settings created successfully");
             } else{
-                System.err.println("Sorry couldn’t create BDV Playground Directory ("+pathDirDefaultSettings+")for settings storage");
+                logger.warn("Sorry couldn’t create BDV Playground Directory ("+pathDirDefaultSettings+")for settings storage");
                 return;
             }
         }
@@ -167,9 +172,9 @@ public class BdvSettingsGUISetter implements Runnable {
 
             try {
                 YamlConfigIO.write(builder.getDescriptions(), pathDefaultYaml);
-                System.out.println("Default settings file successfully created");
+                logger.info("Default settings file successfully created: "+pathDefaultYaml);
             } catch (IOException e) {
-                System.err.println("Couldn't write default key bindings file : "+pathDefaultYaml);
+                logger.warn("Couldn't write default key bindings file : "+pathDefaultYaml);
                 e.printStackTrace();
                 return;
             }
@@ -185,19 +190,19 @@ public class BdvSettingsGUISetter implements Runnable {
         String pathDefaultContextMenuSettings = dirDefaultSettings.getAbsolutePath()+File.separator+ treeActionsFileName;
         File treeActionsConfigFile = new File(pathDefaultContextMenuSettings);
         if (treeActionsConfigFile.exists()) {
-            System.out.println("Actions tree config file already exists.");
+            logger.debug("Actions tree config file already exists.");
         } else {
-            System.out.println("Actions tree config file not present. Duplicate default config file");
+            logger.debug("Actions tree config file not present. Duplicate default config file");
             String defaultFile = dirDefaultSettings.getAbsolutePath()+File.separator+ defaultTreeActionsFileName;
             if (new File(defaultFile).exists()) {
                 try {
                     FileUtils.copyFile(new File(defaultFile), new File(pathDefaultContextMenuSettings));
                 } catch (IOException e) {
-                    System.err.println("Error : couldn't duplicate bdvpg default config file");
+                    logger.error("Error : couldn't duplicate bdvpg default config file");
                     e.printStackTrace();
                 }
             } else {
-                System.err.println("Default tree actions config file for bigdataviewer-playground not present!");
+                logger.warn("Default tree actions config file for bigdataviewer-playground not present!");
             }
         }
 
@@ -237,11 +242,11 @@ public class BdvSettingsGUISetter implements Runnable {
                     try {
                         YamlConfigIO.write(new InputTriggerDescriptionsBuilder(yamlConf).getDescriptions(), pathDir+File.separator+ bdvKeyConfigFileName);
                     } catch (Exception e) {
-                        System.err.println("Could not create yaml file : settings will not be saved.");
+                        logger.error("Could not create yaml file : settings will not be saved.");
                     }
                 });
             } catch (IOException e) {
-                System.err.println("Couldn't read default key bindings file : "+pathYamlFile);
+                logger.error("Couldn't read default key bindings file : "+pathYamlFile);
                 e.printStackTrace();
             }
         }
@@ -257,7 +262,7 @@ public class BdvSettingsGUISetter implements Runnable {
                 try {
                     FileUtils.copyFile(editorDefaultConfig, editorConfig);
                 } catch (IOException e) {
-                    System.err.println("Error : couldn't duplicate bdvpg default config file");
+                    logger.error("Error : couldn't duplicate bdvpg default config file");
                     e.printStackTrace();
                 }
             }

@@ -33,6 +33,9 @@ import bdv.viewer.Interpolation;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import org.scijava.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.scijava.command.bdv.ViewSynchronizerCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
 
@@ -40,6 +43,8 @@ import java.lang.reflect.Type;
 
 @Plugin(type = ISourceAdapter.class)
 public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
+
+    protected static Logger logger = LoggerFactory.getLogger(ResampledSourceAdapter.class);
 
     SourceAndConverterAdapter sacSerializer;
 
@@ -69,12 +74,12 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
         Integer idModel = sacSerializer.getSourceToId().get(source.getModelResamplerSource());
 
         if (idOrigin==null) {
-            System.err.println("The resampled source "+source.getOriginalSource().getName()+" couldn't be serialized : origin source not identified.");
+            logger.error("The resampled source "+source.getOriginalSource().getName()+" couldn't be serialized : origin source not identified.");
             return null;
         }
 
         if (idModel==null) {
-            System.err.println("The resampled source "+source.getOriginalSource().getName()+" couldn't be serialized : model source not identified.");
+            logger.error("The resampled source "+source.getOriginalSource().getName()+" couldn't be serialized : model source not identified.");
             return null;
         }
 

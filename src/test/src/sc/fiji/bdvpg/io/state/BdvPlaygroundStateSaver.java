@@ -31,12 +31,17 @@ package sc.fiji.bdvpg.io.state;
 import net.imagej.ImageJ;
 import org.junit.After;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.*;
+import sc.fiji.bdvpg.scijava.adapter.source.ResampledSourceAdapter;
 import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
 
 import java.io.File;
 
 public class BdvPlaygroundStateSaver {
+
+    protected static Logger logger = LoggerFactory.getLogger(BdvPlaygroundStateSaver.class);
 
     static ImageJ ij;
 
@@ -53,7 +58,7 @@ public class BdvPlaygroundStateSaver {
                 ij.context()
         ).run();
 
-        System.out.println("Saved!");
+        logger.info("Bdv PLayground state saved!");
 
     }
 

@@ -28,7 +28,6 @@
  */
 package bdv.util;
 
-//import bdv.SpimSource;
 import bdv.img.WarpedSource;
 import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.Interpolation;
@@ -43,6 +42,9 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.Views;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.scijava.processors.SpimDataPostprocessor;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.ArrayList;
@@ -72,6 +74,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 public class ResampledSource< T extends NumericType<T> & NativeType<T>> implements Source<T> {
+
+    protected static Logger logger = LoggerFactory.getLogger(ResampledSource.class);
 
     /**
      * Hashmap to cache RAIs (mipmaps and timepoints), used only if {@link ResampledSource#cache} is true
@@ -186,12 +190,12 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
                 mipmapModelToOrigin.put(l, 0); // Always taking the highest resolution
             }
 
-            // For debugging resampling issues, please keep it
-            /*System.out.println("Model mipmap level "+l+" correspond to origin mipmap level "+mipmapModelToOrigin.get(l));
-            System.out.println("Model mipmap level "+l+" has a characteristic voxel size of "+
-                    SourceAndConverterUtils.getCharacteristicVoxelSize(resamplingModel,0,l));
-            System.out.println("Origin level "+mipmapModelToOrigin.get(l)+" has a characteristic voxel size of "+
-                    SourceAndConverterUtils.getCharacteristicVoxelSize(origin,0,mipmapModelToOrigin.get(l)));*/
+            // For debugging resampling issues
+            logger.debug("Model mipmap level "+l+" correspond to origin mipmap level "+mipmapModelToOrigin.get(l));
+            logger.debug("Model mipmap level "+l+" has a characteristic voxel size of "+
+                    SourceAndConverterHelper.getCharacteristicVoxelSize(resamplingModel,0,l));
+            logger.debug("Origin level "+mipmapModelToOrigin.get(l)+" has a characteristic voxel size of "+
+                    SourceAndConverterHelper.getCharacteristicVoxelSize(origin,0,mipmapModelToOrigin.get(l)));
 
         }
     }

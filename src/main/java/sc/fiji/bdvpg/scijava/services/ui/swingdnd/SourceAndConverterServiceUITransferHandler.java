@@ -31,6 +31,8 @@ package sc.fiji.bdvpg.scijava.services.ui.swingdnd;
 import bdv.ui.SourcesTransferable;
 import bdv.viewer.SourceAndConverter;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
@@ -62,6 +64,8 @@ import java.util.List;
 
 public class SourceAndConverterServiceUITransferHandler extends TreeTransferHandler {
 
+    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterServiceUITransferHandler.class);
+
     static DataFlavor nodesFlavor;
     static DataFlavor[] flavors = new DataFlavor[2];
 
@@ -73,7 +77,7 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
             flavors[0] = nodesFlavor;
             flavors[1] = SourcesTransferable.flavor;
         } catch(ClassNotFoundException e) {
-            System.out.println("ClassNotFound: " + e.getMessage());
+            logger.debug("ClassNotFound: " + e.getMessage());
         }
     }
 
@@ -179,13 +183,13 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
                     if (f.getAbsolutePath().endsWith(".xml")) {
                         new SpimDataFromXmlImporter(f).run();
                     } else {
-                        System.out.println("Unsupported drop operation with file " + f.getAbsolutePath());
+                        logger.info("Unsupported drop operation with file " + f.getAbsolutePath());
                     }
                 }
             } else if (t.isDataFlavorSupported(nodesFlavor)) {
                 DefaultMutableTreeNode[] nodes = (DefaultMutableTreeNode[]) t.getTransferData(nodesFlavor);
                 if (nodes.length!=1) {
-                    System.err.println("Only one node should be dragged");
+                    logger.info("Only one node should be dragged");
                     return false;
                 }
                 if ((nodes[0]) instanceof SourceFilterNode) {
@@ -201,8 +205,8 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
                     return true;
 
                 } else {
-                    System.err.println("A source filter node should be selected");
-                    System.out.println("You have selected a node of class "+nodes[0].getClass().getName());
+                    logger.debug("A source filter node should be selected");
+                    logger.debug("You have selected a node of class "+nodes[0].getClass().getName());
                     return false;
                 }
 

@@ -37,6 +37,8 @@ import mpicbg.spim.data.generic.base.NamedEntity;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.PlaygroundPrefs;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.swingdnd.SourceAndConverterServiceUITransferHandler;
@@ -97,6 +99,8 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
 
 public class SourceAndConverterServiceUI {
 
+    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterServiceUI.class);
+
     /**
      * Linked {@link SourceAndConverterService}
      */
@@ -137,9 +141,9 @@ public class SourceAndConverterServiceUI {
      */
     List<SpimDataFilterNode> spimdataFilterNodes = new ArrayList<>();
 
-    Consumer<String> log = (str) -> System.out.println(getClass().getSimpleName()+":"+str);
+    Consumer<String> log = logger::debug;
 
-    Consumer<String> errlog = (str) -> System.err.println(getClass().getSimpleName()+":"+str);
+    Consumer<String> errlog = logger::error;
 
     /**
      * Constructor :
@@ -608,7 +612,6 @@ public class SourceAndConverterServiceUI {
             while (children.hasMoreElements()) {
                 TreeNode testNode = (TreeNode)children.nextElement();
                 if (testNode.toString().trim().equals(stringPath[currentDepth].trim())) {
-                    //System.out.println("Found "+testNode.toString().trim());
                     nodes[currentDepth] = testNode;
                     currentDepth++;
                     current = testNode;

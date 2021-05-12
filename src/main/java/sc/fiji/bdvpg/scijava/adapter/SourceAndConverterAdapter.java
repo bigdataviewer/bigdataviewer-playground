@@ -32,8 +32,11 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import net.imglib2.display.ColorConverter;
+import net.imglib2.realtransform.Wrapped2DTransformAs3DRealTransformAdapter;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.InstantiableException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.persist.IObjectScijavaAdapterService;
 import sc.fiji.bdvpg.scijava.adapter.source.ISourceAdapter;
@@ -45,6 +48,8 @@ import java.util.Map;
 
 public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConverter>,
         JsonDeserializer<SourceAndConverter> {
+
+    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterAdapter.class);
 
     sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer;
 
@@ -59,7 +64,6 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
                     try {
                         ISourceAdapter adapter = pi.createInstance();
                         adapter.setSacSerializer(sacSerializer);
-                        //System.out.println("adapter.getSourceClass()= "+adapter.getSourceClass());
                         sourceSerializers.put(adapter.getSourceClass(), adapter);
                         sourceSerializersFromName.put(adapter.getSourceClass().getName(), adapter);
                     } catch (InstantiableException e) {
@@ -109,7 +113,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
             obj.add("string_metadata",jsonSerializationContext.serialize(stringMetaData));
             return obj;
         } catch (UnsupportedOperationException e) {
-            System.err.println("Could not serialize source "+ sourceAndConverter.getSpimSource().getName() + " of class "+ sourceAndConverter.getSpimSource().getClass().getName());
+            logger.error("Could not serialize source "+ sourceAndConverter.getSpimSource().getName() + " of class "+ sourceAndConverter.getSpimSource().getClass().getName());
             return null;
         }
     }
@@ -119,7 +123,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
                                           JsonSerializationContext jsonSerializationContext) throws UnsupportedOperationException {
 
         if (!sourceSerializers.containsKey(sourceAndConverter.getSpimSource().getClass())) {
-            System.out.println("Unsupported serialisation of "+sourceAndConverter.getSpimSource().getClass());
+            logger.error("Unsupported serialisation of "+sourceAndConverter.getSpimSource().getClass());
             throw new UnsupportedOperationException();
         }
 
@@ -134,7 +138,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
         String sourceClass = jsonObject.getAsJsonPrimitive("source_class").getAsString();
 
         if (!sourceSerializersFromName.containsKey(sourceClass)) {
-            System.out.println("Unsupported deserialisation of "+sourceClass);
+            logger.error("Unsupported deserialisation of "+sourceClass);
             throw new UnsupportedOperationException();
         }
 

@@ -35,9 +35,12 @@ import org.scijava.module.process.PostprocessorPlugin;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import java.util.function.Consumer;
 
@@ -51,6 +54,8 @@ import java.util.function.Consumer;
 @Plugin(type = PostprocessorPlugin.class)
 public class BvvHandlePostprocessor extends AbstractPostprocessorPlugin {
 
+    protected static Logger logger = LoggerFactory.getLogger(BvvHandlePostprocessor.class);
+
     @Parameter
     SourceAndConverterBdvDisplayService bsds;
 
@@ -60,7 +65,7 @@ public class BvvHandlePostprocessor extends AbstractPostprocessorPlugin {
     @Parameter
     GuavaWeakCacheService cacheService;
 
-    public static Consumer<String> log = (str) -> {};//System.out.println(BvvHandlePostprocessor.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = logger::debug;
 
     @Override
     public void process(Module module) {

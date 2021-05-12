@@ -34,19 +34,24 @@ import org.scijava.module.process.AbstractPostprocessorPlugin;
 import org.scijava.module.process.PostprocessorPlugin;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Consumer;
 
 @Plugin(type = PostprocessorPlugin.class)
 public class SpimDataPostprocessor extends AbstractPostprocessorPlugin {
 
+    protected static Logger logger = LoggerFactory.getLogger(SpimDataPostprocessor.class);
+
     @Parameter
 	SourceAndConverterService bss;
 
-    public static Consumer<String> log = (str) -> {};//System.out.println( SpimDataPostprocessor.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = logger::debug;
 
-    public static Consumer<String> errlog = (str) -> System.err.println( SpimDataPostprocessor.class.getSimpleName()+":"+str);
+    public static Consumer<String> errlog = logger::error;
 
     @Override
     public void process(Module module) {

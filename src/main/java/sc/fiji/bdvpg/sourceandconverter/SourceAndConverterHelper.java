@@ -49,6 +49,8 @@ import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Intervals;
 import org.scijava.vecmath.Point3d;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
@@ -87,15 +89,17 @@ import java.util.stream.Collectors;
  */
 public class SourceAndConverterHelper {
 
+    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterHelper.class);
+
     /**
      * Standard logger
      */
-    public static Consumer<String> log = (str) -> System.out.println( SourceAndConverterBdvDisplayService.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = logger::debug;
 
     /**
      * Error logger
      */
-    public static Consumer<String> errlog = (str) -> System.err.println( SourceAndConverterBdvDisplayService.class.getSimpleName()+":"+str);
+    public static Consumer<String> errlog = logger::error;
 
     /**
      * Core function : makes SourceAndConverter object out of a Source

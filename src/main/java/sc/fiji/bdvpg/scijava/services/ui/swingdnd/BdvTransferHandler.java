@@ -32,10 +32,13 @@ import bdv.ui.SourcesTransferable;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.persist.ScijavaGsonHelper;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -54,6 +57,9 @@ import java.util.function.Function;
  */
 
 public class BdvTransferHandler extends TransferHandler {
+
+    protected static Logger logger = LoggerFactory.getLogger(BdvTransferHandler.class);
+
     DataFlavor nodesFlavor;
     DataFlavor[] flavors = new DataFlavor[2];
 
@@ -65,7 +71,7 @@ public class BdvTransferHandler extends TransferHandler {
             flavors[0] = nodesFlavor;
             flavors[1] = SourcesTransferable.flavor;
         } catch(ClassNotFoundException e) {
-            System.out.println("ClassNotFound: " + e.getMessage());
+            logger.warn("ClassNotFound: " + e.getMessage());
         }
     }
 
@@ -130,9 +136,9 @@ public class BdvTransferHandler extends TransferHandler {
                 Transferable t = support.getTransferable();
                 nodes = (DefaultMutableTreeNode[]) t.getTransferData(nodesFlavor);
             } catch (UnsupportedFlavorException ufe) {
-                System.err.println("UnsupportedFlavor: " + ufe.getMessage());
+                logger.warn("UnsupportedFlavor: " + ufe.getMessage());
             } catch (java.io.IOException ioe) {
-                System.err.println("I/O error: " + ioe.getMessage());
+                logger.error("I/O error: " + ioe.getMessage());
             }
 
             if (SourceAndConverterServices.getSourceAndConverterService() instanceof SourceAndConverterService) {
@@ -171,7 +177,7 @@ public class BdvTransferHandler extends TransferHandler {
 
     @Override
     protected Transferable createTransferable(JComponent c) {
-        System.out.println("Create BDV Transferable");
+        logger.debug("Create BDV Transferable");
         if (transferableSupplier!=null) {
             return transferableSupplier.apply(c);
         } else {

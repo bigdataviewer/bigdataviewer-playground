@@ -66,7 +66,10 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.scijava.ui.UIService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.processors.SourceAndConverterPostprocessor;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -103,28 +106,21 @@ import java.util.stream.Collectors;
 public class SourceAndConverterService extends AbstractService implements SciJavaService, ISourceAndConverterService
 {
 
+    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterService.class);
+
     static {
         LegacyInjector.preinit();
     }
 
     /**
-     * Logger
-     */
-    @Parameter
-    LogService ls;
-    LogService logger() {
-        return ls;
-    }
-
-    /**
      * Standard logger
      */
-    public Consumer<String> log = (str) -> logger().log(LogLevel.INFO,str);//System.out.println( SourceAndConverterService.class.getSimpleName()+":"+str);
+    public Consumer<String> log = logger::debug;
 
     /**
      * Error logger
      */
-    public Consumer<String> errlog = (str) -> logger().log(LogLevel.ERROR,str);//System.err.println( SourceAndConverterService.class.getSimpleName()+":"+str);
+    public Consumer<String> errlog = logger::error;
 
     /**
      * Scijava Object Service : will contain all the sourceAndConverters
@@ -172,13 +168,13 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     public void setMetadata( SourceAndConverter sac, String key, Object data )
     {
         if (sac == null) {
-            System.err.println("Error : sac is null in setMetadata function! ");
+            logger.error("Error : sac is null in setMetadata function! ");
             //return;
         }
         if (sacToMetadata.getIfPresent( sac ) == null) {
-            System.err.println("Error : sac has no associated metadata ! This should not happen. ");
-            System.err.println("Sac : "+sac.getSpimSource().getName());
-            System.err.println("SpimSource class: "+sac.getSpimSource().getClass().getSimpleName());
+            logger.error("Error : sac has no associated metadata ! This should not happen. ");
+            logger.error("Sac : "+sac.getSpimSource().getName());
+            logger.error("SpimSource class: "+sac.getSpimSource().getClass().getSimpleName());
             //return;
         }
         sacToMetadata.getIfPresent( sac ).put( key, data );
@@ -271,7 +267,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
         if ( nonVolatile )
         {
-            System.err.println( "WARNING:\nOpening <SpimData> dataset that is not suited for interactive browsing.\nConsider resaving as HDF5 for better performance." );
+            logger.warn( "WARNING:\nOpening <SpimData> dataset that is not suited for interactive browsing.\nConsider resaving as HDF5 for better performance." );
         }
 
         final AbstractSequenceDescription< ?, ?, ? > seq = asd.getSequenceDescription();
@@ -431,7 +427,6 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                     ui.remove(sac);
                 }
             }
-            //System.out.println("Sources left = "+this.getSourceAndConverters().size());
         }
     }
 
@@ -502,7 +497,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
     public void registerAction(String actionName, Consumer<SourceAndConverter[]> action) {
         if (actionMap.containsKey(actionName)) {
-            System.err.println("Overriding action "+actionName);
+            logger.warn("Overriding action "+actionName);
         }
         actionMap.put(actionName, action);
     }

@@ -179,7 +179,6 @@ public class ViewerTransformSyncStarter implements Runnable {
         RealPoint centerScreenGlobalCoord = new RealPoint(3);
 
         at3D.inverse().apply(centerScreenCurrentBdv, centerScreenGlobalCoord);
-        //System.out.println("centerScreenGlobalCoord"+centerScreenGlobalCoord);
 
         // Now compute what should be the matrix in the next BDV frame:
         AffineTransform3D nextAffineTransform = new AffineTransform3D();

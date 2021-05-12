@@ -47,6 +47,10 @@ import mpicbg.spim.data.sequence.*;
 import net.imglib2.FinalDimensions;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.realtransform.AffineTransform3D;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,11 +73,12 @@ import java.util.stream.Collectors;
  *
  * This export does not take advantage of potentially already computed mipmaps TODO take advantage of this, whenever possible
  *
- * An attributeAdder can be used in order to append extra attributes retrievable from the sourceandconverter object
  *
  */
 
 public class XmlHDF5SpimdataExporter implements Runnable {
+
+    protected static Logger logger = LoggerFactory.getLogger(XmlHDF5SpimdataExporter.class);
 
     List<SourceAndConverter> sources;
 
@@ -227,9 +232,9 @@ public class XmlHDF5SpimdataExporter implements Runnable {
                 } else {
                     // AutoMipmap
                     if (basicviewsetup.getVoxelSize()==null) {
-                        System.out.println("No voxel size specified!");
+                        logger.info("No voxel size specified in viewsetup "+basicviewsetup.getId());
                         if (scaleFactor<1) {
-                            System.out.println("Using scale factor = 4");
+                            logger.info("Scale factor below 1, using scale factor 4 instead");
                             scaleFactor=4;
                         }
                         int nLevels = 1;
@@ -303,7 +308,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
         partitions = null;
 
         final ProgressWriter progressWriter = new ProgressWriterIJ();
-        System.out.println( "Starting export..." );
+        logger.info( "Starting export..." );
 
         String seqFilename = xmlFile.getAbsolutePath();//.getParent();
         if ( !seqFilename.endsWith( ".xml" ) )
@@ -312,7 +317,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
         final File parent = seqFile.getParentFile();
         if ( parent == null || !parent.exists() || !parent.isDirectory() )
         {
-            System.err.println( "Invalid export filename " + seqFilename );
+            logger.error( "Invalid export filename " + seqFilename );
         }
         final String hdf5Filename = seqFilename.substring( 0, seqFilename.length() - 4 ) + ".h5";
         final File hdf5File = new File( hdf5Filename );
@@ -345,7 +350,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
             throw new RuntimeException( e );
         }
 
-        System.out.println( "Done!" );
+        logger.info( "Done!" );
 
     }
 

@@ -30,8 +30,11 @@ package sc.fiji.bdvpg.scijava.adapter;
 
 import com.google.gson.*;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.sourceandconverter.exporter.XmlHDF5SpimdataExporter;
 import sc.fiji.bdvpg.spimdata.exporter.XmlFromSpimDataExporter;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
@@ -44,6 +47,8 @@ import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_LOCATI
 
 public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData>,
         JsonDeserializer<AbstractSpimData> {
+
+    protected static Logger logger = LoggerFactory.getLogger(AbstractSpimData.class);
 
     SourceAndConverterAdapter sacSerializer;
 
@@ -68,7 +73,7 @@ public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData>
                 dataLocation = new File(sacSerializer.getBasePath(), "_bdvdataset_"+spimdataCounter+".xml").getAbsolutePath();
             }
             spimdataCounter++;
-            System.out.println("Previously unsaved bdv dataset, saving it to "+dataLocation);
+            logger.info("Previously unsaved bdv dataset, saving it to "+dataLocation);
             new XmlFromSpimDataExporter(asd, dataLocation, sacSerializer.getScijavaContext() ).run();
         }
         obj.addProperty("datalocation", dataLocation);
@@ -80,7 +85,7 @@ public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData>
         String datalocation = jsonElement.getAsJsonObject().get("datalocation").getAsString();
         //System.out.println("Deserialization of "+datalocation);
         if (datalocation.endsWith(".qpath")) {
-            System.err.println("qpath project unhandled in deserialization!");
+            logger.error("qpath project unhandled in deserialization!");
         }
         List<AbstractSpimData> asds =
                 SourceAndConverterServices
@@ -99,7 +104,7 @@ public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData>
         } else if (asds.size()==1) {
             return asds.get(0);
         } else {
-            System.out.println("Warning : multiple spimdata with identical datalocation already in memory");
+            logger.warn("Multiple spimdata with identical datalocation already in memory!");
             return asds.get(0);
         }
     }

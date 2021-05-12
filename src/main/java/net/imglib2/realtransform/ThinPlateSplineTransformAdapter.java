@@ -31,6 +31,8 @@ package net.imglib2.realtransform;
 import com.google.gson.*;
 import jitk.spline.ThinPlateR2LogRSplineKernelTransform;
 import org.scijava.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Field;
@@ -41,6 +43,8 @@ import java.lang.reflect.Type;
  */
 @Plugin(type = IClassRuntimeAdapter.class)
 public class ThinPlateSplineTransformAdapter implements IClassRuntimeAdapter<RealTransform, ThinplateSplineTransform> {
+
+    protected static Logger logger = LoggerFactory.getLogger(ThinPlateSplineTransformAdapter.class);
 
     @Override
     public Class<? extends RealTransform> getBaseClass() {
@@ -86,7 +90,7 @@ public class ThinPlateSplineTransformAdapter implements IClassRuntimeAdapter<Rea
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.err.println("Could not get kernel from ThinplateSplineTransform");
+        logger.error("Could not get kernel from ThinplateSplineTransform");
         return null;
     }
 

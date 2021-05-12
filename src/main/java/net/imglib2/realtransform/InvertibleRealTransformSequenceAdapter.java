@@ -30,6 +30,8 @@ package net.imglib2.realtransform;
 
 import com.google.gson.*;
 import org.scijava.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
@@ -47,6 +49,9 @@ import java.lang.reflect.Type;
  */
 @Plugin(type = IClassRuntimeAdapter.class)
 public class InvertibleRealTransformSequenceAdapter implements IClassRuntimeAdapter<RealTransform, InvertibleRealTransformSequence> {
+
+    protected static Logger logger = LoggerFactory.getLogger(InvertibleRealTransformSequenceAdapter.class);
+
     @Override
     public Class<? extends RealTransform> getBaseClass() {
         return RealTransform.class;
@@ -82,7 +87,7 @@ public class InvertibleRealTransformSequenceAdapter implements IClassRuntimeAdap
                 if (transform instanceof InvertibleRealTransform) {
                     irts.add((InvertibleRealTransform) transform);
                 } else {
-                    System.err.println("Deserialization error: "+transform+" of class "+transform.getClass().getSimpleName()+" is not invertible!");
+                    logger.error("Deserialization error: "+transform+" of class "+transform.getClass().getSimpleName()+" is not invertible!");
                     return null;
                 }
             }

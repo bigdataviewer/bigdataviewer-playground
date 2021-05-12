@@ -31,9 +31,12 @@ package sc.fiji.bdvpg.scijava.command.bdv;
 import bdv.util.BdvHandle;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStarter;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStopper;
+import sc.fiji.bdvpg.scijava.BdvScijavaHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -60,6 +63,8 @@ import java.awt.event.WindowEvent;
                     " to stop the synchronization")
 public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 
+    protected static Logger logger = LoggerFactory.getLogger(ViewSynchronizerCommand.class);
+
     @Parameter(label = "Select Windows to synchronize")
     BdvHandle[] bdvhs;
 
@@ -70,7 +75,7 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 
     public void run() {
         if (bdvhs.length<2) {
-            System.err.println("You should select at least 2 BDV windows!");
+            logger.error("You should select at least 2 BDV windows!");
             return;
         }
 

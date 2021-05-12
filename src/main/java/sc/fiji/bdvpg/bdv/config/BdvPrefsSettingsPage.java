@@ -29,9 +29,12 @@
 package sc.fiji.bdvpg.bdv.config;
 
 import bdv.util.Prefs;
+import net.imglib2.realtransform.InvertibleRealTransformSequenceAdapter;
 import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SettingsPage;
 import org.scijava.listeners.Listeners;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,6 +50,8 @@ import java.util.Properties;
  */
 
 public class BdvPrefsSettingsPage implements SettingsPage {
+
+    protected static Logger logger = LoggerFactory.getLogger(BdvPrefsSettingsPage.class);
 
     private final String treePath;
 
@@ -105,7 +110,7 @@ public class BdvPrefsSettingsPage implements SettingsPage {
             final Properties config = ((BdvPrefsEditorPanel) panel).getAndSetCurrentProperties();
             config.store(stream,"");
         } catch (IOException e) {
-            System.err.println("Could not create bigdataviewer.properties file");
+            logger.error("Could not create bigdataviewer.properties file");
         }
     }
 

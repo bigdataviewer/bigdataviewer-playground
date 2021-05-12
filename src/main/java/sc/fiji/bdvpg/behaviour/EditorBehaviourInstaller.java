@@ -32,9 +32,12 @@ import bdv.util.BdvHandle;
 import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
 import ch.epfl.biop.bdv.select.ToggleListener;
 import com.google.gson.Gson;
+import net.imglib2.realtransform.ThinPlateSplineTransformAdapter;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesShowCommand;
@@ -55,6 +58,8 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getComman
  */
 
 public class EditorBehaviourInstaller implements Runnable {
+
+    protected static Logger logger = LoggerFactory.getLogger(EditorBehaviourInstaller.class);
 
     final SourceSelectorBehaviour ssb;
     BdvHandle bdvh;
@@ -99,9 +104,8 @@ public class EditorBehaviourInstaller implements Runnable {
                     e.printStackTrace();
                 }
             } else {
-                System.err.println("Bdv Playground actions settings File "+f.getAbsolutePath()+" does not exist.");
-                System.err.println("Bdv Playground default actions settings File "+fdefault.getAbsolutePath()+" does not exist.");
-
+                logger.error("Bdv Playground actions settings File "+f.getAbsolutePath()+" does not exist.");
+                logger.error("Bdv Playground default actions settings File "+fdefault.getAbsolutePath()+" does not exist.");
             }
         }
         return popupActions;

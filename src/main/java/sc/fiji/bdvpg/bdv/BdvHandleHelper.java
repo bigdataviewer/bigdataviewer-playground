@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.bdv;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.ui.SourcesTransferable;
 import bdv.util.BdvHandle;
+import bdv.util.ResampledSource;
 import bdv.viewer.Source;
 import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
 import net.imglib2.*;
@@ -45,6 +46,8 @@ import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerConfigHelper;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.scijava.ui.behaviour.util.Behaviours;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.behaviour.EditorBehaviourInstaller;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
@@ -62,12 +65,15 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * BDVUtils
+ * BdvHandleHelper
  * Author: haesleinhuepf, tischi, nicokiaru
  * 12 2019
  */
 public class BdvHandleHelper
 {
+
+    protected static Logger logger = LoggerFactory.getLogger(BdvHandleHelper.class);
+
     /**
      * Creates a viewer transform with a new center position.
      *
@@ -134,12 +140,12 @@ public class BdvHandleHelper
         final double viewerPhysicalVoxelSpacingX = viewerPhysicalWidth / windowWidth;
         final double viewerPhysicalVoxelSpacingY = viewerPhysicalHeight / windowHeight;
 
-        System.out.println( "[DEBUG] windowWidth = " + windowWidth );
-        System.out.println( "[DEBUG] windowHeight = " + windowHeight );
-        System.out.println( "[DEBUG] viewerPhysicalWidth = " + viewerPhysicalWidth );
-        System.out.println( "[DEBUG] viewerPhysicalHeight = " + viewerPhysicalHeight );
-        System.out.println( "[DEBUG] viewerPhysicalVoxelSpacingX = " + viewerPhysicalVoxelSpacingX );
-        System.out.println( "[DEBUG] viewerPhysicalVoxelSpacingY = " + viewerPhysicalVoxelSpacingY );
+        logger.debug( "windowWidth = " + windowWidth );
+        logger.debug( "windowHeight = " + windowHeight );
+        logger.debug( "viewerPhysicalWidth = " + viewerPhysicalWidth );
+        logger.debug( "viewerPhysicalHeight = " + viewerPhysicalHeight );
+        logger.debug( "viewerPhysicalVoxelSpacingX = " + viewerPhysicalVoxelSpacingX );
+        logger.debug( "viewerPhysicalVoxelSpacingY = " + viewerPhysicalVoxelSpacingY );
 
         return viewerPhysicalVoxelSpacingX;
     }
@@ -411,7 +417,7 @@ public class BdvHandleHelper
         try {
             yamlConf = new InputTriggerConfig( YamlConfigIO.read( yamlDataLocation ) );
         } catch (final Exception e) {
-            System.err.println("Could not create "+yamlDataLocation+" file. Using defaults instead.");
+            logger.warn("Could not create "+yamlDataLocation+" file. Using defaults instead.");
         }
 
         if (yamlConf!=null) {

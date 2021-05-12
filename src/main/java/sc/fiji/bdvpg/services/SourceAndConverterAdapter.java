@@ -35,7 +35,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.adapter.AbstractSpimdataAdapter;
+import sc.fiji.bdvpg.scijava.services.ui.swingdnd.BdvTransferHandler;
 import sc.fiji.persist.*;
 
 import java.io.File;
@@ -43,6 +46,8 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class SourceAndConverterAdapter {
+
+    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterAdapter.class);
 
     final File basePath;
 
@@ -69,7 +74,7 @@ public class SourceAndConverterAdapter {
         return ctx;
     }
 
-    public static Consumer<String> log = (str) -> System.out.println(SourceAndConverterAdapter.class+":"+str);
+    public static Consumer<String> log = logger::debug;
 
     public Gson getGson() {
         GsonBuilder builder = ScijavaGsonHelper.getGsonBuilder(ctx, true);

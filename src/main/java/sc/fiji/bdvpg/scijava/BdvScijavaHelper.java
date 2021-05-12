@@ -30,10 +30,13 @@ package sc.fiji.bdvpg.scijava;
 
 import bdv.util.BdvHandle;
 import bdv.util.BdvHandleFrame;
+import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.Context;
 import org.scijava.command.Command;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.util.Arrays;
@@ -45,6 +48,8 @@ import java.util.stream.Collectors;
  */
 
 public class BdvScijavaHelper {
+
+    protected static Logger logger = LoggerFactory.getLogger(BdvScijavaHelper.class);
 
     static public void clearBdvHandleMenuBar(BdvHandle bdvh) {
         if (bdvh instanceof BdvHandleFrame) {
@@ -81,13 +86,13 @@ public class BdvScijavaHelper {
             jmenuItemRoot.add( jMenuItem );
             bdvMenuBar.updateUI();
         } else {
-            System.err.println(BdvScijavaHelper.class.getName()+" : Cannot put command on menu : the bdvhandle is not a frame.");
+            logger.error("Cannot put command on menu : the bdvhandle is not a frame.");
         }
     }
 
     private static JMenu findOrCreateJMenu(JMenuBar bdvMenuBar, List<String> path) {
         if (path.size()==0) {
-            System.err.println(BdvScijavaHelper.class+": No Path specified!");
+            logger.error("No Path specified in find or create JMenu!");
         }
         if (path.size()==1) {
             // TODO or not ? It means the action is on the top level window
@@ -116,7 +121,7 @@ public class BdvScijavaHelper {
 
     private static JMenu findOrCreateJMenu(JMenu jMenu, List<String> path) {
         if (path.size()==0) {
-            System.err.println(BdvScijavaHelper.class+": Reached unreachable statement !");
+            logger.error(" Reached unreachable statement !");
         }
         if (path.size()==1) {
             return jMenu;

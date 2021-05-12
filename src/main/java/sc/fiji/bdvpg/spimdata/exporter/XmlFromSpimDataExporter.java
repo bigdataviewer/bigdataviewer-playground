@@ -40,8 +40,9 @@ import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.EntityHandler;
 import sc.fiji.bdvpg.spimdata.IEntityHandlerService;
@@ -56,6 +57,8 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
 import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_INFO;
 
 public class XmlFromSpimDataExporter implements Runnable {
+
+    protected static Logger logger = LoggerFactory.getLogger(XmlFromSpimDataExporter.class);
 
     AbstractSpimData spimData;
 
@@ -77,7 +80,7 @@ public class XmlFromSpimDataExporter implements Runnable {
         if (isPathValid(dataLocation)) {
             spimData.setBasePath(new File(dataLocation));
         } else {
-            System.out.println("Trying to save spimdata into an invalid file Path : "+dataLocation);
+            logger.error("Trying to save spimdata into an invalid file Path : "+dataLocation);
         }
         this.dataLocation = dataLocation;
         this.context = context;
@@ -137,7 +140,7 @@ public class XmlFromSpimDataExporter implements Runnable {
             } else if (spimData instanceof SpimDataMinimal) {
                 (new XmlIoSpimDataMinimal()).save((SpimDataMinimal) spimData, dataLocation);
             } else {
-                System.err.println("Cannot save SpimData of class : "+spimData.getClass().getSimpleName());
+                logger.error("Cannot save SpimData of class : "+spimData.getClass().getSimpleName());
                 return;
             }
 

@@ -35,6 +35,9 @@ import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerPanel;
 import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.bdv.config.BdvPlaygroundContextualMenuSettingsPage;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -49,7 +52,9 @@ import java.util.function.Consumer;
 
 public class ViewerPanelHandle extends BdvHandle {
 
-    Consumer<String> errlog = s -> System.err.println(this.getClass()+" error: "+s);
+    protected static Logger logger = LoggerFactory.getLogger(ViewerPanelHandle.class);
+
+    Consumer<String> errlog = logger::error;
 
     public String name;
 
@@ -79,7 +84,7 @@ public class ViewerPanelHandle extends BdvHandle {
 
     @Override
     public TriggerBehaviourBindings getTriggerbindings() {
-        System.err.println("Unsupported getTriggerbindings call in ViewerPanel wrapped BdvHandle");
+        errlog.accept("Unsupported getTriggerbindings call in ViewerPanel wrapped BdvHandle");
         return null;
     }
 

@@ -30,6 +30,9 @@ package net.imglib2.realtransform;
 
 import com.google.gson.*;
 import org.scijava.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.behaviour.EditorBehaviourInstaller;
 import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
@@ -40,6 +43,9 @@ import java.lang.reflect.Type;
 
 @Plugin(type = IClassRuntimeAdapter.class)
 public class Wrapped2DTransformAs3DRealTransformAdapter implements IClassRuntimeAdapter<RealTransform, Wrapped2DTransformAs3D> {
+
+    protected static Logger logger = LoggerFactory.getLogger(Wrapped2DTransformAs3DRealTransformAdapter.class);
+
     @Override
     public Class<? extends RealTransform> getBaseClass() {
         return RealTransform.class;
@@ -61,8 +67,7 @@ public class Wrapped2DTransformAs3DRealTransformAdapter implements IClassRuntime
         RealTransform rt = jsonDeserializationContext.deserialize(obj.get("wrappedTransform"), RealTransform.class);
 
         if (!(rt instanceof InvertibleRealTransform)) {
-            System.err.println("Wrapped transform not invertible -> deserialization impossible...");
-            // TODO : see if autowrapping works ?
+            logger.error("Wrapped transform not invertible -> deserialization impossible...");
             return null;
         }
 

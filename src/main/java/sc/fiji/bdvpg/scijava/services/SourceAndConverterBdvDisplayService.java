@@ -43,6 +43,8 @@ import org.scijava.script.ScriptService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.ui.BdvHandleFilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
@@ -60,6 +62,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import sc.fiji.bdvpg.spimdata.exporter.XmlFromSpimDataExporter;
 import sc.fiji.persist.ScijavaGsonHelper;
 
 import javax.swing.tree.DefaultTreeModel;
@@ -75,15 +78,17 @@ import javax.swing.tree.DefaultTreeModel;
 @Plugin(type= Service.class)
 public class SourceAndConverterBdvDisplayService extends AbstractService implements SciJavaService  {
 
+    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterBdvDisplayService.class);
+
     /**
      * Standard logger
      */
-    public static Consumer<String> log = (str) -> System.out.println( SourceAndConverterBdvDisplayService.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = logger::debug;
 
     /**
      * Error logger
      */
-    public static Consumer<String> errlog = (str) -> System.err.println( SourceAndConverterBdvDisplayService.class.getSimpleName()+":"+str);
+    public static Consumer<String> errlog = logger::error;
 
     public static String CONVERTER_SETUP = "ConverterSetup";
 
@@ -444,7 +449,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     public void setDisplayMetadata( BdvHandle bdvh, String key, Object data )
     {
         if (bdvh == null) {
-            System.err.println("Error : bdvh is null in setMetadata function! ");
+            logger.error("Error : bdvh is null in setMetadata function! ");
             //return;
         }
         if (displayToMetadata.getIfPresent( bdvh ) == null) {
