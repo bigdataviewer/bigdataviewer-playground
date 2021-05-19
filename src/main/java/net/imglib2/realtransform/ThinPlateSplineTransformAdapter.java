@@ -33,6 +33,7 @@ import jitk.spline.ThinPlateR2LogRSplineKernelTransform;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sc.fiji.persist.IClassAdapter;
 import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Field;
@@ -41,25 +42,10 @@ import java.lang.reflect.Type;
 /**
  * Adapter for ThinPlateSplineTransform Objects
  */
-@Plugin(type = IClassRuntimeAdapter.class)
-public class ThinPlateSplineTransformAdapter implements IClassRuntimeAdapter<RealTransform, ThinplateSplineTransform> {
+@Plugin(type = IClassAdapter.class)
+public class ThinPlateSplineTransformAdapter implements IClassAdapter<ThinplateSplineTransform> {
 
     protected static Logger logger = LoggerFactory.getLogger(ThinPlateSplineTransformAdapter.class);
-
-    @Override
-    public Class<? extends RealTransform> getBaseClass() {
-        return RealTransform.class;
-    }
-
-    @Override
-    public Class<? extends ThinplateSplineTransform> getRunTimeClass() {
-        return ThinplateSplineTransform.class;
-    }
-
-    @Override
-    public boolean useCustomAdapter() {
-        return true;
-    }
 
     @Override
     public ThinplateSplineTransform deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
@@ -117,5 +103,10 @@ public class ThinPlateSplineTransformAdapter implements IClassRuntimeAdapter<Rea
             }
         }
         return tgtPts;
+    }
+
+    @Override
+    public Class<? extends ThinplateSplineTransform> getAdapterClass() {
+        return ThinplateSplineTransform.class;
     }
 }

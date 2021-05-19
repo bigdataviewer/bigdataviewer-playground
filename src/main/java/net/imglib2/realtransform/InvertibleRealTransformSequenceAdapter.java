@@ -32,6 +32,7 @@ import com.google.gson.*;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sc.fiji.persist.IClassAdapter;
 import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
@@ -47,24 +48,14 @@ import java.lang.reflect.Type;
  * {@link InvertibleRealTransformSequence#transforms} field
  * of an {@link InvertibleRealTransformSequence}
  */
-@Plugin(type = IClassRuntimeAdapter.class)
-public class InvertibleRealTransformSequenceAdapter implements IClassRuntimeAdapter<RealTransform, InvertibleRealTransformSequence> {
+@Plugin(type = IClassAdapter.class)
+public class InvertibleRealTransformSequenceAdapter implements IClassAdapter<InvertibleRealTransformSequence> {
 
     protected static Logger logger = LoggerFactory.getLogger(InvertibleRealTransformSequenceAdapter.class);
 
     @Override
-    public Class<? extends RealTransform> getBaseClass() {
-        return RealTransform.class;
-    }
-
-    @Override
-    public Class<? extends InvertibleRealTransformSequence> getRunTimeClass() {
+    public Class<? extends InvertibleRealTransformSequence> getAdapterClass() {
         return InvertibleRealTransformSequence.class;
-    }
-
-    @Override
-    public boolean useCustomAdapter() {
-        return true;
     }
 
     @Override
@@ -92,7 +83,6 @@ public class InvertibleRealTransformSequenceAdapter implements IClassRuntimeAdap
                 }
             }
         }
-
         return irts;
     }
 

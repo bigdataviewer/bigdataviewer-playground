@@ -33,6 +33,7 @@ import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.behaviour.EditorBehaviourInstaller;
+import sc.fiji.persist.IClassAdapter;
 import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
@@ -41,25 +42,10 @@ import java.lang.reflect.Type;
  * Adapter of an 2D transformed wrapped as 3D
  */
 
-@Plugin(type = IClassRuntimeAdapter.class)
-public class Wrapped2DTransformAs3DRealTransformAdapter implements IClassRuntimeAdapter<RealTransform, Wrapped2DTransformAs3D> {
+@Plugin(type = IClassAdapter.class)
+public class Wrapped2DTransformAs3DRealTransformAdapter implements IClassAdapter<Wrapped2DTransformAs3D> {
 
     protected static Logger logger = LoggerFactory.getLogger(Wrapped2DTransformAs3DRealTransformAdapter.class);
-
-    @Override
-    public Class<? extends RealTransform> getBaseClass() {
-        return RealTransform.class;
-    }
-
-    @Override
-    public Class<? extends Wrapped2DTransformAs3D> getRunTimeClass() {
-        return Wrapped2DTransformAs3D.class;
-    }
-
-    @Override
-    public boolean useCustomAdapter() {
-        return true;
-    }
 
     @Override
     public Wrapped2DTransformAs3D deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
@@ -79,5 +65,10 @@ public class Wrapped2DTransformAs3DRealTransformAdapter implements IClassRuntime
         JsonObject obj = new JsonObject();
         obj.add("wrappedTransform", jsonSerializationContext.serialize(wrapped2DTransformAs3D.getTransform(), RealTransform.class));
         return obj;
+    }
+
+    @Override
+    public Class<? extends Wrapped2DTransformAs3D> getAdapterClass() {
+        return Wrapped2DTransformAs3D.class;
     }
 }

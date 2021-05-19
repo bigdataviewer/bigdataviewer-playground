@@ -28,36 +28,36 @@
  */
 package net.imglib2.realtransform;
 
-import com.google.gson.*;
-import net.imglib2.realtransform.inverse.WrappedIterativeInvertibleRealTransform;
 import org.scijava.plugin.Plugin;
-import sc.fiji.persist.IClassAdapter;
 import sc.fiji.persist.IClassRuntimeAdapter;
 
-import java.lang.reflect.Type;
-
-@Plugin(type = IClassAdapter.class)
-public class WrappedIterativeInvertibleRealTransformAdapter implements IClassAdapter<WrappedIterativeInvertibleRealTransform> {
+/**
+ * Serializes and deserializes {@link InvertibleRealTransformSequence} object
+ *
+ * As long as each individual {@link RealTransform} object present in the sequence can be
+ * serialized, and implements {@link InvertibleRealTransform},
+ * the sequence should be serialized successfully
+ *
+ * This adapter is located in this package in order to access the protected
+ * {@link InvertibleRealTransformSequence#transforms} field
+ * of an {@link InvertibleRealTransformSequence}
+ */
+@Plugin(type = IClassRuntimeAdapter.class)
+public class InvertibleRealTransformSequenceRunTimeAdapter implements IClassRuntimeAdapter<RealTransform, InvertibleRealTransformSequence> {
 
     @Override
-    public WrappedIterativeInvertibleRealTransform deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        JsonObject obj = jsonElement.getAsJsonObject();
-        RealTransform rt = jsonDeserializationContext.deserialize(obj.get("wrappedTransform"), RealTransform.class);
-        return new WrappedIterativeInvertibleRealTransform<>(rt);
+    public Class<? extends RealTransform> getBaseClass() {
+        return RealTransform.class;
     }
 
     @Override
-    public JsonElement serialize(WrappedIterativeInvertibleRealTransform wrappedIterativeInvertibleRealTransform, Type type, JsonSerializationContext jsonSerializationContext) {
-        JsonObject obj = new JsonObject();
-        obj.add("wrappedTransform", jsonSerializationContext.serialize(wrappedIterativeInvertibleRealTransform.getTransform(), RealTransform.class));
-        // TODO : get tolerance and maxiter wrappedIterativeInvertibleRealTransform.getOptimzer().getError().setTolerance();
-        // wrappedIterativeInvertibleRealTransform.getOptimzer().setTolerance().setTolerance( 0.000001 );   // keeps running until error is < 0.000001
-        // ixfm.getOptimzer().setMaxIters( 1000 ); // or 1000 iterations
-        return obj;
+    public Class<? extends InvertibleRealTransformSequence> getRunTimeClass() {
+        return InvertibleRealTransformSequence.class;
     }
 
     @Override
-    public Class<? extends WrappedIterativeInvertibleRealTransform> getAdapterClass() {
-        return WrappedIterativeInvertibleRealTransform.class;
+    public boolean useCustomAdapter() {
+        return false;
     }
+
 }

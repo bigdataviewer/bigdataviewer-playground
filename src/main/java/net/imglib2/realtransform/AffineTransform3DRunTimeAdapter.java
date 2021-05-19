@@ -32,8 +32,9 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.persist.IClassRuntimeAdapter;
 
 /**
- * Runtime adapter for RealTransform
+ * Affine transform 3D runtime adapter
  */
+
 @Plugin(type = IClassRuntimeAdapter.class)
 public class AffineTransform3DRunTimeAdapter implements IClassRuntimeAdapter<RealTransform, AffineTransform3D> {
 
@@ -51,5 +52,4 @@ public class AffineTransform3DRunTimeAdapter implements IClassRuntimeAdapter<Rea
     public boolean useCustomAdapter() {
         return false;
     }
-
 }

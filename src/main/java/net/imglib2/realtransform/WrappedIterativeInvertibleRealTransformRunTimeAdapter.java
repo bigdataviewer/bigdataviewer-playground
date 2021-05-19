@@ -28,36 +28,25 @@
  */
 package net.imglib2.realtransform;
 
-import com.google.gson.*;
 import net.imglib2.realtransform.inverse.WrappedIterativeInvertibleRealTransform;
 import org.scijava.plugin.Plugin;
-import sc.fiji.persist.IClassAdapter;
 import sc.fiji.persist.IClassRuntimeAdapter;
 
-import java.lang.reflect.Type;
-
-@Plugin(type = IClassAdapter.class)
-public class WrappedIterativeInvertibleRealTransformAdapter implements IClassAdapter<WrappedIterativeInvertibleRealTransform> {
-
+@Plugin(type = IClassRuntimeAdapter.class)
+public class WrappedIterativeInvertibleRealTransformRunTimeAdapter implements IClassRuntimeAdapter<RealTransform, WrappedIterativeInvertibleRealTransform> {
     @Override
-    public WrappedIterativeInvertibleRealTransform deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        JsonObject obj = jsonElement.getAsJsonObject();
-        RealTransform rt = jsonDeserializationContext.deserialize(obj.get("wrappedTransform"), RealTransform.class);
-        return new WrappedIterativeInvertibleRealTransform<>(rt);
+    public Class<? extends RealTransform> getBaseClass() {
+        return RealTransform.class;
     }
 
     @Override
-    public JsonElement serialize(WrappedIterativeInvertibleRealTransform wrappedIterativeInvertibleRealTransform, Type type, JsonSerializationContext jsonSerializationContext) {
-        JsonObject obj = new JsonObject();
-        obj.add("wrappedTransform", jsonSerializationContext.serialize(wrappedIterativeInvertibleRealTransform.getTransform(), RealTransform.class));
-        // TODO : get tolerance and maxiter wrappedIterativeInvertibleRealTransform.getOptimzer().getError().setTolerance();
-        // wrappedIterativeInvertibleRealTransform.getOptimzer().setTolerance().setTolerance( 0.000001 );   // keeps running until error is < 0.000001
-        // ixfm.getOptimzer().setMaxIters( 1000 ); // or 1000 iterations
-        return obj;
-    }
-
-    @Override
-    public Class<? extends WrappedIterativeInvertibleRealTransform> getAdapterClass() {
+    public Class<? extends WrappedIterativeInvertibleRealTransform> getRunTimeClass() {
         return WrappedIterativeInvertibleRealTransform.class;
     }
+
+    @Override
+    public boolean useCustomAdapter() {
+        return false;
+    }
+
 }

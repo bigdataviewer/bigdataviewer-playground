@@ -29,7 +29,6 @@
 package sc.fiji.bdvpg.bdv.config;
 
 import bdv.util.Prefs;
-import net.imglib2.realtransform.InvertibleRealTransformSequenceAdapter;
 import org.mastodon.app.ui.settings.ModificationListener;
 import org.mastodon.app.ui.settings.SettingsPage;
 import org.scijava.listeners.Listeners;

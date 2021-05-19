@@ -28,8 +28,12 @@
  */
 package net.imglib2.realtransform;
 
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
 import org.scijava.plugin.Plugin;
+import sc.fiji.persist.IClassAdapter;
 import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
@@ -44,50 +48,34 @@ import java.lang.reflect.Type;
  * {@link RealTransformSequence#transforms} field of a {@link RealTransformSequence}
  */
 
-@Plugin(type = IClassRuntimeAdapter.class)
-public class RealTransformSequenceAdapter implements IClassRuntimeAdapter<RealTransform, RealTransformSequence> {
-    @Override
-    public Class<? extends RealTransform> getBaseClass() {
-        return RealTransform.class;
-    }
+@Plugin(type = IClassAdapter.class)
+public class RealTransformSequenceAdapter implements IClassAdapter<RealTransformSequence> {
 
     @Override
-    public Class<? extends RealTransformSequence> getRunTimeClass() {
+    public Class<? extends RealTransformSequence> getAdapterClass() {
         return RealTransformSequence.class;
     }
 
     @Override
-    public boolean useCustomAdapter() {
-        return true;
-    }
-
-    @Override
-    public RealTransformSequence deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public RealTransformSequence deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) {
         JsonObject obj = jsonElement.getAsJsonObject();
-
         int nTransform = obj.get("size").getAsInt();
-
         RealTransformSequence rts = new RealTransformSequence();
-
         for (int iTransform = 0; iTransform<nTransform; iTransform++) {
             RealTransform transform = jsonDeserializationContext.deserialize(obj.get("realTransform_"+iTransform), RealTransform.class);
             rts.add(transform);
         }
-
         return rts;
     }
 
     @Override
     public JsonElement serialize(RealTransformSequence rts, Type type, JsonSerializationContext jsonSerializationContext) {
-
         JsonObject obj = new JsonObject();
-
         obj.addProperty("size", rts.transforms.size());
-
         for (int iTransform = 0; iTransform<rts.transforms.size(); iTransform++) {
             obj.add("realTransform_"+iTransform, jsonSerializationContext.serialize(rts.transforms.get(iTransform), RealTransform.class));
         }
-
         return obj;
     }
+
 }
