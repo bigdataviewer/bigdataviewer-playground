@@ -351,12 +351,12 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                     entityClassToHandler.get(entityClass).loadEntity(asd, setup, setupIdToSourceAndConverter.get(setupId) );
                 }
             });
-
         }
-        this.register(setupIdToSourceAndConverter.values()); // Necessary ? Yes!
 
         setupIdToSourceAndConverter.keySet().forEach(id -> {
+            register(setupIdToSourceAndConverter.get(id));
             linkToSpimData(setupIdToSourceAndConverter.get(id), asd, id);
+            if (uiAvailable) ui.update(setupIdToSourceAndConverter.get(id));
         });
 
         WrapBasicImgLoader.removeWrapperIfPresent( asd );
