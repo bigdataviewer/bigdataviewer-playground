@@ -29,34 +29,23 @@
 package sc.fiji.bdvpg.bdv;
 
 import bdv.tools.brightness.ConverterSetup;
-import bdv.ui.SourcesTransferable;
 import bdv.util.BdvHandle;
-import bdv.util.ResampledSource;
 import bdv.viewer.Source;
-import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
 import net.imglib2.*;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Intervals;
 import net.imglib2.util.LinAlgHelpers;
 import org.scijava.cache.CacheService;
 import org.scijava.object.ObjectService;
-import org.scijava.ui.behaviour.ClickBehaviour;
-import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerConfigHelper;
 import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
-import org.scijava.ui.behaviour.util.Behaviours;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
-import sc.fiji.bdvpg.behaviour.EditorBehaviourInstaller;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.swingdnd.BdvTransferHandler;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.*;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -108,13 +97,29 @@ public class BdvHandleHelper
 
         adaptedViewerTransform.translate( targetPositionInViewerInPixels );
 
-        final double[] windowCentreInViewerInPixels = new double[ 3 ];
-        windowCentreInViewerInPixels[ 0 ] = bdvHandle.getViewerPanel().getDisplay().getWidth() / 2.0;
-        windowCentreInViewerInPixels[ 1 ] = bdvHandle.getViewerPanel().getDisplay().getHeight() / 2.0;
+        final double[] windowCentreInViewerInPixels = getWindowCentreInPixelUnits( bdvHandle );
 
         adaptedViewerTransform.translate( windowCentreInViewerInPixels );
 
         return adaptedViewerTransform;
+    }
+
+    public static double[] getWindowCentreInPixelUnits( BdvHandle bdvHandle )
+    {
+        final double[] windowCentreInPixelUnits = new double[ 3 ];
+        windowCentreInPixelUnits[ 0 ] = bdvHandle.getViewerPanel().getDisplay().getWidth() / 2.0;
+        windowCentreInPixelUnits[ 1 ] = bdvHandle.getViewerPanel().getDisplay().getHeight() / 2.0;
+        return windowCentreInPixelUnits;
+    }
+
+    public static double[] getWindowCentreInCalibratedUnits( BdvHandle bdvHandle )
+    {
+        final double[] centreInPixelUnits = getWindowCentreInPixelUnits( bdvHandle );
+        final AffineTransform3D affineTransform3D = new AffineTransform3D();
+        bdvHandle.getViewerPanel().state().getViewerTransform( affineTransform3D );
+        final double[] centreInCalibratedUnits = new double[ 3 ];
+        affineTransform3D.inverse().apply( centreInPixelUnits, centreInCalibratedUnits );
+        return centreInCalibratedUnits;
     }
 
     public static double getViewerVoxelSpacing( BdvHandle bdv ) {
