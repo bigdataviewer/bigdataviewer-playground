@@ -407,6 +407,49 @@ public class SourceAndConverterHelper {
 		return longPosition;
 	}
 
+    public static int getMaxTimepoint(SourceAndConverter[] sacs) {
+	    int max = 0;
+	    for (SourceAndConverter<?> sac : sacs) {
+	        int sourceMax = getMaxTimepoint(sac);
+	        if (sourceMax > max) {
+	            max = sourceMax;
+            }
+        }
+	    return max;
+    }
+
+    /**
+     * Looks for the max number of timepoint present in this source and converter
+     * To do this : multiply the n
+     *
+     * TODO : use the spimdata object if present to fetch this
+     * TODO : Limitation : if the timepoint 0 is not present, this fails!
+     *
+     * @param sac
+     * @return
+     */
+	public static int getMaxTimepoint(SourceAndConverter<?> sac) {
+	    if (!sac.getSpimSource().isPresent(0)) {
+	        return 0;
+        }
+        int nFrames = 1;
+        int iFrame = 1;
+        int previous = iFrame;
+        while ((iFrame<Integer.MAX_VALUE / 2)&&(sac.getSpimSource().isPresent(iFrame))) {
+            previous = iFrame;
+            iFrame *= 2;
+        }
+        if (iFrame>1) {
+            for (int tp = previous;tp<iFrame;tp++) {
+                if (!sac.getSpimSource().isPresent(tp)) {
+                    nFrames = tp;
+                    break;
+                }
+            }
+        }
+        return nFrames;
+    }
+
     /**
      * Is the point pt located inside the source  at a particular timepoint ?
      * Looks at highest resolution whether the alpha value of the displayed pixel is zero
