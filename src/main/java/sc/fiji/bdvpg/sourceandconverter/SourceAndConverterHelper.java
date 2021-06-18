@@ -296,6 +296,7 @@ public class SourceAndConverterHelper {
      * Creates ARGB converter from a RealTyped sourceandconverter.
      * Supports Volatile RealTyped or non volatile
      * @param <T> realtype class
+     * @param type a pixel of type T
      * @return a suited converter
      */
     public static< T extends RealType< T >>  Converter createConverterRealType( final T type ) {
@@ -407,6 +408,11 @@ public class SourceAndConverterHelper {
 		return longPosition;
 	}
 
+    /**
+     *
+     * @param sacs sources
+     * @return the max timepoint found in this source according to the next method ( check limitations )
+     */
     public static int getMaxTimepoint(SourceAndConverter[] sacs) {
 	    int max = 0;
 	    for (SourceAndConverter<?> sac : sacs) {
@@ -420,13 +426,14 @@ public class SourceAndConverterHelper {
 
     /**
      * Looks for the max number of timepoint present in this source and converter
-     * To do this : multiply the n
+     * To do this multiply the 2 the max timepoint until no source is present
      *
      * TODO : use the spimdata object if present to fetch this
      * TODO : Limitation : if the timepoint 0 is not present, this fails!
+     * Limitation : if the source is present at all timepoint, this fails
      *
-     * @param sac
-     * @return
+     * @param sac source
+     * @return the maximal timepoint where the source is still present
      */
 	public static int getMaxTimepoint(SourceAndConverter<?> sac) {
 	    if (!sac.getSpimSource().isPresent(0)) {
@@ -459,6 +466,7 @@ public class SourceAndConverterHelper {
      * TODO : Time out if too long to access the data
      * @param sac source
      * @param pt point
+     * @param timePoint timepoint investigated
      * @return true if the source is present
      */
     public static boolean isSourcePresentAt(SourceAndConverter sac, int timePoint, RealPoint pt) {
@@ -853,7 +861,7 @@ public class SourceAndConverterHelper {
     /**
      * Determines all visible sources at the current mouse position in the Bdv window.
      * Note: this method can be slow as it needs an actual random access on the source data.
-     * @param bdvHandle
+     * @param bdvHandle the bdv window to probe
      * @return List of SourceAndConverters
      */
     public static List< SourceAndConverter< ? > > getSourceAndConvertersAtCurrentMousePosition( BdvHandle bdvHandle )

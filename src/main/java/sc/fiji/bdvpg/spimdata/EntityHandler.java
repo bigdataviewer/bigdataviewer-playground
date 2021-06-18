@@ -57,7 +57,7 @@ public interface EntityHandler extends SciJavaPlugin {
 
     /**
      *
-     * @return
+     * @return the entity type being handled by this entity handler
      */
     Class<? extends Entity> getEntityType();
 
@@ -89,7 +89,7 @@ public interface EntityHandler extends SciJavaPlugin {
      * @param spimData object which is being opened
      * @param viewSetup viewSetup associated to the sourceandconverter
      * @param sac current sourceandconverter being opened from the spimData object
-     * @return
+     * @return true is the entity was loaded
      */
     boolean loadEntity(AbstractSpimData spimData, BasicViewSetup viewSetup, SourceAndConverter<?> sac);
 

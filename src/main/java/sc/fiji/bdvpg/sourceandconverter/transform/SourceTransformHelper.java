@@ -129,6 +129,7 @@ public class SourceTransformHelper {
     /**
      * Ignores registration
      * @param affineTransform3D affine transform 3D
+     * @param sacTR the source and a time range, combined in a single class {@link SourceAndConverterAndTimeRange}
      * @return the untransformed source, because the transformation has been canceled
      */
     public static SourceAndConverter cancel(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {

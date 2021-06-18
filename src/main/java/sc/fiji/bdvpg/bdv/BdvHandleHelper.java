@@ -376,6 +376,7 @@ public class BdvHandleHelper
     /**
      * For debugging:
      * - print actions and triggers of a bdv
+     * @param stringEater consumer of the string to print the bindings (system out, ij log, etc.)
      * @param bdv ze bdv
      */
     public static void printBindings(BdvHandle bdv, Consumer<String> stringEater) {

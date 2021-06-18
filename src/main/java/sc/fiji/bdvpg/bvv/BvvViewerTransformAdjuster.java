@@ -71,6 +71,7 @@ public class BvvViewerTransformAdjuster implements Runnable
 	 * <li>centered and scaled such that the full <em>dim_x</em> by
 	 * <em>dim_y</em> is visible.
 	 * </ul>
+	 * @return the Affine Transform, equivalent to the current view, of BVV
 	 */
 	public AffineTransform3D getTransform( )
 	{

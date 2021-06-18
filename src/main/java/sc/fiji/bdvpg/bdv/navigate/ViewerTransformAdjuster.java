@@ -74,6 +74,7 @@ public class ViewerTransformAdjuster implements Runnable
 	 * <li>centered and scaled such that the full <em>dim_x</em> by
 	 * <em>dim_y</em> is visible.
 	 * </ul>
+	 * @return the view which is equivalent to the transform of the bdv window
 	 */
 	public AffineTransform3D getTransform( )
 	{

@@ -56,6 +56,8 @@ public class SourceAndConverterInspector {
 
     /**
      * Appends all the metadata of a SourceAndConverter into a tree structure
+     * @param parent node below which the metadata nodes will be added
+     * @param sac source for which the metadata are fetched
      */
     public static void appendMetadata(DefaultMutableTreeNode parent, SourceAndConverter sac) {
         SourceAndConverterServices.getSourceAndConverterService().getMetadataKeys(sac)
@@ -78,6 +80,7 @@ public class SourceAndConverterInspector {
      *
      * @param parent parent node
      * @param sac source
+     * @param registerIntermediateSources if you want the intermediate sources registered in the source and converter service
      * @param sourceAndConverterService source service
      * @return the set of sources that were necessary to build the sac (including itself)
      */

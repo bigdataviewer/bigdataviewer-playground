@@ -210,14 +210,14 @@ public interface ISourceAndConverterService
     Object getMetadata(AbstractSpimData asd, String key);
 
     /**
-     * Adds metadata for a sac
-     *
+     * Gets metadata of a spimdata
+     * @param asd dataset
      * @return the metadata of a spimdata
      */
     Collection<String> getMetadataKeys(AbstractSpimData asd);
 
     /**
-     * Convenient method to know if a metadata for a sac exists
+     * Convenient method to know if a metadata for a spimdata exists
      * @param key  metadata key to check
      * @param asd spimdata object
      * @return is the spimdata contains this metadata
