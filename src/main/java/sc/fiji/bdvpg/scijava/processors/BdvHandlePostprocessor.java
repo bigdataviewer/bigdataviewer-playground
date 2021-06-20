@@ -71,8 +71,8 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
             if (object instanceof BdvHandle)
             {
                 bsds.registerBdvHandle( (BdvHandle) object );
+                module.resolveOutput(name);
             }
-            module.resolveOutput(name);
         });
 
     }
