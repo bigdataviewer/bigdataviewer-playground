@@ -97,7 +97,9 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     protected Interpolation originInterpolation;
 
-    boolean reuseMipMaps;
+    final boolean reuseMipMaps;
+
+    final int defaultMipMapLevel;
 
     boolean cache;
 
@@ -129,7 +131,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
      * @param originInterpolation specifies whether the origin source should be interpolated of not in the resampling process
      *
      */
-    public ResampledSource(Source<T> source, Source<T> resamplingModel, boolean reuseMipMaps, boolean cache, boolean originInterpolation) {
+    public ResampledSource(Source<T> source, Source<T> resamplingModel, boolean reuseMipMaps, boolean cache, boolean originInterpolation, int defaultMipMapLevel) {
         this.origin=source;
         this.resamplingModel=resamplingModel;
         this.reuseMipMaps=reuseMipMaps;
@@ -139,6 +141,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         } else {
             this.originInterpolation = Interpolation.NEARESTNEIGHBOR;
         }
+        this.defaultMipMapLevel = defaultMipMapLevel;
         computeMipMapsCorrespondance();
     }
 
@@ -187,7 +190,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
                 int match = bestMatch(middleDim);
                 mipmapModelToOrigin.put(l, match);
             } else {
-                mipmapModelToOrigin.put(l, 0); // Always taking the highest resolution
+                mipmapModelToOrigin.put(l, defaultMipMapLevel); // Always taking the highest resolution
             }
 
             // For debugging resampling issues
@@ -323,4 +326,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         return resamplingModel.getNumMipmapLevels();
     }
 
+    public int getDefaultMipMapLevel() {
+        return defaultMipMapLevel;
+    }
 }

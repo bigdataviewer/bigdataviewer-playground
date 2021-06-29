@@ -48,12 +48,15 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
 
     boolean cache;
 
-    public SourceResampler(SourceAndConverter sac_in, SourceAndConverter model, boolean reuseMipmaps, boolean cache, boolean interpolate) {
+    int defaultMipMapLevel;
+
+    public SourceResampler(SourceAndConverter sac_in, SourceAndConverter model, boolean reuseMipmaps, boolean cache, boolean interpolate, int defaultMipMapLevel) {
         this.reuseMipMaps = reuseMipmaps;
         this.model = model;
         this.sac_in = sac_in;
         this.interpolate = interpolate;
         this.cache = cache;
+        this.defaultMipMapLevel = defaultMipMapLevel;
     }
 
     @Override
@@ -73,7 +76,8 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
                         model.getSpimSource(),
                         reuseMipMaps,
                         cache,
-                        interpolate);
+                        interpolate,
+                        defaultMipMapLevel);
 
         SourceAndConverter sac;
         if (src.asVolatile()!=null) {
@@ -87,7 +91,8 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
                         model.getSpimSource(),
                         reuseMipMaps,
                         false,
-                        interpolate);
+                        interpolate,
+                        defaultMipMapLevel);
             }
             vsac = new SourceAndConverter(vsrcRsampled,
                     SourceAndConverterHelper.cloneConverter(src.asVolatile().getConverter(), src.asVolatile()));

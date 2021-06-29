@@ -69,6 +69,7 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
         obj.add("interpolate", jsonSerializationContext.serialize(source.originInterpolation()));
         obj.addProperty("cache", source.isCached());
         obj.addProperty("mipmaps_reused", source.areMipmapsReused());
+        obj.addProperty("defaultMipmapLevel", source.getDefaultMipMapLevel());
 
         Integer idOrigin = sacSerializer.getSourceToId().get(source.getOriginalSource());
         Integer idModel = sacSerializer.getSourceToId().get(source.getModelResamplerSource());
@@ -98,6 +99,7 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
         Interpolation interpolation = jsonDeserializationContext.deserialize(obj.get("interpolate"), Interpolation.class);
         boolean cache = obj.getAsJsonPrimitive("cache").getAsBoolean();
         boolean reuseMipMaps = obj.getAsJsonPrimitive("mipmaps_reused").getAsBoolean();
+        int defaultMipMapLevel = obj.getAsJsonPrimitive("defaultMipmapLevel").getAsInt();
 
         SourceAndConverter originSac;
         SourceAndConverter modelSac;
@@ -130,7 +132,7 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
             return null;
         }
 
-        SourceAndConverter sac = new SourceResampler(originSac, modelSac, reuseMipMaps, cache, interpolation.equals(Interpolation.NLINEAR)).get();
+        SourceAndConverter sac = new SourceResampler(originSac, modelSac, reuseMipMaps, cache, interpolation.equals(Interpolation.NLINEAR), defaultMipMapLevel).get();
 
         /*SourceAndConverterServices.getSourceAndConverterService()
                 .register(sac);*/

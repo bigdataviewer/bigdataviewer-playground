@@ -50,6 +50,9 @@ public class SourcesResamplerCommand implements BdvPlaygroundActionCommand {
     @Parameter(label="Re-use MipMaps")
     boolean reusemipmaps;
 
+    @Parameter(label="MipMap level if not re-used (0 = max resolution)")
+    int defaultmipmaplevel;
+
     @Parameter
     boolean interpolate;
 
@@ -65,7 +68,7 @@ public class SourcesResamplerCommand implements BdvPlaygroundActionCommand {
         sacs_out = new SourceAndConverter[sacs.length];
         for (int i=0;i< sacs.length;i++) {
             SourceAndConverter sac = sacs[i];
-            sacs_out[i] = new SourceResampler(sac, model, reusemipmaps, cache, interpolate).get();
+            sacs_out[i] = new SourceResampler(sac, model, reusemipmaps, cache, interpolate, defaultmipmaplevel).get();
         }
     }
 
