@@ -44,7 +44,6 @@ import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.Views;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.processors.SpimDataPostprocessor;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.ArrayList;
@@ -103,6 +102,8 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     boolean cache;
 
+    private String name;
+
     /**
      * The origin source is accessed through its RealRandomAccessible representation :
      * - It can be accessed at any 3d point in space, with real valued coordinates : it's a field of {@link T} objects
@@ -111,29 +112,27 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
      *  - through its RandomAccessibleInterval bounds
      *  - and the Source affine transform
      *  - and mipmaps, if reuseMipMaps is true
-     *
-     * @param source origin source
+     *  @param source origin source
      *
      * @param resamplingModel model source used for resampling the origin source
-     *
+     *@param name
      * @param reuseMipMaps allows to reuse mipmaps of both the origin and the model source in the resampling
      *  mipmap reuse tries to be clever by matching the voxel size between the model source and the origin source
      *  so for instance the model source mipmap level 0 will resample the origin mipmap level 2, if the voxel size
      *  of the origin is much smaller then the model (and provided that the origin is also a multiresolution source)
      *  the way the matching is performed is specified in {@link SourceAndConverterHelper#bestLevel(Source, int, double)}.
      *  For more details and limitation, please read the documentation in the linked method above
-     *
-     * @param cache specifies whether the result of the resampling should be cached.
+     *@param cache specifies whether the result of the resampling should be cached.
      *  This allows for a fast access of resampled source after the first computation - but the synchronization with
      *  the origin and model source is lost.
      *  TODO : check how the cache can be accessed / reset
-     *
-     * @param originInterpolation specifies whether the origin source should be interpolated of not in the resampling process
+     *@param originInterpolation specifies whether the origin source should be interpolated of not in the resampling process
      *
      */
-    public ResampledSource(Source<T> source, Source<T> resamplingModel, boolean reuseMipMaps, boolean cache, boolean originInterpolation, int defaultMipMapLevel) {
+    public ResampledSource( Source< T > source, Source< T > resamplingModel, String name, boolean reuseMipMaps, boolean cache, boolean originInterpolation, int defaultMipMapLevel ) {
         this.origin=source;
         this.resamplingModel=resamplingModel;
+        this.name = name;
         this.reuseMipMaps=reuseMipMaps;
         this.cache = cache;
         if (originInterpolation) {
@@ -313,7 +312,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     @Override
     public String getName() {
-        return origin.getName()+"_ResampledAs_"+resamplingModel.getName();
+        return name;
     }
 
     @Override
