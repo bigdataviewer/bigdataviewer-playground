@@ -35,7 +35,6 @@ import com.google.gson.*;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.command.bdv.ViewSynchronizerCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
 
@@ -68,6 +67,7 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
 
         obj.add("interpolate", jsonSerializationContext.serialize(source.originInterpolation()));
         obj.addProperty("cache", source.isCached());
+        obj.addProperty("name", source.getName());
         obj.addProperty("mipmaps_reused", source.areMipmapsReused());
         obj.addProperty("defaultMipmapLevel", source.getDefaultMipMapLevel());
 
@@ -98,6 +98,7 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
 
         Interpolation interpolation = jsonDeserializationContext.deserialize(obj.get("interpolate"), Interpolation.class);
         boolean cache = obj.getAsJsonPrimitive("cache").getAsBoolean();
+        String name = obj.getAsJsonPrimitive("name").getAsString();
         boolean reuseMipMaps = obj.getAsJsonPrimitive("mipmaps_reused").getAsBoolean();
         int defaultMipMapLevel = obj.getAsJsonPrimitive("defaultMipmapLevel").getAsInt();
 
@@ -132,7 +133,7 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
             return null;
         }
 
-        SourceAndConverter sac = new SourceResampler(originSac, modelSac, reuseMipMaps, cache, interpolation.equals(Interpolation.NLINEAR), defaultMipMapLevel).get();
+        SourceAndConverter sac = new SourceResampler(originSac, modelSac, name, reuseMipMaps, cache, interpolation.equals(Interpolation.NLINEAR), defaultMipMapLevel).get();
 
         /*SourceAndConverterServices.getSourceAndConverterService()
                 .register(sac);*/

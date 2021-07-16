@@ -111,7 +111,7 @@ public class ResamplingDemo {
         new BrightnessAdjuster(bigMandelbrot,0,800).run();
 
         // Resample generative source as model source
-        SourceResampler sr = new SourceResampler(bigMandelbrot, sac,false,false, false,0);
+        SourceResampler sr = new SourceResampler(bigMandelbrot, sac, "resampled", false,false, false,0);
         SourceAndConverter resampledMandelbrot = sr.get();
 
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, resampledMandelbrot );
@@ -142,7 +142,7 @@ public class ResamplingDemo {
         // DOWNSAMPLING
         EmptySourceAndConverterCreator downSampledModel = new EmptySourceAndConverterCreator("DownSampled",sac,0,4,4,4);//, factory);
 
-        sr = new SourceResampler(sac, downSampledModel.get(),false,false, true,0);
+        sr = new SourceResampler(sac, downSampledModel.get(), "downsampled", false,false, true,0);
         SourceAndConverter downsampledSource = sr.get();
 
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, downsampledSource );
@@ -150,7 +150,7 @@ public class ResamplingDemo {
 
         // DOWNSAMPLING With Mipmap Reuse
 
-        sr = new SourceResampler(sac, downSampledModel.get(),true,false, true,0);
+        sr = new SourceResampler(sac, downSampledModel.get(), "downsampled-with-mipmap", true,false, true,0);
         SourceAndConverter downsampledSourceWithMipmaps = sr.get();
 
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, downsampledSourceWithMipmaps );
@@ -159,7 +159,7 @@ public class ResamplingDemo {
         // UPSAMPLING
         EmptySourceAndConverterCreator upSampledModel = new EmptySourceAndConverterCreator("UpSampled",sac,0,0.2,0.2,0.2);//, factory);
 
-        sr = new SourceResampler(sac, upSampledModel.get(),false,false, true,0);
+        sr = new SourceResampler(sac, upSampledModel.get(), "upsampled", false,false, true,0);
         SourceAndConverter upsampledSource = sr.get();
 
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, upsampledSource );

@@ -50,7 +50,10 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
 
     int defaultMipMapLevel;
 
-    public SourceResampler(SourceAndConverter sac_in, SourceAndConverter model, boolean reuseMipmaps, boolean cache, boolean interpolate, int defaultMipMapLevel) {
+    private String name;
+
+    public SourceResampler( SourceAndConverter sac_in, SourceAndConverter model, String name, boolean reuseMipmaps, boolean cache, boolean interpolate, int defaultMipMapLevel ) {
+        this.name = name;
         this.reuseMipMaps = reuseMipmaps;
         this.model = model;
         this.sac_in = sac_in;
@@ -74,6 +77,7 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
                 new ResampledSource(
                         src.getSpimSource(),
                         model.getSpimSource(),
+                        name,
                         reuseMipMaps,
                         cache,
                         interpolate,
@@ -89,6 +93,7 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
                 vsrcRsampled = new ResampledSource(
                         src.asVolatile().getSpimSource(),
                         model.getSpimSource(),
+                        name,
                         reuseMipMaps,
                         false,
                         interpolate,

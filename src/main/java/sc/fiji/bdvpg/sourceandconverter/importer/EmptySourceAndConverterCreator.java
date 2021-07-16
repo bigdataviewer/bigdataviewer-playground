@@ -31,6 +31,8 @@ package sc.fiji.bdvpg.sourceandconverter.importer;
 import bdv.util.EmptySource;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
+import mpicbg.spim.data.sequence.FinalVoxelDimensions;
+import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealInterval;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -49,11 +51,15 @@ import java.util.function.Supplier;
 
 public class EmptySourceAndConverterCreator implements Runnable, Supplier<SourceAndConverter<?>> {
 
-    final AffineTransform3D at3D;
+    private final AffineTransform3D at3D;
 
-    final long nx, ny, nz;
+    private final long nx, ny, nz;
 
-    final String name;
+    private final String name;
+
+    private final VoxelDimensions voxelDimensions;
+
+    private static VoxelDimensions defaultVoxelDimensions = new FinalVoxelDimensions( "pixel", 1.0, 1.0, 1.0 );
 
     /**
      * Simple constructor
@@ -77,6 +83,7 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
         at3D.scale(sizeVoxX, sizeVoxY, sizeVoxZ);
         at3D.translate(interval.realMin(0), interval.realMin(1), interval.realMin(2));
         this.at3D = at3D;
+        this.voxelDimensions = defaultVoxelDimensions;
     }
 
     /**
@@ -92,6 +99,23 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
             RealInterval interval,
             long nx, long ny, long nz
     ) {
+        this(name, interval, nx, ny, nz, defaultVoxelDimensions);
+    }
+
+    /**
+     * Simple constructor
+     * @param name name of the source
+     * @param interval interval imaged by the source
+     * @param nx number of voxels in x
+     * @param ny number of voxels in y
+     * @param nz number of voxels in z
+     */
+    public EmptySourceAndConverterCreator(
+            String name,
+            RealInterval interval,
+            long nx, long ny, long nz,
+            VoxelDimensions voxelDimensions
+    ) {
         this.nx = nx;
         this.ny = ny;
         this.nz = nz;
@@ -104,6 +128,7 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
         at3D.scale(sizePx, sizePy, sizePz);
         at3D.translate(interval.realMin(0), interval.realMin(1), interval.realMin(2));
         this.at3D = at3D;
+        this.voxelDimensions = voxelDimensions;
     }
 
     /**
@@ -124,6 +149,7 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
         this.nz = nz;
         this.at3D = at3D;
         this.name = name;
+        this.voxelDimensions = defaultVoxelDimensions;
     }
 
     /**
@@ -143,6 +169,8 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
             int timePoint,
             double voxSizeX, double voxSizeY, double voxSizeZ
     ) {
+        this.voxelDimensions = defaultVoxelDimensions;
+
         // Gets model RAI
         RandomAccessibleInterval<?> rai = model.getSpimSource().getSource(timePoint,0);
 
@@ -232,7 +260,7 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
     @Override
     public SourceAndConverter<?> get() {
 
-        Source<?> src = new EmptySource(nx,ny,nz,at3D,name);
+        Source<?> src = new EmptySource(nx,ny,nz,at3D,name,voxelDimensions);
 
         SourceAndConverter<?> sac;
 

@@ -35,7 +35,6 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Resample Source Based on Model Source")
@@ -59,16 +58,21 @@ public class SourcesResamplerCommand implements BdvPlaygroundActionCommand {
     @Parameter
     boolean cache;
 
+    @Parameter(label="Name(s) of the resampled source(s)")
+    String name; // CSV separate for multiple sources
+
     @Parameter(type = ItemIO.OUTPUT)
     SourceAndConverter[] sacs_out;
+
 
     @Override
     public void run() {
         // Should not be parallel
         sacs_out = new SourceAndConverter[sacs.length];
+        final String[] names = name.split( "," );
         for (int i=0;i< sacs.length;i++) {
             SourceAndConverter sac = sacs[i];
-            sacs_out[i] = new SourceResampler(sac, model, reusemipmaps, cache, interpolate, defaultmipmaplevel).get();
+            sacs_out[i] = new SourceResampler(sac, model, names[i], reusemipmaps, cache, interpolate, defaultmipmaplevel).get();
         }
     }
 
