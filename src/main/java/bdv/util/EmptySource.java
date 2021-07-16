@@ -30,6 +30,7 @@ package bdv.util;
 
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
+import mpicbg.spim.data.sequence.FinalVoxelDimensions;
 import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imglib2.*;
 import net.imglib2.position.FunctionRandomAccessible;
@@ -66,15 +67,16 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
     }
 
     public EmptySource(EmptySourceParams p) {
-       this(p.nx,p.ny,p.nz, p.at3D, p.name);
+       this(p.nx,p.ny,p.nz, p.at3D, p.name, p.voxelDimensions);
     }
 
-    public EmptySource(long nx, long ny, long nz, AffineTransform3D at3D, String name) {
+    public EmptySource( long nx, long ny, long nz, AffineTransform3D at3D, String name, VoxelDimensions voxelDimensions ) {
 
         params = new EmptySourceParams();
         params.nx = nx;
         params.ny = ny;
         params.nz = nz;
+        params.voxelDimensions = voxelDimensions;
 
         BiConsumer<Localizable, UnsignedShortType > fun = (l,t) -> t.set(0);
 
@@ -120,29 +122,7 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
 
     @Override
     public VoxelDimensions getVoxelDimensions() {
-        return new VoxelDimensions() {
-            @Override
-            public String unit() {
-                return "undefined";
-            }
-
-            @Override
-            public void dimensions(double[] dimensions) {
-                dimensions[0] = 1;
-                dimensions[1] = 1;
-                dimensions[2] = 1;
-            }
-
-            @Override
-            public double dimension(int d) {
-                return 1;
-            }
-
-            @Override
-            public int numDimensions() {
-                return 3;
-            }
-        };
+        return params.voxelDimensions;
     }
 
     @Override
@@ -154,6 +134,7 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
         public long nx,ny,nz;
         public AffineTransform3D at3D;
         public String name;
+        public VoxelDimensions voxelDimensions;
 
         public EmptySourceParams() {
             nx = 1;
@@ -161,6 +142,7 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
             nz = 1;
             at3D = new AffineTransform3D();
             name = "";
+            voxelDimensions = new FinalVoxelDimensions( "pixel", 1.0, 1.0, 1.0 );
         }
 
         public EmptySourceParams(EmptySourceParams p) {
@@ -170,6 +152,7 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
             at3D = new AffineTransform3D();
             at3D.set(p.at3D);
             name = p.name;
+            voxelDimensions = p.voxelDimensions;
         }
     }
 }

@@ -31,6 +31,9 @@ package sc.fiji.bdvpg;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import mpicbg.spim.data.sequence.DefaultVoxelDimensions;
+import mpicbg.spim.data.sequence.FinalVoxelDimensions;
+import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imagej.ImageJ;
 import net.imglib2.FinalRealInterval;
 import net.imglib2.type.numeric.ARGBType;
@@ -89,14 +92,17 @@ public class SimpleResamplingDemo {
         new ViewerTransformAdjuster( bdvHandle, sac ).run();
         new BrightnessAutoAdjuster( sac, 0 ).run();
 
+        final VoxelDimensions voxelDimensions = new FinalVoxelDimensions("micrometer", 0.5, 0.5, 3.0 );
+
         SourceAndConverter model = new EmptySourceAndConverterCreator("Model",
                 new FinalRealInterval(new double[]{50,50,50}, new double[]{150,150,150}),
-                100,100,100).get();
+                100,100,100, voxelDimensions).get();
 
         // Resample generative source as model source
         SourceAndConverter box =
                 new SourceResampler(sac, model, "crop", false,false, false,0).get();
 
+        final VoxelDimensions voxelDimensionsInResampledSource = box.getSpimSource().getVoxelDimensions();
 
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, box );
 
