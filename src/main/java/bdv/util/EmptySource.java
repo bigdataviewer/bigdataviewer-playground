@@ -134,7 +134,9 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
         public long nx,ny,nz;
         public AffineTransform3D at3D;
         public String name;
-        public VoxelDimensions voxelDimensions;
+        transient VoxelDimensions voxelDimensions; // transient because it cannot be instanciated  without argument
+        public String unit = "pixel";
+        public double vx = 1.0, vy = 1.0, vz = 1.0;
 
         public EmptySourceParams() {
             nx = 1;
@@ -142,7 +144,15 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
             nz = 1;
             at3D = new AffineTransform3D();
             name = "";
-            voxelDimensions = new FinalVoxelDimensions( "pixel", 1.0, 1.0, 1.0 );
+            voxelDimensions = new FinalVoxelDimensions( unit, vx, vy, vz );
+        }
+
+        public void setVoxelDimensions(String unit, double vx, double vy, double vz) {
+            this.unit = unit;
+            this.vx = vx;
+            this.vy = vy;
+            this.vz = vz;
+            voxelDimensions = new FinalVoxelDimensions( unit, vx, vy, vz );
         }
 
         public EmptySourceParams(EmptySourceParams p) {
