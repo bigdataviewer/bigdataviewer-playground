@@ -138,7 +138,9 @@ public class ScijavaGsonHelper {
                     }
                 });
 
-        return builder;
+
+
+        return builder.setPrettyPrinting();
     }
 
     // Inner static class needed for type safety
