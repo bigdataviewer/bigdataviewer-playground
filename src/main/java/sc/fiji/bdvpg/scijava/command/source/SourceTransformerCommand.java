@@ -28,39 +28,55 @@
  */
 package sc.fiji.bdvpg.scijava.command.source;
 
+import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.SourceAndConverter;
-import org.scijava.command.InteractiveCommand;
+import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
-
-import java.text.DecimalFormat;
-
-import static org.scijava.ItemVisibility.MESSAGE;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAndTimeRange;
+import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
 
 /**
  *
- * @author Nicolas Chiaruttini, EPFL 2020
+ * @author Nicolas Chiaruttini, EPFL 2021
  */
 
-@Plugin(type = BdvPlaygroundActionCommand.class,  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Brightness")
-public class BrightnessAdjusterCommand implements BdvPlaygroundActionCommand {
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Sources Affine Transformation",
+description = "Applies an affine transformation on several sources.")
 
-    @Parameter(label = "Select Source(s)")
+public class SourceTransformerCommand implements BdvPlaygroundActionCommand {
+    @Parameter(label = "Select source(s)")
     SourceAndConverter[] sacs;
 
-    @Parameter()
-    double min;
+    @Parameter
+    double m00 = 1, m01 = 0, m02 = 0, tx = 0, m10 = 0, m11 = 1, m12 = 0, ty = 0, m20 = 0, m21 = 0, m22 = 1, tz = 0;
 
-    @Parameter()
-    double max;
+    @Parameter(label = "Initial timepoint (0 based)")
+    int initimepoint;
 
+    @Parameter(label = "Number of timepoints (min 1)", min = "1")
+    int ntimepoints;
+
+    @Override
     public void run() {
-        for (SourceAndConverter source:sacs) {
-            new BrightnessAdjuster(source, min, max).run();
+
+        for (SourceAndConverter sac : sacs) {
+            AffineTransform3D at3D_global = new AffineTransform3D();
+
+            at3D_global.set(m00, m01,m02,tx,m10,m11,m12,ty,m20,m21,m22,tz);
+
+            if (sac.getSpimSource() instanceof TransformedSource) {
+                SourceTransformHelper.mutate(at3D_global, new SourceAndConverterAndTimeRange(sac, initimepoint));
+            } else {
+
+                SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange(sac, initimepoint, initimepoint+ntimepoints));
+            }
         }
+
+        SourceAndConverterServices.getBdvDisplayService()
+                .updateDisplays(sacs);
     }
 }

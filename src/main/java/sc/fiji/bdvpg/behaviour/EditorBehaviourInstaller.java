@@ -32,7 +32,6 @@ import bdv.util.BdvHandle;
 import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
 import ch.epfl.biop.bdv.select.ToggleListener;
 import com.google.gson.Gson;
-import net.imglib2.realtransform.ThinPlateSplineTransformAdapter;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
@@ -76,7 +75,7 @@ public class EditorBehaviourInstaller implements Runnable {
                 "Inspect Sources",
                 "PopupLine",
                 getCommandName(SourcesInvisibleMakerCommand.class),
-                getCommandName(BrightnessAdjusterCommand.class),
+                getCommandName(InteractiveBrightnessAdjusterCommand.class),
                 getCommandName(SourceColorChangerCommand.class),
                 "PopupLine",
                 getCommandName(SourcesRemoverCommand.class)};
