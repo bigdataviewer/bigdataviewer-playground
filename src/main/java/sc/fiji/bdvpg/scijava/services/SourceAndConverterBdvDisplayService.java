@@ -220,6 +220,19 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * @param bdvh bdvhandle to append the sources
      */
     public void show(BdvHandle bdvh, SourceAndConverter... sacs) {
+        show(bdvh, true, sacs);
+    }
+
+    /**
+     * Displays a BDV sourceandconverter into the specified BdvHandle
+     * This function really is the core of this service
+     * It mimicks or copies the functions of BdvVisTools because it is responsible to
+     * create converter, volatiles, convertersetups and so on
+     * @param sacs sources to display
+     * @param visible whether to make the source active (=visible)
+     * @param bdvh bdvhandle to append the sources
+     */
+    public void show(BdvHandle bdvh, boolean visible, SourceAndConverter... sacs ) {
 
         List<SourceAndConverter<?>> sacsToDisplay = new ArrayList<>();
 
@@ -248,8 +261,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         // Actually display the sources -> repaint called only once!
         bdvh.getViewerPanel().state().addSources(sacsToDisplay);
         // And make them active
-        bdvh.getViewerPanel().state().setSourcesActive(sacsToDisplay, true);
+        bdvh.getViewerPanel().state().setSourcesActive(sacsToDisplay, visible);
     }
+
 
     /**
      * Removes a sourceandconverter from all BdvHandle displaying this sourceandconverter
