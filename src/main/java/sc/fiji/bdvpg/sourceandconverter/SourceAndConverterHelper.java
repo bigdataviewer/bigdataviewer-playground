@@ -52,7 +52,6 @@ import org.scijava.vecmath.Point3d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
@@ -879,4 +878,242 @@ public class SourceAndConverterHelper {
 
         return sourceAndConverters;
     }
+
+    /**
+     * Return the list of double position along the ray which should lead to different pixel values
+     * this is complicated... how to handle warped sources ? procedural sources ?
+     * @param sac source that's investigated
+     * @param origin of the ray
+     * @param direction of the ray
+     * @return a list of double position along the ray which should sample each pixel
+     */
+    public static List<Double> rayIntersect(SourceAndConverter sac, int timepoint, RealPoint origin, RealPoint direction) {
+        if (sac.getSpimSource()==null) {
+            return new ArrayList<>();
+        } else {
+            return rayIntersect(sac.getSpimSource(), timepoint, origin, direction);
+        }
+    }
+
+    public static List<Double> rayIntersect(Source source, int timepoint, RealPoint origin, RealPoint direction) {
+        if (source.isPresent(timepoint)) {
+            if ((source instanceof AbstractSpimSource)
+                ||(source instanceof TransformedSource)
+                ||(source instanceof ResampledSource)) {
+                return rayIntersectRaiSource(source, timepoint, origin, direction);
+            } else return new ArrayList<>();
+        } else return new ArrayList<>();
+    }
+
+    public static List<Double> rayIntersectRaiSource(Source source, int timepoint, RealPoint origin, RealPoint direction) {
+        long[] dims = source.getSource(timepoint,0).dimensionsAsLongArray();
+        AffineTransform3D at3d = new AffineTransform3D();
+        source.getSourceTransform(timepoint,0,at3d);
+
+        // Ok, now let's find the intersection of the ray with the box
+        // Let's find the plane (XY, XZ, YZ) which is the best aligned along the direction
+
+        RealPoint ui = new RealPoint(3);
+        ui.setPosition(at3d.get(0,0),0);
+        ui.setPosition(at3d.get(1,0),1);
+        ui.setPosition(at3d.get(2,0),2);
+
+        RealPoint vi = new RealPoint(3);
+        vi.setPosition(at3d.get(0,1),0);
+        vi.setPosition(at3d.get(1,1),1);
+        vi.setPosition(at3d.get(2,1),2);
+
+        RealPoint wi = new RealPoint(3);
+        wi.setPosition(at3d.get(0,2),0);
+        wi.setPosition(at3d.get(1,2),1);
+        wi.setPosition(at3d.get(2,2),2);
+
+        RealPoint oppositeCorner = new RealPoint(dims[0]-1, dims[1]-1, dims[2]-1);
+
+        at3d.apply(oppositeCorner, oppositeCorner);
+
+        RealPoint plane0Origin = new RealPoint(0,0,0);
+        at3d.apply(plane0Origin, plane0Origin); // pix to physical space coordinates - origin of first plane
+
+        if (!rayIntersectPlane(origin, direction, plane0Origin, ui, vi, dims[0], dims[1]))
+        if (!rayIntersectPlane(origin, direction, plane0Origin, ui, wi, dims[0], dims[2]))
+        if (!rayIntersectPlane(origin, direction, plane0Origin, vi, wi, dims[1], dims[2]))
+        if (!rayIntersectPlane(origin, direction, oppositeCorner, minus3(ui), minus3(vi), dims[0], dims[1]))
+        if (!rayIntersectPlane(origin, direction, oppositeCorner, minus3(ui), minus3(wi), dims[0], dims[2]))
+        if (!rayIntersectPlane(origin, direction, oppositeCorner, minus3(vi), minus3(wi), dims[1], dims[2]))
+                return new ArrayList<>();
+
+        RealPoint u = prodVect(vi,wi);
+        RealPoint v = prodVect(ui,wi);
+        RealPoint w = prodVect(ui,vi);
+
+        normalize3(u);
+        normalize3(v);
+        normalize3(w);
+
+        double absud = Math.abs(prodScal3(u,direction));
+        double absvd = Math.abs(prodScal3(v,direction));
+        double abswd = Math.abs(prodScal3(w,direction));
+
+        RealPoint mainDirection;
+
+        RealPoint planeMaxOrigin = new RealPoint(0,0,0);
+
+        long nPlanes;
+
+        if (absud>absvd) {
+            // u > v
+            if (absud>abswd) {
+                // u > w
+                nPlanes = dims[0];
+                planeMaxOrigin.setPosition(nPlanes,0);
+                mainDirection = new RealPoint(u);
+            } else {
+                // w > u
+                nPlanes = dims[2];
+                planeMaxOrigin.setPosition(nPlanes,2);
+                mainDirection = new RealPoint(w);
+            }
+        } else {
+            // v > u
+            if (absvd>abswd) {
+                // v > w
+                nPlanes = dims[1];
+                planeMaxOrigin.setPosition(nPlanes,1);
+                mainDirection = new RealPoint(v);
+            } else {
+                // w > v
+                nPlanes = dims[2];
+                planeMaxOrigin.setPosition(nPlanes,2);
+                mainDirection = new RealPoint(w);
+            }
+        }
+        normalize3(mainDirection);
+        at3d.apply(planeMaxOrigin, planeMaxOrigin); // pix to physical space coordinates - origin of last plane
+
+        // We now need to find where
+        // the plane perpendicular to mainDirection and with offset offs
+        // intersects with the ray
+        // we subtract the offset of the origin ray
+
+        // The equation of the first plane is for any vector i
+        // (i-offs0).maindirection = 0
+        // The equation of the ray is i = lambda.direction + origin
+        // We look for p0, the coordinate along the ray of the point which belongs
+        // both to the plane and to the ray
+        // (p0.direction+origin-offs0).maindirection = 0
+        // thus p0.direction.maindirection = (offs0-origin).maindirection
+        // p0 = (offs.maindirection - origin.maindirection ) / (direction.maindirection)
+
+        double pOrigin = prodScal3(origin, mainDirection);
+        double p0 = (prodScal3(plane0Origin, mainDirection) - pOrigin) / prodScal3(direction,mainDirection);
+        double pMax = (prodScal3(planeMaxOrigin, mainDirection) - pOrigin) / prodScal3(direction,mainDirection);
+
+        if (nPlanes >= Integer.MAX_VALUE) {
+            logger.debug("Too many planes");
+            return new ArrayList<>();
+        } else {
+            List<Double> zPositions = new ArrayList<>((int) nPlanes);
+            double step = (pMax-p0)/(double) nPlanes;
+            for (int i = 0; i<nPlanes; i++) {
+                zPositions.add(p0 + i*step);
+            }
+            return zPositions;
+        }
+    }
+
+    static RealPoint minus3(RealPoint pt) {
+        return new RealPoint(-pt.getDoublePosition(0),
+                -pt.getDoublePosition(1),
+                -pt.getDoublePosition(2));
+    }
+
+    public static boolean rayIntersectPlane(RealPoint rayOrigin, RealPoint rayDirection,
+                                            RealPoint planeOrigin, RealPoint u, RealPoint v,
+                                            double maxCoordU, double maxCoordV) {
+        // Equation of the plane:
+        // (uxv).(i-planeOrigin) = 0, where x is the cross product
+
+        // Equation of the ray:
+        // i = rayOrigin + lambda.rayDirection
+
+        // First let's find lambda, which is such that:
+
+        // (uxv).(rayOrigin + lambda.rayDirection - planeOrigin) = 0
+        // implies
+        // lambda = (uxv).(planeOrigin-rayOrigin) / (uxv.rayDirection)
+        // Edge case : denominator null = never crossing ( parallel )
+
+        RealPoint uxv = prodVect(u,v);
+
+        double denominator = prodScal3(uxv, rayDirection);
+
+        if (Math.abs(denominator) < 1e-12) {
+            return false;
+        } else {
+
+            RealPoint planeOriginMinusRayOrigin = new RealPoint(
+                planeOrigin.getDoublePosition(0) - rayOrigin.getDoublePosition(0),
+                planeOrigin.getDoublePosition(1) - rayOrigin.getDoublePosition(1),
+                planeOrigin.getDoublePosition(2) - rayOrigin.getDoublePosition(2)
+            );
+
+            double lambda = prodScal3(uxv, planeOriginMinusRayOrigin) / denominator;
+
+            RealPoint ptCrossingInPlane = new RealPoint(
+                rayOrigin.getDoublePosition(0)
+                        + rayDirection.getDoublePosition(0) * lambda
+                        - planeOrigin.getDoublePosition(0),
+                rayOrigin.getDoublePosition(1)
+                        + rayDirection.getDoublePosition(1) * lambda
+                        - planeOrigin.getDoublePosition(1),
+                rayOrigin.getDoublePosition(2)
+                        + rayDirection.getDoublePosition(2) * lambda
+                        - planeOrigin.getDoublePosition(2)
+            );
+
+            double coordU = prodScal3(u, ptCrossingInPlane) / norm2(u);
+            double coordV = prodScal3(v, ptCrossingInPlane) / norm2(v);
+
+            return ((coordU>-0.5)&&(coordU<maxCoordU-0.5))&&((coordV>-0.5)&&(coordV<maxCoordV-0.5)); // Account for 'pixel thickness' of 1
+        }
+    }
+
+    public static double norm2(RealPoint pt) {
+        double px = pt.getDoublePosition(0);
+        double py = pt.getDoublePosition(1);
+        double pz = pt.getDoublePosition(2);
+        return px*px+py*py+pz*pz;
+    }
+
+    public static void normalize3(RealPoint pt) {
+        double px = pt.getDoublePosition(0);
+        double py = pt.getDoublePosition(1);
+        double pz = pt.getDoublePosition(2);
+        double d = Math.sqrt(px*px+py*py+pz*pz);
+        pt.setPosition(pt.getDoublePosition(0)/d, 0);
+        pt.setPosition(pt.getDoublePosition(1)/d, 1);
+        pt.setPosition(pt.getDoublePosition(2)/d, 2);
+    }
+
+    public static double prodScal3(RealPoint pt1, RealPoint pt2) {
+        return pt1.getDoublePosition(0)*pt2.getDoublePosition(0)+
+                pt1.getDoublePosition(1)*pt2.getDoublePosition(1)+
+                pt1.getDoublePosition(2)*pt2.getDoublePosition(2);
+    }
+
+    public static RealPoint prodVect(RealPoint pt1, RealPoint pt2) {
+
+        double px = pt1.getDoublePosition(1)*pt2.getDoublePosition(2)
+                   -pt1.getDoublePosition(2)*pt2.getDoublePosition(1);
+
+        double py = pt1.getDoublePosition(2)*pt2.getDoublePosition(0)
+                   -pt1.getDoublePosition(0)*pt2.getDoublePosition(2);
+
+        double pz = pt1.getDoublePosition(0)*pt2.getDoublePosition(1)
+                   -pt1.getDoublePosition(1)*pt2.getDoublePosition(0);
+
+        return new RealPoint(px,py,pz);
+    }
+
 }
