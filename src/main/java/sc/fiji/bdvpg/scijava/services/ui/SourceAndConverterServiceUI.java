@@ -564,13 +564,21 @@ public class SourceAndConverterServiceUI {
      */
     public Set<SourceAndConverter> getSourceAndConvertersFromChildrenOf(DefaultMutableTreeNode node) {
         Set<SourceAndConverter> sacs = new HashSet<>();
-        for (int i=0;i<node.getChildCount();i++) {
-            DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
-            if (child.getUserObject() instanceof RenamableSourceAndConverter) {
-                Object userObj = ((RenamableSourceAndConverter) (child.getUserObject())).sac;
-                sacs.add((SourceAndConverter) userObj);
-            } else {
-                sacs.addAll(getSourceAndConvertersFromChildrenOf(child));
+        if (node instanceof SourceFilterNode) {
+            sacs.addAll(((SourceFilterNode) node).currentOutputSacs);
+        } else {
+            for (int i = 0; i < node.getChildCount(); i++) {
+                DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
+                if (child instanceof SourceFilterNode) {
+                    sacs.addAll(((SourceFilterNode) child).currentOutputSacs);
+                } else {
+                    if (child.getUserObject() instanceof RenamableSourceAndConverter) {
+                        Object userObj = ((RenamableSourceAndConverter) (child.getUserObject())).sac;
+                        sacs.add((SourceAndConverter) userObj);
+                    } else {
+                        sacs.addAll(getSourceAndConvertersFromChildrenOf(child));
+                    }
+                }
             }
         }
         return sacs;

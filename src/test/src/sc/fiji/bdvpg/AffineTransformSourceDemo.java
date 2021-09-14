@@ -94,6 +94,7 @@ public class AffineTransformSourceDemo {
 
                 if (Math.random()>0.0) {
                     AffineTransform3D at3d = new AffineTransform3D();
+
                     at3d.rotate(2, Math.random());
                     at3d.scale(0.5 + Math.random() / 4, 0.5 + Math.random() / 4, 1);
                     at3d.translate(200 * x, 200 * y, 0);

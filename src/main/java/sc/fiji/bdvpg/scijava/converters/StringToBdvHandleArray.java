@@ -26,41 +26,55 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijava.command.source;
+package sc.fiji.bdvpg.scijava.converters;
 
-import bdv.viewer.SourceAndConverter;
-import org.scijava.command.InteractiveCommand;
+import bdv.util.BdvHandle;
+import org.scijava.convert.AbstractConverter;
+import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 
-import java.text.DecimalFormat;
-
-import static org.scijava.ItemVisibility.MESSAGE;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
- *
- * @author Nicolas Chiaruttini, EPFL 2020
+ * Does not trim spaces!!! "BigDataViewer" is different to " BigDataViewer"
+ * @param <I>
  */
+@Plugin(type = org.scijava.convert.Converter.class)
+public class StringToBdvHandleArray<I extends String> extends AbstractConverter<I, BdvHandle[]> {
+    @Parameter
+    ObjectService os;
 
-@Plugin(type = BdvPlaygroundActionCommand.class,  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Brightness")
-public class BrightnessAdjusterCommand implements BdvPlaygroundActionCommand {
-
-    @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
-
-    @Parameter()
-    double min;
-
-    @Parameter()
-    double max;
-
-    public void run() {
-        for (SourceAndConverter source:sacs) {
-            new BrightnessAdjuster(source, min, max).run();
+    @Override
+    public <T> T convert(Object src, Class<T> dest) {
+        String input = (String) src;
+        String[] bdvNames = input.split(",");
+        List<BdvHandle> bdvhs = new ArrayList<>();
+        for (String bdvName:bdvNames) {
+            Optional<BdvHandle> ans = os.getObjects(BdvHandle.class).stream().filter(bdvh ->
+                    (bdvh.toString().equals(bdvName)) || (BdvHandleHelper.getWindowTitle(bdvh).equals(bdvName))
+            ).findFirst();
+            if (ans.isPresent()) {
+                bdvhs.add(ans.get());
+            }
         }
+        if (bdvhs.size()==0) {
+            return null;
+        } else {
+            return (T) bdvhs.toArray(new BdvHandle[0]);
+        }
+    }
+
+    @Override
+    public Class getOutputType() {
+        return BdvHandle[].class;
+    }
+
+    @Override
+    public Class<I> getInputType() {
+        return (Class<I>) String.class;
     }
 }

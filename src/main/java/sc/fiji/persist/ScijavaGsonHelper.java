@@ -34,7 +34,6 @@ import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -138,7 +137,7 @@ public class ScijavaGsonHelper {
                     }
                 });
 
-        return builder;
+        return builder.setPrettyPrinting();
     }
 
     // Inner static class needed for type safety

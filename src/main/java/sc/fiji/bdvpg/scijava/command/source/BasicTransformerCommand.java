@@ -63,8 +63,11 @@ public class BasicTransformerCommand implements BdvPlaygroundActionCommand {
     @Parameter(choices = {"X", "Y", "Z"})
     String axis;
 
-    @Parameter
-    int timepoint;
+    @Parameter(label = "Initial timepoint (0 based)")
+    int initimepoint;
+
+    @Parameter(label = "Number of timepoints (min 1)", min = "1")
+    int ntimepoints;
 
     @Parameter(label = "Global transform (relative to the origin of the world)")
     boolean globalchange;
@@ -87,46 +90,47 @@ public class BasicTransformerCommand implements BdvPlaygroundActionCommand {
                 }
                 if (globalchange) {
                     if (sac.getSpimSource() instanceof TransformedSource) {
-                        SourceTransformHelper.mutate(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
+                        SourceTransformHelper.mutate(at3D_global, new SourceAndConverterAndTimeRange(sac, initimepoint, initimepoint+ntimepoints));
                     } else {
-                        SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
+                        SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange(sac, initimepoint, initimepoint+ntimepoints));
                     }
                 } else {
-                    // Maintain center of box constant
-                    AffineTransform3D at3D = new AffineTransform3D();
-                    at3D.identity();
-                    //double[] m = at3D.getRowPackedCopy();
-                    sac.getSpimSource().getSourceTransform(timepoint,0,at3D);
-                    long[] dims = new long[3];
-                    sac.getSpimSource().getSource(timepoint,0).dimensions(dims);
+                    for (int timepoint = initimepoint; timepoint< initimepoint+ntimepoints; timepoint++){
+                        // Maintain center of box constant
+                        AffineTransform3D at3D = new AffineTransform3D();
+                        at3D.identity();
+                        //double[] m = at3D.getRowPackedCopy();
+                        sac.getSpimSource().getSourceTransform(timepoint, 0, at3D);
+                        long[] dims = new long[3];
+                        sac.getSpimSource().getSource(timepoint, 0).dimensions(dims);
 
-                    RealPoint ptCenterGlobalBefore = new RealPoint(3);
-                    RealPoint ptCenterPixel = new RealPoint((dims[0]-1.0)/2.0,(dims[1]-1.0)/2.0, (dims[2]-1.0)/2.0);
+                        RealPoint ptCenterGlobalBefore = new RealPoint(3);
+                        RealPoint ptCenterPixel = new RealPoint((dims[0] - 1.0) / 2.0, (dims[1] - 1.0) / 2.0, (dims[2] - 1.0) / 2.0);
 
-                    at3D.apply(ptCenterPixel, ptCenterGlobalBefore);
+                        at3D.apply(ptCenterPixel, ptCenterGlobalBefore);
 
-                    RealPoint ptCenterGlobalAfter = new RealPoint(3);
+                        RealPoint ptCenterGlobalAfter = new RealPoint(3);
 
-                    at3D_global.apply(ptCenterGlobalBefore, ptCenterGlobalAfter);
+                        at3D_global.apply(ptCenterGlobalBefore, ptCenterGlobalAfter);
 
-                    // Just shifting
-                    double[] m = at3D_global.getRowPackedCopy();
+                        // Just shifting
+                        double[] m = at3D_global.getRowPackedCopy();
 
-                    m[3] -= ptCenterGlobalAfter.getDoublePosition(0)-ptCenterGlobalBefore.getDoublePosition(0);
+                        m[3] -= ptCenterGlobalAfter.getDoublePosition(0) - ptCenterGlobalBefore.getDoublePosition(0);
 
-                    m[7] -= ptCenterGlobalAfter.getDoublePosition(1)-ptCenterGlobalBefore.getDoublePosition(1);
+                        m[7] -= ptCenterGlobalAfter.getDoublePosition(1) - ptCenterGlobalBefore.getDoublePosition(1);
 
-                    m[11] -= ptCenterGlobalAfter.getDoublePosition(2)-ptCenterGlobalBefore.getDoublePosition(2);
+                        m[11] -= ptCenterGlobalAfter.getDoublePosition(2) - ptCenterGlobalBefore.getDoublePosition(2);
 
-                    at3D_global.set(m);
+                        at3D_global.set(m);
 
-                    if (sac.getSpimSource() instanceof TransformedSource) {
-                        SourceTransformHelper.mutate(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
-                    } else {
-                        SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
+                        if (sac.getSpimSource() instanceof TransformedSource) {
+                            SourceTransformHelper.mutate(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
+                        } else {
+                            SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
+                        }
+                        //SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
                     }
-                    //SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
-
                 }
             }
         }

@@ -29,10 +29,14 @@
 package sc.fiji.bdvpg.bdv;
 
 import bdv.tools.brightness.ConverterSetup;
+import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
+import bdv.util.BdvOptions;
+import bdv.util.BdvOverlay;
 import bdv.viewer.Source;
 import net.imglib2.*;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.util.Intervals;
 import net.imglib2.util.LinAlgHelpers;
 import org.scijava.cache.CacheService;
@@ -46,6 +50,7 @@ import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -433,6 +438,29 @@ public class BdvHandleHelper
             // TODO : support replacement of key bindings bdv.getKeybindings().addInputMap("bdvpg", new InputMap(), "bdv", "navigation");
         }
 
+    }
+
+
+    public static BdvOverlay addCenterCross(BdvHandle bdvh) {
+        final BdvOverlay overlay = new BdvOverlay()
+        {
+            @Override
+            protected void draw( final Graphics2D g )
+            {
+                int colorCode = this.info.getColor().get();
+                int w = bdvh.getViewerPanel().getWidth();
+                int h = bdvh.getViewerPanel().getHeight();
+                g.setColor(new Color(ARGBType.red(colorCode) , ARGBType.green(colorCode), ARGBType.blue(colorCode), ARGBType.alpha(colorCode) ));
+                g.drawLine(w/2, h/2-h/4,w/2, h/2+h/4 );
+                g.drawLine(w/2-w/4, h/2,w/2+w/4, h/2 );
+            }
+
+        };
+
+        int nTimepoints = bdvh.getViewerPanel().state().getNumTimepoints();
+        BdvFunctions.showOverlay( overlay, "cross_overlay", BdvOptions.options().addTo( bdvh ) );
+        bdvh.getViewerPanel().setTimepoint(nTimepoints);
+        return overlay;
     }
 
 }

@@ -29,7 +29,6 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.*;
-import bdv.viewer.render.AccumulateProjectorFactory;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
@@ -101,9 +100,9 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
         new ViewerOrthoSyncStarter(bdvhx, bdvhz, bdvhy, synctime).run();
 
        if (drawcrosses) {
-           addCross(bdvhx);
-           addCross(bdvhy);
-           addCross(bdvhz);
+           BdvHandleHelper.addCenterCross(bdvhx);
+           BdvHandleHelper.addCenterCross(bdvhy);
+           BdvHandleHelper.addCenterCross(bdvhz);
        }
     }
 
@@ -124,26 +123,6 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
         }
 
         return bdvh;
-    }
-
-    void addCross(BdvHandle bdvh) {
-        final BdvOverlay overlay = new BdvOverlay()
-        {
-            @Override
-            protected void draw( final Graphics2D g )
-            {
-                int colorCode = this.info.getColor().get();
-                int w = bdvh.getViewerPanel().getWidth();
-                int h = bdvh.getViewerPanel().getHeight();
-                g.setColor(new Color(ARGBType.red(colorCode) , ARGBType.green(colorCode), ARGBType.blue(colorCode), ARGBType.alpha(colorCode) ));
-                g.drawLine(w/2, h/2-h/4,w/2, h/2+h/4 );
-                g.drawLine(w/2-w/4, h/2,w/2+w/4, h/2 );
-            }
-
-        };
-
-        BdvFunctions.showOverlay( overlay, "cross_overlay", BdvOptions.options().addTo( bdvh ) );
-        bdvh.getViewerPanel().setTimepoint(ntimepoints);
     }
 
 }

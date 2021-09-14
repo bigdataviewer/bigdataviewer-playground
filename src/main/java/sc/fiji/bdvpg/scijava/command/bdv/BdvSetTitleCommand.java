@@ -26,41 +26,28 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijava.command.source;
+package sc.fiji.bdvpg.scijava.command.bdv;
 
-import bdv.viewer.SourceAndConverter;
-import org.scijava.command.InteractiveCommand;
+import bdv.util.BdvHandle;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
 
-import java.text.DecimalFormat;
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Set Title",
+    description = "Sets the title of a BDV Windows")
 
-import static org.scijava.ItemVisibility.MESSAGE;
+public class BdvSetTitleCommand implements BdvPlaygroundActionCommand {
 
-/**
- *
- * @author Nicolas Chiaruttini, EPFL 2020
- */
+    @Parameter(label = "Select BDV Window")
+    BdvHandle bdvh;
 
-@Plugin(type = BdvPlaygroundActionCommand.class,  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Brightness")
-public class BrightnessAdjusterCommand implements BdvPlaygroundActionCommand {
-
-    @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
-
-    @Parameter()
-    double min;
-
-    @Parameter()
-    double max;
+    @Parameter(label = "title")
+    String title;
 
     public void run() {
-        for (SourceAndConverter source:sacs) {
-            new BrightnessAdjuster(source, min, max).run();
-        }
+        BdvHandleHelper.setWindowTitle(bdvh, title);
     }
+
 }
