@@ -53,7 +53,7 @@ description = "Manual transformation of selected sources. Works only with a sing
 
 public class ManualTransformCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(choices = {"Mutate", "Append"})
+    @Parameter(choices = {"Mutate", "Append", "Wrap"})
     String mode = "Mutate";
 
     @Parameter(label = "Select Source(s)")
@@ -70,9 +70,14 @@ public class ManualTransformCommand implements BdvPlaygroundActionCommand {
             manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     SourceTransformHelper::mutate
             );
-        } else {
+        } else if (mode.equals("Append")) {
             manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     SourceTransformHelper::append
+            );
+        } else
+        {
+            manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                    SourceTransformHelper::createNewTransformedSourceAndConverter
             );
         }
 
