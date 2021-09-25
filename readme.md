@@ -1,4 +1,4 @@
-[![](https://travis-ci.com/bigdataviewer/bigdataviewer-playground.svg?branch=master)](https://travis-ci.com/bigdataviewer/bigdataviewer-playground)
+[![](https://github.com/bigdataviewer/bigdataviewer-playground/actions/workflows/build-main.yml/badge.svg)](https://github.com/bigdataviewer/bigdataviewer-playground/actions/workflows/build-main.yml)
 [![Gitter](https://badges.gitter.im/bigdataviewer-playground/community.svg)](https://gitter.im/bigdataviewer-playground/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 
