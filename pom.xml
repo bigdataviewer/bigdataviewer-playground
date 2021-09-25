@@ -101,8 +101,8 @@
 	</issueManagement>
 
 	<ciManagement>
-		<system>Travis CI</system>
-		<url>https://travis-ci.com/bigdataviewer/bigdataviewer-playground</url>
+		<system>GitHub Actions</system>
+		<url>https://github.com/bigdataviewer/bigdataviewer-playground/actions</url>
 	</ciManagement>
 
 	<properties>
