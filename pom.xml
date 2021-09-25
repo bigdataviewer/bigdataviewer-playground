@@ -114,7 +114,7 @@
 		<license.copyrightOwners>Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL</license.copyrightOwners>
 		<license.excludes>**/resources/**</license.excludes>
 
-		<releaseProfiles>deploy-to-scijava</releaseProfiles>
+		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
 		<scijava.deleteOtherVersions>true</scijava.deleteOtherVersions>
 		<!-- <scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory> -->
