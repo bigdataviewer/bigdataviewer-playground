@@ -71,8 +71,9 @@ public class ScijavaSwingUI {
     static public Module createModule(Context context, Class commandClass, Object... args) throws ModuleException {
         Module module = context.getService(CommandService.class).getCommand(commandClass).createModule();
         context.inject(module);
-        preprocessWithoutHarvesting(context,module);
+
         setModuleInputs(module, args);
+        preprocessWithoutHarvesting(context,module);
         return module;
     }
 
