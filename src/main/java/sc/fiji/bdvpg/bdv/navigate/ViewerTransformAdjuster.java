@@ -32,9 +32,16 @@ import bdv.util.Affine3DHelpers;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.SynchronizedViewerState;
-import net.imglib2.Interval;
+import net.imglib2.*;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * BigDataViewer Playground Action --
@@ -51,18 +58,32 @@ import net.imglib2.util.LinAlgHelpers;
 public class ViewerTransformAdjuster implements Runnable
 {
 	private final BdvHandle bdvHandle;
-	private final SourceAndConverter<?> source;
+	private final SourceAndConverter[] sources;
 
-	public ViewerTransformAdjuster( BdvHandle bdvHandle, SourceAndConverter<?> source )
+	public ViewerTransformAdjuster( BdvHandle bdvHandle, SourceAndConverter source )
+	{
+		this(bdvHandle, new SourceAndConverter[]{source});
+	}
+
+	public ViewerTransformAdjuster( BdvHandle bdvHandle, SourceAndConverter[] sources )
 	{
 		this.bdvHandle = bdvHandle;
-		this.source = source;
+		this.sources = sources;
 	}
 
 	public void run()
 	{
-		final AffineTransform3D transform = getTransform();
-		bdvHandle.getViewerPanel().state().setViewerTransform(transform);
+		AffineTransform3D transform;
+		if (sources.length==0) {
+
+		} else if (sources.length==1) {
+		    transform = getTransform();
+			bdvHandle.getViewerPanel().state().setViewerTransform(transform);
+		} else {
+			transform = getTransformMultiSources();
+			bdvHandle.getViewerPanel().state().setViewerTransform(transform);
+		}
+
 	}
 
 	/**
@@ -87,6 +108,9 @@ public class ViewerTransformAdjuster implements Runnable
 		final double cY = viewerHeight / 2.0;
 
 		final int timepoint = state.getCurrentTimepoint();
+
+		SourceAndConverter source = sources[0];
+
 		if ( !source.getSpimSource().isPresent( timepoint ) )
 			return new AffineTransform3D();
 
@@ -146,5 +170,100 @@ public class ViewerTransformAdjuster implements Runnable
 		viewerTransform.set( viewerTransform.get( 0, 3 ) + cX - 0.5, 0, 3 );
 		viewerTransform.set( viewerTransform.get( 1, 3 ) + cY - 0.5, 1, 3 );
 		return viewerTransform;
+	}
+
+	public AffineTransform3D getTransformMultiSources() {
+		final SynchronizedViewerState state = bdvHandle.getViewerPanel().state();
+
+		final int timepoint = state.getCurrentTimepoint();
+
+		List<RealInterval> intervalList = Arrays.asList(sources).stream()
+				.filter(sourceAndConverter -> sourceAndConverter.getSpimSource()!=null)
+				.filter(sourceAndConverter -> sourceAndConverter.getSpimSource().isPresent(timepoint))
+				.map(sourceAndConverter -> {
+					Interval interval = sourceAndConverter.getSpimSource().getSource(timepoint,0);
+					AffineTransform3D sourceTransform = new AffineTransform3D();
+					sourceAndConverter.getSpimSource().getSourceTransform( timepoint, 0, sourceTransform );
+					RealPoint corner0 = new RealPoint(interval.min(0), interval.min(1), interval.min(2));
+					RealPoint corner1 = new RealPoint(interval.max(0), interval.max(1), interval.max(2));
+					sourceTransform.apply(corner0, corner0);
+					sourceTransform.apply(corner1, corner1);
+					return new FinalRealInterval(new double[]{
+								Math.min(corner0.getDoublePosition(0), corner1.getDoublePosition(0)),
+								Math.min(corner0.getDoublePosition(1), corner1.getDoublePosition(1)),
+								Math.min(corner0.getDoublePosition(2), corner1.getDoublePosition(2))},
+							new double[]{
+								Math.max(corner0.getDoublePosition(0), corner1.getDoublePosition(0)),
+								Math.max(corner0.getDoublePosition(1), corner1.getDoublePosition(1)),
+								Math.max(corner0.getDoublePosition(2), corner1.getDoublePosition(2))});
+				})
+				.filter(object -> object!=null)
+				.collect(Collectors.toList());
+
+		RealInterval maxInterval = intervalList.stream()
+				.reduce((i1,i2) -> new FinalRealInterval(
+						new double[]{Math.min(i1.realMin(0), i2.realMin(0)), Math.min(i1.realMin(1), i2.realMin(1)), Math.min(i1.realMin(2), i2.realMin(2))},
+						new double[]{Math.max(i1.realMax(0), i2.realMax(0)), Math.max(i1.realMax(1), i2.realMax(1)), Math.max(i1.realMax(2), i2.realMax(2))}
+						)).get();
+
+		RealPoint center = new RealPoint(
+					(maxInterval.realMin(0)+ maxInterval.realMax(0))/2.0,
+					(maxInterval.realMin(1)+ maxInterval.realMax(1))/2.0,
+					(maxInterval.realMin(2)+ maxInterval.realMax(2))/2.0
+				);
+
+
+		final double[] centerGlobal = {center.getDoublePosition(0), center.getDoublePosition(1), center.getDoublePosition(2)};
+
+		final int viewerWidth = bdvHandle.getBdvHandle().getViewerPanel().getWidth();
+		final int viewerHeight = bdvHandle.getBdvHandle().getViewerPanel().getHeight();
+
+		AffineTransform3D viewerTransform = new AffineTransform3D();
+
+		bdvHandle.getViewerPanel().state().getViewerTransform(viewerTransform);
+
+		viewerTransform = BdvHandleHelper.getViewerTransformWithNewCenter(bdvHandle, centerGlobal);
+
+		// Let's scale: we need to find the coordinates on the screen of the big bounding box
+		RealPoint screenCoord = new RealPoint(0,0,0);
+		List<RealPoint> boxCorners = getBox(maxInterval);
+
+		double currentMinScale = Double.MAX_VALUE;
+
+		final double cX = viewerWidth / 2.0;
+		final double cY = viewerHeight / 2.0;
+
+		for (RealPoint corner:boxCorners) {
+			viewerTransform.apply(corner, screenCoord);
+
+			double scaleX = Math.abs(cX/(screenCoord.getDoublePosition(0)-viewerWidth/2.0));
+			double scaleY = Math.abs(cY/(screenCoord.getDoublePosition(1)-viewerHeight/2.0));
+
+			currentMinScale = Math.min(currentMinScale,scaleX);
+			currentMinScale = Math.min(currentMinScale,scaleY);
+		}
+
+		viewerTransform.scale( currentMinScale );
+		bdvHandle.getViewerPanel().state().setViewerTransform(viewerTransform);
+
+		viewerTransform = BdvHandleHelper.getViewerTransformWithNewCenter(bdvHandle, centerGlobal);
+
+		return viewerTransform;
+	}
+
+	public static List<RealPoint> getBox(RealInterval ri) {
+		ArrayList<RealPoint> rps = new ArrayList<>();
+		for (int x=0; x<2; x++) {
+			for (int y=0; y<2; y++) {
+				for (int z=0; z<2; z++) {
+					rps.add(new RealPoint(
+							(x==0)?ri.realMin(0):ri.realMax(0),
+							(y==0)?ri.realMin(1):ri.realMax(1),
+							(z==0)?ri.realMin(2):ri.realMax(2)
+					));
+				}
+			}
+		}
+		return rps;
 	}
 }

@@ -29,6 +29,7 @@
 package bdv.util;
 
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.algorithm.lazy.Caches;
 import net.imglib2.cache.Cache;
 import net.imglib2.cache.img.CachedCellImg;
 import net.imglib2.cache.img.LoadedCellCacheLoader;
@@ -48,7 +49,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Intervals;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
-import org.janelia.saalfeldlab.n5.imglib2.RandomAccessibleLoader;
+//import org.janelia.saalfeldlab.n5.imglib2.RandomAccessibleLoader;
 //import org.janelia.saalfeldlab.n5.imglib2.RandomAccessibleLoader;
 
 import static net.imglib2.img.basictypeaccess.AccessFlags.VOLATILE;
@@ -72,7 +73,7 @@ public class RAIHelper {
         final long[] dimensions = Intervals.dimensionsAsLongArray(source);
         final CellGrid grid = new CellGrid(dimensions, blockSize);
 
-        final RandomAccessibleLoader<T> loader = new RandomAccessibleLoader<T>(Views.zeroMin(source));
+        final Caches.RandomAccessibleLoader<T> loader = new Caches.RandomAccessibleLoader<T>(Views.zeroMin(source));
 
         final T type = Util.getTypeFromInterval(source);
 

@@ -50,7 +50,7 @@ public class BdvSourcesGotoCommand implements BdvPlaygroundActionCommand {
     @Override
     public void run() {
         if  (sacs.length>0) {
-            new ViewerTransformAdjuster(bdvh, sacs[0]).run(); // TODO : improve this
+            new ViewerTransformAdjuster(bdvh, sacs).run();
         }
     }
 }

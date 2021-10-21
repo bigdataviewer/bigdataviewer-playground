@@ -30,7 +30,7 @@ package sc.fiji.bdvpg.bvv;
 
 import bdv.util.Affine3DHelpers;
 import bdv.viewer.SourceAndConverter;
-import bdv.viewer.state.ViewerState;
+import bdv.viewer.ViewerState;
 import bvv.util.BvvHandle;
 import net.imglib2.Interval;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -59,7 +59,7 @@ public class BvvViewerTransformAdjuster implements Runnable
 	public void run()
 	{
 		final AffineTransform3D transform = getTransform();
-		bvvHandle.getViewerPanel().setCurrentViewerTransform( transform );
+		bvvHandle.getViewerPanel().state().setViewerTransform( transform );
 	}
 
 	/**
@@ -75,7 +75,7 @@ public class BvvViewerTransformAdjuster implements Runnable
 	 */
 	public AffineTransform3D getTransform( )
 	{
-		final ViewerState state = bvvHandle.getViewerPanel().getState();
+		final ViewerState state = bvvHandle.getViewerPanel().state();
 
 		final int viewerWidth = bvvHandle.getViewerPanel().getWidth();
 		final int viewerHeight = bvvHandle.getViewerPanel().getHeight();

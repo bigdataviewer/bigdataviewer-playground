@@ -66,7 +66,7 @@ public class BdvSourcesAdderCommand implements BdvPlaygroundActionCommand {
         }
 
         if ((adjustviewonsource) && (sacs.length>0)) {
-            new ViewerTransformAdjuster(bdvh, sacs[0]).run();
+            new ViewerTransformAdjuster(bdvh, sacs).run();
         }
     }
 }
