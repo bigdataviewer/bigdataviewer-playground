@@ -35,6 +35,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.util.ColorRGB;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
 
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Color")
@@ -52,6 +53,7 @@ public class SourceColorChangerCommand implements BdvPlaygroundActionCommand {
         for (SourceAndConverter sac : sacs) {
             new ColorChanger(sac, imglib2color).run();
         }
+        SourceAndConverterServices.getBdvDisplayService().updateDisplays( sacs );
     }
 
 }
