@@ -1,5 +1,6 @@
 /.idea/
 /target/
+*.log
 *.iml
 *.releaseBackup
 release.properties
