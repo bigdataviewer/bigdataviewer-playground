@@ -53,7 +53,7 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
     public int ntimepoints = 1;
 
     @Parameter(label = "Add cross overlay to show view plane locations")
-    public boolean drawcrosses;
+    public boolean drawcrosses = true;
 
     @Parameter(label = "Display (0 if you have one screen)")
     int screen = 0;
@@ -92,10 +92,13 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
     public void run() {
 
         bdvhx = createBdv("-Front", locationx, locationy);
+        bdvhx.getViewerPanel().state().setNumTimepoints(ntimepoints);
 
         bdvhy = createBdv("-Right", locationx + sizex +10, locationy);
+        bdvhy.getViewerPanel().state().setNumTimepoints(ntimepoints);
 
         bdvhz = createBdv("-Bottom", locationx, locationy + sizey +40);
+        bdvhz.getViewerPanel().state().setNumTimepoints(ntimepoints);
 
         new ViewerOrthoSyncStarter(bdvhx, bdvhz, bdvhy, synctime).run();
 
