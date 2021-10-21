@@ -46,7 +46,7 @@ public class SpimDataExporterCommand implements BdvPlaygroundActionCommand {
 
     // To get associated spimdata
     @Parameter(label = "Select source(s)")
-    SourceAndConverter sac;
+    SourceAndConverter[] sacs;
 
     @Parameter(label = "Output File (XML)", style = "save")
     public File xmlfilepath;
@@ -56,17 +56,28 @@ public class SpimDataExporterCommand implements BdvPlaygroundActionCommand {
 
     public void run() {
 
-        if (SourceAndConverterServices.getSourceAndConverterService()
-                .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)==null) {
-            System.err.println("No BDVDataset associated to the chosen source - Aborting save command");
-            return;
+        if (sacs == null) {
+            System.err.println(" No source selected! ");
+        } else {
+
+            if (sacs.length>1) {
+                System.out.println("More than one source selected! Getting the first one to catch the linked spimdata object.");
+            }
+
+            SourceAndConverter sac = sacs[0];
+
+            if (SourceAndConverterServices.getSourceAndConverterService()
+                    .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO) == null) {
+                System.err.println("No BDVDataset associated to the chosen source - Aborting save command");
+                return;
+            }
+
+            AbstractSpimData asd =
+                    ((SourceAndConverterService.SpimDataInfo) SourceAndConverterServices.getSourceAndConverterService()
+                            .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)).asd;
+
+            new XmlFromSpimDataExporter(asd, xmlfilepath.getAbsolutePath(), context).run();
         }
-
-        AbstractSpimData asd =
-                ((SourceAndConverterService.SpimDataInfo)SourceAndConverterServices.getSourceAndConverterService()
-                .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)).asd;
-
-        new XmlFromSpimDataExporter(asd, xmlfilepath.getAbsolutePath(), context).run();
     }
 
 }
