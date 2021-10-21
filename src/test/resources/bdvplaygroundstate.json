@@ -1,131 +1,9 @@
 [
   {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 0,
-    "color": -1,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 80.0,
-    "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack-multilevel.xml"
-      },
-      "viewsetup": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "downsampled-with-mipmap",
-    "source_class": "bdv.util.ResampledSource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 1,
-    "color": -8882176,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 80.0,
-    "sac": {
-      "type": "ResampledSource",
-      "interpolate": "NLINEAR",
-      "cache": false,
-      "name": "downsampled-with-mipmap",
-      "mipmaps_reused": true,
-      "defaultMipmapLevel": 0,
-      "origin_source_id": 18,
-      "model_source_id": 13
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "demoSlice.tif channel 1",
-    "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 2,
-    "color": -1,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 140.0,
-    "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/demoSlice.xml"
-      },
-      "viewsetup": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 3,
-    "color": 65535,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 150.0,
-    "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack.xml"
-      },
-      "viewsetup": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 4,
-    "color": -1,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 150.0,
-    "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack.xml"
-      },
-      "viewsetup": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "DownSampled",
-    "source_class": "bdv.util.EmptySource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 5,
-    "color": -1,
-    "converter_setup_min": 0.0,
-    "converter_setup_max": 65535.0,
-    "sac": {
-      "empty_source_parameters": {
-        "nx": 46,
-        "ny": 56,
-        "nz": 67,
-        "at3D": {
-          "affinetransform3d": [
-            4.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            4.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            4.0,
-            0.0
-          ]
-        },
-        "name": "DownSampled",
-        "unit": "pixel",
-        "vx": 1.0,
-        "vy": 1.0,
-        "vz": 1.0
-      }
-    },
-    "string_metadata": {}
-  },
-  {
     "source_name": "mri-stack_Transformed_mri-stack",
     "source_class": "bdv.img.WarpedSource",
     "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 6,
+    "source_id": 0,
     "color": -1,
     "converter_setup_min": 10.0,
     "converter_setup_max": 80.0,
@@ -147,7 +25,83 @@
           0.0
         ]
       },
-      "wrapped_source_id": 0
+      "wrapped_source_id": 8
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.SpimSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 1,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 80.0,
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack-multilevel.xml"
+      },
+      "viewsetup": 0
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.tools.transformation.TransformedSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 2,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "type": "AffineTransform3D",
+        "affinetransform3d": [
+          0.6452882943528918,
+          -0.13288455768035037,
+          0.0,
+          0.0,
+          0.14876338869132696,
+          0.7223960031661185,
+          0.0,
+          200.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 11
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "Mandelbrot Set",
+    "source_class": "bdv.tools.transformation.TransformedSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 3,
+    "color": -1,
+    "converter_setup_min": 0.0,
+    "converter_setup_max": 800.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "type": "AffineTransform3D",
+        "affinetransform3d": [
+          600.0,
+          0.0,
+          0.0,
+          -100.0,
+          0.0,
+          600.0,
+          0.0,
+          -100.0,
+          0.0,
+          0.0,
+          600.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 21
     },
     "string_metadata": {}
   },
@@ -155,7 +109,147 @@
     "source_name": "mri-stack_Transformed_mri-stack",
     "source_class": "bdv.img.WarpedSource",
     "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 4,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 80.0,
+    "sac": {
+      "realtransform": {
+        "type": "Wrapped2DTransformAs3D",
+        "wrappedTransform": {
+          "type": "WrappedIterativeInvertibleRealTransform",
+          "wrappedTransform": {
+            "type": "ThinplateSplineTransform",
+            "srcPts": [
+              [
+                0.586500005865,
+                6.752850067528501,
+                7.245000072450001,
+                1.0,
+                3.5973000359730003
+              ],
+              [
+                -0.3228000032280005,
+                1.2115500121154996,
+                4.6855500468555,
+                4.5,
+                1.1247000112469996
+              ]
+            ],
+            "tgtPts": [
+              [
+                -1.942890293094024E-16,
+                6.0,
+                6.461300994119225,
+                1.1102230246251565E-16,
+                3.0
+              ],
+              [
+                -2.220446049250313E-15,
+                4.440892098500626E-16,
+                4.266775559289091,
+                3.9999999999999987,
+                2.0
+              ]
+            ]
+          }
+        }
+      },
+      "wrapped_source_id": 8
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "resampled",
+    "source_class": "bdv.util.ResampledSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 5,
+    "color": -65536,
+    "converter_setup_min": 0.0,
+    "converter_setup_max": 800.0,
+    "sac": {
+      "type": "ResampledSource",
+      "interpolate": "NEARESTNEIGHBOR",
+      "cache": false,
+      "name": "resampled",
+      "mipmaps_reused": false,
+      "defaultMipmapLevel": 0,
+      "origin_source_id": 3,
+      "model_source_id": 1
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "upsampled",
+    "source_class": "bdv.util.ResampledSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 6,
+    "color": -16776961,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 80.0,
+    "sac": {
+      "type": "ResampledSource",
+      "interpolate": "NLINEAR",
+      "cache": false,
+      "name": "upsampled",
+      "mipmaps_reused": false,
+      "defaultMipmapLevel": 0,
+      "origin_source_id": 1,
+      "model_source_id": 22
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.tools.transformation.TransformedSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 7,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "type": "AffineTransform3D",
+        "affinetransform3d": [
+          0.5817579012017067,
+          -0.12736475848174275,
+          0.0,
+          200.0,
+          0.11655968307203686,
+          0.5324040762692177,
+          0.0,
+          200.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 11
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.SpimSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 8,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 80.0,
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack-multilevel.xml"
+      },
+      "viewsetup": 0
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack_Transformed_mri-stack",
+    "source_class": "bdv.img.WarpedSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 9,
     "color": -1,
     "converter_setup_min": 10.0,
     "converter_setup_max": 80.0,
@@ -268,7 +362,288 @@
           }
         }
       },
-      "wrapped_source_id": 0
+      "wrapped_source_id": 8
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "downsampled-with-mipmap",
+    "source_class": "bdv.util.ResampledSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 10,
+    "color": -8882176,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 80.0,
+    "sac": {
+      "type": "ResampledSource",
+      "interpolate": "NLINEAR",
+      "cache": false,
+      "name": "downsampled-with-mipmap",
+      "mipmaps_reused": true,
+      "defaultMipmapLevel": 0,
+      "origin_source_id": 1,
+      "model_source_id": 25
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.SpimSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 11,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack.xml"
+      },
+      "viewsetup": 0
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack_Transformed_mri-stack",
+    "source_class": "bdv.img.WarpedSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 12,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 80.0,
+    "sac": {
+      "realtransform": {
+        "type": "WrappedIterativeInvertibleRealTransform",
+        "wrappedTransform": {
+          "type": "ThinplateSplineTransform",
+          "srcPts": [
+            [
+              48.10642972599996,
+              137.513570274,
+              135.09716107,
+              46.898225123999964,
+              22.73413308399995,
+              153.2202301,
+              161.677662314,
+              22.73413308399995
+            ],
+            [
+              51.19156529799997,
+              47.56695149199996,
+              179.26125310999998,
+              180.469457712,
+              51.19156529799997,
+              49.98336069599998,
+              186.510480722,
+              191.34329913
+            ],
+            [
+              -2.997892414000053,
+              -2.997892414000053,
+              -2.997892414000053,
+              -2.997892414000053,
+              262.807120026,
+              262.807120026,
+              262.807120026,
+              262.807120026
+            ]
+          ],
+          "tgtPts": [
+            [
+              49.31463432800045,
+              137.51357027399985,
+              137.5135702740003,
+              38.44079291000003,
+              153.22023010000024,
+              160.46945771200052,
+              31.191565298000512,
+              32.39976989999984
+            ],
+            [
+              56.024383706000094,
+              45.15054228800079,
+              172.0120254980005,
+              178.053048508,
+              49.98336069599971,
+              181.6776623139993,
+              176.84484390599977,
+              52.39976989999997
+            ],
+            [
+              -2.997892414000063,
+              -2.997892414000063,
+              -2.997892414000063,
+              -2.997892414000063,
+              262.807120026,
+              262.807120026,
+              262.807120026,
+              262.807120026
+            ]
+          ]
+        }
+      },
+      "wrapped_source_id": 8
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.tools.transformation.TransformedSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 13,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "type": "AffineTransform3D",
+        "affinetransform3d": [
+          0.5391414427083534,
+          -0.4583945417182619,
+          0.0,
+          200.0,
+          0.39910844953968916,
+          0.46941201453959136,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 11
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "demoSlice.tif channel 1",
+    "source_class": "bdv.SpimSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 14,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 140.0,
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/demoSlice.xml"
+      },
+      "viewsetup": 0
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.SpimSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 15,
+    "color": 65535,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack.xml"
+      },
+      "viewsetup": 0
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "demoSlice.tif channel 1_xfm_0",
+    "source_class": "bdv.img.WarpedSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 16,
+    "color": 65535,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 140.0,
+    "sac": {
+      "realtransform": {
+        "type": "Wrapped2DTransformAs3D",
+        "wrappedTransform": {
+          "type": "WrappedIterativeInvertibleRealTransform",
+          "wrappedTransform": {
+            "type": "ThinplateSplineTransform",
+            "srcPts": [
+              [
+                0.586500005865,
+                6.752850067528501,
+                7.245000072450001,
+                1.0,
+                3.5973000359730003
+              ],
+              [
+                -0.3228000032280005,
+                1.2115500121154996,
+                4.6855500468555,
+                4.5,
+                1.1247000112469996
+              ]
+            ],
+            "tgtPts": [
+              [
+                -1.942890293094024E-16,
+                6.0,
+                6.461300994119225,
+                1.1102230246251565E-16,
+                3.0
+              ],
+              [
+                -2.220446049250313E-15,
+                4.440892098500626E-16,
+                4.266775559289091,
+                3.9999999999999987,
+                2.0
+              ]
+            ]
+          }
+        }
+      },
+      "wrapped_source_id": 20
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.tools.transformation.TransformedSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 17,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "affinetransform_fixed": {
+        "type": "AffineTransform3D",
+        "affinetransform3d": [
+          0.5543652484151118,
+          -0.3418624252051537,
+          0.0,
+          0.0,
+          0.2827227381506541,
+          0.45846413472739034,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "wrapped_source_id": 11
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.SpimSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 18,
+    "color": -1,
+    "converter_setup_min": 10.0,
+    "converter_setup_max": 150.0,
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack.xml"
+      },
+      "viewsetup": 0
     },
     "string_metadata": {}
   },
@@ -276,7 +651,7 @@
     "source_name": "mri-stack_xfm_0",
     "source_class": "bdv.img.WarpedSource",
     "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 8,
+    "source_id": 19,
     "color": 65535,
     "converter_setup_min": 10.0,
     "converter_setup_max": 150.0,
@@ -351,7 +726,7 @@
           ]
         }
       },
-      "wrapped_source_id": 3
+      "wrapped_source_id": 15
     },
     "string_metadata": {}
   },
@@ -359,7 +734,7 @@
     "source_name": "demoSlice.tif channel 1",
     "source_class": "bdv.SpimSource",
     "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 9,
+    "source_id": 20,
     "color": 65535,
     "converter_setup_min": 10.0,
     "converter_setup_max": 140.0,
@@ -371,49 +746,42 @@
     },
     "string_metadata": {}
   },
+  null,
   {
-    "source_name": "mri-stack",
-    "source_class": "bdv.tools.transformation.TransformedSource",
+    "source_name": "UpSampled",
+    "source_class": "bdv.util.EmptySource",
     "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 10,
+    "source_id": 22,
     "color": -1,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 150.0,
+    "converter_setup_min": 0.0,
+    "converter_setup_max": 65535.0,
     "sac": {
-      "affinetransform_fixed": {
-        "type": "AffineTransform3D",
-        "affinetransform3d": [
-          0.7085429951722464,
-          -0.029113510321871244,
-          0.0,
-          200.0,
-          0.029207972526807187,
-          0.7108419461704573,
-          0.0,
-          200.0,
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ]
-      },
-      "wrapped_source_id": 4
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 11,
-    "color": -1,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 150.0,
-    "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack.xml"
-      },
-      "viewsetup": 0
+      "empty_source_parameters": {
+        "nx": 930,
+        "ny": 1130,
+        "nz": 1350,
+        "at3D": {
+          "affinetransform3d": [
+            0.2,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.2,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.2,
+            0.0
+          ]
+        },
+        "name": "UpSampled",
+        "unit": "pixel",
+        "vx": 1.0,
+        "vy": 1.0,
+        "vz": 1.0
+      }
     },
     "string_metadata": {}
   },
@@ -421,7 +789,7 @@
     "source_name": "downsampled",
     "source_class": "bdv.util.ResampledSource",
     "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 12,
+    "source_id": 23,
     "color": -34816,
     "converter_setup_min": 10.0,
     "converter_setup_max": 80.0,
@@ -432,8 +800,8 @@
       "name": "downsampled",
       "mipmaps_reused": false,
       "defaultMipmapLevel": 0,
-      "origin_source_id": 18,
-      "model_source_id": 5
+      "origin_source_id": 1,
+      "model_source_id": 24
     },
     "string_metadata": {}
   },
@@ -441,7 +809,7 @@
     "source_name": "DownSampled",
     "source_class": "bdv.util.EmptySource",
     "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 13,
+    "source_id": 24,
     "color": -1,
     "converter_setup_min": 0.0,
     "converter_setup_max": 65535.0,
@@ -476,77 +844,40 @@
     "string_metadata": {}
   },
   {
-    "source_name": "demoSlice.tif channel 1_xfm_0",
-    "source_class": "bdv.img.WarpedSource",
+    "source_name": "DownSampled",
+    "source_class": "bdv.util.EmptySource",
     "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 14,
-    "color": 65535,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 140.0,
-    "sac": {
-      "realtransform": {
-        "type": "Wrapped2DTransformAs3D",
-        "wrappedTransform": {
-          "type": "WrappedIterativeInvertibleRealTransform",
-          "wrappedTransform": {
-            "type": "ThinplateSplineTransform",
-            "srcPts": [
-              [
-                0.586500005865,
-                6.752850067528501,
-                7.245000072450001,
-                1.0,
-                3.5973000359730003
-              ],
-              [
-                -0.3228000032280005,
-                1.2115500121154996,
-                4.6855500468555,
-                4.5,
-                1.1247000112469996
-              ]
-            ],
-            "tgtPts": [
-              [
-                -1.942890293094024E-16,
-                6.0,
-                6.461300994119225,
-                1.1102230246251565E-16,
-                3.0
-              ],
-              [
-                -2.220446049250313E-15,
-                4.440892098500626E-16,
-                4.266775559289091,
-                3.9999999999999987,
-                2.0
-              ]
-            ]
-          }
-        }
-      },
-      "wrapped_source_id": 9
-    },
-    "string_metadata": {}
-  },
-  null,
-  {
-    "source_name": "resampled",
-    "source_class": "bdv.util.ResampledSource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 16,
-    "color": -65536,
+    "source_id": 25,
+    "color": -1,
     "converter_setup_min": 0.0,
-    "converter_setup_max": 800.0,
+    "converter_setup_max": 65535.0,
     "sac": {
-      "type": "ResampledSource",
-      "interpolate": "NEARESTNEIGHBOR",
-      "cache": false,
-      "name": "resampled",
-      "mipmaps_reused": false,
-      "defaultMipmapLevel": 0,
-      "origin_source_id": 26,
-      "model_source_id": 18
+      "empty_source_parameters": {
+        "nx": 46,
+        "ny": 56,
+        "nz": 67,
+        "at3D": {
+          "affinetransform3d": [
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            4.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            4.0,
+            0.0
+          ]
+        },
+        "name": "DownSampled",
+        "unit": "pixel",
+        "vx": 1.0,
+        "vy": 1.0,
+        "vz": 1.0
+      }
     },
     "string_metadata": {}
   },
@@ -554,7 +885,7 @@
     "source_name": "mri-stack_Transformed_mri-stack",
     "source_class": "bdv.img.WarpedSource",
     "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 17,
+    "source_id": 26,
     "color": -1,
     "converter_setup_min": 10.0,
     "converter_setup_max": 80.0,
@@ -650,338 +981,7 @@
           }
         }
       },
-      "wrapped_source_id": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 18,
-    "color": -1,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 80.0,
-    "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack-multilevel.xml"
-      },
-      "viewsetup": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack_Transformed_mri-stack",
-    "source_class": "bdv.img.WarpedSource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 19,
-    "color": -1,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 80.0,
-    "sac": {
-      "realtransform": {
-        "type": "Wrapped2DTransformAs3D",
-        "wrappedTransform": {
-          "type": "WrappedIterativeInvertibleRealTransform",
-          "wrappedTransform": {
-            "type": "ThinplateSplineTransform",
-            "srcPts": [
-              [
-                0.586500005865,
-                6.752850067528501,
-                7.245000072450001,
-                1.0,
-                3.5973000359730003
-              ],
-              [
-                -0.3228000032280005,
-                1.2115500121154996,
-                4.6855500468555,
-                4.5,
-                1.1247000112469996
-              ]
-            ],
-            "tgtPts": [
-              [
-                -1.942890293094024E-16,
-                6.0,
-                6.461300994119225,
-                1.1102230246251565E-16,
-                3.0
-              ],
-              [
-                -2.220446049250313E-15,
-                4.440892098500626E-16,
-                4.266775559289091,
-                3.9999999999999987,
-                2.0
-              ]
-            ]
-          }
-        }
-      },
-      "wrapped_source_id": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "UpSampled",
-    "source_class": "bdv.util.EmptySource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 20,
-    "color": -1,
-    "converter_setup_min": 0.0,
-    "converter_setup_max": 65535.0,
-    "sac": {
-      "empty_source_parameters": {
-        "nx": 930,
-        "ny": 1130,
-        "nz": 1350,
-        "at3D": {
-          "affinetransform3d": [
-            0.2,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.2,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            0.2,
-            0.0
-          ]
-        },
-        "name": "UpSampled",
-        "unit": "pixel",
-        "vx": 1.0,
-        "vy": 1.0,
-        "vz": 1.0
-      }
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "upsampled",
-    "source_class": "bdv.util.ResampledSource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 21,
-    "color": -16776961,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 80.0,
-    "sac": {
-      "type": "ResampledSource",
-      "interpolate": "NLINEAR",
-      "cache": false,
-      "name": "upsampled",
-      "mipmaps_reused": false,
-      "defaultMipmapLevel": 0,
-      "origin_source_id": 18,
-      "model_source_id": 20
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.tools.transformation.TransformedSource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 22,
-    "color": -1,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 150.0,
-    "sac": {
-      "affinetransform_fixed": {
-        "type": "AffineTransform3D",
-        "affinetransform3d": [
-          0.5223638178452807,
-          -0.34484926599228777,
-          0.0,
-          0.0,
-          0.2835677407001297,
-          0.42953702460017135,
-          0.0,
-          200.0,
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ]
-      },
-      "wrapped_source_id": 4
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.tools.transformation.TransformedSource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 23,
-    "color": -1,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 150.0,
-    "sac": {
-      "affinetransform_fixed": {
-        "type": "AffineTransform3D",
-        "affinetransform3d": [
-          0.3904795360017406,
-          -0.40222114980509754,
-          0.0,
-          200.0,
-          0.4495465773532149,
-          0.43642344272824524,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ]
-      },
-      "wrapped_source_id": 4
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack_Transformed_mri-stack",
-    "source_class": "bdv.img.WarpedSource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 24,
-    "color": -1,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 80.0,
-    "sac": {
-      "realtransform": {
-        "type": "WrappedIterativeInvertibleRealTransform",
-        "wrappedTransform": {
-          "type": "ThinplateSplineTransform",
-          "srcPts": [
-            [
-              48.10642972599996,
-              137.513570274,
-              135.09716107,
-              46.898225123999964,
-              22.73413308399995,
-              153.2202301,
-              161.677662314,
-              22.73413308399995
-            ],
-            [
-              51.19156529799997,
-              47.56695149199996,
-              179.26125310999998,
-              180.469457712,
-              51.19156529799997,
-              49.98336069599998,
-              186.510480722,
-              191.34329913
-            ],
-            [
-              -2.997892414000053,
-              -2.997892414000053,
-              -2.997892414000053,
-              -2.997892414000053,
-              262.807120026,
-              262.807120026,
-              262.807120026,
-              262.807120026
-            ]
-          ],
-          "tgtPts": [
-            [
-              49.31463432800045,
-              137.51357027399985,
-              137.5135702740003,
-              38.44079291000003,
-              153.22023010000024,
-              160.46945771200052,
-              31.191565298000512,
-              32.39976989999984
-            ],
-            [
-              56.024383706000094,
-              45.15054228800079,
-              172.0120254980005,
-              178.053048508,
-              49.98336069599971,
-              181.6776623139993,
-              176.84484390599977,
-              52.39976989999997
-            ],
-            [
-              -2.997892414000063,
-              -2.997892414000063,
-              -2.997892414000063,
-              -2.997892414000063,
-              262.807120026,
-              262.807120026,
-              262.807120026,
-              262.807120026
-            ]
-          ]
-        }
-      },
-      "wrapped_source_id": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.tools.transformation.TransformedSource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 25,
-    "color": -1,
-    "converter_setup_min": 10.0,
-    "converter_setup_max": 150.0,
-    "sac": {
-      "affinetransform_fixed": {
-        "type": "AffineTransform3D",
-        "affinetransform3d": [
-          0.6354700582631716,
-          -0.3501336569873727,
-          0.0,
-          0.0,
-          0.3618764520324433,
-          0.6567824756859063,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          0.0
-        ]
-      },
-      "wrapped_source_id": 4
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "Mandelbrot Set",
-    "source_class": "bdv.tools.transformation.TransformedSource",
-    "converter_class": "class net.imglib2.display.Instances$Imp",
-    "source_id": 26,
-    "color": -1,
-    "converter_setup_min": 0.0,
-    "converter_setup_max": 800.0,
-    "sac": {
-      "affinetransform_fixed": {
-        "type": "AffineTransform3D",
-        "affinetransform3d": [
-          600.0,
-          0.0,
-          0.0,
-          -100.0,
-          0.0,
-          600.0,
-          0.0,
-          -100.0,
-          0.0,
-          0.0,
-          600.0,
-          0.0
-        ]
-      },
-      "wrapped_source_id": 15
+      "wrapped_source_id": 8
     },
     "string_metadata": {}
   }
