@@ -296,11 +296,11 @@ public class BdvHandleHelper
         wa = new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                super.windowClosing(e);
-                bdvsds.closeBdv(bdvh);
                 if (runnable!=null) {
                     runnable.run();
                 }
+                super.windowClosing(e);
+                bdvsds.closeBdv(bdvh);
                 topFrame.removeWindowListener(this); // Avoid memory leak
                 e.getWindow().dispose();
                 bdvh.close();

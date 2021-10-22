@@ -446,7 +446,7 @@ public class SourceAndConverterHelper {
             iFrame *= 2;
         }
         if (iFrame>1) {
-            for (int tp = previous;tp<iFrame;tp++) {
+            for (int tp = previous;tp<iFrame+1;tp++) {
                 if (!sac.getSpimSource().isPresent(tp)) {
                     nFrames = tp;
                     break;
