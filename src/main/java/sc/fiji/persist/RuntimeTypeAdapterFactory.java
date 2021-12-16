@@ -114,7 +114,7 @@ import java.util.Map;
  * Both the type field name ({@code "type"}) and the type labels ({@code
  * "Rectangle"}) are configurable.
  *
- * <h3>Registering Types</h3>
+ * Registering Types
  * Create a {@code RuntimeTypeAdapterFactory} by passing the base type and type field
  * name to the {@link #of} factory method. If you don't supply an explicit type
  * field name, {@code "type"} will be used. <pre>   {@code
@@ -142,7 +142,7 @@ import java.util.Map;
  *       .registerSubtype(Diamond.class);
  * }</pre>
  *
- * <h3>Serialization and deserialization</h3>
+ * Serialization and deserialization
  * In order to serialize and deserialize a polymorphic object,
  * you must specify the base type explicitly.
  * <pre>   {@code

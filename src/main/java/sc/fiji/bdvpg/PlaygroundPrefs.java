@@ -28,15 +28,27 @@
  */
 package sc.fiji.bdvpg;
 
+/**
+ * Static simple BigDataViewer Playground properties
+ */
 public abstract class PlaygroundPrefs
 {
+
 	private static boolean sourceAndConverterUIVisibility = true;
 
+	/**
+	 * Set whether the tree view should be displayed or not automatically
+	 * @param visibility
+	 */
 	public static void setSourceAndConverterUIVisibility( boolean visibility )
 	{
 		sourceAndConverterUIVisibility = visibility;
 	}
 
+	/**
+	 *
+	 * @return whether the tree view is displayed or not automatically
+	 */
 	public static boolean getSourceAndConverterUIVisibility()
 	{
 		return sourceAndConverterUIVisibility;

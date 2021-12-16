@@ -41,7 +41,7 @@ import java.util.Optional;
 
 /**
  * Does not trim spaces!!! "BigDataViewer" is different to " BigDataViewer"
- * @param <I>
+ * @param <I> a class that extends String (a bit weird TBH)
  */
 @Plugin(type = org.scijava.convert.Converter.class)
 public class StringToBdvHandleArray<I extends String> extends AbstractConverter<I, BdvHandle[]> {

@@ -30,5 +30,8 @@ package sc.fiji.bdvpg.scijava.command;
 
 import org.scijava.command.Command;
 
+/**
+ * Top interface for scijava Commands which can be autodiscovered by BigDataViewer Playground
+ */
 public interface BdvPlaygroundActionCommand extends Command {
 }

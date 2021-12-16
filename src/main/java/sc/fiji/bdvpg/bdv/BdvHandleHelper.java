@@ -183,6 +183,11 @@ public class BdvHandleHelper
         return intersects;
     }
 
+    /**
+     * @param intervalA 3d interval A
+     * @param intervalB 3d interval B
+     * @return the intersection 3D interval between A and B
+     */
     public static FinalInterval intersect2D( final Interval intervalA, final Interval intervalB ) {
         assert intervalA.numDimensions() == intervalB.numDimensions();
 
@@ -196,6 +201,10 @@ public class BdvHandleHelper
         return new FinalInterval( min, max );
     }
 
+    /**
+     * @param bdvHandle bdv window
+     * @return an interval containing the bdv current view
+     */
     public static FinalRealInterval getViewerGlobalBoundingInterval(BdvHandle bdvHandle) {
         AffineTransform3D viewerTransform = new AffineTransform3D();
         bdvHandle.getViewerPanel().state().getViewerTransform( viewerTransform );
@@ -207,12 +216,24 @@ public class BdvHandleHelper
         return viewerTransform.estimateBounds( new FinalInterval( min, max ) );
     }
 
+    /**
+     *
+     * @param source source to probe
+     * @param timepoint timepoint probed for the source
+     * @return an interval containing the source
+     */
     public static Interval getSourceGlobalBoundingInterval( Source< ? > source, int timepoint ) {
         final AffineTransform3D sourceTransform = getSourceTransform( source, timepoint );
         final RandomAccessibleInterval< ? > rai = source.getSource(timepoint,0);
         return Intervals.smallestContainingInterval( sourceTransform.estimateBounds( rai ) );
     }
 
+    /**
+     *
+     * @param source source
+     * @param timepoint timepoint
+     * @return the transform of the source at its highest resolution level
+     */
     public static AffineTransform3D getSourceTransform( Source< ? > source, int timepoint ) {
         return getSourceTransform(source, timepoint, 0);
     }

@@ -45,6 +45,9 @@ import java.util.stream.Collectors;
 
 import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_LOCATION;
 
+/**
+ * Serializes SpimData objects
+ */
 public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData>,
         JsonDeserializer<AbstractSpimData> {
 

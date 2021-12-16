@@ -92,7 +92,7 @@
 		<connection>scm:git:git://github.com/bigdataviewer/bigdataviewer-playground</connection>
 		<developerConnection>scm:git:git@github.com:bigdataviewer/bigdataviewer-playground</developerConnection>
 		<url>https://github.com/bigdataviewer/bigdataviewer-playground</url>
-    <tag>bigdataviewer-playground-0.3.4</tag>
+    <tag>HEAD</tag>
   </scm>
 
 	<issueManagement>

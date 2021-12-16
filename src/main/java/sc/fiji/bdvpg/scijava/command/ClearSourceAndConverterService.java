@@ -37,6 +37,9 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import java.util.List;
 
+/**
+ * Command which clear all sources currently contained in the sourceandconverter service
+ */
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Clear Bdv Playground State")
 public class ClearSourceAndConverterService implements BdvPlaygroundActionCommand {
 
