@@ -86,9 +86,9 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
             if (sourceAndConverter.getConverter() instanceof ColorConverter) {
                 ColorConverter colorConverter = (ColorConverter) sourceAndConverter.getConverter();
                 obj.add("color", jsonSerializationContext.serialize(colorConverter.getColor().get()));
-                double min = SourceAndConverterServices.getBdvDisplayService()
+                double min = SourceAndConverterServices.getSourceAndConverterService()
                         .getConverterSetup(sourceAndConverter).getDisplayRangeMin();
-                double max = SourceAndConverterServices.getBdvDisplayService()
+                double max = SourceAndConverterServices.getSourceAndConverterService()
                         .getConverterSetup(sourceAndConverter).getDisplayRangeMax();
                 obj.addProperty("converter_setup_min", min);
                 obj.addProperty("converter_setup_max", max);
@@ -151,7 +151,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
                 int color = jsonObject.getAsJsonPrimitive("color").getAsInt();
                 new ColorChanger(sac,  new ARGBType(color)).run(); // TO deal with volatile and non volatile
                 // Min Max display
-                SourceAndConverterServices.getBdvDisplayService()
+                SourceAndConverterServices.getSourceAndConverterService()
                         .getConverterSetup(sac).setDisplayRange(
                                 jsonObject.getAsJsonPrimitive("converter_setup_min").getAsDouble(),
                                 jsonObject.getAsJsonPrimitive("converter_setup_max").getAsDouble());

@@ -37,6 +37,7 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.register.BigWarpLauncher;
 
 import java.util.Arrays;
@@ -80,12 +81,15 @@ public class BigWarpLauncherCommand implements BdvPlaygroundActionCommand {
     @Parameter
 	SourceAndConverterBdvDisplayService bsds;
 
+    @Parameter
+    SourceAndConverterService sac_service;
+
     public void run() {
         List<SourceAndConverter> movingSacs = Arrays.stream(movingsources).collect(Collectors.toList());
         List<SourceAndConverter> fixedSacs = Arrays.stream(fixedsources).collect(Collectors.toList());
 
-        List<ConverterSetup> converterSetups = Arrays.stream(movingsources).map(src -> bsds.getConverterSetup(src)).collect(Collectors.toList());
-        converterSetups.addAll(Arrays.stream(fixedsources).map(src -> bsds.getConverterSetup(src)).collect(Collectors.toList()));
+        List<ConverterSetup> converterSetups = Arrays.stream(movingsources).map(src -> sac_service.getConverterSetup(src)).collect(Collectors.toList());
+        converterSetups.addAll(Arrays.stream(fixedsources).map(src -> sac_service.getConverterSetup(src)).collect(Collectors.toList()));
 
         // Launch BigWarp
         BigWarpLauncher bwl = new BigWarpLauncher(movingSacs, fixedSacs, bigwarpname, converterSetups);

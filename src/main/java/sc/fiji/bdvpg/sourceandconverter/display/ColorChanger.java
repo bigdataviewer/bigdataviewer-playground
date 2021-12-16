@@ -66,7 +66,7 @@ public class ColorChanger implements Runnable, Consumer<SourceAndConverter> {
             }
             // Updates display, if any
             if ( SourceAndConverterServices.getBdvDisplayService()!=null)
-                SourceAndConverterServices.getBdvDisplayService().getConverterSetup(sourceAndConverter).setColor(color);
+                SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(sourceAndConverter).setColor(color);
         } else {
             new SystemLogger().err("sourceAndConverter Converter is not an instance of Color Converter");
         }

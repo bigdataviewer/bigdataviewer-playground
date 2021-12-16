@@ -28,6 +28,7 @@
  */
 package sc.fiji.bdvpg.services;
 
+import bdv.tools.brightness.ConverterSetup;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
@@ -208,6 +209,13 @@ public interface ISourceAndConverterService
      * @return the metadata object
      */
     Object getMetadata(AbstractSpimData asd, String key);
+
+    /**
+     * Gets source and converter of the source
+     * @param sac the source
+     * @return the convertersetup associated to the source
+     */
+    ConverterSetup getConverterSetup(SourceAndConverter sac);
 
     /**
      * Gets metadata of a spimdata

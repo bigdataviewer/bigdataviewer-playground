@@ -34,6 +34,7 @@ import bdv.ViewerSetupImgLoader;
 import bdv.VolatileSpimSource;
 import bdv.img.cache.VolatileGlobalCellCache;
 import bdv.spimdata.WrapBasicImgLoader;
+import bdv.tools.brightness.ConverterSetup;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import com.google.common.cache.Cache;
@@ -90,6 +91,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService.CONVERTER_SETUP;
 
 /**
  * Scijava Service which centralizes BDV Sources, independently of their display
@@ -387,6 +390,27 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         }
 
         return name;
+    }
+
+    /**
+     * Gets or create the associated ConverterSetup of a Source
+     * While several converters can be associated to a Source (volatile and non volatile),
+     * only one ConverterSetup is associated to a Source
+     * @param sac source to get the convertersetup from
+     * @return the converter setup of the source
+     */
+    public ConverterSetup getConverterSetup(SourceAndConverter sac) {
+        if (!isRegistered(sac)) {
+            register(sac);
+        }
+
+        // If no ConverterSetup is built then build it
+        if ( sacToMetadata.getIfPresent(sac).get( CONVERTER_SETUP ) == null) {
+            ConverterSetup setup = SourceAndConverterHelper.createConverterSetup(sac);
+            sacToMetadata.getIfPresent(sac).put( CONVERTER_SETUP,  setup );
+        }
+
+        return (ConverterSetup) sacToMetadata.getIfPresent(sac).get( CONVERTER_SETUP );
     }
 
     @Override

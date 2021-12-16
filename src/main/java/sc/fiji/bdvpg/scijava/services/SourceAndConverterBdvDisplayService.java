@@ -254,7 +254,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
             if (!escape) {
                 sacsToDisplay.add(sac);
-                bdvh.getConverterSetups().put(sac,getConverterSetup(sac));
+                bdvh.getConverterSetups().put(sac,bdvSourceAndConverterService.getConverterSetup(sac));
             }
         }
 
@@ -295,27 +295,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     public void remove(BdvHandle bdvh, SourceAndConverter<?>... sacs) {
         bdvh.getViewerPanel().state().removeSources(Arrays.asList(sacs));
         bdvh.getViewerPanel().requestRepaint();
-    }
-
-    /**
-     * Gets or create the associated ConverterSetup of a Source
-     * While several converters can be associated to a Source (volatile and non volatile),
-     * only one ConverterSetup is associated to a Source
-     * @param sac source to get the convertersetup from
-     * @return the converter setup of the source
-     */
-    public ConverterSetup getConverterSetup(SourceAndConverter sac) {
-        if (!bdvSourceAndConverterService.isRegistered(sac)) {
-            bdvSourceAndConverterService.register(sac);
-        }
-
-        // If no ConverterSetup is built then build it
-        if ( bdvSourceAndConverterService.sacToMetadata.getIfPresent(sac).get( CONVERTER_SETUP ) == null) {
-            ConverterSetup setup = SourceAndConverterHelper.createConverterSetup(sac);
-            bdvSourceAndConverterService.sacToMetadata.getIfPresent(sac).put( CONVERTER_SETUP,  setup );
-        }
-
-        return (ConverterSetup) bdvSourceAndConverterService.sacToMetadata.getIfPresent(sac).get( CONVERTER_SETUP );
     }
 
     /**

@@ -104,8 +104,8 @@ public class InteractiveBrightnessAdjusterCommand extends InteractiveCommand imp
     public void init() {
         if (sacs!=null)
         if (sacs.length>0) {
-            double minSource = SourceAndConverterServices.getBdvDisplayService().getConverterSetup(sacs[0]).getDisplayRangeMin();
-            double maxSource = SourceAndConverterServices.getBdvDisplayService().getConverterSetup(sacs[0]).getDisplayRangeMax();
+            double minSource = SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(sacs[0]).getDisplayRangeMin();
+            double maxSource = SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(sacs[0]).getDisplayRangeMax();
 
             if (minSource>=0) {
                 min = 0;
