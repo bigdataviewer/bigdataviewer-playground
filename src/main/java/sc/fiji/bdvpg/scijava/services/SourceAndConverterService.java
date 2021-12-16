@@ -78,6 +78,8 @@ import sc.fiji.bdvpg.sourceandconverter.importer.SourceAndConverterFromSpimDataC
 import sc.fiji.bdvpg.spimdata.EntityHandler;
 import sc.fiji.bdvpg.spimdata.IEntityHandlerService;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -412,6 +414,13 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                                 ViewerImgLoader imgLoader = (ViewerImgLoader) (asd.getSequenceDescription().getImgLoader());
                                 if (imgLoader.getCacheControl() instanceof VolatileGlobalCellCache) {
                                     ((VolatileGlobalCellCache) (imgLoader.getCacheControl())).clearCache();
+                                }
+                            }
+                            if (asd.getSequenceDescription().getImgLoader() instanceof Closeable) {
+                                try {
+                                    ((Closeable) asd.getSequenceDescription().getImgLoader()).close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
                                 }
                             }
                         }
