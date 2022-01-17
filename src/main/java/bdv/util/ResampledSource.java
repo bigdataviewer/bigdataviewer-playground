@@ -307,7 +307,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     @Override
     public T getType() {
-        return origin.getType();
+        return origin.getType().createVariable();
     }
 
     @Override
