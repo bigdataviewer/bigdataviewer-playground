@@ -189,24 +189,25 @@ public class SourceAndConverterHelper {
         } else if (converter instanceof RealLUTConverter) {
             return new RealLUTConverter(((RealLUTConverter) converter).getMin(),((RealLUTConverter) converter).getMax(),((RealLUTConverter) converter).getLUT());
         } else {
-            //RealARGBColorConverter
-            Converter cvt = BigDataViewer.createConverterToARGB((NumericType)sac.getSpimSource().getType());
 
-            if ((converter instanceof ColorConverter)&&(cvt instanceof ColorConverter)) {
-                ((ColorConverter) cvt).setColor(((ColorConverter)converter).getColor());
-            }
+            Converter clonedConverter = BigDataViewer.createConverterToARGB((NumericType)sac.getSpimSource().getType());
 
-            if ((converter instanceof RealARGBColorConverter)&&(cvt instanceof RealARGBColorConverter)) {
-                ((RealARGBColorConverter)cvt).setMin(((RealARGBColorConverter)converter).getMin());
-                ((RealARGBColorConverter)cvt).setMax(((RealARGBColorConverter)converter).getMax());
-            }
+			if (clonedConverter!=null)
+			{
+				if ((converter instanceof ColorConverter)&&(clonedConverter instanceof ColorConverter))
+				{
+					((ColorConverter)clonedConverter).setColor(((ColorConverter)converter).getColor());
+					((ColorConverter)clonedConverter).setMin(((ColorConverter)converter).getMin());
+					((ColorConverter)clonedConverter).setMax(((ColorConverter)converter).getMax());
+				}
 
-            if (cvt!=null) {
-                return cvt;
-            }
-
-            errlog.accept("Could not clone the converter of class " + converter.getClass().getSimpleName());
-            return null;
+				return clonedConverter;
+			}
+			else
+			{
+				errlog.accept( "Could not clone the converter of class " + converter.getClass().getSimpleName() );
+				return null;
+			}
         }
     }
 
