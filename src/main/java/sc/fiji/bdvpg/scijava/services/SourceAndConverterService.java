@@ -79,6 +79,7 @@ import sc.fiji.bdvpg.sourceandconverter.importer.SourceAndConverterFromSpimDataC
 import sc.fiji.bdvpg.spimdata.EntityHandler;
 import sc.fiji.bdvpg.spimdata.IEntityHandlerService;
 
+import java.awt.*;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -89,6 +90,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -232,7 +234,37 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             Map<String, Object> sourceData = new HashMap<>();
             sacToMetadata.put(sac, sourceData);
         }
+        /*
+          TODO FIX
+          Problematic behaviour... several thread deadlocks experienced in ABBA because
+          of the line below, if not put in invokelater. Example deadlock:
+          invokeLater may fix this, but this does not feel right...
+            "ForkJoinPool.commonPool-worker-7" #156 daemon prio=6 os_prio=0 tid=0x00000171bd131800 nid=0x3b4c in Object.wait() [0x0000000a72afe000]
+               java.lang.Thread.State: WAITING (on object monitor)
+                    at java.lang.Object.wait(Native Method)
+                    at java.lang.Object.wait(Object.java:502)
+                    at java.awt.EventQueue.invokeAndWait(EventQueue.java:1343)
+                    - locked <0x000000077aebb9b8> (a java.awt.EventQueue$1AWTInvocationLock)
+                    at java.awt.EventQueue.invokeAndWait(EventQueue.java:1324)
+                    at org.scijava.thread.DefaultThreadService.invoke(DefaultThreadService.java:115)
+                    at org.scijava.event.DefaultEventBus.publishNow(DefaultEventBus.java:182)
+                    at org.scijava.event.DefaultEventBus.publishNow(DefaultEventBus.java:73)
+                    at org.scijava.event.DefaultEventService.publish(DefaultEventService.java:102)
+                    at org.scijava.object.ObjectService.addObject(ObjectService.java:92)
+                    at org.scijava.object.ObjectService.addObject(ObjectService.java:86)
+                    at sc.fiji.bdvpg.scijava.services.SourceAndConverterService.register(SourceAndConverterService.java:235)
+         */
         objectService.addObject(sac);
+        /*AtomicBoolean flagPerformed2 = new AtomicBoolean();
+        flagPerformed.set(false);
+        EventQueue.invokeLater(()-> {
+
+            flagPerformed.set(true);
+        });
+        while (!flagPerformed.get()) {
+            // busy waiting
+        }*/
+
         if (uiAvailable) ui.update(sac);
     }
 
@@ -455,7 +487,39 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                 } else {
                     errlog.accept(sac.getSpimSource().getName() + " has no associated metadata");
                 }
+                /*
+                  TODO FIX
+                  Problematic behaviour... several thread deadlocks experienced in ABBA because
+                  of the line below, if not put in invokelater. Example deadlock:
+                  invokeLater may fix this, but this does not feel right...
+                    "ForkJoinPool.commonPool-worker-7" #156 daemon prio=6 os_prio=0 tid=0x00000171bd131800 nid=0x3b4c in Object.wait() [0x0000000a72afe000]
+                       java.lang.Thread.State: WAITING (on object monitor)
+                            at java.lang.Object.wait(Native Method)
+                            at java.lang.Object.wait(Object.java:502)
+                            at java.awt.EventQueue.invokeAndWait(EventQueue.java:1343)
+                            - locked <0x000000077aebb9b8> (a java.awt.EventQueue$1AWTInvocationLock)
+                            at java.awt.EventQueue.invokeAndWait(EventQueue.java:1324)
+                            at org.scijava.thread.DefaultThreadService.invoke(DefaultThreadService.java:115)
+                            at org.scijava.event.DefaultEventBus.publishNow(DefaultEventBus.java:182)
+                            at org.scijava.event.DefaultEventBus.publishNow(DefaultEventBus.java:73)
+                            at org.scijava.event.DefaultEventService.publish(DefaultEventService.java:102)
+                            at org.scijava.object.ObjectService.addObject(ObjectService.java:92)
+                            at org.scijava.object.ObjectService.addObject(ObjectService.java:86)
+                            at sc.fiji.bdvpg.scijava.services.SourceAndConverterService.register(SourceAndConverterService.java:235)
+                 */
                 objectService.removeObject(sac);
+                /*
+                Does not work
+                AtomicBoolean flagPerformed = new AtomicBoolean();
+                flagPerformed.set(false);
+                EventQueue.invokeLater(()-> {
+
+                    flagPerformed.set(true);
+                });
+                while (!flagPerformed.get()) {
+                    // busy waiting
+                }*/
+
                 if (uiAvailable) {
                     ui.remove(sac);
                 }
