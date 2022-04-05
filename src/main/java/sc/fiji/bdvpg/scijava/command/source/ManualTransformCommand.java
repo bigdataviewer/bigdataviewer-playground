@@ -30,6 +30,7 @@ package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import ij.IJ;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStarter;
@@ -53,7 +54,7 @@ description = "Manual transformation of selected sources. Works only with a sing
 
 public class ManualTransformCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(choices = {"Mutate", "Append", "Wrap"})
+    @Parameter(choices = {"Mutate", "Append", "Wrap", "Log"})
     String mode = "Mutate";
 
     @Parameter(label = "Select Source(s)")
@@ -74,8 +75,11 @@ public class ManualTransformCommand implements BdvPlaygroundActionCommand {
             manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     SourceTransformHelper::append
             );
-        } else
-        {
+        } else if (mode.equals("Log")) {
+            manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                    (transform, source) -> SourceTransformHelper.log(transform, source, (str) -> IJ.log(str))
+            );
+        } else {
             manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     SourceTransformHelper::createNewTransformedSourceAndConverter
             );

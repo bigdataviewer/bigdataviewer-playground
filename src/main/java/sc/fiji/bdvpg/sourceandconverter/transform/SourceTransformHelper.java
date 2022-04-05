@@ -39,6 +39,7 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAndTimeRange;
 import java.lang.reflect.Method;
+import java.util.function.Consumer;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
 
@@ -133,6 +134,17 @@ public class SourceTransformHelper {
      * @return the untransformed source, because the transformation has been canceled
      */
     public static SourceAndConverter cancel(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
+        return sacTR.sac;
+    }
+
+    /**
+     * Ignores registration, and prints the matrix in system.out
+     * @param affineTransform3D affine transform 3D
+     * @param sacTR the source and a time range, combined in a single class {@link SourceAndConverterAndTimeRange}
+     * @return the untransformed source, because the transformation has been canceled
+     */
+    public static SourceAndConverter log(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR, Consumer<String> logger) {
+        System.out.println(affineTransform3D);
         return sacTR.sac;
     }
 

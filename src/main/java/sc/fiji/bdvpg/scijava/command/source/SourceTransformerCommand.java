@@ -30,6 +30,7 @@ package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.SourceAndConverter;
+import ij.IJ;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -51,7 +52,10 @@ public class SourceTransformerCommand implements BdvPlaygroundActionCommand {
     @Parameter(label = "Select source(s)")
     SourceAndConverter[] sacs;
 
-    @Parameter
+    @Parameter(label = "Matrix as comma separated numbers", required = false, callback = "parseInput")
+    String matrixCsv;
+
+    @Parameter(style = "format:0.#####E0")
     double m00 = 1, m01 = 0, m02 = 0, tx = 0, m10 = 0, m11 = 1, m12 = 0, ty = 0, m20 = 0, m21 = 0, m22 = 1, tz = 0;
 
     @Parameter(label = "Initial timepoint (0 based)")
@@ -78,5 +82,32 @@ public class SourceTransformerCommand implements BdvPlaygroundActionCommand {
 
         SourceAndConverterServices.getBdvDisplayService()
                 .updateDisplays(sacs);
+    }
+
+    public void parseInput() {
+        //"1.0, 0.0, 0.0, -1.9866937698669376, 0.0, 1.0, 0.0, -2.5403625254036246, 0.0, 0.0, 1.0, 0.0"
+        if (matrixCsv!=null) {
+            String[] inputs = matrixCsv.split(",");
+            if (inputs.length==12) {
+                try {
+                    m00 = Double.parseDouble(inputs[0]);
+                    m01 = Double.parseDouble(inputs[1]);
+                    m02 = Double.parseDouble(inputs[2]);
+                    tx = Double.parseDouble(inputs[3]);
+                    m10 = Double.parseDouble(inputs[4]);
+                    m11 = Double.parseDouble(inputs[5]);
+                    m12 = Double.parseDouble(inputs[6]);
+                    ty = Double.parseDouble(inputs[7]);
+                    m20 = Double.parseDouble(inputs[8]);
+                    m21 = Double.parseDouble(inputs[9]);
+                    m22 = Double.parseDouble(inputs[10]);
+                    tz = Double.parseDouble(inputs[11]);
+                } catch (Exception e) {
+                    IJ.log("Number parsing exception: "+e.getMessage());
+                }
+            } else {
+                IJ.log("A matrix should have 12 elements");
+            }
+        }
     }
 }
