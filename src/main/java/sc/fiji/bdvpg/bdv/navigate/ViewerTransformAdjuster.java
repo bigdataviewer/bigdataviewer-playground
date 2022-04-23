@@ -34,6 +34,7 @@ import bdv.viewer.SourceAndConverter;
 import bdv.viewer.SynchronizedViewerState;
 import net.imglib2.*;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.util.Intervals;
 import net.imglib2.util.LinAlgHelpers;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 
@@ -200,16 +201,12 @@ public class ViewerTransformAdjuster implements Runnable
 				.filter(object -> object!=null)
 				.collect(Collectors.toList());
 
-		RealInterval maxInterval = intervalList.stream()
-				.reduce((i1,i2) -> new FinalRealInterval(
-						new double[]{Math.min(i1.realMin(0), i2.realMin(0)), Math.min(i1.realMin(1), i2.realMin(1)), Math.min(i1.realMin(2), i2.realMin(2))},
-						new double[]{Math.max(i1.realMax(0), i2.realMax(0)), Math.max(i1.realMax(1), i2.realMax(1)), Math.max(i1.realMax(2), i2.realMax(2))}
-						)).get();
+		RealInterval boundingInterval = intervalList.stream().reduce(Intervals::union).get();
 
 		RealPoint center = new RealPoint(
-					(maxInterval.realMin(0)+ maxInterval.realMax(0))/2.0,
-					(maxInterval.realMin(1)+ maxInterval.realMax(1))/2.0,
-					(maxInterval.realMin(2)+ maxInterval.realMax(2))/2.0
+					(boundingInterval.realMin(0)+ boundingInterval.realMax(0))/2.0,
+					(boundingInterval.realMin(1)+ boundingInterval.realMax(1))/2.0,
+					(boundingInterval.realMin(2)+ boundingInterval.realMax(2))/2.0
 				);
 
 
@@ -226,7 +223,7 @@ public class ViewerTransformAdjuster implements Runnable
 
 		// Let's scale: we need to find the coordinates on the screen of the big bounding box
 		RealPoint screenCoord = new RealPoint(0,0,0);
-		List<RealPoint> boxCorners = getBox(maxInterval);
+		List<RealPoint> boxCorners = getBox(boundingInterval);
 
 		double currentMinScale = Double.MAX_VALUE;
 
