@@ -47,13 +47,13 @@ public class SimpleIJLaunch {
         ij = new ImageJ();
         ij.ui().showUI();
         DebugTools.setRootLevel("INFO");
-        SourceAndConverterService sacService = ij.get(SourceAndConverterService.class);
+        /*SourceAndConverterService sacService = ij.get(SourceAndConverterService.class);
         SourceAndConverter aTile = sacService.getSourceAndConverters().get(0);
         AffineTransform3D transform = new AffineTransform3D();
         aTile.getSpimSource().getSourceTransform(0,0,transform);
         double voxSizeX = transform.get(0,0);
         double voxSizeY = transform.get(1,1);
-        double voxSizeZ = transform.get(2,2);
+        double voxSizeZ = transform.get(2,2);*/
 
     }
 

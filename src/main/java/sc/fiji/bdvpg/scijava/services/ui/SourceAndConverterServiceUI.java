@@ -563,8 +563,12 @@ public class SourceAndConverterServiceUI {
      *     - the list order can be considered random
      */
     public Set<SourceAndConverter> getSourceAndConvertersFromChildrenOf(DefaultMutableTreeNode node) {
+
         Set<SourceAndConverter> sacs = new HashSet<>();
-        if (node instanceof SourceFilterNode) {
+        if (node.getUserObject() instanceof RenamableSourceAndConverter) {
+            Object userObj = ((RenamableSourceAndConverter) (node.getUserObject())).sac;
+            sacs.add((SourceAndConverter) userObj);
+        } else if (node instanceof SourceFilterNode) {
             sacs.addAll(((SourceFilterNode) node).currentOutputSacs);
         } else {
             for (int i = 0; i < node.getChildCount(); i++) {
@@ -606,11 +610,8 @@ public class SourceAndConverterServiceUI {
      * @return treepath fetched from the path
      */
     public TreePath getTreePathFromString(String path) {
-
         String[] stringPath = path.split(">");
-
         Object[] nodes = new Object[stringPath.length];
-
         TreeNode current = top;
         int currentDepth = 0;
 
@@ -650,6 +651,21 @@ public class SourceAndConverterServiceUI {
      */
     public List<SourceAndConverter> getSourceAndConvertersFromTreePath(TreePath path) {
         return SourceAndConverterHelper.sortDefaultNoGeneric(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) path.getLastPathComponent()));
+    }
+
+    /**
+     * Used by {@link sc.fiji.bdvpg.scijava.converters.StringToSourceAndConverterArray}
+     * Note the sorting of SourceAndConverter by {@link SourceAndConverterHelper#sortDefaultNoGeneric}
+     * @param path path
+     * @return the list of sources in the path
+     */
+    public List<SourceAndConverter> getSourceAndConvertersFromPath(String path) {
+        TreePath tp = getTreePathFromString(path);
+        if (tp!=null) {
+            return getSourceAndConvertersFromTreePath(tp);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     public synchronized void addNode(DefaultMutableTreeNode node) {
