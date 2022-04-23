@@ -36,6 +36,7 @@ import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Show Sources",
@@ -57,7 +58,7 @@ public class BdvSourcesAdderCommand implements BdvPlaygroundActionCommand {
     @Override
     public void run() {
 
-        SourceAndConverterServices.getBdvDisplayService().show(bdvh, sacs);
+        SourceAndConverterServices.getBdvDisplayService().show(bdvh,  SourceAndConverterHelper.sortDefault(sacs));
         if (autocontrast) {
             for (SourceAndConverter sac : sacs) {
                 int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();

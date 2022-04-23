@@ -501,6 +501,10 @@ public class SourceAndConverterHelper {
 
     }
 
+    public static SourceAndConverter[] sortDefault(SourceAndConverter[] sacs) {
+        return sortDefaultNoGeneric(Arrays.asList(sacs)).toArray(new SourceAndConverter[0]);
+    }
+
     /**
      * Default sorting order for SourceAndConverter
      * Because sometimes we want some consistency in channel ordering when exporting / importing
@@ -1116,5 +1120,4 @@ public class SourceAndConverterHelper {
 
         return new RealPoint(px,py,pz);
     }
-
 }
