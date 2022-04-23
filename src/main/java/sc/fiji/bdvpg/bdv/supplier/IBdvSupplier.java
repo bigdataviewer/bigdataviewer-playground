@@ -29,7 +29,10 @@
 package sc.fiji.bdvpg.bdv.supplier;
 
 import bdv.util.BdvHandle;
+import bdv.viewer.render.AccumulateProjectorFactory;
+import net.imglib2.type.numeric.ARGBType;
 import org.scijava.plugin.SciJavaPlugin;
+import sc.fiji.bdvpg.bdv.projector.DefaultAccumulatorFactory;
 
 import java.util.function.Supplier;
 
@@ -40,4 +43,7 @@ import java.util.function.Supplier;
  * these objects
  */
 public interface IBdvSupplier extends Supplier<BdvHandle>, SciJavaPlugin {
+    default AccumulateProjectorFactory<ARGBType> getProjectorFactory() {
+        return new DefaultAccumulatorFactory();
+    };
 }
