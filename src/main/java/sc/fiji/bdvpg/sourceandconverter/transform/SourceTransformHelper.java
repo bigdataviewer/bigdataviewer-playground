@@ -169,7 +169,7 @@ public class SourceTransformHelper {
         sacTR.getTimePoints().forEach( timePoint -> {
             ViewRegistration vr = sdi.asd.getViewRegistrations().getViewRegistration(timePoint, sdi.setupId);
 
-            ViewTransform vt = vr.getTransformList().get(vr.getTransformList().size() - 1);
+            ViewTransform vt = vr.getTransformList().get(0);
 
             AffineTransform3D at3D = new AffineTransform3D();
             at3D.concatenate(vt.asAffine3D());
@@ -177,10 +177,9 @@ public class SourceTransformHelper {
 
             ViewTransform newvt = new ViewTransformAffine(vt.getName(), at3D);
 
-            vr.getTransformList().remove(vt);
-            vr.getTransformList().add(newvt);
+            vr.getTransformList().remove(0);
+            vr.getTransformList().add(0,newvt);
             vr.updateModel();
-
 
             try {
                 Method updateBdvSource = Class.forName("bdv.AbstractSpimSource").getDeclaredMethod("loadTimepoint", int.class);
