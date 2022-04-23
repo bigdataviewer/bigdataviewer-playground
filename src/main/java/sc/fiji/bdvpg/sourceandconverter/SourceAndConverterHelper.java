@@ -425,6 +425,22 @@ public class SourceAndConverterHelper {
     }
 
     /**
+     *
+     * @param sacs sources
+     * @return the max timepoint found in this source according to the next method ( check limitations )
+     */
+    public static int getMaxTimepoint(Source[] sacs) {
+        int max = 0;
+        for (Source<?> source : sacs) {
+            int sourceMax = getMaxTimepoint(source);
+            if (sourceMax > max) {
+                max = sourceMax;
+            }
+        }
+        return max;
+    }
+
+    /**
      * Looks for the max number of timepoint present in this source and converter
      * To do this multiply the 2 the max timepoint until no source is present
      *
@@ -432,29 +448,33 @@ public class SourceAndConverterHelper {
      * TODO : Limitation : if the timepoint 0 is not present, this fails!
      * Limitation : if the source is present at all timepoint, this fails
      *
-     * @param sac source
+     * @param source source
      * @return the maximal timepoint where the source is still present
      */
-	public static int getMaxTimepoint(SourceAndConverter<?> sac) {
-	    if (!sac.getSpimSource().isPresent(0)) {
+	public static int getMaxTimepoint(Source<?> source) {
+	    if (!source.isPresent(0)) {
 	        return 0;
         }
         int nFrames = 1;
         int iFrame = 1;
         int previous = iFrame;
-        while ((iFrame<Integer.MAX_VALUE / 2)&&(sac.getSpimSource().isPresent(iFrame))) {
+        while ((iFrame<Integer.MAX_VALUE / 2)&&(source.isPresent(iFrame))) {
             previous = iFrame;
             iFrame *= 2;
         }
         if (iFrame>1) {
             for (int tp = previous;tp<iFrame+1;tp++) {
-                if (!sac.getSpimSource().isPresent(tp)) {
+                if (!source.isPresent(tp)) {
                     nFrames = tp;
                     break;
                 }
             }
         }
         return nFrames;
+    }
+
+    public static int getMaxTimepoint(SourceAndConverter<?> sac) {
+        return getMaxTimepoint(sac.getSpimSource());
     }
 
     /**
@@ -716,7 +736,7 @@ public class SourceAndConverterHelper {
      * So if the voxel size is [1.2, 0.8, 50], the value 1.2 is used to compare the levels
      * to the target resolution. This is a way to avoid the complexity of defining the correct
      * pixel size while being also robust to comparing 2d and 3d sources. Indeed 2d sources may
-     * have aberrantly defined vox size along the third axis, either way too big or way too small
+     * have aberrant defined vox size along the third axis, either way too big or way too small
      * in one case or the other, the missing dimension is ignored, which we hope works
      * in most circumstances.
      *
@@ -755,11 +775,44 @@ public class SourceAndConverterHelper {
         }
 
         int level = 0;
-        while((originVoxSize.get(level)<voxSize)&&(level<originVoxSize.size()-1)) {
-            level=level+1;
+
+
+        if (voxSize<originVoxSize.get(0)) return 0; // below highest resolution : return the highest resolution
+
+        if (originVoxSize.get(0) == 0) {
+            System.err.println(SourceAndConverterHelper.class.getSimpleName()+" error : couldn't find voxel size of source "+src.getName());
+            // proceed anyway
+            return 0;
         }
 
-        return Math.max(level-1,0);
+        /*
+        How to decide which resolution level is the best ? The perfect answer is to blend
+        the resolution levels, but we can't do this here. My assumption: we want to take the
+        resolution level which has its voxel size ratio voxSize/originVoxSize nearest to 1
+        */
+
+        double bestRatio = voxSize / originVoxSize.get(0);
+        int bestLevel = 0;
+
+        boolean doBetter = true;
+        int currentLevel = 0;
+
+        while ((doBetter)&&(currentLevel<originVoxSize.size()-1)) {
+            currentLevel++;
+            double currentRatio;
+            double currentVoxSize = originVoxSize.get(currentLevel);
+            if (currentVoxSize>voxSize) {
+                currentRatio = currentVoxSize / voxSize;
+            } else {
+                currentRatio = voxSize / currentVoxSize;
+            }
+            if (currentRatio<bestRatio) {
+                bestRatio = currentRatio;
+                bestLevel = currentLevel;
+            } else doBetter = false;
+        }
+
+        return bestLevel;
     }
 
     /**
