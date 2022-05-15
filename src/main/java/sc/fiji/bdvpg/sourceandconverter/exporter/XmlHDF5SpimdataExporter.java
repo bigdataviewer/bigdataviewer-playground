@@ -321,7 +321,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
         }
         final String hdf5Filename = seqFilename.substring( 0, seqFilename.length() - 4 ) + ".h5";
         final File hdf5File = new File( hdf5Filename );
-        boolean deflate = false;
+        boolean deflate = true;
         {
             WriteSequenceToHdf5.writeHdf5File( seq, perSetupExportMipmapInfo, deflate, hdf5File, loopbackHeuristic, afterEachPlane, numCellCreatorThreads, new SubTaskProgressWriter( progressWriter, 0, 0.95 ) );
         }

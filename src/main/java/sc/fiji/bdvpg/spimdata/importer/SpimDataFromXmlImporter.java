@@ -28,6 +28,7 @@
  */
 package sc.fiji.bdvpg.spimdata.importer;
 
+import bdv.img.hdf5.Hdf5ImageLoader;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
 import mpicbg.spim.data.generic.AbstractSpimData;
