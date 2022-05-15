@@ -680,4 +680,80 @@ public class SourceAndConverterServiceUI {
         parent.add(node);
     }
 
+    public Node getRoot() {
+        return new Node((TreeNode) model.getRoot());
+    }
+
+    public static class Node {
+
+        // SourceFilterNode
+        // RenamableSourceAndConverter
+
+        private final TreeNode node;
+
+        protected Node(TreeNode node) {
+            this.node = node;
+        }
+
+        public Node child(int index) {
+            return new Node(node.getChildAt(index));
+        }
+
+        public Node child(String name) {
+            final Enumeration children = node.children();
+            while (children.hasMoreElements()) {
+                TreeNode testNode = (TreeNode)children.nextElement();
+                if (testNode.toString().equals(name)) {
+                    return new Node( testNode);
+                }
+            }
+            return null;
+        }
+
+        public List<Node> children() {
+            ArrayList<Node> list = new ArrayList<>(node.getChildCount());
+            final Enumeration children = node.children();
+            while (children.hasMoreElements()) {
+                TreeNode n = (TreeNode)children.nextElement();
+                list.add(new Node(n));
+            }
+            return list;
+        }
+
+        public String name() {
+            return node.toString();
+        }
+
+        @Override
+        public String toString() {
+            return name();
+        }
+
+        public String path() {
+            String fullPath = name();
+            Node parent = parent();
+            while(parent!=null) {
+                fullPath = parent().name()+">"+fullPath;
+                parent = parent.parent();
+            }
+            return fullPath;
+        }
+
+        public SourceAndConverter[] sources() {
+            if (node instanceof SourceFilterNode) {
+                Set<SourceAndConverter> sourcesSet = ((SourceFilterNode) node).currentOutputSacs;
+                return SourceAndConverterHelper.sortDefaultNoGeneric(sourcesSet).toArray(new SourceAndConverter[0]);
+            } else if (node instanceof RenamableSourceAndConverter) {
+                return new SourceAndConverter[] {((RenamableSourceAndConverter) node).sac};
+            } else {
+                return null;
+            }
+        }
+
+        public Node parent() {
+            if (node.getParent()==null) return null;
+            return new Node(node.getParent());
+        }
+    }
+
 }

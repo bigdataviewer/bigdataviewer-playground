@@ -297,18 +297,19 @@ public class XmlHDF5SpimdataExporter implements Runnable {
         }
         //---------------------- End of setup handling
 
-
         final int numCellCreatorThreads = Math.max( 1, nThreads - 1 );
 
         final ExportScalePyramid.LoopbackHeuristic loopbackHeuristic = new ExportScalePyramid.DefaultLoopbackHeuristic();
 
-        final ExportScalePyramid.AfterEachPlane afterEachPlane = usedLoopBack -> { };
+        final ProgressWriter progressWriter = new ProgressWriterIJ();
+        logger.info( "Starting export..." );
+
+        final ExportScalePyramid.AfterEachPlane afterEachPlane = usedLoopBack -> {
+
+        };
 
         final ArrayList<Partition> partitions;
         partitions = null;
-
-        final ProgressWriter progressWriter = new ProgressWriterIJ();
-        logger.info( "Starting export..." );
 
         String seqFilename = xmlFile.getAbsolutePath();//.getParent();
         if ( !seqFilename.endsWith( ".xml" ) )
