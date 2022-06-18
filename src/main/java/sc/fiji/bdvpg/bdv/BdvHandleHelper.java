@@ -461,7 +461,6 @@ public class BdvHandleHelper
 
     }
 
-
     public static BdvOverlay addCenterCross(BdvHandle bdvh) {
         final BdvOverlay overlay = new BdvOverlay()
         {

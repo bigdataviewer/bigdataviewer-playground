@@ -28,12 +28,20 @@
  */
 package sc.fiji.bdvpg.bvv;
 
+import bdv.util.BdvFunctions;
+import bdv.util.BdvHandle;
+import bdv.util.BdvOptions;
+import bdv.util.BdvOverlay;
+import bvv.util.BvvFunctions;
 import bvv.util.BvvHandle;
+import net.imglib2.type.numeric.ARGBType;
 import org.scijava.cache.CacheService;
 import org.scijava.object.ObjectService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 import javax.swing.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.ref.WeakReference;
@@ -163,4 +171,5 @@ public class BvvHandleHelper {
         }
         return uniqueTitle;
     }
+
 }

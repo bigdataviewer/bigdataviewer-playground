@@ -26,48 +26,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijava.command.bvv;
+package sc.fiji.bdvpg.scijava.widget;
 
-import bdv.viewer.SourceAndConverter;
 import bvv.util.BvvHandle;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bvv.BvvViewerTransformAdjuster;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import org.scijava.widget.InputWidget;
 
-/**
- * Show sources in a BigVolumeViewer window - limited to 16 bit images
- */
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>BVV - Show Sources",
-    description = "Show sources in a BigVolumeViewer window - limited to 16 bit images")
-public class BvvSourcesAdderCommand implements BdvPlaygroundActionCommand {
-
-    @Parameter(label = "Select BVV Window(s)")
-    BvvHandle bvvh;
-
-    @Parameter(label="Adjust View on Source")
-    boolean adjustviewonsource;
-
-    @Parameter(label = "Select source(s)")
-    SourceAndConverter[] sacs;
-
-    @Override
-    public void run() {
-
-        for (SourceAndConverter sac : sacs) {
-            bvvh.getConverterSetups()
-                    .put(sac,SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(sac));
-            bvvh.getViewerPanel()
-                    .state().addSource(sac);
-
-            bvvh.getViewerPanel().state().setSourceActive(sac, true);
-        }
-
-        if ((adjustviewonsource) && (sacs.length>0)) {
-            new BvvViewerTransformAdjuster(bvvh, sacs[0]).run();
-        }
-
-    }
+public interface BvvHandleWidget<U> extends InputWidget<BvvHandle, U> {
 }
