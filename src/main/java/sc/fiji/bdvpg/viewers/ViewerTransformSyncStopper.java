@@ -32,7 +32,6 @@ import bdv.viewer.TimePointListener;
 import bdv.viewer.TransformListener;
 import bvv.util.BvvHandle;
 import net.imglib2.realtransform.AffineTransform3D;
-import sc.fiji.bdvpg.bvv.navigate.ViewerOrthoSyncStarter;
 
 import java.util.Map;
 

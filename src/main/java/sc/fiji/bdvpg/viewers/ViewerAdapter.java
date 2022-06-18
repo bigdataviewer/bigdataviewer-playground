@@ -1,9 +1,11 @@
 package sc.fiji.bdvpg.viewers;
 
+import bdv.util.BdvHandle;
 import bdv.viewer.TimePointListener;
 import bdv.viewer.TransformListener;
 import bdv.viewer.ViewerPanel;
 import bdv.viewer.ViewerState;
+import bvv.util.BvvHandle;
 import net.imglib2.realtransform.AffineTransform3D;
 
 /**
@@ -22,6 +24,16 @@ public class ViewerAdapter {
 
     public ViewerAdapter(tpietzsch.example2.VolumeViewerPanel viewerPanel) {
         bvvPanel = viewerPanel;
+        bdvPanel = null;
+    }
+
+    public ViewerAdapter(BdvHandle bdv) {
+        bvvPanel = null;
+        bdvPanel = bdv.getViewerPanel();
+    }
+
+    public ViewerAdapter(BvvHandle bvv) {
+        bvvPanel = bvv.getViewerPanel();
         bdvPanel = null;
     }
 
@@ -86,5 +98,35 @@ public class ViewerAdapter {
         } else {
             bvvPanel.removeTimePointListener(listener);
         }
+    }
+
+    // Override this so that two vieweradapter with the same object will be equals
+    @Override
+    public int hashCode() {
+        if (bdvPanel!=null) return bdvPanel.hashCode();
+        return bvvPanel.hashCode();
+    }
+
+    // Overriding equals() to compare two Complex objects
+    @Override
+    public boolean equals(Object o) {
+
+        // If the object is compared with itself then return true
+        if (o == this) {
+            return true;
+        }
+
+        /* Check if o is an instance of Complex or not
+          "null instanceof [type]" also returns false */
+        if (!(o instanceof ViewerAdapter)) {
+            return false;
+        }
+
+        // typecast o to Complex so that we can compare data members
+        ViewerAdapter c = (ViewerAdapter) o;
+
+        // Compare the data members and return accordingly
+        if (c.bdvPanel!=null) return c.bdvPanel.equals(((ViewerAdapter) o).bdvPanel);
+        return c.bvvPanel.equals(((ViewerAdapter) o).bvvPanel);
     }
 }

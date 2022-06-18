@@ -87,7 +87,7 @@ public class SwingBdvHandleWidget extends SwingInputWidget<BdvHandle> implements
         getComponent().add(listScroller);
     }
 
-    public class RenamableBdvHandle {
+    public static class RenamableBdvHandle {
 
         public BdvHandle bdvh;
 

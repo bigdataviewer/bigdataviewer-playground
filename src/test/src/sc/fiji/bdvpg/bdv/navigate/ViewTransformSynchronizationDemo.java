@@ -45,6 +45,9 @@ import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
+import sc.fiji.bdvpg.viewers.ViewerAdapter;
+import sc.fiji.bdvpg.viewers.ViewerTransformSyncStarter;
+import sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper;
 
 /**
  * ViewTransformSynchronizationDemo
@@ -102,7 +105,7 @@ public class ViewTransformSynchronizationDemo {
                 if (isSynchronizing) {
                     syncstop.run();
                 } else {
-                    syncstart.setBdvHandleInitialReference(bdvHandle);
+                    syncstart.setHandleInitialReference(new ViewerAdapter(bdvHandle));
                     syncstart.run();
                 }
                 isSynchronizing = !isSynchronizing;

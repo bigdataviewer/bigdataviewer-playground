@@ -28,7 +28,6 @@
  */
 package sc.fiji.bdvpg.scijava.widget;
 
-import bdv.util.BdvHandle;
 import bvv.util.BvvHandle;
 import org.scijava.Priority;
 import org.scijava.object.ObjectService;
@@ -37,9 +36,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.bvv.BvvHandleHelper;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -57,7 +54,7 @@ public class SwingBvvHandleWidget extends SwingInputWidget<BvvHandle> implements
 
     @Override
     public boolean supports(final WidgetModel model) {
-        return super.supports(model) && model.isType(BdvHandle.class);
+        return super.supports(model) && model.isType(BvvHandle.class);
     }
 
     @Override
@@ -90,7 +87,7 @@ public class SwingBvvHandleWidget extends SwingInputWidget<BvvHandle> implements
         getComponent().add(listScroller);
     }
 
-    public class RenamableBvvHandle {
+    public static class RenamableBvvHandle {
 
         public BvvHandle bvvh;
 

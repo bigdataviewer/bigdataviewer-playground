@@ -28,18 +28,17 @@
  */
 package sc.fiji.bdvpg.viewers;
 
+import bdv.util.BdvHandle;
 import bdv.viewer.TimePointListener;
 import bdv.viewer.TransformListener;
 import bvv.util.BvvHandle;
 import net.imglib2.RealPoint;
-import net.imglib2.realtransform.AffineTransform3D;
-import sc.fiji.bdvpg.bdv.navigate.ViewerOrthoSyncStarter;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStopper;
+import net.imglib2.realtransform.AffineTransform3D;;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static sc.fiji.bdvpg.bdv.navigate.ViewerTransformSyncStopper.MatrixApproxEquals;
+import static sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper.MatrixApproxEquals;
 
 /**
  * BigDataViewer Playground Action --
@@ -102,6 +101,21 @@ public class ViewerTransformSyncStarter implements Runnable {
      */
     Map<ViewerAdapter, TimePointListener> handleToTimeListener = new HashMap<>();
 
+    public ViewerTransformSyncStarter(BdvHandle[] bdvHandles, boolean synchronizeTime) {
+        this.handles = new ViewerAdapter[bdvHandles.length];
+        for (int i = 0;i< bdvHandles.length;i++) {
+            handles[i] = new ViewerAdapter(bdvHandles[i]);
+        }
+        this.synchronizeTime = synchronizeTime;
+    }
+
+    public ViewerTransformSyncStarter(BvvHandle[] bvvHandles, boolean synchronizeTime) {
+        this.handles = new ViewerAdapter[bvvHandles.length];
+        for (int i = 0;i< bvvHandles.length;i++) {
+            handles[i] = new ViewerAdapter(bvvHandles[i]);
+        }
+        this.synchronizeTime = synchronizeTime;
+    }
 
     public ViewerTransformSyncStarter(ViewerAdapter[] handles, boolean synchronizeTime) {
        this.handles = handles;

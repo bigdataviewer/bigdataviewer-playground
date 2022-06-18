@@ -29,6 +29,7 @@
 package sc.fiji.bdvpg.scijava.widget;
 
 import bdv.util.BdvHandle;
+import bvv.util.BvvHandle;
 import org.scijava.Priority;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
@@ -38,20 +39,23 @@ import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import java.awt.Dimension;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Swing implementation of {@link BdvHandleListWidget}.
+ * Swing implementation of {@link BvvHandleListWidget}.
  *
  * @author Nicolas Chiaruttini
  */
 
 @Plugin(type = InputWidget.class, priority = Priority.EXTREMELY_HIGH)
-public class SwingBdvHandleListWidget extends SwingInputWidget<BdvHandle[]> implements
-        BdvHandleListWidget<JPanel> {
+public class SwingBvvHandleListWidget extends SwingInputWidget<BvvHandle[]> implements
+        BvvHandleListWidget<JPanel> {
 
     @Override
     protected void doRefresh() {
@@ -59,20 +63,20 @@ public class SwingBdvHandleListWidget extends SwingInputWidget<BdvHandle[]> impl
 
     @Override
     public boolean supports(final WidgetModel model) {
-        return super.supports(model) && model.isType(BdvHandle[].class);
+        return super.supports(model) && model.isType(BvvHandle[].class);
     }
 
     @Override
-    public BdvHandle[] getValue() {
-        return getSelectedBdvHandles();
+    public BvvHandle[] getValue() {
+        return getSelectedBvvHandles();
     }
 
-    JList<SwingBdvHandleWidget.RenamableBdvHandle> list;
+    JList<SwingBvvHandleWidget.RenamableBvvHandle> list;
 
-    public BdvHandle[] getSelectedBdvHandles() {
-        List<SwingBdvHandleWidget.RenamableBdvHandle> selected = list.getSelectedValuesList();
-        return  selected.stream().map((e) -> e.bdvh)
-                .collect(Collectors.toList()).toArray(new BdvHandle[selected.size()]);
+    public BvvHandle[] getSelectedBvvHandles() {
+        List<SwingBvvHandleWidget.RenamableBvvHandle> selected = list.getSelectedValuesList();
+        return  selected.stream().map((e) -> e.bvvh)
+                .collect(Collectors.toList()).toArray(new BvvHandle[selected.size()]);
     }
 
     @Parameter
@@ -81,11 +85,11 @@ public class SwingBdvHandleListWidget extends SwingInputWidget<BdvHandle[]> impl
     @Override
     public void set(final WidgetModel model) {
         super.set(model);
-        SwingBdvHandleWidget.RenamableBdvHandle[] data =
-                os.getObjects(BdvHandle.class)
+        SwingBvvHandleWidget.RenamableBvvHandle[] data =
+                os.getObjects(BvvHandle.class)
                         .stream()
-                        .map(SwingBdvHandleWidget.RenamableBdvHandle::new)
-                        .toArray(SwingBdvHandleWidget.RenamableBdvHandle[]::new);
+                        .map(SwingBvvHandleWidget.RenamableBvvHandle::new)
+                        .toArray(SwingBvvHandleWidget.RenamableBvvHandle[]::new);
         list = new JList(data); //data has type Object[]
         list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         JScrollPane listScroller = new JScrollPane(list);

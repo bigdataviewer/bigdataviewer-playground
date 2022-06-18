@@ -29,15 +29,15 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.*;
-import net.imglib2.type.numeric.ARGBType;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerOrthoSyncStarter;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.viewers.ViewerAdapter;
+import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -100,7 +100,7 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
         bdvhz = createBdv("-Bottom", locationx, locationy + sizey +40);
         bdvhz.getViewerPanel().state().setNumTimepoints(ntimepoints);
 
-        new ViewerOrthoSyncStarter(bdvhx, bdvhz, bdvhy, synctime).run();
+        new ViewerOrthoSyncStarter(new ViewerAdapter(bdvhx), new ViewerAdapter(bdvhz), new ViewerAdapter(bdvhy), synctime).run();
 
        if (drawcrosses) {
            BdvHandleHelper.addCenterCross(bdvhx);

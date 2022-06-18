@@ -33,11 +33,12 @@ import bvv.util.BvvOptions;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bvv.navigate.ViewerOrthoSyncStarter;
 import sc.fiji.bdvpg.bvv.BvvCreator;
 import sc.fiji.bdvpg.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.viewers.ViewerAdapter;
+import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
 
 import javax.swing.JFrame;
 import java.awt.GraphicsDevice;
@@ -95,7 +96,7 @@ public class BvvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
         bvvhz = createBvv("-Bottom", locationx, locationy + sizey +40);
         bvvhz.getViewerPanel().state().setNumTimepoints(ntimepoints);
 
-        new ViewerOrthoSyncStarter(bvvhx, bvvhz, bvvhy, synctime).run();
+        new ViewerOrthoSyncStarter(new ViewerAdapter(bvvhx), new ViewerAdapter(bvvhz), new ViewerAdapter(bvvhy), synctime).run();
 
     }
 
