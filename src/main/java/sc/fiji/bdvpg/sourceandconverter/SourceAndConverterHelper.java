@@ -226,10 +226,14 @@ public class SourceAndConverterHelper {
 			}
 		} else {
 			log.accept( "Unmodifiable ConverterSetup for Converters of class " + sac.getConverter().getClass() );
-			if (sac.asVolatile() != null) {
-				return new UnmodifiableConverterSetup( sac.getConverter(), sac.asVolatile().getConverter());
-			} else {
-				return new UnmodifiableConverterSetup( sac.getConverter());
+			if (sac.asVolatile() != null)
+			{
+				final UnmodifiableConverterSetup setup = new UnmodifiableConverterSetup( sac.getConverter(), sac.asVolatile().getConverter() );
+				return setup;
+			} else
+			{
+				final UnmodifiableConverterSetup setup = new UnmodifiableConverterSetup( sac.getConverter() );
+				return setup;
 			}
 		}
     }
