@@ -346,7 +346,7 @@ public class SourceAndConverterHelper {
 		Source< ? > spimSource = source.getSpimSource();
 
 		final long[] voxelPositionInSource = getVoxelPositionInSource( spimSource, globalPosition, timepoint, 0 );
-		Interval sourceInterval = spimSource.getSource( 0, 0 );
+		Interval sourceInterval = spimSource.getSource( timepoint, 0 );
 
 		if ( sourceIs2d )
 		{
