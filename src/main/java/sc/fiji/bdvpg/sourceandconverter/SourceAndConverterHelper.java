@@ -216,24 +216,29 @@ public class SourceAndConverterHelper {
     }
 
     public static ConverterSetup createConverterSetup(SourceAndConverter sac, int legacyId) {
-        //return BigDataViewer.createConverterSetup(sac, legacyId);
-        ConverterSetup setup;
-        if (sac.getSpimSource().getType() instanceof RealType) {
-            setup = createConverterSetupRealType(sac);
-        } else if (sac.getSpimSource().getType() instanceof ARGBType) {
-            setup = createConverterSetupARGBType(sac);
-        } else {
-            errlog.accept("Cannot create convertersetup for Source of type "+sac.getSpimSource().getType().getClass().getSimpleName());
-            setup = null;
-        }
-        //setup.setViewer(() -> requestRepaint.run());
-        return setup;
+        if (sac.getConverter() instanceof ColorConverter) {
+			return BigDataViewer.createConverterSetup(sac, -1);
+		} else if (sac.getConverter() instanceof RealLUTConverter) {
+			if (sac.asVolatile() != null) {
+				return new LUTConverterSetup((RealLUTConverter) sac.getConverter(), (RealLUTConverter) sac.asVolatile().getConverter());
+			} else {
+				return new LUTConverterSetup((RealLUTConverter) sac.getConverter());
+			}
+		} else {
+			log.accept( "Unmodifiable ConverterSetup for Converters of class " + sac.getConverter().getClass() );
+			if (sac.asVolatile() != null) {
+				return new UnmodifiableConverterSetup( sac.getConverter(), sac.asVolatile().getConverter());
+			} else {
+				return new UnmodifiableConverterSetup( sac.getConverter());
+			}
+		}
     }
 
     /**
      * Creates converters and convertersetup for a ARGB typed sourceandconverter
      * @param source source
      */
+	@Deprecated // not used anymore
     static private ConverterSetup createConverterSetupARGBType(SourceAndConverter source) {
         ConverterSetup setup;
         if (source.getConverter() instanceof ColorConverter) {
@@ -249,6 +254,7 @@ public class SourceAndConverterHelper {
      * Creates converters and convertersetup for a real typed sourceandconverter
      * @param source source
      */
+	@Deprecated // Not used anymore
     static private ConverterSetup createConverterSetupRealType(SourceAndConverter source) {
         final ConverterSetup setup;
         if (source.getConverter() instanceof ColorConverter) {
