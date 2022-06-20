@@ -30,6 +30,7 @@ package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
+import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -46,7 +47,7 @@ public class TransformedSourceWrapperCommand implements BdvPlaygroundActionComma
     @Parameter(label = "Select Source(s)")
     SourceAndConverter[] sacs;
 
-    @Parameter
+    @Parameter(type = ItemIO.OUTPUT)
     SourceAndConverter[] sacs_out;
 
     @Override
