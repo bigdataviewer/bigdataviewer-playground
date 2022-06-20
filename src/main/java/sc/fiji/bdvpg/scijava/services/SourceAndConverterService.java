@@ -109,7 +109,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService
  *
  * */
 
-@Plugin(type=Service.class)
+@Plugin(type=Service.class, headless = true)
 public class SourceAndConverterService extends AbstractService implements SciJavaService, ISourceAndConverterService
 {
 
@@ -144,8 +144,8 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     /**
      * uiService : used ot check if an UI is available to create a Swing Panel
      */
-    @Parameter
-    UIService uiService;
+    //@Parameter
+    //UIService uiService;
 
     /**
      * Display service : cannot be set through Parameter annotation due to 'circular dependency'
@@ -575,7 +575,8 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         spimdataToMetadata = CacheBuilder.newBuilder().weakKeys().build();
 
         registerDefaultActions();
-        if (uiService!=null) {
+
+        if (!context().getService(UIService.class).isHeadless()) {
             log.accept( "uiService detected : Constructing JPanel for BdvSourceAndConverterService" );
             ui = new SourceAndConverterServiceUI( this );
             uiAvailable = true;

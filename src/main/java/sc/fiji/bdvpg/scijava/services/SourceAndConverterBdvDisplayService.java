@@ -75,7 +75,7 @@ import javax.swing.tree.DefaultTreeModel;
  * Make its best to keep in synchronizations all of this, without creating errors nor memory leaks
  */
 
-@Plugin(type= Service.class)
+@Plugin(type= Service.class, headless = false)
 public class SourceAndConverterBdvDisplayService extends AbstractService implements SciJavaService  {
 
     protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterBdvDisplayService.class);
