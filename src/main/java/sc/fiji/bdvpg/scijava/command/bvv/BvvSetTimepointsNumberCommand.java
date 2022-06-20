@@ -28,54 +28,27 @@
  */
 package sc.fiji.bdvpg.scijava.command.bvv;
 
-import bdv.viewer.SourceAndConverter;
 import bvv.util.BvvHandle;
-import ij.IJ;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
-/**
- * Show sources in a BigVolumeViewer window - limited to 16 bit images
- */
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>BVV - Show Sources",
-    description = "Show sources in a BigVolumeViewer window - limited to 16 bit images")
-public class BvvSourcesAdderCommand implements BdvPlaygroundActionCommand {
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>BVV - Set Number Of Timepoints",
+    description = "Sets the number of timepoints in one or several BVV Windows")
 
-    @Parameter(label = "Select BVV Window(s)")
-    BvvHandle bvvh;
+public class BvvSetTimepointsNumberCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(label="Adjust View on Source")
-    boolean adjustviewonsource;
+    @Parameter(label = "Select BVV Windows")
+    BvvHandle[] bvvhs;
 
-    @Parameter(label = "Select source(s)")
-    SourceAndConverter[] sacs;
+    @Parameter(label = "Number of timepoints, min = 1", min = "1")
+    int numberoftimepoints;
 
-    @Override
     public void run() {
-
-        for (SourceAndConverter sac : sacs) {
-            if (sac.getSpimSource().getType() instanceof UnsignedShortType) {
-
-                bvvh.getConverterSetups()
-                        .put(sac, SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(sac));
-                bvvh.getViewerPanel()
-                        .state().addSource(sac);
-
-                bvvh.getViewerPanel().state().setSourceActive(sac, true);
-            } else {
-                IJ.log("Source "+sac.getSpimSource().getName()+" is not an unsigned 16 bit image. Bvv does not support this kind of images (yet).");
-            }
+        for (BvvHandle bvvh : bvvhs) {
+            bvvh.getViewerPanel().setNumTimepoints(numberoftimepoints);
         }
-
-        if ((adjustviewonsource) && (sacs.length>0)) {
-            new ViewerTransformAdjuster(new ViewerAdapter(bvvh), sacs).run();
-        }
-
     }
+
 }

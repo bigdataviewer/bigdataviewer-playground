@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -83,8 +84,13 @@ public class BdvHandleHelper
      */
     public static AffineTransform3D getViewerTransformWithNewCenter( BdvHandle bdvHandle, double[] xyz )
     {
+        return getViewerTransformWithNewCenter(new ViewerAdapter(bdvHandle), xyz);
+    }
+
+    public static AffineTransform3D getViewerTransformWithNewCenter(ViewerAdapter handle, double[] xyz )
+    {
         final AffineTransform3D currentViewerTransform = new AffineTransform3D();
-        bdvHandle.getViewerPanel().state().getViewerTransform( currentViewerTransform );
+        handle.state().getViewerTransform( currentViewerTransform );
 
         AffineTransform3D adaptedViewerTransform = currentViewerTransform.copy();
 
@@ -102,19 +108,25 @@ public class BdvHandleHelper
 
         adaptedViewerTransform.translate( targetPositionInViewerInPixels );
 
-        final double[] windowCentreInViewerInPixels = getWindowCentreInPixelUnits( bdvHandle );
+        final double[] windowCentreInViewerInPixels = getWindowCentreInPixelUnits( handle );
 
         adaptedViewerTransform.translate( windowCentreInViewerInPixels );
 
         return adaptedViewerTransform;
     }
 
-    public static double[] getWindowCentreInPixelUnits( BdvHandle bdvHandle )
+    public static double[] getWindowCentreInPixelUnits( ViewerAdapter handle )
     {
         final double[] windowCentreInPixelUnits = new double[ 3 ];
-        windowCentreInPixelUnits[ 0 ] = bdvHandle.getViewerPanel().getDisplay().getWidth() / 2.0;
-        windowCentreInPixelUnits[ 1 ] = bdvHandle.getViewerPanel().getDisplay().getHeight() / 2.0;
+        windowCentreInPixelUnits[ 0 ] = handle.getWidth() / 2.0;
+        windowCentreInPixelUnits[ 1 ] = handle.getHeight() / 2.0;
         return windowCentreInPixelUnits;
+    }
+
+
+    public static double[] getWindowCentreInPixelUnits( BdvHandle bdvHandle )
+    {
+        return getWindowCentreInPixelUnits(new ViewerAdapter(bdvHandle));
     }
 
     public static double[] getWindowCentreInCalibratedUnits( BdvHandle bdvHandle )

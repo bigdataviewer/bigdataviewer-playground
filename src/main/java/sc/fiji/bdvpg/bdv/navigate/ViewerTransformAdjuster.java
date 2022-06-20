@@ -32,11 +32,13 @@ import bdv.util.Affine3DHelpers;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.SynchronizedViewerState;
+import bdv.viewer.ViewerState;
 import net.imglib2.*;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Intervals;
 import net.imglib2.util.LinAlgHelpers;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,7 +60,7 @@ import java.util.stream.Collectors;
 
 public class ViewerTransformAdjuster implements Runnable
 {
-	private final BdvHandle bdvHandle;
+	private final ViewerAdapter handle;
 	private final SourceAndConverter[] sources;
 
 	public ViewerTransformAdjuster( BdvHandle bdvHandle, SourceAndConverter source )
@@ -68,7 +70,13 @@ public class ViewerTransformAdjuster implements Runnable
 
 	public ViewerTransformAdjuster( BdvHandle bdvHandle, SourceAndConverter[] sources )
 	{
-		this.bdvHandle = bdvHandle;
+		this.handle = new ViewerAdapter(bdvHandle);
+		this.sources = sources;
+	}
+
+	public ViewerTransformAdjuster(ViewerAdapter handle, SourceAndConverter[] sources )
+	{
+		this.handle = handle;
 		this.sources = sources;
 	}
 
@@ -79,10 +87,10 @@ public class ViewerTransformAdjuster implements Runnable
 
 		} else if (sources.length==1) {
 		    transform = getTransform();
-			bdvHandle.getViewerPanel().state().setViewerTransform(transform);
+			handle.state().setViewerTransform(transform);
 		} else {
 			transform = getTransformMultiSources();
-			bdvHandle.getViewerPanel().state().setViewerTransform(transform);
+			handle.state().setViewerTransform(transform);
 		}
 
 	}
@@ -100,10 +108,10 @@ public class ViewerTransformAdjuster implements Runnable
 	 */
 	public AffineTransform3D getTransform( )
 	{
-		final SynchronizedViewerState state = bdvHandle.getViewerPanel().state();
+		final ViewerState state = handle.state();
 
-		final int viewerWidth = bdvHandle.getBdvHandle().getViewerPanel().getWidth();
-		final int viewerHeight = bdvHandle.getBdvHandle().getViewerPanel().getHeight();
+		final int viewerWidth = (int) handle.getWidth();
+		final int viewerHeight = (int) handle.getHeight();
 
 		final double cX = viewerWidth / 2.0;
 		final double cY = viewerHeight / 2.0;
@@ -174,7 +182,7 @@ public class ViewerTransformAdjuster implements Runnable
 	}
 
 	public AffineTransform3D getTransformMultiSources() {
-		final SynchronizedViewerState state = bdvHandle.getViewerPanel().state();
+		final ViewerState state = handle.state();
 
 		final int timepoint = state.getCurrentTimepoint();
 
@@ -212,14 +220,14 @@ public class ViewerTransformAdjuster implements Runnable
 
 		final double[] centerGlobal = {center.getDoublePosition(0), center.getDoublePosition(1), center.getDoublePosition(2)};
 
-		final int viewerWidth = bdvHandle.getBdvHandle().getViewerPanel().getWidth();
-		final int viewerHeight = bdvHandle.getBdvHandle().getViewerPanel().getHeight();
+		final int viewerWidth = (int) handle.getWidth();
+		final int viewerHeight = (int) handle.getHeight();
 
 		AffineTransform3D viewerTransform = new AffineTransform3D();
 
-		bdvHandle.getViewerPanel().state().getViewerTransform(viewerTransform);
+		handle.state().getViewerTransform(viewerTransform);
 
-		viewerTransform = BdvHandleHelper.getViewerTransformWithNewCenter(bdvHandle, centerGlobal);
+		viewerTransform = BdvHandleHelper.getViewerTransformWithNewCenter(handle, centerGlobal);
 
 		// Let's scale: we need to find the coordinates on the screen of the big bounding box
 		RealPoint screenCoord = new RealPoint(0,0,0);
@@ -241,9 +249,9 @@ public class ViewerTransformAdjuster implements Runnable
 		}
 
 		viewerTransform.scale( currentMinScale );
-		bdvHandle.getViewerPanel().state().setViewerTransform(viewerTransform);
+		handle.state().setViewerTransform(viewerTransform);
 
-		viewerTransform = BdvHandleHelper.getViewerTransformWithNewCenter(bdvHandle, centerGlobal);
+		viewerTransform = BdvHandleHelper.getViewerTransformWithNewCenter(handle, centerGlobal);
 
 		return viewerTransform;
 	}
