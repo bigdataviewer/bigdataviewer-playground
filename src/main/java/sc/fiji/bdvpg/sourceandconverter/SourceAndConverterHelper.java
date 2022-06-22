@@ -228,56 +228,11 @@ public class SourceAndConverterHelper {
 			log.accept( "Unmodifiable ConverterSetup for Converters of class " + sac.getConverter().getClass() );
 			if (sac.asVolatile() != null)
 			{
-				final UnmodifiableConverterSetup setup = new UnmodifiableConverterSetup( sac.getConverter(), sac.asVolatile().getConverter() );
-				return setup;
-			} else
-			{
-				final UnmodifiableConverterSetup setup = new UnmodifiableConverterSetup( sac.getConverter() );
-				return setup;
+				return new UnmodifiableConverterSetup( sac.getConverter(), sac.asVolatile().getConverter() );
+			} else {
+				return new UnmodifiableConverterSetup( sac.getConverter() );
 			}
 		}
-    }
-
-    /**
-     * Creates converters and convertersetup for a ARGB typed sourceandconverter
-     * @param source source
-     */
-	@Deprecated // not used anymore
-    static private ConverterSetup createConverterSetupARGBType(SourceAndConverter source) {
-        ConverterSetup setup;
-        if (source.getConverter() instanceof ColorConverter) {
-            setup = BigDataViewer.createConverterSetup(source, -1);
-        } else {
-            errlog.accept("Cannot build ConverterSetup for Converters of class "+source.getConverter().getClass());
-            setup = null;
-        }
-        return setup;
-    }
-
-    /**
-     * Creates converters and convertersetup for a real typed sourceandconverter
-     * @param source source
-     */
-	@Deprecated // Not used anymore
-    static private ConverterSetup createConverterSetupRealType(SourceAndConverter source) {
-        final ConverterSetup setup;
-        if (source.getConverter() instanceof ColorConverter) {
-            setup = BigDataViewer.createConverterSetup(source, -1);
-        } else if (source.getConverter() instanceof RealLUTConverter) {
-            if (source.asVolatile() != null) {
-                setup = new LUTConverterSetup((RealLUTConverter) source.getConverter(), (RealLUTConverter) source.asVolatile().getConverter());
-            } else {
-                setup = new LUTConverterSetup((RealLUTConverter) source.getConverter());
-            }
-        } else {
-            log.accept( "Unsupported ConverterSetup for Converters of class " + source.getConverter().getClass() );
-            if (source.asVolatile() != null) {
-                setup = new UnmodifiableConverterSetup( source.getConverter(), source.asVolatile().getConverter());
-            } else {
-                setup = new UnmodifiableConverterSetup( source.getConverter());
-            }
-        }
-        return setup;
     }
 
 	/**
