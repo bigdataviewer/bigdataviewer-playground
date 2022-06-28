@@ -127,15 +127,19 @@
 
 		<!-- package version below are determined by the parent pom but need to be upgraded -->
 
-		<bigdataviewer-core.version>10.2.1</bigdataviewer-core.version>
-		<bigdataviewer-vistools.version>1.0.0-beta-29</bigdataviewer-vistools.version>
+		<bigdataviewer-core.version>10.4.1</bigdataviewer-core.version>
+		<bigdataviewer-vistools.version>1.0.0-beta-30</bigdataviewer-vistools.version>
 		<imglib2-cache.version>1.0.0-beta-16</imglib2-cache.version>
         <bigwarp_fiji.version>7.0.5</bigwarp_fiji.version>
+		<ui-behaviour.version>2.0.6</ui-behaviour.version>
 
 	</properties>
 
 	<dependencies>
-
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>ui-behaviour</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-legacy</artifactId>
