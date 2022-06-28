@@ -31,6 +31,8 @@ package bdv.util;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.brightness.SetupAssignments;
 import bdv.tools.transformation.ManualTransformationEditor;
+import bdv.ui.appearance.AppearanceManager;
+import bdv.ui.keymap.KeymapManager;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerPanel;
 import org.scijava.ui.behaviour.util.InputActionBindings;
