@@ -68,6 +68,18 @@ public class ViewerPanelHandle extends BdvHandle {
     }
 
     @Override
+    public KeymapManager getKeymapManager() {
+        errlog.accept("Unsupported getKeymapManager call in ViewerPanel wrapped BdvHandle");
+        return null;
+    }
+
+    @Override
+    public AppearanceManager getAppearanceManager() {
+        errlog.accept("Unsupported getAppearanceManager call in ViewerPanel wrapped BdvHandle");
+        return null;
+    }
+
+    @Override
     public void close() {
         // TODO : implement this ?
     }

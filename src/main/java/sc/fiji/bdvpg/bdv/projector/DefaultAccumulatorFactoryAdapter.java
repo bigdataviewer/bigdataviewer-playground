@@ -41,8 +41,8 @@ import sc.fiji.persist.IClassRuntimeAdapter;
 @Plugin(type = IClassRuntimeAdapter.class)
 public class DefaultAccumulatorFactoryAdapter implements IClassRuntimeAdapter<AccumulateProjectorFactory, AccumulateProjectorARGB.Factory> {
     @Override
-    public Class<? extends  AccumulateProjectorARGB.Factory> getBaseClass() {
-        return  AccumulateProjectorARGB.Factory.class;
+    public Class<? extends  AccumulateProjectorFactory> getBaseClass() {
+        return  AccumulateProjectorFactory.class;
     }
 
     @Override
