@@ -90,7 +90,7 @@ public class ViewerAdapter {
 
     public void addTransformListener(TransformListener<AffineTransform3D> listener) {
         if (bdvPanel!=null) {
-            bdvPanel.addTransformListener(listener);
+            bdvPanel.transformListeners().add(listener);
         } else {
             bvvPanel.addTransformListener(listener);
         }
@@ -106,7 +106,7 @@ public class ViewerAdapter {
 
     public void addTimePointListener(TimePointListener timeListener) {
         if (bdvPanel!=null) {
-            bdvPanel.addTimePointListener(timeListener);
+            bdvPanel.timePointListeners().add(timeListener);
         } else {
             bvvPanel.addTimePointListener(timeListener);
         }
@@ -114,7 +114,7 @@ public class ViewerAdapter {
 
     public void removeTransformListener(TransformListener<AffineTransform3D> listener) {
         if (bdvPanel!=null) {
-            bdvPanel.removeTransformListener(listener);
+            bdvPanel.transformListeners().remove(listener);
         } else {
             bvvPanel.removeTransformListener(listener);
         }
@@ -122,7 +122,7 @@ public class ViewerAdapter {
 
     public void removeTimePointListener(TimePointListener listener) {
         if (bdvPanel!=null) {
-            bdvPanel.removeTimePointListener(listener);
+            bdvPanel.timePointListeners().remove(listener);
         } else {
             bvvPanel.removeTimePointListener(listener);
         }

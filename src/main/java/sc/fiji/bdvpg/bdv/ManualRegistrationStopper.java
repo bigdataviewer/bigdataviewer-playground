@@ -89,7 +89,7 @@ public class ManualRegistrationStopper implements Runnable {
         AffineTransform3D transform3D = this.starter.getCurrentTransform().copy();
 
         // Stops BdvHandle listener
-        this.starter.getBdvHandle().getViewerPanel().removeTransformListener(starter.getListener());
+        this.starter.getBdvHandle().getViewerPanel().transformListeners().remove(starter.getListener());
 
         // Removes temporary TransformedSourceAndConverter - a two step process in order to improve performance
         List<SourceAndConverter> tempSacs = starter.getTransformedSourceAndConverterDisplayed();

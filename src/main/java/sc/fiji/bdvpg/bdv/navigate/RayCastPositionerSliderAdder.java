@@ -96,8 +96,8 @@ public class RayCastPositionerSliderAdder implements Runnable {
     @Override
     public void run() {
 
-        bdvh.getViewerPanel().addTransformListener(transformListener);
-        bdvh.getViewerPanel().addTimePointListener(timePointListener);
+        bdvh.getViewerPanel().transformListeners().add(transformListener);
+        bdvh.getViewerPanel().timePointListeners().add(timePointListener);
         bdvh.getViewerPanel().state().changeListeners().add(changeListener);
         bdvh.getViewerPanel().add(slider, BorderLayout.WEST);
         bdvh.getViewerPanel().revalidate();
@@ -175,8 +175,8 @@ public class RayCastPositionerSliderAdder implements Runnable {
     }
 
     public void removeFromBdv() {
-        bdvh.getViewerPanel().removeTransformListener(transformListener);
-        bdvh.getViewerPanel().removeTimePointListener(timePointListener);
+        bdvh.getViewerPanel().transformListeners().remove(transformListener);
+        bdvh.getViewerPanel().timePointListeners().remove(timePointListener);
         bdvh.getViewerPanel().state().changeListeners().remove(changeListener);
         bdvh.getViewerPanel().remove(slider);
         bdvh.getViewerPanel().revalidate();

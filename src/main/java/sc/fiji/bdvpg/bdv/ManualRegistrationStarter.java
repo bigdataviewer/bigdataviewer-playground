@@ -141,7 +141,7 @@ public class ManualRegistrationStarter implements Runnable {
         };
 
         // Sets the listener
-        bdvHandle.getViewerPanel().addTransformListener(manualRegistrationListener);
+        bdvHandle.getViewerPanel().transformListeners().add(manualRegistrationListener);
     }
 
     public BdvHandle getBdvHandle() {
