@@ -41,7 +41,7 @@ description = "Adds a metadata string to selected sources")
 public class AddMetadataCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter(label = "Key")
     String key;
@@ -54,7 +54,7 @@ public class AddMetadataCommand implements BdvPlaygroundActionCommand {
 
     @Override
     public void run() {
-        for (SourceAndConverter sac : sacs) {
+        for (SourceAndConverter<?> sac : sacs) {
             sac_service.setMetadata(sac, key, value);
         }
     }

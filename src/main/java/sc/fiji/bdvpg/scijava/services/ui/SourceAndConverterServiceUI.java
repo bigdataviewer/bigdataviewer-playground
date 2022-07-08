@@ -392,7 +392,7 @@ public class SourceAndConverterServiceUI {
     private void updateSpimDataFilterNodes() {
         synchronized (tree) {
             // Fetch All Spimdatas from all Sources
-            Set<AbstractSpimData> currentSpimdatas = sourceAndConverterService.getSpimDatasets();
+            Set<AbstractSpimData<?>> currentSpimdatas = sourceAndConverterService.getSpimDatasets();
 
             Set<SpimDataFilterNode> obsoleteSpimDataFilterNodes = new HashSet<>();
 
@@ -417,7 +417,7 @@ public class SourceAndConverterServiceUI {
                         spimdataFilterNodes.add(newNode);
                         newNode.add(allSources);
                         top.add(newNode);
-                        addEntityFilterNodes(newNode, asd);
+                        addEntityFilterNodes(newNode, (AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) asd);
                     }
                 }
             );

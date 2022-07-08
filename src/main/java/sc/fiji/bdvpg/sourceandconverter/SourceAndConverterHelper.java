@@ -285,9 +285,9 @@ public class SourceAndConverterHelper {
      * Here should go all the ways to build a Volatile Source
      * from a non Volatile Source, ARGBTyped
      * @param source the source
-     * @return
+     * @return the created volatile source
      */
-    private static Source createVolatileARGBType(Source source) {
+    private static Source<?> createVolatileARGBType(Source<?> source) {
         // TODO unsupported yet
         return null;
     }

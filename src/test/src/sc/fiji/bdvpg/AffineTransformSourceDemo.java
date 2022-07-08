@@ -78,15 +78,15 @@ public class AffineTransformSourceDemo {
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
         //importer.run();
 
-        final AbstractSpimData spimData = importer.get();
+        final AbstractSpimData<?> spimData = importer.get();
 
-        SourceAndConverter sac = SourceAndConverterServices
+        SourceAndConverter<?> sac = SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
 
         new ViewerTransformAdjuster(bdvHandle, sac).run();
-        new BrightnessAutoAdjuster(sac, 0).run();
+        new BrightnessAutoAdjuster<>(sac, 0).run();
 
         ArrayList<SourceAndConverter<?>> sacs = new ArrayList<>();
         for (int x = 0; x < numberOfSourcesInOneAxis;x++) {
@@ -102,7 +102,7 @@ public class AffineTransformSourceDemo {
                     SourceAffineTransformer sat = new SourceAffineTransformer(sac, at3d);
                     sat.run();
 
-                    SourceAndConverter transformedSac = sat.getSourceOut();
+                    SourceAndConverter<?> transformedSac = sat.getSourceOut();
 
                     sacs.add(transformedSac);
                 }

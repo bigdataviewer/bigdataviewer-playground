@@ -50,7 +50,7 @@ import static org.scijava.ItemVisibility.MESSAGE;
 public class BrightnessAdjusterCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter()
     double min;
@@ -59,7 +59,7 @@ public class BrightnessAdjusterCommand implements BdvPlaygroundActionCommand {
     double max;
 
     public void run() {
-        for (SourceAndConverter source:sacs) {
+        for (SourceAndConverter<?> source:sacs) {
             new BrightnessAdjuster(source, min, max).run();
         }
     }

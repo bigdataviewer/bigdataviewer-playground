@@ -41,17 +41,17 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 public class BrightnessAutoAdjuster< T extends RealType< T >> implements Runnable
 {
-	private final SourceAndConverter sac;
+	private final SourceAndConverter<?> sac;
 	private final double cumulativeMinCutoff;
 	private final double cumulativeMaxCutoff;
 	private final int timePoint;
 
-	public BrightnessAutoAdjuster( final SourceAndConverter sac, int timePoint )
+	public BrightnessAutoAdjuster( final SourceAndConverter<?> sac, int timePoint )
 	{
 		this(sac, timePoint, 0.01, 0.99 );
 	}
 
-	public BrightnessAutoAdjuster( final SourceAndConverter sac, final int timePoint, final double cumulativeMinCutoff, final double cumulativeMaxCutoff )
+	public BrightnessAutoAdjuster( final SourceAndConverter<?> sac, final int timePoint, final double cumulativeMinCutoff, final double cumulativeMaxCutoff )
 	{
 		this.sac = sac;
 		this.cumulativeMinCutoff = cumulativeMinCutoff;

@@ -69,13 +69,13 @@ public class LUTSourceCreatorCommand extends DynamicCommand implements BdvPlaygr
     private Map<String, URL> luts = null;
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Override
     public void run() {
-        Converter bdvLut = cs.convert(table, Converter.class);
+        Converter<?,?> bdvLut = cs.convert(table, Converter.class);
 
-        for (SourceAndConverter sac: sacs) {
+        for (SourceAndConverter<?> sac: sacs) {
             ConverterChanger cc = new ConverterChanger(sac, bdvLut, bdvLut);
             cc.run();
             cc.get();

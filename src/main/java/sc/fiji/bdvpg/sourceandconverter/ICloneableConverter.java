@@ -36,6 +36,6 @@ import net.imglib2.converter.Converter;
  */
 public interface ICloneableConverter {
 
-    Converter duplicateConverter(SourceAndConverter source);
+    Converter<?,?> duplicateConverter(SourceAndConverter<?> source);
 
 }

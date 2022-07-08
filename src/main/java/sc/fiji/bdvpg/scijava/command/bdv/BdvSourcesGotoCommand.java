@@ -45,7 +45,7 @@ public class BdvSourcesGotoCommand implements BdvPlaygroundActionCommand {
     BdvHandle bdvh;
 
     @Parameter(label="Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Override
     public void run() {

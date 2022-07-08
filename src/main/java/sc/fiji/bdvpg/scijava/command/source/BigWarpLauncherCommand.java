@@ -58,10 +58,10 @@ public class BigWarpLauncherCommand implements BdvPlaygroundActionCommand {
     String bigwarpname;
 
     @Parameter(label = "Moving Source(s)")
-    SourceAndConverter[] movingsources;
+    SourceAndConverter<?>[] movingsources;
 
     @Parameter(label = "Fixed Source(s)")
-    SourceAndConverter[] fixedsources;
+    SourceAndConverter<?>[] fixedsources;
 
     @Parameter(type = ItemIO.OUTPUT)
     BdvHandle bdvhq;
@@ -70,13 +70,13 @@ public class BigWarpLauncherCommand implements BdvPlaygroundActionCommand {
     BdvHandle bdvhp;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter[] warpedsources;
+    SourceAndConverter<?>[] warpedsources;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter gridsource;
+    SourceAndConverter<?> gridsource;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter warpmagnitudesource;
+    SourceAndConverter<?> warpmagnitudesource;
 
     @Parameter
 	SourceAndConverterBdvDisplayService bsds;
@@ -85,8 +85,8 @@ public class BigWarpLauncherCommand implements BdvPlaygroundActionCommand {
     SourceAndConverterService sac_service;
 
     public void run() {
-        List<SourceAndConverter> movingSacs = Arrays.stream(movingsources).collect(Collectors.toList());
-        List<SourceAndConverter> fixedSacs = Arrays.stream(fixedsources).collect(Collectors.toList());
+        List<SourceAndConverter<?>> movingSacs = Arrays.stream(movingsources).collect(Collectors.toList());
+        List<SourceAndConverter<?>> fixedSacs = Arrays.stream(fixedsources).collect(Collectors.toList());
 
         List<ConverterSetup> converterSetups = Arrays.stream(movingsources).map(src -> sac_service.getConverterSetup(src)).collect(Collectors.toList());
         converterSetups.addAll(Arrays.stream(fixedsources).map(src -> sac_service.getConverterSetup(src)).collect(Collectors.toList()));

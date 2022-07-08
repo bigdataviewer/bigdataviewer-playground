@@ -151,7 +151,7 @@ public class BdvTransferHandler extends TransferHandler {
                     if (unwrapped.getUserObject() instanceof RenamableSourceAndConverter) {
                         sacs.add(((RenamableSourceAndConverter) unwrapped.getUserObject()).sac);
                     } else {
-                        for (SourceAndConverter sac : ui.getSourceAndConvertersFromChildrenOf(unwrapped)) {
+                        for (SourceAndConverter<?> sac : ui.getSourceAndConvertersFromChildrenOf(unwrapped)) {
                             sacs.add(sac);
                         }
                     }

@@ -48,7 +48,7 @@ public class ClearSourceAndConverterService implements BdvPlaygroundActionComman
 
     @Override
     public void run() {
-        List<SourceAndConverter> sources = sac_service.getSourceAndConverters();
+        List<SourceAndConverter<?>> sources = sac_service.getSourceAndConverters();
         sac_service.remove(sources.toArray(new SourceAndConverter[0]));
     }
 }

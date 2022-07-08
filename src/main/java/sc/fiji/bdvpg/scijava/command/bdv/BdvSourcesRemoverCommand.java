@@ -44,11 +44,11 @@ public class BdvSourcesRemoverCommand implements BdvPlaygroundActionCommand {
     BdvHandle bdvh;
 
     @Parameter(label="Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Override
     public void run() {
-        for (SourceAndConverter sac:sacs) {
+        for (SourceAndConverter<?> sac:sacs) {
             SourceAndConverterServices.getBdvDisplayService().remove(bdvh, sac);
         }
     }

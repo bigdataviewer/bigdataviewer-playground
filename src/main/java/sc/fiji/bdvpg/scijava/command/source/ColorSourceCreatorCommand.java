@@ -49,18 +49,18 @@ public class ColorSourceCreatorCommand implements BdvPlaygroundActionCommand {
     ColorRGB color = new ColorRGB(255,255,255);
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Override
     public void run() {
-        for (SourceAndConverter source_in : sacs) {
+        for (SourceAndConverter<?> source_in : sacs) {
             ARGBType imglib2color = new ARGBType(ARGBType.rgba(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
 
-            Converter c = SourceAndConverterHelper.createConverter(source_in.getSpimSource());
+            Converter<?,?> c = SourceAndConverterHelper.createConverter(source_in.getSpimSource()); // TODO : Should it be Converter<?,ARGBType> ?
             assert c instanceof ColorConverter;
             ((ColorConverter) c).setColor(imglib2color);
 
-            Converter vc = null;
+            Converter<?,?> vc = null;
             if (source_in.asVolatile() != null) {
                 vc = SourceAndConverterHelper.createConverter(source_in.asVolatile().getSpimSource());
                 assert vc != null;

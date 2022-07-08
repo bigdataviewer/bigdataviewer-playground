@@ -41,7 +41,7 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 public class BdvAdjustViewOnSourcesCommand  implements BdvPlaygroundActionCommand {
 
     @Parameter(label="Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter(label = "Select BDV Window")
     BdvHandle bdvh;

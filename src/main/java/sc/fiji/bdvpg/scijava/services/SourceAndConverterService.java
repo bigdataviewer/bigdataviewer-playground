@@ -142,12 +142,6 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     ScriptService scriptService;
 
     /**
-     * uiService : used ot check if an UI is available to create a Swing Panel
-     */
-    //@Parameter
-    //UIService uiService;
-
-    /**
      * Display service : cannot be set through Parameter annotation due to 'circular dependency'
      */
     SourceAndConverterBdvDisplayService bsds = null;
@@ -156,14 +150,14 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      * Map containing objects that are 1 to 1 linked to a Source
      * Keys are Weakly referenced -> Metadata should be GCed if referenced only here
      */
-    Cache<SourceAndConverter, Map<String, Object>> sacToMetadata;
+    Cache<SourceAndConverter<?>, Map<String, Object>> sacToMetadata;
 
     /**
      * Test if a Source is already registered in the Service
      * @param src source
      * @return true if a source is already registered
      */
-    public boolean isRegistered(SourceAndConverter src) {
+    public boolean isRegistered(SourceAndConverter<?> src) {
         return sacToMetadata.getIfPresent(src)!=null;
     }
 
@@ -172,7 +166,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public void setMetadata( SourceAndConverter sac, String key, Object data )
+    public void setMetadata( SourceAndConverter<?> sac, String key, Object data )
     {
         if (sac == null) {
             logger.error("Error : sac is null in setMetadata function! ");
@@ -188,7 +182,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public Object getMetadata( SourceAndConverter sac, String key )
+    public Object getMetadata( SourceAndConverter<?> sac, String key )
     {
         if (sacToMetadata.getIfPresent(sac)!=null) {
             return sacToMetadata.getIfPresent(sac).get(key);
@@ -198,7 +192,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public void removeMetadata(SourceAndConverter sac, String key) {
+    public void removeMetadata(SourceAndConverter<?> sac, String key) {
         Map<String,Object> metadata = sacToMetadata.getIfPresent(sac);
         if (metadata!=null) {
             metadata.remove(key);
@@ -206,7 +200,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public Collection<String> getMetadataKeys(SourceAndConverter sac) {
+    public Collection<String> getMetadataKeys(SourceAndConverter<?> sac) {
         Map<String, Object> map = sacToMetadata.getIfPresent(sac);
         if (map==null) {
             return new ArrayList<>();
@@ -216,7 +210,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public boolean containsMetadata(SourceAndConverter sac, String key) {
+    public boolean containsMetadata(SourceAndConverter<?> sac, String key) {
         return getMetadata(sac,key)!=null;
     }
 
@@ -225,7 +219,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      * Called in the BdvSourcePostProcessor
      * @param sac source
      */
-    public synchronized void register(SourceAndConverter sac) {
+    public synchronized void register(SourceAndConverter<?> sac) {
         if (objectService.getObjects(SourceAndConverter.class).contains(sac)) {
             log.accept("Source already registered");
             return;
@@ -268,8 +262,8 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         if (uiAvailable) ui.update(sac);
     }
 
-    public synchronized void register(Collection<SourceAndConverter> sources) {
-        for (SourceAndConverter sac:sources) {
+    public synchronized void register(Collection<SourceAndConverter<?>> sources) {
+        for (SourceAndConverter<?> sac:sources) {
             this.register(sac);
         }
     }
@@ -281,7 +275,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      * TODO nice documentation about {@link EntityHandler} and scijava extension mechanism
      * @param asd spimdata object to register
      */
-    public synchronized void register(AbstractSpimData asd) {
+    public synchronized void register(AbstractSpimData<?> asd) {
 
         if (spimdataToMetadata.getIfPresent(asd)==null) {
             Map<String, Object> sourceData = new HashMap<>();
@@ -431,7 +425,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      * @param sac source to get the convertersetup from
      * @return the converter setup of the source
      */
-    public ConverterSetup getConverterSetup(SourceAndConverter sac) {
+    public ConverterSetup getConverterSetup(SourceAndConverter<?> sac) {
         if (!isRegistered(sac)) {
             register(sac);
         }
@@ -446,7 +440,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public synchronized void remove(SourceAndConverter... sacs ) {
+    public synchronized void remove(SourceAndConverter<?>... sacs ) {
         // Remove displays
         if (sacs != null) {
             if (bsds!=null) {
@@ -528,17 +522,23 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public List<SourceAndConverter> getSourceAndConverters() {
-        return objectService.getObjects(SourceAndConverter.class);
+    public List<SourceAndConverter<?>> getSourceAndConverters() {
+        List<SourceAndConverter> list = objectService.getObjects(SourceAndConverter.class);
+        List<SourceAndConverter<?>> nonRawList = new ArrayList<>();
+        list.forEach(source -> nonRawList.add(source));
+        return nonRawList;
     }
 
     @Override
-    public List<SourceAndConverter> getSourceAndConverterFromSpimdata(AbstractSpimData asd) {
-        return objectService.getObjects(SourceAndConverter.class)
+    public List<SourceAndConverter<?>> getSourceAndConverterFromSpimdata(AbstractSpimData<?> asd) {
+        List<SourceAndConverter> rawList = objectService.getObjects(SourceAndConverter.class)
                 .stream()
-                .filter(s -> (sacToMetadata.getIfPresent(s).get(SPIM_DATA_INFO) !=null))
-                .filter(s -> ((SpimDataInfo)sacToMetadata.getIfPresent(s).get(SPIM_DATA_INFO)).asd.equals(asd))
+                .filter(s -> (sacToMetadata.getIfPresent(s).get(SPIM_DATA_INFO) != null))
+                .filter(s -> ((SpimDataInfo) sacToMetadata.getIfPresent(s).get(SPIM_DATA_INFO)).asd.equals(asd))
                 .collect(Collectors.toList());
+        List<SourceAndConverter<?>> list = new ArrayList<>();
+        rawList.forEach(source -> list.add(source));
+        return list;
     }
 
     public void linkToSpimData( SourceAndConverter sac, AbstractSpimData asd, int idSetup) {
@@ -591,9 +591,9 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
 
-    Map<String, Consumer<SourceAndConverter[]>> actionMap = new ConcurrentHashMap<>();
+    Map<String, Consumer<SourceAndConverter<?>[]>> actionMap = new ConcurrentHashMap<>();
 
-    public void registerAction(String actionName, Consumer<SourceAndConverter[]> action) {
+    public void registerAction(String actionName, Consumer<SourceAndConverter<?>[]> action) {
         if (actionMap.containsKey(actionName)) {
             logger.warn("Overriding action "+actionName);
         }
@@ -604,13 +604,13 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         actionMap.remove(actionName);
     }
 
-    public Consumer<SourceAndConverter[]> getAction(String actionName) {
+    public Consumer<SourceAndConverter<?>[]> getAction(String actionName) {
         return actionMap.get(actionName);
     }
 
     @Override
-    public Set<AbstractSpimData> getSpimDatasets() {
-        Set<AbstractSpimData> asds = new HashSet<>();
+    public Set<AbstractSpimData<?>> getSpimDatasets() {
+        Set<AbstractSpimData<?>> asds = new HashSet<>();
         this.getSourceAndConverters().forEach(sac -> {
             if (containsMetadata(sac, SPIM_DATA_INFO)) {
                 asds.add(((SpimDataInfo)getMetadata(sac, SPIM_DATA_INFO)).asd);

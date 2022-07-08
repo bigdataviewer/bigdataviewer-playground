@@ -33,6 +33,8 @@ import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.type.numeric.ARGBType;
 import java.util.Arrays;
 import java.util.List;
+
+import net.imglib2.type.numeric.RealType;
 import org.scijava.listeners.*;
 
 /**
@@ -44,18 +46,18 @@ import org.scijava.listeners.*;
  * TODO : create a more generic convertersetup which can handle RealLUTConverter and ColorConverter
  */
 
-public class LUTConverterSetup implements ConverterSetup
+public class LUTConverterSetup<R extends RealType< R >> implements ConverterSetup
 {
-    protected final List<RealLUTConverter> converters;
+    protected final List<RealLUTConverter<R>> converters;
 
     private final Listeners.List< SetupChangeListener > listeners = new Listeners.SynchronizedList<>();
 
-    public LUTConverterSetup(final RealLUTConverter ... converters )
+    public LUTConverterSetup(final RealLUTConverter<R> ... converters )
     {
         this( Arrays.asList( converters ) );
     }
 
-    public LUTConverterSetup(final List< RealLUTConverter > converters  )
+    public LUTConverterSetup(final List< RealLUTConverter<R> > converters  )
     {
         this.converters = converters;
     }
@@ -63,7 +65,7 @@ public class LUTConverterSetup implements ConverterSetup
     @Override
     public void setDisplayRange( final double min, final double max )
     {
-        for ( final RealLUTConverter converter : converters ) {
+        for ( final RealLUTConverter<R> converter : converters ) {
             converter.setMin(min);
             converter.setMax(max);
         }

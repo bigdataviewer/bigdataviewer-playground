@@ -53,7 +53,7 @@ public class EmptySourceAdapter implements ISourceAdapter<EmptySource>{
     }
 
     @Override
-    public JsonElement serialize(SourceAndConverter sac, Type type, JsonSerializationContext jsonSerializationContext) {
+    public JsonElement serialize(SourceAndConverter<?> sac, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
         EmptySource source = (EmptySource) sac.getSpimSource();
         obj.add("empty_source_parameters", jsonSerializationContext.serialize(source.getParameters()));
@@ -61,7 +61,7 @@ public class EmptySourceAdapter implements ISourceAdapter<EmptySource>{
     }
 
     @Override
-    public SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public SourceAndConverter<?> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
         EmptySource.EmptySourceParams sourceParams = jsonDeserializationContext.deserialize(obj.get("empty_source_parameters"), EmptySource.EmptySourceParams.class);
 

@@ -53,7 +53,7 @@ public class InteractiveBrightnessAdjusterCommand extends InteractiveCommand imp
     String customsourcelabel = "Label your sources here";
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter(visibility=MESSAGE, required=false, style = "text field")
     String message = "Display Range [ NaN - NaN ]";
@@ -78,7 +78,7 @@ public class InteractiveBrightnessAdjusterCommand extends InteractiveCommand imp
         if ((!firstTimeCalled)&&(!secondTimeCalled)) {
             double minValue = min + minslider /1000.0*(max-min);
             double maxValue = min + maxslider /1000.0*(max-min);
-            for (SourceAndConverter source:sacs) {
+            for (SourceAndConverter<?> source:sacs) {
                 new BrightnessAdjuster(source, minValue, maxValue).run();
             }
         } else {

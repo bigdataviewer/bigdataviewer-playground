@@ -30,6 +30,7 @@ package sc.fiji.bdvpg.bdv.projector;
 
 import bdv.viewer.render.AccumulateProjectorARGB;
 import bdv.viewer.render.AccumulateProjectorFactory;
+import net.imglib2.type.numeric.ARGBType;
 import org.scijava.plugin.Plugin;
 import sc.fiji.persist.IClassRuntimeAdapter;
 
@@ -40,13 +41,14 @@ import sc.fiji.persist.IClassRuntimeAdapter;
 
 @Plugin(type = IClassRuntimeAdapter.class)
 public class DefaultAccumulatorFactoryAdapter implements IClassRuntimeAdapter<AccumulateProjectorFactory, AccumulateProjectorARGB.Factory> {
+    // TODO : Fix
     @Override
-    public Class<? extends  AccumulateProjectorFactory> getBaseClass() {
-        return  AccumulateProjectorFactory.class;
+    public Class<? extends AccumulateProjectorFactory> getBaseClass() {
+        return AccumulateProjectorFactory.class;
     }
 
     @Override
-    public Class<? extends  AccumulateProjectorARGB.Factory> getRunTimeClass() {
+    public Class<? extends AccumulateProjectorARGB.Factory> getRunTimeClass() {
         return AccumulateProjectorARGB.Factory.class;
     }
 
@@ -55,15 +57,4 @@ public class DefaultAccumulatorFactoryAdapter implements IClassRuntimeAdapter<Ac
         return false;
     }
 
-    /*@Override
-    public DefaultAccumulatorFactory deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        return new DefaultAccumulatorFactory();
-    }
-
-    @Override
-    public JsonElement serialize(DefaultAccumulatorFactory src, Type typeOfSrc, JsonSerializationContext context) {
-        JsonObject obj = new JsonObject();
-        //obj.addProperty("type", DefaultAccumulatorFactory.class.getSimpleName());
-        return obj;
-    }*/
 }

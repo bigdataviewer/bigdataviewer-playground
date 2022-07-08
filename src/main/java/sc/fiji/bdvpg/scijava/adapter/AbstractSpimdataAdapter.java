@@ -48,8 +48,8 @@ import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_LOCATI
 /**
  * Serializes SpimData objects
  */
-public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData>,
-        JsonDeserializer<AbstractSpimData> {
+public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData<?>>,
+        JsonDeserializer<AbstractSpimData<?>> {
 
     protected static Logger logger = LoggerFactory.getLogger(AbstractSpimData.class);
 
@@ -84,13 +84,13 @@ public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData>
     }
 
     @Override
-    public AbstractSpimData deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public AbstractSpimData<?> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         String datalocation = jsonElement.getAsJsonObject().get("datalocation").getAsString();
         //System.out.println("Deserialization of "+datalocation);
         if (datalocation.endsWith(".qpath")) {
             logger.error("qpath project unhandled in deserialization!");
         }
-        List<AbstractSpimData> asds =
+        List<AbstractSpimData<?>> asds =
                 SourceAndConverterServices
                         .getSourceAndConverterService()
                         .getSpimDatasets()

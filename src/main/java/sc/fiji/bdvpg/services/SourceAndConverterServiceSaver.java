@@ -58,7 +58,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter im
 
     File f;
 
-    List<SourceAndConverter> sacs;
+    List<SourceAndConverter<?>> sacs;
 
     public SourceAndConverterServiceSaver(File f, Context ctx) {
         this(f, ctx, SourceAndConverterServices
@@ -66,7 +66,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter im
                 .getSourceAndConverters());
     }
 
-    public SourceAndConverterServiceSaver(File f, Context ctx, List<SourceAndConverter> sacs) {
+    public SourceAndConverterServiceSaver(File f, Context ctx, List<SourceAndConverter<?>> sacs) {
         super(ctx, f.getParentFile());
         this.sacs = sacs;
         this.f = f;
@@ -77,7 +77,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter im
     }
 
 
-    Set<SourceAndConverter> setOfSourcesNeedingSerialization = new HashSet<>();
+    Set<SourceAndConverter<?>> setOfSourcesNeedingSerialization = new HashSet<>();
 
     @Override
     public void run() {
@@ -97,10 +97,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter im
             );
 
             // Then let's get back all the sacs - they may have increase in number
-            sacs = /*SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .getSourceAndConverters()*/
-                    new ArrayList<>(setOfSourcesNeedingSerialization);
+            sacs = new ArrayList<>(setOfSourcesNeedingSerialization);
 
 
             for (int i = 0; i < sacs.size(); i++) {
@@ -115,14 +112,14 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter im
             // Let's launch serialization of all SpimDatasets first
             // This forces a saving of all datasets before they can be required by other sourceAdnConverters
             // Serializes datasets - required to avoid serialization issues
-            Set<AbstractSpimData> asds = SourceAndConverterServices
+            Set<AbstractSpimData<?>> asds = SourceAndConverterServices
                     .getSourceAndConverterService()
                     .getSpimDatasets();
 
             // Avoid unnecessary serialization of unneeded spimdata
             asds = asds.stream()
                 .filter(asd -> {
-                    List<SourceAndConverter> sacs_in_asd = SourceAndConverterServices
+                    List<SourceAndConverter<?>> sacs_in_asd = SourceAndConverterServices
                             .getSourceAndConverterService()
                             .getSourceAndConverterFromSpimdata(asd);
                     return sacs_in_asd.stream()

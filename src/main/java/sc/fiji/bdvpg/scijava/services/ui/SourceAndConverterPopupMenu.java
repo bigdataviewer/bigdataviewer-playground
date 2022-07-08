@@ -154,7 +154,7 @@ public class SourceAndConverterPopupMenu
 	 * @param action action method
 	 * @param actionName action name
 	 */
-	public void addPopupAction( String actionName, Consumer<SourceAndConverter[]> action ) {
+	public void addPopupAction( String actionName, Consumer<SourceAndConverter<?>[]> action ) {
 		JMenuItem menuItem = new JMenuItem(actionName);
 		if (action == null) {
 			menuItem.addActionListener(e -> System.err.println("No action defined for action named "+actionName));

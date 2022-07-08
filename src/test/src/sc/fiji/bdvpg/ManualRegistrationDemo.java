@@ -173,7 +173,7 @@ public class ManualRegistrationDemo {
             SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacReference);
             new ViewerTransformAdjuster(bdvHandle, sacReference).run();
 
-            List<SourceAndConverter> sacList = SourceAndConverterServices.getSourceAndConverterService()
+            List<SourceAndConverter<?>> sacList = SourceAndConverterServices.getSourceAndConverterService()
                     .getSourceAndConverterFromSpimdata(asd);
 
             ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacList.toArray(new SourceAndConverter[sacList.size()]));
@@ -208,7 +208,7 @@ public class ManualRegistrationDemo {
             SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacReference);
             new ViewerTransformAdjuster(bdvHandle, sacReference).run();
 
-            List<SourceAndConverter> sacList = SourceAndConverterServices.getSourceAndConverterService()
+            List<SourceAndConverter<?>> sacList = SourceAndConverterServices.getSourceAndConverterService()
                     .getSourceAndConverterFromSpimdata(asd);
 
 

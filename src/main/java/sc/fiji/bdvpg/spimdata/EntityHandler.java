@@ -82,7 +82,7 @@ public interface EntityHandler extends SciJavaPlugin {
      * @param viewSetup viewSetup associated to the Source
      * @return true if this entity was loaded, the entity is not always loaded
      */
-    boolean loadEntity(AbstractSpimData spimData, BasicViewSetup viewSetup);
+    boolean loadEntity(AbstractSpimData<?> spimData, BasicViewSetup viewSetup);
 
     /**
      * This method is called after the SourceAndConverter object is created
@@ -91,7 +91,7 @@ public interface EntityHandler extends SciJavaPlugin {
      * @param sac current sourceandconverter being opened from the spimData object
      * @return true is the entity was loaded
      */
-    boolean loadEntity(AbstractSpimData spimData, BasicViewSetup viewSetup, SourceAndConverter<?> sac);
+    boolean loadEntity(AbstractSpimData<?> spimData, BasicViewSetup viewSetup, SourceAndConverter<?> sac);
 
     /**
      * If canCreateSourceAndConverter returns true, this function is called in order to
@@ -102,7 +102,7 @@ public interface EntityHandler extends SciJavaPlugin {
      * @param viewSetup viewsetup - helps to identify attributes and setup id
      * @return the SourceAndConverter newly created
      */
-    default SourceAndConverter<?> makeSourceAndConverter(AbstractSpimData spimData, BasicViewSetup viewSetup) {
+    default SourceAndConverter<?> makeSourceAndConverter(AbstractSpimData<?> spimData, BasicViewSetup viewSetup) {
         throw new UnsupportedOperationException("makeSourceAndConverter method needs to be overriden if used");
     };
 

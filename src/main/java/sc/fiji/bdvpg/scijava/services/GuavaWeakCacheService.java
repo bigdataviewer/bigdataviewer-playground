@@ -55,7 +55,7 @@ public class GuavaWeakCacheService extends AbstractService implements CacheServi
 
     private Cache<Object, Object> cache;
 
-    public Cache getCache() {
+    public Cache<Object, Object> getCache() {
         return cache;
     }
 

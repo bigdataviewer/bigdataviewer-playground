@@ -84,11 +84,11 @@ public class SourceAndConverterInspector {
      * @param sourceAndConverterService source service
      * @return the set of sources that were necessary to build the sac (including itself)
      */
-    public static Set<SourceAndConverter> appendInspectorResult(DefaultMutableTreeNode parent,
-                                                                SourceAndConverter sac,
+    public static Set<SourceAndConverter<?>> appendInspectorResult(DefaultMutableTreeNode parent,
+                                                                SourceAndConverter<?> sac,
                                                                 ISourceAndConverterService sourceAndConverterService,
                                                                 boolean registerIntermediateSources) {
-        Set<SourceAndConverter> subSources = new HashSet<>();
+        Set<SourceAndConverter<?>> subSources = new HashSet<>();
         subSources.add(sac);
 
         if (sac.getSpimSource() instanceof TransformedSource) {
@@ -264,7 +264,7 @@ public class SourceAndConverterInspector {
      */
     public static SourceAndConverter getRootSourceAndConverter(Source source) {
         SourceAndConverter sac;
-        List<SourceAndConverter> sacs = SourceAndConverterServices.getSourceAndConverterService()
+        List<SourceAndConverter<?>> sacs = SourceAndConverterServices.getSourceAndConverterService()
                 .getSourceAndConvertersFromSource(source);
         if (sacs.size()==0) {
             sac = SourceAndConverterHelper.createSourceAndConverter(source);

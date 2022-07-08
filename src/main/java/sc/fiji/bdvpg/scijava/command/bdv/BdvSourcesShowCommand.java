@@ -46,7 +46,7 @@ import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label="Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter(label="Auto Contrast")
     boolean autocontrast;
@@ -72,9 +72,9 @@ public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
 
         SourceAndConverterServices.getBdvDisplayService().show(bdvh, sacs);
         if (autocontrast) {
-            for (SourceAndConverter sac : sacs) {
+            for (SourceAndConverter<?> sac : sacs) {
                 int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
-                new BrightnessAutoAdjuster(sac, timepoint).run();
+                new BrightnessAutoAdjuster<>(sac, timepoint).run();
             }
         }
 

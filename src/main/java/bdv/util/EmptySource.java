@@ -163,6 +163,10 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
             at3D.set(p.at3D);
             name = p.name;
             voxelDimensions = p.voxelDimensions;
+            vx = p.vx;
+            vy = p.vy;
+            vz = p.vz;
+            unit = p.unit;
         }
     }
 }

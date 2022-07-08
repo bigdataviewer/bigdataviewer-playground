@@ -54,12 +54,12 @@ public class BvvSourcesAdderCommand implements BdvPlaygroundActionCommand {
     boolean adjustviewonsource;
 
     @Parameter(label = "Select source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Override
     public void run() {
 
-        for (SourceAndConverter sac : sacs) {
+        for (SourceAndConverter<?> sac : sacs) {
             if (sac.getSpimSource().getType() instanceof UnsignedShortType) {
 
                 bvvh.getConverterSetups()

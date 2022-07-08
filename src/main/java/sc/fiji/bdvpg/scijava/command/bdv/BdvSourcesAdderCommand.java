@@ -47,7 +47,7 @@ public class BdvSourcesAdderCommand implements BdvPlaygroundActionCommand {
     BdvHandle bdvh;
 
     @Parameter(label="Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter(label="Auto Contrast")
     boolean autocontrast;
@@ -60,9 +60,9 @@ public class BdvSourcesAdderCommand implements BdvPlaygroundActionCommand {
 
         SourceAndConverterServices.getBdvDisplayService().show(bdvh,  SourceAndConverterHelper.sortDefault(sacs));
         if (autocontrast) {
-            for (SourceAndConverter sac : sacs) {
+            for (SourceAndConverter<?> sac : sacs) {
                 int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
-                new BrightnessAutoAdjuster(sac, timepoint).run();
+                new BrightnessAutoAdjuster<>(sac, timepoint).run();
             }
         }
 
