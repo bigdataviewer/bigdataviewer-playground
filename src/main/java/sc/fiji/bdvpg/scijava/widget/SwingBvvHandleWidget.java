@@ -62,10 +62,10 @@ public class SwingBvvHandleWidget extends SwingInputWidget<BvvHandle> implements
         return getSelectedBvvHandle();
     }
 
-    JList list;
+    JList<RenamableBvvHandle> list;
 
     public BvvHandle getSelectedBvvHandle() {
-        return ((RenamableBvvHandle) list.getSelectedValue()).bvvh;
+        return (list.getSelectedValue()).bvvh;
     }
 
     @Parameter
@@ -79,7 +79,7 @@ public class SwingBvvHandleWidget extends SwingInputWidget<BvvHandle> implements
                   .stream()
                   .map(RenamableBvvHandle::new)
                   .toArray(RenamableBvvHandle[]::new);
-        list = new JList(data); //data has type Object[]
+        list = new JList<>(data); //data has type Object[]
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane listScroller = new JScrollPane(list);
         listScroller.setPreferredSize(new Dimension(250, 80));

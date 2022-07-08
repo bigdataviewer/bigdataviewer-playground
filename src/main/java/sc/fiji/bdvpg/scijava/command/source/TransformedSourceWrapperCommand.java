@@ -35,28 +35,22 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
-
-import java.util.Arrays;
 
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Wrap as Transformed Source")
 public class TransformedSourceWrapperCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter[] sacs_out;
+    SourceAndConverter<?>[] sacs_out;
 
     @Override
     public void run() {
-        SourceAffineTransformer sat = new SourceAffineTransformer(null, new AffineTransform3D());
-        sacs_out = new SourceAndConverter[sacs.length];
+        sacs_out = new SourceAndConverter<?>[sacs.length];
         for (int i=0;i< sacs.length;i++) {
-            SourceAndConverter sac = sacs[i];
-            sacs_out[i] = sat.apply(sac);
+            sacs_out[i] = new SourceAffineTransformer<>(null, new AffineTransform3D()).apply((SourceAndConverter<Object>) sacs[i]);
         }
     }
 }

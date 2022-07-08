@@ -77,7 +77,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
     /**
      * Filters SourceAndConverter to downstream nodes in the tree
      */
-    public Predicate<SourceAndConverter> filter;
+    public Predicate<SourceAndConverter<?>> filter;
 
     /**
      * Name of this node : displayed in the jtree
@@ -91,7 +91,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
 
     DefaultTreeModel model;
 
-    public SourceFilterNode(DefaultTreeModel model, String name, Predicate<SourceAndConverter> filter, boolean displayFilteredSources) {
+    public SourceFilterNode(DefaultTreeModel model, String name, Predicate<SourceAndConverter<?>> filter, boolean displayFilteredSources) {
         super(name);
         this.model = model;
         this.name = name;
@@ -119,7 +119,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
     public synchronized void insert(MutableTreeNode newChild, int childIndex) { // is synchronized useful ?
 
         if (((DefaultMutableTreeNode)newChild).getUserObject() instanceof RenamableSourceAndConverter) {
-            SourceAndConverter sac = getSacFromNode(newChild);
+            SourceAndConverter<?> sac = getSacFromNode(newChild);
             if (currentInputSacs.contains(sac)) {
                 // Nothing to be done
             } else {
@@ -149,7 +149,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
         }
     }
 
-    private static SourceAndConverter getSacFromNode(MutableTreeNode newChild) {
+    private static SourceAndConverter<?> getSacFromNode(MutableTreeNode newChild) {
         return ((RenamableSourceAndConverter)(((DefaultMutableTreeNode)newChild).getUserObject())).sac;
     }
 
@@ -165,7 +165,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
      * Removes a source and converter from this node and children nodes
      * @param sac source to remove
      */
-    void remove(SourceAndConverter sac) {
+    void remove(SourceAndConverter<?> sac) {
         currentInputSacs.remove(sac);
         currentOutputSacs.remove(sac);
 
@@ -195,12 +195,12 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
             NodeAddedUpdateEvent nodeEvent = (NodeAddedUpdateEvent) event;
             assert this.isNodeChild(nodeEvent.getNode());
             if (nodeEvent.getNode() instanceof SourceFilterNode) {
-                for (SourceAndConverter sac : currentOutputSacs) {
+                for (SourceAndConverter<?> sac : currentOutputSacs) {
                     ((SourceFilterNode) nodeEvent.getNode()).add(new DefaultMutableTreeNode(new RenamableSourceAndConverter(sac)));
                 }
             }
         } else if (event instanceof FilterUpdateEvent) {
-            for (SourceAndConverter sac : currentInputSacs) {
+            for (SourceAndConverter<?> sac : currentInputSacs) {
                 if (filter.test(sac)) {
                     if (!currentOutputSacs.contains(sac)) {
                         // a blocked source is now passing
@@ -229,7 +229,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
             }
         } else if (event instanceof SourceUpdateEvent){
             SourceUpdateEvent sourceEvent = (SourceUpdateEvent) event;
-            SourceAndConverter sac = sourceEvent.getSource();
+            SourceAndConverter<?> sac = sourceEvent.getSource();
             if (filter.test(sac)) {
                 if (!currentOutputSacs.contains(sac)) {
                     // a blocked source is now passing
@@ -303,13 +303,13 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
      * the full tree
      */
     public static class SourceUpdateEvent extends UpdateEvent {
-        final SourceAndConverter sac;
+        final SourceAndConverter<?> sac;
 
-        public SourceUpdateEvent(final SourceAndConverter sac) {
+        public SourceUpdateEvent(final SourceAndConverter<?> sac) {
             this.sac = sac;
         }
 
-        public SourceAndConverter getSource() {
+        public SourceAndConverter<?> getSource() {
             return sac;
         }
 

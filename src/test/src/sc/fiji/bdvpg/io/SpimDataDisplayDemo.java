@@ -64,7 +64,7 @@ public class SpimDataDisplayDemo
 		SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
 			SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
 			new ViewerTransformAdjuster(bdvHandle, sac).run();
-			new BrightnessAutoAdjuster(sac, 0).run();
+			new BrightnessAutoAdjuster<>(sac, 0).run();
 		});
 	}
 

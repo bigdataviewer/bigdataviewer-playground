@@ -31,7 +31,6 @@ package sc.fiji.bdvpg.bdv.navigate;
 import bdv.util.Affine3DHelpers;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import bdv.viewer.SynchronizedViewerState;
 import bdv.viewer.ViewerState;
 import net.imglib2.*;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -43,7 +42,6 @@ import sc.fiji.bdvpg.viewers.ViewerAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -61,20 +59,20 @@ import java.util.stream.Collectors;
 public class ViewerTransformAdjuster implements Runnable
 {
 	private final ViewerAdapter handle;
-	private final SourceAndConverter[] sources;
+	private final SourceAndConverter<?>[] sources;
 
-	public ViewerTransformAdjuster( BdvHandle bdvHandle, SourceAndConverter source )
+	public ViewerTransformAdjuster( BdvHandle bdvHandle, SourceAndConverter<?> source )
 	{
 		this(bdvHandle, new SourceAndConverter[]{source});
 	}
 
-	public ViewerTransformAdjuster( BdvHandle bdvHandle, SourceAndConverter[] sources )
+	public ViewerTransformAdjuster( BdvHandle bdvHandle, SourceAndConverter<?>[] sources )
 	{
 		this.handle = new ViewerAdapter(bdvHandle);
 		this.sources = sources;
 	}
 
-	public ViewerTransformAdjuster(ViewerAdapter handle, SourceAndConverter[] sources )
+	public ViewerTransformAdjuster(ViewerAdapter handle, SourceAndConverter<?>[] sources )
 	{
 		this.handle = handle;
 		this.sources = sources;
@@ -82,17 +80,15 @@ public class ViewerTransformAdjuster implements Runnable
 
 	public void run()
 	{
-		AffineTransform3D transform;
-		if (sources.length==0) {
-
-		} else if (sources.length==1) {
-		    transform = getTransform();
-			handle.state().setViewerTransform(transform);
-		} else {
-			transform = getTransformMultiSources();
+		if (sources.length != 0) {
+			AffineTransform3D transform;
+			if (sources.length==1) {
+				transform = getTransform();
+			} else {
+				transform = getTransformMultiSources();
+			}
 			handle.state().setViewerTransform(transform);
 		}
-
 	}
 
 	/**
@@ -118,7 +114,7 @@ public class ViewerTransformAdjuster implements Runnable
 
 		final int timepoint = state.getCurrentTimepoint();
 
-		SourceAndConverter source = sources[0];
+		SourceAndConverter<?> source = sources[0];
 
 		if ( !source.getSpimSource().isPresent( timepoint ) )
 			return new AffineTransform3D();
@@ -186,7 +182,7 @@ public class ViewerTransformAdjuster implements Runnable
 
 		final int timepoint = state.getCurrentTimepoint();
 
-		List<RealInterval> intervalList = Arrays.asList(sources).stream()
+		List<RealInterval> intervalList = Arrays.stream(sources)
 				.filter(sourceAndConverter -> sourceAndConverter.getSpimSource()!=null)
 				.filter(sourceAndConverter -> sourceAndConverter.getSpimSource().isPresent(timepoint))
 				.map(sourceAndConverter -> {
@@ -205,9 +201,7 @@ public class ViewerTransformAdjuster implements Runnable
 								Math.max(corner0.getDoublePosition(0), corner1.getDoublePosition(0)),
 								Math.max(corner0.getDoublePosition(1), corner1.getDoublePosition(1)),
 								Math.max(corner0.getDoublePosition(2), corner1.getDoublePosition(2))});
-				})
-				.filter(object -> object!=null)
-				.collect(Collectors.toList());
+				}).collect(Collectors.toList());
 
 		RealInterval boundingInterval = intervalList.stream().reduce(Intervals::union).get();
 

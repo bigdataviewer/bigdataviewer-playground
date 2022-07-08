@@ -30,6 +30,7 @@ package sc.fiji.bdvpg.sourceandconverter.transform;
 
 import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.SourceAndConverter;
+import net.imglib2.Volatile;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
@@ -48,13 +49,13 @@ import java.util.function.Function;
  */
 
 
-public class SourceAffineTransformer implements Runnable, Function<SourceAndConverter<?>, SourceAndConverter<?>> {
+public class SourceAffineTransformer<T> implements Runnable, Function<SourceAndConverter<T>, SourceAndConverter<T>> {
 
-    SourceAndConverter<?> sourceIn;
+    SourceAndConverter<T> sourceIn;
     final AffineTransform3D at3D;
-    SourceAndConverter<?> sourceOut;
+    SourceAndConverter<T> sourceOut;
 
-    public SourceAffineTransformer(SourceAndConverter<?> src, AffineTransform3D at3D) {
+    public SourceAffineTransformer(SourceAndConverter<T> src, AffineTransform3D at3D) {
         this.sourceIn = src;
         this.at3D = at3D;
     }
@@ -72,13 +73,13 @@ public class SourceAffineTransformer implements Runnable, Function<SourceAndConv
        sourceOut = apply(sourceIn);
     }
 
-    public SourceAndConverter<?> getSourceOut() {
-        return apply(sourceIn);//sourceOut;
+    public SourceAndConverter<T> getSourceOut() {
+        return apply(sourceIn);
     }
 
-    public SourceAndConverter<?> apply(SourceAndConverter<?> in) {
-        SourceAndConverter<?> sac;
-        TransformedSource<?> src = new TransformedSource<>(in.getSpimSource());
+    public SourceAndConverter<T> apply(SourceAndConverter<T> in) {
+        SourceAndConverter<T> sac;
+        TransformedSource<T> src = new TransformedSource(in.getSpimSource());
         src.setFixedTransform(at3D);
         if (in.asVolatile()!=null) {
             TransformedSource<?> vsrc = new TransformedSource<>(in.asVolatile().getSpimSource(), src);
@@ -89,4 +90,5 @@ public class SourceAffineTransformer implements Runnable, Function<SourceAndConv
         }
         return sac;
     }
+
 }

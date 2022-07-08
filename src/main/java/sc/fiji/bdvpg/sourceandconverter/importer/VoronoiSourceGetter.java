@@ -48,7 +48,7 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverter> {
+public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverter<?>> {
 
     // Size of the image in pixels
     final long[] imgSize;
@@ -68,36 +68,10 @@ public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverte
     }
 
     @Override
-    public SourceAndConverter get() {
+    public SourceAndConverter<?> get() {
         RandomAccessibleInterval voronoi = getVoronoiTestLabelImage(imgSize, numPts, copyImg);
-        /*VoxelDimensions voxDimensions = new VoxelDimensions() {
-            @Override
-            public String unit() {
-                return "undefined";
-            }
-
-            @Override
-            public void dimensions(double[] dimensions) {
-                dimensions[0] = 1;
-                dimensions[1] = 1;
-                dimensions[2] = 1;
-            }
-
-            @Override
-            public double dimension(int d) {
-                return 1;
-            }
-
-            @Override
-            public int numDimensions() {
-                return 3;
-            }
-        };*/
-
         Source s = new RandomAccessibleIntervalSource<>( voronoi, new FloatType(), new AffineTransform3D(), "Voronoi_"+numPts+" Pts_["+imgSize[0]+","+imgSize[1]+","+imgSize[2]+"]" );
-
         return SourceAndConverterHelper.createSourceAndConverter(s);
-
     }
 
     public static RandomAccessibleInterval<FloatType> getVoronoiTestLabelImage(final long[] imgTestSize, int numPts, boolean copyImg) {

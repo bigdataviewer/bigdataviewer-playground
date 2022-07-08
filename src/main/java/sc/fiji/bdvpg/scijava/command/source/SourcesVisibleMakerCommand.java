@@ -39,14 +39,14 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 public class SourcesVisibleMakerCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter
     SourceAndConverterBdvDisplayService bsds;
 
     @Override
     public void run() {
-        for (SourceAndConverter sac:sacs) {
+        for (SourceAndConverter<?> sac:sacs) {
             bsds.setVisible(sac, true);
         }
     }

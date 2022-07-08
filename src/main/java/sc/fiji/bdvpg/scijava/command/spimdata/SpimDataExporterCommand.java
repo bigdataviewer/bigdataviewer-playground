@@ -46,7 +46,7 @@ public class SpimDataExporterCommand implements BdvPlaygroundActionCommand {
 
     // To get associated spimdata
     @Parameter(label = "Select source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter(label = "Output File (XML)", style = "save")
     public File xmlfilepath;
@@ -64,7 +64,7 @@ public class SpimDataExporterCommand implements BdvPlaygroundActionCommand {
                 System.out.println("More than one source selected! Getting the first one to catch the linked spimdata object.");
             }
 
-            SourceAndConverter sac = sacs[0];
+            SourceAndConverter<?> sac = sacs[0];
 
             if (SourceAndConverterServices.getSourceAndConverterService()
                     .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO) == null) {
@@ -72,7 +72,7 @@ public class SpimDataExporterCommand implements BdvPlaygroundActionCommand {
                 return;
             }
 
-            AbstractSpimData asd =
+            AbstractSpimData<?> asd =
                     ((SourceAndConverterService.SpimDataInfo) SourceAndConverterServices.getSourceAndConverterService()
                             .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)).asd;
 

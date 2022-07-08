@@ -60,9 +60,9 @@ public class SourceTransformHelper {
      *
      * @param affineTransform3D affine transform 3d
      * @param sacTR source to transform
-     * @return transformed source
+     * @return transformed source<
      */
-    public static SourceAndConverter mutate(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
+    public static <T> SourceAndConverter<T> mutate(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange<T> sacTR) {
         if (sacTR.sac.getSpimSource() instanceof AbstractSpimSource) {
             if (SourceAndConverterServices.getSourceAndConverterService().getMetadata(sacTR.sac,SPIM_DATA_INFO)!=null) {
                 return mutateLastSpimdataTransformation(affineTransform3D, sacTR);
@@ -87,7 +87,7 @@ public class SourceTransformHelper {
      * @param sacTR source to transform
      * @return a transformed source ( same as the input for append, unless it's not possible )
      */
-    public static SourceAndConverter append(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
+    public static <T> SourceAndConverter<T> append(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange<T> sacTR) {
         if (sacTR.sac.getSpimSource() instanceof AbstractSpimSource) {
             if (SourceAndConverterServices.getSourceAndConverterService().getMetadata(sacTR.sac,SPIM_DATA_INFO)!=null) {
                 return appendNewSpimdataTransformation(affineTransform3D, sacTR);
@@ -109,7 +109,7 @@ public class SourceTransformHelper {
      * @param sacTR source to transform
      * @return transformed source
      */
-    public static SourceAndConverter set(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
+    public static <T> SourceAndConverter<T> set(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange<T> sacTR) {
         if (sacTR.sac.getSpimSource() instanceof AbstractSpimSource) {
             if (SourceAndConverterServices.getSourceAndConverterService().getMetadata(sacTR.sac,SPIM_DATA_INFO)!=null) {
                 return setLastSpimdataTransformation(affineTransform3D, sacTR);
@@ -133,7 +133,7 @@ public class SourceTransformHelper {
      * @param sacTR the source and a time range, combined in a single class {@link SourceAndConverterAndTimeRange}
      * @return the untransformed source, because the transformation has been canceled
      */
-    public static SourceAndConverter cancel(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
+    public static <T> SourceAndConverter<T> cancel(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange<T> sacTR) {
         return sacTR.sac;
     }
 
@@ -143,7 +143,7 @@ public class SourceTransformHelper {
      * @param sacTR the source and a time range, combined in a single class {@link SourceAndConverterAndTimeRange}
      * @return the untransformed source, because the transformation has been canceled
      */
-    public static SourceAndConverter log(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR, Consumer<String> logger) {
+    public static <T> SourceAndConverter<T> log(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange<T> sacTR, Consumer<String> logger) {
         System.out.println(affineTransform3D);
         return sacTR.sac;
     }
@@ -154,7 +154,7 @@ public class SourceTransformHelper {
      * @param sacTR source to transform
      * @return the transformed source (equals to the input, the underlying spimdata object has been modified)
      */
-    public static SourceAndConverter mutateLastSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
+    public static <T> SourceAndConverter<T> mutateLastSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange<T> sacTR) {
         assert SourceAndConverterServices
                 .getSourceAndConverterService()
                 .containsMetadata(sacTR.sac,SPIM_DATA_INFO);
@@ -184,11 +184,11 @@ public class SourceTransformHelper {
             try {
                 Method updateBdvSource = Class.forName("bdv.AbstractSpimSource").getDeclaredMethod("loadTimepoint", int.class);
                 updateBdvSource.setAccessible(true);
-                AbstractSpimSource ass = (AbstractSpimSource) sacTR.sac.getSpimSource();
+                AbstractSpimSource<?> ass = (AbstractSpimSource<?>) sacTR.sac.getSpimSource();
                 updateBdvSource.invoke(ass, timePoint);
 
                 if (sacTR.sac.asVolatile() != null) {
-                    ass = (AbstractSpimSource) sacTR.sac.asVolatile().getSpimSource();
+                    ass = (AbstractSpimSource<?>) sacTR.sac.asVolatile().getSpimSource();
                     updateBdvSource.invoke(ass, timePoint);
                 }
 
@@ -209,7 +209,7 @@ public class SourceTransformHelper {
      * @param sacTR source to transform
      * @return transformed source
      */
-    public static SourceAndConverter setLastSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
+    public static <T> SourceAndConverter<T> setLastSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange<T> sacTR) {
         assert SourceAndConverterServices
                 .getSourceAndConverterService()
                 .containsMetadata(sacTR.sac,SPIM_DATA_INFO);
@@ -235,11 +235,11 @@ public class SourceTransformHelper {
             try {
                 Method updateBdvSource = Class.forName("bdv.AbstractSpimSource").getDeclaredMethod("loadTimepoint", int.class);
                 updateBdvSource.setAccessible(true);
-                AbstractSpimSource ass = (AbstractSpimSource) sacTR.sac.getSpimSource();
+                AbstractSpimSource<?> ass = (AbstractSpimSource<?>) sacTR.sac.getSpimSource();
                 updateBdvSource.invoke(ass, timePoint);
 
                 if (sacTR.sac.asVolatile() != null) {
-                    ass = (AbstractSpimSource) sacTR.sac.asVolatile().getSpimSource();
+                    ass = (AbstractSpimSource<?>) sacTR.sac.asVolatile().getSpimSource();
                     updateBdvSource.invoke(ass, timePoint);
                 }
 
@@ -258,7 +258,7 @@ public class SourceTransformHelper {
      * @param sacTR source to transform
      * @return transformed source
      */
-    public static SourceAndConverter appendNewSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
+    public static <T> SourceAndConverter<T> appendNewSpimdataTransformation(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange<T> sacTR) {
         assert SourceAndConverterServices
                 .getSourceAndConverterService()
                 .containsMetadata(sacTR.sac,SPIM_DATA_INFO);
@@ -279,11 +279,11 @@ public class SourceTransformHelper {
             try {
                 Method updateBdvSource = Class.forName("bdv.AbstractSpimSource").getDeclaredMethod("loadTimepoint", int.class);
                 updateBdvSource.setAccessible(true);
-                AbstractSpimSource ass = (AbstractSpimSource) sacTR.sac.getSpimSource();
+                AbstractSpimSource<?> ass = (AbstractSpimSource<?>) sacTR.sac.getSpimSource();
                 updateBdvSource.invoke(ass, timePoint);
 
                 if (sacTR.sac.asVolatile() != null) {
-                    ass = (AbstractSpimSource) sacTR.sac.asVolatile().getSpimSource();
+                    ass = (AbstractSpimSource<?>) sacTR.sac.asVolatile().getSpimSource();
                     updateBdvSource.invoke(ass, timePoint);
                 }
 
@@ -303,8 +303,8 @@ public class SourceTransformHelper {
      * @param sacTR source to transform
      * @return transformed source
      */
-    public static SourceAndConverter createNewTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
-        SourceAndConverter transformedSac = new SourceAffineTransformer(sacTR.sac, affineTransform3D).getSourceOut();
+    public static <T> SourceAndConverter<T> createNewTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
+        SourceAndConverter<T> transformedSac = new SourceAffineTransformer<>(sacTR.sac, affineTransform3D).getSourceOut();
         return transformedSac;
     }
 
@@ -315,11 +315,11 @@ public class SourceTransformHelper {
      * @param sacTR source to transform
      * @return mutated transformed source, if possible
      */
-    public static SourceAndConverter mutateTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
+    public static <T> SourceAndConverter<T> mutateTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange<T> sacTR) {
         assert sacTR.sac.getSpimSource() instanceof TransformedSource;
         AffineTransform3D at3D = new AffineTransform3D();
-        ((TransformedSource)sacTR.sac.getSpimSource()).getFixedTransform(at3D);
-        ((TransformedSource)sacTR.sac.getSpimSource()).setFixedTransform(at3D.preConcatenate(affineTransform3D));
+        ((TransformedSource<T>)sacTR.sac.getSpimSource()).getFixedTransform(at3D);
+        ((TransformedSource<T>)sacTR.sac.getSpimSource()).setFixedTransform(at3D.preConcatenate(affineTransform3D));
         return sacTR.sac;
     }
 
@@ -331,13 +331,9 @@ public class SourceTransformHelper {
      * @param sacTR source to transform
      * @return transformed source
      */
-    public static SourceAndConverter setTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
+    public static <T> SourceAndConverter<T> setTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange<T> sacTR) {
         assert sacTR.sac.getSpimSource() instanceof TransformedSource;
-        //AffineTransform3D at3D = new AffineTransform3D();
-        ((TransformedSource)sacTR.sac.getSpimSource()).setFixedTransform(affineTransform3D);
-        //.getIncrementalTransform(at3D);
-        //((TransformedSource)sacTR.sac.getSpimSource()).getIncrementalTransform(at3D);//.getFixedTransform(at3D);
-        //((TransformedSource)sacTR.sac.getSpimSource()).setFixedTransform(at3D.inverse().preConcatenate(affineTransform3D));
+        ((TransformedSource<T>)sacTR.sac.getSpimSource()).setFixedTransform(affineTransform3D);
         return sacTR.sac;
     }
 

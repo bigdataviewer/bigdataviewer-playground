@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_LOCATION;
 
-public class SpimDataFromXmlImporter implements Runnable, Function<String, AbstractSpimData> {
+public class SpimDataFromXmlImporter implements Runnable, Function<String, AbstractSpimData<?>> {
 
     protected static Logger logger = LoggerFactory.getLogger(SpimDataFromXmlImporter.class);
 
@@ -61,13 +61,13 @@ public class SpimDataFromXmlImporter implements Runnable, Function<String, Abstr
         apply(dataLocation);
     }
 
-    public AbstractSpimData get() {
+    public AbstractSpimData<?> get() {
         return apply(dataLocation);
     }
 
     @Override
-    public AbstractSpimData apply(String dataLocation) {
-        AbstractSpimData sd = null;
+    public AbstractSpimData<?> apply(String dataLocation) {
+        AbstractSpimData<?> sd = null;
         try {
             sd = new XmlIoSpimData().load(dataLocation);
             SourceAndConverterServices.getSourceAndConverterService().register(sd);

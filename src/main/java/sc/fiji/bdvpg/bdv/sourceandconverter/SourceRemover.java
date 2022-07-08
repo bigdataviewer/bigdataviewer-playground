@@ -45,7 +45,7 @@ import java.util.function.Consumer;
  *
  */
 
-public class SourceRemover implements Runnable, Consumer<SourceAndConverter[]>
+public class SourceRemover implements Runnable, Consumer<SourceAndConverter<?>[]>
 {
 	final SourceAndConverter<?> sacIn;
 	final BdvHandle bdvh;

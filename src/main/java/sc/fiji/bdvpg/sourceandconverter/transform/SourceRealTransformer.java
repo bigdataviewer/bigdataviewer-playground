@@ -35,13 +35,13 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Function;
 
-public class SourceRealTransformer implements Runnable, Function<SourceAndConverter,SourceAndConverter> {
+public class SourceRealTransformer<T> implements Runnable, Function<SourceAndConverter<T>,SourceAndConverter<T>> {
 
-    SourceAndConverter sourceIn;
+    SourceAndConverter<T> sourceIn;
     final RealTransform rt;
-    SourceAndConverter sourceOut;
+    SourceAndConverter<T> sourceOut;
 
-    public SourceRealTransformer(SourceAndConverter src, RealTransform rt) {
+    public SourceRealTransformer(SourceAndConverter<T> src, RealTransform rt) {
         this.sourceIn = src;
         this.rt = rt;
     }
@@ -59,19 +59,19 @@ public class SourceRealTransformer implements Runnable, Function<SourceAndConver
         sourceOut = apply(sourceIn);
     }
 
-    public SourceAndConverter getSourceOut() {
+    public SourceAndConverter<T> getSourceOut() {
         return sourceOut;
     }
 
-    public SourceAndConverter apply(SourceAndConverter in) {
-        WarpedSource src = new WarpedSource(in.getSpimSource(), "Transformed_"+in.getSpimSource().getName(), () -> false);
+    public SourceAndConverter<T> apply(SourceAndConverter<T> in) {
+        WarpedSource<T> src = new WarpedSource<>(in.getSpimSource(), "Transformed_"+in.getSpimSource().getName(), () -> false);
         src.updateTransform(rt);
         src.setIsTransformed(true);
         if (in.asVolatile()!=null) {
-            WarpedSource vsrc = new WarpedSource(in.asVolatile().getSpimSource(), "Transformed_"+in.asVolatile().getSpimSource().getName(), () -> false);//f.apply(in.asVolatile().getSpimSource());
+            WarpedSource<?> vsrc = new WarpedSource<>(in.asVolatile().getSpimSource(), "Transformed_"+in.asVolatile().getSpimSource().getName(), () -> false);//f.apply(in.asVolatile().getSpimSource());
             vsrc.updateTransform(rt);
             vsrc.setIsTransformed(true);
-            SourceAndConverter vout = new SourceAndConverter<>(vsrc, SourceAndConverterHelper.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));
+            SourceAndConverter vout = new SourceAndConverter(vsrc, SourceAndConverterHelper.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));
             return new SourceAndConverter(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in), vout);
         } else {
             return new SourceAndConverter(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in));

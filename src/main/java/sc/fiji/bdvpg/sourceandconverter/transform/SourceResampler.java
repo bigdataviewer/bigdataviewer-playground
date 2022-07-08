@@ -36,11 +36,11 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Function;
 
-public class SourceResampler implements Runnable, Function<SourceAndConverter, SourceAndConverter> {
+public class SourceResampler implements Runnable, Function<SourceAndConverter<?>, SourceAndConverter<?>> {
 
-    SourceAndConverter sac_in;
+    SourceAndConverter<?> sac_in;
 
-    SourceAndConverter model;
+    SourceAndConverter<?> model;
 
     boolean reuseMipMaps;
 
@@ -52,7 +52,7 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
 
     private String name;
 
-    public SourceResampler( SourceAndConverter sac_in, SourceAndConverter model, String name, boolean reuseMipmaps, boolean cache, boolean interpolate, int defaultMipMapLevel ) {
+    public SourceResampler( SourceAndConverter<?> sac_in, SourceAndConverter<?> model, String name, boolean reuseMipmaps, boolean cache, boolean interpolate, int defaultMipMapLevel ) {
         this.name = name;
         this.reuseMipMaps = reuseMipmaps;
         this.model = model;
@@ -67,13 +67,13 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
 
     }
 
-    public SourceAndConverter get() {
+    public SourceAndConverter<?> get() {
         return apply(sac_in);
     }
 
     @Override
-    public SourceAndConverter apply(SourceAndConverter src) {
-        Source srcRsampled =
+    public SourceAndConverter<?> apply(SourceAndConverter<?> src) {
+        Source<?> srcRsampled =
                 new ResampledSource(
                         src.getSpimSource(),
                         model.getSpimSource(),
@@ -83,10 +83,10 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
                         interpolate,
                         defaultMipMapLevel);
 
-        SourceAndConverter sac;
+        SourceAndConverter<?> sac;
         if (src.asVolatile()!=null) {
-            SourceAndConverter vsac;
-            Source vsrcRsampled;
+            SourceAndConverter<?> vsac;
+            Source<?> vsrcRsampled;
             if (cache) {
                 vsrcRsampled = new VolatileSource(srcRsampled);
             } else {
@@ -101,10 +101,10 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
             }
             vsac = new SourceAndConverter(vsrcRsampled,
                     SourceAndConverterHelper.cloneConverter(src.asVolatile().getConverter(), src.asVolatile()));
-            sac = new SourceAndConverter<>(srcRsampled,
+            sac = new SourceAndConverter(srcRsampled,
                     SourceAndConverterHelper.cloneConverter(src.getConverter(), src),vsac);
         } else {
-            sac = new SourceAndConverter<>(srcRsampled,
+            sac = new SourceAndConverter(srcRsampled,
                     SourceAndConverterHelper.cloneConverter(src.getConverter(), src));
         }
 

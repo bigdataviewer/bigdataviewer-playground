@@ -45,12 +45,12 @@ public class SourceColorChangerCommand implements BdvPlaygroundActionCommand {
     ColorRGB color = new ColorRGB(255,255,255);
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Override
     public void run() {
         ARGBType imglib2color = new ARGBType(ARGBType.rgba(color.getRed(), color.getGreen(), color.getBlue(), 255));// Fully opaque color.getAlpha()));
-        for (SourceAndConverter sac : sacs) {
+        for (SourceAndConverter<?> sac : sacs) {
             new ColorChanger(sac, imglib2color).run();
         }
         SourceAndConverterServices.getBdvDisplayService().updateDisplays( sacs );

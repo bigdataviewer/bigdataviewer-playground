@@ -40,15 +40,13 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 public class SourcesRemoverCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter
 	SourceAndConverterService bss;
 
     @Override
     public void run() {
-        //for (SourceAndConverter sac:sacs) {
         bss.remove(sacs);
-        //}
     }
 }

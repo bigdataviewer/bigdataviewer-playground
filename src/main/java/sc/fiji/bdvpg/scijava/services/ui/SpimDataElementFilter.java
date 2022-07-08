@@ -55,7 +55,7 @@ public class SpimDataElementFilter extends SourceFilterNode {
         this.sourceAndConverterService = sourceAndConverterService;
     }
 
-    public boolean filter(SourceAndConverter sac) {
+    public boolean filter(SourceAndConverter<?> sac) {
         if (sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO)) {
             AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>> asd = ( AbstractSpimData<AbstractSequenceDescription<BasicViewSetup,?,?>>) (( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).asd;
             Integer idx = (( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).setupId;

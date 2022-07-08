@@ -80,7 +80,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
     protected static Logger logger = LoggerFactory.getLogger(XmlHDF5SpimdataExporter.class);
 
-    List<SourceAndConverter> sources;
+    List<SourceAndConverter<?>> sources;
 
     int nThreads;
 
@@ -102,7 +102,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
     String entityType;
 
-    public XmlHDF5SpimdataExporter(List<SourceAndConverter> sources,
+    public XmlHDF5SpimdataExporter(List<SourceAndConverter<?>> sources,
                                    String entityType,
                                    int nThreads,
                                    int timePointBegin,
@@ -121,7 +121,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
     }
 
-    public XmlHDF5SpimdataExporter(List<SourceAndConverter> sources,
+    public XmlHDF5SpimdataExporter(List<SourceAndConverter<?>> sources,
                                    String entityType,
                                    int nThreads,
                                    int timePointBegin,
@@ -152,7 +152,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
     }
 
-    AbstractSpimData spimData;
+    AbstractSpimData<?> spimData;
 
     BiConsumer<SourceAndConverter<?>, BasicViewSetup> attributeAdder;
 
@@ -275,7 +275,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
                     basicviewsetup.setAttribute(new Tile(idx_current_src+1));
                 }
 
-                SourceAndConverter sac = sources.get(idxSourceToSac.get(src));
+                SourceAndConverter<?> sac = sources.get(idxSourceToSac.get(src));
 
                 attributeAdder.accept(sac, basicviewsetup);
 

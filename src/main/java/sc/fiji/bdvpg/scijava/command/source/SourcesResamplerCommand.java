@@ -41,10 +41,10 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
 public class SourcesResamplerCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter
-    SourceAndConverter model;
+    SourceAndConverter<?> model;
 
     @Parameter(label="Re-use MipMaps")
     boolean reusemipmaps;
@@ -62,16 +62,16 @@ public class SourcesResamplerCommand implements BdvPlaygroundActionCommand {
     String name; // CSV separate for multiple sources
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter[] sacs_out;
+    SourceAndConverter<?>[] sacs_out;
 
 
     @Override
     public void run() {
         // Should not be parallel
-        sacs_out = new SourceAndConverter[sacs.length];
+        sacs_out = new SourceAndConverter<?>[sacs.length];
         final String[] names = name.split( "," );
         for (int i=0;i< sacs.length;i++) {
-            SourceAndConverter sac = sacs[i];
+            SourceAndConverter<?> sac = sacs[i];
             sacs_out[i] = new SourceResampler(sac, model, names[i], reusemipmaps, cache, interpolate, defaultmipmaplevel).get();
         }
     }

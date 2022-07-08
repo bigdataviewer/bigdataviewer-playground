@@ -79,7 +79,7 @@ public class SwingBdvHandleWidget extends SwingInputWidget<BdvHandle> implements
                   .stream()
                   .map(RenamableBdvHandle::new)
                   .toArray(RenamableBdvHandle[]::new);
-        list = new JList(data); //data has type Object[]
+        list = new JList<>(data); //data has type Object[]
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane listScroller = new JScrollPane(list);
         listScroller.setPreferredSize(new Dimension(250, 80));

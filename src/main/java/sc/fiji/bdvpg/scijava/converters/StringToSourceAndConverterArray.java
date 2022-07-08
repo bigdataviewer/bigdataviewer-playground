@@ -43,7 +43,7 @@ import javax.swing.tree.TreePath;
  */
 
 @Plugin(type = org.scijava.convert.Converter.class)
-public class StringToSourceAndConverterArray<I extends String> extends AbstractConverter<I, SourceAndConverter[]> {
+public class StringToSourceAndConverterArray<I extends String> extends AbstractConverter<I, SourceAndConverter<?>[]> {
 
     @Parameter
     SourceAndConverterService sacsService;

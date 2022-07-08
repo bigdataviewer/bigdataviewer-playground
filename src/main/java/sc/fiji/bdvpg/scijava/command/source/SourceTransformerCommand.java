@@ -50,7 +50,7 @@ description = "Applies an affine transformation on several sources.")
 
 public class SourceTransformerCommand implements BdvPlaygroundActionCommand {
     @Parameter(label = "Select source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter(label = "Matrix as comma separated numbers", required = false, callback = "parseInput")
     String matrixCsv;
@@ -67,7 +67,7 @@ public class SourceTransformerCommand implements BdvPlaygroundActionCommand {
     @Override
     public void run() {
 
-        for (SourceAndConverter sac : sacs) {
+        for (SourceAndConverter<?> sac : sacs) {
             AffineTransform3D at3D_global = new AffineTransform3D();
 
             at3D_global.set(m00, m01,m02,tx,m10,m11,m12,ty,m20,m21,m22,tz);

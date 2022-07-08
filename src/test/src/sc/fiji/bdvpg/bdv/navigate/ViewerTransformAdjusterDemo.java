@@ -60,7 +60,7 @@ public class ViewerTransformAdjusterDemo
         // Import SpimData object
         SpimDataFromXmlImporter sdix = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml");
 
-        AbstractSpimData asd = sdix.get();
+        AbstractSpimData<?> asd = sdix.get();
 
         // Register to the sourceandconverter service
         SourceAndConverterServices.getSourceAndConverterService().register(asd);

@@ -59,7 +59,7 @@ public class SpimDataPostprocessor extends AbstractPostprocessorPlugin {
        module.getOutputs().forEach((name, object)-> {
            //log.accept("input:\t"+name+"\tclass:\t"+object.getClass().getSimpleName());
            if (object instanceof AbstractSpimData) {
-               AbstractSpimData asd = (AbstractSpimData) object;
+               AbstractSpimData<?> asd = (AbstractSpimData<?>) object;
                log.accept("SpimData found.");
                bss.register(asd);
                module.resolveOutput(name);
@@ -68,9 +68,9 @@ public class SpimDataPostprocessor extends AbstractPostprocessorPlugin {
                    bss.setSpimDataName(asd, datasetname);
                }
            }
-           if (object instanceof AbstractSpimData[]) {
-               AbstractSpimData[] asds = (AbstractSpimData[]) object;
-               for (AbstractSpimData asd:asds) {
+           if (object instanceof AbstractSpimData<?>[]) {
+               AbstractSpimData<?>[] asds = (AbstractSpimData<?>[]) object;
+               for (AbstractSpimData<?> asd:asds) {
                    log.accept( "SpimData found." );
                    bss.register( asd );
                    module.resolveOutput( name );

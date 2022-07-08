@@ -40,8 +40,6 @@ import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,9 +58,9 @@ public class XmlHDF5SpimdataExporterTest {
 
         // Arrange
         // creates a Voronoi SourceAndConverter
-        SourceAndConverter sac = new VoronoiSourceGetter(new long[]{512,512,1},256,true).get();
+        SourceAndConverter<?> sac = new VoronoiSourceGetter(new long[]{512,512,1},256,true).get();
         // Puts it into a List
-        List<SourceAndConverter> sacs = new ArrayList<>();
+        List<SourceAndConverter<?>> sacs = new ArrayList<>();
         sacs.add(sac);
         // Makes temp file which will be deleted at the end of the test execution
         File fileXmlGen = folder.newFile("testVoronoi.xml");

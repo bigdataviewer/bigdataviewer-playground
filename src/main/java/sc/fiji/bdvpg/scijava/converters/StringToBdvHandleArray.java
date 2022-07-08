@@ -69,7 +69,7 @@ public class StringToBdvHandleArray<I extends String> extends AbstractConverter<
     }
 
     @Override
-    public Class getOutputType() {
+    public Class<BdvHandle[]> getOutputType() {
         return BdvHandle[].class;
     }
 

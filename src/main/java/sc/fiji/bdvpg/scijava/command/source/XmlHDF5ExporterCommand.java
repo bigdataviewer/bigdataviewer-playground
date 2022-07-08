@@ -42,7 +42,7 @@ import java.util.Arrays;
 public class XmlHDF5ExporterCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter(label = "Each source is an independent", choices = {"Channel", "Tile"})
     String entitytype;
