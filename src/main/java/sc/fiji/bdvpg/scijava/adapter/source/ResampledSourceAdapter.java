@@ -91,7 +91,7 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
     }
 
     @Override
-    public SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public SourceAndConverter<?> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject obj = jsonElement.getAsJsonObject();
         int origin_source_id = obj.getAsJsonPrimitive("origin_source_id").getAsInt();
         int model_source_id = obj.getAsJsonPrimitive("model_source_id").getAsInt();
@@ -102,8 +102,8 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
         boolean reuseMipMaps = obj.getAsJsonPrimitive("mipmaps_reused").getAsBoolean();
         int defaultMipMapLevel = obj.getAsJsonPrimitive("defaultMipmapLevel").getAsInt();
 
-        SourceAndConverter originSac;
-        SourceAndConverter modelSac;
+        SourceAndConverter<?> originSac;
+        SourceAndConverter<?> modelSac;
 
         if (sacSerializer.getIdToSac().containsKey(origin_source_id)) {
             // Already deserialized
@@ -133,10 +133,7 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
             return null;
         }
 
-        SourceAndConverter sac = new SourceResampler(originSac, modelSac, name, reuseMipMaps, cache, interpolation.equals(Interpolation.NLINEAR), defaultMipMapLevel).get();
-
-        /*SourceAndConverterServices.getSourceAndConverterService()
-                .register(sac);*/
+        SourceAndConverter<?> sac = new SourceResampler(originSac, modelSac, name, reuseMipMaps, cache, interpolation.equals(Interpolation.NLINEAR), defaultMipMapLevel).get();
 
         return sac;
     }

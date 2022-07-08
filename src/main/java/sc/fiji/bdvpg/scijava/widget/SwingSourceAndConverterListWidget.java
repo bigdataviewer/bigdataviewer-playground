@@ -57,7 +57,7 @@ import java.util.Set;
  */
 
 @Plugin(type = InputWidget.class)
-public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAndConverter[]> implements
+public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAndConverter<?>[]> implements
         SourceAndConverterListWidget<JPanel> {
 
     @Override

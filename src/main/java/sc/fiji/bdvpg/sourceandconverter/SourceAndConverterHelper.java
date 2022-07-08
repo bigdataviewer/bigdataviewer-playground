@@ -106,9 +106,9 @@ public class SourceAndConverterHelper {
      * @param source source
      * @return a sourceandconverter from the source
      */
-    public static SourceAndConverter createSourceAndConverter(Source source) {
+    public static SourceAndConverter<?> createSourceAndConverter(Source<?> source) {
         Converter nonVolatileConverter;
-        SourceAndConverter out;
+        SourceAndConverter<?> out;
         if (source.getType() instanceof RealType) {
 
             nonVolatileConverter = createConverterRealType((RealType) source.getType());
@@ -234,7 +234,7 @@ public class SourceAndConverterHelper {
      * Creates converters and convertersetup for a ARGB typed sourceandconverter
      * @param source source
      */
-    static private ConverterSetup createConverterSetupARGBType(SourceAndConverter source) {
+    static private ConverterSetup createConverterSetupARGBType(SourceAndConverter<?> source) {
         ConverterSetup setup;
         if (source.getConverter() instanceof ColorConverter) {
             setup = BigDataViewer.createConverterSetup(source, -1);
@@ -249,7 +249,7 @@ public class SourceAndConverterHelper {
      * Creates converters and convertersetup for a real typed sourceandconverter
      * @param source source
      */
-    static private ConverterSetup createConverterSetupRealType(SourceAndConverter source) {
+    static private ConverterSetup createConverterSetupRealType(SourceAndConverter<?> source) {
         final ConverterSetup setup;
         if (source.getConverter() instanceof ColorConverter) {
             setup = BigDataViewer.createConverterSetup(source, -1);
@@ -413,7 +413,7 @@ public class SourceAndConverterHelper {
      * @param sacs sources
      * @return the max timepoint found in this source according to the next method ( check limitations )
      */
-    public static int getMaxTimepoint(SourceAndConverter[] sacs) {
+    public static int getMaxTimepoint(SourceAndConverter<?>[] sacs) {
 	    int max = 0;
 	    for (SourceAndConverter<?> sac : sacs) {
 	        int sourceMax = getMaxTimepoint(sac);
@@ -489,7 +489,7 @@ public class SourceAndConverterHelper {
      * @param timePoint timepoint investigated
      * @return true if the source is present
      */
-    public static boolean isSourcePresentAt(SourceAndConverter sac, int timePoint, RealPoint pt) {
+    public static boolean isSourcePresentAt(SourceAndConverter<?> sac, int timePoint, RealPoint pt) {
 
         RealRandomAccessible rra_ible = sac.getSpimSource().getInterpolatedSource(timePoint, 0, Interpolation.NEARESTNEIGHBOR);
 
@@ -505,7 +505,7 @@ public class SourceAndConverterHelper {
             rra.setPosition(iPt);
 
             // Gets converter -> will decide based on ARGB value whether the source is present or not
-            Converter<Object, ARGBType> cvt = sac.getConverter();
+            Converter<Object, ARGBType> cvt = (Converter<Object, ARGBType>) sac.getConverter();
             ARGBType colorOut = new ARGBType();
             cvt.convert(rra.get(), colorOut);
 
@@ -521,7 +521,7 @@ public class SourceAndConverterHelper {
 
     }
 
-    public static SourceAndConverter[] sortDefault(SourceAndConverter[] sacs) {
+    public static SourceAndConverter<?>[] sortDefault(SourceAndConverter<?>[] sacs) {
         return sortDefaultNoGeneric(Arrays.asList(sacs)).toArray(new SourceAndConverter[0]);
     }
 
@@ -549,7 +549,7 @@ public class SourceAndConverterHelper {
             }
         });
 
-        Comparator<SourceAndConverter> sacComparator = (s1, s2) -> {
+        Comparator<SourceAndConverter<?>> sacComparator = (s1, s2) -> {
             // Those who do not belong to spimdata are last:
             SourceAndConverterService.SpimDataInfo sdi1 = null, sdi2 = null;
             if (SourceAndConverterServices
@@ -599,6 +599,7 @@ public class SourceAndConverterHelper {
      * @param sacs sources
      * @return ordered sources
      */
+    @Deprecated
     public static List<SourceAndConverter> sortDefaultNoGeneric(Collection<SourceAndConverter> sacs) {
         List<SourceAndConverter> sortedList = new ArrayList<>(sacs.size());
         sortedList.addAll(sacs);
@@ -822,7 +823,7 @@ public class SourceAndConverterHelper {
      * @param voxSize target voxel size
      * @return mipmap level chosen
      */
-    public static int bestLevel(SourceAndConverter sac, int t, double voxSize) {
+    public static int bestLevel(SourceAndConverter<?> sac, int t, double voxSize) {
         return bestLevel(sac.getSpimSource(), t, voxSize);
     }
     
@@ -856,11 +857,11 @@ public class SourceAndConverterHelper {
                 rootOrigin = ((WarpedSource) rootOrigin).getWrappedSource();
             } else if (rootOrigin instanceof TransformedSource) {
                 AffineTransform3D m = new AffineTransform3D();
-                ((TransformedSource) rootOrigin).getFixedTransform(m);
+                ((TransformedSource<?>) rootOrigin).getFixedTransform(m);
                 chainedSourceTransform.concatenate(m);
-                rootOrigin = ((TransformedSource) rootOrigin).getWrappedSource();
+                rootOrigin = ((TransformedSource<?>) rootOrigin).getWrappedSource();
             } else if (rootOrigin instanceof ResampledSource) {
-                rootOrigin = ((ResampledSource) rootOrigin).getModelResamplerSource();
+                rootOrigin = ((ResampledSource<?>) rootOrigin).getModelResamplerSource();
             }
         }
         return rootOrigin;
@@ -873,7 +874,7 @@ public class SourceAndConverterHelper {
      * @param level mipmap level
      * @return the characteristic voxel size for this level
      */
-    public static double getCharacteristicVoxelSize(SourceAndConverter sac, int t, int level) {
+    public static double getCharacteristicVoxelSize(SourceAndConverter<?> sac, int t, int level) {
         return getCharacteristicVoxelSize(sac.getSpimSource(), t, level);
     }
 
@@ -945,7 +946,7 @@ public class SourceAndConverterHelper {
      * @param direction of the ray
      * @return a list of double position along the ray which should sample each pixel
      */
-    public static List<Double> rayIntersect(SourceAndConverter sac, int timepoint, RealPoint origin, RealPoint direction) {
+    public static List<Double> rayIntersect(SourceAndConverter<?> sac, int timepoint, RealPoint origin, RealPoint direction) {
         if (sac.getSpimSource()==null) {
             return new ArrayList<>();
         } else {

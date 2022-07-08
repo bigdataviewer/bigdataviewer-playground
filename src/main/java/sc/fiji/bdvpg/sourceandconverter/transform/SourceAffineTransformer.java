@@ -48,13 +48,13 @@ import java.util.function.Function;
  */
 
 
-public class SourceAffineTransformer implements Runnable, Function<SourceAndConverter, SourceAndConverter> {
+public class SourceAffineTransformer implements Runnable, Function<SourceAndConverter<?>, SourceAndConverter<?>> {
 
-    SourceAndConverter sourceIn;
+    SourceAndConverter<?> sourceIn;
     final AffineTransform3D at3D;
-    SourceAndConverter sourceOut;
+    SourceAndConverter<?> sourceOut;
 
-    public SourceAffineTransformer(SourceAndConverter src, AffineTransform3D at3D) {
+    public SourceAffineTransformer(SourceAndConverter<?> src, AffineTransform3D at3D) {
         this.sourceIn = src;
         this.at3D = at3D;
     }
@@ -72,18 +72,18 @@ public class SourceAffineTransformer implements Runnable, Function<SourceAndConv
        sourceOut = apply(sourceIn);
     }
 
-    public SourceAndConverter getSourceOut() {
+    public SourceAndConverter<?> getSourceOut() {
         return apply(sourceIn);//sourceOut;
     }
 
-    public SourceAndConverter apply(SourceAndConverter in) {
-        SourceAndConverter sac;
-        TransformedSource src = new TransformedSource(in.getSpimSource());
+    public SourceAndConverter<?> apply(SourceAndConverter<?> in) {
+        SourceAndConverter<?> sac;
+        TransformedSource<?> src = new TransformedSource<>(in.getSpimSource());
         src.setFixedTransform(at3D);
         if (in.asVolatile()!=null) {
-            TransformedSource vsrc = new TransformedSource(in.asVolatile().getSpimSource(), src);
-            SourceAndConverter vout = new SourceAndConverter<>(vsrc, SourceAndConverterHelper.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));
-            sac = new SourceAndConverter<>(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in), vout);
+            TransformedSource<?> vsrc = new TransformedSource<>(in.asVolatile().getSpimSource(), src);
+            SourceAndConverter<?> vout = new SourceAndConverter<>(vsrc, SourceAndConverterHelper.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));
+            sac = new SourceAndConverter(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in), vout);
         } else {
             sac = new SourceAndConverter<>(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in));
         }

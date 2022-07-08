@@ -68,7 +68,7 @@ public class ScijavaSwingUI {
         return panel;
     }
 
-    static public Module createModule(Context context, Class commandClass, Object... args) throws ModuleException {
+    static public Module createModule(Context context, Class<? extends Command> commandClass, Object... args) throws ModuleException {
         Module module = context.getService(CommandService.class).getCommand(commandClass).createModule();
         context.inject(module);
 

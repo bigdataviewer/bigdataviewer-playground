@@ -56,7 +56,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
 
     sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer;
 
-    Map<Class<? extends Source>, ISourceAdapter> sourceSerializers = new HashMap<>();
+    Map<Class<? extends Source<?>>, ISourceAdapter> sourceSerializers = new HashMap<>();
     Map<String, ISourceAdapter> sourceSerializersFromName = new HashMap<>();
 
     public SourceAndConverterAdapter(sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer) {
@@ -121,7 +121,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
         }
     }
 
-    JsonElement serializeSubClass (SourceAndConverter sourceAndConverter,
+    JsonElement serializeSubClass (SourceAndConverter<?> sourceAndConverter,
                                           Type type,
                                           JsonSerializationContext jsonSerializationContext) throws UnsupportedOperationException {
 
@@ -135,7 +135,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
     }
 
     @Override
-    public SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public SourceAndConverter<?> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
 
         String sourceClass = jsonObject.getAsJsonPrimitive("source_class").getAsString();
@@ -145,7 +145,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
             throw new UnsupportedOperationException();
         }
 
-        SourceAndConverter sac = sourceSerializersFromName.get(sourceClass)
+        SourceAndConverter<?> sac = sourceSerializersFromName.get(sourceClass)
                 .deserialize(jsonObject.get("sac"), SourceAndConverter.class, jsonDeserializationContext);
 
         if (sac != null) {

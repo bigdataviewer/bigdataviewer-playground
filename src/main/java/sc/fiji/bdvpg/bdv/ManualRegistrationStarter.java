@@ -70,18 +70,18 @@ public class ManualRegistrationStarter implements Runnable {
     /**
      * Sources that will be transformed
      */
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     /**
      * From the sources that will be transformed, list of sources which were actually
      * displayed at the beginning of the action
      */
-    List<SourceAndConverter> originallyDisplayedSacs = new ArrayList<>();
+    List<SourceAndConverter<?>> originallyDisplayedSacs = new ArrayList<>();
 
     /**
      * Transient transformed source displayed for the registration
      */
-    List<SourceAndConverter> displayedSacsWrapped = new ArrayList<>();
+    List<SourceAndConverter<?>> displayedSacsWrapped = new ArrayList<>();
 
     /**
      * bdvHandle used for the manual registration
@@ -99,7 +99,7 @@ public class ManualRegistrationStarter implements Runnable {
      */
     TransformListener<AffineTransform3D> manualRegistrationListener;
 
-    public ManualRegistrationStarter(BdvHandle bdvHandle, SourceAndConverter... sacs) {
+    public ManualRegistrationStarter(BdvHandle bdvHandle, SourceAndConverter<?>... sacs) {
             this.sacs = sacs;
             this.bdvHandle = bdvHandle;
     }
@@ -107,7 +107,7 @@ public class ManualRegistrationStarter implements Runnable {
     @Override
     public void run() {
 
-        for (SourceAndConverter sourceAndConverter : sacs) {
+        for (SourceAndConverter<?> sourceAndConverter : sacs) {
 
             // Wraps into a Transformed Source, if the source was displayed originally
             if (SourceAndConverterServices.getBdvDisplayService().getDisplaysOf(sourceAndConverter).contains(bdvHandle)) {
@@ -137,7 +137,7 @@ public class ManualRegistrationStarter implements Runnable {
                 currentRegistration.concatenate(originalViewTransform);
 
                 // Sets view transform fo transiently wrapped source to maintain relative position
-                displayedSacsWrapped.forEach(sac -> ((TransformedSource) sac.getSpimSource()).setFixedTransform(currentRegistration));
+                displayedSacsWrapped.forEach(sac -> ((TransformedSource<?>) sac.getSpimSource()).setFixedTransform(currentRegistration));
         };
 
         // Sets the listener
@@ -160,7 +160,7 @@ public class ManualRegistrationStarter implements Runnable {
      * Returns the transient wrapped transformed sources displayed (and then used by the user for the registration)
      * @return the transient wrapped transformed sources displayed (and then used by the user for the registration)
      */
-    public List<SourceAndConverter> getTransformedSourceAndConverterDisplayed() {
+    public List<SourceAndConverter<?>> getTransformedSourceAndConverterDisplayed() {
         return displayedSacsWrapped;
     }
 
@@ -168,7 +168,7 @@ public class ManualRegistrationStarter implements Runnable {
      * Returns the sources that need to be registered
      * @return the sources that need to be registered
      */
-    public SourceAndConverter[] getOriginalSourceAndConverter() {
+    public SourceAndConverter<?>[] getOriginalSourceAndConverter() {
         return sacs;
     }
 
@@ -176,7 +176,7 @@ public class ManualRegistrationStarter implements Runnable {
      * Returns the sources (within the sources that need to be transformed) that were originally displayed in the bdvHandle
      * @return the sources (within the sources that need to be transformed) that were originally displayed in the bdvHandle
      */
-    public List<SourceAndConverter> getOriginallyDisplayedSourceAndConverter() {
+    public List<SourceAndConverter<?>> getOriginallyDisplayedSourceAndConverter() {
         return originallyDisplayedSacs;
     }
 

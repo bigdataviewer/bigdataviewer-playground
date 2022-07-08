@@ -336,7 +336,7 @@ public class SourceAndConverterServiceUI {
      * - adds a node per source which summarizes the results of the inspection
      * @param sacs sources that should be inspected
      */
-    public void inspectSources(SourceAndConverter[] sacs) {
+    public void inspectSources(SourceAndConverter<?>[] sacs) {
         for (SourceAndConverter sac:sacs) {
             inspectSource(sac);
         }
@@ -543,17 +543,17 @@ public class SourceAndConverterServiceUI {
      * - the list does not contain duplicates
      * - the list is ordered according to {@link SourceAndConverterHelper#sortDefaultNoGeneric}
      */
-    public SourceAndConverter[] getSelectedSourceAndConverters() {
-        Set<SourceAndConverter> sacList = new HashSet<>(); // A set avoids duplicate SourceAndConverter
+    public SourceAndConverter<?>[] getSelectedSourceAndConverters() {
+        Set<SourceAndConverter<?>> sacList = new HashSet<>(); // A set avoids duplicate SourceAndConverter
         for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
             if (((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject() instanceof RenamableSourceAndConverter) {
                 Object userObj = ((RenamableSourceAndConverter) ((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject()).sac;
-                sacList.add((SourceAndConverter) userObj);
+                sacList.add((SourceAndConverter<?>) userObj);
             } else {
                 sacList.addAll(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) tp.getLastPathComponent()));
             }
         }
-        return SourceAndConverterHelper.sortDefaultNoGeneric(sacList).toArray(new SourceAndConverter[sacList.size()]);
+        return SourceAndConverterHelper.sortDefaultGeneric(sacList).toArray(new SourceAndConverter<?>[0]);
     }
 
     /**
@@ -562,9 +562,9 @@ public class SourceAndConverterServiceUI {
      *     - the list does not contain duplicates
      *     - the list order can be considered random
      */
-    public Set<SourceAndConverter> getSourceAndConvertersFromChildrenOf(DefaultMutableTreeNode node) {
+    public Set<SourceAndConverter<?>> getSourceAndConvertersFromChildrenOf(DefaultMutableTreeNode node) {
 
-        Set<SourceAndConverter> sacs = new HashSet<>();
+        Set<SourceAndConverter<?>> sacs = new HashSet<>();
         if (node.getUserObject() instanceof RenamableSourceAndConverter) {
             Object userObj = ((RenamableSourceAndConverter) (node.getUserObject())).sac;
             sacs.add((SourceAndConverter) userObj);
@@ -645,21 +645,21 @@ public class SourceAndConverterServiceUI {
 
     /**
      * Used by {@link sc.fiji.bdvpg.scijava.converters.StringToSourceAndConverterArray}
-     * Note the sorting of SourceAndConverter by {@link SourceAndConverterHelper#sortDefaultNoGeneric}
+     * Note the sorting of SourceAndConverter by {@link SourceAndConverterHelper#sortDefaultGeneric}
      * @param path path
      * @return the list of sources in the path
      */
-    public List<SourceAndConverter> getSourceAndConvertersFromTreePath(TreePath path) {
-        return SourceAndConverterHelper.sortDefaultNoGeneric(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) path.getLastPathComponent()));
+    public List<SourceAndConverter<?>> getSourceAndConvertersFromTreePath(TreePath path) {
+        return SourceAndConverterHelper.sortDefaultGeneric(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) path.getLastPathComponent()));
     }
 
     /**
      * Used by {@link sc.fiji.bdvpg.scijava.converters.StringToSourceAndConverterArray}
-     * Note the sorting of SourceAndConverter by {@link SourceAndConverterHelper#sortDefaultNoGeneric}
+     * Note the sorting of SourceAndConverter by {@link SourceAndConverterHelper#sortDefaultGeneric}
      * @param path path
      * @return the list of sources in the path
      */
-    public List<SourceAndConverter> getSourceAndConvertersFromPath(String path) {
+    public List<SourceAndConverter<?>> getSourceAndConvertersFromPath(String path) {
         TreePath tp = getTreePathFromString(path);
         if (tp!=null) {
             return getSourceAndConvertersFromTreePath(tp);
@@ -739,10 +739,10 @@ public class SourceAndConverterServiceUI {
             return fullPath;
         }
 
-        public SourceAndConverter[] sources() {
+        public SourceAndConverter<?>[] sources() {
             if (node instanceof SourceFilterNode) {
-                Set<SourceAndConverter> sourcesSet = ((SourceFilterNode) node).currentOutputSacs;
-                return SourceAndConverterHelper.sortDefaultNoGeneric(sourcesSet).toArray(new SourceAndConverter[0]);
+                Set<SourceAndConverter<?>> sourcesSet = ((SourceFilterNode) node).currentOutputSacs;
+                return SourceAndConverterHelper.sortDefault(sourcesSet.toArray(new SourceAndConverter<?>[0]));
             } else if (node instanceof RenamableSourceAndConverter) {
                 return new SourceAndConverter[] {((RenamableSourceAndConverter) node).sac};
             } else {

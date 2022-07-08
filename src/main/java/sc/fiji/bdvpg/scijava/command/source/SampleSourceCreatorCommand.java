@@ -51,7 +51,7 @@ public class SampleSourceCreatorCommand implements BdvPlaygroundActionCommand {
     String samplename;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter sac;
+    SourceAndConverter<?> sac;
 
     @Override
     public void run() {

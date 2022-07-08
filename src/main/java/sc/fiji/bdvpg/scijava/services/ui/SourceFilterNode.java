@@ -108,10 +108,10 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
     }
 
     // Holding current state = set of SourceAndConverter contained in the filter node
-    Set<SourceAndConverter> currentInputSacs = ConcurrentHashMap.newKeySet();
-    Set<SourceAndConverter> currentOutputSacs = ConcurrentHashMap.newKeySet();
+    Set<SourceAndConverter<?>> currentInputSacs = ConcurrentHashMap.newKeySet();
+    Set<SourceAndConverter<?>> currentOutputSacs = ConcurrentHashMap.newKeySet();
 
-    public boolean hasConsumed(SourceAndConverter sac) {
+    public boolean hasConsumed(SourceAndConverter<?> sac) {
         return currentOutputSacs.contains(sac);
     }
 

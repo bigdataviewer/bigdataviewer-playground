@@ -99,7 +99,7 @@ public class OrthoViewDemo {
             sacs.forEach( sac -> {
                 SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
                 new ViewerTransformAdjuster(bdvHandle, sac).run();
-                new BrightnessAutoAdjuster(sac, 0).run();
+                new BrightnessAutoAdjuster<>(sac, 0).run();
             });
 
             new ClickBehaviourInstaller(bdvHandle, (x,y) -> {

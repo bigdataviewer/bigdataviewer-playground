@@ -44,7 +44,7 @@ public class MultiBdvSourcesAdderCommand implements BdvPlaygroundActionCommand {
     BdvHandle[] bdvhs;
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Override
     public void run() {

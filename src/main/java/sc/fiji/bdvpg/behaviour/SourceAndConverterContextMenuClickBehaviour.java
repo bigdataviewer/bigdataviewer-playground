@@ -109,7 +109,7 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 
 	private void showPopupMenu( BdvHandle bdv, int x, int y )
 	{
-		final List<SourceAndConverter> sacs = new ArrayList<>(sourcesSupplier.get());
+		final List<SourceAndConverter<?>> sacs = new ArrayList<>(sourcesSupplier.get());
 
 		final SourceAndConverterPopupMenu popupMenu = new SourceAndConverterPopupMenu( () -> sacs.toArray(new SourceAndConverter[0]), popupActions );
 

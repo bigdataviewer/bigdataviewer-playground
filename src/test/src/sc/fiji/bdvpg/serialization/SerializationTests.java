@@ -93,7 +93,7 @@ public class SerializationTests {
      * @param o object to serialize and deserialize
      * @param c class of the object
      */
-    public static void testSerialization(Gson gson, Object o, Class c) {
+    public static void testSerialization(Gson gson, Object o, Class<?> c) {
         String json = gson.toJson(o, c);
         System.out.println(json);
         Object oRestored = gson.fromJson(json, c);

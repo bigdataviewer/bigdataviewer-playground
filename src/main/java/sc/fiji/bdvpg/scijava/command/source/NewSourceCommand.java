@@ -51,13 +51,13 @@ description = "Defines an empty source which occupied the same volume as a model
 public class NewSourceCommand implements BdvPlaygroundActionCommand {
     
     @Parameter(label = "Model Source", description = "Defines the portion of space covered by the new source")
-    SourceAndConverter model;
+    SourceAndConverter<?> model;
 
     @Parameter(label = "Source name")
     String name;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter sac;
+    SourceAndConverter<?> sac;
     
     @Parameter(label = "Voxel Size X")
     double voxsizex;

@@ -49,11 +49,11 @@ import java.util.Map;
 
 public class SourceAndConverterFromSpimDataCreator
 {
-	private final AbstractSpimData asd;
-	private final Map< Integer, SourceAndConverter > setupIdToSourceAndConverter;
-	private final Map< SourceAndConverter, Map< String, Object > > sourceAndConverterToMetadata;
+	private final AbstractSpimData<?> asd;
+	private final Map< Integer, SourceAndConverter<?> > setupIdToSourceAndConverter;
+	private final Map< SourceAndConverter<?>, Map< String, Object > > sourceAndConverterToMetadata;
 
-	public SourceAndConverterFromSpimDataCreator( AbstractSpimData asd )
+	public SourceAndConverterFromSpimDataCreator( AbstractSpimData<?> asd )
 	{
 		this.asd = asd;
 		setupIdToSourceAndConverter = new HashMap<>();
@@ -61,7 +61,7 @@ public class SourceAndConverterFromSpimDataCreator
 		createSourceAndConverters();
 	}
 
-	public Map< Integer, SourceAndConverter > getSetupIdToSourceAndConverter()
+	public Map< Integer, SourceAndConverter<?> > getSetupIdToSourceAndConverter()
 	{
 		return setupIdToSourceAndConverter;
 	}

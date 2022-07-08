@@ -133,7 +133,7 @@ public class Procedural3DImageShort extends RealPoint implements RealRandomAcces
     }
 
     public Source<UnsignedShortType> getSource(final Interval interval, AffineTransform3D at3D, String name, VoxelDimensions voxDimensions) {
-        return new RealRandomAccessibleSource(getRRA(), new UnsignedShortType(), name, voxDimensions) {
+        return new RealRandomAccessibleSource<UnsignedShortType>(getRRA(), new UnsignedShortType(), name, voxDimensions) {
             @Override
             public Interval getInterval(final int t, final int level) {
                 return new FinalInterval(new long[]{0,0,0}, new long[]{1,1,1});

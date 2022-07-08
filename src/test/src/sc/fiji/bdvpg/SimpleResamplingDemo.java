@@ -74,9 +74,9 @@ public class SimpleResamplingDemo {
 
         // Get Model Source
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter("src/test/resources/mri-stack-multilevel.xml");
-        AbstractSpimData asd = importer.get();
+        AbstractSpimData<?> asd = importer.get();
 
-        SourceAndConverter sac = SourceAndConverterServices
+        SourceAndConverter<?> sac = SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(asd)
                 .get(0);
@@ -90,16 +90,16 @@ public class SimpleResamplingDemo {
 
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, sac );
         new ViewerTransformAdjuster( bdvHandle, sac ).run();
-        new BrightnessAutoAdjuster( sac, 0 ).run();
+        new BrightnessAutoAdjuster<>( sac, 0 ).run();
 
         final VoxelDimensions voxelDimensions = new FinalVoxelDimensions("micrometer", 0.5, 0.5, 3.0 );
 
-        SourceAndConverter model = new EmptySourceAndConverterCreator("Model",
+        SourceAndConverter<?> model = new EmptySourceAndConverterCreator("Model",
                 new FinalRealInterval(new double[]{50,50,50}, new double[]{150,150,150}),
                 100,100,100, voxelDimensions).get();
 
         // Resample generative source as model source
-        SourceAndConverter box =
+        SourceAndConverter<?> box =
                 new SourceResampler(sac, model, "crop", false,false, false,0).get();
 
         final VoxelDimensions voxelDimensionsInResampledSource = box.getSpimSource().getVoxelDimensions();

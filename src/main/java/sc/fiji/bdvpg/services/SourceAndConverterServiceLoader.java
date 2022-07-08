@@ -59,7 +59,7 @@ public class SourceAndConverterServiceLoader extends SourceAndConverterAdapter i
     public void run() {
 
         // Empty service
-        SourceAndConverter[] sacs =
+        SourceAndConverter<?>[] sacs =
                 SourceAndConverterServices
                         .getSourceAndConverterService()
                         .getSourceAndConverters().toArray(new SourceAndConverter[0]);

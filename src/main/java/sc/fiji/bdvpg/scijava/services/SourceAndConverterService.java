@@ -305,7 +305,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
         final ViewerImgLoader imgLoader = ( ViewerImgLoader ) seq.getImgLoader();
 
-        final Map< Integer, SourceAndConverter > setupIdToSourceAndConverter = new HashMap<>();
+        final Map< Integer, SourceAndConverter<?> > setupIdToSourceAndConverter = new HashMap<>();
 
         for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() ) {
 
@@ -348,11 +348,11 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
                         Converter volatileConverter = SourceAndConverterHelper.createConverterRealType((RealType)vs.getType());
 
-                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
+                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter<>(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
 
                     } else {
 
-                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter));
+                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter<>(s, nonVolatileConverter));
                     }
 
                 } else if (type instanceof ARGBType) {
@@ -364,9 +364,9 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                     Converter nonVolatileConverter = SourceAndConverterHelper.createConverterARGBType(s);
                     if (vs!=null) {
                         Converter volatileConverter = SourceAndConverterHelper.createConverterARGBType(vs);
-                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
+                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter<>(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
                     } else {
-                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter));
+                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter<>(s, nonVolatileConverter));
                     }
 
                 } else {

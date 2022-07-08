@@ -58,7 +58,7 @@ public class ManualTransformCommand implements BdvPlaygroundActionCommand {
     String mode = "Mutate";
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter
     BdvHandle bdvh;
