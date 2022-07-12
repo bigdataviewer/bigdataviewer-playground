@@ -181,7 +181,7 @@ public class SourceAndConverterServiceUI {
                 // Right Click -> popup
                 if (SwingUtilities.isRightMouseButton(e)) {
 
-                    JPopupMenu popup = new SourceAndConverterPopupMenu(() -> getSelectedSourceAndConverters()).getPopup();
+                    JPopupMenu popup = new SourceAndConverterPopupMenu(() -> getSelectedSourceAndConverters(tree)).getPopup();
 
                     addUISpecificActions(popup);
 
@@ -543,7 +543,7 @@ public class SourceAndConverterServiceUI {
      * - the list does not contain duplicates
      * - the list is ordered according to {@link SourceAndConverterHelper#sortDefaultNoGeneric}
      */
-    public SourceAndConverter[] getSelectedSourceAndConverters() {
+    public SourceAndConverter[] getSelectedSourceAndConverters(JTree tree) {
         Set<SourceAndConverter> sacList = new HashSet<>(); // A set avoids duplicate SourceAndConverter
         for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
             if (((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject() instanceof RenamableSourceAndConverter) {
