@@ -69,10 +69,10 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 
     protected static Logger logger = LoggerFactory.getLogger(ViewSynchronizerCommand.class);
 
-    @Parameter(label = "Select Bvv Windows to synchronize")
+    @Parameter(label = "Select Bvv Windows to synchronize", required = false)
     BdvHandle[] bdvhs;
 
-    @Parameter(label = "Select Bvv Windows to synchronize")
+    @Parameter(label = "Select Bvv Windows to synchronize", required = false)
     BvvHandle[] bvvhs;
 
     @Parameter(label = "Synchronize timepoints")
