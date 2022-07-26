@@ -117,14 +117,16 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice[] gd = ge.getScreenDevices();
         JFrame frame = BdvHandleHelper.getJFrame(bdvh);
-        if( screen > -1 && screen < gd.length ) {
-            frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);
-        } else if( gd.length > 0 ) {
-            frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);
-        } else {
-            throw new RuntimeException( "No Screens Found" );
-        }
-        frame.setSize(sizex, sizey);
+        SwingUtilities.invokeLater(() -> {
+            if( screen > -1 && screen < gd.length ) {
+                frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);
+            } else if( gd.length > 0 ) {
+                frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);
+            } else {
+                throw new RuntimeException( "No Screens Found" );
+            }
+            frame.setSize(sizex, sizey);
+        });
 
         return bdvh;
     }
