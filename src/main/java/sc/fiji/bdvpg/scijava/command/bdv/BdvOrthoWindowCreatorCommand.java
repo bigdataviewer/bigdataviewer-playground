@@ -38,6 +38,7 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.viewers.ViewerAdapter;
 import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
+import sc.fiji.bdvpg.viewers.ViewerStateSyncStarter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -88,6 +89,9 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
     @Parameter
     SourceAndConverterBdvDisplayService sacDisplayService;
 
+    @Parameter
+    boolean synchronize_sources = true;
+
     @Override
     public void run() {
 
@@ -95,7 +99,6 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
         bdvhy = createBdv("-Right", locationx + sizex +10, locationy);
         bdvhz = createBdv("-Bottom", locationx, locationy + sizey +40);
 
-        new ViewerOrthoSyncStarter(new ViewerAdapter(bdvhx), new ViewerAdapter(bdvhz), new ViewerAdapter(bdvhy), synctime).run();
 
         if (drawcrosses) {
             BdvHandleHelper.addCenterCross(bdvhx);
@@ -106,6 +109,13 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
         bdvhx.getViewerPanel().state().setNumTimepoints(ntimepoints);
         bdvhy.getViewerPanel().state().setNumTimepoints(ntimepoints);
         bdvhz.getViewerPanel().state().setNumTimepoints(ntimepoints);
+
+        ViewerOrthoSyncStarter starter = new ViewerOrthoSyncStarter(new ViewerAdapter(bdvhx), new ViewerAdapter(bdvhz), new ViewerAdapter(bdvhy), synctime);
+        starter.run();
+
+        if (synchronize_sources) {
+            new ViewerStateSyncStarter(new ViewerAdapter(bdvhx), new ViewerAdapter(bdvhy), new ViewerAdapter(bdvhz)).run();
+        }
 
     }
 
