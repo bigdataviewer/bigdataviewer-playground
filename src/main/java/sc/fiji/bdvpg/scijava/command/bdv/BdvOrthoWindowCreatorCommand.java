@@ -92,21 +92,21 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
     public void run() {
 
         bdvhx = createBdv("-Front", locationx, locationy);
-        bdvhx.getViewerPanel().state().setNumTimepoints(ntimepoints);
-
         bdvhy = createBdv("-Right", locationx + sizex +10, locationy);
-        bdvhy.getViewerPanel().state().setNumTimepoints(ntimepoints);
-
         bdvhz = createBdv("-Bottom", locationx, locationy + sizey +40);
-        bdvhz.getViewerPanel().state().setNumTimepoints(ntimepoints);
 
         new ViewerOrthoSyncStarter(new ViewerAdapter(bdvhx), new ViewerAdapter(bdvhz), new ViewerAdapter(bdvhy), synctime).run();
 
-       if (drawcrosses) {
-           BdvHandleHelper.addCenterCross(bdvhx);
-           BdvHandleHelper.addCenterCross(bdvhy);
-           BdvHandleHelper.addCenterCross(bdvhz);
-       }
+        if (drawcrosses) {
+            BdvHandleHelper.addCenterCross(bdvhx);
+            BdvHandleHelper.addCenterCross(bdvhy);
+            BdvHandleHelper.addCenterCross(bdvhz);
+        }
+
+        bdvhx.getViewerPanel().state().setNumTimepoints(ntimepoints);
+        bdvhy.getViewerPanel().state().setNumTimepoints(ntimepoints);
+        bdvhz.getViewerPanel().state().setNumTimepoints(ntimepoints);
+
     }
 
     BdvHandle createBdv(String suffix, double locX, double locY) {
@@ -124,6 +124,7 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
         } else {
             throw new RuntimeException( "No Screens Found" );
         }
+        frame.setSize(sizex, sizey);
 
         return bdvh;
     }

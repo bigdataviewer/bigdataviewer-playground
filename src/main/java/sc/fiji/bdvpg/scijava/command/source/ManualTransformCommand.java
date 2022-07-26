@@ -37,6 +37,7 @@ import sc.fiji.bdvpg.bdv.ManualRegistrationStarter;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStopper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
 
 import javax.swing.*;
@@ -54,7 +55,7 @@ description = "Manual transformation of selected sources. Works only with a sing
 
 public class ManualTransformCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(choices = {"Mutate", "Append", "Wrap", "Log"})
+    @Parameter(choices = {"Mutate", "Append", "Append (all timepoints)", "Append (timepoints before)", "Append (timepoints after)", "Wrap", "Log"})
     String mode = "Mutate";
 
     @Parameter(label = "Select Source(s)")
@@ -66,23 +67,38 @@ public class ManualTransformCommand implements BdvPlaygroundActionCommand {
     public void run() {
         ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvh, sacs);
         ManualRegistrationStopper manualRegistrationStopper;
-
-        if (mode.equals("Mutate")) {
-            manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                    SourceTransformHelper::mutate
-            );
-        } else if (mode.equals("Append")) {
-            manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                    SourceTransformHelper::append
-            );
-        } else if (mode.equals("Log")) {
-            manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                    (transform, source) -> SourceTransformHelper.log(transform, source, (str) -> IJ.log(str))
-            );
-        } else {
-            manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                    SourceTransformHelper::createNewTransformedSourceAndConverter
-            );
+        switch (mode) {
+            case "Mutate":
+                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                        SourceTransformHelper::mutate);
+                break;
+            case "Append":
+                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                        SourceTransformHelper::append);
+                break;
+            case "Append (all timepoints)":
+                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                        SourceTransformHelper::append);
+                manualRegistrationStopper.setTimeRange(0, SourceAndConverterHelper.getMaxTimepoint(sacs));
+                break;
+            case "Append (timepoints before)":
+                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                        SourceTransformHelper::append);
+                manualRegistrationStopper.setTimeRange(0, bdvh.getViewerPanel().state().getCurrentTimepoint()+1);
+                break;
+            case "Append (timepoints after)":
+                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                        SourceTransformHelper::append);
+                manualRegistrationStopper.setTimeRange(bdvh.getViewerPanel().state().getCurrentTimepoint(), SourceAndConverterHelper.getMaxTimepoint(sacs));
+                break;
+            case "Log":
+                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                        (transform, source) -> SourceTransformHelper.log(transform, source, (str) -> IJ.log(str)));
+                break;
+            default:
+                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                        SourceTransformHelper::createNewTransformedSourceAndConverter
+                );
         }
 
         manualRegistrationStarter.run();
