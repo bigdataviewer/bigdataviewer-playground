@@ -28,9 +28,9 @@
  */
 package sc.fiji.bdvpg.bdv.config;
 
+import bdv.ui.settings.ModificationListener;
+import bdv.ui.settings.SettingsPage;
 import bdv.util.Prefs;
-import org.mastodon.app.ui.settings.ModificationListener;
-import org.mastodon.app.ui.settings.SettingsPage;
 import org.scijava.listeners.Listeners;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

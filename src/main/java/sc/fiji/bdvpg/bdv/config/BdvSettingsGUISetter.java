@@ -31,10 +31,10 @@ package sc.fiji.bdvpg.bdv.config;
 import bdv.TransformEventHandler2D;
 import bdv.TransformEventHandler3D;
 import bdv.TransformState;
+import bdv.ui.settings.ModificationListener;
+import bdv.ui.settings.SettingsPage;
+import bdv.ui.settings.SettingsPanel;
 import org.apache.commons.io.FileUtils;
-import org.mastodon.app.ui.settings.ModificationListener;
-import org.mastodon.app.ui.settings.SettingsPage;
-import org.mastodon.app.ui.settings.SettingsPanel;
 import org.scijava.listeners.Listeners;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerConfigHelper;
@@ -44,8 +44,6 @@ import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.scijava.ui.behaviour.util.Behaviours;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.behaviour.EditorBehaviourInstaller;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -292,7 +290,7 @@ public class BdvSettingsGUISetter implements Runnable {
 
         private final JPanel panel;
 
-        private final Listeners.List< ModificationListener > modificationListeners;
+        private final Listeners.List<ModificationListener> modificationListeners;
 
         public DefaultSettingsPage( final String treePath, final JPanel panel )
         {
