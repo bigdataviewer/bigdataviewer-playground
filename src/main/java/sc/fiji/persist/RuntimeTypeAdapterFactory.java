@@ -218,7 +218,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
 
     /*
      * Registers {@code type} identified by its {@link Class#getSimpleName simple
-     * name}. Labels are case sensitive.
+     * name}. Labels are case-sensitive.
      *
      * @throws IllegalArgumentException if either {@code type} or its simple name
      *     have already been registered on this type adapter.

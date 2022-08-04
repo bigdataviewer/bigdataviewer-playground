@@ -147,7 +147,7 @@ public class SourceAndConverterServiceUI {
     /**
      * Constructor :
      *
-     * Initializes fields + standard actions
+     * Initialize fields + standard actions
      *
      * @param sourceAndConverterService the service to which this UI is linked
      */

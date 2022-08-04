@@ -43,7 +43,7 @@ public class MultipleSpimDataImporterCommand implements BdvPlaygroundActionComma
     /**
      * Note: Due to a bug in SciJava there needs to be some
      * text above the `File[]` parameter.
-     * Otherwise the UI for `File[]` is not built.
+     * Otherwise, the UI for `File[]` is not built.
      *
      * But then programmatically the message above is always shown...
      */

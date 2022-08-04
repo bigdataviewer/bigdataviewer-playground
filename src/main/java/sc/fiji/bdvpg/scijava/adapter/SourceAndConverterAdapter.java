@@ -151,7 +151,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
             if (jsonObject.getAsJsonPrimitive("color")!=null) {
                 // Now the color
                 int color = jsonObject.getAsJsonPrimitive("color").getAsInt();
-                new ColorChanger(sac,  new ARGBType(color)).run(); // TO deal with volatile and non volatile
+                new ColorChanger(sac,  new ARGBType(color)).run(); // TO deal with volatile and non-volatile
                 // Min Max display
                 SourceAndConverterServices.getSourceAndConverterService()
                         .getConverterSetup(sac).setDisplayRange(

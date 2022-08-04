@@ -135,7 +135,7 @@ public class BigWarpLauncher implements Runnable {
             } else {
                 bigWarp = new BigWarp(bwData, bigWarpName, null);
             }
-            // What does P and Q stand for ? Not sure about who's moving and who's fixed
+            // What does P and Q stand for ? Not sure about the moving and the fixed one
             bdvHandleP = new ViewerPanelHandle(bigWarp.getViewerFrameP().getViewerPanel(), bigWarpName+"_Moving");
             bdvHandleQ = new ViewerPanelHandle(bigWarp.getViewerFrameQ().getViewerPanel(), bigWarpName+"_Fixed");
 

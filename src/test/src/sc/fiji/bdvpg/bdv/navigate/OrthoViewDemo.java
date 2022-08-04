@@ -60,6 +60,7 @@ public class OrthoViewDemo {
 
     static ImageJ ij;
 
+    @SuppressWarnings("GrazieInspection")
     public static void main(String[] args) {
 
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation

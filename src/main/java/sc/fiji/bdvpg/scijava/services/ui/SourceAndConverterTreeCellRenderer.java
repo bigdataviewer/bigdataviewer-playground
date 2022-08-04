@@ -50,10 +50,12 @@ public class SourceAndConverterTreeCellRenderer extends DefaultTreeCellRenderer 
     static {
         URL iconSourceURL;
         iconSourceURL = SourceAndConverterTreeCellRenderer.class.getResource("/images/source2d.png");
+        assert iconSourceURL != null;
         source2d = new ImageIcon(iconSourceURL);
         iconSourceURL = SourceAndConverterTreeCellRenderer.class.getResource("/images/source3d.png");
         source3d = new ImageIcon(iconSourceURL);
         iconSourceURL = SourceAndConverterTreeCellRenderer.class.getResource("/images/sourceFilterNodeCentered.png");
+        assert iconSourceURL != null;
         sourceFilterNode = new ImageIcon(iconSourceURL);
     }
 

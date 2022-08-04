@@ -50,7 +50,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * Allows to drop drop SourceAndConverter from the SourceAndConverterServiceUI into the bdv windows
+ * Allows dropping SourceAndConverter from the SourceAndConverterServiceUI into the bdv windows
  *
  * Allows importing nodes from the SourceAndConverterServiceUI JTree
  */

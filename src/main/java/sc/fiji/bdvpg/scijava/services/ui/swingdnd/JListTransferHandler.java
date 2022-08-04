@@ -50,11 +50,12 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * Allows to drop drop SourceAndConverter from the SourceAndConverterServiceUI into the bdv windows
+ * Allows dropping SourceAndConverter from the SourceAndConverterServiceUI into the bdv windows
  *
  * Allows importing nodes from the SourceAndConverterServiceUI JTree
  */
@@ -147,7 +148,7 @@ public class JListTransferHandler extends TransferHandler {
                 SourceAndConverterServiceUI ui =
                         ((SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getUI();
 
-                for (DefaultMutableTreeNode node : nodes) {
+                for (DefaultMutableTreeNode node : Objects.requireNonNull(nodes)) {
                     DefaultMutableTreeNode unwrapped = (DefaultMutableTreeNode) (node.getUserObject());
                     if (unwrapped.getUserObject() instanceof RenamableSourceAndConverter) {
                         sacs.add(((RenamableSourceAndConverter) unwrapped.getUserObject()).sac);

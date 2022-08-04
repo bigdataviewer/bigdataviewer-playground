@@ -205,7 +205,7 @@ public class SwingSourceAndConverterSortedListWidget extends SwingInputWidget<So
 
     }
 
-    class CustomSourceListModel extends DefaultListModel {
+    static class CustomSourceListModel extends DefaultListModel {
         @Override
         public void add(int index, Object element) {
             if (element instanceof SourceAndConverter) {

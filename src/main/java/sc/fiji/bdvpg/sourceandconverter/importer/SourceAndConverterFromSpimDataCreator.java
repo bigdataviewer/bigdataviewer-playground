@@ -139,12 +139,10 @@ public class SourceAndConverterFromSpimDataCreator
 		final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
 
 		Converter nonVolatileConverter = SourceAndConverterHelper.createConverterARGBType(s);
-		if (vs!=null) {
-			Converter volatileConverter = SourceAndConverterHelper.createConverterARGBType(vs);
-			setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
-		} else {
-			setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter));
-		}
+
+		Converter volatileConverter = SourceAndConverterHelper.createConverterARGBType(vs);
+		setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
+
 	}
 
 	private static String createSetupName( final BasicViewSetup setup ) {
@@ -158,7 +156,7 @@ public class SourceAndConverterFromSpimDataCreator
 
 		final Angle angle = setup.getAttribute( Angle.class );
 		if ( angle != null )
-			name += ( name.isEmpty() ? "" : " " ) + "a " + angle.getName();
+			name += "a " + angle.getName();
 
 		final Channel channel = setup.getAttribute( Channel.class );
 		if ( channel != null )

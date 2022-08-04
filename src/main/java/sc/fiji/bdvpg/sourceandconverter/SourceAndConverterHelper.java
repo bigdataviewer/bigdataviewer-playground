@@ -157,7 +157,7 @@ public class SourceAndConverterHelper {
 
     /**
      * Creates default converters for a Source
-     * Support Volatile or non Volatile
+     * Support Volatile or non-volatile
      * Support RealTyped or ARGBTyped
      * @param source source
      * @return one converter for the source
@@ -237,7 +237,7 @@ public class SourceAndConverterHelper {
 
 	/**
      * Here should go all the ways to build a Volatile Source
-     * from a non Volatile Source, RealTyped
+     * from a non-volatile Source, RealTyped
      * @param source source
      * @return the volatile source
      */
@@ -248,9 +248,9 @@ public class SourceAndConverterHelper {
 
     /**
      * Here should go all the ways to build a Volatile Source
-     * from a non Volatile Source, ARGBTyped
+     * from a non-volatile Source, ARGBTyped
      * @param source the source
-     * @return
+     * @return the volatile source created
      */
     private static Source createVolatileARGBType(Source source) {
         // TODO unsupported yet
@@ -259,7 +259,7 @@ public class SourceAndConverterHelper {
 
     /**
      * Creates ARGB converter from a RealTyped sourceandconverter.
-     * Supports Volatile RealTyped or non volatile
+     * Supports Volatile RealTyped or non-volatile
      * @param <T> realtype class
      * @param type a pixel of type T
      * @return a suited converter
@@ -275,7 +275,7 @@ public class SourceAndConverterHelper {
 
     /**
      * Creates ARGB converter from a RealTyped sourceandconverter.
-     * Supports Volatile ARGBType or non volatile
+     * Supports Volatile ARGBType or non-volatile
      * @param source source
      * @return a compatible converter
      */
@@ -463,7 +463,7 @@ public class SourceAndConverterHelper {
             final AffineTransform3D sourceTransform = new AffineTransform3D();
             sac.getSpimSource().getSourceTransform(timePoint, 0, sourceTransform);
 
-            // Get a access to the source at the pointer location
+            // Get access to the source at the pointer location
             RealRandomAccess rra = rra_ible.realRandomAccess();
             RealPoint iPt = new RealPoint(3);
             sourceTransform.inverse().apply(pt, iPt);
@@ -501,18 +501,6 @@ public class SourceAndConverterHelper {
     public static List<SourceAndConverter<?>> sortDefaultGeneric(Collection<SourceAndConverter<?>> sacs) {
         List<SourceAndConverter<?>> sortedList = new ArrayList<>(sacs.size());
         sortedList.addAll(sacs);
-        Set<AbstractSpimData> spimData = new HashSet<>();
-        // Gets all SpimdataInfo
-        sacs.forEach(sac -> {
-            if (SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
-                SourceAndConverterService.SpimDataInfo sdi = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
-                        .getSourceAndConverterService()
-                        .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)));
-                spimData.add(sdi.asd);
-            }
-        });
 
         Comparator<SourceAndConverter> sacComparator = (s1, s2) -> {
             // Those who do not belong to spimdata are last:
@@ -541,7 +529,7 @@ public class SourceAndConverterHelper {
                 return 1;
             }
 
-            if ((sdi1!=null)&&(sdi2!=null)) {
+            if (sdi1 != null) {
                 if (sdi1.asd==sdi2.asd) {
                     return sdi1.setupId-sdi2.setupId;
                 } else {
@@ -567,18 +555,6 @@ public class SourceAndConverterHelper {
     public static List<SourceAndConverter> sortDefaultNoGeneric(Collection<SourceAndConverter> sacs) {
         List<SourceAndConverter> sortedList = new ArrayList<>(sacs.size());
         sortedList.addAll(sacs);
-        Set<AbstractSpimData> spimData = new HashSet<>();
-        // Gets all SpimdataInfo
-        sacs.forEach(sac -> {
-            if (SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
-                SourceAndConverterService.SpimDataInfo sdi = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
-                        .getSourceAndConverterService()
-                        .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)));
-                spimData.add(sdi.asd);
-            }
-        });
 
         Comparator<SourceAndConverter> sacComparator = (s1, s2) -> {
             // Those who do not belong to spimdata are last:
@@ -607,7 +583,7 @@ public class SourceAndConverterHelper {
                 return 1;
             }
 
-            if ((sdi1!=null)&&(sdi2!=null)) {
+            if (sdi1 != null) {
                 if (sdi1.asd==sdi2.asd) {
                     return sdi1.setupId-sdi2.setupId;
                 } else {
@@ -700,7 +676,7 @@ public class SourceAndConverterHelper {
      *
      * So if the voxel size is [1.2, 0.8, 50], the value 1.2 is used to compare the levels
      * to the target resolution. This is a way to avoid the complexity of defining the correct
-     * pixel size while being also robust to comparing 2d and 3d sources. Indeed 2d sources may
+     * pixel size while being also robust to comparing 2d and 3d sources. Indeed, 2d sources may
      * have aberrant defined vox size along the third axis, either way too big or way too small
      * in one case or the other, the missing dimension is ignored, which we hope works
      * in most circumstances.
@@ -708,7 +684,7 @@ public class SourceAndConverterHelper {
      * Other complication : the sourceandconverter could be a warped source, or a warped source
      * of a warped source of a transformed source, etc.
      *
-     * The proper computation of the level required is complicated, and could be ill defined:
+     * The proper computation of the level required is complicated, and could be ill-defined:
      * Warping can cause local shrinking or expansion such that a single level won't be the
      * best choice for all the image.
      *
@@ -720,7 +696,7 @@ public class SourceAndConverterHelper {
      * see how this search is done
      *
      * So : the source root should be properly scaled from the beginning and weird transformation
-     * (like spherical transformed will give wrong results.
+     * like spherical transformed will give wrong results.
      *
      * @param src source
      * @param t timepoint
@@ -882,7 +858,7 @@ public class SourceAndConverterHelper {
 
     /**
      * Determines all visible sources at the current mouse position in the Bdv window.
-     * Note: this method can be slow as it needs an actual random access on the source data.
+     * Note: this method can be slow as it needs a random access on the source data.
      * @param bdvHandle the bdv window to probe
      * @return List of SourceAndConverters
      */

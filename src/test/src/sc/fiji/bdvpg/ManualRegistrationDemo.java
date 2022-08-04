@@ -176,7 +176,7 @@ public class ManualRegistrationDemo {
             List<SourceAndConverter> sacList = SourceAndConverterServices.getSourceAndConverterService()
                     .getSourceAndConverterFromSpimdata(asd);
 
-            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacList.toArray(new SourceAndConverter[sacList.size()]));
+            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacList.toArray(new SourceAndConverter[0]));
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
@@ -212,7 +212,7 @@ public class ManualRegistrationDemo {
                     .getSourceAndConverterFromSpimdata(asd);
 
 
-            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacList.toArray(new SourceAndConverter[sacList.size()]));
+            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacList.toArray(new SourceAndConverter[0]));
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)

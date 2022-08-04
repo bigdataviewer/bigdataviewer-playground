@@ -102,7 +102,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     SourceAndConverterService bdvSourceAndConverterService;
 
     /**
-     * Used to retrieved the last active BDV Windows (if the activated callback has been set right)
+     * Used to retrieve the last active BDV Windows (if the activated callback has been set right)
      **/
     @Parameter
     GuavaWeakCacheService cacheService;
@@ -378,7 +378,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Updates bdvHandles which are displaying at least one of this sacs
+     * Updates bdvHandles which are displaying at least one of these sacs
      * Potentially improvement is to check whether the timepoint need an update ?
      * @param sacs sources to update
      */
@@ -440,7 +440,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     {
         if (bdvh == null) {
             logger.error("Error : bdvh is null in setMetadata function! ");
-            //return;
+            return;
         }
         if (displayToMetadata.getIfPresent( bdvh ) == null) {
             // Create Metadata

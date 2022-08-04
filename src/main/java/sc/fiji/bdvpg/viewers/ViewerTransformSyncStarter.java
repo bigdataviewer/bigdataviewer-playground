@@ -38,7 +38,8 @@ import net.imglib2.realtransform.AffineTransform3D;
 import java.util.HashMap;
 import java.util.Map;
 
-import static sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper.MatrixApproxEquals;
+import static sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter.MatrixApproxEquals;
+
 
 /**
  * BigDataViewer Playground Action --
@@ -56,7 +57,7 @@ import static sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper.MatrixApproxEqual
  * Note : closing one window in the chain breaks the synchronization TODO make more robust
  *
  * To avoid infinite loop, the stop condition is : if the view transform is unnecessary
- * (i.e. the view target is approximately equal to the source {@link ViewerTransformSyncStopper#MatrixApproxEquals}),
+ * (i.e. the view target is approximately equal to the source
  * then there's no need to trigger a view transform change to the next BdvHandle
  *
  * see also {@link ViewerOrthoSyncStarter}

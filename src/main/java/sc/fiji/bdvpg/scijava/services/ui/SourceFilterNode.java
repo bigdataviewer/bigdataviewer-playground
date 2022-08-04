@@ -187,8 +187,8 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
 
     /**
      * Very important method which recomputes the tree based on the {@link UpdateEvent} notified
-     * ensures new and up to date recomputation of the whole tree
-     * @param event casted event
+     * ensures new and up-to-date recomputation of the whole tree
+     * @param event cast event
      */
     public void update(UpdateEvent event) {
         if (event instanceof NodeAddedUpdateEvent) {
@@ -297,7 +297,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
      * There is no need to notified children nodes as the {@link SourceFilterNode#update(UpdateEvent)}
      * method will do the job itself
      *
-     * However this is true for the children only.
+     * However, this is true for the children only.
      *
      * Normally, such an event should be triggered from the top node, to ensure a complete update of
      * the full tree

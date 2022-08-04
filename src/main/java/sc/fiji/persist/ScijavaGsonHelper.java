@@ -129,7 +129,7 @@ public class ScijavaGsonHelper {
                 .getAdapters(IClassAdapter.class) // Gets all scijava class adapters (no runtime)
                 .forEach(pi -> {
                     try {
-                        IClassAdapter<?> adapter = pi.createInstance(); // Instanciate the adapter (no argument should be present in the constructor, but auto filled scijava parameters are allowed)
+                        IClassAdapter<?> adapter = pi.createInstance(); // Instanciate the adapter (no argument should be present in the constructor, but auto-filled scijava parameters are allowed)
                         log.accept("\t "+adapter.getAdapterClass());
                         builder.registerTypeHierarchyAdapter(adapter.getAdapterClass(), adapter); // Register gson adapter
                     } catch (InstantiableException e) {

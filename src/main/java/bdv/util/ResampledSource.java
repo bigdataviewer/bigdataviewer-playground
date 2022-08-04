@@ -115,11 +115,11 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
      *  @param source origin source
      *
      * @param resamplingModel model source used for resampling the origin source
-     *@param name
-     * @param reuseMipMaps allows to reuse mipmaps of both the origin and the model source in the resampling
+     * @param name of the resampled source
+     * @param reuseMipMaps allows reusing mipmaps of both the origin and the model source in the resampling
      *  mipmap reuse tries to be clever by matching the voxel size between the model source and the origin source
      *  so for instance the model source mipmap level 0 will resample the origin mipmap level 2, if the voxel size
-     *  of the origin is much smaller then the model (and provided that the origin is also a multiresolution source)
+     *  of the origin is much smaller than the model (and provided that the origin is also a multiresolution source)
      *  the way the matching is performed is specified in {@link SourceAndConverterHelper#bestLevel(Source, int, double)}.
      *  For more details and limitation, please read the documentation in the linked method above
      *@param cache specifies whether the result of the resampling should be cached.

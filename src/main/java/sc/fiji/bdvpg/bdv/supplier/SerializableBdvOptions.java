@@ -45,7 +45,7 @@ public class SerializableBdvOptions {
 
     public double[] screenScales = new double[] { 1, 0.75, 0.5, 0.25, 0.125 };
 
-    public long targetRenderNanos = 30 * 1000000l;
+    public long targetRenderNanos = 30 * 1000000L;
 
     public int numRenderingThreads = 3;
 

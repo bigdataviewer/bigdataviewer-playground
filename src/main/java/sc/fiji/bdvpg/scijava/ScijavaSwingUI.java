@@ -56,7 +56,7 @@ import java.util.List;
 public class ScijavaSwingUI {
 
     static public<C extends Command> JPanel getPanel(Context context, Class<C> scijavaCommand, Object... args) {
-        Module module = null;
+        Module module;
         JPanel panel = null;
         try {
             module = createModule(context, scijavaCommand, args);

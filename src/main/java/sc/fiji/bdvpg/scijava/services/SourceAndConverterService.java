@@ -136,12 +136,6 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     ScriptService scriptService;
 
     /**
-     * uiService : used ot check if an UI is available to create a Swing Panel
-     */
-    //@Parameter
-    //UIService uiService;
-
-    /**
      * Display service : cannot be set through Parameter annotation due to 'circular dependency'
      */
     SourceAndConverterBdvDisplayService bsds = null;
@@ -170,8 +164,9 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     {
         if (sac == null) {
             logger.error("Error : sac is null in setMetadata function! ");
-            //return;
+            return;
         }
+
         if (sacToMetadata.getIfPresent( sac ) == null) {
             logger.error("Error : sac has no associated metadata ! This should not happen. ");
             logger.error("Sac : "+sac.getSpimSource().getName());
@@ -309,7 +304,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
         for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() ) {
 
-            // Execute {@link EntityHandler}, if a compatible entity is found in the spimdata, compatible with a entity class handler
+            // Execute {@link EntityHandler}, if a compatible entity is found in the spimdata, compatible with an entity class handler
             entityClassToHandler.keySet().forEach(entityClass -> {
                 Entity e = setup.getAttribute(entityClass);
                 if (e!=null) {
@@ -362,12 +357,9 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                     final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
 
                     Converter nonVolatileConverter = SourceAndConverterHelper.createConverterARGBType(s);
-                    if (vs!=null) {
-                        Converter volatileConverter = SourceAndConverterHelper.createConverterARGBType(vs);
-                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
-                    } else {
-                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter));
-                    }
+
+                    Converter volatileConverter = SourceAndConverterHelper.createConverterARGBType(vs);
+                    setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
 
                 } else {
                     SourceAndConverterHelper.errlog.accept("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
@@ -405,7 +397,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
         final Angle angle = setup.getAttribute( Angle.class );
         if ( angle != null )
-            name += ( name.isEmpty() ? "" : " " ) + "a " + angle.getName();
+            name += "a " + angle.getName();
 
         final Channel channel = setup.getAttribute( Channel.class );
         if ( channel != null )
@@ -420,7 +412,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
     /**
      * Gets or create the associated ConverterSetup of a Source
-     * While several converters can be associated to a Source (volatile and non volatile),
+     * While several converters can be associated to a Source (volatile and non-volatile),
      * only one ConverterSetup is associated to a Source
      * @param sac source to get the convertersetup from
      * @return the converter setup of the source
@@ -541,7 +533,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
 
     /**
-     * Swing UI for this Service, exists only if an UI is available in the current execution context
+     * Swing UI for this Service, exists only if a UI is available in the current execution context
      */
     SourceAndConverterServiceUI ui;
 
@@ -614,7 +606,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     /**
-     * @return a list of of action name / keys / identifiers
+     * @return a list of action name / keys / identifiers
      */
     public Set<String> getActionsKeys() {
         return actionMap.keySet();
@@ -704,7 +696,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         registerScijavaCommandInfo(commandService.getCommand(commandClass));
     }
 
-    //------------------- SpimData specific informations
+    //------------------- SpimData specific information
 
    public static class SpimDataInfo {
 

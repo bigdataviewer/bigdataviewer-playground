@@ -80,10 +80,14 @@ public class BdvScijavaHelper {
             for (int i=0;i<skipTopLevels;i++) {path.remove(0);}
 
             JMenuItem jmenuItemRoot = findOrCreateJMenu(bdvMenuBar, path);
-            final JMenuItem jMenuItem = new JMenuItem( path.get(path.size()-1));
-            jMenuItem.addActionListener(e -> runnable.run());
-            jmenuItemRoot.add( jMenuItem );
-            bdvMenuBar.updateUI();
+            if (jmenuItemRoot!=null) {
+                final JMenuItem jMenuItem = new JMenuItem(path.get(path.size() - 1));
+                jMenuItem.addActionListener(e -> runnable.run());
+                jmenuItemRoot.add(jMenuItem);
+                bdvMenuBar.updateUI();
+            } else {
+                logger.error("Could not find or create jmenu ("+bdvMenuBar+", "+path+")");
+            }
         } else {
             logger.error("Cannot put command on menu : the bdvhandle is not a frame.");
         }

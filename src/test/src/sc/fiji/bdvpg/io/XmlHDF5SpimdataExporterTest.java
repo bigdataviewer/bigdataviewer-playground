@@ -83,7 +83,6 @@ public class XmlHDF5SpimdataExporterTest {
             System.out.println(line);
         }
         br.close();
-        line = null;
 
         br = new BufferedReader(new FileReader(fileXmlGen.getAbsoluteFile()));
         while ((line = br.readLine()) != null) {

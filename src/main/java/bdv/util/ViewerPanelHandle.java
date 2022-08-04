@@ -29,7 +29,6 @@
 package bdv.util;
 
 import bdv.tools.brightness.ConverterSetup;
-import bdv.tools.brightness.SetupAssignments;
 import bdv.tools.transformation.ManualTransformationEditor;
 import bdv.ui.appearance.AppearanceManager;
 import bdv.ui.keymap.KeymapManager;
@@ -47,8 +46,7 @@ import java.util.function.Consumer;
  * Wraps a {@link bdv.BigDataViewer} instance into a {@link BdvHandle}
  * This class NEEDS to be in bdv.util or else it cannot implement the createViewer method
  *
- * Class used in practice to wrap {@link bigwarp.BigWarp} BigDataViewer instances,
- * this has very limited functionalities apart from this
+ * Class used to wrap {@link bigwarp.BigWarp} BigDataViewer instances.
  */
 
 public class ViewerPanelHandle extends BdvHandle {

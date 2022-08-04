@@ -83,7 +83,7 @@ public class XmlFromSpimDataExporter implements Runnable {
             logger.error("Trying to save spimdata into an invalid file Path : "+dataLocation);
         }
         this.dataLocation = dataLocation;
-        this.context = context;
+        this.context = ctx;
     }
 
     @Override
@@ -121,7 +121,7 @@ public class XmlFromSpimDataExporter implements Runnable {
 
                 for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() ) {
 
-                    // Execute {@link EntityHandler}, if a compatible entity is found in the spimdata, compatible with a entity class handler
+                    // Execute {@link EntityHandler}, if a compatible entity is found in the spimdata, compatible with an entity class handler
                     entityClassToHandler.keySet().forEach(entityClass -> {
                         Entity e = setup.getAttribute(entityClass);
                         if (e!=null) {

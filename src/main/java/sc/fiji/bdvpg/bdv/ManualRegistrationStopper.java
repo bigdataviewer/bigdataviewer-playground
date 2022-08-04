@@ -101,7 +101,7 @@ public class ManualRegistrationStopper implements Runnable {
         // Stops BdvHandle listener
         this.starter.getBdvHandle().getViewerPanel().transformListeners().remove(starter.getListener());
 
-        // Removes temporary TransformedSourceAndConverter - a two step process in order to improve performance
+        // Removes temporary TransformedSourceAndConverter - a two-step process in order to improve performance
         List<SourceAndConverter> tempSacs = starter.getTransformedSourceAndConverterDisplayed();
         SourceAndConverterServices.getBdvDisplayService().remove(starter.bdvHandle,tempSacs.toArray(new SourceAndConverter[0]));
 

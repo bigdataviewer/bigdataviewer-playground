@@ -50,6 +50,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -244,11 +245,11 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
         public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
             if (flavor.equals(nodesFlavor)) {
                 return nodes;
-            }
-            if (flavor.equals(SourcesTransferable.flavor)) {
+            } else if (flavor.equals(SourcesTransferable.flavor)) {
                 return sourcesTransferable.getTransferData(SourcesTransferable.flavor);
+            } else {
+                throw new UnsupportedFlavorException(flavor);
             }
-            return null;
         }
     }
 }

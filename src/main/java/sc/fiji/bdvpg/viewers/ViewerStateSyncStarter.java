@@ -64,19 +64,10 @@ public class ViewerStateSyncStarter implements Runnable {
     @Override
     public void run() {
         isPropagating.set(false);
-        for (int i = 0; i< handles.length; i++) {
-
-            // The idea is that bdvHandles[i], when it has a state,
-            // triggers an identical ViewTransform to the next bdvHandle in the array
-            // (called nextBdvHandle). nextBdvHandle is bdvHandles[i+1] in most cases,
-            // unless it's the end of the array,
-            // where in this case nextBdvHandle is bdvHandles[0]
-            ViewerAdapter handle = handles[i];
+        for (ViewerAdapter handle : handles) {
             ViewerStateChangeListener stateListener = new BasicStateListener(handle, isPropagating);
-
             handle.state().changeListeners().add(stateListener);
             handleToStateListener.put(handle, stateListener);
-
         }
     }
 
