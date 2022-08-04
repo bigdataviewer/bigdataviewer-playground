@@ -37,6 +37,7 @@ import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterTreeCellRenderer;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import javax.swing.*;
 import javax.swing.event.AncestorEvent;
@@ -66,12 +67,13 @@ public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAn
 
     @Override
     public boolean supports(final WidgetModel model) {
+        if (model.getItem().getWidgetStyle().contains("sorted")) return false;
         return super.supports(model) && model.isType(SourceAndConverter[].class);
     }
 
     @Override
     public SourceAndConverter[] getValue() {
-        return getSelectedSourceAndConverters();
+        return SourceAndConverterHelper.sortDefault(getSelectedSourceAndConverters());
     }
 
     @Parameter

@@ -38,6 +38,7 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.viewers.ViewerAdapter;
 import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
+import sc.fiji.bdvpg.viewers.ViewerStateSyncStarter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -88,25 +89,34 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
     @Parameter
     SourceAndConverterBdvDisplayService sacDisplayService;
 
+    @Parameter
+    boolean synchronize_sources = true;
+
     @Override
     public void run() {
 
         bdvhx = createBdv("-Front", locationx, locationy);
-        bdvhx.getViewerPanel().state().setNumTimepoints(ntimepoints);
-
         bdvhy = createBdv("-Right", locationx + sizex +10, locationy);
-        bdvhy.getViewerPanel().state().setNumTimepoints(ntimepoints);
-
         bdvhz = createBdv("-Bottom", locationx, locationy + sizey +40);
+
+
+        if (drawcrosses) {
+            BdvHandleHelper.addCenterCross(bdvhx);
+            BdvHandleHelper.addCenterCross(bdvhy);
+            BdvHandleHelper.addCenterCross(bdvhz);
+        }
+
+        bdvhx.getViewerPanel().state().setNumTimepoints(ntimepoints);
+        bdvhy.getViewerPanel().state().setNumTimepoints(ntimepoints);
         bdvhz.getViewerPanel().state().setNumTimepoints(ntimepoints);
 
-        new ViewerOrthoSyncStarter(new ViewerAdapter(bdvhx), new ViewerAdapter(bdvhz), new ViewerAdapter(bdvhy), synctime).run();
+        ViewerOrthoSyncStarter starter = new ViewerOrthoSyncStarter(new ViewerAdapter(bdvhx), new ViewerAdapter(bdvhz), new ViewerAdapter(bdvhy), synctime);
+        starter.run();
 
-       if (drawcrosses) {
-           BdvHandleHelper.addCenterCross(bdvhx);
-           BdvHandleHelper.addCenterCross(bdvhy);
-           BdvHandleHelper.addCenterCross(bdvhz);
-       }
+        if (synchronize_sources) {
+            new ViewerStateSyncStarter(new ViewerAdapter(bdvhx), new ViewerAdapter(bdvhy), new ViewerAdapter(bdvhz)).run();
+        }
+
     }
 
     BdvHandle createBdv(String suffix, double locX, double locY) {
@@ -117,13 +127,16 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice[] gd = ge.getScreenDevices();
         JFrame frame = BdvHandleHelper.getJFrame(bdvh);
-        if( screen > -1 && screen < gd.length ) {
-            frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);
-        } else if( gd.length > 0 ) {
-            frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);
-        } else {
-            throw new RuntimeException( "No Screens Found" );
-        }
+        SwingUtilities.invokeLater(() -> {
+            if( screen > -1 && screen < gd.length ) {
+                frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);
+            } else if( gd.length > 0 ) {
+                frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);
+            } else {
+                throw new RuntimeException( "No Screens Found" );
+            }
+            frame.setSize(sizex, sizey);
+        });
 
         return bdvh;
     }

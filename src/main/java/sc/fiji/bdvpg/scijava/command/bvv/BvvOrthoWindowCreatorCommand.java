@@ -39,6 +39,7 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.viewers.ViewerAdapter;
 import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
+import sc.fiji.bdvpg.viewers.ViewerStateSyncStarter;
 
 import javax.swing.JFrame;
 import java.awt.GraphicsDevice;
@@ -72,6 +73,9 @@ public class BvvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
     //@Parameter(label = "Synchronize time") // honestly no reason not to synchronize the time
     public boolean synctime = true;
 
+    @Parameter
+    boolean synchronize_sources = true;
+
     /**
      * This triggers: BdvHandlePostprocessor
      */
@@ -97,6 +101,10 @@ public class BvvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
         bvvhz.getViewerPanel().state().setNumTimepoints(ntimepoints);
 
         new ViewerOrthoSyncStarter(new ViewerAdapter(bvvhx), new ViewerAdapter(bvvhz), new ViewerAdapter(bvvhy), synctime).run();
+
+        if (synchronize_sources) {
+            new ViewerStateSyncStarter(new ViewerAdapter(bvvhx), new ViewerAdapter(bvvhy), new ViewerAdapter(bvvhz)).run();
+        }
 
     }
 

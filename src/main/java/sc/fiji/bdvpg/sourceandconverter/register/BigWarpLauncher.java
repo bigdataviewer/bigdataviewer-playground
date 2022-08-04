@@ -132,7 +132,7 @@ public class BigWarpLauncher implements Runnable {
     public void run() {
         try {
             if (force2d) {
-                bigWarp = new BigWarp(bwData, bigWarpName, BigWarpViewerOptions.options(true),null);
+                bigWarp = new BigWarp(bwData, bigWarpName, BigWarpViewerOptions.options().is2D(true),null);
             } else {
                 bigWarp = new BigWarp(bwData, bigWarpName, null);
             }

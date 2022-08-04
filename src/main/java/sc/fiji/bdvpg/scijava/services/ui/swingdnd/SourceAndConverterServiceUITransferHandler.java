@@ -146,7 +146,7 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
                 SourceAndConverterServiceUI ui =
                         ((SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getUI();
                 List<SourceAndConverter<?>> sacs = new ArrayList<>();
-                for (SourceAndConverter sac : ui.getSelectedSourceAndConverters()) {
+                for (SourceAndConverter sac : ui.getSelectedSourceAndConverters((JTree) c)) {
                     sacs.add(sac);
                 }
                 //Collections.addAll(sacs, ui.getSelectedSourceAndConverters()); // Do not work, even if intellij suggests it
