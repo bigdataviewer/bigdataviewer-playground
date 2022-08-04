@@ -32,7 +32,6 @@ import bdv.util.BdvHandle;
 import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.adapter.SourceAndConverterAdapter;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 /**

@@ -40,8 +40,6 @@ import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 

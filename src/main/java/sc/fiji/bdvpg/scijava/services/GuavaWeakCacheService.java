@@ -61,8 +61,8 @@ public class GuavaWeakCacheService extends AbstractService implements CacheServi
 
     public void logCache(Consumer<String> logger) {
         cache.asMap().entrySet().forEach(e -> {
-            logger.accept(e.getKey().getClass().getSimpleName()+":"+e.getKey().toString());
-            logger.accept("\t"+e.getValue().getClass().getSimpleName()+":"+e.getValue().toString());
+            logger.accept(e.getKey().getClass().getSimpleName()+":"+e.getKey());
+            logger.accept("\t"+e.getValue().getClass().getSimpleName()+":"+e.getValue());
 
         });
     }

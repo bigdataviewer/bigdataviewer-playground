@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import java.util.function.Consumer;
 

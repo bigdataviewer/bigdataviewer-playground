@@ -30,7 +30,6 @@ package sc.fiji.bdvpg.scijava;
 
 import bdv.util.BdvHandle;
 import bdv.util.BdvHandleFrame;
-import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.Context;
 import org.scijava.command.Command;
 import org.scijava.command.CommandService;

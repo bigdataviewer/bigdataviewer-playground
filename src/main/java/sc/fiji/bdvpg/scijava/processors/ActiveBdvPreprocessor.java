@@ -31,20 +31,10 @@ package sc.fiji.bdvpg.scijava.processors;
 import bdv.util.BdvHandle;
 import net.imagej.display.process.SingleInputPreprocessor;
 import org.scijava.Priority;
-import org.scijava.command.CommandService;
-import org.scijava.module.Module;
 import org.scijava.module.process.PreprocessorPlugin;
-import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
-import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-
-import java.lang.ref.WeakReference;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Fills single, unresolved module inputs with the active {@link BdvHandle},

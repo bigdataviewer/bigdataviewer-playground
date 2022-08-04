@@ -40,7 +40,6 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 /**
  * Helper function to transform RealTyped {@link bdv.viewer.Source} to {@link UnsignedShortType} source

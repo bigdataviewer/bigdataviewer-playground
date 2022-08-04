@@ -28,11 +28,8 @@
  */
 package net.imglib2.realtransform;
 
-import com.google.gson.*;
 import org.scijava.plugin.Plugin;
 import sc.fiji.persist.IClassRuntimeAdapter;
-
-import java.lang.reflect.Type;
 
 /**
  * Serializes and deserializes a {@link RealTransformSequence} object

@@ -102,7 +102,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     boolean cache;
 
-    private String name;
+    private final String name;
 
     /**
      * The origin source is accessed through its RealRandomAccessible representation :

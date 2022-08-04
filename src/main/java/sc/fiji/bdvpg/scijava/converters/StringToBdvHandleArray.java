@@ -57,9 +57,7 @@ public class StringToBdvHandleArray<I extends String> extends AbstractConverter<
             Optional<BdvHandle> ans = os.getObjects(BdvHandle.class).stream().filter(bdvh ->
                     (bdvh.toString().equals(bdvName)) || (BdvHandleHelper.getWindowTitle(bdvh).equals(bdvName))
             ).findFirst();
-            if (ans.isPresent()) {
-                bdvhs.add(ans.get());
-            }
+            ans.ifPresent(bdvhs::add);
         }
         if (bdvhs.size()==0) {
             return null;

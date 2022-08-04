@@ -29,17 +29,11 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
-import org.scijava.command.InteractiveCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
-
-import java.text.DecimalFormat;
-
-import static org.scijava.ItemVisibility.MESSAGE;
 
 /**
  *

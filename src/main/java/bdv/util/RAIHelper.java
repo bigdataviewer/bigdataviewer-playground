@@ -54,7 +54,6 @@ import net.imglib2.view.Views;
 
 import static net.imglib2.img.basictypeaccess.AccessFlags.VOLATILE;
 import static net.imglib2.type.PrimitiveType.*;
-import static net.imglib2.type.PrimitiveType.DOUBLE;
 
 /**
  * Helper function to cache a {@link RandomAccessibleInterval}
@@ -66,7 +65,7 @@ import static net.imglib2.type.PrimitiveType.DOUBLE;
 public class RAIHelper {
 
     @SuppressWarnings( { "unchecked", "rawtypes" } )
-    public static final <T extends NativeType<T>> RandomAccessibleInterval<T> wrapAsVolatileCachedCellImg(
+    public static <T extends NativeType<T>> RandomAccessibleInterval<T> wrapAsVolatileCachedCellImg(
             final RandomAccessibleInterval<T> source,
             final int[] blockSize) {
 

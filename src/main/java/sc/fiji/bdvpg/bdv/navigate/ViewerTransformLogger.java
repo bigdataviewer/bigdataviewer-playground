@@ -64,6 +64,6 @@ public class ViewerTransformLogger implements Runnable
 	{
 		final AffineTransform3D view = new AffineTransform3D();
 		bdvHandle.getViewerPanel().state().getViewerTransform( view );
-		logger.out( Logs.BDV + ": Viewer Transform: " + view.toString() );
+		logger.out( Logs.BDV + ": Viewer Transform: " + view );
 	}
 }

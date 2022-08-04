@@ -32,7 +32,6 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import net.imglib2.display.ColorConverter;
-import net.imglib2.realtransform.Wrapped2DTransformAs3DRealTransformAdapter;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.InstantiableException;
 import org.slf4j.Logger;

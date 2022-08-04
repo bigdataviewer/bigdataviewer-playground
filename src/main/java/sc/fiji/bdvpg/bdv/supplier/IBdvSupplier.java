@@ -45,5 +45,5 @@ import java.util.function.Supplier;
 public interface IBdvSupplier extends Supplier<BdvHandle>, SciJavaPlugin {
     default AccumulateProjectorFactory<ARGBType> getProjectorFactory() {
         return AccumulateProjectorARGB.factory;
-    };
+    }
 }

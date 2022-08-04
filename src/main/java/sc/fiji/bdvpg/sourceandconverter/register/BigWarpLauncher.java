@@ -35,7 +35,6 @@ import bdv.util.ViewerPanelHandle;
 import bdv.viewer.SourceAndConverter;
 import bigwarp.BigWarp;
 import mpicbg.spim.data.SpimDataException;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -137,8 +136,8 @@ public class BigWarpLauncher implements Runnable {
                 bigWarp = new BigWarp(bwData, bigWarpName, null);
             }
             // What does P and Q stand for ? Not sure about who's moving and who's fixed
-            bdvHandleP = new ViewerPanelHandle(bigWarp.getViewerFrameP().getViewerPanel(), bigWarp.getSetupAssignments(), bigWarpName+"_Moving");
-            bdvHandleQ = new ViewerPanelHandle(bigWarp.getViewerFrameQ().getViewerPanel(), bigWarp.getSetupAssignments(), bigWarpName+"_Fixed");
+            bdvHandleP = new ViewerPanelHandle(bigWarp.getViewerFrameP().getViewerPanel(), bigWarpName+"_Moving");
+            bdvHandleQ = new ViewerPanelHandle(bigWarp.getViewerFrameQ().getViewerPanel(), bigWarpName+"_Fixed");
 
             warpedSources = new SourceAndConverter[movingSources.size()];
 

@@ -47,7 +47,7 @@ import net.imglib2.type.Type;
 
 public class BasicSetupImgLoaderFromSource< T extends Type< T >> implements BasicSetupImgLoader< T > {
 
-    Source<T> src;
+    final Source<T> src;
 
     public BasicSetupImgLoaderFromSource(Source<T> src) {
         this.src = src;

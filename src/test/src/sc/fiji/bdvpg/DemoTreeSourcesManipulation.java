@@ -31,7 +31,6 @@ package sc.fiji.bdvpg;
 import bigwarp.BigWarp;
 import ij.IJ;
 import net.imagej.ImageJ;
-import org.scijava.util.DefaultTreeNode;
 import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
@@ -65,6 +64,5 @@ public class DemoTreeSourcesManipulation {
         IJ.log("Their names are:");
         r.children().forEach(n -> IJ.log("- "+n.name()+" | path = "+n.path()));
         IJ.log("nSources = "+r.child("src/test/resources/demoSlice.xml").sources().length);
-        ;
     }
 }

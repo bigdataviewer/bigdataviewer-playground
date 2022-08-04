@@ -39,7 +39,6 @@ import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.bdv.config.BdvPlaygroundContextualMenuSettingsPage;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -60,11 +59,10 @@ public class ViewerPanelHandle extends BdvHandle {
 
     public String name;
 
-    public ViewerPanelHandle(ViewerPanel viewerPanel, SetupAssignments sa, String name) {
+    public ViewerPanelHandle(ViewerPanel viewerPanel, String name) {
         super(BdvOptions.options());
         this.viewer = viewerPanel;
         this.name = name;
-        this.setupAssignments = sa;
     }
 
     @Override

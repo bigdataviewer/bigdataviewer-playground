@@ -31,7 +31,6 @@ package sc.fiji.bdvpg.bdv.navigate;
 import bdv.util.Affine3DHelpers;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import bdv.viewer.SynchronizedViewerState;
 import bdv.viewer.ViewerState;
 import net.imglib2.*;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -43,7 +42,6 @@ import sc.fiji.bdvpg.viewers.ViewerAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**

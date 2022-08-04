@@ -130,7 +130,7 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
         return 1; // 0 or 1 ?
     }
 
-    static public class EmptySourceParams implements Cloneable, Serializable {
+    static public class EmptySourceParams implements Serializable {
         public long nx,ny,nz;
         public AffineTransform3D at3D;
         public String name;

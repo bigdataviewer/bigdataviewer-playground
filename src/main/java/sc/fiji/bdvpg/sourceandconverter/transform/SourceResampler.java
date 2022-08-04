@@ -50,7 +50,7 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
 
     int defaultMipMapLevel;
 
-    private String name;
+    private final String name;
 
     public SourceResampler( SourceAndConverter sac_in, SourceAndConverter model, String name, boolean reuseMipmaps, boolean cache, boolean interpolate, int defaultMipMapLevel ) {
         this.name = name;

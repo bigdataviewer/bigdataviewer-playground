@@ -30,7 +30,6 @@ package sc.fiji.bdvpg.scijava.services.ui.swingdnd;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.behaviour.EditorBehaviourUnInstaller;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -68,7 +67,7 @@ public class TreeTransferHandler extends TransferHandler {
     }
 
     //TransferHandler
-    @Override public boolean canImport(JComponent comp, DataFlavor flavor[]) {
+    @Override public boolean canImport(JComponent comp, DataFlavor[] flavor) {
         for (DataFlavor dataFlavor : flavor) {
             for (DataFlavor value : flavors) {
                 if (dataFlavor.equals(value)) {

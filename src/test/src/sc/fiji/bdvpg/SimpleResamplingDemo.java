@@ -31,7 +31,6 @@ package sc.fiji.bdvpg;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
-import mpicbg.spim.data.sequence.DefaultVoxelDimensions;
 import mpicbg.spim.data.sequence.FinalVoxelDimensions;
 import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imagej.ImageJ;

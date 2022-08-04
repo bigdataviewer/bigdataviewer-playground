@@ -49,7 +49,6 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 import java.io.File;
 import java.util.ArrayList;

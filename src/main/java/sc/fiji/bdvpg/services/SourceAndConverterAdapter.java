@@ -38,7 +38,6 @@ import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.adapter.AbstractSpimdataAdapter;
-import sc.fiji.bdvpg.scijava.services.ui.swingdnd.BdvTransferHandler;
 import sc.fiji.persist.*;
 
 import java.io.File;

@@ -38,7 +38,6 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.persist.ScijavaGsonHelper;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -82,10 +81,8 @@ public class BdvTransferHandler extends TransferHandler {
     public void importSourcesAndConverters(TransferSupport support, List<SourceAndConverter<?>> sacs) {
         // Can be extended for custom action on sources import
         Optional<BdvHandle> bdvh = getBdvHandleFromViewerPanel(((bdv.viewer.ViewerPanel)support.getComponent()));
-        if (bdvh.isPresent()) {
-            SourceAndConverterServices.getBdvDisplayService()
-                    .show(bdvh.get(), sacs.toArray(new SourceAndConverter[0]));
-        }
+        bdvh.ifPresent(bdvHandle -> SourceAndConverterServices.getBdvDisplayService()
+                .show(bdvHandle, sacs.toArray(new SourceAndConverter[0])));
     }
 
     public Optional<BdvHandle> getBdvHandleFromViewerPanel(ViewerPanel viewerPanel) {
@@ -106,10 +103,8 @@ public class BdvTransferHandler extends TransferHandler {
                     }
                 }
             }
-            return false;
-        } else {
-            return false;
         }
+        return false;
     }
 
     @Override public boolean importData(TransferHandler.TransferSupport support) {

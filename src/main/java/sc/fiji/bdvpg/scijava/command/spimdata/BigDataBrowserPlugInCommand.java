@@ -125,7 +125,7 @@ public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand
             if ( id != null )
             {
                 nameList.add( id );
-                if ( thumbnailUrl != null && StringUtils.isNotEmpty( thumbnailUrl ) )
+                if ( StringUtils.isNotEmpty(thumbnailUrl) )
                     imageMap.put( id, new ImageIcon( new URL( thumbnailUrl ) ) );
                 if ( datasetUrl != null )
                     datasetUrlMap.put( id, datasetUrl );

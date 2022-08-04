@@ -29,7 +29,6 @@
 package sc.fiji.bdvpg.sourceandconverter.importer;
 
 import bdv.viewer.SourceAndConverter;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Function;

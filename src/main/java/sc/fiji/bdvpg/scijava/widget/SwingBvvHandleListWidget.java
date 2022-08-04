@@ -28,7 +28,6 @@
  */
 package sc.fiji.bdvpg.scijava.widget;
 
-import bdv.util.BdvHandle;
 import bvv.util.BvvHandle;
 import org.scijava.Priority;
 import org.scijava.object.ObjectService;
@@ -37,7 +36,6 @@ import org.scijava.plugin.Plugin;
 import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 
 import javax.swing.JList;
 import javax.swing.JPanel;

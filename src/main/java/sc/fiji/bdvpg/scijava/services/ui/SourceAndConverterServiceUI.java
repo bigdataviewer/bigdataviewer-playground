@@ -30,7 +30,6 @@ package sc.fiji.bdvpg.scijava.services.ui;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import ij.Prefs;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.base.Entity;
 import mpicbg.spim.data.generic.base.NamedEntity;

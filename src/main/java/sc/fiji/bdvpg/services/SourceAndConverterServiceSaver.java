@@ -34,7 +34,6 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.processors.BvvHandlePostprocessor;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterInspector;
 
 import javax.swing.tree.DefaultMutableTreeNode;

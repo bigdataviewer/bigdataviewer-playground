@@ -29,7 +29,6 @@
 package sc.fiji.bdvpg.scijava.command;
 
 import org.scijava.Context;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;

@@ -43,6 +43,7 @@ import sc.fiji.bdvpg.viewers.ViewerStateSyncStarter;
 import javax.swing.*;
 import java.awt.*;
 
+@SuppressWarnings("CanBeFinal")
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Create Orthogonal Views",
         description = "Creates 3 BDV windows with synchronized orthogonal views")
 public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand {

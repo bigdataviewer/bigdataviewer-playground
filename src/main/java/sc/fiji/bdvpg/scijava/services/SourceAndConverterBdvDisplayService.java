@@ -28,7 +28,6 @@
  */
 package sc.fiji.bdvpg.scijava.services;
 
-import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.Gson;
@@ -52,7 +51,6 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
 import sc.fiji.bdvpg.bdv.supplier.IBdvSupplier;
 import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
@@ -62,7 +60,6 @@ import java.util.stream.Collectors;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import sc.fiji.bdvpg.spimdata.exporter.XmlFromSpimDataExporter;
 import sc.fiji.persist.ScijavaGsonHelper;
 
 import javax.swing.tree.DefaultTreeModel;

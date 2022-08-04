@@ -28,15 +28,10 @@
  */
 package sc.fiji.bdvpg;
 
-import bdv.viewer.SourceAndConverter;
 import loci.common.DebugTools;
 import net.imagej.ImageJ;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.realtransform.AffineTransform3D;
 import org.junit.After;
 import org.junit.Test;
-import org.scijava.util.VersionUtils;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 public class SimpleIJLaunch {
 
