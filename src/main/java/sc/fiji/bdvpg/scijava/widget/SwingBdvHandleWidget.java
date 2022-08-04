@@ -86,7 +86,7 @@ public class SwingBdvHandleWidget extends SwingInputWidget<BdvHandle> implements
 
     public static class RenamableBdvHandle {
 
-        public BdvHandle bdvh;
+        public final BdvHandle bdvh;
 
         public RenamableBdvHandle(BdvHandle bdvh) {
             this.bdvh = bdvh;

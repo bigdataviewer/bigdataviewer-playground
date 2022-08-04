@@ -44,10 +44,10 @@ import java.util.List;
 
 public class TreeTransferHandler extends TransferHandler {
 
-    protected static Logger logger = LoggerFactory.getLogger(TreeTransferHandler.class);
+    protected static final Logger logger = LoggerFactory.getLogger(TreeTransferHandler.class);
 
     DataFlavor nodesFlavor;
-    DataFlavor[] flavors = new DataFlavor[1];
+    final DataFlavor[] flavors = new DataFlavor[1];
     //DefaultMutableTreeNode[] nodesToRemove;
 
     public TreeTransferHandler() {
@@ -169,7 +169,7 @@ public class TreeTransferHandler extends TransferHandler {
     }
 
     public class NodesTransferable implements Transferable {
-        DefaultMutableTreeNode[] nodes;
+        final DefaultMutableTreeNode[] nodes;
 
         public NodesTransferable(DefaultMutableTreeNode[] nodes) {
             this.nodes = nodes;

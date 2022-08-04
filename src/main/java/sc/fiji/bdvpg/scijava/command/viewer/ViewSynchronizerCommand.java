@@ -67,7 +67,7 @@ import java.awt.event.WindowEvent;
                     " to stop the synchronization")
 public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 
-    protected static Logger logger = LoggerFactory.getLogger(ViewSynchronizerCommand.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ViewSynchronizerCommand.class);
 
     @Parameter(label = "Select Bdv Windows to synchronize", required = false)
     BdvHandle[] bdvhs;

@@ -45,6 +45,7 @@ description = "Duplicate one or several sources and sets a new color for these s
 
 public class ColorSourceCreatorCommand implements BdvPlaygroundActionCommand {
 
+    @SuppressWarnings("CanBeFinal")
     @Parameter
     ColorRGB color = new ColorRGB(255,255,255);
 

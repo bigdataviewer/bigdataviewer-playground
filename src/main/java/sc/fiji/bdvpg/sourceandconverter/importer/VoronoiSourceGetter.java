@@ -70,29 +70,6 @@ public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverte
     @Override
     public SourceAndConverter get() {
         RandomAccessibleInterval voronoi = getVoronoiTestLabelImage(imgSize, numPts, copyImg);
-        /*VoxelDimensions voxDimensions = new VoxelDimensions() {
-            @Override
-            public String unit() {
-                return "undefined";
-            }
-
-            @Override
-            public void dimensions(double[] dimensions) {
-                dimensions[0] = 1;
-                dimensions[1] = 1;
-                dimensions[2] = 1;
-            }
-
-            @Override
-            public double dimension(int d) {
-                return 1;
-            }
-
-            @Override
-            public int numDimensions() {
-                return 3;
-            }
-        };*/
 
         Source s = new RandomAccessibleIntervalSource<>( voronoi, new FloatType(), new AffineTransform3D(), "Voronoi_"+numPts+" Pts_["+imgSize[0]+","+imgSize[1]+","+imgSize[2]+"]" );
 

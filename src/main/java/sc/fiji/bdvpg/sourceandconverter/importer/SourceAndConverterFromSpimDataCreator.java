@@ -42,13 +42,17 @@ import mpicbg.spim.data.sequence.Channel;
 import net.imglib2.converter.Converter;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.bdv.config.BdvPrefsSettingsPage;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class SourceAndConverterFromSpimDataCreator
-{
+public class SourceAndConverterFromSpimDataCreator {
+	protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterFromSpimDataCreator.class);
+
 	private final AbstractSpimData asd;
 	private final Map< Integer, SourceAndConverter > setupIdToSourceAndConverter;
 	private final Map< SourceAndConverter, Map< String, Object > > sourceAndConverterToMetadata;
@@ -103,7 +107,7 @@ public class SourceAndConverterFromSpimDataCreator
 				createARGBTypeSourceAndConverter( setupId, sourceName );
 
 			} else {
-				SourceAndConverterHelper.errlog.accept("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
+				logger.error("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
 			}
 
 			sourceAndConverterToMetadata.put( setupIdToSourceAndConverter.get( setupId ), new HashMap<>() );

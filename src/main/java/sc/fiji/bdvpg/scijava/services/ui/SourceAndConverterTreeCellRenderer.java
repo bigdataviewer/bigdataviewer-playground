@@ -39,13 +39,13 @@ public class SourceAndConverterTreeCellRenderer extends DefaultTreeCellRenderer 
     private static final String SPAN_FORMAT = "<span style='color:%s'>%s</span>";
 
     //static ImageIcon sourceIcon;
-    static ImageIcon source2d;
+    static final ImageIcon source2d;
     //static ImageIcon source2dwarped;
 
-    static ImageIcon source3d;
+    static final ImageIcon source3d;
     //static ImageIcon source3dwarped;
 
-    static ImageIcon sourceFilterNode;
+    static final ImageIcon sourceFilterNode;
 
     static {
         URL iconSourceURL;

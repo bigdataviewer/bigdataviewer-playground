@@ -72,7 +72,7 @@ public class ViewerTransformSyncStarter implements Runnable {
     /**
      * Array of BdvHandles to synchronize
      */
-    ViewerAdapter[] handles;
+    final ViewerAdapter[] handles;
 
     /**
      * Reference to the BdvHandle which will serve as a reference for the
@@ -87,20 +87,20 @@ public class ViewerTransformSyncStarter implements Runnable {
      * for synchronization purpose. This object contains all what's needed to stop
      * the synchronization
      */
-    Map<ViewerAdapter, TransformListener<AffineTransform3D>> handleToTransformListener = new HashMap<>();
+    final Map<ViewerAdapter, TransformListener<AffineTransform3D>> handleToTransformListener = new HashMap<>();
 
 
     /** Optional time synchronization
      *
      */
-    boolean synchronizeTime;
+    final boolean synchronizeTime;
 
     /**
      * Map which links each BdvHandle to the TimePointListener which has been added
      * for synchronization purpose. This object contains all what's neede to stop
      * the synchronization
      */
-    Map<ViewerAdapter, TimePointListener> handleToTimeListener = new HashMap<>();
+    final Map<ViewerAdapter, TimePointListener> handleToTimeListener = new HashMap<>();
 
     public ViewerTransformSyncStarter(BdvHandle[] bdvHandles, boolean synchronizeTime) {
         this.handles = new ViewerAdapter[bdvHandles.length];

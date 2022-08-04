@@ -51,12 +51,12 @@ import java.util.Map;
 public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConverter>,
         JsonDeserializer<SourceAndConverter> {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterAdapter.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterAdapter.class);
 
-    sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer;
+    final sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer;
 
-    Map<Class<? extends Source>, ISourceAdapter> sourceSerializers = new HashMap<>();
-    Map<String, ISourceAdapter> sourceSerializersFromName = new HashMap<>();
+    final Map<Class<? extends Source>, ISourceAdapter> sourceSerializers = new HashMap<>();
+    final Map<String, ISourceAdapter> sourceSerializersFromName = new HashMap<>();
 
     public SourceAndConverterAdapter(sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer) {
         this.sacSerializer = sacSerializer;
@@ -105,7 +105,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
                         Object o = SourceAndConverterServices
                                     .getSourceAndConverterService()
                                     .getMetadata(sourceAndConverter, key);
-                        if ((o!=null) && (o instanceof String)) {
+                        if (o instanceof String) {
                             stringMetaData.put(key,(String)o);
                         }
                     });

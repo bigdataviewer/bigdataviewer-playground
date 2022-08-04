@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 
 public class SourceToUnsignedShortConverter {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceToUnsignedShortConverter.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceToUnsignedShortConverter.class);
 
     static public Source<UnsignedShortType> convertRealSource(Source<RealType> iniSrc) {
         Converter<RealType, UnsignedShortType> cvt = (i, o) -> o.set((int) i.getRealDouble());

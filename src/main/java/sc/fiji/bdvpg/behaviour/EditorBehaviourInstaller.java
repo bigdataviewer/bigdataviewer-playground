@@ -58,10 +58,10 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getComman
 
 public class EditorBehaviourInstaller implements Runnable {
 
-    protected static Logger logger = LoggerFactory.getLogger(EditorBehaviourInstaller.class);
+    protected static final Logger logger = LoggerFactory.getLogger(EditorBehaviourInstaller.class);
 
     final SourceSelectorBehaviour ssb;
-    BdvHandle bdvh;
+    final BdvHandle bdvh;
 
     private ToggleListener toggleListener;
 
@@ -111,7 +111,7 @@ public class EditorBehaviourInstaller implements Runnable {
     }
 
 
-    String editorActionsPath;
+    final String editorActionsPath;
 
     public EditorBehaviourInstaller(SourceSelectorBehaviour ssb, String context) {
         this.ssb = ssb;

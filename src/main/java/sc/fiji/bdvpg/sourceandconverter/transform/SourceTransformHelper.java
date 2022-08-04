@@ -304,8 +304,7 @@ public class SourceTransformHelper {
      * @return transformed source
      */
     public static SourceAndConverter createNewTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
-        SourceAndConverter transformedSac = new SourceAffineTransformer(sacTR.sac, affineTransform3D).getSourceOut();
-        return transformedSac;
+        return new SourceAffineTransformer(sacTR.sac, affineTransform3D).getSourceOut();
     }
 
     /**
@@ -335,9 +334,6 @@ public class SourceTransformHelper {
         assert sacTR.sac.getSpimSource() instanceof TransformedSource;
         //AffineTransform3D at3D = new AffineTransform3D();
         ((TransformedSource)sacTR.sac.getSpimSource()).setFixedTransform(affineTransform3D);
-        //.getIncrementalTransform(at3D);
-        //((TransformedSource)sacTR.sac.getSpimSource()).getIncrementalTransform(at3D);//.getFixedTransform(at3D);
-        //((TransformedSource)sacTR.sac.getSpimSource()).setFixedTransform(at3D.inverse().preConcatenate(affineTransform3D));
         return sacTR.sac;
     }
 

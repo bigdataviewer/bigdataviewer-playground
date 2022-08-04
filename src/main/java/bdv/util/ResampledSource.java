@@ -74,33 +74,33 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ResampledSource< T extends NumericType<T> & NativeType<T>> implements Source<T> {
 
-    protected static Logger logger = LoggerFactory.getLogger(ResampledSource.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ResampledSource.class);
 
     /**
      * Hashmap to cache RAIs (mipmaps and timepoints), used only if {@link ResampledSource#cache} is true
      */
-    transient ConcurrentHashMap<Integer, ConcurrentHashMap<Integer,RandomAccessibleInterval<T>>> cachedRAIs
+    final transient ConcurrentHashMap<Integer, ConcurrentHashMap<Integer,RandomAccessibleInterval<T>>> cachedRAIs
             = new ConcurrentHashMap<>();
 
     /**
      * Origin source of type {@link T}
      */
-    Source<T> origin;
+    final Source<T> origin;
 
     /**
      * Model source, no need to be of type {@link T}
      */
-    Source<?> resamplingModel;
+    final Source<?> resamplingModel;
 
     protected final DefaultInterpolators< T > interpolators = new DefaultInterpolators<>();
 
-    protected Interpolation originInterpolation;
+    protected final Interpolation originInterpolation;
 
     final boolean reuseMipMaps;
 
     final int defaultMipMapLevel;
 
-    boolean cache;
+    final boolean cache;
 
     private final String name;
 
@@ -144,7 +144,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         computeMipMapsCorrespondance();
     }
 
-    Map<Integer, Integer> mipmapModelToOrigin = new HashMap<>();
+    final Map<Integer, Integer> mipmapModelToOrigin = new HashMap<>();
 
     List<Double> originVoxSize;
 
@@ -260,6 +260,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     }
 
+    @SuppressWarnings("UnnecessaryLocalVariable")
     public RandomAccessibleInterval<T> buildSource(int t, int level) {
         // Get current model source transformation
         AffineTransform3D at = new AffineTransform3D();
@@ -296,7 +297,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         zero.setZero();
         ExtendedRandomAccessibleInterval<T, RandomAccessibleInterval< T >>
                 eView = Views.extendZero(getSource( t, level ));
-        RealRandomAccessible< T > realRandomAccessible = Views.interpolate( eView, interpolators.get(method) );
+        @SuppressWarnings("UnnecessaryLocalVariable") RealRandomAccessible< T > realRandomAccessible = Views.interpolate( eView, interpolators.get(method) );
         return realRandomAccessible;
     }
 

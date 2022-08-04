@@ -62,10 +62,10 @@ import java.util.function.Function;
 
 public class JListTransferHandler extends TransferHandler {
 
-    protected static Logger logger = LoggerFactory.getLogger(JListTransferHandler.class);
+    protected static final Logger logger = LoggerFactory.getLogger(JListTransferHandler.class);
 
     DataFlavor nodesFlavor;
-    DataFlavor[] flavors = new DataFlavor[2];
+    final DataFlavor[] flavors = new DataFlavor[2];
 
     public JListTransferHandler() {
         try {
@@ -101,10 +101,8 @@ public class JListTransferHandler extends TransferHandler {
                     }
                 }
             }
-            return false;
-        } else {
-            return false;
         }
+        return false;
     }
 
     @Override public boolean importData(TransferSupport support) {
@@ -127,8 +125,8 @@ public class JListTransferHandler extends TransferHandler {
                     idxInsert++;
                 }
                 return true;
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         } else {
 

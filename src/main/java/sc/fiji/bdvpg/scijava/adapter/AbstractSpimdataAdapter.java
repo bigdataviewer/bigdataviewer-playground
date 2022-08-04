@@ -52,7 +52,7 @@ public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData>
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractSpimData.class);
 
-    SourceAndConverterAdapter sacSerializer;
+    final SourceAndConverterAdapter sacSerializer;
 
     int spimdataCounter = 0;
 

@@ -43,7 +43,7 @@ import java.lang.reflect.Type;
 @Plugin(type = IClassAdapter.class)
 public class Wrapped2DTransformAs3DRealTransformAdapter implements IClassAdapter<Wrapped2DTransformAs3D> {
 
-    protected static Logger logger = LoggerFactory.getLogger(Wrapped2DTransformAs3DRealTransformAdapter.class);
+    protected static final Logger logger = LoggerFactory.getLogger(Wrapped2DTransformAs3DRealTransformAdapter.class);
 
     @Override
     public Wrapped2DTransformAs3D deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {

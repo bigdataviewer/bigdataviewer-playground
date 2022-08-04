@@ -50,7 +50,7 @@ import java.util.Properties;
 
 public class BdvPrefsSettingsPage implements SettingsPage {
 
-    protected static Logger logger = LoggerFactory.getLogger(BdvPrefsSettingsPage.class);
+    protected static final Logger logger = LoggerFactory.getLogger(BdvPrefsSettingsPage.class);
 
     private final String treePath;
 
@@ -118,9 +118,13 @@ public class BdvPrefsSettingsPage implements SettingsPage {
      */
     static class BdvPrefsEditorPanel extends JPanel {
 
-        JButton chooseScaleBarColor, chooseScaleBarBGColor;
+        final JButton chooseScaleBarColor;
+        final JButton chooseScaleBarBGColor;
 
-        JCheckBox showScaleBar,showMultiboxOverlay, showTextOverlay, showScaleBarInMovie;
+        final JCheckBox showScaleBar;
+        final JCheckBox showMultiboxOverlay;
+        final JCheckBox showTextOverlay;
+        final JCheckBox showScaleBarInMovie;
 
         Color scaleBarColor, scaleBarBGColor;
 

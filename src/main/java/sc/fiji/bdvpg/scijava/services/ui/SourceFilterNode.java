@@ -87,7 +87,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
     /**
      * Are the filtered sources displayed as direct children of this node ?
      */
-    boolean displayFilteredSources;
+    final boolean displayFilteredSources;
 
     DefaultTreeModel model;
 
@@ -108,8 +108,8 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
     }
 
     // Holding current state = set of SourceAndConverter contained in the filter node
-    Set<SourceAndConverter> currentInputSacs = ConcurrentHashMap.newKeySet();
-    Set<SourceAndConverter> currentOutputSacs = ConcurrentHashMap.newKeySet();
+    final Set<SourceAndConverter> currentInputSacs = ConcurrentHashMap.newKeySet();
+    final Set<SourceAndConverter> currentOutputSacs = ConcurrentHashMap.newKeySet();
 
     public boolean hasConsumed(SourceAndConverter sac) {
         return currentOutputSacs.contains(sac);

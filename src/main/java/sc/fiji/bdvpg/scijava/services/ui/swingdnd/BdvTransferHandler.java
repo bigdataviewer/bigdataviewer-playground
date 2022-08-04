@@ -57,10 +57,10 @@ import java.util.function.Function;
 
 public class BdvTransferHandler extends TransferHandler {
 
-    protected static Logger logger = LoggerFactory.getLogger(BdvTransferHandler.class);
+    protected static final Logger logger = LoggerFactory.getLogger(BdvTransferHandler.class);
 
     DataFlavor nodesFlavor;
-    DataFlavor[] flavors = new DataFlavor[2];
+    final DataFlavor[] flavors = new DataFlavor[2];
 
     public BdvTransferHandler() {
         try {

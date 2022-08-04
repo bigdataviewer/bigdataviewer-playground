@@ -36,7 +36,6 @@ import bdv.util.*;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imglib2.*;
 import net.imglib2.converter.Converter;
 import net.imglib2.converter.RealLUTConverter;
@@ -88,17 +87,8 @@ import java.util.stream.Collectors;
  */
 public class SourceAndConverterHelper {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterHelper.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterHelper.class);
 
-    /**
-     * Standard logger
-     */
-    public static Consumer<String> log = logger::debug;
-
-    /**
-     * Error logger
-     */
-    public static Consumer<String> errlog = logger::error;
 
     /**
      * Core function : makes SourceAndConverter object out of a Source
@@ -147,7 +137,7 @@ public class SourceAndConverterHelper {
 
         } else {
 
-            errlog.accept("Cannot create sourceandconverter and converter for sources of type "+source.getType());
+            logger.error("Cannot create sourceandconverter and converter for sources of type "+source.getType());
             return null;
 
         }
@@ -168,7 +158,7 @@ public class SourceAndConverterHelper {
         } else if (source.getType() instanceof ARGBType) {
             return createConverterARGBType(source);
         } else {
-            errlog.accept("Cannot create converter for sourceandconverter of type "+source.getType().getClass().getSimpleName());
+            logger.error("Cannot create converter for sourceandconverter of type "+source.getType().getClass().getSimpleName());
             return null;
         }
     }
@@ -205,7 +195,7 @@ public class SourceAndConverterHelper {
 			}
 			else
 			{
-				errlog.accept( "Could not clone the converter of class " + converter.getClass().getSimpleName() );
+                logger.error( "Could not clone the converter of class " + converter.getClass().getSimpleName() );
 				return null;
 			}
         }
@@ -225,7 +215,7 @@ public class SourceAndConverterHelper {
 				return new LUTConverterSetup((RealLUTConverter) sac.getConverter());
 			}
 		} else {
-			log.accept( "Unmodifiable ConverterSetup for Converters of class " + sac.getConverter().getClass() );
+			logger.debug( "Unmodifiable ConverterSetup for Converters of class " + sac.getConverter().getClass() );
 			if (sac.asVolatile() != null)
 			{
 				return new UnmodifiableConverterSetup( sac.getConverter(), sac.asVolatile().getConverter() );

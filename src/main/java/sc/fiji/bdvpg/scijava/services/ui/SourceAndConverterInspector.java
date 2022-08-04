@@ -52,7 +52,7 @@ import java.util.function.Supplier;
 
 public class SourceAndConverterInspector {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterInspector.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterInspector.class);
 
     /**
      * Appends all the metadata of a SourceAndConverter into a tree structure

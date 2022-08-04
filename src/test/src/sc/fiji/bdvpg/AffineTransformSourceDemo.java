@@ -59,7 +59,7 @@ public class AffineTransformSourceDemo {
 
     @Test
     public void demoRunOk() {
-        main(new String[]{""});
+        main("");
     }
 
     @After

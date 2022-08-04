@@ -45,14 +45,14 @@ import java.util.function.Consumer;
  * - the functional interface allows to use this action in a functional way,
  * in this case, the constructor without SourceAndConverter can be used
  *
- * TODO : think if this action is useful ? It looks ununsed because the direct call to SourceAndConverterServices.getSourceAndConverterDisplayService().show is more convenient
+ * TODO : think if this action is useful ? It looks unused because the direct call to SourceAndConverterServices.getSourceAndConverterDisplayService().show is more convenient
  *
  */
 
 public class SourceAdder implements Runnable, Consumer<SourceAndConverter[]>
 {
 	SourceAndConverter[] sacsIn;
-	BdvHandle bdvh;
+	final BdvHandle bdvh;
 
 	public SourceAdder(BdvHandle bdvh, SourceAndConverter... sacsIn) {
 		this.sacsIn=sacsIn;

@@ -44,8 +44,8 @@ import java.util.function.Consumer;
  */
 public class ColorChanger implements Runnable, Consumer<SourceAndConverter> {
 
-    SourceAndConverter sac;
-    ARGBType color;
+    final SourceAndConverter sac;
+    final ARGBType color;
 
     public ColorChanger(SourceAndConverter sac, ARGBType color) {
         this.sac = sac;

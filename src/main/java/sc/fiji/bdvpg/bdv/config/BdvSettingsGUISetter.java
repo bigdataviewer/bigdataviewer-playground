@@ -91,7 +91,7 @@ import java.util.stream.Stream;
 
 public class BdvSettingsGUISetter implements Runnable {
 
-    protected static Logger logger = LoggerFactory.getLogger(BdvSettingsGUISetter.class);
+    protected static final Logger logger = LoggerFactory.getLogger(BdvSettingsGUISetter.class);
 
     final String rootPath;
 

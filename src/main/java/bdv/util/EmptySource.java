@@ -58,7 +58,7 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
 
     transient final RandomAccessibleInterval<UnsignedShortType> rai;
 
-    EmptySourceParams params;
+    final EmptySourceParams params;
 
     transient protected final DefaultInterpolators< UnsignedShortType > interpolators = new DefaultInterpolators<>();
 

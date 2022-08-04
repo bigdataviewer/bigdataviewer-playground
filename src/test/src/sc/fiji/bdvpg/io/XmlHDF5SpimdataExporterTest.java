@@ -45,7 +45,7 @@ import java.util.List;
 
 public class XmlHDF5SpimdataExporterTest {
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public final TemporaryFolder folder = new TemporaryFolder();
 
     static ImageJ ij;
 

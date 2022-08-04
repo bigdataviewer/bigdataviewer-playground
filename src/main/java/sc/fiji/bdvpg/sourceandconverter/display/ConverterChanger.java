@@ -35,11 +35,11 @@ import java.util.function.Function;
 
 public class ConverterChanger implements Runnable, Function<SourceAndConverter, SourceAndConverter> {
 
-    SourceAndConverter sac_in;
+    final SourceAndConverter sac_in;
 
-    Converter nonVolatileConverter;
+    final Converter nonVolatileConverter;
 
-    Converter volatileConverter;
+    final Converter volatileConverter;
 
     public ConverterChanger(SourceAndConverter sac, Converter cvtnv, Converter cvt) {
         sac_in = sac;

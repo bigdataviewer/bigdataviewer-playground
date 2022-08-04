@@ -50,7 +50,7 @@ import java.lang.reflect.Type;
 @Plugin(type = IClassAdapter.class)
 public class InvertibleRealTransformSequenceAdapter implements IClassAdapter<InvertibleRealTransformSequence> {
 
-    protected static Logger logger = LoggerFactory.getLogger(InvertibleRealTransformSequenceAdapter.class);
+    protected static final Logger logger = LoggerFactory.getLogger(InvertibleRealTransformSequenceAdapter.class);
 
     @Override
     public Class<? extends InvertibleRealTransformSequence> getAdapterClass() {

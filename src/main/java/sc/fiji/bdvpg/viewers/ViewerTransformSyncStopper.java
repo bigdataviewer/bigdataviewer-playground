@@ -48,9 +48,9 @@ import java.util.Map;
 
 public class ViewerTransformSyncStopper implements Runnable {
 
-    Map<ViewerAdapter, TransformListener<AffineTransform3D>> handleToTransformListener;
+    final Map<ViewerAdapter, TransformListener<AffineTransform3D>> handleToTransformListener;
 
-    Map<ViewerAdapter, TimePointListener> handleToTimePointListener;
+    final Map<ViewerAdapter, TimePointListener> handleToTimePointListener;
 
     public ViewerTransformSyncStopper(
             Map<ViewerAdapter,TransformListener<AffineTransform3D>> handleToTransformListener,

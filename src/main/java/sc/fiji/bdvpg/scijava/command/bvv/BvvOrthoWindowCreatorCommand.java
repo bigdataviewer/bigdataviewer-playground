@@ -45,6 +45,7 @@ import javax.swing.JFrame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
+@SuppressWarnings("CanBeFinal")
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>BVV - Create Orthogonal Views",
         description = "Creates 3 BVV windows with synchronized orthogonal views")
 public class BvvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand {

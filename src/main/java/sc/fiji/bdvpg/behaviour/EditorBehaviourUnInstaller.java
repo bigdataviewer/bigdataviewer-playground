@@ -43,9 +43,9 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 public class EditorBehaviourUnInstaller implements Runnable {
 
-    protected static Logger logger = LoggerFactory.getLogger(EditorBehaviourUnInstaller.class);
+    protected static final Logger logger = LoggerFactory.getLogger(EditorBehaviourUnInstaller.class);
 
-    BdvHandle bdvh;
+    final BdvHandle bdvh;
 
     public EditorBehaviourUnInstaller(BdvHandle bdvh) {
         this.bdvh = bdvh;

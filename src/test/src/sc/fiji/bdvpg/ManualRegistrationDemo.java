@@ -77,7 +77,7 @@ public class ManualRegistrationDemo {
     final public static int MutateLastSpimdataTransformation = 3;
 
     // Change to test the different options
-    static int demoMode = AppendNewSpimdataTransformation;
+    static final int demoMode = AppendNewSpimdataTransformation;
 
     public static boolean isTransforming = false;
 
@@ -101,10 +101,6 @@ public class ManualRegistrationDemo {
 
         // Creates SourceAndConverter Reference
         SourceAndConverter sacReference = SourceAndConverterHelper.createSourceAndConverter(source);
-
-        //int demoMode = CreateNewTransformedSourceAndConverter;
-        //int demoMode = MutateTransformedSourceAndConverter;
-
 
         if (demoMode == CreateNewTransformedSourceAndConverter) {
 

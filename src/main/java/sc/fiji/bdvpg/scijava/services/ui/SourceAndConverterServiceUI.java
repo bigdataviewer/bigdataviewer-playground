@@ -98,22 +98,22 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
 
 public class SourceAndConverterServiceUI {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterServiceUI.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterServiceUI.class);
 
     /**
      * Linked {@link SourceAndConverterService}
      */
-    SourceAndConverterService sourceAndConverterService;
+    final SourceAndConverterService sourceAndConverterService;
 
     /**
      * JFrame container
      */
-    JFrame frame;
+    final JFrame frame;
 
     /**
      * JPanel container
      */
-    JPanel panel;
+    final JPanel panel;
 
     /**
      * Swing JTree used for displaying Sources object
@@ -123,12 +123,12 @@ public class SourceAndConverterServiceUI {
     /**
      * Tree root note
      */
-    SourceFilterNode top;
+    final SourceFilterNode top;
 
     /**
      * Scrollpane to display the JTree, if too big
      */
-    JScrollPane treeView;
+    final JScrollPane treeView;
 
     /**
      * Tree model
@@ -138,11 +138,7 @@ public class SourceAndConverterServiceUI {
     /**
      * Spimdata Filter nodes currently present in the tree
      */
-    List<SpimDataFilterNode> spimdataFilterNodes = new ArrayList<>();
-
-    Consumer<String> log = logger::debug;
-
-    Consumer<String> errlog = logger::error;
+    final List<SpimDataFilterNode> spimdataFilterNodes = new ArrayList<>();
 
     /**
      * Constructor :
@@ -253,13 +249,13 @@ public class SourceAndConverterServiceUI {
                 {
                     TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
                     if (paths.length!=1) {
-                        errlog.accept("Only one node should be selected");
+                        logger.error("Only one node should be selected");
                         return;
                     }
                     if ((paths[0].getLastPathComponent()) instanceof SourceFilterNode) {
                         copiedNode = (SourceFilterNode) ((SourceFilterNode)(paths[0].getLastPathComponent())).clone();
                     } else {
-                        errlog.accept("A source filter node should be selected");
+                        logger.error("A source filter node should be selected");
                     }
 
                 }
@@ -271,14 +267,14 @@ public class SourceAndConverterServiceUI {
                 {
                     TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
                     if (paths.length!=1) {
-                        errlog.accept("Only one node should be selected");
+                        logger.error("Only one node should be selected");
                         return;
                     }
                     if ((paths[0].getLastPathComponent()) instanceof SourceFilterNode) {
                         SourceFilterNode sfn = ((SourceFilterNode) (paths[0].getLastPathComponent()));
                         sfn.add(copiedNode);
                    } else {
-                        errlog.accept("A source filter node should be selected");
+                        logger.error("A source filter node should be selected");
                     }
                 }
         );
@@ -294,7 +290,7 @@ public class SourceAndConverterServiceUI {
                             .forEach(n -> {
                                 SourceFilterNode sfn = (SourceFilterNode) n;
                                 if (sfn.equals(top)) {
-                                    errlog.accept("The root can't be deleted");
+                                    logger.error("The root can't be deleted");
                                 } else {
                                     sfn.removeFromParent();
                                 }
@@ -308,7 +304,7 @@ public class SourceAndConverterServiceUI {
                 {
                     TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
                     if (paths.length!=1) {
-                        errlog.accept("Only one node should be selected");
+                        logger.error("Only one node should be selected");
                         return;
                     }
                     if ((paths[0].getLastPathComponent()) instanceof SourceFilterNode) {
@@ -318,7 +314,7 @@ public class SourceAndConverterServiceUI {
                         sfn.add(newNode);
 
                     } else {
-                        errlog.accept("A source filter node should be selected");
+                        logger.error("A source filter node should be selected");
                     }
                 }
         );
@@ -626,7 +622,7 @@ public class SourceAndConverterServiceUI {
                     found = true;
                     break;
                 } else {
-                    errlog.accept("Unmatched "+testNode.toString().trim());
+                    logger.error("Unmatched "+testNode.toString().trim());
                 }
             }
             if (!found) break;

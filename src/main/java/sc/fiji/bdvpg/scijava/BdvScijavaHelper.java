@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 
 public class BdvScijavaHelper {
 
-    protected static Logger logger = LoggerFactory.getLogger(BdvScijavaHelper.class);
+    protected static final Logger logger = LoggerFactory.getLogger(BdvScijavaHelper.class);
 
     static public void clearBdvHandleMenuBar(BdvHandle bdvh) {
         if (bdvh instanceof BdvHandleFrame) {
@@ -72,8 +72,7 @@ public class BdvScijavaHelper {
     static public void addActionToBdvHandleMenu(BdvHandle bdvh, String pathHierarchy, int skipTopLevels, Runnable runnable) {
         if (bdvh instanceof BdvHandleFrame) {
             final JMenuBar bdvMenuBar = ( ( BdvHandleFrame ) bdvh ).getBigDataViewer().getViewerFrame().getJMenuBar();
-            List<String> path = Arrays.asList(pathHierarchy.split(">"))
-                    .stream()
+            List<String> path = Arrays.stream(pathHierarchy.split(">"))
                     .map(String::trim)
                     .collect(Collectors.toList());
 

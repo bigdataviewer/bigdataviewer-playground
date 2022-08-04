@@ -71,9 +71,9 @@ import java.util.function.BiFunction;
 
 public class ManualRegistrationStopper implements Runnable {
 
-    ManualRegistrationStarter starter;
+    final ManualRegistrationStarter starter;
 
-    BiFunction<AffineTransform3D, SourceAndConverterAndTimeRange, SourceAndConverter> registrationPolicy;// = ManualRegistrationStopper::createNewTransformedSourceAndConverter;
+    final BiFunction<AffineTransform3D, SourceAndConverterAndTimeRange, SourceAndConverter> registrationPolicy;// = ManualRegistrationStopper::createNewTransformedSourceAndConverter;
 
     SourceAndConverter[] transformedSources;
 

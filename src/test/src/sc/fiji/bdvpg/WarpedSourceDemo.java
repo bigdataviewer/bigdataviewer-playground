@@ -61,7 +61,7 @@ public class WarpedSourceDemo {
 
     @Test
     public void demoRunOk() throws Exception {
-        main(new String[]{""});
+        main("");
     }
 
     @After

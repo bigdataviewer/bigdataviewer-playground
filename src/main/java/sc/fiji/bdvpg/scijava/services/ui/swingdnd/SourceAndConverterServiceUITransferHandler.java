@@ -50,7 +50,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -64,10 +63,10 @@ import java.util.List;
 
 public class SourceAndConverterServiceUITransferHandler extends TreeTransferHandler {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterServiceUITransferHandler.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterServiceUITransferHandler.class);
 
     static DataFlavor nodesFlavor;
-    static DataFlavor[] flavors = new DataFlavor[2];
+    static final DataFlavor[] flavors = new DataFlavor[2];
 
     static {
         try {

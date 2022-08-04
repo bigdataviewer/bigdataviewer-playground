@@ -55,15 +55,4 @@ public class DefaultAccumulatorFactoryAdapter implements IClassRuntimeAdapter<Ac
         return false;
     }
 
-    /*@Override
-    public DefaultAccumulatorFactory deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        return new DefaultAccumulatorFactory();
-    }
-
-    @Override
-    public JsonElement serialize(DefaultAccumulatorFactory src, Type typeOfSrc, JsonSerializationContext context) {
-        JsonObject obj = new JsonObject();
-        //obj.addProperty("type", DefaultAccumulatorFactory.class.getSimpleName());
-        return obj;
-    }*/
 }

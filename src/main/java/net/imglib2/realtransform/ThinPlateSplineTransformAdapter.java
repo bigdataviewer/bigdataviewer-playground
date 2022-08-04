@@ -44,7 +44,7 @@ import java.lang.reflect.Type;
 @Plugin(type = IClassAdapter.class)
 public class ThinPlateSplineTransformAdapter implements IClassAdapter<ThinplateSplineTransform> {
 
-    protected static Logger logger = LoggerFactory.getLogger(ThinPlateSplineTransformAdapter.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ThinPlateSplineTransformAdapter.class);
 
     @Override
     public ThinplateSplineTransform deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {

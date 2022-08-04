@@ -46,7 +46,7 @@ import java.util.function.Consumer;
 
 public class SourceAndConverterAdapter {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterAdapter.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterAdapter.class);
 
     final File basePath;
 
@@ -64,10 +64,10 @@ public class SourceAndConverterAdapter {
     Map<Integer, Source> idToSource;
     Map<Source, Integer> sourceToId;
 
-    public Set<Integer> alreadyDeSerializedSacs = new HashSet<>();
-    public Map<Integer, JsonElement> idToJsonElement = new HashMap<>();
+    public final Set<Integer> alreadyDeSerializedSacs = new HashSet<>();
+    public final Map<Integer, JsonElement> idToJsonElement = new HashMap<>();
 
-    Context ctx;
+    final Context ctx;
 
     public Context getScijavaContext() {
         return ctx;

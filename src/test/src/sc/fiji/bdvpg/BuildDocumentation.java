@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 
 public class BuildDocumentation {
     static String doc = "";
-    static String linkGitHubRepoPrefix = "https://github.com/bigdataviewer/bigdataviewer-playground/tree/master/src/main/java/";
+    static final String linkGitHubRepoPrefix = "https://github.com/bigdataviewer/bigdataviewer-playground/tree/master/src/main/java/";
 
     public static void main(String... args) {
         //

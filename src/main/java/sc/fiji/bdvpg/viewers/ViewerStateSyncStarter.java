@@ -46,7 +46,7 @@ public class ViewerStateSyncStarter implements Runnable {
     /**
      * Array of BdvHandles to synchronize
      */
-    ViewerAdapter[] handles;
+    final ViewerAdapter[] handles;
 
     public ViewerStateSyncStarter(ViewerAdapter... handles) {
         this.handles = handles;
@@ -57,7 +57,7 @@ public class ViewerStateSyncStarter implements Runnable {
      * for synchronization purpose. This object contains all what's needed to stop
      * the synchronization
      */
-    Map<ViewerAdapter, ViewerStateChangeListener> handleToStateListener = new HashMap<>();
+    final Map<ViewerAdapter, ViewerStateChangeListener> handleToStateListener = new HashMap<>();
 
     final AtomicBoolean isPropagating = new AtomicBoolean();
 

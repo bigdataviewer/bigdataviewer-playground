@@ -72,10 +72,10 @@ import javax.swing.tree.DefaultTreeModel;
  * Make its best to keep in synchronizations all of this, without creating errors nor memory leaks
  */
 
-@Plugin(type= Service.class, headless = false)
+@Plugin(type= Service.class)
 public class SourceAndConverterBdvDisplayService extends AbstractService implements SciJavaService  {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterBdvDisplayService.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterBdvDisplayService.class);
 
     /**
      * Standard logger
@@ -87,7 +87,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      */
     public static Consumer<String> errlog = logger::error;
 
-    public static String CONVERTER_SETUP = "ConverterSetup";
+    public static final String CONVERTER_SETUP = "ConverterSetup";
 
     /**
      * Used to add Aliases for BdvHandle objects
@@ -345,7 +345,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     /**
      * Enables proper closing of Big Warp paired BdvHandles
      */
-    List<Pair<BdvHandle, BdvHandle>> pairedBdvs = new ArrayList<>();
+    final List<Pair<BdvHandle, BdvHandle>> pairedBdvs = new ArrayList<>();
     public void pairClosing(BdvHandle bdv1, BdvHandle bdv2) {
         pairedBdvs.add(new Pair<BdvHandle, BdvHandle>() {
             @Override

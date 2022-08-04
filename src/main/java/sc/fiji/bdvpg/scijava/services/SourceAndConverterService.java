@@ -107,21 +107,11 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService
 public class SourceAndConverterService extends AbstractService implements SciJavaService, ISourceAndConverterService
 {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterService.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterService.class);
 
     static {
         LegacyInjector.preinit();
     }
-
-    /**
-     * Standard logger
-     */
-    public Consumer<String> log = logger::debug;
-
-    /**
-     * Error logger
-     */
-    public Consumer<String> errlog = logger::error;
 
     /**
      * Scijava Object Service : will contain all the sourceAndConverters
@@ -216,7 +206,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      */
     public synchronized void register(SourceAndConverter sac) {
         if (objectService.getObjects(SourceAndConverter.class).contains(sac)) {
-            log.accept("Source already registered");
+            logger.debug("Source already registered");
             return;
         }
         if (sacToMetadata.getIfPresent(sac) == null) {
@@ -244,15 +234,6 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                     at sc.fiji.bdvpg.scijava.services.SourceAndConverterService.register(SourceAndConverterService.java:235)
          */
         objectService.addObject(sac);
-        /*AtomicBoolean flagPerformed2 = new AtomicBoolean();
-        flagPerformed.set(false);
-        EventQueue.invokeLater(()-> {
-
-            flagPerformed.set(true);
-        });
-        while (!flagPerformed.get()) {
-            // busy waiting
-        }*/
 
         if (uiAvailable) ui.update(sac);
     }
@@ -283,7 +264,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             try {
                 EntityHandler handler = pi.createInstance();
                 entityClassToHandler.put(handler.getEntityType(), handler);
-                log.accept("Plugin found for entity class "+handler.getEntityType().getSimpleName());
+                logger.debug("Plugin found for entity class "+handler.getEntityType().getSimpleName());
             } catch (InstantiableException e) {
                 e.printStackTrace();
             }
@@ -362,7 +343,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                     setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
 
                 } else {
-                    SourceAndConverterHelper.errlog.accept("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
+                    logger.error("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
                 }
 
             }
@@ -471,7 +452,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
                     sacToMetadata.invalidate(sac);
                 } else {
-                    errlog.accept(sac.getSpimSource().getName() + " has no associated metadata");
+                    logger.error(sac.getSpimSource().getName() + " has no associated metadata");
                 }
                 /*
                   TODO FIX
@@ -563,13 +544,13 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         registerDefaultActions();
 
         if (!context().getService(UIService.class).isHeadless()) {
-            log.accept( "uiService detected : Constructing JPanel for BdvSourceAndConverterService" );
+            logger.debug( "uiService detected : Constructing JPanel for BdvSourceAndConverterService" );
             ui = new SourceAndConverterServiceUI( this );
             uiAvailable = true;
         }
 
         SourceAndConverterServices.setSourceAndConverterService(this);
-        log.accept("Service initialized.");
+        logger.debug("Service initialized.");
     }
 
     public List<SourceAndConverter> getSourceAndConvertersFromSource(Source src) {
@@ -620,7 +601,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     void registerDefaultActions() {
         this.registerAction("Display names", (srcs) -> {
             for (SourceAndConverter src:srcs){
-                log.accept(src.getSpimSource().getName());
+                logger.debug(src.getSpimSource().getName());
             }});
 
         context().getService(PluginService.class)
@@ -676,18 +657,18 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                         (sacs) -> {
                             commandService.run(ci, true);
                         });
-                log.accept("Registering action entitled " + ci.getMenuPath().getMenuString() + " from command " + ci.getClassName() + " sacs ignored");
+                logger.debug("Registering action entitled " + ci.getMenuPath().getMenuString() + " from command " + ci.getClassName() + " sacs ignored");
             }
         } catch (NullPointerException npe) {
-            errlog.accept("Error on scijava commands registrations");
-            errlog.accept("Null Pointer Exception for command '"+ci.getTitle()+"'");
-            errlog.accept("Try to exclude this command by modifying ActionPackages.json file");
-            errlog.accept("class : "+ci.getClassName());
+            logger.error("Error on scijava commands registrations");
+            logger.error("Null Pointer Exception for command '"+ci.getTitle()+"'");
+            logger.error("Try to exclude this command by modifying ActionPackages.json file");
+            logger.error("class : "+ci.getClassName());
         } catch (Exception e) {
-            errlog.accept("Error on scijava commands registrations");
-            errlog.accept("Exception for command "+ci.getTitle());
-            errlog.accept("Try to exclude this command by modifying ActionPackages.json file");
-            errlog.accept("class : "+ci.getClassName());
+            logger.error("Error on scijava commands registrations");
+            logger.error("Exception for command "+ci.getTitle());
+            logger.error("Try to exclude this command by modifying ActionPackages.json file");
+            logger.error("class : "+ci.getClassName());
             e.printStackTrace();
         }
     }
@@ -731,7 +712,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     public void setMetadata( AbstractSpimData asd, String key, Object data )
     {
         if (asd == null) {
-            errlog.accept("Error : asd is null in setMetadata function! ");
+            logger.error("Error : asd is null in setMetadata function! ");
             return;
         }
         if (spimdataToMetadata.getIfPresent(asd)==null) {

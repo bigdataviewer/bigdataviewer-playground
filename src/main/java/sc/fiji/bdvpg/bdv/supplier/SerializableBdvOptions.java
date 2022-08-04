@@ -36,6 +36,11 @@ import net.imglib2.type.numeric.ARGBType;
 
 /**
  * Because BdvOptions is not directly serializable
+ *
+ * Not serialized:
+ * TransformEventHandlerFactory transformEventHandlerFactory
+ * InputTriggerConfig inputTriggerConfig
+ * AffineTransform3D sourceTransform
  */
 public class SerializableBdvOptions {
 
@@ -63,11 +68,6 @@ public class SerializableBdvOptions {
     public int numTimePoints = 1;
 
     public AccumulateProjectorFactory<ARGBType> accumulateProjectorFactory = AccumulateProjectorARGB.factory;
-
-    // Not serialized
-    //private TransformEventHandlerFactory transformEventHandlerFactory = TransformEventHandler3D::new;
-    //private InputTriggerConfig inputTriggerConfig = null;
-    //private final AffineTransform3D sourceTransform = new AffineTransform3D();
 
     public SerializableBdvOptions() {
     }

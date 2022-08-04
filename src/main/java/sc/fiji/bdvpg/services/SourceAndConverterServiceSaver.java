@@ -53,9 +53,9 @@ import java.util.stream.Collectors;
 
 public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter implements Runnable {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterServiceSaver.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterServiceSaver.class);
 
-    File f;
+    final File f;
 
     List<SourceAndConverter> sacs;
 
@@ -76,14 +76,11 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter im
     }
 
 
-    Set<SourceAndConverter> setOfSourcesNeedingSerialization = new HashSet<>();
+    final Set<SourceAndConverter> setOfSourcesNeedingSerialization = new HashSet<>();
 
     @Override
     public void run() {
         synchronized (SourceAndConverterServiceSaver.class) {
-            /*sacs = SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .getSourceAndConverters();*/
 
             // Makes sure each source is associated to at least one sourceAndConverter
             // this happens via recursive source inspection

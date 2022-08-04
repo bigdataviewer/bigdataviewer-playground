@@ -56,11 +56,11 @@ import java.util.Map;
 
 public class BigWarpLauncher implements Runnable {
 
-    BigWarp.BigWarpData<?> bwData;
+    final BigWarp.BigWarpData<?> bwData;
 
     BigWarp<?> bigWarp;
 
-    String bigWarpName;
+    final String bigWarpName;
 
     BdvHandle bdvHandleP;
 
@@ -76,8 +76,8 @@ public class BigWarpLauncher implements Runnable {
     // Alternative maybe better option :
     // Use array : Source[] or SourceAndConverter[] (and maybe this issue was the reason for BigWarp choosing this in the beginning)
 
-    List<SourceAndConverter> movingSources;
-    List<SourceAndConverter> fixedSources;
+    final List<SourceAndConverter> movingSources;
+    final List<SourceAndConverter> fixedSources;
 
     //List<SourceAndConverter> allRegisteredSources;
 

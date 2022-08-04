@@ -52,7 +52,7 @@ import java.util.function.Consumer;
 
 public class ScijavaGsonHelper {
 
-    protected static Logger logger = LoggerFactory.getLogger(ScijavaGsonHelper.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ScijavaGsonHelper.class);
 
     public static Gson getGson(Context ctx) {
         return getGson(ctx, false);
@@ -143,13 +143,13 @@ public class ScijavaGsonHelper {
     // Inner static class needed for type safety
     public static class ClassTypesAndSubTypes<T> {
 
-        Class<T> baseClass;
+        final Class<T> baseClass;
 
         public ClassTypesAndSubTypes(Class<T> clazz) {
             this.baseClass = clazz;
         }
 
-        List<Class<? extends T>> subClasses = new ArrayList<>();
+        final List<Class<? extends T>> subClasses = new ArrayList<>();
 
         public RuntimeTypeAdapterFactory<T> getRunTimeAdapterFactory(Consumer<String> log) {
             RuntimeTypeAdapterFactory<T> factory = RuntimeTypeAdapterFactory.of(baseClass);

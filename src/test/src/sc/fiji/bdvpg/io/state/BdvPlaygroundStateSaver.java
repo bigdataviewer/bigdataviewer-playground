@@ -40,7 +40,7 @@ import java.io.File;
 
 public class BdvPlaygroundStateSaver {
 
-    protected static Logger logger = LoggerFactory.getLogger(BdvPlaygroundStateSaver.class);
+    protected static final Logger logger = LoggerFactory.getLogger(BdvPlaygroundStateSaver.class);
 
     static ImageJ ij;
 
