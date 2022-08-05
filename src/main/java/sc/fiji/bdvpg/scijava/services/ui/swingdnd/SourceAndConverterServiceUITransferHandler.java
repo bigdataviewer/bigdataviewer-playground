@@ -50,7 +50,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -64,10 +63,10 @@ import java.util.List;
 
 public class SourceAndConverterServiceUITransferHandler extends TreeTransferHandler {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterServiceUITransferHandler.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterServiceUITransferHandler.class);
 
     static DataFlavor nodesFlavor;
-    static DataFlavor[] flavors = new DataFlavor[2];
+    static final DataFlavor[] flavors = new DataFlavor[2];
 
     static {
         try {
@@ -146,7 +145,7 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
                 SourceAndConverterServiceUI ui =
                         ((SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getUI();
                 List<SourceAndConverter<?>> sacs = new ArrayList<>();
-                for (SourceAndConverter<?> sac : ui.getSelectedSourceAndConverters()) {
+                for (SourceAndConverter<?> sac : ui.getSelectedSourceAndConverters((JTree) c)) {
                     sacs.add(sac);
                 }
                 //Collections.addAll(sacs, ui.getSelectedSourceAndConverters()); // Do not work, even if intellij suggests it
@@ -245,11 +244,11 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
         public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
             if (flavor.equals(nodesFlavor)) {
                 return nodes;
-            }
-            if (flavor.equals(SourcesTransferable.flavor)) {
+            } else if (flavor.equals(SourcesTransferable.flavor)) {
                 return sourcesTransferable.getTransferData(SourcesTransferable.flavor);
+            } else {
+                throw new UnsupportedFlavorException(flavor);
             }
-            return null;
         }
     }
 }

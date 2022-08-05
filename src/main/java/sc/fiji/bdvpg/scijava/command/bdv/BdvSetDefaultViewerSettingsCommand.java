@@ -77,14 +77,6 @@ public class BdvSetDefaultViewerSettingsCommand implements BdvPlaygroundActionCo
     @Parameter
     int numtimepoints = 1;
 
-    //@Parameter
-    //AxisOrder axisOrder = AxisOrder.DEFAULT;
-
-    //AccumulateProjectorFactory<ARGBType> accumulateProjectorFactory = new DefaultAccumulatorFactory();
-
-    @Parameter
-    Context ctx;
-
     @Parameter
     SourceAndConverterBdvDisplayService sacDisplayService;
 

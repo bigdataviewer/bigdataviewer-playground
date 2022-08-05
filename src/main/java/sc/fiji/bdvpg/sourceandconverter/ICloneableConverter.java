@@ -32,7 +32,7 @@ import bdv.viewer.SourceAndConverter;
 import net.imglib2.converter.Converter;
 
 /**
- * Empty interface which allows to duplicate custom converters in dependent repositories
+ * Empty interface which allows duplicating custom converters in dependent repositories
  */
 public interface ICloneableConverter {
 

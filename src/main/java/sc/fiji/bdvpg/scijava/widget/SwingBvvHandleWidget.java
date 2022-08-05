@@ -89,7 +89,7 @@ public class SwingBvvHandleWidget extends SwingInputWidget<BvvHandle> implements
 
     public static class RenamableBvvHandle {
 
-        public BvvHandle bvvh;
+        public final BvvHandle bvvh;
 
         public RenamableBvvHandle(BvvHandle bvvh) {
             this.bvvh = bvvh;

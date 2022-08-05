@@ -35,7 +35,6 @@ import net.imglib2.histogram.DiscreteFrequencyDistribution;
 import net.imglib2.histogram.Histogram1d;
 import net.imglib2.histogram.Real1dBinMapper;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.view.Views;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 

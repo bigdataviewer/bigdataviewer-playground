@@ -55,8 +55,6 @@ import org.scijava.InstantiableException;
 import org.scijava.command.Command;
 import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;
-import org.scijava.log.LogLevel;
-import org.scijava.log.LogService;
 import org.scijava.module.ModuleItem;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
@@ -70,16 +68,13 @@ import org.scijava.ui.UIService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.processors.SourceAndConverterPostprocessor;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-import sc.fiji.bdvpg.sourceandconverter.importer.SourceAndConverterFromSpimDataCreator;
 import sc.fiji.bdvpg.spimdata.EntityHandler;
 import sc.fiji.bdvpg.spimdata.IEntityHandlerService;
 
-import java.awt.*;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -90,7 +85,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -113,21 +107,11 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService
 public class SourceAndConverterService extends AbstractService implements SciJavaService, ISourceAndConverterService
 {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterService.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterService.class);
 
     static {
         LegacyInjector.preinit();
     }
-
-    /**
-     * Standard logger
-     */
-    public Consumer<String> log = logger::debug;
-
-    /**
-     * Error logger
-     */
-    public Consumer<String> errlog = logger::error;
 
     /**
      * Scijava Object Service : will contain all the sourceAndConverters
@@ -170,8 +154,9 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     {
         if (sac == null) {
             logger.error("Error : sac is null in setMetadata function! ");
-            //return;
+            return;
         }
+
         if (sacToMetadata.getIfPresent( sac ) == null) {
             logger.error("Error : sac has no associated metadata ! This should not happen. ");
             logger.error("Sac : "+sac.getSpimSource().getName());
@@ -221,7 +206,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      */
     public synchronized void register(SourceAndConverter<?> sac) {
         if (objectService.getObjects(SourceAndConverter.class).contains(sac)) {
-            log.accept("Source already registered");
+            logger.debug("Source already registered");
             return;
         }
         if (sacToMetadata.getIfPresent(sac) == null) {
@@ -249,15 +234,6 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                     at sc.fiji.bdvpg.scijava.services.SourceAndConverterService.register(SourceAndConverterService.java:235)
          */
         objectService.addObject(sac);
-        /*AtomicBoolean flagPerformed2 = new AtomicBoolean();
-        flagPerformed.set(false);
-        EventQueue.invokeLater(()-> {
-
-            flagPerformed.set(true);
-        });
-        while (!flagPerformed.get()) {
-            // busy waiting
-        }*/
 
         if (uiAvailable) ui.update(sac);
     }
@@ -288,7 +264,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             try {
                 EntityHandler handler = pi.createInstance();
                 entityClassToHandler.put(handler.getEntityType(), handler);
-                log.accept("Plugin found for entity class "+handler.getEntityType().getSimpleName());
+                logger.debug("Plugin found for entity class "+handler.getEntityType().getSimpleName());
             } catch (InstantiableException e) {
                 e.printStackTrace();
             }
@@ -309,7 +285,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
         for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() ) {
 
-            // Execute {@link EntityHandler}, if a compatible entity is found in the spimdata, compatible with a entity class handler
+            // Execute {@link EntityHandler}, if a compatible entity is found in the spimdata, compatible with an entity class handler
             entityClassToHandler.keySet().forEach(entityClass -> {
                 Entity e = setup.getAttribute(entityClass);
                 if (e!=null) {
@@ -362,15 +338,12 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                     final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
 
                     Converter nonVolatileConverter = SourceAndConverterHelper.createConverterARGBType(s);
-                    if (vs!=null) {
-                        Converter volatileConverter = SourceAndConverterHelper.createConverterARGBType(vs);
-                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter<>(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
-                    } else {
-                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter<>(s, nonVolatileConverter));
-                    }
+
+                    Converter volatileConverter = SourceAndConverterHelper.createConverterARGBType(vs);
+                    setupIdToSourceAndConverter.put( setupId, new SourceAndConverter<>(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
 
                 } else {
-                    SourceAndConverterHelper.errlog.accept("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
+                    logger.error("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
                 }
 
             }
@@ -405,7 +378,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
         final Angle angle = setup.getAttribute( Angle.class );
         if ( angle != null )
-            name += ( name.isEmpty() ? "" : " " ) + "a " + angle.getName();
+            name += "a " + angle.getName();
 
         final Channel channel = setup.getAttribute( Channel.class );
         if ( channel != null )
@@ -420,7 +393,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
     /**
      * Gets or create the associated ConverterSetup of a Source
-     * While several converters can be associated to a Source (volatile and non volatile),
+     * While several converters can be associated to a Source (volatile and non-volatile),
      * only one ConverterSetup is associated to a Source
      * @param sac source to get the convertersetup from
      * @return the converter setup of the source
@@ -479,7 +452,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
                     sacToMetadata.invalidate(sac);
                 } else {
-                    errlog.accept(sac.getSpimSource().getName() + " has no associated metadata");
+                    logger.error(sac.getSpimSource().getName() + " has no associated metadata");
                 }
                 /*
                   TODO FIX
@@ -547,7 +520,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
 
     /**
-     * Swing UI for this Service, exists only if an UI is available in the current execution context
+     * Swing UI for this Service, exists only if a UI is available in the current execution context
      */
     SourceAndConverterServiceUI ui;
 
@@ -577,13 +550,13 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         registerDefaultActions();
 
         if (!context().getService(UIService.class).isHeadless()) {
-            log.accept( "uiService detected : Constructing JPanel for BdvSourceAndConverterService" );
+            logger.debug( "uiService detected : Constructing JPanel for BdvSourceAndConverterService" );
             ui = new SourceAndConverterServiceUI( this );
             uiAvailable = true;
         }
 
         SourceAndConverterServices.setSourceAndConverterService(this);
-        log.accept("Service initialized.");
+        logger.debug("Service initialized.");
     }
 
     public List<SourceAndConverter> getSourceAndConvertersFromSource(Source src) {
@@ -620,7 +593,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     /**
-     * @return a list of of action name / keys / identifiers
+     * @return a list of action name / keys / identifiers
      */
     public Set<String> getActionsKeys() {
         return actionMap.keySet();
@@ -634,7 +607,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     void registerDefaultActions() {
         this.registerAction("Display names", (srcs) -> {
             for (SourceAndConverter src:srcs){
-                log.accept(src.getSpimSource().getName());
+                logger.debug(src.getSpimSource().getName());
             }});
 
         context().getService(PluginService.class)
@@ -690,18 +663,18 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                         (sacs) -> {
                             commandService.run(ci, true);
                         });
-                log.accept("Registering action entitled " + ci.getMenuPath().getMenuString() + " from command " + ci.getClassName() + " sacs ignored");
+                logger.debug("Registering action entitled " + ci.getMenuPath().getMenuString() + " from command " + ci.getClassName() + " sacs ignored");
             }
         } catch (NullPointerException npe) {
-            errlog.accept("Error on scijava commands registrations");
-            errlog.accept("Null Pointer Exception for command '"+ci.getTitle()+"'");
-            errlog.accept("Try to exclude this command by modifying ActionPackages.json file");
-            errlog.accept("class : "+ci.getClassName());
+            logger.error("Error on scijava commands registrations");
+            logger.error("Null Pointer Exception for command '"+ci.getTitle()+"'");
+            logger.error("Try to exclude this command by modifying ActionPackages.json file");
+            logger.error("class : "+ci.getClassName());
         } catch (Exception e) {
-            errlog.accept("Error on scijava commands registrations");
-            errlog.accept("Exception for command "+ci.getTitle());
-            errlog.accept("Try to exclude this command by modifying ActionPackages.json file");
-            errlog.accept("class : "+ci.getClassName());
+            logger.error("Error on scijava commands registrations");
+            logger.error("Exception for command "+ci.getTitle());
+            logger.error("Try to exclude this command by modifying ActionPackages.json file");
+            logger.error("class : "+ci.getClassName());
             e.printStackTrace();
         }
     }
@@ -710,7 +683,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         registerScijavaCommandInfo(commandService.getCommand(commandClass));
     }
 
-    //------------------- SpimData specific informations
+    //------------------- SpimData specific information
 
    public static class SpimDataInfo {
 
@@ -745,7 +718,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     public void setMetadata( AbstractSpimData asd, String key, Object data )
     {
         if (asd == null) {
-            errlog.accept("Error : asd is null in setMetadata function! ");
+            logger.error("Error : asd is null in setMetadata function! ");
             return;
         }
         if (spimdataToMetadata.getIfPresent(asd)==null) {

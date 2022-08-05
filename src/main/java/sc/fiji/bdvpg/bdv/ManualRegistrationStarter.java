@@ -60,7 +60,7 @@ import java.util.List;
  * this allows for a much stronger performance : you can actually register multiple
  * sources but only perform your registration based on a subset of them (those which are currently displayed).
  *
- * Limitation : if no other source is visible, you don't see waht's happening at all...
+ * Limitation : if no other source is visible, you don't see what's happening at all...
  *
  * @author : Nicolas Chiaruttini, BIOP, EPFL 2019
  *
@@ -70,23 +70,23 @@ public class ManualRegistrationStarter implements Runnable {
     /**
      * Sources that will be transformed
      */
-    SourceAndConverter<?>[] sacs;
+    final SourceAndConverter<?>[] sacs;
 
     /**
      * From the sources that will be transformed, list of sources which were actually
      * displayed at the beginning of the action
      */
-    List<SourceAndConverter<?>> originallyDisplayedSacs = new ArrayList<>();
+    final List<SourceAndConverter<?>> originallyDisplayedSacs = new ArrayList<>();
 
     /**
      * Transient transformed source displayed for the registration
      */
-    List<SourceAndConverter<?>> displayedSacsWrapped = new ArrayList<>();
+    final List<SourceAndConverter<?>> displayedSacsWrapped = new ArrayList<>();
 
     /**
      * bdvHandle used for the manual registration
      */
-    BdvHandle bdvHandle;
+    final BdvHandle bdvHandle;
 
     /**
      * Current registration state
@@ -112,7 +112,7 @@ public class ManualRegistrationStarter implements Runnable {
             // Wraps into a Transformed Source, if the source was displayed originally
             if (SourceAndConverterServices.getBdvDisplayService().getDisplaysOf(sourceAndConverter).contains(bdvHandle)) {
                 if (SourceAndConverterServices.getBdvDisplayService().isVisible(sourceAndConverter, bdvHandle)) {
-                    displayedSacsWrapped.add(new SourceAffineTransformer(sourceAndConverter, new AffineTransform3D()).getSourceOut());
+                    displayedSacsWrapped.add(new SourceAffineTransformer<>(sourceAndConverter, new AffineTransform3D()).getSourceOut());
                     originallyDisplayedSacs.add(sourceAndConverter);
                 }
             }

@@ -89,7 +89,7 @@ public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand
         createDatasetListUI(serverurl, nameList.toArray() );
     }
 
-    private boolean getDatasetList( final String remoteUrl, final ArrayList< String > nameList ) throws IOException
+    private void getDatasetList( final String remoteUrl, final ArrayList< String > nameList ) throws IOException
     {
         // Get JSON string from the server
         final URL url = new URL( remoteUrl + "/json/" );
@@ -125,7 +125,7 @@ public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand
             if ( id != null )
             {
                 nameList.add( id );
-                if ( thumbnailUrl != null && StringUtils.isNotEmpty( thumbnailUrl ) )
+                if ( StringUtils.isNotEmpty(thumbnailUrl) )
                     imageMap.put( id, new ImageIcon( new URL( thumbnailUrl ) ) );
                 if ( datasetUrl != null )
                     datasetUrlMap.put( id, datasetUrl );
@@ -138,7 +138,6 @@ public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand
 
         reader.close();
 
-        return true;
     }
 
     private void createDatasetListUI( final String remoteUrl, final Object[] values )

@@ -28,13 +28,10 @@
  */
 package net.imglib2.realtransform;
 
-import com.google.gson.*;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.persist.IClassRuntimeAdapter;
-
-import java.lang.reflect.Type;
 
 /**
  * Adapter of an 2D transformed wrapped as 3D

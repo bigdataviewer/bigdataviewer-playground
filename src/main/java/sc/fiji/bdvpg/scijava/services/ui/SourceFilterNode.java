@@ -87,7 +87,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
     /**
      * Are the filtered sources displayed as direct children of this node ?
      */
-    boolean displayFilteredSources;
+    final boolean displayFilteredSources;
 
     DefaultTreeModel model;
 
@@ -108,8 +108,8 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
     }
 
     // Holding current state = set of SourceAndConverter contained in the filter node
-    Set<SourceAndConverter<?>> currentInputSacs = ConcurrentHashMap.newKeySet();
-    Set<SourceAndConverter<?>> currentOutputSacs = ConcurrentHashMap.newKeySet();
+    final Set<SourceAndConverter<?>> currentInputSacs = ConcurrentHashMap.newKeySet();
+    final Set<SourceAndConverter<?>> currentOutputSacs = ConcurrentHashMap.newKeySet();
 
     public boolean hasConsumed(SourceAndConverter<?> sac) {
         return currentOutputSacs.contains(sac);
@@ -187,8 +187,8 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
 
     /**
      * Very important method which recomputes the tree based on the {@link UpdateEvent} notified
-     * ensures new and up to date recomputation of the whole tree
-     * @param event casted event
+     * ensures new and up-to-date recomputation of the whole tree
+     * @param event cast event
      */
     public void update(UpdateEvent event) {
         if (event instanceof NodeAddedUpdateEvent) {
@@ -297,7 +297,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
      * There is no need to notified children nodes as the {@link SourceFilterNode#update(UpdateEvent)}
      * method will do the job itself
      *
-     * However this is true for the children only.
+     * However, this is true for the children only.
      *
      * Normally, such an event should be triggered from the top node, to ensure a complete update of
      * the full tree

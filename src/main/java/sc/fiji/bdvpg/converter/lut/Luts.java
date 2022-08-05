@@ -189,24 +189,18 @@ public class Luts
 	}
 
 
-	public static int getARGBIndex( final byte lutIndex, final byte[][] lut, double brightness )
-	{
-		final int color = ARGBType.rgba(
+	public static int getARGBIndex( final byte lutIndex, final byte[][] lut, double brightness ) {
+		return ARGBType.rgba(
 				( lut[ lutIndex & 0xFF ][ 0 ] & 0xFF ) * brightness ,
 				( lut[ lutIndex & 0xFF ][ 1 ] & 0xFF ) * brightness,
 				( lut[ lutIndex & 0xFF ][ 2 ] & 0xFF ) * brightness, 255 );
-
-		return color;
 	}
 
-	public static int getARGBIndex( final byte lutIndex, final byte[][] lut )
-	{
-		final int color = ARGBType.rgba(
+	public static int getARGBIndex( final byte lutIndex, final byte[][] lut ) {
+		return ARGBType.rgba(
 				( lut[ lutIndex & 0xFF ][ 0 ] & 0xFF ) ,
 				( lut[ lutIndex & 0xFF ][ 1 ] & 0xFF ),
 				( lut[ lutIndex & 0xFF ][ 2 ] & 0xFF ), 255 );
-
-		return color;
 	}
 
 

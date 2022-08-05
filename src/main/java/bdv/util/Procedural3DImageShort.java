@@ -77,7 +77,7 @@ public class Procedural3DImageShort extends RealPoint implements RealRandomAcces
 
     public RealRandomAccessible<UnsignedShortType> getRRA() {
 
-        RealRandomAccessible<UnsignedShortType> rra = new RealRandomAccessible<UnsignedShortType>() {
+        return new RealRandomAccessible<UnsignedShortType>() {
             @Override
             public RealRandomAccess<UnsignedShortType> realRandomAccess() {
                 return copy();
@@ -93,8 +93,6 @@ public class Procedural3DImageShort extends RealPoint implements RealRandomAcces
                 return 3;
             }
         };
-
-        return rra;
     }
 
     public Source<UnsignedShortType> getSource(final Interval interval, AffineTransform3D at3D, String name) {

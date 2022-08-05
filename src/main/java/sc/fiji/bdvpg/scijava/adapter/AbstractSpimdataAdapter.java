@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.exporter.XmlHDF5SpimdataExporter;
 import sc.fiji.bdvpg.spimdata.exporter.XmlFromSpimDataExporter;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
@@ -51,9 +50,9 @@ import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_LOCATI
 public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData<?>>,
         JsonDeserializer<AbstractSpimData<?>> {
 
-    protected static Logger logger = LoggerFactory.getLogger(AbstractSpimData.class);
+    protected static final Logger logger = LoggerFactory.getLogger(AbstractSpimData.class);
 
-    SourceAndConverterAdapter sacSerializer;
+    final SourceAndConverterAdapter sacSerializer;
 
     int spimdataCounter = 0;
 

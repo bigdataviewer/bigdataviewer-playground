@@ -218,7 +218,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
 
     /*
      * Registers {@code type} identified by its {@link Class#getSimpleName simple
-     * name}. Labels are case sensitive.
+     * name}. Labels are case-sensitive.
      *
      * @throws IllegalArgumentException if either {@code type} or its simple name
      *     have already been registered on this type adapter.
@@ -243,7 +243,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
         }
 
         return new TypeAdapter<R>() {
-            @Override public R read(JsonReader in) throws IOException {
+            @Override public R read(JsonReader in) throws JsonParseException {
                 JsonElement jsonElement = Streams.parse(in);
                 JsonElement labelJsonElement;
                 if (maintainType) {

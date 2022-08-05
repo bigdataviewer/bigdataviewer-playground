@@ -40,9 +40,9 @@ import java.util.HashMap;
 
 public class SourceAndConverterServiceLoader extends SourceAndConverterAdapter implements Runnable{
 
-    String filePath;
-    Context ctx;
-    boolean erasePreviousState;
+    final String filePath;
+    final Context ctx;
+    final boolean erasePreviousState;
 
     public SourceAndConverterServiceLoader(String filePath, String basePath, Context ctx, boolean erasePreviousState) {
         super(ctx, new File(basePath));

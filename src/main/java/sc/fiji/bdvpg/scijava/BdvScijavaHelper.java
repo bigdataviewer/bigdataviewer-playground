@@ -30,7 +30,6 @@ package sc.fiji.bdvpg.scijava;
 
 import bdv.util.BdvHandle;
 import bdv.util.BdvHandleFrame;
-import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.Context;
 import org.scijava.command.Command;
 import org.scijava.command.CommandService;
@@ -49,7 +48,7 @@ import java.util.stream.Collectors;
 
 public class BdvScijavaHelper {
 
-    protected static Logger logger = LoggerFactory.getLogger(BdvScijavaHelper.class);
+    protected static final Logger logger = LoggerFactory.getLogger(BdvScijavaHelper.class);
 
     static public void clearBdvHandleMenuBar(BdvHandle bdvh) {
         if (bdvh instanceof BdvHandleFrame) {
@@ -73,18 +72,21 @@ public class BdvScijavaHelper {
     static public void addActionToBdvHandleMenu(BdvHandle bdvh, String pathHierarchy, int skipTopLevels, Runnable runnable) {
         if (bdvh instanceof BdvHandleFrame) {
             final JMenuBar bdvMenuBar = ( ( BdvHandleFrame ) bdvh ).getBigDataViewer().getViewerFrame().getJMenuBar();
-            List<String> path = Arrays.asList(pathHierarchy.split(">"))
-                    .stream()
+            List<String> path = Arrays.stream(pathHierarchy.split(">"))
                     .map(String::trim)
                     .collect(Collectors.toList());
 
             for (int i=0;i<skipTopLevels;i++) {path.remove(0);}
 
             JMenuItem jmenuItemRoot = findOrCreateJMenu(bdvMenuBar, path);
-            final JMenuItem jMenuItem = new JMenuItem( path.get(path.size()-1));
-            jMenuItem.addActionListener(e -> runnable.run());
-            jmenuItemRoot.add( jMenuItem );
-            bdvMenuBar.updateUI();
+            if (jmenuItemRoot!=null) {
+                final JMenuItem jMenuItem = new JMenuItem(path.get(path.size() - 1));
+                jMenuItem.addActionListener(e -> runnable.run());
+                jmenuItemRoot.add(jMenuItem);
+                bdvMenuBar.updateUI();
+            } else {
+                logger.error("Could not find or create jmenu ("+bdvMenuBar+", "+path+")");
+            }
         } else {
             logger.error("Cannot put command on menu : the bdvhandle is not a frame.");
         }

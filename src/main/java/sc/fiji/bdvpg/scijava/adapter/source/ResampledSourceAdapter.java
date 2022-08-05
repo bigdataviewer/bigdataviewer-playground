@@ -43,7 +43,7 @@ import java.lang.reflect.Type;
 @Plugin(type = ISourceAdapter.class)
 public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
 
-    protected static Logger logger = LoggerFactory.getLogger(ResampledSourceAdapter.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ResampledSourceAdapter.class);
 
     SourceAndConverterAdapter sacSerializer;
 
@@ -133,8 +133,6 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
             return null;
         }
 
-        SourceAndConverter<?> sac = new SourceResampler(originSac, modelSac, name, reuseMipMaps, cache, interpolation.equals(Interpolation.NLINEAR), defaultMipMapLevel).get();
-
-        return sac;
+        return new SourceResampler(originSac, modelSac, name, reuseMipMaps, cache, interpolation.equals(Interpolation.NLINEAR), defaultMipMapLevel).get();
     }
 }

@@ -11,7 +11,7 @@
 
 	<groupId>sc.fiji</groupId>
 	<artifactId>bigdataviewer-playground</artifactId>
-	<version>0.5.2-SNAPSHOT</version>
+	<version>0.6.0-SNAPSHOT</version>
 
 	<name>bigdataviewer-playground</name>
 	<description>BigDataViewer Actions and GUI</description>
@@ -121,17 +121,16 @@
 
 		<bigdataviewer-selector.version>0.1.8</bigdataviewer-selector.version>
 		<bigvolumeviewer.version>0.2.0</bigvolumeviewer.version>
-		<mastodon.version>1.0.0-beta-21</mastodon.version>
 		<bigdataviewer-spimdata-extras.version>0.1.2</bigdataviewer-spimdata-extras.version>
 		<reflections.version>0.9.11</reflections.version>
 
 		<!-- package version below are determined by the parent pom but need to be upgraded -->
 
-		<bigdataviewer-core.version>10.4.2</bigdataviewer-core.version>
+		<bigdataviewer-core.version>10.4.3</bigdataviewer-core.version>
 		<bigdataviewer-vistools.version>1.0.0-beta-30</bigdataviewer-vistools.version>
 		<imglib2-cache.version>1.0.0-beta-16</imglib2-cache.version>
-        <bigwarp_fiji.version>7.0.5</bigwarp_fiji.version>
-		<ui-behaviour.version>2.0.6</ui-behaviour.version>
+        <bigwarp_fiji.version>7.0.6-SNAPSHOT</bigwarp_fiji.version>
+		<ui-behaviour.version>2.0.7</ui-behaviour.version>
 
 	</properties>
 
@@ -153,12 +152,6 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-vistools</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mastodon</groupId>
-			<artifactId>mastodon</artifactId>
-			<version>${mastodon.version}</version>
 		</dependency>
 
 		<dependency>

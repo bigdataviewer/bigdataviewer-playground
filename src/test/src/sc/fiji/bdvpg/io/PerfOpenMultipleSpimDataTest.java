@@ -28,18 +28,11 @@
  */
 package sc.fiji.bdvpg.io;
 
-import bdv.util.BdvHandle;
-import bdv.viewer.SourceAndConverter;
 import net.imagej.ImageJ;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.scijava.Context;
 import sc.fiji.bdvpg.TestHelper;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.time.Duration;

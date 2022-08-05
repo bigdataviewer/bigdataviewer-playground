@@ -48,7 +48,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  * Helper class that helps to apply an affinetransform to a {@link SourceAndConverter}
  *
  * Because there are many ways the affinetransform can be applied to a source depending
- * on the the spimsource class and on how you want to deal with the previous already existing
+ * on the spimsource class and on how you want to deal with the previous already existing
  * transforms
  */
 
@@ -138,7 +138,7 @@ public class SourceTransformHelper {
     }
 
     /**
-     * Ignores registration, and prints the matrix in system.out
+     * Ignores registration, and prints the matrix with the standard out
      * @param affineTransform3D affine transform 3D
      * @param sacTR the source and a time range, combined in a single class {@link SourceAndConverterAndTimeRange}
      * @return the untransformed source, because the transformation has been canceled
@@ -304,8 +304,7 @@ public class SourceTransformHelper {
      * @return transformed source
      */
     public static <T> SourceAndConverter<T> createNewTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
-        SourceAndConverter<T> transformedSac = new SourceAffineTransformer<>(sacTR.sac, affineTransform3D).getSourceOut();
-        return transformedSac;
+        return new SourceAffineTransformer<>(sacTR.sac, affineTransform3D).getSourceOut();
     }
 
     /**

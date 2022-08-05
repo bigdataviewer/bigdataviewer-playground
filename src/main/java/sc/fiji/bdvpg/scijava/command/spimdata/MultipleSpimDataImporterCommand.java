@@ -29,7 +29,6 @@
 package sc.fiji.bdvpg.scijava.command.spimdata;
 
 import org.scijava.ItemVisibility;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -44,12 +43,12 @@ public class MultipleSpimDataImporterCommand implements BdvPlaygroundActionComma
     /**
      * Note: Due to a bug in SciJava there needs to be some
      * text above the `File[]` parameter.
-     * Otherwise the UI for `File[]` is not built.
+     * Otherwise, the UI for `File[]` is not built.
      *
      * But then programmatically the message above is always shown...
      */
     @Parameter ( visibility = ItemVisibility.MESSAGE  )
-    private String message = "Please choose XML files:";
+    public String message = "Please choose XML files:";
 
     @Parameter(style="extensions:xml")
     public File[] files;

@@ -33,13 +33,10 @@ import bvv.util.BvvHandle;
 import bvv.util.BvvOptions;
 import bvv.util.BvvStackSource;
 import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
-import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 
-import java.util.Random;
 import java.util.function.Supplier;
 
 /**

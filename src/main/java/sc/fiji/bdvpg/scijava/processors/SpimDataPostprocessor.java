@@ -37,21 +37,16 @@ import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Consumer;
 
 @Plugin(type = PostprocessorPlugin.class)
 public class SpimDataPostprocessor extends AbstractPostprocessorPlugin {
 
-    protected static Logger logger = LoggerFactory.getLogger(SpimDataPostprocessor.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpimDataPostprocessor.class);
 
     @Parameter
 	SourceAndConverterService bss;
-
-    public static Consumer<String> log = logger::debug;
-
-    public static Consumer<String> errlog = logger::error;
 
     @Override
     public void process(Module module) {
@@ -60,7 +55,7 @@ public class SpimDataPostprocessor extends AbstractPostprocessorPlugin {
            //log.accept("input:\t"+name+"\tclass:\t"+object.getClass().getSimpleName());
            if (object instanceof AbstractSpimData) {
                AbstractSpimData<?> asd = (AbstractSpimData<?>) object;
-               log.accept("SpimData found.");
+               logger.debug("SpimData found.");
                bss.register(asd);
                module.resolveOutput(name);
                if (module.getInputs().containsKey("datasetname")) {
@@ -69,9 +64,9 @@ public class SpimDataPostprocessor extends AbstractPostprocessorPlugin {
                }
            }
            if (object instanceof AbstractSpimData<?>[]) {
-               AbstractSpimData<?>[] asds = (AbstractSpimData<?>[]) object;
+               AbstractSpimData<?>[] asds = (AbstractSpimData[]) object;
                for (AbstractSpimData<?> asd:asds) {
-                   log.accept( "SpimData found." );
+                   logger.debug( "SpimData found." );
                    bss.register( asd );
                    module.resolveOutput( name );
                }

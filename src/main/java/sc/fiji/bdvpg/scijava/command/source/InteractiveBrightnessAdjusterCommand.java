@@ -91,7 +91,7 @@ public class InteractiveBrightnessAdjusterCommand extends InteractiveCommand imp
         }
     }
 
-    DecimalFormat formatter = new DecimalFormat("#.###");
+    final DecimalFormat formatter = new DecimalFormat("#.###");
 
     public void updateMessage() {
         formatter.setMinimumFractionDigits(3);

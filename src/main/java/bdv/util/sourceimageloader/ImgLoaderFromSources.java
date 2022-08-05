@@ -46,7 +46,7 @@ import java.util.List;
  */
 public class ImgLoaderFromSources<T extends Type<T>> implements TypedBasicImgLoader< T > {
 
-    List<Source<T>> srcs;
+    final List<Source<T>> srcs;
 
     public ImgLoaderFromSources(List<Source<T>> srcs) {
         this.srcs = srcs;

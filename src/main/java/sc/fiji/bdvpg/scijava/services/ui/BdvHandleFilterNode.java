@@ -46,10 +46,10 @@ import javax.swing.tree.DefaultTreeModel;
 
 public class BdvHandleFilterNode extends SourceFilterNode {
 
-    public BdvHandle bdvh;
+    public final BdvHandle bdvh;
     String name;
 
-    ViewerStateChangeListener vscl;
+    final ViewerStateChangeListener vscl;
 
     public boolean filter(SourceAndConverter<?> sac) {
         return bdvh.getViewerPanel().state().getSources().contains(sac);

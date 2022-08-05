@@ -38,45 +38,42 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
-import java.util.function.Consumer;
-
 @Plugin(type = PostprocessorPlugin.class)
 public class SourceAndConverterPostprocessor extends AbstractPostprocessorPlugin {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterPostprocessor.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterPostprocessor.class);
 
     @Parameter
     SourceAndConverterService bss;
-
-    public static Consumer<String> log = logger::debug;
 
     @Override
     public void process(Module module) {
 
        module.getOutputs().forEach((name, object)-> {
            //log.accept("input:\t"+name+"\tclass:\t"+object.getClass().getSimpleName());
+
            if (object instanceof SourceAndConverter<?>) {
                SourceAndConverter<?> sac = (SourceAndConverter<?>) object;
-               log.accept("Source found.");
-               log.accept("Is it registered ? ");
+               logger.debug("Source found.");
+               logger.debug("Is it registered ? ");
                if (!bss.isRegistered(sac)) {
-                   log.accept("No.");
+                   logger.debug("No, registers it.");
                    bss.register(sac);
                } else {
-                   log.accept("Yes.");
+                   logger.debug("Yes.");
                }
                module.resolveOutput(name);
            }
            if (object instanceof SourceAndConverter<?>[]) {
                SourceAndConverter<?>[] sacs = (SourceAndConverter<?>[]) object;
                for (SourceAndConverter<?> sac:sacs) {
-                   log.accept("Source found.");
-                   log.accept("Is it registered ? ");
+                   logger.debug("Source found.");
+                   logger.debug("Is it registered ? ");
                    if (!bss.isRegistered(sac)) {
-                       log.accept("No.");
+                       logger.debug("No.");
                        bss.register(sac);
                    } else {
-                       log.accept("Yes.");
+                       logger.debug("Yes.");
                    }
                }
                module.resolveOutput(name);

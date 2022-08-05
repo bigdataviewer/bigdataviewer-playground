@@ -38,19 +38,19 @@ import java.util.function.Function;
 
 public class SourceResampler implements Runnable, Function<SourceAndConverter<?>, SourceAndConverter<?>> {
 
-    SourceAndConverter<?> sac_in;
+    final SourceAndConverter<?> sac_in;
 
-    SourceAndConverter<?> model;
+    final SourceAndConverter<?> model;
 
-    boolean reuseMipMaps;
+    final boolean reuseMipMaps;
 
-    boolean interpolate;
+    final boolean interpolate;
 
-    boolean cache;
+    final boolean cache;
 
-    int defaultMipMapLevel;
+    final int defaultMipMapLevel;
 
-    private String name;
+    private final String name;
 
     public SourceResampler( SourceAndConverter<?> sac_in, SourceAndConverter<?> model, String name, boolean reuseMipmaps, boolean cache, boolean interpolate, int defaultMipMapLevel ) {
         this.name = name;

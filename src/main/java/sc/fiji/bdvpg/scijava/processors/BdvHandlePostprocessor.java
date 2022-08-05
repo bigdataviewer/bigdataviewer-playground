@@ -32,19 +32,12 @@ import bdv.util.BdvHandle;
 import org.scijava.module.Module;
 import org.scijava.module.process.AbstractPostprocessorPlugin;
 import org.scijava.module.process.PostprocessorPlugin;
-import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.BdvHandleFilterNode;
-import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 
-import javax.swing.tree.DefaultTreeModel;
 import java.util.function.Consumer;
 
 /**
@@ -57,7 +50,7 @@ import java.util.function.Consumer;
 @Plugin(type = PostprocessorPlugin.class)
 public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
 
-    protected static Logger logger = LoggerFactory.getLogger(BdvHandlePostprocessor.class);
+    protected static final Logger logger = LoggerFactory.getLogger(BdvHandlePostprocessor.class);
 
     @Parameter
     SourceAndConverterBdvDisplayService bsds;

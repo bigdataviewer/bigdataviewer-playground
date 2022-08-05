@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import java.util.function.Consumer;
 
@@ -54,7 +53,7 @@ import java.util.function.Consumer;
 @Plugin(type = PostprocessorPlugin.class)
 public class BvvHandlePostprocessor extends AbstractPostprocessorPlugin {
 
-    protected static Logger logger = LoggerFactory.getLogger(BvvHandlePostprocessor.class);
+    protected static final Logger logger = LoggerFactory.getLogger(BvvHandlePostprocessor.class);
 
     @Parameter
     SourceAndConverterBdvDisplayService bsds;
@@ -65,7 +64,7 @@ public class BvvHandlePostprocessor extends AbstractPostprocessorPlugin {
     @Parameter
     GuavaWeakCacheService cacheService;
 
-    public static Consumer<String> log = logger::debug;
+    public static final Consumer<String> log = logger::debug;
 
     @Override
     public void process(Module module) {
@@ -82,9 +81,6 @@ public class BvvHandlePostprocessor extends AbstractPostprocessorPlugin {
                 String windowTitle = BvvHandleHelper.getWindowTitle(bvvh);
                 windowTitle = BvvHandleHelper.getUniqueWindowTitle(os, windowTitle);
                 BvvHandleHelper.setWindowTitle(bvvh, windowTitle);
-                //for (int i=0;i<bdvh.getViewerPanel().getState().numSources();i++) {
-                //    bsds.registerBdvSource(bdvh,i);
-                //}
                 module.resolveOutput(name);
             }
         });

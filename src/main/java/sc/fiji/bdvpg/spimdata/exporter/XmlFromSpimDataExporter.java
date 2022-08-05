@@ -58,13 +58,13 @@ import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_INFO;
 
 public class XmlFromSpimDataExporter implements Runnable {
 
-    protected static Logger logger = LoggerFactory.getLogger(XmlFromSpimDataExporter.class);
+    protected static final Logger logger = LoggerFactory.getLogger(XmlFromSpimDataExporter.class);
 
-    AbstractSpimData spimData;
+    final AbstractSpimData spimData;
 
-    String dataLocation;
+    final String dataLocation;
 
-    Context context;
+    final Context context;
 
     public static boolean isPathValid(String path) {
         try {
@@ -83,7 +83,7 @@ public class XmlFromSpimDataExporter implements Runnable {
             logger.error("Trying to save spimdata into an invalid file Path : "+dataLocation);
         }
         this.dataLocation = dataLocation;
-        this.context = context;
+        this.context = ctx;
     }
 
     @Override
@@ -121,7 +121,7 @@ public class XmlFromSpimDataExporter implements Runnable {
 
                 for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() ) {
 
-                    // Execute {@link EntityHandler}, if a compatible entity is found in the spimdata, compatible with a entity class handler
+                    // Execute {@link EntityHandler}, if a compatible entity is found in the spimdata, compatible with an entity class handler
                     entityClassToHandler.keySet().forEach(entityClass -> {
                         Entity e = setup.getAttribute(entityClass);
                         if (e!=null) {
@@ -141,10 +141,7 @@ public class XmlFromSpimDataExporter implements Runnable {
                 (new XmlIoSpimDataMinimal()).save((SpimDataMinimal) spimData, dataLocation);
             } else {
                 logger.error("Cannot save SpimData of class : "+spimData.getClass().getSimpleName());
-                return;
             }
-
-
         } catch (SpimDataException e) {
             e.printStackTrace();
         }

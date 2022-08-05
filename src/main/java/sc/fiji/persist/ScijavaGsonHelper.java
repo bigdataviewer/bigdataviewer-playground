@@ -52,7 +52,7 @@ import java.util.function.Consumer;
 
 public class ScijavaGsonHelper {
 
-    protected static Logger logger = LoggerFactory.getLogger(ScijavaGsonHelper.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ScijavaGsonHelper.class);
 
     public static Gson getGson(Context ctx) {
         return getGson(ctx, false);
@@ -129,7 +129,7 @@ public class ScijavaGsonHelper {
                 .getAdapters(IClassAdapter.class) // Gets all scijava class adapters (no runtime)
                 .forEach(pi -> {
                     try {
-                        IClassAdapter<?> adapter = pi.createInstance(); // Instanciate the adapter (no argument should be present in the constructor, but auto filled scijava parameters are allowed)
+                        IClassAdapter<?> adapter = pi.createInstance(); // Instanciate the adapter (no argument should be present in the constructor, but auto-filled scijava parameters are allowed)
                         log.accept("\t "+adapter.getAdapterClass());
                         builder.registerTypeHierarchyAdapter(adapter.getAdapterClass(), adapter); // Register gson adapter
                     } catch (InstantiableException e) {
@@ -143,13 +143,13 @@ public class ScijavaGsonHelper {
     // Inner static class needed for type safety
     public static class ClassTypesAndSubTypes<T> {
 
-        Class<T> baseClass;
+        final Class<T> baseClass;
 
         public ClassTypesAndSubTypes(Class<T> clazz) {
             this.baseClass = clazz;
         }
 
-        List<Class<? extends T>> subClasses = new ArrayList<>();
+        final List<Class<? extends T>> subClasses = new ArrayList<>();
 
         public RuntimeTypeAdapterFactory<T> getRunTimeAdapterFactory(Consumer<String> log) {
             RuntimeTypeAdapterFactory<T> factory = RuntimeTypeAdapterFactory.of(baseClass);

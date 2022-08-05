@@ -188,7 +188,7 @@ public class BigWarpDemo {
 
     @Test
     public void demoRunOk() {
-        main(new String[]{""});
+        main("");
     }
 
     @After

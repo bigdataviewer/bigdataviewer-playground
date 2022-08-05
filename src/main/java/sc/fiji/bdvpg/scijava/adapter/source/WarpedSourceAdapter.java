@@ -107,11 +107,6 @@ public class WarpedSourceAdapter implements ISourceAdapter<WarpedSource>{
 
         SourceRealTransformer srt = new SourceRealTransformer(wrappedSac, rt);
         srt.run();
-        SourceAndConverter sac = srt.getSourceOut();
-
-        /*SourceAndConverterServices.getSourceAndConverterService()
-                .register(sac);*/
-
-        return sac;
+        return srt.getSourceOut();
     }
 }

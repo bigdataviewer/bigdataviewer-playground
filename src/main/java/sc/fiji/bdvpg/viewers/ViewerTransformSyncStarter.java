@@ -33,12 +33,13 @@ import bdv.viewer.TimePointListener;
 import bdv.viewer.TransformListener;
 import bvv.util.BvvHandle;
 import net.imglib2.RealPoint;
-import net.imglib2.realtransform.AffineTransform3D;;
+import net.imglib2.realtransform.AffineTransform3D;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper.MatrixApproxEquals;
+import static sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter.MatrixApproxEquals;
+
 
 /**
  * BigDataViewer Playground Action --
@@ -56,7 +57,7 @@ import static sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper.MatrixApproxEqual
  * Note : closing one window in the chain breaks the synchronization TODO make more robust
  *
  * To avoid infinite loop, the stop condition is : if the view transform is unnecessary
- * (i.e. the view target is approximately equal to the source {@link ViewerTransformSyncStopper#MatrixApproxEquals}),
+ * (i.e. the view target is approximately equal to the source
  * then there's no need to trigger a view transform change to the next BdvHandle
  *
  * see also {@link ViewerOrthoSyncStarter}
@@ -71,7 +72,7 @@ public class ViewerTransformSyncStarter implements Runnable {
     /**
      * Array of BdvHandles to synchronize
      */
-    ViewerAdapter[] handles;
+    final ViewerAdapter[] handles;
 
     /**
      * Reference to the BdvHandle which will serve as a reference for the
@@ -86,20 +87,20 @@ public class ViewerTransformSyncStarter implements Runnable {
      * for synchronization purpose. This object contains all what's needed to stop
      * the synchronization
      */
-    Map<ViewerAdapter, TransformListener<AffineTransform3D>> handleToTransformListener = new HashMap<>();
+    final Map<ViewerAdapter, TransformListener<AffineTransform3D>> handleToTransformListener = new HashMap<>();
 
 
     /** Optional time synchronization
      *
      */
-    boolean synchronizeTime;
+    final boolean synchronizeTime;
 
     /**
      * Map which links each BdvHandle to the TimePointListener which has been added
      * for synchronization purpose. This object contains all what's neede to stop
      * the synchronization
      */
-    Map<ViewerAdapter, TimePointListener> handleToTimeListener = new HashMap<>();
+    final Map<ViewerAdapter, TimePointListener> handleToTimeListener = new HashMap<>();
 
     public ViewerTransformSyncStarter(BdvHandle[] bdvHandles, boolean synchronizeTime) {
         this.handles = new ViewerAdapter[bdvHandles.length];

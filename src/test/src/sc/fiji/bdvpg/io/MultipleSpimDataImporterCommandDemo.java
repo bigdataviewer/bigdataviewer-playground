@@ -33,7 +33,6 @@ import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.scijava.command.spimdata.MultipleSpimDataImporterCommand;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.io.File;
 

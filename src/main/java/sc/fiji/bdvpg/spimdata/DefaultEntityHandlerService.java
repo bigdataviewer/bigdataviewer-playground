@@ -33,7 +33,6 @@ import org.scijava.plugin.AbstractPTService;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.service.Service;
-import sc.fiji.persist.IObjectScijavaAdapter;
 
 import java.util.List;
 

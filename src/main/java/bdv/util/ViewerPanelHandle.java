@@ -29,7 +29,6 @@
 package bdv.util;
 
 import bdv.tools.brightness.ConverterSetup;
-import bdv.tools.brightness.SetupAssignments;
 import bdv.tools.transformation.ManualTransformationEditor;
 import bdv.ui.appearance.AppearanceManager;
 import bdv.ui.keymap.KeymapManager;
@@ -39,7 +38,6 @@ import org.scijava.ui.behaviour.util.InputActionBindings;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.bdv.config.BdvPlaygroundContextualMenuSettingsPage;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -48,34 +46,30 @@ import java.util.function.Consumer;
  * Wraps a {@link bdv.BigDataViewer} instance into a {@link BdvHandle}
  * This class NEEDS to be in bdv.util or else it cannot implement the createViewer method
  *
- * Class used in practice to wrap {@link bigwarp.BigWarp} BigDataViewer instances,
- * this has very limited functionalities apart from this
+ * Class used to wrap {@link bigwarp.BigWarp} BigDataViewer instances.
  */
 
 public class ViewerPanelHandle extends BdvHandle {
 
-    protected static Logger logger = LoggerFactory.getLogger(ViewerPanelHandle.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ViewerPanelHandle.class);
 
-    Consumer<String> errlog = logger::error;
+    public final String name;
 
-    public String name;
-
-    public ViewerPanelHandle(ViewerPanel viewerPanel, SetupAssignments sa, String name) {
+    public ViewerPanelHandle(ViewerPanel viewerPanel, String name) {
         super(BdvOptions.options());
         this.viewer = viewerPanel;
         this.name = name;
-        this.setupAssignments = sa;
     }
 
     @Override
     public KeymapManager getKeymapManager() {
-        errlog.accept("Unsupported getKeymapManager call in ViewerPanel wrapped BdvHandle");
+        logger.error("Unsupported getKeymapManager call in ViewerPanel wrapped BdvHandle");
         return null;
     }
 
     @Override
     public AppearanceManager getAppearanceManager() {
-        errlog.accept("Unsupported getAppearanceManager call in ViewerPanel wrapped BdvHandle");
+        logger.error("Unsupported getAppearanceManager call in ViewerPanel wrapped BdvHandle");
         return null;
     }
 
@@ -86,19 +80,19 @@ public class ViewerPanelHandle extends BdvHandle {
 
     @Override
     public ManualTransformationEditor getManualTransformEditor() {
-        errlog.accept("Unsupported getManualTransformEditor call in ViewerPanel wrapped BdvHandle");
+        logger.error("Unsupported getManualTransformEditor call in ViewerPanel wrapped BdvHandle");
         return null;
     }
 
     @Override
     public InputActionBindings getKeybindings() {
-        errlog.accept("Unsupported getKeybindings call in ViewerPanel wrapped BdvHandle");
+        logger.error("Unsupported getKeybindings call in ViewerPanel wrapped BdvHandle");
         return null;
     }
 
     @Override
     public TriggerBehaviourBindings getTriggerbindings() {
-        errlog.accept("Unsupported getTriggerbindings call in ViewerPanel wrapped BdvHandle");
+        logger.error("Unsupported getTriggerbindings call in ViewerPanel wrapped BdvHandle");
         return null;
     }
 
@@ -106,7 +100,7 @@ public class ViewerPanelHandle extends BdvHandle {
             List< ? extends ConverterSetup> converterSetups,
             List< ? extends SourceAndConverter< ? >> sources,
             int numTimepoints ) {
-        errlog.accept("Cannot add sources in ViewerPanel wrapped BdvHandle BdvHandle");
+        logger.error("Cannot add sources in ViewerPanel wrapped BdvHandle BdvHandle");
         return false;
     }
 

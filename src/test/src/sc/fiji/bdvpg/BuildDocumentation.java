@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 
 public class BuildDocumentation {
     static String doc = "";
-    static String linkGitHubRepoPrefix = "https://github.com/bigdataviewer/bigdataviewer-playground/tree/master/src/main/java/";
+    static final String linkGitHubRepoPrefix = "https://github.com/bigdataviewer/bigdataviewer-playground/tree/master/src/main/java/";
 
     public static void main(String... args) {
         //
@@ -65,12 +65,11 @@ public class BuildDocumentation {
 
                 Field[] fields = c.getDeclaredFields();
                 List<Field> inputFields = Arrays.stream(fields)
-                                            .filter(f -> f.isAnnotationPresent(Parameter.class))
-                                            .filter(f -> {
-                                                Parameter p = f.getAnnotation(Parameter.class);
-                                                return (p.type()==ItemIO.INPUT) || (p.type()==ItemIO.BOTH);
-                                            }).collect(Collectors.toList());
-                inputFields.sort(Comparator.comparing(f -> f.getName()));
+                        .filter(f -> f.isAnnotationPresent(Parameter.class))
+                        .filter(f -> {
+                            Parameter p = f.getAnnotation(Parameter.class);
+                            return (p.type() == ItemIO.INPUT) || (p.type() == ItemIO.BOTH);
+                        }).sorted(Comparator.comparing(Field::getName)).collect(Collectors.toList());
                 if (inputFields.size()>0) {
                     doc += "#### Input\n";
                     inputFields.forEach(f -> {
@@ -84,9 +83,8 @@ public class BuildDocumentation {
                         .filter(f -> f.isAnnotationPresent(Parameter.class))
                         .filter(f -> {
                             Parameter p = f.getAnnotation(Parameter.class);
-                            return (p.type()==ItemIO.OUTPUT) || (p.type()==ItemIO.BOTH);
-                        }).collect(Collectors.toList());
-                outputFields.sort(Comparator.comparing(f -> f.getName()));
+                            return (p.type() == ItemIO.OUTPUT) || (p.type() == ItemIO.BOTH);
+                        }).sorted(Comparator.comparing(Field::getName)).collect(Collectors.toList());
                 if (outputFields.size()>0) {
                     doc += "#### Output\n";
                     outputFields.forEach(f -> {

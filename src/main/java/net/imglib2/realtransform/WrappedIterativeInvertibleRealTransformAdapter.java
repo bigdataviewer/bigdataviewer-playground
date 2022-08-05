@@ -32,7 +32,6 @@ import com.google.gson.*;
 import net.imglib2.realtransform.inverse.WrappedIterativeInvertibleRealTransform;
 import org.scijava.plugin.Plugin;
 import sc.fiji.persist.IClassAdapter;
-import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
 

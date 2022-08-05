@@ -28,7 +28,6 @@
  */
 package sc.fiji.bdvpg.scijava.services;
 
-import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.Gson;
@@ -52,7 +51,6 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
 import sc.fiji.bdvpg.bdv.supplier.IBdvSupplier;
 import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
@@ -62,7 +60,6 @@ import java.util.stream.Collectors;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import sc.fiji.bdvpg.spimdata.exporter.XmlFromSpimDataExporter;
 import sc.fiji.persist.ScijavaGsonHelper;
 
 import javax.swing.tree.DefaultTreeModel;
@@ -75,10 +72,10 @@ import javax.swing.tree.DefaultTreeModel;
  * Make its best to keep in synchronizations all of this, without creating errors nor memory leaks
  */
 
-@Plugin(type= Service.class, headless = false)
+@Plugin(type= Service.class)
 public class SourceAndConverterBdvDisplayService extends AbstractService implements SciJavaService  {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterBdvDisplayService.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterBdvDisplayService.class);
 
     /**
      * Standard logger
@@ -90,7 +87,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      */
     public static Consumer<String> errlog = logger::error;
 
-    public static String CONVERTER_SETUP = "ConverterSetup";
+    public static final String CONVERTER_SETUP = "ConverterSetup";
 
     /**
      * Used to add Aliases for BdvHandle objects
@@ -105,7 +102,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     SourceAndConverterService bdvSourceAndConverterService;
 
     /**
-     * Used to retrieved the last active BDV Windows (if the activated callback has been set right)
+     * Used to retrieve the last active BDV Windows (if the activated callback has been set right)
      **/
     @Parameter
     GuavaWeakCacheService cacheService;
@@ -348,7 +345,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     /**
      * Enables proper closing of Big Warp paired BdvHandles
      */
-    List<Pair<BdvHandle, BdvHandle>> pairedBdvs = new ArrayList<>();
+    final List<Pair<BdvHandle, BdvHandle>> pairedBdvs = new ArrayList<>();
     public void pairClosing(BdvHandle bdv1, BdvHandle bdv2) {
         pairedBdvs.add(new Pair<BdvHandle, BdvHandle>() {
             @Override
@@ -381,7 +378,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Updates bdvHandles which are displaying at least one of this sacs
+     * Updates bdvHandles which are displaying at least one of these sacs
      * Potentially improvement is to check whether the timepoint need an update ?
      * @param sacs sources to update
      */
@@ -443,7 +440,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     {
         if (bdvh == null) {
             logger.error("Error : bdvh is null in setMetadata function! ");
-            //return;
+            return;
         }
         if (displayToMetadata.getIfPresent( bdvh ) == null) {
             // Create Metadata

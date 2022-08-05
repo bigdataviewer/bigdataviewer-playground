@@ -38,14 +38,14 @@ import java.util.function.Consumer;
 
 /**
  * In contrast to ConverterChanger, this action do not create a new SourceAndConverter to change the color
- * of the displayed source. However this means that the converter has to be of instance ColorConverter
+ * of the displayed source. However, this means that the converter has to be of instance ColorConverter
  * One way around this is to create more generic converters from the beginning but this would have drawbacks:
  * - how to save the converter in spimdata ?
  */
 public class ColorChanger implements Runnable, Consumer<SourceAndConverter<?>> {
 
-    SourceAndConverter<?> sac;
-    ARGBType color;
+    final SourceAndConverter<?> sac;
+    final ARGBType color;
 
     public ColorChanger(SourceAndConverter<?> sac, ARGBType color) {
         this.sac = sac;

@@ -149,7 +149,7 @@ public interface ISourceAndConverterService
      * is convenient to know because a single source can be associated with
      * multiple sourceandconverters
      * @param source to check ( not a sourceandconverter )
-     * @return a list of all sacs which have for source source
+     * @return a list of all sacs which wraps the same underlying source
      */
     List<SourceAndConverter<?>> getSourceAndConvertersFromSource( Source<?> source );
 
@@ -168,8 +168,7 @@ public interface ISourceAndConverterService
     void removeAction(String actionName);
 
     /**
-     *
-     * @return a list of of action name / keys / identifiers
+     * @return a list of action name / keys / identifiers
      */
     Set<String> getActionsKeys();
 

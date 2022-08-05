@@ -35,7 +35,6 @@ import bdv.util.ViewerPanelHandle;
 import bdv.viewer.SourceAndConverter;
 import bigwarp.BigWarp;
 import mpicbg.spim.data.SpimDataException;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,11 +56,11 @@ import java.util.Map;
 
 public class BigWarpLauncher implements Runnable {
 
-    BigWarp.BigWarpData<?> bwData;
+    final BigWarp.BigWarpData<?> bwData;
 
     BigWarp<?> bigWarp;
 
-    String bigWarpName;
+    final String bigWarpName;
 
     BdvHandle bdvHandleP;
 
@@ -77,8 +76,8 @@ public class BigWarpLauncher implements Runnable {
     // Alternative maybe better option :
     // Use array : Source[] or SourceAndConverter[] (and maybe this issue was the reason for BigWarp choosing this in the beginning)
 
-    List<SourceAndConverter<?>> movingSources;
-    List<SourceAndConverter<?>> fixedSources;
+    final List<SourceAndConverter<?>> movingSources;
+    final List<SourceAndConverter<?>> fixedSources;
 
     //List<SourceAndConverter> allRegisteredSources;
 
@@ -132,13 +131,13 @@ public class BigWarpLauncher implements Runnable {
     public void run() {
         try {
             if (force2d) {
-                bigWarp = new BigWarp<>(bwData, bigWarpName, BigWarpViewerOptions.options(true),null);
+                bigWarp = new BigWarp<>(bwData, bigWarpName, BigWarpViewerOptions.options().is2D(true),null);
             } else {
                 bigWarp = new BigWarp<>(bwData, bigWarpName, null);
             }
-            // What does P and Q stand for ? Not sure about who's moving and who's fixed
-            bdvHandleP = new ViewerPanelHandle(bigWarp.getViewerFrameP().getViewerPanel(), bigWarp.getSetupAssignments(), bigWarpName+"_Moving");
-            bdvHandleQ = new ViewerPanelHandle(bigWarp.getViewerFrameQ().getViewerPanel(), bigWarp.getSetupAssignments(), bigWarpName+"_Fixed");
+            // What does P and Q stand for ? Not sure about the moving and the fixed one
+            bdvHandleP = new ViewerPanelHandle(bigWarp.getViewerFrameP().getViewerPanel(), bigWarpName+"_Moving");
+            bdvHandleQ = new ViewerPanelHandle(bigWarp.getViewerFrameQ().getViewerPanel(), bigWarpName+"_Fixed");
 
             warpedSources = new SourceAndConverter[movingSources.size()];
 

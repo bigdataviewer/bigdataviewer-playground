@@ -154,7 +154,7 @@ public class ViewerAdapter {
         ViewerAdapter c = (ViewerAdapter) o;
 
         // Compare the data members and return accordingly
-        if (c.bdvPanel!=null) return c.bdvPanel.equals(((ViewerAdapter) o).bdvPanel);
-        return c.bvvPanel.equals(((ViewerAdapter) o).bvvPanel);
+        if (c.bdvPanel!=null) return c.bdvPanel.equals(this.bdvPanel);
+        return c.bvvPanel.equals(this.bvvPanel);
     }
 }

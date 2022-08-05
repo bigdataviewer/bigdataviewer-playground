@@ -50,7 +50,7 @@ import java.util.function.BiConsumer;
  * This source can be thus used to define a template in order to Resample another source
  * with new bounds and voxel size, for instance as a model in {@link ResampledSource}
  *
- * Also this source can be serialized with the gson adapter {@link EmptySourceAdapter}
+ * Also, this source can be serialized with the gson adapter {@link EmptySourceAdapter}
  * which is helpful to save such source easily.
  *
  */
@@ -58,7 +58,7 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
 
     transient final RandomAccessibleInterval<UnsignedShortType> rai;
 
-    EmptySourceParams params;
+    final EmptySourceParams params;
 
     transient protected final DefaultInterpolators< UnsignedShortType > interpolators = new DefaultInterpolators<>();
 
@@ -130,7 +130,7 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
         return 1; // 0 or 1 ?
     }
 
-    static public class EmptySourceParams implements Cloneable, Serializable {
+    static public class EmptySourceParams implements Serializable {
         public long nx,ny,nz;
         public AffineTransform3D at3D;
         public String name;
@@ -159,6 +159,10 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
             nx = p.nx;
             ny = p.ny;
             nz = p.nz;
+            vx = p.vx;
+            vy = p.vy;
+            vz = p.vz;
+            unit = p.unit;
             at3D = new AffineTransform3D();
             at3D.set(p.at3D);
             name = p.name;

@@ -30,7 +30,6 @@ package sc.fiji.bdvpg.scijava.services.ui.swingdnd;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.behaviour.EditorBehaviourUnInstaller;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -45,10 +44,10 @@ import java.util.List;
 
 public class TreeTransferHandler extends TransferHandler {
 
-    protected static Logger logger = LoggerFactory.getLogger(TreeTransferHandler.class);
+    protected static final Logger logger = LoggerFactory.getLogger(TreeTransferHandler.class);
 
     DataFlavor nodesFlavor;
-    DataFlavor[] flavors = new DataFlavor[1];
+    final DataFlavor[] flavors = new DataFlavor[1];
     //DefaultMutableTreeNode[] nodesToRemove;
 
     public TreeTransferHandler() {
@@ -68,7 +67,7 @@ public class TreeTransferHandler extends TransferHandler {
     }
 
     //TransferHandler
-    @Override public boolean canImport(JComponent comp, DataFlavor flavor[]) {
+    @Override public boolean canImport(JComponent comp, DataFlavor[] flavor) {
         for (DataFlavor dataFlavor : flavor) {
             for (DataFlavor value : flavors) {
                 if (dataFlavor.equals(value)) {
@@ -170,7 +169,7 @@ public class TreeTransferHandler extends TransferHandler {
     }
 
     public class NodesTransferable implements Transferable {
-        DefaultMutableTreeNode[] nodes;
+        final DefaultMutableTreeNode[] nodes;
 
         public NodesTransferable(DefaultMutableTreeNode[] nodes) {
             this.nodes = nodes;

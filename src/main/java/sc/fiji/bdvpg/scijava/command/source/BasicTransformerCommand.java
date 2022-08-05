@@ -48,6 +48,7 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
+@SuppressWarnings("SpellCheckingInspection")
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Basic Transformation",
 description = "Performs basic transformation (rotate / flip) along X Y Z axis for several sources. " +
         "If global is selected, the transformation is performed relative to the global origin (0,0,0). " +

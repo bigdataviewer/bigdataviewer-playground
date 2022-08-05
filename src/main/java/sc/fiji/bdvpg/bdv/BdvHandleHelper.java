@@ -67,7 +67,7 @@ import java.util.function.Consumer;
 public class BdvHandleHelper
 {
 
-    protected static Logger logger = LoggerFactory.getLogger(BdvHandleHelper.class);
+    protected static final Logger logger = LoggerFactory.getLogger(BdvHandleHelper.class);
 
     /**
      * Creates a viewer transform with a new center position.

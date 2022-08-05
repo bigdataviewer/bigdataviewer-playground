@@ -38,7 +38,6 @@ import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.adapter.AbstractSpimdataAdapter;
-import sc.fiji.bdvpg.scijava.services.ui.swingdnd.BdvTransferHandler;
 import sc.fiji.persist.*;
 
 import java.io.File;
@@ -47,7 +46,7 @@ import java.util.function.Consumer;
 
 public class SourceAndConverterAdapter {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterAdapter.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterAdapter.class);
 
     final File basePath;
 
@@ -65,10 +64,10 @@ public class SourceAndConverterAdapter {
     Map<Integer, Source> idToSource;
     Map<Source, Integer> sourceToId;
 
-    public Set<Integer> alreadyDeSerializedSacs = new HashSet<>();
-    public Map<Integer, JsonElement> idToJsonElement = new HashMap<>();
+    public final Set<Integer> alreadyDeSerializedSacs = new HashSet<>();
+    public final Map<Integer, JsonElement> idToJsonElement = new HashMap<>();
 
-    Context ctx;
+    final Context ctx;
 
     public Context getScijavaContext() {
         return ctx;

@@ -71,15 +71,25 @@ import java.util.function.BiFunction;
 
 public class ManualRegistrationStopper implements Runnable {
 
-    ManualRegistrationStarter starter;
+    final ManualRegistrationStarter starter;
 
-    BiFunction<AffineTransform3D, SourceAndConverterAndTimeRange, SourceAndConverter<?>> registrationPolicy;// = ManualRegistrationStopper::createNewTransformedSourceAndConverter;
+    final BiFunction<AffineTransform3D, SourceAndConverterAndTimeRange<?>, SourceAndConverter<?>> registrationPolicy;// = ManualRegistrationStopper::createNewTransformedSourceAndConverter;
 
     SourceAndConverter<?>[] transformedSources;
 
-    public ManualRegistrationStopper(ManualRegistrationStarter starter, BiFunction<AffineTransform3D, SourceAndConverterAndTimeRange, SourceAndConverter<?>> registrationPolicy) {
+    public ManualRegistrationStopper(ManualRegistrationStarter starter, BiFunction<AffineTransform3D, SourceAndConverterAndTimeRange<?>, SourceAndConverter<?>> registrationPolicy) {
         this.starter = starter;
         this.registrationPolicy = registrationPolicy;
+        this.minTimepoint = starter.bdvHandle.getViewerPanel().state().getCurrentTimepoint();
+        this.maxTimepoint = starter.bdvHandle.getViewerPanel().state().getCurrentTimepoint()+1;
+    }
+
+    int minTimepoint;
+    int maxTimepoint;
+
+    public void setTimeRange(int min, int max) {
+        this.minTimepoint = min;
+        this.maxTimepoint = max;
     }
 
     @Override
@@ -91,8 +101,9 @@ public class ManualRegistrationStopper implements Runnable {
         // Stops BdvHandle listener
         this.starter.getBdvHandle().getViewerPanel().transformListeners().remove(starter.getListener());
 
-        // Removes temporary TransformedSourceAndConverter - a two step process in order to improve performance
+        // Removes temporary TransformedSourceAndConverter - a two-step process in order to improve performance
         List<SourceAndConverter<?>> tempSacs = starter.getTransformedSourceAndConverterDisplayed();
+
         SourceAndConverterServices.getBdvDisplayService().remove(starter.bdvHandle,tempSacs.toArray(new SourceAndConverter[0]));
 
         for (SourceAndConverter<?> sac: tempSacs) {
@@ -107,7 +118,7 @@ public class ManualRegistrationStopper implements Runnable {
         for (int i=0;i<nSources;i++) {
             SourceAndConverter<?> sac  = this.starter.getOriginalSourceAndConverter()[i];
 
-            transformedSources[i] = registrationPolicy.apply(transform3D, new SourceAndConverterAndTimeRange(sac, starter.bdvHandle.getViewerPanel().state().getCurrentTimepoint()));
+            transformedSources[i] = registrationPolicy.apply(transform3D, new SourceAndConverterAndTimeRange<>(sac, minTimepoint, maxTimepoint));
             if (starter.getOriginallyDisplayedSourceAndConverter().contains(sac)) {
                 transformedSacsToDisplay.add(transformedSources[i]);
             }
@@ -122,4 +133,5 @@ public class ManualRegistrationStopper implements Runnable {
     public SourceAndConverter<?>[] getTransformedSources() {
         return transformedSources;
     }
+
 }

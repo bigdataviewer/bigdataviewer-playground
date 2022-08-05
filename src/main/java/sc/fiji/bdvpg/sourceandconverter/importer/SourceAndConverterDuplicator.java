@@ -29,14 +29,13 @@
 package sc.fiji.bdvpg.sourceandconverter.importer;
 
 import bdv.viewer.SourceAndConverter;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Function;
 
     public class SourceAndConverterDuplicator implements Runnable, Function<SourceAndConverter<?>, SourceAndConverter<?>> {
 
-    SourceAndConverter<?> sac_in;
+    final SourceAndConverter<?> sac_in;
 
     public SourceAndConverterDuplicator(SourceAndConverter<?> sac) {
         sac_in = sac;

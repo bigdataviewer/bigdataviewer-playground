@@ -36,7 +36,6 @@ import bdv.util.*;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imglib2.*;
 import net.imglib2.converter.Converter;
 import net.imglib2.converter.RealLUTConverter;
@@ -88,17 +87,8 @@ import java.util.stream.Collectors;
  */
 public class SourceAndConverterHelper {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterHelper.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterHelper.class);
 
-    /**
-     * Standard logger
-     */
-    public static Consumer<String> log = logger::debug;
-
-    /**
-     * Error logger
-     */
-    public static Consumer<String> errlog = logger::error;
 
     /**
      * Core function : makes SourceAndConverter object out of a Source
@@ -147,7 +137,7 @@ public class SourceAndConverterHelper {
 
         } else {
 
-            errlog.accept("Cannot create sourceandconverter and converter for sources of type "+source.getType());
+            logger.error("Cannot create sourceandconverter and converter for sources of type "+source.getType());
             return null;
 
         }
@@ -157,7 +147,7 @@ public class SourceAndConverterHelper {
 
     /**
      * Creates default converters for a Source
-     * Support Volatile or non Volatile
+     * Support Volatile or non-volatile
      * Support RealTyped or ARGBTyped
      * @param source source
      * @return one converter for the source
@@ -168,7 +158,7 @@ public class SourceAndConverterHelper {
         } else if (source.getType() instanceof ARGBType) {
             return createConverterARGBType(source);
         } else {
-            errlog.accept("Cannot create converter for sourceandconverter of type "+source.getType().getClass().getSimpleName());
+            logger.error("Cannot create converter for sourceandconverter of type "+source.getType().getClass().getSimpleName());
             return null;
         }
     }
@@ -205,7 +195,7 @@ public class SourceAndConverterHelper {
 			}
 			else
 			{
-				errlog.accept( "Could not clone the converter of class " + converter.getClass().getSimpleName() );
+                logger.error( "Could not clone the converter of class " + converter.getClass().getSimpleName() );
 				return null;
 			}
         }
@@ -216,63 +206,28 @@ public class SourceAndConverterHelper {
     }
 
     public static ConverterSetup createConverterSetup(SourceAndConverter sac, int legacyId) {
-        //return BigDataViewer.createConverterSetup(sac, legacyId);
-        ConverterSetup setup;
-        if (sac.getSpimSource().getType() instanceof RealType) {
-            setup = createConverterSetupRealType(sac);
-        } else if (sac.getSpimSource().getType() instanceof ARGBType) {
-            setup = createConverterSetupARGBType(sac);
-        } else {
-            errlog.accept("Cannot create convertersetup for Source of type "+sac.getSpimSource().getType().getClass().getSimpleName());
-            setup = null;
-        }
-        //setup.setViewer(() -> requestRepaint.run());
-        return setup;
-    }
-
-    /**
-     * Creates converters and convertersetup for a ARGB typed sourceandconverter
-     * @param source source
-     */
-    static private ConverterSetup createConverterSetupARGBType(SourceAndConverter<?> source) {
-        ConverterSetup setup;
-        if (source.getConverter() instanceof ColorConverter) {
-            setup = BigDataViewer.createConverterSetup(source, -1);
-        } else {
-            errlog.accept("Cannot build ConverterSetup for Converters of class "+source.getConverter().getClass());
-            setup = null;
-        }
-        return setup;
-    }
-
-    /**
-     * Creates converters and convertersetup for a real typed sourceandconverter
-     * @param source source
-     */
-    static private ConverterSetup createConverterSetupRealType(SourceAndConverter<?> source) {
-        final ConverterSetup setup;
-        if (source.getConverter() instanceof ColorConverter) {
-            setup = BigDataViewer.createConverterSetup(source, -1);
-        } else if (source.getConverter() instanceof RealLUTConverter) {
-            if (source.asVolatile() != null) {
-                setup = new LUTConverterSetup((RealLUTConverter) source.getConverter(), (RealLUTConverter) source.asVolatile().getConverter());
-            } else {
-                setup = new LUTConverterSetup((RealLUTConverter) source.getConverter());
-            }
-        } else {
-            log.accept( "Unsupported ConverterSetup for Converters of class " + source.getConverter().getClass() );
-            if (source.asVolatile() != null) {
-                setup = new UnmodifiableConverterSetup( source.getConverter(), source.asVolatile().getConverter());
-            } else {
-                setup = new UnmodifiableConverterSetup( source.getConverter());
-            }
-        }
-        return setup;
+        if (sac.getConverter() instanceof ColorConverter) {
+			return BigDataViewer.createConverterSetup(sac, -1);
+		} else if (sac.getConverter() instanceof RealLUTConverter) {
+			if (sac.asVolatile() != null) {
+				return new LUTConverterSetup((RealLUTConverter) sac.getConverter(), (RealLUTConverter) sac.asVolatile().getConverter());
+			} else {
+				return new LUTConverterSetup((RealLUTConverter) sac.getConverter());
+			}
+		} else {
+			logger.debug( "Unmodifiable ConverterSetup for Converters of class " + sac.getConverter().getClass() );
+			if (sac.asVolatile() != null)
+			{
+				return new UnmodifiableConverterSetup( sac.getConverter(), sac.asVolatile().getConverter() );
+			} else {
+				return new UnmodifiableConverterSetup( sac.getConverter() );
+			}
+		}
     }
 
 	/**
      * Here should go all the ways to build a Volatile Source
-     * from a non Volatile Source, RealTyped
+     * from a non-volatile Source, RealTyped
      * @param source source
      * @return the volatile source
      */
@@ -283,9 +238,13 @@ public class SourceAndConverterHelper {
 
     /**
      * Here should go all the ways to build a Volatile Source
-     * from a non Volatile Source, ARGBTyped
+     * from a non-volatile Source, ARGBTyped
      * @param source the source
+<<<<<<< HEAD
      * @return the created volatile source
+=======
+     * @return the volatile source created
+>>>>>>> bdv-0.4.1
      */
     private static Source<?> createVolatileARGBType(Source<?> source) {
         // TODO unsupported yet
@@ -294,7 +253,7 @@ public class SourceAndConverterHelper {
 
     /**
      * Creates ARGB converter from a RealTyped sourceandconverter.
-     * Supports Volatile RealTyped or non volatile
+     * Supports Volatile RealTyped or non-volatile
      * @param <T> realtype class
      * @param type a pixel of type T
      * @return a suited converter
@@ -310,7 +269,7 @@ public class SourceAndConverterHelper {
 
     /**
      * Creates ARGB converter from a RealTyped sourceandconverter.
-     * Supports Volatile ARGBType or non volatile
+     * Supports Volatile ARGBType or non-volatile
      * @param source source
      * @return a compatible converter
      */
@@ -498,7 +457,7 @@ public class SourceAndConverterHelper {
             final AffineTransform3D sourceTransform = new AffineTransform3D();
             sac.getSpimSource().getSourceTransform(timePoint, 0, sourceTransform);
 
-            // Get a access to the source at the pointer location
+            // Get access to the source at the pointer location
             RealRandomAccess rra = rra_ible.realRandomAccess();
             RealPoint iPt = new RealPoint(3);
             sourceTransform.inverse().apply(pt, iPt);
@@ -536,18 +495,6 @@ public class SourceAndConverterHelper {
     public static List<SourceAndConverter<?>> sortDefaultGeneric(Collection<SourceAndConverter<?>> sacs) {
         List<SourceAndConverter<?>> sortedList = new ArrayList<>(sacs.size());
         sortedList.addAll(sacs);
-        Set<AbstractSpimData> spimData = new HashSet<>();
-        // Gets all SpimdataInfo
-        sacs.forEach(sac -> {
-            if (SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
-                SourceAndConverterService.SpimDataInfo sdi = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
-                        .getSourceAndConverterService()
-                        .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)));
-                spimData.add(sdi.asd);
-            }
-        });
 
         Comparator<SourceAndConverter<?>> sacComparator = (s1, s2) -> {
             // Those who do not belong to spimdata are last:
@@ -576,7 +523,7 @@ public class SourceAndConverterHelper {
                 return 1;
             }
 
-            if ((sdi1!=null)&&(sdi2!=null)) {
+            if (sdi1 != null) {
                 if (sdi1.asd==sdi2.asd) {
                     return sdi1.setupId-sdi2.setupId;
                 } else {
@@ -603,18 +550,6 @@ public class SourceAndConverterHelper {
     public static List<SourceAndConverter> sortDefaultNoGeneric(Collection<SourceAndConverter> sacs) {
         List<SourceAndConverter> sortedList = new ArrayList<>(sacs.size());
         sortedList.addAll(sacs);
-        Set<AbstractSpimData> spimData = new HashSet<>();
-        // Gets all SpimdataInfo
-        sacs.forEach(sac -> {
-            if (SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
-                SourceAndConverterService.SpimDataInfo sdi = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
-                        .getSourceAndConverterService()
-                        .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)));
-                spimData.add(sdi.asd);
-            }
-        });
 
         Comparator<SourceAndConverter> sacComparator = (s1, s2) -> {
             // Those who do not belong to spimdata are last:
@@ -643,7 +578,7 @@ public class SourceAndConverterHelper {
                 return 1;
             }
 
-            if ((sdi1!=null)&&(sdi2!=null)) {
+            if (sdi1 != null) {
                 if (sdi1.asd==sdi2.asd) {
                     return sdi1.setupId-sdi2.setupId;
                 } else {
@@ -736,7 +671,7 @@ public class SourceAndConverterHelper {
      *
      * So if the voxel size is [1.2, 0.8, 50], the value 1.2 is used to compare the levels
      * to the target resolution. This is a way to avoid the complexity of defining the correct
-     * pixel size while being also robust to comparing 2d and 3d sources. Indeed 2d sources may
+     * pixel size while being also robust to comparing 2d and 3d sources. Indeed, 2d sources may
      * have aberrant defined vox size along the third axis, either way too big or way too small
      * in one case or the other, the missing dimension is ignored, which we hope works
      * in most circumstances.
@@ -744,7 +679,7 @@ public class SourceAndConverterHelper {
      * Other complication : the sourceandconverter could be a warped source, or a warped source
      * of a warped source of a transformed source, etc.
      *
-     * The proper computation of the level required is complicated, and could be ill defined:
+     * The proper computation of the level required is complicated, and could be ill-defined:
      * Warping can cause local shrinking or expansion such that a single level won't be the
      * best choice for all the image.
      *
@@ -756,7 +691,7 @@ public class SourceAndConverterHelper {
      * see how this search is done
      *
      * So : the source root should be properly scaled from the beginning and weird transformation
-     * (like spherical transformed will give wrong results.
+     * like spherical transformed will give wrong results.
      *
      * @param src source
      * @param t timepoint
@@ -918,7 +853,7 @@ public class SourceAndConverterHelper {
 
     /**
      * Determines all visible sources at the current mouse position in the Bdv window.
-     * Note: this method can be slow as it needs an actual random access on the source data.
+     * Note: this method can be slow as it needs a random access on the source data.
      * @param bdvHandle the bdv window to probe
      * @return List of SourceAndConverters
      */

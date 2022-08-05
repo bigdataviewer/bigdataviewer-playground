@@ -33,7 +33,6 @@ import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.base.Entity;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
-import mpicbg.spim.data.sequence.ViewSetup;
 import org.scijava.plugin.SciJavaPlugin;
 
 /**
@@ -104,6 +103,6 @@ public interface EntityHandler extends SciJavaPlugin {
      */
     default SourceAndConverter<?> makeSourceAndConverter(AbstractSpimData<?> spimData, BasicViewSetup viewSetup) {
         throw new UnsupportedOperationException("makeSourceAndConverter method needs to be overriden if used");
-    };
+    }
 
 }

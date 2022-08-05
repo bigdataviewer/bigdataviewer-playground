@@ -59,7 +59,7 @@ public class EmptySourceAndConverterCreator implements Runnable, Supplier<Source
 
     private final VoxelDimensions voxelDimensions;
 
-    private static VoxelDimensions defaultVoxelDimensions = new FinalVoxelDimensions( "pixel", 1.0, 1.0, 1.0 );
+    private static final VoxelDimensions defaultVoxelDimensions = new FinalVoxelDimensions( "pixel", 1.0, 1.0, 1.0 );
 
     /**
      * Simple constructor

@@ -28,7 +28,6 @@
  */
 package sc.fiji.bdvpg.spimdata.importer;
 
-import bdv.img.hdf5.Hdf5ImageLoader;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
 import mpicbg.spim.data.generic.AbstractSpimData;
@@ -44,9 +43,9 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
 
 public class SpimDataFromXmlImporter implements Runnable, Function<String, AbstractSpimData<?>> {
 
-    protected static Logger logger = LoggerFactory.getLogger(SpimDataFromXmlImporter.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpimDataFromXmlImporter.class);
 
-    String dataLocation;
+    final String dataLocation;
 
     public SpimDataFromXmlImporter( File file ) {
         this.dataLocation = file.getAbsolutePath();

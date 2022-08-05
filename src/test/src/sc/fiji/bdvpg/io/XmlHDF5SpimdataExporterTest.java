@@ -45,7 +45,7 @@ import java.util.List;
 
 public class XmlHDF5SpimdataExporterTest {
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public final TemporaryFolder folder = new TemporaryFolder();
 
     static ImageJ ij;
 
@@ -83,7 +83,6 @@ public class XmlHDF5SpimdataExporterTest {
             System.out.println(line);
         }
         br.close();
-        line = null;
 
         br = new BufferedReader(new FileReader(fileXmlGen.getAbsoluteFile()));
         while ((line = br.readLine()) != null) {

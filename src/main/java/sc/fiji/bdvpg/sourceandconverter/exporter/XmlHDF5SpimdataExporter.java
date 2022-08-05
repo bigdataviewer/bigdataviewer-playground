@@ -49,7 +49,6 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -78,29 +77,29 @@ import java.util.stream.Collectors;
 
 public class XmlHDF5SpimdataExporter implements Runnable {
 
-    protected static Logger logger = LoggerFactory.getLogger(XmlHDF5SpimdataExporter.class);
+    protected static final Logger logger = LoggerFactory.getLogger(XmlHDF5SpimdataExporter.class);
 
-    List<SourceAndConverter<?>> sources;
+    final List<SourceAndConverter<?>> sources;
 
-    int nThreads;
+    final int nThreads;
 
-    int timePointBegin;
+    final int timePointBegin;
 
-    int timePointEnd;
+    final int timePointEnd;
 
     int scaleFactor;
 
-    int blockSizeX;
+    final int blockSizeX;
 
-    int blockSizeY;
+    final int blockSizeY;
 
-    int blockSizeZ;
+    final int blockSizeZ;
 
-    int thresholdSizeForMipmap;
+    final int thresholdSizeForMipmap;
 
-    File xmlFile;
+    final File xmlFile;
 
-    String entityType;
+    final String entityType;
 
     public XmlHDF5SpimdataExporter(List<SourceAndConverter<?>> sources,
                                    String entityType,
@@ -154,7 +153,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
     AbstractSpimData<?> spimData;
 
-    BiConsumer<SourceAndConverter<?>, BasicViewSetup> attributeAdder;
+    final BiConsumer<SourceAndConverter<?>, BasicViewSetup> attributeAdder;
 
     public void run() {
 
@@ -278,10 +277,6 @@ public class XmlHDF5SpimdataExporter implements Runnable {
                 SourceAndConverter<?> sac = sources.get(idxSourceToSac.get(src));
 
                 attributeAdder.accept(sac, basicviewsetup);
-
-                /*Displaysettings ds = new Displaysettings(idx_current_src);
-                DisplaysettingsHelper.GetDisplaySettingsFromCurrentConverter(sac, ds);
-                basicviewsetup.setAttribute(ds);*/
 
                 setups.put(idx_current_src, basicviewsetup); // Hum hum, order according to hashmap size TODO check
 

@@ -32,7 +32,6 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import net.imglib2.display.ColorConverter;
-import net.imglib2.realtransform.Wrapped2DTransformAs3DRealTransformAdapter;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.InstantiableException;
 import org.slf4j.Logger;
@@ -52,12 +51,12 @@ import java.util.Map;
 public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConverter>,
         JsonDeserializer<SourceAndConverter> {
 
-    protected static Logger logger = LoggerFactory.getLogger(SourceAndConverterAdapter.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterAdapter.class);
 
-    sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer;
+    final sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer;
 
-    Map<Class<? extends Source<?>>, ISourceAdapter> sourceSerializers = new HashMap<>();
-    Map<String, ISourceAdapter> sourceSerializersFromName = new HashMap<>();
+    final Map<Class<? extends Source<?>>, ISourceAdapter> sourceSerializers = new HashMap<>();
+    final Map<String, ISourceAdapter> sourceSerializersFromName = new HashMap<>();
 
     public SourceAndConverterAdapter(sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer) {
         this.sacSerializer = sacSerializer;
@@ -106,7 +105,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
                         Object o = SourceAndConverterServices
                                     .getSourceAndConverterService()
                                     .getMetadata(sourceAndConverter, key);
-                        if ((o!=null) && (o instanceof String)) {
+                        if (o instanceof String) {
                             stringMetaData.put(key,(String)o);
                         }
                     });
@@ -152,7 +151,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
             if (jsonObject.getAsJsonPrimitive("color")!=null) {
                 // Now the color
                 int color = jsonObject.getAsJsonPrimitive("color").getAsInt();
-                new ColorChanger(sac,  new ARGBType(color)).run(); // TO deal with volatile and non volatile
+                new ColorChanger(sac,  new ARGBType(color)).run(); // TO deal with volatile and non-volatile
                 // Min Max display
                 SourceAndConverterServices.getSourceAndConverterService()
                         .getConverterSetup(sac).setDisplayRange(

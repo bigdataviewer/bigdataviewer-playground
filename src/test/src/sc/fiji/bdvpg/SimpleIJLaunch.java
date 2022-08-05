@@ -28,15 +28,10 @@
  */
 package sc.fiji.bdvpg;
 
-import bdv.viewer.SourceAndConverter;
 import loci.common.DebugTools;
 import net.imagej.ImageJ;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.realtransform.AffineTransform3D;
 import org.junit.After;
 import org.junit.Test;
-import org.scijava.util.VersionUtils;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 public class SimpleIJLaunch {
 
@@ -47,19 +42,11 @@ public class SimpleIJLaunch {
         ij = new ImageJ();
         ij.ui().showUI();
         DebugTools.setRootLevel("INFO");
-        /*SourceAndConverterService sacService = ij.get(SourceAndConverterService.class);
-        SourceAndConverter aTile = sacService.getSourceAndConverters().get(0);
-        AffineTransform3D transform = new AffineTransform3D();
-        aTile.getSpimSource().getSourceTransform(0,0,transform);
-        double voxSizeX = transform.get(0,0);
-        double voxSizeY = transform.get(1,1);
-        double voxSizeZ = transform.get(2,2);*/
-
     }
 
     @Test
     public void demoRunOk() {
-        main(new String[]{""});
+        main("");
     }
 
     @After

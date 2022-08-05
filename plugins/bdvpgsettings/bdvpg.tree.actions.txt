@@ -10,6 +10,8 @@
   "BDV - Synchronize Views",
   "BDV - Remove Sources From BDV",
   "PopupLine",
+  "PopupLine",
+  "PopupLine",
   "Create Empty BVV Frame",
   "Show Sources in BVV",
   "PopupLine",

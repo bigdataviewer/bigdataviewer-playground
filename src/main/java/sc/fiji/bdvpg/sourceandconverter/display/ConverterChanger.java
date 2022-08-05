@@ -38,11 +38,11 @@ import java.util.function.Function;
 
 public class  ConverterChanger<T,V extends Volatile<T>> implements Runnable, Function<SourceAndConverter<T>, SourceAndConverter<T>> {
 
-    SourceAndConverter<T> sac_in;
+    final SourceAndConverter<T> sac_in;
 
-    Converter<T, ARGBType> nonVolatileConverter;
+    final Converter<T, ARGBType> nonVolatileConverter;
 
-    Converter<V,ARGBType> volatileConverter;
+    final Converter<V,ARGBType> volatileConverter;
 
     public ConverterChanger(SourceAndConverter<T> sac, Converter<T,ARGBType> cvtnv, Converter<V,ARGBType> cvt) {
         sac_in = sac;
@@ -63,13 +63,13 @@ public class  ConverterChanger<T,V extends Volatile<T>> implements Runnable, Fun
     public SourceAndConverter<T> apply(SourceAndConverter<T> sourceAndConverter) {
         SourceAndConverter<T> sac;
         if (sourceAndConverter.asVolatile()!=null) {
-            sac = new SourceAndConverter<T>(
+            sac = new SourceAndConverter<>(
                     sourceAndConverter.getSpimSource(),
                     nonVolatileConverter,
-                    new SourceAndConverter<>((Source<V>) sourceAndConverter.asVolatile().getSpimSource(),volatileConverter)
+                    new SourceAndConverter<>((Source<V>) sourceAndConverter.asVolatile().getSpimSource(), volatileConverter)
             );
         } else {
-            sac = new SourceAndConverter<T>(
+            sac = new SourceAndConverter<>(
                     sourceAndConverter.getSpimSource(),
                     nonVolatileConverter);
         }

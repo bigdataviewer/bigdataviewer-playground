@@ -74,35 +74,35 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ResampledSource< T extends NumericType<T> & NativeType<T>> implements Source<T> {
 
-    protected static Logger logger = LoggerFactory.getLogger(ResampledSource.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ResampledSource.class);
 
     /**
      * Hashmap to cache RAIs (mipmaps and timepoints), used only if {@link ResampledSource#cache} is true
      */
-    transient ConcurrentHashMap<Integer, ConcurrentHashMap<Integer,RandomAccessibleInterval<T>>> cachedRAIs
+    final transient ConcurrentHashMap<Integer, ConcurrentHashMap<Integer,RandomAccessibleInterval<T>>> cachedRAIs
             = new ConcurrentHashMap<>();
 
     /**
      * Origin source of type {@link T}
      */
-    Source<T> origin;
+    final Source<T> origin;
 
     /**
      * Model source, no need to be of type {@link T}
      */
-    Source<?> resamplingModel;
+    final Source<?> resamplingModel;
 
     protected final DefaultInterpolators< T > interpolators = new DefaultInterpolators<>();
 
-    protected Interpolation originInterpolation;
+    protected final Interpolation originInterpolation;
 
     final boolean reuseMipMaps;
 
     final int defaultMipMapLevel;
 
-    boolean cache;
+    final boolean cache;
 
-    private String name;
+    private final String name;
 
     /**
      * The origin source is accessed through its RealRandomAccessible representation :
@@ -116,10 +116,14 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
      *
      * @param resamplingModel model source used for resampling the origin source
      * @param name of the resampled source
+<<<<<<< HEAD
      * @param reuseMipMaps allows to reuse mipmaps of both the origin and the model source in the resampling
+=======
+     * @param reuseMipMaps allows reusing mipmaps of both the origin and the model source in the resampling
+>>>>>>> bdv-0.4.1
      *  mipmap reuse tries to be clever by matching the voxel size between the model source and the origin source
      *  so for instance the model source mipmap level 0 will resample the origin mipmap level 2, if the voxel size
-     *  of the origin is much smaller then the model (and provided that the origin is also a multiresolution source)
+     *  of the origin is much smaller than the model (and provided that the origin is also a multiresolution source)
      *  the way the matching is performed is specified in {@link SourceAndConverterHelper#bestLevel(Source, int, double)}.
      *  For more details and limitation, please read the documentation in the linked method above
      *@param cache specifies whether the result of the resampling should be cached.
@@ -144,7 +148,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         computeMipMapsCorrespondance();
     }
 
-    Map<Integer, Integer> mipmapModelToOrigin = new HashMap<>();
+    final Map<Integer, Integer> mipmapModelToOrigin = new HashMap<>();
 
     List<Double> originVoxSize;
 
@@ -260,6 +264,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     }
 
+    @SuppressWarnings("UnnecessaryLocalVariable")
     public RandomAccessibleInterval<T> buildSource(int t, int level) {
         // Get current model source transformation
         AffineTransform3D at = new AffineTransform3D();
@@ -296,7 +301,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         zero.setZero();
         ExtendedRandomAccessibleInterval<T, RandomAccessibleInterval< T >>
                 eView = Views.extendZero(getSource( t, level ));
-        RealRandomAccessible< T > realRandomAccessible = Views.interpolate( eView, interpolators.get(method) );
+        @SuppressWarnings("UnnecessaryLocalVariable") RealRandomAccessible< T > realRandomAccessible = Views.interpolate( eView, interpolators.get(method) );
         return realRandomAccessible;
     }
 

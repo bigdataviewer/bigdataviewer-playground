@@ -33,7 +33,6 @@ import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.persist.IClassAdapter;
-import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
 
@@ -51,7 +50,7 @@ import java.lang.reflect.Type;
 @Plugin(type = IClassAdapter.class)
 public class InvertibleRealTransformSequenceAdapter implements IClassAdapter<InvertibleRealTransformSequence> {
 
-    protected static Logger logger = LoggerFactory.getLogger(InvertibleRealTransformSequenceAdapter.class);
+    protected static final Logger logger = LoggerFactory.getLogger(InvertibleRealTransformSequenceAdapter.class);
 
     @Override
     public Class<? extends InvertibleRealTransformSequence> getAdapterClass() {

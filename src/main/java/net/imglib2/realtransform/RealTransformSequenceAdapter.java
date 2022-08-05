@@ -34,7 +34,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import org.scijava.plugin.Plugin;
 import sc.fiji.persist.IClassAdapter;
-import sc.fiji.persist.IClassRuntimeAdapter;
 
 import java.lang.reflect.Type;
 

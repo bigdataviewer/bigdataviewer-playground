@@ -71,7 +71,7 @@ public class VolatileSource<T extends NumericType<T>, V extends Volatile< T > & 
 
     final SharedQueue queue;
 
-    ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, RandomAccessibleInterval<V>>> cachedRAIs = new ConcurrentHashMap<>();
+    final ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, RandomAccessibleInterval<V>>> cachedRAIs = new ConcurrentHashMap<>();
 
     public VolatileSource(final Source<T> source) {
         this.originSource = source;
@@ -113,6 +113,7 @@ public class VolatileSource<T extends NumericType<T>, V extends Volatile< T > & 
         zero.setZero();
         ExtendedRandomAccessibleInterval<V, RandomAccessibleInterval< V >>
                 eView = Views.extendZero(getSource( t, level ));
+        //noinspection UnnecessaryLocalVariable
         RealRandomAccessible< V > realRandomAccessible = Views.interpolate( eView, interpolators.get(method) );
         return realRandomAccessible;
     }

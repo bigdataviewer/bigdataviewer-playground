@@ -28,7 +28,6 @@
  */
 package sc.fiji.bdvpg.scijava.widget;
 
-import bdv.util.BdvHandle;
 import bvv.util.BvvHandle;
 import org.scijava.widget.InputWidget;
 

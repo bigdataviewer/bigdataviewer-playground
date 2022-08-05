@@ -37,12 +37,9 @@ import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Plugin(type = InputWidget.class, priority = Priority.EXTREMELY_HIGH)
 public class SwingBdvHandleWidget extends SwingInputWidget<BdvHandle> implements
@@ -89,7 +86,7 @@ public class SwingBdvHandleWidget extends SwingInputWidget<BdvHandle> implements
 
     public static class RenamableBdvHandle {
 
-        public BdvHandle bdvh;
+        public final BdvHandle bdvh;
 
         public RenamableBdvHandle(BdvHandle bdvh) {
             this.bdvh = bdvh;

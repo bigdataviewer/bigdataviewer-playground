@@ -37,7 +37,11 @@ public abstract class PlaygroundPrefs
 	private static boolean sourceAndConverterUIVisibility = true;
 
 	/**
+<<<<<<< HEAD
 	 * @param visibility flag that sets whether the tree view should be displayed
+=======
+	 * @param visibility Sets whether the tree view should be displayed or not automatically
+>>>>>>> bdv-0.4.1
 	 */
 	public static void setSourceAndConverterUIVisibility( boolean visibility )
 	{

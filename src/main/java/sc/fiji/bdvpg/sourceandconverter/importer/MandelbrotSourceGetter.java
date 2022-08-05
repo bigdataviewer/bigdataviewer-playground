@@ -38,7 +38,7 @@ import java.util.function.Supplier;
 
 public class MandelbrotSourceGetter implements Runnable, Supplier<SourceAndConverter> {
 
-    int maxIterations = 255;
+    final int maxIterations = 255;
 
     public void run() {
         // Useless
