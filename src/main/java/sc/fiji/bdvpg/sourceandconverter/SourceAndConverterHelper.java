@@ -100,48 +100,29 @@ public class SourceAndConverterHelper {
         Converter nonVolatileConverter;
         SourceAndConverter<T> out;
         if (source.getType() instanceof RealType) {
-
             nonVolatileConverter = createConverterRealType((RealType) source.getType());
-
-            Source volatileSource = createVolatileRealType(source);
-
-            if (volatileSource!=null) {
-
+            try {
+                Source volatileSource = createVolatileRealType(source);
                 Converter volatileConverter = createConverterRealType((RealType) volatileSource.getType());
                 out = new SourceAndConverter(source, nonVolatileConverter,
                         new SourceAndConverter<>(volatileSource, volatileConverter));
-
-            } else {
-
+            } catch (Exception e) {
                 out = new SourceAndConverter(source, nonVolatileConverter);
-
             }
-
         } else if (source.getType() instanceof ARGBType) {
-
             nonVolatileConverter = createConverterARGBType(source);
-
-            Source volatileSource = createVolatileARGBType(source);
-
-            if (volatileSource!=null) {
-
+            try {
+                Source volatileSource = createVolatileARGBType(source);
                 Converter volatileConverter = createConverterARGBType(volatileSource);
                 out = new SourceAndConverter(source, nonVolatileConverter,
                         new SourceAndConverter<>(volatileSource, volatileConverter));
-
-            } else {
-
+            } catch (UnsupportedOperationException e) {
                 out = new SourceAndConverter(source, nonVolatileConverter);
-
             }
-
         } else {
-
             logger.error("Cannot create sourceandconverter and converter for sources of type "+source.getType());
             return null;
-
         }
-
         return out;
     }
 
@@ -231,24 +212,19 @@ public class SourceAndConverterHelper {
      * @param source source
      * @return the volatile source
      */
-    private static Source createVolatileRealType(Source source) {
+    private static Source createVolatileRealType(Source source) throws UnsupportedOperationException {
         // TODO unsupported yet
-        return null;
+        throw new UnsupportedOperationException("Unimplemented createVolatileRealType method in SourceAndConverterHelper");
     }
 
     /**
      * Here should go all the ways to build a Volatile Source
      * from a non-volatile Source, ARGBTyped
      * @param source the source
-<<<<<<< HEAD
-     * @return the created volatile source
-=======
      * @return the volatile source created
->>>>>>> bdv-0.4.1
      */
-    private static Source<?> createVolatileARGBType(Source<?> source) {
-        // TODO unsupported yet
-        return null;
+    private static Source<?> createVolatileARGBType(Source<?> source) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("Unimplemented createVolatileARGBType method in SourceAndConverterHelper");
     }
 
     /**

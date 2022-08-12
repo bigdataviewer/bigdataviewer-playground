@@ -47,6 +47,8 @@ import mpicbg.spim.data.sequence.*;
 import net.imglib2.FinalDimensions;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.type.Type;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,19 +158,22 @@ public class XmlHDF5SpimdataExporter implements Runnable {
     final BiConsumer<SourceAndConverter<?>, BasicViewSetup> attributeAdder;
 
     public void run() {
+        List<Source<?>> ori_srcs = sources.stream().map(SourceAndConverter::getSpimSource).collect(Collectors.toList());
 
         // Gets Concrete SpimSource
-        List<Source<?>> srcs = sources.stream().map(SourceAndConverter::getSpimSource).collect(Collectors.toList());
         Map<Source<?>, Integer> idxSourceToSac = new HashMap<>();
 
-        // Convert To UnsignedShortType (limitation of current xml/hdf5 implementation)
-        srcs.replaceAll(SourceToUnsignedShortConverter::convertSource);
+        List<Source<UnsignedShortType>> srcs =
+                sources.stream()
+                        .map(SourceAndConverter::getSpimSource)
+                        .map(SourceToUnsignedShortConverter::convertSource) // Convert To UnsignedShortType (limitation of current xml/hdf5 implementation)
+                        .collect(Collectors.toList());
 
         for (int i=0;i<srcs.size();i++) {
             idxSourceToSac.put(srcs.get(i), i);
         }
 
-        ImgLoaderFromSources<?> imgLoader = new ImgLoaderFromSources(srcs);
+        ImgLoaderFromSources<UnsignedShortType> imgLoader = new ImgLoaderFromSources<>(srcs);
 
         final int numTimepoints = this.timePointEnd - this.timePointBegin;
 

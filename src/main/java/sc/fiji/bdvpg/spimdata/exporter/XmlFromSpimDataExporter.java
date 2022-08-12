@@ -60,7 +60,7 @@ public class XmlFromSpimDataExporter implements Runnable {
 
     protected static final Logger logger = LoggerFactory.getLogger(XmlFromSpimDataExporter.class);
 
-    final AbstractSpimData spimData;
+    final AbstractSpimData<?> spimData;
 
     final String dataLocation;
 
@@ -75,7 +75,7 @@ public class XmlFromSpimDataExporter implements Runnable {
         return true;
     }
 
-    public XmlFromSpimDataExporter (AbstractSpimData spimData, String dataLocation, Context ctx) {
+    public XmlFromSpimDataExporter (AbstractSpimData<?> spimData, String dataLocation, Context ctx) {
         this.spimData = spimData;
         if (isPathValid(dataLocation)) {
             spimData.setBasePath(new File(dataLocation));
@@ -125,8 +125,12 @@ public class XmlFromSpimDataExporter implements Runnable {
                     entityClassToHandler.keySet().forEach(entityClass -> {
                         Entity e = setup.getAttribute(entityClass);
                         if (e!=null) {
-                            SourceAndConverter<?> sac = idToSac.get(setup);
-                            entityClassToHandler.get(entityClass).writeEntity(setup, sac);//.loadEntity(asd, setup);
+                            if (idToSac.containsKey(setup)) {
+                                SourceAndConverter<?> sac = idToSac.get(setup);
+                                entityClassToHandler.get(entityClass).writeEntity(setup, sac);//.loadEntity(asd, setup);
+                            } else {
+                                logger.warn("No source found for setup "+setup);
+                            }
                         }
                     });
                 }
