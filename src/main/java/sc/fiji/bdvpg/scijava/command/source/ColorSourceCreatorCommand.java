@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,7 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
+import net.imglib2.Volatile;
 import net.imglib2.converter.Converter;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.type.numeric.ARGBType;
@@ -40,6 +41,8 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.sourceandconverter.display.ConverterChanger;
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Create New Source (Set Color)",
 description = "Duplicate one or several sources and sets a new color for these sources")
 
@@ -49,28 +52,32 @@ public class ColorSourceCreatorCommand implements BdvPlaygroundActionCommand {
     ColorRGB color = new ColorRGB(255,255,255);
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Override
     public void run() {
-        for (SourceAndConverter source_in : sacs) {
-            ARGBType imglib2color = new ARGBType(ARGBType.rgba(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
-
-            Converter c = SourceAndConverterHelper.createConverter(source_in.getSpimSource());
-            assert c instanceof ColorConverter;
-            ((ColorConverter) c).setColor(imglib2color);
-
-            Converter vc = null;
-            if (source_in.asVolatile() != null) {
-                vc = SourceAndConverterHelper.createConverter(source_in.asVolatile().getSpimSource());
-                assert vc != null;
-                ((ColorConverter) vc).setColor(imglib2color);
-            }
-
-            ConverterChanger cc = new ConverterChanger(source_in, c, vc);
-            cc.run();
-            cc.get();
+        for (SourceAndConverter<?> source : sacs) {
+            createAndChangeConverter(source);
         }
+    }
+
+    private <T, V extends Volatile<T>> void createAndChangeConverter(SourceAndConverter<T> source) {
+        ARGBType imglib2color = new ARGBType(ARGBType.rgba(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
+
+        Converter<T,ARGBType> c = SourceAndConverterHelper.createConverter(source.getSpimSource()); // TODO : Should it be Converter<?,ARGBType> ?
+        assert c instanceof ColorConverter;
+        ((ColorConverter) c).setColor(imglib2color);
+
+        Converter<V, ARGBType> vc = null;
+        if (source.asVolatile() != null) {
+            vc = (Converter<V, ARGBType>) SourceAndConverterHelper.createConverter(source.asVolatile().getSpimSource());
+            assert vc != null;
+            ((ColorConverter) vc).setColor(imglib2color);
+        }
+
+        ConverterChanger<T, V> cc = new ConverterChanger<>(source, c, vc);
+        cc.run();
+        cc.get();
     }
 
 }

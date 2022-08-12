@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -31,12 +31,16 @@ package sc.fiji.bdvpg.io.state;
 import net.imagej.ImageJ;
 import org.junit.After;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.*;
 import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
 
 import java.io.File;
 
 public class BdvPlaygroundStateSaver {
+
+    protected static final Logger logger = LoggerFactory.getLogger(BdvPlaygroundStateSaver.class);
 
     static ImageJ ij;
 
@@ -53,7 +57,7 @@ public class BdvPlaygroundStateSaver {
                 ij.context()
         ).run();
 
-        System.out.println("Saved!");
+        logger.info("Bdv Playground state saved!");
 
     }
 

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,21 +32,22 @@ import bdv.util.Procedural3DImageShort;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.FinalInterval;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Supplier;
 
-public class MandelbrotSourceGetter implements Runnable, Supplier<SourceAndConverter> {
+public class MandelbrotSourceGetter implements Runnable, Supplier<SourceAndConverter<UnsignedShortType>> {
 
-    int maxIterations = 255;
+    final int maxIterations = 255;
 
     public void run() {
         // Useless
     }
 
     @Override
-    public SourceAndConverter get() {
-        Source s = new Procedural3DImageShort(
+    public SourceAndConverter<UnsignedShortType> get() {
+        Source<UnsignedShortType> s = new Procedural3DImageShort(
                     p -> {
                         double re = p[0];
                         double im = p[1];

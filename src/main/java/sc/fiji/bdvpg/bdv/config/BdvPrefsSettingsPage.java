@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,10 +28,12 @@
  */
 package sc.fiji.bdvpg.bdv.config;
 
+import bdv.ui.settings.ModificationListener;
+import bdv.ui.settings.SettingsPage;
 import bdv.util.Prefs;
-import org.mastodon.app.ui.settings.ModificationListener;
-import org.mastodon.app.ui.settings.SettingsPage;
 import org.scijava.listeners.Listeners;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,7 +41,7 @@ import java.io.*;
 import java.util.Properties;
 
 /**
- * Settings Page to open, edit and resave the Bigdataviewer Preferences {@link Prefs} stored
+ * Settings Page to open, edit and save the Bigdataviewer Preferences {@link Prefs} stored
  * within the bigdataviewer.properties file
  * {@link SettingsPage} comes from Mastodon
  *
@@ -47,6 +49,8 @@ import java.util.Properties;
  */
 
 public class BdvPrefsSettingsPage implements SettingsPage {
+
+    protected static final Logger logger = LoggerFactory.getLogger(BdvPrefsSettingsPage.class);
 
     private final String treePath;
 
@@ -105,18 +109,22 @@ public class BdvPrefsSettingsPage implements SettingsPage {
             final Properties config = ((BdvPrefsEditorPanel) panel).getAndSetCurrentProperties();
             config.store(stream,"");
         } catch (IOException e) {
-            System.err.println("Could not create bigdataviewer.properties file");
+            logger.error("Could not create bigdataviewer.properties file");
         }
     }
 
     /**
-     * Inner panel containing checkboxes and colorchoosers
+     * Inner panel containing check boxes and color choosers
      */
     static class BdvPrefsEditorPanel extends JPanel {
 
-        JButton chooseScaleBarColor, chooseScaleBarBGColor;
+        final JButton chooseScaleBarColor;
+        final JButton chooseScaleBarBGColor;
 
-        JCheckBox showScaleBar,showMultiboxOverlay, showTextOverlay, showScaleBarInMovie;
+        final JCheckBox showScaleBar;
+        final JCheckBox showMultiboxOverlay;
+        final JCheckBox showTextOverlay;
+        final JCheckBox showScaleBarInMovie;
 
         Color scaleBarColor, scaleBarBGColor;
 

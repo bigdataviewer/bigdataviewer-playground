@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,12 +28,13 @@
  */
 package sc.fiji.bdvpg.scijava.services;
 
-import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import com.google.gson.Gson;
+import ij.Prefs;
 import net.imglib2.converter.Converter;
 import net.imglib2.util.Pair;
-import org.scijava.command.CommandService;
+import org.scijava.Context;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -41,47 +42,49 @@ import org.scijava.script.ScriptService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
-import sc.fiji.bdvpg.bdv.projector.Projector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvWindowCreatorCommand;
 import sc.fiji.bdvpg.scijava.services.ui.BdvHandleFilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
+import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
+import sc.fiji.bdvpg.bdv.supplier.IBdvSupplier;
+import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
 
 import java.lang.ref.WeakReference;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import sc.fiji.persist.ScijavaGsonHelper;
 
 import javax.swing.tree.DefaultTreeModel;
 
 /**
- * Scijava Service which handles the Display of BDV SourceAndConverters in one or multiple BDV Windows
+ * SciJava Service which handles the Display of BDV SourceAndConverters in one or multiple BDV Windows
  * Pairs with BdvSourceAndConverterService, but this service is optional
  *
  * Handling multiple Sources displayed in potentially multiple BDV Windows
  * Make its best to keep in synchronizations all of this, without creating errors nor memory leaks
  */
 
+@SuppressWarnings("unused") // Because SciJava parameters are filled through reflection
 @Plugin(type= Service.class)
 public class SourceAndConverterBdvDisplayService extends AbstractService implements SciJavaService  {
 
-    /**
-     * Standard logger
-     */
-    public static Consumer<String> log = (str) -> System.out.println( SourceAndConverterBdvDisplayService.class.getSimpleName()+":"+str);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterBdvDisplayService.class);
 
-    /**
-     * Error logger
-     */
-    public static Consumer<String> errlog = (str) -> System.err.println( SourceAndConverterBdvDisplayService.class.getSimpleName()+":"+str);
-
-    public static String CONVERTER_SETUP = "ConverterSetup";
+    public static final String CONVERTER_SETUP = "ConverterSetup";
 
     /**
      * Used to add Aliases for BdvHandle objects
@@ -96,13 +99,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     SourceAndConverterService bdvSourceAndConverterService;
 
     /**
-     * Used to create BDV Windows when necessary
-     **/
-    @Parameter
-    CommandService cs;
-
-    /**
-     * Used to retrieved the last active BDV Windows (if the activated callback has been set right)
+     * Used to retrieve the last active BDV Windows (if the activated callback has been set right)
      **/
     @Parameter
     GuavaWeakCacheService cacheService;
@@ -110,25 +107,53 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     @Parameter
     ObjectService os;
 
+    @Parameter
+    Context ctx;
+
+    Supplier<BdvHandle> bdvSupplier;  // = new DefaultBdvSupplier(new SerializableBdvOptions());
+
+    /**
+     * Can be used to change how Bdv Windows are created
+     * @param bdvSupplier supplier of bdv window
+     */
+    public void setDefaultBdvSupplier(IBdvSupplier bdvSupplier) {
+        this.bdvSupplier = bdvSupplier;
+
+        logger.info(" --- Serializing to save default bdv window of class "+bdvSupplier.getClass().getSimpleName());
+        Gson gson = ScijavaGsonHelper.getGson(ctx, true);
+        String bdvSupplierSerialized = gson.toJson(bdvSupplier, IBdvSupplier.class);
+        logger.info("Bdv Supplier serialized into : "+bdvSupplierSerialized);
+        // Saved in prefs for next session
+        Prefs.set("bigdataviewer.playground.supplier", bdvSupplierSerialized);
+    }
+
     public BdvHandle getNewBdv() {
-        try
-        {
-            return (BdvHandle)
-                    cs.run(BdvWindowCreatorCommand.class,
-                            true,
-                            "is2d", false,
-                            "windowtitle", "Bdv",
-                            "ntimepoints", 1,
-                            "interpolate",false,
-                            "projector", Projector.SUM_PROJECTOR).get().getOutput("bdvh");
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+
+        if (bdvSupplier==null) {
+            logger.debug(" --- Fetching or generating default bdv window");
+            Gson gson = ScijavaGsonHelper.getGson(ctx);
+            String defaultBdvViewer = gson.toJson(new DefaultBdvSupplier(new SerializableBdvOptions()), IBdvSupplier.class);
+            String  bdvSupplierJson = Prefs.get("bigdataviewer.playground.supplier", defaultBdvViewer);
+            try {
+                bdvSupplier = gson.fromJson(bdvSupplierJson, IBdvSupplier.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.info("Restoring default bdv supplier");
+                bdvSupplier = new DefaultBdvSupplier(new SerializableBdvOptions());
+                String bdvSupplierSerialized = gson.toJson(bdvSupplier, IBdvSupplier.class);
+                logger.debug("Bdv Supplier serialized into : "+bdvSupplierSerialized);
+                // Saved in prefs for next session
+                Prefs.set("bigdataviewer.playground.supplier", bdvSupplierSerialized);
+            }
         }
-        return null;
+
+        BdvHandle bdvh = bdvSupplier.get();
+        this.registerBdvHandle(bdvh); // We always want it to be registered
+        return bdvh;
     }
 
     /**
-     * Returns the last active BDV or create a new one
+     * @return the last active BDV or create a new one
      */
     public BdvHandle getActiveBdv() {
         List<BdvHandle> bdvhs = os.getObjects(BdvHandle.class);
@@ -158,7 +183,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * Displays a Source, the last active bdvh is chosen since none is specified in this method
      * @param sacs sources to display
      */
-    public void show(SourceAndConverter... sacs) {
+    public void show(SourceAndConverter<?>... sacs) {
          show(getActiveBdv(), sacs);
     }
 
@@ -167,31 +192,45 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * @param sac source
      * @param visible whether to set it visible
      */
-    public void setVisible(SourceAndConverter sac, boolean visible) {
+    public void setVisible(SourceAndConverter<?> sac, boolean visible) {
         getDisplaysOf(sac).forEach(bdvhr -> bdvhr.getViewerPanel().state().setSourceActive(sac, visible));
     }
 
     /**
-     * Makes visible a source, makes it visible in all BDVs according to BdvhReferences
      * @param sac source to display
+     * @param bdvh bdv window where to check this property
+     * @return true if the source is visible
      */
-    public boolean isVisible(SourceAndConverter sac, BdvHandle bdvh) {
+    public boolean isVisible(SourceAndConverter<?> sac, BdvHandle bdvh) {
         return bdvh.getViewerPanel().state().isSourceActive(sac);
     }
 
     /**
-     * Displays a BDV sourceandconverter into the specified BdvHandle
+     * Displays a BDV SourceAndConverter into the specified BdvHandle
      * This function really is the core of this service
      * It mimicks or copies the functions of BdvVisTools because it is responsible to
      * create converter, volatiles, convertersetups and so on
      * @param sacs sources to display
      * @param bdvh bdvhandle to append the sources
      */
-    public void show(BdvHandle bdvh, SourceAndConverter... sacs) {
+    public void show(BdvHandle bdvh, SourceAndConverter<?>... sacs) {
+        show(bdvh, true, sacs);
+    }
+
+    /**
+     * Displays a BDV SourceAndConverter into the specified BdvHandle
+     * This function really is the core of this service
+     * It mimics or copies the functions of BdvVisTools because it is responsible to
+     * create converter, volatiles, converter setups and so on
+     * @param sacs sources to display
+     * @param visible whether to make the source active (=visible)
+     * @param bdvh bdvhandle to append the sources
+     */
+    public void show(BdvHandle bdvh, boolean visible, SourceAndConverter<?>... sacs ) {
 
         List<SourceAndConverter<?>> sacsToDisplay = new ArrayList<>();
 
-        for (SourceAndConverter sac:sacs) {
+        for (SourceAndConverter<?> sac:sacs) {
             if (!bdvSourceAndConverterService.isRegistered(sac)) {
                 bdvSourceAndConverterService.register(sac);
             }
@@ -209,18 +248,19 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
             if (!escape) {
                 sacsToDisplay.add(sac);
-                bdvh.getConverterSetups().put(sac,getConverterSetup(sac));
+                bdvh.getConverterSetups().put(sac,bdvSourceAndConverterService.getConverterSetup(sac));
             }
         }
 
         // Actually display the sources -> repaint called only once!
         bdvh.getViewerPanel().state().addSources(sacsToDisplay);
         // And make them active
-        bdvh.getViewerPanel().state().setSourcesActive(sacsToDisplay, true);
+        bdvh.getViewerPanel().state().setSourcesActive(sacsToDisplay, visible);
     }
 
+
     /**
-     * Removes a sourceandconverter from all BdvHandle displaying this sourceandconverter
+     * Removes a SourceAndConverter from all BdvHandle displaying this SourceAndConverter
      * Updates all references of other Sources present
      * @param sacs sources to remove
      */
@@ -229,11 +269,11 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Removes a sourceandconverter from the active Bdv
+     * Removes a SourceAndConverter from the active Bdv
      * Updates all references of other Sources present
      * @param sacs sources to remove from active bdv
      */
-    public void removeFromActiveBdv(SourceAndConverter... sacs) {
+    public void removeFromActiveBdv(SourceAndConverter<?>... sacs) {
         // This condition avoids creating a window for nothing
         if (os.getObjects(BdvHandle.class).size()>0) {
             remove(getActiveBdv(), sacs);
@@ -241,7 +281,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Removes a sourceandconverter from a BdvHandle
+     * Removes a SourceAndConverter from a BdvHandle
      * Updates all references of other Sources present
      * @param bdvh bdvhandle
      * @param sacs Array of SourceAndConverter
@@ -249,27 +289,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     public void remove(BdvHandle bdvh, SourceAndConverter<?>... sacs) {
         bdvh.getViewerPanel().state().removeSources(Arrays.asList(sacs));
         bdvh.getViewerPanel().requestRepaint();
-    }
-
-    /**
-     * Gets or create the associated ConverterSetup of a Source
-     * While several converters can be associated to a Source (volatile and non volatile),
-     * only one ConverterSetup is associated to a Source
-     * @param sac source to get the convertersetup from
-     * @return the converter setup of the source
-     */
-    public ConverterSetup getConverterSetup(SourceAndConverter sac) {
-        if (!bdvSourceAndConverterService.isRegistered(sac)) {
-            bdvSourceAndConverterService.register(sac);
-        }
-
-        // If no ConverterSetup is built then build it
-        if ( bdvSourceAndConverterService.sacToMetadata.getIfPresent(sac).get( CONVERTER_SETUP ) == null) {
-            ConverterSetup setup = SourceAndConverterHelper.createConverterSetup(sac);
-            bdvSourceAndConverterService.sacToMetadata.getIfPresent(sac).put( CONVERTER_SETUP,  setup );
-        }
-
-        return (ConverterSetup) bdvSourceAndConverterService.sacToMetadata.getIfPresent(sac).get( CONVERTER_SETUP );
     }
 
     /**
@@ -281,8 +300,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * @param source source
      * @param cvt converter
      */
-    public void updateConverter(SourceAndConverter source, Converter cvt) {
-        errlog.accept("Unsupported operation : a new SourceAndConverterObject should be built. (TODO) ");
+    public void updateConverter(SourceAndConverter<?> source, Converter<?,?> cvt) {
+        logger.error("Unsupported operation : a new SourceAndConverterObject should be built. (TODO) ");
     }
 
     /**
@@ -293,8 +312,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         scriptService.addAlias(BdvHandle.class);
         displayToMetadata = CacheBuilder.newBuilder().weakKeys().build();//new HashMap<>();
         bdvSourceAndConverterService.setDisplayService(this);
-        SourceAndConverterServices.setSourceAndConverterDisplayService(this);
-        log.accept("Service initialized.");
+        SourceAndConverterServices.setBdvDisplayService(this);
+        // Catching bdv supplier from Prefs
+        logger.debug("Bdv Playground Display Service initialized.");
     }
 
     /**
@@ -322,7 +342,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     /**
      * Enables proper closing of Big Warp paired BdvHandles
      */
-    List<Pair<BdvHandle, BdvHandle>> pairedBdvs = new ArrayList<>();
+    final List<Pair<BdvHandle, BdvHandle>> pairedBdvs = new ArrayList<>();
     public void pairClosing(BdvHandle bdv1, BdvHandle bdv2) {
         pairedBdvs.add(new Pair<BdvHandle, BdvHandle>() {
             @Override
@@ -338,9 +358,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Registers a sourceandconverter which has originated from a BdvHandle
-     * Useful for BigWarp where the grid and the deformation magnitude sourceandconverter are created
-     * into bigwarp
+     * Registers a SourceAndConverter which has originated from a BdvHandle
+     * Useful for BigWarp where the grid and the deformation magnitude SourceAndConverter are created
+     * into BigWarp
      * @param bdvh_in bdvhandle fetched for registration
      */
     public void registerBdvSource(BdvHandle bdvh_in) {
@@ -355,11 +375,11 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Updates bdvHandles which are displaying at least one of this sacs
+     * Updates bdvHandles which are displaying at least one of these sacs
      * Potentially improvement is to check whether the timepoint need an update ?
      * @param sacs sources to update
      */
-    public void updateDisplays(SourceAndConverter... sacs)
+    public void updateDisplays(SourceAndConverter<?>... sacs)
     {
         getDisplaysOf(sacs).forEach(bdvHandle -> bdvHandle.getViewerPanel().requestRepaint());
     }
@@ -382,7 +402,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * @param sacs the sources queried
      * @return all bdvhandle which contain the source
      */
-    public Set<BdvHandle> getDisplaysOf(SourceAndConverter... sacs) {
+    public Set<BdvHandle> getDisplaysOf(SourceAndConverter<?>... sacs) {
         if (sacs == null) {
             return new HashSet<>();
         }
@@ -413,11 +433,12 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      */
     Cache<BdvHandle, Map<String, Object>> displayToMetadata;
 
+    @SuppressWarnings("ConstantConditions")
     public void setDisplayMetadata( BdvHandle bdvh, String key, Object data )
     {
         if (bdvh == null) {
-            System.err.println("Error : bdvh is null in setMetadata function! ");
-            //return;
+            logger.error("Error : bdvh is null in setMetadata function! ");
+            return;
         }
         if (displayToMetadata.getIfPresent( bdvh ) == null) {
             // Create Metadata
@@ -426,7 +447,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         displayToMetadata.getIfPresent( bdvh ).put( key, data );
     }
 
-    public Object getDisplayMetadata( BdvHandle bdvh, String key )
+    @SuppressWarnings("ConstantConditions")
+    public Object getDisplayMetadata(BdvHandle bdvh, String key )
     {
         if (displayToMetadata.getIfPresent(bdvh)!=null) {
             return displayToMetadata.getIfPresent(bdvh).get(key);
@@ -437,7 +459,6 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
     public void registerBdvHandle( BdvHandle bdvh )
     {
-        log.accept("BdvHandle found.");
         //------------ Register BdvHandle in ObjectService
         if (!os.getObjects(BdvHandle.class).contains(bdvh))
         { // adds it only if not already present in ObjectService
@@ -456,15 +477,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
             //------------ Allows to remove the BdvHandle from the objectService when closed by the user
             BdvHandleHelper.setBdvHandleCloseOperation( bdvh, cacheService, this, true,
-                    () -> {
-                        //bdvh.getViewerPanel().state().changeListeners().remove(vscl); // TODO : check no memory leak
-                        sacService.getUI().removeBdvHandleNodes( bdvh );
-                    } );
+                    () -> sacService.getUI().removeBdvHandleNodes( bdvh ));
 
             ( ( SourceFilterNode ) sacService.getUI().getTreeModel().getRoot() ).insert( node, 0 );
-                    /*SwingUtilities.invokeLater(()->
-                            sacsService.getUI().getTreeModel().nodeStructureChanged(node.getParent())//.reload()
-                    );*/
         }
     }
 

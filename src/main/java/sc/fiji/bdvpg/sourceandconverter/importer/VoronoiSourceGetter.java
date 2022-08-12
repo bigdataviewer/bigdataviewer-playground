@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -48,7 +48,7 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverter> {
+public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverter<?>> {
 
     // Size of the image in pixels
     final long[] imgSize;
@@ -68,36 +68,10 @@ public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverte
     }
 
     @Override
-    public SourceAndConverter get() {
-        RandomAccessibleInterval voronoi = getVoronoiTestLabelImage(imgSize, numPts, copyImg);
-        /*VoxelDimensions voxDimensions = new VoxelDimensions() {
-            @Override
-            public String unit() {
-                return "undefined";
-            }
-
-            @Override
-            public void dimensions(double[] dimensions) {
-                dimensions[0] = 1;
-                dimensions[1] = 1;
-                dimensions[2] = 1;
-            }
-
-            @Override
-            public double dimension(int d) {
-                return 1;
-            }
-
-            @Override
-            public int numDimensions() {
-                return 3;
-            }
-        };*/
-
-        Source s = new RandomAccessibleIntervalSource<>( voronoi, new FloatType(), new AffineTransform3D(), "Voronoi_"+numPts+" Pts_["+imgSize[0]+","+imgSize[1]+","+imgSize[2]+"]" );
-
+    public SourceAndConverter<FloatType> get() {
+        RandomAccessibleInterval<FloatType> voronoi = getVoronoiTestLabelImage(imgSize, numPts, copyImg);
+        Source<FloatType> s = new RandomAccessibleIntervalSource<>( voronoi, new FloatType(), new AffineTransform3D(), "Voronoi_"+numPts+" Pts_["+imgSize[0]+","+imgSize[1]+","+imgSize[2]+"]" );
         return SourceAndConverterHelper.createSourceAndConverter(s);
-
     }
 
     public static RandomAccessibleInterval<FloatType> getVoronoiTestLabelImage(final long[] imgTestSize, int numPts, boolean copyImg) {
@@ -124,7 +98,7 @@ public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverte
         RandomAccessibleInterval< FloatType > labelImage = Views.interval( randomAccessible, interval );
 
         if (copyImg) {
-            final ArrayImg labelImageCopy = new ArrayImgFactory( Util.getTypeFromInterval( labelImage ) ).create( labelImage );
+            final ArrayImg<FloatType,?> labelImageCopy = new ArrayImgFactory( Util.getTypeFromInterval( labelImage ) ).create( labelImage );
 
             // Image copied to avoid computing it on the fly
             // https://github.com/imglib/imglib2-algorithm/blob/47cd6ed5c97cca4b316c92d4d3260086a335544d/src/main/java/net/imglib2/algorithm/util/Grids.java#L221 used for parallel copy
@@ -143,7 +117,7 @@ public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverte
     }
 
     /**
-     * Copy from a sourceandconverter that is just RandomAccessible to an IterableInterval. Latter one defines
+     * Copy from a {@link SourceAndConverter} that is just RandomAccessible to an IterableInterval. Latter one defines
      * size and location of the copy operation. It will query the same pixel locations of the
      * IterableInterval in the RandomAccessible. It is up to the developer to ensure that these
      * coordinates match.

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -34,23 +34,23 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.histogram.DiscreteFrequencyDistribution;
 import net.imglib2.histogram.Histogram1d;
 import net.imglib2.histogram.Real1dBinMapper;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
-public class BrightnessAutoAdjuster implements Runnable
+public class BrightnessAutoAdjuster< T extends RealType< T >> implements Runnable
 {
-	private final SourceAndConverter sac;
+	private final SourceAndConverter<?> sac;
 	private final double cumulativeMinCutoff;
 	private final double cumulativeMaxCutoff;
 	private final int timePoint;
 
-	public BrightnessAutoAdjuster( final SourceAndConverter sac, int timePoint )
+	public BrightnessAutoAdjuster( final SourceAndConverter<?> sac, int timePoint )
 	{
 		this(sac, timePoint, 0.01, 0.99 );
 	}
 
-	public BrightnessAutoAdjuster( final SourceAndConverter sac, final int timePoint, final double cumulativeMinCutoff, final double cumulativeMaxCutoff )
+	public BrightnessAutoAdjuster( final SourceAndConverter<?> sac, final int timePoint, final double cumulativeMinCutoff, final double cumulativeMaxCutoff )
 	{
 		this.sac = sac;
 		this.cumulativeMinCutoff = cumulativeMinCutoff;
@@ -63,35 +63,48 @@ public class BrightnessAutoAdjuster implements Runnable
 	{
 		if ( !sac.getSpimSource().isPresent( timePoint ) )
 			return;
-		if ( !(sac.getSpimSource().getType() instanceof UnsignedShortType))
+		if ( !(sac.getSpimSource().getType() instanceof RealType)){
+			System.out.println("Can't auto adjust brightness of pixel type "+sac.getSpimSource().getType().getClass().getSimpleName());
 			return;
+		}
 
 		@SuppressWarnings( "unchecked" )
-		final RandomAccessibleInterval< UnsignedShortType > img = ( RandomAccessibleInterval< UnsignedShortType > ) sac.getSpimSource().getSource( timePoint, sac.getSpimSource().getNumMipmapLevels() - 1 );
-		final long z = ( img.min( 2 ) + img.max( 2 ) + 1 ) / 2;
+		final RandomAccessibleInterval< T > img = ( RandomAccessibleInterval< T > ) sac.getSpimSource().getSource( timePoint, sac.getSpimSource().getNumMipmapLevels() - 1 );
+		final long zMiddle = ( img.min( 2 ) + img.max( 2 ) + 1 ) / 2;
+
+		final Iterable< T > sampledPixels = Views.iterable( Views.hyperSlice( img, 2, zMiddle ) );
+		double minValue = Double.MAX_VALUE;
+		double maxValue = -Double.MAX_VALUE;
+
+		for ( T pixel : sampledPixels) {
+			double val = pixel.getRealDouble();
+			if (val<minValue) minValue = val;
+			if (val>maxValue) maxValue = val;
+		}
 
 		final int numBins = 6535;
-		final Histogram1d< UnsignedShortType > histogram = new Histogram1d<>( Views.iterable( Views.hyperSlice( img, 2, z ) ), new Real1dBinMapper<>(0, 65535, numBins, false) );
+		final Histogram1d< T > histogram = new Histogram1d<>( sampledPixels, new Real1dBinMapper<>(minValue, maxValue, numBins, false) );
 		final DiscreteFrequencyDistribution dfd = histogram.dfd();
 		final long[] bin = new long[] { 0 };
 		double cumulative = 0;
 		int i = 0;
-		for ( ; i < numBins && cumulative < cumulativeMinCutoff; ++i )
+		for ( ; (i < numBins) && (cumulative < cumulativeMinCutoff); ++i )
 		{
 			bin[ 0 ] = i;
 			cumulative += dfd.relativeFrequency( bin );
 		}
-		final int min = i * 65535 / numBins;
-		for ( ; i < numBins && cumulative < cumulativeMaxCutoff; ++i )
-		{
-			bin[ 0 ] = i;
-			cumulative += dfd.relativeFrequency( bin );
-		}
-		final int max = i * 65535 / numBins;
 
-		//minMaxGroup.getMinBoundedValue().setCurrentValue( min );
-		//minMaxGroup.getMaxBoundedValue().setCurrentValue( max );
-		ConverterSetup converterSetup = SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup( sac );
+		final double min = ((double)(i)/(double)numBins) * (maxValue - minValue) + minValue;
+
+		for ( ; (i < numBins) && (cumulative < cumulativeMaxCutoff); ++i )
+		{
+			bin[ 0 ] = i;
+			cumulative += dfd.relativeFrequency( bin );
+		}
+		i+=1;
+		final double max = ((double)i/(double)numBins) * (maxValue - minValue) + minValue;
+
+		ConverterSetup converterSetup = SourceAndConverterServices.getSourceAndConverterService().getConverterSetup( sac );
 		converterSetup.setDisplayRange(min, max);
 	}
 

@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>30.0.0</version>
+		<version>32.0.0-beta-4</version>
 		<relativePath />
 	</parent>
 
 	<groupId>sc.fiji</groupId>
 	<artifactId>bigdataviewer-playground</artifactId>
-	<version>0.2.14-SNAPSHOT</version>
+	<version>0.6.0-SNAPSHOT</version>
 
 	<name>bigdataviewer-playground</name>
 	<description>BigDataViewer Actions and GUI</description>
-	<url>https://github.com/bigdataviewer/bigdataviewer-playground/</url>
+	<url>https://github.com/bigdataviewer/bigdataviewer-playground</url>
 	<inceptionYear>2019</inceptionYear>
 	<organization>
 		<name>MPI-CBG / EMBL / EPFL</name>
@@ -96,19 +96,18 @@
 	<scm>
 		<connection>scm:git:git://github.com/bigdataviewer/bigdataviewer-playground</connection>
 		<developerConnection>scm:git:git@github.com:bigdataviewer/bigdataviewer-playground</developerConnection>
-		<url>https://github.com/bigdataviewer/bigdataviewer-playground/</url>
-    <tag>bigdataviewer-playground-0.2.7</tag>
+		<url>https://github.com/bigdataviewer/bigdataviewer-playground</url>
+    <tag>HEAD</tag>
   </scm>
 
 	<issueManagement>
 		<system>GitHub Issues</system>
 		<url>https://github.com/bigdataviewer/bigdataviewer-playground/issues</url>
-
 	</issueManagement>
 
 	<ciManagement>
-		<system>Travis CI</system>
-		<url>https://travis-ci.com/bigdataviewer/bigdataviewer-playground</url>
+		<system>GitHub Actions</system>
+		<url>https://github.com/bigdataviewer/bigdataviewer-playground/actions</url>
 	</ciManagement>
 
 	<properties>
@@ -120,10 +119,10 @@
 		<license.copyrightOwners>Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL</license.copyrightOwners>
 		<license.excludes>**/resources/**</license.excludes>
 
-		<releaseProfiles>deploy-to-scijava</releaseProfiles>
+		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
 		<scijava.deleteOtherVersions>true</scijava.deleteOtherVersions>
-		<scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory>
+		<!-- <scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory> -->
 
 		<bigdataviewer-bioformats.version>0.2.15</bigdataviewer-bioformats.version>
 		<bigdataviewer-core.version>10.2.0</bigdataviewer-core.version>
@@ -153,10 +152,26 @@
 
 		<reflections.version>0.9.11</reflections.version>
 
+
+		<bigdataviewer-spimdata-extras.version>0.1.2</bigdataviewer-spimdata-extras.version>
+		<reflections.version>0.9.11</reflections.version>
+
+		<!-- package version below are determined by the parent pom but need to be upgraded -->
+
+		<bigdataviewer-core.version>10.4.3</bigdataviewer-core.version>
+		<bigdataviewer-vistools.version>1.0.0-beta-30</bigdataviewer-vistools.version>
+		<imglib2-cache.version>1.0.0-beta-16</imglib2-cache.version>
+        <bigwarp_fiji.version>7.0.6-SNAPSHOT</bigwarp_fiji.version>
+		<ui-behaviour.version>2.0.7</ui-behaviour.version>
+
+
 	</properties>
 
 	<dependencies>
-
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>ui-behaviour</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-legacy</artifactId>
@@ -182,12 +197,6 @@
 			<groupId>graphics.scenery</groupId>
 			<artifactId>scenery</artifactId>
 			<version>${scenery.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mastodon</groupId>
-			<artifactId>mastodon</artifactId>
-			<version>${mastodon.version}</version>
 		</dependency>
 
 		<dependency>
@@ -225,12 +234,6 @@
 		<dependency>
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>ch.epfl.biop</groupId>
-			<artifactId>bigdataviewer-spimdata-extras</artifactId>
-			<version>${bigdataviewer-spimdata-extras.version}</version>
 		</dependency>
 
 		<!-- Test dependencies -->

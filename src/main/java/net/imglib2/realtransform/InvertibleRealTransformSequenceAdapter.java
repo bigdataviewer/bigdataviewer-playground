@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,9 @@ package net.imglib2.realtransform;
 
 import com.google.gson.*;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.services.serializers.plugins.IClassRuntimeAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sc.fiji.persist.IClassAdapter;
 
 import java.lang.reflect.Type;
 
@@ -45,15 +47,13 @@ import java.lang.reflect.Type;
  * {@link InvertibleRealTransformSequence#transforms} field
  * of an {@link InvertibleRealTransformSequence}
  */
-@Plugin(type = IClassRuntimeAdapter.class)
-public class InvertibleRealTransformSequenceAdapter implements IClassRuntimeAdapter<RealTransform, InvertibleRealTransformSequence> {
-    @Override
-    public Class<? extends RealTransform> getBaseClass() {
-        return RealTransform.class;
-    }
+@Plugin(type = IClassAdapter.class)
+public class InvertibleRealTransformSequenceAdapter implements IClassAdapter<InvertibleRealTransformSequence> {
+
+    protected static final Logger logger = LoggerFactory.getLogger(InvertibleRealTransformSequenceAdapter.class);
 
     @Override
-    public Class<? extends InvertibleRealTransformSequence> getRunTimeClass() {
+    public Class<? extends InvertibleRealTransformSequence> getAdapterClass() {
         return InvertibleRealTransformSequence.class;
     }
 
@@ -77,27 +77,21 @@ public class InvertibleRealTransformSequenceAdapter implements IClassRuntimeAdap
                 if (transform instanceof InvertibleRealTransform) {
                     irts.add((InvertibleRealTransform) transform);
                 } else {
-                    System.err.println("Deserialization eroor: "+transform+" of class "+transform.getClass().getSimpleName()+" is not invertible!");
+                    logger.error("Deserialization error: "+transform+" of class "+transform.getClass().getSimpleName()+" is not invertible!");
                     return null;
                 }
             }
         }
-
         return irts;
     }
 
     @Override
     public JsonElement serialize(InvertibleRealTransformSequence irts, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject obj = new JsonObject();
-
-        obj.addProperty("type", InvertibleRealTransformSequence.class.getSimpleName());
-
         obj.addProperty("size", irts.transforms.size());
-
         for (int iTransform = 0; iTransform<irts.transforms.size(); iTransform++) {
-            obj.add("realTransform_"+iTransform, jsonSerializationContext.serialize(irts.transforms.get(iTransform)));
+            obj.add("realTransform_"+iTransform, jsonSerializationContext.serialize(irts.transforms.get(iTransform), RealTransform.class));
         }
-
         return obj;
     }
 }

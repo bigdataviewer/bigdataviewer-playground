@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -47,14 +47,16 @@ import mpicbg.spim.data.sequence.*;
 import net.imglib2.FinalDimensions;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.realtransform.AffineTransform3D;
-import spimdata.util.Displaysettings;
-import spimdata.util.DisplaysettingsHelper;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -71,33 +73,36 @@ import java.util.stream.Collectors;
  *
  * This export does not take advantage of potentially already computed mipmaps TODO take advantage of this, whenever possible
  *
+ *
  */
 
 public class XmlHDF5SpimdataExporter implements Runnable {
 
-    List<SourceAndConverter> sources;
+    protected static final Logger logger = LoggerFactory.getLogger(XmlHDF5SpimdataExporter.class);
 
-    int nThreads;
+    final List<SourceAndConverter<?>> sources;
 
-    int timePointBegin;
+    final int nThreads;
 
-    int timePointEnd;
+    final int timePointBegin;
+
+    final int timePointEnd;
 
     int scaleFactor;
 
-    int blockSizeX;
+    final int blockSizeX;
 
-    int blockSizeY;
+    final int blockSizeY;
 
-    int blockSizeZ;
+    final int blockSizeZ;
 
-    int thresholdSizeForMipmap;
+    final int thresholdSizeForMipmap;
 
-    File xmlFile;
+    final File xmlFile;
 
-    String entityType;
+    final String entityType;
 
-    public XmlHDF5SpimdataExporter(List<SourceAndConverter> sources,
+    public XmlHDF5SpimdataExporter(List<SourceAndConverter<?>> sources,
                                    String entityType,
                                    int nThreads,
                                    int timePointBegin,
@@ -108,6 +113,27 @@ public class XmlHDF5SpimdataExporter implements Runnable {
                                    int blockSizeZ,
                                    int thresholdSizeForMipmap,
                                    File xmlFile) {
+        this(sources,entityType,nThreads,
+                timePointBegin,timePointEnd,
+                scaleFactor,
+                blockSizeX, blockSizeY, blockSizeZ, thresholdSizeForMipmap,
+                xmlFile, (source, viewsetup) -> {});
+
+    }
+
+    public XmlHDF5SpimdataExporter(List<SourceAndConverter<?>> sources,
+                                   String entityType,
+                                   int nThreads,
+                                   int timePointBegin,
+                                   int timePointEnd,
+                                   int scaleFactor,
+                                   int blockSizeX,
+                                   int blockSizeY,
+                                   int blockSizeZ,
+                                   int thresholdSizeForMipmap,
+                                   File xmlFile,
+                                   BiConsumer<SourceAndConverter<?>, BasicViewSetup> attributeAdder
+                                   ) {
         this.sources = sources;
         this.entityType = entityType;
         this.nThreads = nThreads;
@@ -122,25 +148,31 @@ public class XmlHDF5SpimdataExporter implements Runnable {
         this.thresholdSizeForMipmap = thresholdSizeForMipmap;
 
         this.xmlFile = xmlFile;
+        this.attributeAdder = attributeAdder;
 
     }
 
-    AbstractSpimData spimData;
+    AbstractSpimData<?> spimData;
+
+    final BiConsumer<SourceAndConverter<?>, BasicViewSetup> attributeAdder;
 
     public void run() {
+        List<Source<?>> ori_srcs = sources.stream().map(SourceAndConverter::getSpimSource).collect(Collectors.toList());
 
         // Gets Concrete SpimSource
-        List<Source> srcs = sources.stream().map(SourceAndConverter::getSpimSource).collect(Collectors.toList());
-        Map<Source, Integer> idxSourceToSac = new HashMap<>();
+        Map<Source<?>, Integer> idxSourceToSac = new HashMap<>();
 
-        // Convert To UnsignedShortType (limitation of current xml/hdf5 implementation)
-        srcs.replaceAll(SourceToUnsignedShortConverter::convertSource);
+        List<Source<UnsignedShortType>> srcs =
+                sources.stream()
+                        .map(SourceAndConverter::getSpimSource)
+                        .map(SourceToUnsignedShortConverter::convertSource) // Convert To UnsignedShortType (limitation of current xml/hdf5 implementation)
+                        .collect(Collectors.toList());
 
         for (int i=0;i<srcs.size();i++) {
             idxSourceToSac.put(srcs.get(i), i);
         }
 
-        ImgLoaderFromSources<?> imgLoader = new ImgLoaderFromSources(srcs);
+        ImgLoaderFromSources<UnsignedShortType> imgLoader = new ImgLoaderFromSources<>(srcs);
 
         final int numTimepoints = this.timePointEnd - this.timePointBegin;
 
@@ -203,9 +235,9 @@ public class XmlHDF5SpimdataExporter implements Runnable {
                 } else {
                     // AutoMipmap
                     if (basicviewsetup.getVoxelSize()==null) {
-                        System.out.println("No voxel size specified!");
+                        logger.info("No voxel size specified in viewsetup "+basicviewsetup.getId());
                         if (scaleFactor<1) {
-                            System.out.println("Using scale factor = 4");
+                            logger.info("Scale factor below 1, using scale factor 4 instead");
                             scaleFactor=4;
                         }
                         int nLevels = 1;
@@ -246,13 +278,9 @@ public class XmlHDF5SpimdataExporter implements Runnable {
                     basicviewsetup.setAttribute(new Tile(idx_current_src+1));
                 }
 
-                SourceAndConverter sac = sources.get(idxSourceToSac.get(src));
+                SourceAndConverter<?> sac = sources.get(idxSourceToSac.get(src));
 
-                Displaysettings ds = new Displaysettings(idx_current_src);
-
-                DisplaysettingsHelper.GetDisplaySettingsFromCurrentConverter(sac, ds);
-
-                basicviewsetup.setAttribute(ds);
+                attributeAdder.accept(sac, basicviewsetup);
 
                 setups.put(idx_current_src, basicviewsetup); // Hum hum, order according to hashmap size TODO check
 
@@ -268,18 +296,19 @@ public class XmlHDF5SpimdataExporter implements Runnable {
         }
         //---------------------- End of setup handling
 
-
         final int numCellCreatorThreads = Math.max( 1, nThreads - 1 );
 
         final ExportScalePyramid.LoopbackHeuristic loopbackHeuristic = new ExportScalePyramid.DefaultLoopbackHeuristic();
 
-        final ExportScalePyramid.AfterEachPlane afterEachPlane = usedLoopBack -> { };
+        final ProgressWriter progressWriter = new ProgressWriterIJ();
+        logger.info( "Starting export..." );
+
+        final ExportScalePyramid.AfterEachPlane afterEachPlane = usedLoopBack -> {
+
+        };
 
         final ArrayList<Partition> partitions;
         partitions = null;
-
-        final ProgressWriter progressWriter = new ProgressWriterIJ();
-        System.out.println( "Starting export..." );
 
         String seqFilename = xmlFile.getAbsolutePath();//.getParent();
         if ( !seqFilename.endsWith( ".xml" ) )
@@ -288,11 +317,11 @@ public class XmlHDF5SpimdataExporter implements Runnable {
         final File parent = seqFile.getParentFile();
         if ( parent == null || !parent.exists() || !parent.isDirectory() )
         {
-            System.err.println( "Invalid export filename " + seqFilename );
+            logger.error( "Invalid export filename " + seqFilename );
         }
         final String hdf5Filename = seqFilename.substring( 0, seqFilename.length() - 4 ) + ".h5";
         final File hdf5File = new File( hdf5Filename );
-        boolean deflate = false;
+        boolean deflate = true;
         {
             WriteSequenceToHdf5.writeHdf5File( seq, perSetupExportMipmapInfo, deflate, hdf5File, loopbackHeuristic, afterEachPlane, numCellCreatorThreads, new SubTaskProgressWriter( progressWriter, 0, 0.95 ) );
         }
@@ -321,11 +350,11 @@ public class XmlHDF5SpimdataExporter implements Runnable {
             throw new RuntimeException( e );
         }
 
-        System.out.println( "Done!" );
+        logger.info( "Done!" );
 
     }
 
-    public AbstractSpimData get() {
+    public AbstractSpimData<?> get() {
         return spimData;
     }
 

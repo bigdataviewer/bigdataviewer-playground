@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -35,6 +35,8 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Make Metadata Filter Node",
 description = "Adds a node in the tree view which selects the sources which contain a certain key metadata and which matches a certain regular expression")
 
@@ -59,7 +61,7 @@ public class MakeMetadataFilterNodeCommand implements BdvPlaygroundActionCommand
                 (sac) -> {
                     if (sac_service.containsMetadata(sac, key)) {
                         Object o = sac_service.getMetadata(sac, key);
-                        if ((o!=null)||(o instanceof String)) {
+                        if ((o!=null) && (o instanceof String)) {
                             String str = (String) o;
                             return str.matches(valueregex);
                         } else return false;

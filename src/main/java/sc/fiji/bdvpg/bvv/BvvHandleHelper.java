@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -41,10 +41,22 @@ import java.util.List;
 
 public class BvvHandleHelper {
 
+    /**
+     * @param bvvh the BigVolumeViewer window handle
+     * @return the JFrame object associated to the bvv handle
+     */
     public static JFrame getJFrame(BvvHandle bvvh) {
         return (JFrame) SwingUtilities.getWindowAncestor(bvvh.getViewerPanel());
     }
 
+    /**
+     *
+     * @param bvvh the BigVolumeViewer window handle
+     * @param cs SciJava cache service
+     * @param os SciJava objet service
+     * @param bdvsds bigdataviewer display service
+     * @param putWindowOnTop if this window has to be put on top
+     */
     public static void setBvvHandleCloseOperation( BvvHandle bvvh, CacheService cs, ObjectService os, SourceAndConverterBdvDisplayService bdvsds, boolean putWindowOnTop) {
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bvvh.getViewerPanel());
 
@@ -81,27 +93,51 @@ public class BvvHandleHelper {
         }
     }
 
+    /**
+     *
+     * @param bvvh the BigVolumeViewer window handle
+     */
     public static void activateWindow(BvvHandle bvvh) {
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bvvh.getViewerPanel());
         topFrame.toFront();
         topFrame.requestFocus();
     }
 
+    /**
+     *
+     * @param bvvh the BigVolumeViewer window handle
+     */
     public static void closeWindow(BvvHandle bvvh) {
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bvvh.getViewerPanel());
         topFrame.dispatchEvent( new WindowEvent(topFrame, WindowEvent.WINDOW_CLOSING));
     }
 
+    /**
+     *
+     * @param bvvh the BigVolumeViewer window handle
+     * @param title window title to set
+     */
     public static void setWindowTitle(BvvHandle bvvh, String title) {
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bvvh.getViewerPanel());
         topFrame.setTitle(title);
     }
 
+    /**
+     *
+     * @param bvvh the BigVolumeViewer window handle
+     * @return the BigVolumeViewer window title
+     */
     public static String getWindowTitle(BvvHandle bvvh) {
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bvvh.getViewerPanel());
         return topFrame.getTitle();
     }
 
+    /**
+     *
+     * @param os SciJava object service
+     * @param iniTitle initial Title to set
+     * @return a potentially modified title which is unique in the current scijava context
+     */
     public static String getUniqueWindowTitle(ObjectService os, String iniTitle) {
         List<BvvHandle> bvvs = os.getObjects(BvvHandle.class);
         boolean duplicateExist;
@@ -127,4 +163,5 @@ public class BvvHandleHelper {
         }
         return uniqueTitle;
     }
+
 }

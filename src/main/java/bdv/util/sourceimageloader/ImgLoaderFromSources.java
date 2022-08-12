@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,7 @@ import java.util.List;
  */
 public class ImgLoaderFromSources<T extends Type<T>> implements TypedBasicImgLoader< T > {
 
-    List<Source<T>> srcs;
+    final List<Source<T>> srcs;
 
     public ImgLoaderFromSources(List<Source<T>> srcs) {
         this.srcs = srcs;

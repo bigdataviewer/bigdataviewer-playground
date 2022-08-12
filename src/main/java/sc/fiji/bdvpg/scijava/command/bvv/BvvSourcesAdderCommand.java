@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,14 +30,23 @@ package sc.fiji.bdvpg.scijava.command.bvv;
 
 import bdv.viewer.SourceAndConverter;
 import bvv.util.BvvHandle;
+import ij.IJ;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bvv.BvvViewerTransformAdjuster;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>Show Sources in BVV",
+/**
+ * Show sources in a BigVolumeViewer window - limited to 16 bit images
+ */
+
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>BVV - Show Sources",
     description = "Show sources in a BigVolumeViewer window - limited to 16 bit images")
 public class BvvSourcesAdderCommand implements BdvPlaygroundActionCommand {
 
@@ -48,22 +57,27 @@ public class BvvSourcesAdderCommand implements BdvPlaygroundActionCommand {
     boolean adjustviewonsource;
 
     @Parameter(label = "Select source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Override
     public void run() {
 
-        for (SourceAndConverter sac : sacs) {
-            bvvh.getConverterSetups()
-                    .put(sac,SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(sac));
-            bvvh.getViewerPanel()
-                    .state().addSource(sac);
+        for (SourceAndConverter<?> sac : sacs) {
+            if (sac.getSpimSource().getType() instanceof UnsignedShortType) {
 
-            bvvh.getViewerPanel().state().setSourceActive(sac, true);
+                bvvh.getConverterSetups()
+                        .put(sac, SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(sac));
+                bvvh.getViewerPanel()
+                        .state().addSource(sac);
+
+                bvvh.getViewerPanel().state().setSourceActive(sac, true);
+            } else {
+                IJ.log("Source "+sac.getSpimSource().getName()+" is not an unsigned 16 bit image. Bvv does not support this kind of images (yet).");
+            }
         }
 
         if ((adjustviewonsource) && (sacs.length>0)) {
-            new BvvViewerTransformAdjuster(bvvh, sacs[0]).run();
+            new ViewerTransformAdjuster(new ViewerAdapter(bvvh), sacs).run();
         }
 
     }

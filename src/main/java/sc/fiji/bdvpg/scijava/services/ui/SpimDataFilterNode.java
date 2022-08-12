@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -41,21 +41,21 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  */
 public class SpimDataFilterNode extends SourceFilterNode {
 
-    final AbstractSpimData asd;
+    final AbstractSpimData<?> asd;
     final SourceAndConverterService sourceAndConverterService;
 
-    public boolean filter(SourceAndConverter sac) {
+    public boolean filter(SourceAndConverter<?> sac) {
         return (sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO ))&&(( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).asd.equals(asd);
     }
 
-    public SpimDataFilterNode(DefaultTreeModel model, String defaultName, AbstractSpimData spimdata, SourceAndConverterService sourceAndConverterService) {
+    public SpimDataFilterNode(DefaultTreeModel model, String defaultName, AbstractSpimData<?> spimdata, SourceAndConverterService sourceAndConverterService) {
         super(model, defaultName,null, false);
         this.sourceAndConverterService = sourceAndConverterService;
         this.filter = this::filter;
         asd = spimdata;
     }
 
-    String getName(AbstractSpimData spimdata, String defaultName) {
+    String getName(AbstractSpimData<?> spimdata, String defaultName) {
         return defaultName;
     }
 

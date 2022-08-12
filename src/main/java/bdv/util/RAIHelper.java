@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,7 @@
 package bdv.util;
 
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.algorithm.lazy.Caches;
 import net.imglib2.cache.Cache;
 import net.imglib2.cache.img.CachedCellImg;
 import net.imglib2.cache.img.LoadedCellCacheLoader;
@@ -48,11 +49,11 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Intervals;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
-import org.janelia.saalfeldlab.n5.imglib2.RandomAccessibleLoader;
+//import org.janelia.saalfeldlab.n5.imglib2.RandomAccessibleLoader;
+//import org.janelia.saalfeldlab.n5.imglib2.RandomAccessibleLoader;
 
 import static net.imglib2.img.basictypeaccess.AccessFlags.VOLATILE;
 import static net.imglib2.type.PrimitiveType.*;
-import static net.imglib2.type.PrimitiveType.DOUBLE;
 
 /**
  * Helper function to cache a {@link RandomAccessibleInterval}
@@ -64,14 +65,14 @@ import static net.imglib2.type.PrimitiveType.DOUBLE;
 public class RAIHelper {
 
     @SuppressWarnings( { "unchecked", "rawtypes" } )
-    public static final <T extends NativeType<T>> RandomAccessibleInterval<T> wrapAsVolatileCachedCellImg(
+    public static <T extends NativeType<T>> RandomAccessibleInterval<T> wrapAsVolatileCachedCellImg(
             final RandomAccessibleInterval<T> source,
             final int[] blockSize) {
 
         final long[] dimensions = Intervals.dimensionsAsLongArray(source);
         final CellGrid grid = new CellGrid(dimensions, blockSize);
 
-        final RandomAccessibleLoader<T> loader = new RandomAccessibleLoader<T>(Views.zeroMin(source));
+        final Caches.RandomAccessibleLoader<T> loader = new Caches.RandomAccessibleLoader<>(Views.zeroMin(source));
 
         final T type = Util.getTypeFromInterval(source);
 

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -35,6 +35,8 @@ import com.google.gson.Gson;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesShowCommand;
@@ -56,8 +58,10 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getComman
 
 public class EditorBehaviourInstaller implements Runnable {
 
+    protected static final Logger logger = LoggerFactory.getLogger(EditorBehaviourInstaller.class);
+
     final SourceSelectorBehaviour ssb;
-    BdvHandle bdvh;
+    final BdvHandle bdvh;
 
     private ToggleListener toggleListener;
 
@@ -71,9 +75,8 @@ public class EditorBehaviourInstaller implements Runnable {
                 "Inspect Sources",
                 "PopupLine",
                 getCommandName(SourcesInvisibleMakerCommand.class),
-                getCommandName(BrightnessAdjusterCommand.class),
+                getCommandName(InteractiveBrightnessAdjusterCommand.class),
                 getCommandName(SourceColorChangerCommand.class),
-                getCommandName( SourceAndConverterBlendingModeChangerCommand.class),
                 "PopupLine",
                 getCommandName(SourcesRemoverCommand.class)};
 
@@ -100,16 +103,14 @@ public class EditorBehaviourInstaller implements Runnable {
                     e.printStackTrace();
                 }
             } else {
-                System.err.println("Bdv Playground actions settings File "+f.getAbsolutePath()+" does not exist.");
-                System.err.println("Bdv Playground default actions settings File "+fdefault.getAbsolutePath()+" does not exist.");
-
+                logger.error("Bdv Playground actions settings File "+f.getAbsolutePath()+" does not exist.");
+                logger.error("Bdv Playground default actions settings File "+fdefault.getAbsolutePath()+" does not exist.");
             }
         }
         return popupActions;
     }
 
-
-    String editorActionsPath;
+    final String editorActionsPath;
 
     public EditorBehaviourInstaller(SourceSelectorBehaviour ssb, String context) {
         this.ssb = ssb;
@@ -149,7 +150,7 @@ public class EditorBehaviourInstaller implements Runnable {
         ssb.addToggleListener(toggleListener);
 
         // Provides a way to retrieve this installer -> can be used to uninstalling it {@link EditorBehaviourUninstaller}
-        SourceAndConverterServices.getSourceAndConverterDisplayService().setDisplayMetadata(
+        SourceAndConverterServices.getBdvDisplayService().setDisplayMetadata(
                 bdvh, EditorBehaviourInstaller.class.getSimpleName(), this);
 
     }

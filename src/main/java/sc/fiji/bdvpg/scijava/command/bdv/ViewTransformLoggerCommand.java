@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -39,15 +39,14 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 /**
  * ViewTransformLoggerCommand
- * <p>
- * <p>
- * <p>
  * Author: @haesleinhuepf
  * 12 2019
  */
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Log view transform",
-        description = "Outputs the current view transfrom of a BDV window into the standard IJ logger")
+        description = "Outputs the current view transform of a BDV window into the standard IJ logger")
 
 public class ViewTransformLoggerCommand implements BdvPlaygroundActionCommand {
 

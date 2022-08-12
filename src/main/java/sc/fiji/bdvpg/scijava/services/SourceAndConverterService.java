@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,21 +28,33 @@
  */
 package sc.fiji.bdvpg.scijava.services;
 
+import bdv.SpimSource;
 import bdv.ViewerImgLoader;
+import bdv.ViewerSetupImgLoader;
+import bdv.VolatileSpimSource;
 import bdv.img.cache.VolatileGlobalCellCache;
+import bdv.spimdata.WrapBasicImgLoader;
+import bdv.tools.brightness.ConverterSetup;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import mpicbg.spim.data.generic.base.Entity;
+import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
+import mpicbg.spim.data.generic.sequence.BasicViewSetup;
+import mpicbg.spim.data.sequence.Angle;
+import mpicbg.spim.data.sequence.Channel;
 import net.imagej.patcher.LegacyInjector;
+import net.imglib2.converter.Converter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
+import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.RealType;
+import org.scijava.InstantiableException;
 import org.scijava.command.Command;
 import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;
-import org.scijava.log.LogLevel;
-import org.scijava.log.LogService;
 import org.scijava.module.ModuleItem;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
@@ -53,13 +65,18 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.scijava.ui.UIService;
-import sc.fiji.bdvpg.bdv.projector.BlendingMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.importer.SourceAndConverterFromSpimDataCreator;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
+import sc.fiji.bdvpg.spimdata.EntityHandler;
+import sc.fiji.bdvpg.spimdata.IEntityHandlerService;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -71,11 +88,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService.CONVERTER_SETUP;
+
 /**
- * Scijava Service which centralizes BDV Sources, independently of their display
+ * SciJava Service which centralizes BDV Sources, independently of their display
  * BDV Sources can be registered to this Service.
  * This service adds the Source to the ObjectService, but on top of it,
- * It contains a Map which contains any object which can be linked to the sourceandconverter.
+ * It contains a Map which contains any object which can be linked to the {@link SourceAndConverter}.
  *
  * It also handles SpimData object, but split all Sources into individual ones
  *
@@ -84,50 +103,27 @@ import java.util.stream.Collectors;
  *
  * */
 
-@Plugin(type=Service.class)
+@Plugin(type=Service.class, headless = true)
 public class SourceAndConverterService extends AbstractService implements SciJavaService, ISourceAndConverterService
 {
+
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterService.class);
 
     static {
         LegacyInjector.preinit();
     }
 
     /**
-     * Logger
-     */
-    @Parameter
-    LogService ls;
-    LogService logger() {
-        return ls;
-    }
-
-    /**
-     * Standard logger
-     */
-    public Consumer<String> log = (str) -> logger().log(LogLevel.INFO,str);//System.out.println( SourceAndConverterService.class.getSimpleName()+":"+str);
-
-    /**
-     * Error logger
-     */
-    public Consumer<String> errlog = (str) -> logger().log(LogLevel.ERROR,str);//System.err.println( SourceAndConverterService.class.getSimpleName()+":"+str);
-
-    /**
-     * Scijava Object Service : will contain all the sourceAndConverters
+     * SciJava Object Service : will contain all the sourceAndConverters
      */
     @Parameter
     ObjectService objectService;
 
     /**
-     * Scriptservice : used for adding Source alias to help for scripting
+     * ScriptService : used for adding Source alias to help for scripting
      */
     @Parameter
     ScriptService scriptService;
-
-    /**
-     * uiService : used ot check if an UI is available to create a Swing Panel
-     */
-    @Parameter
-    UIService uiService;
 
     /**
      * Display service : cannot be set through Parameter annotation due to 'circular dependency'
@@ -138,14 +134,14 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      * Map containing objects that are 1 to 1 linked to a Source
      * Keys are Weakly referenced -> Metadata should be GCed if referenced only here
      */
-    Cache<SourceAndConverter, Map<String, Object>> sacToMetadata;
+    Cache<SourceAndConverter<?>, Map<String, Object>> sacToMetadata;
 
     /**
      * Test if a Source is already registered in the Service
      * @param src source
      * @return true if a source is already registered
      */
-    public boolean isRegistered(SourceAndConverter src) {
+    public boolean isRegistered(SourceAndConverter<?> src) {
         return sacToMetadata.getIfPresent(src)!=null;
     }
 
@@ -154,33 +150,36 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public void setMetadata( SourceAndConverter sac, String key, Object data )
+    public void setMetadata( SourceAndConverter<?> sac, String key, Object data )
     {
         if (sac == null) {
-            System.err.println("Error : sac is null in setMetadata function! ");
-            //return;
+            logger.error("Error : sac is null in setMetadata function! ");
+            return;
         }
+
         if (sacToMetadata.getIfPresent( sac ) == null) {
-            System.err.println("Error : sac has no associated metadata ! This should not happen. ");
-            System.err.println("Sac : "+sac.getSpimSource().getName());
-            System.err.println("SpimSource class: "+sac.getSpimSource().getClass().getSimpleName());
+            logger.error("Error : sac has no associated metadata ! This should not happen. ");
+            logger.error("Sac : "+sac.getSpimSource().getName());
+            logger.error("SpimSource class: "+sac.getSpimSource().getClass().getSimpleName());
             //return;
+        } else {
+            sacToMetadata.getIfPresent(sac).put(key, data);
         }
-        sacToMetadata.getIfPresent( sac ).put( key, data );
     }
 
     @Override
-    public Object getMetadata( SourceAndConverter sac, String key )
+    public Object getMetadata( SourceAndConverter<?> sac, String key )
     {
-        if (sacToMetadata.getIfPresent(sac)!=null) {
-            return sacToMetadata.getIfPresent(sac).get(key);
+        Map<String, Object> meta = sacToMetadata.getIfPresent(sac);
+        if (meta!=null) {
+            return meta.get(key);
         } else {
             return null;
         }
     }
 
     @Override
-    public void removeMetadata(SourceAndConverter sac, String key) {
+    public void removeMetadata(SourceAndConverter<?> sac, String key) {
         Map<String,Object> metadata = sacToMetadata.getIfPresent(sac);
         if (metadata!=null) {
             metadata.remove(key);
@@ -188,7 +187,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public Collection<String> getMetadataKeys(SourceAndConverter sac) {
+    public Collection<String> getMetadataKeys(SourceAndConverter<?> sac) {
         Map<String, Object> map = sacToMetadata.getIfPresent(sac);
         if (map==null) {
             return new ArrayList<>();
@@ -198,7 +197,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     @Override
-    public boolean containsMetadata(SourceAndConverter sac, String key) {
+    public boolean containsMetadata(SourceAndConverter<?> sac, String key) {
         return getMetadata(sac,key)!=null;
     }
 
@@ -207,45 +206,221 @@ public class SourceAndConverterService extends AbstractService implements SciJav
      * Called in the BdvSourcePostProcessor
      * @param sac source
      */
-    public synchronized void register(SourceAndConverter sac) {
+    public synchronized void register(SourceAndConverter<?> sac) {
         if (objectService.getObjects(SourceAndConverter.class).contains(sac)) {
-            log.accept("Source already registered");
+            logger.debug("Source already registered");
             return;
         }
         if (sacToMetadata.getIfPresent(sac) == null) {
             Map<String, Object> sourceData = new HashMap<>();
             sacToMetadata.put(sac, sourceData);
         }
+        /*
+          TODO FIX
+          Problematic behaviour... several thread deadlocks experienced in ABBA because
+          of the line below, if not put in invokelater. Example deadlock:
+          invokeLater may fix this, but this does not feel right...
+            "ForkJoinPool.commonPool-worker-7" #156 daemon prio=6 os_prio=0 tid=0x00000171bd131800 nid=0x3b4c in Object.wait() [0x0000000a72afe000]
+               java.lang.Thread.State: WAITING (on object monitor)
+                    at java.lang.Object.wait(Native Method)
+                    at java.lang.Object.wait(Object.java:502)
+                    at java.awt.EventQueue.invokeAndWait(EventQueue.java:1343)
+                    - locked <0x000000077aebb9b8> (a java.awt.EventQueue$1AWTInvocationLock)
+                    at java.awt.EventQueue.invokeAndWait(EventQueue.java:1324)
+                    at org.scijava.thread.DefaultThreadService.invoke(DefaultThreadService.java:115)
+                    at org.scijava.event.DefaultEventBus.publishNow(DefaultEventBus.java:182)
+                    at org.scijava.event.DefaultEventBus.publishNow(DefaultEventBus.java:73)
+                    at org.scijava.event.DefaultEventService.publish(DefaultEventService.java:102)
+                    at org.scijava.object.ObjectService.addObject(ObjectService.java:92)
+                    at org.scijava.object.ObjectService.addObject(ObjectService.java:86)
+                    at sc.fiji.bdvpg.scijava.services.SourceAndConverterService.register(SourceAndConverterService.java:235)
+         */
         objectService.addObject(sac);
+
         if (uiAvailable) ui.update(sac);
     }
 
-    public synchronized void register(Collection<SourceAndConverter> sources) {
-        for (SourceAndConverter sac:sources) {
+    public synchronized void register(Collection<SourceAndConverter<?>> sources) {
+        for (SourceAndConverter<?> sac:sources) {
             this.register(sac);
         }
     }
 
-    public synchronized void register(AbstractSpimData asd) {
+    @Parameter
+    IEntityHandlerService entityHandlerService;
+
+    /**
+     * TODO nice documentation about {@link EntityHandler} and scijava extension mechanism
+     * @param asd spimdata object to register
+     */
+    public synchronized void register(AbstractSpimData<?> asd) {
 
         if (spimdataToMetadata.getIfPresent(asd)==null) {
             Map<String, Object> sourceData = new HashMap<>();
             spimdataToMetadata.put(asd, sourceData);
         }
 
-        final SourceAndConverterFromSpimDataCreator creator = new SourceAndConverterFromSpimDataCreator( asd );
-        Map<Integer, SourceAndConverter> sacs = creator.getSetupIdToSourceAndConverter();
-        this.register(sacs.values());
-        final ISourceAndConverterService service = SourceAndConverterServices.getSourceAndConverterService();
-        sacs.forEach((id,sac) -> {
-            creator.getMetadata( sac ).forEach( (key,value) -> service.setMetadata(sac, key, value) );
-            this.linkToSpimData(sac, asd, id);
-            if (uiAvailable) ui.update(sac);
+        Map<Class<? extends Entity>, EntityHandler> entityClassToHandler = new HashMap<>();
+
+        entityHandlerService.getHandlers(EntityHandler.class).forEach(pi -> {
+            try {
+                EntityHandler handler = pi.createInstance();
+                entityClassToHandler.put(handler.getEntityType(), handler);
+                logger.debug("Plugin found for entity class "+handler.getEntityType().getSimpleName());
+            } catch (InstantiableException e) {
+                e.printStackTrace();
+            }
         });
+
+        boolean nonVolatile = WrapBasicImgLoader.wrapImgLoaderIfNecessary( asd );
+
+        if ( nonVolatile )
+        {
+            logger.warn( "WARNING:\nOpening <SpimData> dataset that is not suited for interactive browsing.\nConsider resaving as HDF5 for better performance." );
+        }
+
+        final AbstractSequenceDescription< ?, ?, ? > seq = asd.getSequenceDescription();
+
+        final ViewerImgLoader imgLoader = ( ViewerImgLoader ) seq.getImgLoader();
+
+        final Map< Integer, SourceAndConverter<?> > setupIdToSourceAndConverter = new HashMap<>();
+
+        for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() ) {
+
+            // Execute {@link EntityHandler}, if a compatible entity is found in the spimdata, compatible with an entity class handler
+            entityClassToHandler.keySet().forEach(entityClass -> {
+                Entity e = setup.getAttribute(entityClass);
+                if (e!=null) {
+                    entityClassToHandler.get(entityClass).loadEntity(asd, setup);
+                }
+            });
+
+            final int setupId = setup.getId();
+
+            ViewerSetupImgLoader vsil = imgLoader.getSetupImgLoader(setupId);
+
+            String sourceName = createSetupName(setup);
+
+            final Object type = vsil.getImageType();
+
+            entityClassToHandler.keySet().forEach(entityClass -> {
+                Entity e = setup.getAttribute(entityClass);
+                if (e!=null) {
+                    if (entityClassToHandler.get(entityClass).canCreateSourceAndConverter()) {
+                        setupIdToSourceAndConverter.put(setupId, entityClassToHandler.get(entityClass).makeSourceAndConverter(asd, setup));
+                    }
+                }
+            });
+
+            if (!setupIdToSourceAndConverter.containsKey(setupId)) {
+                if (type instanceof RealType) {
+
+                    //createRealTypeSourceAndConverter( nonVolatile, setupId, sourceName );
+                    final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
+
+                    Converter nonVolatileConverter = SourceAndConverterHelper.createConverterRealType((RealType)s.getType()); // IN FACT THE CASTING IS NECESSARY!!
+
+                    if (!nonVolatile ) {
+
+                        final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
+
+                        Converter volatileConverter = SourceAndConverterHelper.createConverterRealType((RealType)vs.getType());
+
+                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter<>(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
+
+                    } else {
+
+                        setupIdToSourceAndConverter.put( setupId, new SourceAndConverter<>(s, nonVolatileConverter));
+                    }
+
+                } else if (type instanceof ARGBType) {
+
+                    //createARGBTypeSourceAndConverter( setupId, sourceName );
+                    final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
+                    final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
+
+                    Converter nonVolatileConverter = SourceAndConverterHelper.createConverterARGBType(s);
+
+                    Converter volatileConverter = SourceAndConverterHelper.createConverterARGBType(vs);
+                    setupIdToSourceAndConverter.put( setupId, new SourceAndConverter<>(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
+
+                } else {
+                    logger.error("Cannot open Spimdata with Source of type "+type.getClass().getSimpleName());
+                }
+
+            }
+
+            // Execute {@link EntityHandler}, if a compatible entity is found
+            entityClassToHandler.keySet().forEach(entityClass -> {
+                Entity e = setup.getAttribute(entityClass);
+                if (e!=null) {
+                    entityClassToHandler.get(entityClass).loadEntity(asd, setup, setupIdToSourceAndConverter.get(setupId) );
+                }
+            });
+        }
+
+        setupIdToSourceAndConverter.keySet().forEach(id -> {
+            register(setupIdToSourceAndConverter.get(id));
+            linkToSpimData(setupIdToSourceAndConverter.get(id), asd, id);
+            if (uiAvailable) ui.update(setupIdToSourceAndConverter.get(id));
+        });
+
+        WrapBasicImgLoader.removeWrapperIfPresent( asd );
+
+    }
+
+    private static String createSetupName( final BasicViewSetup setup ) {
+        if ( setup.hasName() ) {
+            if (!setup.getName().trim().equals("")) {
+                return setup.getName();
+            }
+        }
+
+        String name = "";
+
+        final Angle angle = setup.getAttribute( Angle.class );
+        if ( angle != null )
+            name += "a " + angle.getName();
+
+        final Channel channel = setup.getAttribute( Channel.class );
+        if ( channel != null )
+            name += ( name.isEmpty() ? "" : " " ) + "c " + channel.getName();
+
+        if ((channel == null)&&(angle == null)) {
+            name += "id "+setup.getId();
+        }
+
+        return name;
+    }
+
+    /**
+     * Gets or create the associated ConverterSetup of a Source
+     * While several converters can be associated to a Source (volatile and non-volatile),
+     * only one ConverterSetup is associated to a Source
+     * @param sac source to get the convertersetup from
+     * @return the converter setup of the source
+     */
+    public ConverterSetup getConverterSetup(SourceAndConverter<?> sac) {
+        if (!isRegistered(sac)) {
+            register(sac);
+        }
+        Map<String, Object> meta = sacToMetadata.getIfPresent(sac);
+
+        if (meta == null) {
+            logger.error("getConverterSetup NPE : the source "+sac.getSpimSource().getName()+" has no metadata associated! ");
+            return null;
+        }
+        // If no ConverterSetup is built then build it
+        if ( meta.get( CONVERTER_SETUP ) == null) {
+            ConverterSetup setup = SourceAndConverterHelper.createConverterSetup(sac);
+            meta.put( CONVERTER_SETUP,  setup );
+        }
+
+        return (ConverterSetup) meta.get( CONVERTER_SETUP );
     }
 
     @Override
-    public synchronized void remove(SourceAndConverter... sacs ) {
+    public synchronized void remove(SourceAndConverter<?>... sacs ) {
         // Remove displays
         if (sacs != null) {
             if (bsds!=null) {
@@ -255,9 +430,10 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                 // Checks if it's the last of a spimdataset -> should shutdown cache
                 // ----------------------------
                 AbstractSpimData asd = null;
-                if (sacToMetadata.getIfPresent(sac)!=null) {
-                    if (sacToMetadata.getIfPresent(sac).get(SPIM_DATA_INFO) != null) {
-                        asd = ((SpimDataInfo) (sacToMetadata.getIfPresent(sac).get(SPIM_DATA_INFO))).asd;
+                Map<String, Object> meta = sacToMetadata.getIfPresent(sac);
+                if (meta!=null) {
+                    if (meta.get(SPIM_DATA_INFO) != null) {
+                        asd = ((SpimDataInfo) (meta.get(SPIM_DATA_INFO))).asd;
                     }
 
                     if (asd != null) {
@@ -271,35 +447,80 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                                     ((VolatileGlobalCellCache) (imgLoader.getCacheControl())).clearCache();
                                 }
                             }
+                            if (asd.getSequenceDescription().getImgLoader() instanceof Closeable) {
+                                try {
+                                    ((Closeable) asd.getSequenceDescription().getImgLoader()).close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                     }
                     //----------------
 
                     sacToMetadata.invalidate(sac);
                 } else {
-                    errlog.accept(sac.getSpimSource().getName() + " has no associated metadata");
+                    logger.error(sac.getSpimSource().getName() + " has no associated metadata");
                 }
+                /*
+                  TODO FIX
+                  Problematic behaviour... several thread deadlocks experienced in ABBA because
+                  of the line below, if not put in invokelater. Example deadlock:
+                  invokeLater may fix this, but this does not feel right...
+                    "ForkJoinPool.commonPool-worker-7" #156 daemon prio=6 os_prio=0 tid=0x00000171bd131800 nid=0x3b4c in Object.wait() [0x0000000a72afe000]
+                       java.lang.Thread.State: WAITING (on object monitor)
+                            at java.lang.Object.wait(Native Method)
+                            at java.lang.Object.wait(Object.java:502)
+                            at java.awt.EventQueue.invokeAndWait(EventQueue.java:1343)
+                            - locked <0x000000077aebb9b8> (a java.awt.EventQueue$1AWTInvocationLock)
+                            at java.awt.EventQueue.invokeAndWait(EventQueue.java:1324)
+                            at org.scijava.thread.DefaultThreadService.invoke(DefaultThreadService.java:115)
+                            at org.scijava.event.DefaultEventBus.publishNow(DefaultEventBus.java:182)
+                            at org.scijava.event.DefaultEventBus.publishNow(DefaultEventBus.java:73)
+                            at org.scijava.event.DefaultEventService.publish(DefaultEventService.java:102)
+                            at org.scijava.object.ObjectService.addObject(ObjectService.java:92)
+                            at org.scijava.object.ObjectService.addObject(ObjectService.java:86)
+                            at sc.fiji.bdvpg.scijava.services.SourceAndConverterService.register(SourceAndConverterService.java:235)
+                 */
                 objectService.removeObject(sac);
+                /*
+                Does not work
+                AtomicBoolean flagPerformed = new AtomicBoolean();
+                flagPerformed.set(false);
+                EventQueue.invokeLater(()-> {
+
+                    flagPerformed.set(true);
+                });
+                while (!flagPerformed.get()) {
+                    // busy waiting
+                }*/
+
                 if (uiAvailable) {
                     ui.remove(sac);
                 }
             }
-            //System.out.println("Sources left = "+this.getSourceAndConverters().size());
         }
     }
 
     @Override
-    public List<SourceAndConverter> getSourceAndConverters() {
-        return objectService.getObjects(SourceAndConverter.class);
+    public List<SourceAndConverter<?>> getSourceAndConverters() {
+        List<SourceAndConverter> list = objectService.getObjects(SourceAndConverter.class);
+        List<SourceAndConverter<?>> nonRawList = new ArrayList<>();
+        list.forEach(nonRawList::add);
+        nonRawList = SourceAndConverterHelper.sortDefaultGeneric(nonRawList);
+        return nonRawList;
     }
 
     @Override
-    public List<SourceAndConverter> getSourceAndConverterFromSpimdata(AbstractSpimData asd) {
-        return objectService.getObjects(SourceAndConverter.class)
+    public List<SourceAndConverter<?>> getSourceAndConverterFromSpimdata(AbstractSpimData<?> asd) {
+        List<SourceAndConverter> rawList = objectService.getObjects(SourceAndConverter.class)
                 .stream()
-                .filter(s -> (sacToMetadata.getIfPresent(s).get(SPIM_DATA_INFO) !=null))
-                .filter(s -> ((SpimDataInfo)sacToMetadata.getIfPresent(s).get(SPIM_DATA_INFO)).asd.equals(asd))
+                .filter(s -> (sacToMetadata.getIfPresent(s).get(SPIM_DATA_INFO) != null))
+                .filter(s -> ((SpimDataInfo) sacToMetadata.getIfPresent(s).get(SPIM_DATA_INFO)).asd.equals(asd))
                 .collect(Collectors.toList());
+        List<SourceAndConverter<?>> list = new ArrayList<>();
+        rawList.forEach(list::add);
+        return list;
     }
 
     public void linkToSpimData( SourceAndConverter sac, AbstractSpimData asd, int idSetup) {
@@ -308,7 +529,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
 
 
     /**
-     * Swing UI for this Service, exists only if an UI is available in the current execution context
+     * Swing UI for this Service, exists only if a UI is available in the current execution context
      */
     SourceAndConverterServiceUI ui;
 
@@ -336,14 +557,15 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         spimdataToMetadata = CacheBuilder.newBuilder().weakKeys().build();
 
         registerDefaultActions();
-        if (uiService!=null) {
-            log.accept( "uiService detected : Constructing JPanel for BdvSourceAndConverterService" );
+
+        if (!context().getService(UIService.class).isHeadless()) {
+            logger.debug( "uiService detected : Constructing JPanel for BdvSourceAndConverterService" );
             ui = new SourceAndConverterServiceUI( this );
             uiAvailable = true;
         }
 
         SourceAndConverterServices.setSourceAndConverterService(this);
-        log.accept("Service initialized.");
+        logger.debug("Service initialized.");
     }
 
     public List<SourceAndConverter> getSourceAndConvertersFromSource(Source src) {
@@ -351,11 +573,11 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
 
-    Map<String, Consumer<SourceAndConverter[]>> actionMap = new ConcurrentHashMap<>();
+    final Map<String, Consumer<SourceAndConverter<?>[]>> actionMap = new ConcurrentHashMap<>();
 
-    public void registerAction(String actionName, Consumer<SourceAndConverter[]> action) {
+    public void registerAction(String actionName, Consumer<SourceAndConverter<?>[]> action) {
         if (actionMap.containsKey(actionName)) {
-            System.err.println("Overriding action "+actionName);
+            logger.warn("Overriding action "+actionName);
         }
         actionMap.put(actionName, action);
     }
@@ -364,13 +586,13 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         actionMap.remove(actionName);
     }
 
-    public Consumer<SourceAndConverter[]> getAction(String actionName) {
+    public Consumer<SourceAndConverter<?>[]> getAction(String actionName) {
         return actionMap.get(actionName);
     }
 
     @Override
-    public Set<AbstractSpimData> getSpimDatasets() {
-        Set<AbstractSpimData> asds = new HashSet<>();
+    public Set<AbstractSpimData<?>> getSpimDatasets() {
+        Set<AbstractSpimData<?>> asds = new HashSet<>();
         this.getSourceAndConverters().forEach(sac -> {
             if (containsMetadata(sac, SPIM_DATA_INFO)) {
                 asds.add(((SpimDataInfo)getMetadata(sac, SPIM_DATA_INFO)).asd);
@@ -380,7 +602,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     /**
-     * @return a list of of action name / keys / identifiers
+     * @return a list of action name / keys / identifiers
      */
     public Set<String> getActionsKeys() {
         return actionMap.keySet();
@@ -394,7 +616,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     void registerDefaultActions() {
         this.registerAction("Display names", (srcs) -> {
             for (SourceAndConverter src:srcs){
-                System.out.println(src.getSpimSource().getName());
+                logger.debug(src.getSpimSource().getName());
             }});
 
         context().getService(PluginService.class)
@@ -447,21 +669,19 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                 }
             } else {
                 registerAction(ci.getMenuPath().getLeaf().toString(),
-                        (sacs) -> {
-                            commandService.run(ci, true);
-                        });
-                log.accept("Registering action entitled " + ci.getMenuPath().getMenuString() + " from command " + ci.getClassName() + " sacs ignored");
+                        (sacs) -> commandService.run(ci, true) );
+                logger.debug("Registering action entitled " + ci.getMenuPath().getMenuString() + " from command " + ci.getClassName() + " sacs ignored");
             }
         } catch (NullPointerException npe) {
-            errlog.accept("Error on scijava commands registrations");
-            errlog.accept("Null Pointer Exception for command '"+ci.getTitle()+"'");
-            errlog.accept("Try to exclude this command by modifying ActionPackages.json file");
-            errlog.accept("class : "+ci.getClassName());
+            logger.error("Error on scijava commands registrations");
+            logger.error("Null Pointer Exception for command '"+ci.getTitle()+"'");
+            logger.error("Try to exclude this command by modifying ActionPackages.json file");
+            logger.error("class : "+ci.getClassName());
         } catch (Exception e) {
-            errlog.accept("Error on scijava commands registrations");
-            errlog.accept("Exception for command "+ci.getTitle());
-            errlog.accept("Try to exclude this command by modifying ActionPackages.json file");
-            errlog.accept("class : "+ci.getClassName());
+            logger.error("Error on scijava commands registrations");
+            logger.error("Exception for command "+ci.getTitle());
+            logger.error("Try to exclude this command by modifying ActionPackages.json file");
+            logger.error("class : "+ci.getClassName());
             e.printStackTrace();
         }
     }
@@ -470,12 +690,12 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         registerScijavaCommandInfo(commandService.getCommand(commandClass));
     }
 
-    //------------------- SpimData specific informations
+    //------------------- SpimData specific information
 
    public static class SpimDataInfo {
 
         public final AbstractSpimData asd;
-        public int setupId;
+        public final int setupId;
 
         public SpimDataInfo(AbstractSpimData asd, int setupId) {
             this.asd = asd;
@@ -505,7 +725,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     public void setMetadata( AbstractSpimData asd, String key, Object data )
     {
         if (asd == null) {
-            errlog.accept("Error : asd is null in setMetadata function! ");
+            logger.error("Error : asd is null in setMetadata function! ");
             return;
         }
         if (spimdataToMetadata.getIfPresent(asd)==null) {

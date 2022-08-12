@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,17 +32,12 @@ import bdv.util.BdvHandle;
 import org.scijava.module.Module;
 import org.scijava.module.process.AbstractPostprocessorPlugin;
 import org.scijava.module.process.PostprocessorPlugin;
-import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.BdvHandleFilterNode;
-import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 
-import javax.swing.tree.DefaultTreeModel;
 import java.util.function.Consumer;
 
 /**
@@ -51,23 +46,16 @@ import java.util.function.Consumer;
  * BdvSourceAndConverterService
  * Also fix BDV Close operation
  */
-
+@SuppressWarnings("unused")
 @Plugin(type = PostprocessorPlugin.class)
 public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
+
+    protected static final Logger logger = LoggerFactory.getLogger(BdvHandlePostprocessor.class);
 
     @Parameter
     SourceAndConverterBdvDisplayService bsds;
 
-    @Parameter
-    SourceAndConverterService sacsService;
-
-    @Parameter
-    ObjectService os;
-
-    @Parameter
-    GuavaWeakCacheService cacheService;
-
-    public static Consumer<String> log = (str) -> System.out.println(BdvHandlePostprocessor.class.getSimpleName()+":"+str);
+    public static Consumer<String> log = logger::debug;
 
     @Override
     public void process(Module module) {
@@ -76,8 +64,8 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
             if (object instanceof BdvHandle)
             {
                 bsds.registerBdvHandle( (BdvHandle) object );
+                module.resolveOutput(name);
             }
-            module.resolveOutput(name);
         });
 
     }

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,12 +28,11 @@
  */
 package sc.fiji.bdvpg.sourceandconverter;
 
-import bdv.*;
+import bdv.AbstractSpimSource;
+import bdv.BigDataViewer;
 import bdv.img.WarpedSource;
-import bdv.spimdata.WrapBasicImgLoader;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.transformation.TransformedSource;
-import bdv.util.ARGBColorConverterSetup;
 import bdv.util.BdvHandle;
 import bdv.util.LUTConverterSetup;
 import bdv.util.ResampledSource;
@@ -41,32 +40,36 @@ import bdv.util.UnmodifiableConverterSetup;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import mpicbg.spim.data.generic.AbstractSpimData;
-import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
-import mpicbg.spim.data.generic.sequence.BasicViewSetup;
-import mpicbg.spim.data.sequence.Angle;
-import mpicbg.spim.data.sequence.Channel;
-import net.imglib2.*;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
+import net.imglib2.Point;
+import net.imglib2.RealPoint;
+import net.imglib2.RealRandomAccess;
+import net.imglib2.RealRandomAccessible;
+import net.imglib2.Volatile;
 import net.imglib2.converter.Converter;
 import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.display.ColorConverter;
+import net.imglib2.display.RealARGBColorConverter;
 import net.imglib2.display.ScaledARGBConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.volatiles.VolatileARGBType;
 import net.imglib2.util.Intervals;
 import org.scijava.vecmath.Point3d;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.converter.RealARGBColorConverter;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import spimdata.util.Displaysettings;
-import spimdata.util.DisplaysettingsHelper;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -80,7 +83,7 @@ import java.util.stream.Collectors;
  * - (optional) a volatile Source, which can be used for fast display and lazy processing
  * - a converter from the volatile Source type to VolatileARGBType, fot display purpose
  *
- * Mainly thie class supports RealTyped source and ARGBTyped source
+ * Mainly this class supports RealTyped source and ARGBTyped source
  * It can deal wth conversion of:
  * - Source to SourceAndConverter
  * - Spimdata to a List of SourceAndConverter
@@ -98,263 +101,179 @@ import java.util.stream.Collectors;
  */
 public class SourceAndConverterHelper {
 
-    /**
-     * Standard logger
-     */
-    public static Consumer<String> log = (str) -> System.out.println( SourceAndConverterBdvDisplayService.class.getSimpleName()+":"+str);
-
-    /**
-     * Error logger
-     */
-    public static Consumer<String> errlog = (str) -> System.err.println( SourceAndConverterBdvDisplayService.class.getSimpleName()+":"+str);
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterHelper.class);
 
     /**
      * Core function : makes SourceAndConverter object out of a Source
      * Mainly duplicated functions from BdvVisTools
      * @param source source
-     * @return a sourceandconverter from the source
+     * @return a SourceAndConverter from the source
      */
-    public static SourceAndConverter createSourceAndConverter(Source source) {
-        Converter nonVolatileConverter;
-        SourceAndConverter out;
+    public static <T> SourceAndConverter<T> createSourceAndConverter(Source<T> source) {
         if (source.getType() instanceof RealType) {
-
-            nonVolatileConverter = createConverterRealType((RealType) source.getType());
-
-            Source volatileSource = createVolatileRealType(source);
-
-            if (volatileSource!=null) {
-
-                Converter volatileConverter = createConverterRealType((RealType) volatileSource.getType());
-                out = new SourceAndConverter(source, nonVolatileConverter,
-                        new SourceAndConverter<>(volatileSource, volatileConverter));
-
-            } else {
-
-                out = new SourceAndConverter(source, nonVolatileConverter);
-
-            }
-
+            return (SourceAndConverter<T>) createSourceAndConverterRealType((Source<? extends RealType>)source);
         } else if (source.getType() instanceof ARGBType) {
-
-            nonVolatileConverter = createConverterARGBType(source);
-
-            Source volatileSource = createVolatileARGBType(source);
-
-            if (volatileSource!=null) {
-
-                Converter volatileConverter = createConverterARGBType(volatileSource);
-                out = new SourceAndConverter(source, nonVolatileConverter,
-                        new SourceAndConverter<>(volatileSource, volatileConverter));
-
-            } else {
-
-                out = new SourceAndConverter(source, nonVolatileConverter);
-
-            }
-
+            return (SourceAndConverter<T>) createSourceAndConverterARGBType((Source<ARGBType>) source);
         } else {
-
-            errlog.accept("Cannot create sourceandconverter and converter for sources of type "+source.getType());
+            logger.error("Cannot create SourceAndConverter and converter for sources of type "+source.getType());
             return null;
-
         }
+    }
 
-        return out;
+    private static <T extends RealType<T>, V extends Volatile<T>&RealType> SourceAndConverter<T> createSourceAndConverterRealType(Source<T> source) {
+        Converter<T, ARGBType> nonVolatileConverter = createConverterRealType(source.getType());
+        try {
+            Source<V> volatileSource = createVolatileRealType(source);
+            Converter<V, ARGBType> volatileConverter = createConverterRealType(volatileSource.getType());
+            return new SourceAndConverter<>(source, nonVolatileConverter,
+                    new SourceAndConverter<>(volatileSource, volatileConverter));
+        } catch (Exception e) {
+            return new SourceAndConverter<>(source, nonVolatileConverter);
+        }
+    }
+
+    private static SourceAndConverter<ARGBType> createSourceAndConverterARGBType(Source<ARGBType> source) {
+        Converter<ARGBType, ARGBType> nonVolatileConverter = new ScaledARGBConverter.ARGB( 0, 255 );
+        try {
+            Source<VolatileARGBType> volatileSource = createVolatileARGBType(source);
+            Converter<VolatileARGBType, ARGBType> volatileConverter = new ScaledARGBConverter.VolatileARGB( 0, 255 );
+            return new SourceAndConverter<>(source, nonVolatileConverter,
+                    new SourceAndConverter<>(volatileSource, volatileConverter));
+        } catch (Exception e) {
+            return new SourceAndConverter<>(source, nonVolatileConverter);
+        }
     }
 
     /**
      * Creates default converters for a Source
-     * Support Volatile or non Volatile
+     * Support Volatile or non-volatile
      * Support RealTyped or ARGBTyped
      * @param source source
      * @return one converter for the source
      */
-    public static Converter createConverter(Source source) {
+    public static <T> Converter<T, ARGBType> createConverter(Source<? extends T> source) {
         if (source.getType() instanceof RealType) {
-            return createConverterRealType((RealType)source.getType());//source);
+            return (Converter<T, ARGBType>) (createConverterRealType((RealType)(source.getType())));//source);
         } else if (source.getType() instanceof ARGBType) {
-            return createConverterARGBType(source);
+            return (Converter<T, ARGBType>) (createConverterARGBType(source));
         } else {
-            errlog.accept("Cannot create converter for sourceandconverter of type "+source.getType().getClass().getSimpleName());
+            logger.error("Cannot create converter for SourceAndConverter of type "+source.getType().getClass().getSimpleName());
             return null;
         }
     }
 
     /**
-     * Clones a converter
-     * TODO :
-     * @return the cloned converter
+     * @param converter to clone
+     * @param sac source using this converter, useful to retrieve extra information
+     *            if necessary to clone the converter
+     * @return a cloned converter ( could be the same instance ?)
      */
-    public static Converter cloneConverter(Converter converter, SourceAndConverter sac) {
-        if (converter instanceof RealARGBColorConverter.Imp0) {
-            RealARGBColorConverter.Imp0 out = new RealARGBColorConverter.Imp0<>( ((RealARGBColorConverter.Imp0) converter).getMin(), ((RealARGBColorConverter.Imp0) converter).getMax() );
-            out.setColor(((RealARGBColorConverter.Imp0) converter).getColor());
-            // For averaging
-            // TODO : modularizes this / set as optional
-            out.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
-            return out;
-        } else if (converter instanceof RealARGBColorConverter.Imp1) {
-            RealARGBColorConverter.Imp1 out = new RealARGBColorConverter.Imp1<>( ((RealARGBColorConverter.Imp1) converter).getMin(), ((RealARGBColorConverter.Imp1) converter).getMax() );
-            out.setColor(((RealARGBColorConverter.Imp1) converter).getColor());
-            // For averaging
-            // TODO : modularizes this / set as optional
-            out.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
-            return out;
+    public static <I,O> Converter<I,O> cloneConverter(Converter<I,O> converter, SourceAndConverter<?> sac) {
+        if (converter instanceof ICloneableConverter) { // Extensibility of converters which implements ICloneableConverter
+            return (Converter<I,O>) ((ICloneableConverter) converter).duplicateConverter(sac);
         } else if (converter instanceof ScaledARGBConverter.VolatileARGB) {
-            return new ScaledARGBConverter.VolatileARGB(((ScaledARGBConverter.VolatileARGB) converter).getMin(), ((ScaledARGBConverter.VolatileARGB) converter).getMax());
+            return (Converter<I,O>) new ScaledARGBConverter.VolatileARGB(((ScaledARGBConverter.VolatileARGB) converter).getMin(), ((ScaledARGBConverter.VolatileARGB) converter).getMax());
         } else if (converter instanceof ScaledARGBConverter.ARGB) {
-            return new ScaledARGBConverter.ARGB(((ScaledARGBConverter.ARGB) converter).getMin(),((ScaledARGBConverter.ARGB) converter).getMax());
+            return (Converter<I,O>) new ScaledARGBConverter.ARGB(((ScaledARGBConverter.ARGB) converter).getMin(),((ScaledARGBConverter.ARGB) converter).getMax());
         } else if (converter instanceof RealLUTConverter) {
-            return new RealLUTConverter(((RealLUTConverter) converter).getMin(),((RealLUTConverter) converter).getMax(),((RealLUTConverter) converter).getLUT());
+            return (Converter<I,O>) new RealLUTConverter(((RealLUTConverter) converter).getMin(),((RealLUTConverter) converter).getMax(),((RealLUTConverter) converter).getLUT());
         } else {
-            //RealARGBColorConverter
-            Converter cvt = BigDataViewer.createConverterToARGB((NumericType)sac.getSpimSource().getType());
-            if ((converter instanceof ColorConverter)&&(cvt instanceof ColorConverter)) {
-                ((ColorConverter) cvt).setColor(((ColorConverter)converter).getColor());
-            }
 
-            if ((converter instanceof RealARGBColorConverter)&&(cvt instanceof RealARGBColorConverter)) {
-                ((RealARGBColorConverter)cvt).setMin(((RealARGBColorConverter)converter).getMin());
-                ((RealARGBColorConverter)cvt).setMax(((RealARGBColorConverter)converter).getMax());
-            }
+            Converter clonedConverter = BigDataViewer.createConverterToARGB((NumericType)sac.getSpimSource().getType());
 
-            if (cvt!=null) {
-                return cvt;
-            }
+			if (clonedConverter!=null)
+			{
+				if ((converter instanceof ColorConverter)&&(clonedConverter instanceof ColorConverter))
+				{
+					((ColorConverter)clonedConverter).setColor(((ColorConverter)converter).getColor());
+					((ColorConverter)clonedConverter).setMin(((ColorConverter)converter).getMin());
+					((ColorConverter)clonedConverter).setMax(((ColorConverter)converter).getMax());
+				}
 
-            errlog.accept("Could not clone the converter of class " + converter.getClass().getSimpleName());
-            return null;
+				return (Converter<I,O>) clonedConverter;
+			}
+			else
+			{
+                logger.error( "Could not clone the converter of class " + converter.getClass().getSimpleName() );
+				return null;
+			}
         }
     }
 
-    public static ConverterSetup createConverterSetup(SourceAndConverter sac) {
+    public static ConverterSetup createConverterSetup(SourceAndConverter<?> sac) {
         return  createConverterSetup(sac,-1);
     }
 
-    public static ConverterSetup createConverterSetup(SourceAndConverter sac, int legacyId) {
-        //return BigDataViewer.createConverterSetup(sac, legacyId);
-        ConverterSetup setup;
-        if (sac.getSpimSource().getType() instanceof RealType) {
-            setup = createConverterSetupRealType(sac);
-        } else if (sac.getSpimSource().getType() instanceof ARGBType) {
-            setup = createConverterSetupARGBType(sac);
-        } else {
-            errlog.accept("Cannot create convertersetup for Source of type "+sac.getSpimSource().getType().getClass().getSimpleName());
-            setup = null;
-        }
-        //setup.setViewer(() -> requestRepaint.run());
-        return setup;
-    }
-
-    /**
-     * Creates converters and convertersetup for a ARGB typed sourceandconverter
-     * @param source source
-     */
-    static private ConverterSetup createConverterSetupARGBType(SourceAndConverter source) {
-        ConverterSetup setup;
-        if (source.getConverter() instanceof ColorConverter) {
-            if (source.asVolatile()!=null) {
-                setup = new ARGBColorConverterSetup( (ColorConverter) source.getConverter(), (ColorConverter) source.asVolatile().getConverter() );
-            } else {
-                setup = new ARGBColorConverterSetup( (ColorConverter) source.getConverter());
-            }
-        } else {
-            errlog.accept("Cannot build ConverterSetup for Converters of class "+source.getConverter().getClass());
-            setup = null;
-        }
-        return setup;
-    }
-
-    /**
-     * Creates converters and convertersetup for a real typed sourceandconverter
-     * @param source source
-     */
-    static private ConverterSetup createConverterSetupRealType(SourceAndConverter source) {
-        final ConverterSetup setup;
-        if (source.getConverter() instanceof ColorConverter) {
-            if (source.asVolatile() != null) {
-                setup = new ARGBColorConverterSetup((ColorConverter) source.getConverter(), (ColorConverter) source.asVolatile().getConverter());
-            } else {
-                setup = new ARGBColorConverterSetup((ColorConverter) source.getConverter());
-            }
-        } else if (source.getConverter() instanceof RealLUTConverter) {
-            if (source.asVolatile() != null) {
-                setup = new LUTConverterSetup((RealLUTConverter) source.getConverter(), (RealLUTConverter) source.asVolatile().getConverter());
-            } else {
-                setup = new LUTConverterSetup((RealLUTConverter) source.getConverter());
-            }
-        } else {
-            log.accept( "Unsupported ConverterSetup for Converters of class " + source.getConverter().getClass() );
-            if (source.asVolatile() != null) {
-                setup = new UnmodifiableConverterSetup( source.getConverter(), source.asVolatile().getConverter());
-            } else {
-                setup = new UnmodifiableConverterSetup( source.getConverter());
-            }
-        }
-        return setup;
+    public static ConverterSetup createConverterSetup(SourceAndConverter<?> sac, int legacyId) {
+        if (sac.getConverter() instanceof ColorConverter) {
+			return BigDataViewer.createConverterSetup(sac, -1);
+		} else if (sac.getConverter() instanceof RealLUTConverter) {
+			if (sac.asVolatile() != null) {
+				return new LUTConverterSetup((RealLUTConverter) sac.getConverter(), (RealLUTConverter) sac.asVolatile().getConverter());
+			} else {
+				return new LUTConverterSetup((RealLUTConverter) sac.getConverter());
+			}
+		} else {
+			logger.debug( "Unmodifiable ConverterSetup for Converters of class " + sac.getConverter().getClass() );
+			if (sac.asVolatile() != null) {
+				return new UnmodifiableConverterSetup( sac.getConverter(), sac.asVolatile().getConverter() );
+			} else {
+				return new UnmodifiableConverterSetup( sac.getConverter() );
+			}
+		}
     }
 
 	/**
      * Here should go all the ways to build a Volatile Source
-     * from a non Volatile Source, RealTyped
+     * from a non-volatile Source, RealTyped
      * @param source source
      * @return the volatile source
      */
-    private static Source createVolatileRealType(Source source) {
+    private static <T, V extends Volatile<T>> Source<V> createVolatileRealType(Source<T> source) throws UnsupportedOperationException {
         // TODO unsupported yet
-        return null;
+        throw new UnsupportedOperationException("Unimplemented createVolatileRealType method in SourceAndConverterHelper");
     }
 
     /**
      * Here should go all the ways to build a Volatile Source
-     * from a non Volatile Source, ARGBTyped
+     * from a non-volatile Source, ARGBTyped
      * @param source the source
-     * @return
+     * @return the volatile source created
      */
-    private static Source createVolatileARGBType(Source source) {
-        // TODO unsupported yet
-        return null;
+    private static Source<VolatileARGBType> createVolatileARGBType(Source<ARGBType> source) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("Unimplemented createVolatileARGBType method in SourceAndConverterHelper");
     }
 
     /**
-     * Creates ARGB converter from a RealTyped sourceandconverter.
-     * Supports Volatile RealTyped or non volatile
-     * @param <T> realtype class
+     * Creates ARGB converter from a RealTyped SourceAndConverter.
+     * Supports Volatile RealTyped or non-volatile
+     * @param <T> RealType class
+     * @param type a pixel of type T
      * @return a suited converter
      */
-    public static< T extends RealType< T >>  Converter createConverterRealType( final T type ) {
+    public static< T extends RealType< T >>  Converter<T, ARGBType> createConverterRealType( final T type ) {
         final double typeMin = Math.max( 0, Math.min( type.getMinValue(), 65535 ) );
         final double typeMax = Math.max( 0, Math.min( type.getMaxValue(), 65535 ) );
         final RealARGBColorConverter< T > converter ;
-        if ( type instanceof Volatile)
-            converter = new RealARGBColorConverter.Imp0<>( typeMin, typeMax );
-        else
-            converter = new RealARGBColorConverter.Imp1<>( typeMin, typeMax );
+        converter = RealARGBColorConverter.create(type, typeMin, typeMax );
         converter.setColor( new ARGBType( 0xffffffff ) );
-
-        ((RealARGBColorConverter)converter).getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
         return converter;
     }
 
     /**
-     * Creates ARGB converter from a RealTyped sourceandconverter.
-     * Supports Volatile ARGBType or non volatile
+     * Creates ARGB converter from a RealTyped SourceAndConverter.
+     * Supports Volatile ARGBType or non-volatile
      * @param source source
      * @return a compatible converter
      */
-    public static Converter createConverterARGBType( Source source ) {
+     public static Converter<?, ARGBType> createConverterARGBType( Source<?> source ) {
         final Converter converter ;
         if ( source.getType() instanceof Volatile)
             converter = new ScaledARGBConverter.VolatileARGB( 0, 255 );
         else
             converter = new ScaledARGBConverter.ARGB( 0, 255 );
-
-        // Unsupported
-        //converter.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
         return converter;
-    }
-
+     }
 
 	/**
 	 * Checks whether a given point (calibrated global coordinate)
@@ -370,12 +289,12 @@ public class SourceAndConverterHelper {
 	 * @return
 	 * 			boolean indicating whether the position falls within the source interval
 	 */
-	public static boolean isPositionWithinSourceInterval( SourceAndConverter< ? > source, RealPoint globalPosition, int timepoint, boolean sourceIs2d )
+	public static boolean isPositionWithinSourceInterval(SourceAndConverter< ? > source, RealPoint globalPosition, int timepoint, boolean sourceIs2d )
 	{
 		Source< ? > spimSource = source.getSpimSource();
 
 		final long[] voxelPositionInSource = getVoxelPositionInSource( spimSource, globalPosition, timepoint, 0 );
-		Interval sourceInterval = spimSource.getSource( 0, 0 );
+		Interval sourceInterval = spimSource.getSource( timepoint, 0 );
 
 		if ( sourceIs2d )
 		{
@@ -416,7 +335,7 @@ public class SourceAndConverterHelper {
 	 * @return voxel coordinate
 	 */
 	public static long[] getVoxelPositionInSource(
-			final Source source,
+			final Source<?> source,
 			final RealPoint globalPosition,
 			final int t,
 			final int level )
@@ -438,6 +357,75 @@ public class SourceAndConverterHelper {
 	}
 
     /**
+     *
+     * @param sacs sources
+     * @return the max timepoint found in this source according to the next method ( check limitations )
+     */
+    public static int getMaxTimepoint(SourceAndConverter<?>[] sacs) {
+	    int max = 0;
+	    for (SourceAndConverter<?> sac : sacs) {
+	        int sourceMax = getMaxTimepoint(sac);
+	        if (sourceMax > max) {
+	            max = sourceMax;
+            }
+        }
+	    return max;
+    }
+
+    /**
+     *
+     * @param sacs sources
+     * @return the max timepoint found in this source according to the next method ( check limitations )
+     */
+    public static int getMaxTimepoint(Source<?>[] sacs) {
+        int max = 0;
+        for (Source<?> source : sacs) {
+            int sourceMax = getMaxTimepoint(source);
+            if (sourceMax > max) {
+                max = sourceMax;
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Looks for the max number of timepoint present in this source and converter
+     * To do this multiply the 2 the max timepoint until no source is present
+     *
+     * TODO : use the spimdata object if present to fetch this
+     * TODO : Limitation : if the timepoint 0 is not present, this fails!
+     * Limitation : if the source is present at all timepoint, this fails
+     *
+     * @param source source
+     * @return the maximal timepoint where the source is still present
+     */
+	public static int getMaxTimepoint(Source<?> source) {
+	    if (!source.isPresent(0)) {
+	        return 0;
+        }
+        int nFrames = 1;
+        int iFrame = 1;
+        int previous = iFrame;
+        while ((iFrame<Integer.MAX_VALUE / 2)&&(source.isPresent(iFrame))) {
+            previous = iFrame;
+            iFrame *= 2;
+        }
+        if (iFrame>1) {
+            for (int tp = previous;tp<iFrame+1;tp++) {
+                if (!source.isPresent(tp)) {
+                    nFrames = tp;
+                    break;
+                }
+            }
+        }
+        return nFrames;
+    }
+
+    public static int getMaxTimepoint(SourceAndConverter<?> sac) {
+        return getMaxTimepoint(sac.getSpimSource());
+    }
+
+    /**
      * Is the point pt located inside the source  at a particular timepoint ?
      * Looks at highest resolution whether the alpha value of the displayed pixel is zero
      * TODO TO think Alternative : looks whether R, G and B values equal zero - source not present
@@ -446,25 +434,26 @@ public class SourceAndConverterHelper {
      * TODO : Time out if too long to access the data
      * @param sac source
      * @param pt point
+     * @param timePoint timepoint investigated
      * @return true if the source is present
      */
-    public static boolean isSourcePresentAt(SourceAndConverter sac, int timePoint, RealPoint pt) {
+    public static <T> boolean isSourcePresentAt(SourceAndConverter<T> sac, int timePoint, RealPoint pt) {
 
-        RealRandomAccessible rra_ible = sac.getSpimSource().getInterpolatedSource(timePoint, 0, Interpolation.NEARESTNEIGHBOR);
+        RealRandomAccessible<T> rra_ible = sac.getSpimSource().getInterpolatedSource(timePoint, 0, Interpolation.NEARESTNEIGHBOR);
 
         if (rra_ible!=null) {
             // Get transformation of the source
             final AffineTransform3D sourceTransform = new AffineTransform3D();
             sac.getSpimSource().getSourceTransform(timePoint, 0, sourceTransform);
 
-            // Get a access to the source at the pointer location
-            RealRandomAccess rra = rra_ible.realRandomAccess();
+            // Get access to the source at the pointer location
+            RealRandomAccess<T> rra = rra_ible.realRandomAccess();
             RealPoint iPt = new RealPoint(3);
             sourceTransform.inverse().apply(pt, iPt);
             rra.setPosition(iPt);
 
             // Gets converter -> will decide based on ARGB value whether the source is present or not
-            Converter<Object, ARGBType> cvt = sac.getConverter();
+            Converter<T, ARGBType> cvt = sac.getConverter();
             ARGBType colorOut = new ARGBType();
             cvt.convert(rra.get(), colorOut);
 
@@ -472,12 +461,15 @@ public class SourceAndConverterHelper {
             int cValue = colorOut.get();
 
             // Alpha == 0 -> not present, otherwise it is present
-
             return ARGBType.alpha(cValue) != 0;
         } else {
             return false;
         }
 
+    }
+
+    public static SourceAndConverter<?>[] sortDefault(SourceAndConverter<?>[] sacs) {
+        return sortDefaultGeneric(Arrays.asList(sacs)).toArray(new SourceAndConverter<?>[0]);
     }
 
     /**
@@ -491,20 +483,8 @@ public class SourceAndConverterHelper {
     public static List<SourceAndConverter<?>> sortDefaultGeneric(Collection<SourceAndConverter<?>> sacs) {
         List<SourceAndConverter<?>> sortedList = new ArrayList<>(sacs.size());
         sortedList.addAll(sacs);
-        Set<AbstractSpimData> spimData = new HashSet<>();
-        // Gets all SpimdataInfo
-        sacs.forEach(sac -> {
-            if (SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
-                SourceAndConverterService.SpimDataInfo sdi = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
-                        .getSourceAndConverterService()
-                        .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)));
-                spimData.add(sdi.asd);
-            }
-        });
 
-        Comparator<SourceAndConverter> sacComparator = (s1, s2) -> {
+        Comparator<SourceAndConverter<?>> sacComparator = (s1, s2) -> {
             // Those who do not belong to spimdata are last:
             SourceAndConverterService.SpimDataInfo sdi1 = null, sdi2 = null;
             if (SourceAndConverterServices
@@ -531,7 +511,7 @@ public class SourceAndConverterHelper {
                 return 1;
             }
 
-            if ((sdi1!=null)&&(sdi2!=null)) {
+            if (sdi1 != null) {
                 if (sdi1.asd==sdi2.asd) {
                     return sdi1.setupId-sdi2.setupId;
                 } else {
@@ -554,21 +534,11 @@ public class SourceAndConverterHelper {
      * @param sacs sources
      * @return ordered sources
      */
+    @SuppressWarnings("rawtypes")
+    @Deprecated
     public static List<SourceAndConverter> sortDefaultNoGeneric(Collection<SourceAndConverter> sacs) {
         List<SourceAndConverter> sortedList = new ArrayList<>(sacs.size());
         sortedList.addAll(sacs);
-        Set<AbstractSpimData> spimData = new HashSet<>();
-        // Gets all SpimdataInfo
-        sacs.forEach(sac -> {
-            if (SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)!=null) {
-                SourceAndConverterService.SpimDataInfo sdi = ((SourceAndConverterService.SpimDataInfo)(SourceAndConverterServices
-                        .getSourceAndConverterService()
-                        .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)));
-                spimData.add(sdi.asd);
-            }
-        });
 
         Comparator<SourceAndConverter> sacComparator = (s1, s2) -> {
             // Those who do not belong to spimdata are last:
@@ -597,7 +567,7 @@ public class SourceAndConverterHelper {
                 return 1;
             }
 
-            if ((sdi1!=null)&&(sdi2!=null)) {
+            if (sdi1 != null) {
                 if (sdi1.asd==sdi2.asd) {
                     return sdi1.setupId-sdi2.setupId;
                 } else {
@@ -618,7 +588,7 @@ public class SourceAndConverterHelper {
      * @param source source
      * @return the center point of the source (assuming not warped)
      */
-    public static RealPoint getSourceAndConverterCenterPoint(SourceAndConverter source) {
+    public static RealPoint getSourceAndConverterCenterPoint(SourceAndConverter<?> source) {
         AffineTransform3D sourceTransform = new AffineTransform3D();
         sourceTransform.identity();
 
@@ -641,8 +611,8 @@ public class SourceAndConverterHelper {
      * @param src converter source
      * @param dst converter dest
      */
-    public static void transferColorConverters(SourceAndConverter src, SourceAndConverter dst) {
-        transferColorConverters(new SourceAndConverter[]{src}, new SourceAndConverter[]{dst});
+    public static void transferColorConverters(SourceAndConverter<?> src, SourceAndConverter<?> dst) {
+        transferColorConverters(new SourceAndConverter<?>[]{src}, new SourceAndConverter<?>[]{dst});
     }
 
     /**
@@ -659,11 +629,11 @@ public class SourceAndConverterHelper {
      * @param srcs sources source
      * @param dsts sources dest
      */
-    public static void transferColorConverters(SourceAndConverter[] srcs, SourceAndConverter[] dsts) {
+    public static void transferColorConverters(SourceAndConverter<?>[] srcs, SourceAndConverter<?>[] dsts) {
         if ((srcs!=null)&&(dsts!=null))
         for (int i = 0;i<Math.min(srcs.length, dsts.length);i++) {
-            SourceAndConverter src = srcs[i];
-            SourceAndConverter dst = dsts[i];
+            SourceAndConverter<?> src = srcs[i];
+            SourceAndConverter<?> dst = dsts[i];
             if ((src!=null)&&(dst!=null))
             if ((dst.getConverter() instanceof ColorConverter) && (src.getConverter() instanceof ColorConverter)) {
                 ColorConverter conv_src = (ColorConverter) src.getConverter();
@@ -690,15 +660,15 @@ public class SourceAndConverterHelper {
      *
      * So if the voxel size is [1.2, 0.8, 50], the value 1.2 is used to compare the levels
      * to the target resolution. This is a way to avoid the complexity of defining the correct
-     * pixel size while being also robust to comparing 2d and 3d sources. Indeed 2d sources may
-     * have aberrantly defined vox size along the third axis, either way too big or way too small
+     * pixel size while being also robust to comparing 2d and 3d sources. Indeed, 2d sources may
+     * have aberrant defined vox size along the third axis, either way too big or way too small
      * in one case or the other, the missing dimension is ignored, which we hope works
      * in most circumstances.
      *
-     * Other complication : the sourceandconverter could be a warped source, or a warped source
+     * Other complication : the SourceAndConverter could be a warped source, or a warped source
      * of a warped source of a transformed source, etc.
      *
-     * The proper computation of the level required is complicated, and could be ill defined:
+     * The proper computation of the level required is complicated, and could be ill-defined:
      * Warping can cause local shrinking or expansion such that a single level won't be the
      * best choice for all the image.
      *
@@ -710,16 +680,17 @@ public class SourceAndConverterHelper {
      * see how this search is done
      *
      * So : the source root should be properly scaled from the beginning and weird transformation
-     * (like spherical transformed will give wrong results.
+     * like spherical transformed will give wrong results.
      *
      * @param src source
+     * @param t timepoint
      * @param voxSize target voxel size
      * @return mipmap level fitted for the voxel size
      */
-    public static int bestLevel(Source src, int t, double voxSize) {
+    public static int bestLevel(Source<?> src, int t, double voxSize) {
         List<Double> originVoxSize = new ArrayList<>();
         AffineTransform3D chainedSourceTransform = new AffineTransform3D();
-        Source rootOrigin = getRootSource(src, chainedSourceTransform);
+        Source<?> rootOrigin = getRootSource(src, chainedSourceTransform);
 
         for (int l=0;l<rootOrigin.getNumMipmapLevels();l++) {
             AffineTransform3D sourceTransform = new AffineTransform3D();
@@ -728,12 +699,42 @@ public class SourceAndConverterHelper {
             originVoxSize.add(mid);
         }
 
-        int level = 0;
-        while((originVoxSize.get(level)<voxSize)&&(level<originVoxSize.size()-1)) {
-            level=level+1;
+        if (voxSize<originVoxSize.get(0)) return 0; // below highest resolution : return the highest resolution
+
+        if (originVoxSize.get(0) == 0) {
+            System.err.println(SourceAndConverterHelper.class.getSimpleName()+" error : couldn't find voxel size of source "+src.getName());
+            // proceed anyway
+            return 0;
         }
 
-        return Math.max(level-1,0);
+        /*
+        How to decide which resolution level is the best ? The perfect answer is to blend
+        the resolution levels, but we can't do this here. My assumption: we want to take the
+        resolution level which has its voxel size ratio voxSize/originVoxSize nearest to 1
+        */
+
+        double bestRatio = voxSize / originVoxSize.get(0);
+        int bestLevel = 0;
+
+        boolean doBetter = true;
+        int currentLevel = 0;
+
+        while ((doBetter)&&(currentLevel<originVoxSize.size()-1)) {
+            currentLevel++;
+            double currentRatio;
+            double currentVoxSize = originVoxSize.get(currentLevel);
+            if (currentVoxSize>voxSize) {
+                currentRatio = currentVoxSize / voxSize;
+            } else {
+                currentRatio = voxSize / currentVoxSize;
+            }
+            if (currentRatio<bestRatio) {
+                bestRatio = currentRatio;
+                bestLevel = currentLevel;
+            } else doBetter = false;
+        }
+
+        return bestLevel;
     }
 
     /**
@@ -743,7 +744,7 @@ public class SourceAndConverterHelper {
      * @param voxSize target voxel size
      * @return mipmap level chosen
      */
-    public static int bestLevel(SourceAndConverter sac, int t, double voxSize) {
+    public static int bestLevel(SourceAndConverter<?> sac, int t, double voxSize) {
         return bestLevel(sac.getSpimSource(), t, voxSize);
     }
     
@@ -752,7 +753,7 @@ public class SourceAndConverterHelper {
      * for an example of the use of this function
      * 
      * What the 'root' means is actually the origin source from which is derived the source
-     * so if a source has been affine tranformed, warped, resampled, potentially in successive steps
+     * so if a source has been affine transformed, warped, resampled, potentially in successive steps
      * this function should return the source it was derived from.
      * 
      * This function is used (for the moment) only when a source needs to be resampled
@@ -764,23 +765,24 @@ public class SourceAndConverterHelper {
      * into account, provided that the transform are affine. Is the source is transformed in a more
      * complex way, then nothing can be done easily...
      *
+     * @param chainedSourceTransform TODO
      * @param source source
      * @return the root source : it's not derived from another source
      */
-    public static Source getRootSource(Source source, AffineTransform3D chainedSourceTransform) {
-        Source rootOrigin = source;
+    public static Source<?> getRootSource(Source<?> source, AffineTransform3D chainedSourceTransform) {
+        Source<?> rootOrigin = source;
         while ((rootOrigin instanceof WarpedSource)
                 ||(rootOrigin instanceof TransformedSource)
                 ||(rootOrigin instanceof ResampledSource)) {
             if (rootOrigin instanceof WarpedSource) {
-                rootOrigin = ((WarpedSource) rootOrigin).getWrappedSource();
+                rootOrigin = ((WarpedSource<?>) rootOrigin).getWrappedSource();
             } else if (rootOrigin instanceof TransformedSource) {
                 AffineTransform3D m = new AffineTransform3D();
-                ((TransformedSource) rootOrigin).getFixedTransform(m);
+                ((TransformedSource<?>) rootOrigin).getFixedTransform(m);
                 chainedSourceTransform.concatenate(m);
-                rootOrigin = ((TransformedSource) rootOrigin).getWrappedSource();
+                rootOrigin = ((TransformedSource<?>) rootOrigin).getWrappedSource();
             } else if (rootOrigin instanceof ResampledSource) {
-                rootOrigin = ((ResampledSource) rootOrigin).getModelResamplerSource();
+                rootOrigin = ((ResampledSource<?>) rootOrigin).getModelResamplerSource();
             }
         }
         return rootOrigin;
@@ -789,11 +791,11 @@ public class SourceAndConverterHelper {
     /**
      * see {@link SourceAndConverterHelper#getCharacteristicVoxelSize(AffineTransform3D)}
      * @param sac source
-     * @param t timepoiont
+     * @param t timepoint
      * @param level mipmap level
      * @return the characteristic voxel size for this level
      */
-    public static double getCharacteristicVoxelSize(SourceAndConverter sac, int t, int level) {
+    public static double getCharacteristicVoxelSize(SourceAndConverter<?> sac, int t, int level) {
         return getCharacteristicVoxelSize(sac.getSpimSource(), t, level);
     }
 
@@ -804,9 +806,9 @@ public class SourceAndConverterHelper {
      * @param level mipmap level
      * @return the characteristic voxel size
      */
-    public static double getCharacteristicVoxelSize(Source src, int t, int level) {
+    public static double getCharacteristicVoxelSize(Source<?> src, int t, int level) {
         AffineTransform3D chainedSourceTransform = new AffineTransform3D();
-        Source root = getRootSource(src, chainedSourceTransform);
+        Source<?> root = getRootSource(src, chainedSourceTransform);
 
         AffineTransform3D sourceTransform = new AffineTransform3D();
         root.getSourceTransform(t, level, sourceTransform);
@@ -837,8 +839,8 @@ public class SourceAndConverterHelper {
 
     /**
      * Determines all visible sources at the current mouse position in the Bdv window.
-     * Note: this method can be slow as it needs an actual random access on the source data.
-     * @param bdvHandle
+     * Note: this method can be slow as it needs a random access on the source data.
+     * @param bdvHandle the bdv window to probe
      * @return List of SourceAndConverters
      */
     public static List< SourceAndConverter< ? > > getSourceAndConvertersAtCurrentMousePosition( BdvHandle bdvHandle )
@@ -848,12 +850,249 @@ public class SourceAndConverterHelper {
         bdvHandle.getBdvHandle().getViewerPanel().getGlobalMouseCoordinates( mousePosInBdv );
         int timePoint = bdvHandle.getViewerPanel().state().getCurrentTimepoint();
 
-        final List< SourceAndConverter< ? > > sourceAndConverters = SourceAndConverterServices.getSourceAndConverterDisplayService().getSourceAndConverterOf( bdvHandle )
+        final List< SourceAndConverter< ? > > sourceAndConverters = SourceAndConverterServices.getBdvDisplayService().getSourceAndConverterOf( bdvHandle )
                 .stream()
                 .filter( sac -> isSourcePresentAt( sac, timePoint, mousePosInBdv ) )
-                .filter( sac -> SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible( sac, bdvHandle ) )
+                .filter( sac -> SourceAndConverterServices.getBdvDisplayService().isVisible( sac, bdvHandle ) )
                 .collect( Collectors.toList() );
 
         return sourceAndConverters;
+    }
+
+    /**
+     * Return the list of double position along the ray which should lead to different pixel values
+     * this is complicated... how to handle warped sources ? procedural sources ?
+     * @param sac source that's investigated
+     * @param origin of the ray
+     * @param direction of the ray
+     * @return a list of double position along the ray which should sample each pixel
+     */
+    public static List<Double> rayIntersect(SourceAndConverter<?> sac, int timepoint, RealPoint origin, RealPoint direction) {
+        if (sac.getSpimSource()==null) {
+            return new ArrayList<>();
+        } else {
+            return rayIntersect(sac.getSpimSource(), timepoint, origin, direction);
+        }
+    }
+
+    public static List<Double> rayIntersect(Source<?> source, int timepoint, RealPoint origin, RealPoint direction) {
+        if (source.isPresent(timepoint)) {
+            if ((source instanceof AbstractSpimSource)
+                ||(source instanceof TransformedSource)
+                ||(source instanceof ResampledSource)) {
+                return rayIntersectRaiSource(source, timepoint, origin, direction);
+            } else return new ArrayList<>();
+        } else return new ArrayList<>();
+    }
+
+    public static List<Double> rayIntersectRaiSource(Source<?> source, int timepoint, RealPoint origin, RealPoint direction) {
+        long[] dims = source.getSource(timepoint,0).dimensionsAsLongArray();
+        AffineTransform3D at3d = new AffineTransform3D();
+        source.getSourceTransform(timepoint,0,at3d);
+
+        // Ok, now let's find the intersection of the ray with the box
+        // Let's find the plane (XY, XZ, YZ) which is the best aligned along the direction
+
+        RealPoint ui = new RealPoint(3);
+        ui.setPosition(at3d.get(0,0),0);
+        ui.setPosition(at3d.get(1,0),1);
+        ui.setPosition(at3d.get(2,0),2);
+
+        RealPoint vi = new RealPoint(3);
+        vi.setPosition(at3d.get(0,1),0);
+        vi.setPosition(at3d.get(1,1),1);
+        vi.setPosition(at3d.get(2,1),2);
+
+        RealPoint wi = new RealPoint(3);
+        wi.setPosition(at3d.get(0,2),0);
+        wi.setPosition(at3d.get(1,2),1);
+        wi.setPosition(at3d.get(2,2),2);
+
+        RealPoint oppositeCorner = new RealPoint(dims[0]-1, dims[1]-1, dims[2]-1);
+
+        at3d.apply(oppositeCorner, oppositeCorner);
+
+        RealPoint plane0Origin = new RealPoint(0,0,0);
+        at3d.apply(plane0Origin, plane0Origin); // pix to physical space coordinates - origin of first plane
+
+        if (!rayIntersectPlane(origin, direction, plane0Origin, ui, vi, dims[0], dims[1]))
+        if (!rayIntersectPlane(origin, direction, plane0Origin, ui, wi, dims[0], dims[2]))
+        if (!rayIntersectPlane(origin, direction, plane0Origin, vi, wi, dims[1], dims[2]))
+        if (!rayIntersectPlane(origin, direction, oppositeCorner, minus3(ui), minus3(vi), dims[0], dims[1]))
+        if (!rayIntersectPlane(origin, direction, oppositeCorner, minus3(ui), minus3(wi), dims[0], dims[2]))
+        if (!rayIntersectPlane(origin, direction, oppositeCorner, minus3(vi), minus3(wi), dims[1], dims[2]))
+                return new ArrayList<>();
+
+        RealPoint u = prodVect(vi,wi);
+        RealPoint v = prodVect(ui,wi);
+        RealPoint w = prodVect(ui,vi);
+
+        normalize3(u);
+        normalize3(v);
+        normalize3(w);
+
+        double absud = Math.abs(prodScal3(u,direction));
+        double absvd = Math.abs(prodScal3(v,direction));
+        double abswd = Math.abs(prodScal3(w,direction));
+
+        RealPoint mainDirection;
+
+        RealPoint planeMaxOrigin = new RealPoint(0,0,0);
+
+        long nPlanes;
+
+        if (absud>absvd) {
+            // u > v
+            if (absud>abswd) {
+                // u > w
+                nPlanes = dims[0];
+                planeMaxOrigin.setPosition(nPlanes,0);
+                mainDirection = new RealPoint(u);
+            } else {
+                // w > u
+                nPlanes = dims[2];
+                planeMaxOrigin.setPosition(nPlanes,2);
+                mainDirection = new RealPoint(w);
+            }
+        } else {
+            // v > u
+            if (absvd>abswd) {
+                // v > w
+                nPlanes = dims[1];
+                planeMaxOrigin.setPosition(nPlanes,1);
+                mainDirection = new RealPoint(v);
+            } else {
+                // w > v
+                nPlanes = dims[2];
+                planeMaxOrigin.setPosition(nPlanes,2);
+                mainDirection = new RealPoint(w);
+            }
+        }
+        normalize3(mainDirection);
+        at3d.apply(planeMaxOrigin, planeMaxOrigin); // pix to physical space coordinates - origin of last plane
+
+        // We now need to find where
+        // the plane perpendicular to mainDirection and with offset offs
+        // intersects with the ray
+        // we subtract the offset of the origin ray
+
+        // The equation of the first plane is for any vector i
+        // (i-offs0).maindirection = 0
+        // The equation of the ray is i = lambda.direction + origin
+        // We look for p0, the coordinate along the ray of the point which belongs
+        // both to the plane and to the ray
+        // (p0.direction+origin-offs0).maindirection = 0
+        // thus p0.direction.maindirection = (offs0-origin).maindirection
+        // p0 = (offs.maindirection - origin.maindirection ) / (direction.maindirection)
+
+        double pOrigin = prodScal3(origin, mainDirection);
+        double p0 = (prodScal3(plane0Origin, mainDirection) - pOrigin) / prodScal3(direction,mainDirection);
+        double pMax = (prodScal3(planeMaxOrigin, mainDirection) - pOrigin) / prodScal3(direction,mainDirection);
+
+        if (nPlanes >= Integer.MAX_VALUE) {
+            logger.debug("Too many planes");
+            return new ArrayList<>();
+        } else {
+            List<Double> zPositions = new ArrayList<>((int) nPlanes);
+            double step = (pMax-p0)/(double) nPlanes;
+            for (int i = 0; i<nPlanes; i++) {
+                zPositions.add(p0 + i*step);
+            }
+            return zPositions;
+        }
+    }
+
+    static RealPoint minus3(RealPoint pt) {
+        return new RealPoint(-pt.getDoublePosition(0),
+                -pt.getDoublePosition(1),
+                -pt.getDoublePosition(2));
+    }
+
+    public static boolean rayIntersectPlane(RealPoint rayOrigin, RealPoint rayDirection,
+                                            RealPoint planeOrigin, RealPoint u, RealPoint v,
+                                            double maxCoordU, double maxCoordV) {
+        // Equation of the plane:
+        // (uxv).(i-planeOrigin) = 0, where x is the cross product
+
+        // Equation of the ray:
+        // i = rayOrigin + lambda.rayDirection
+
+        // First let's find lambda, which is such that:
+
+        // (uxv).(rayOrigin + lambda.rayDirection - planeOrigin) = 0
+        // implies
+        // lambda = (uxv).(planeOrigin-rayOrigin) / (uxv.rayDirection)
+        // Edge case : denominator null = never crossing ( parallel )
+
+        RealPoint uxv = prodVect(u,v);
+
+        double denominator = prodScal3(uxv, rayDirection);
+
+        if (Math.abs(denominator) < 1e-12) {
+            return false;
+        } else {
+
+            RealPoint planeOriginMinusRayOrigin = new RealPoint(
+                planeOrigin.getDoublePosition(0) - rayOrigin.getDoublePosition(0),
+                planeOrigin.getDoublePosition(1) - rayOrigin.getDoublePosition(1),
+                planeOrigin.getDoublePosition(2) - rayOrigin.getDoublePosition(2)
+            );
+
+            double lambda = prodScal3(uxv, planeOriginMinusRayOrigin) / denominator;
+
+            RealPoint ptCrossingInPlane = new RealPoint(
+                rayOrigin.getDoublePosition(0)
+                        + rayDirection.getDoublePosition(0) * lambda
+                        - planeOrigin.getDoublePosition(0),
+                rayOrigin.getDoublePosition(1)
+                        + rayDirection.getDoublePosition(1) * lambda
+                        - planeOrigin.getDoublePosition(1),
+                rayOrigin.getDoublePosition(2)
+                        + rayDirection.getDoublePosition(2) * lambda
+                        - planeOrigin.getDoublePosition(2)
+            );
+
+            double coordU = prodScal3(u, ptCrossingInPlane) / norm2(u);
+            double coordV = prodScal3(v, ptCrossingInPlane) / norm2(v);
+
+            return ((coordU>-0.5)&&(coordU<maxCoordU-0.5))&&((coordV>-0.5)&&(coordV<maxCoordV-0.5)); // Account for 'pixel thickness' of 1
+        }
+    }
+
+    public static double norm2(RealPoint pt) {
+        double px = pt.getDoublePosition(0);
+        double py = pt.getDoublePosition(1);
+        double pz = pt.getDoublePosition(2);
+        return px*px+py*py+pz*pz;
+    }
+
+    public static void normalize3(RealPoint pt) {
+        double px = pt.getDoublePosition(0);
+        double py = pt.getDoublePosition(1);
+        double pz = pt.getDoublePosition(2);
+        double d = Math.sqrt(px*px+py*py+pz*pz);
+        pt.setPosition(pt.getDoublePosition(0)/d, 0);
+        pt.setPosition(pt.getDoublePosition(1)/d, 1);
+        pt.setPosition(pt.getDoublePosition(2)/d, 2);
+    }
+
+    public static double prodScal3(RealPoint pt1, RealPoint pt2) {
+        return pt1.getDoublePosition(0)*pt2.getDoublePosition(0)+
+                pt1.getDoublePosition(1)*pt2.getDoublePosition(1)+
+                pt1.getDoublePosition(2)*pt2.getDoublePosition(2);
+    }
+
+    public static RealPoint prodVect(RealPoint pt1, RealPoint pt2) {
+
+        double px = pt1.getDoublePosition(1)*pt2.getDoublePosition(2)
+                   -pt1.getDoublePosition(2)*pt2.getDoublePosition(1);
+
+        double py = pt1.getDoublePosition(2)*pt2.getDoublePosition(0)
+                   -pt1.getDoublePosition(0)*pt2.getDoublePosition(2);
+
+        double pz = pt1.getDoublePosition(0)*pt2.getDoublePosition(1)
+                   -pt1.getDoublePosition(1)*pt2.getDoublePosition(0);
+
+        return new RealPoint(px,py,pz);
     }
 }

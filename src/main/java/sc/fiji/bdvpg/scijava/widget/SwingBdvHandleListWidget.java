@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,6 @@ import org.scijava.plugin.Plugin;
 import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -67,10 +66,10 @@ public class SwingBdvHandleListWidget extends SwingInputWidget<BdvHandle[]> impl
         return getSelectedBdvHandles();
     }
 
-    JList<RenamableBdvHandle> list;
+    JList<SwingBdvHandleWidget.RenamableBdvHandle> list;
 
     public BdvHandle[] getSelectedBdvHandles() {
-        List<RenamableBdvHandle> selected = list.getSelectedValuesList();
+        List<SwingBdvHandleWidget.RenamableBdvHandle> selected = list.getSelectedValuesList();
         return  selected.stream().map((e) -> e.bdvh)
                 .collect(Collectors.toList()).toArray(new BdvHandle[selected.size()]);
     }
@@ -81,31 +80,17 @@ public class SwingBdvHandleListWidget extends SwingInputWidget<BdvHandle[]> impl
     @Override
     public void set(final WidgetModel model) {
         super.set(model);
-        RenamableBdvHandle[] data =
+        SwingBdvHandleWidget.RenamableBdvHandle[] data =
                 os.getObjects(BdvHandle.class)
                         .stream()
-                        .map(RenamableBdvHandle::new)
-                        .toArray(RenamableBdvHandle[]::new);
-        list = new JList(data); //data has type Object[]
+                        .map(SwingBdvHandleWidget.RenamableBdvHandle::new)
+                        .toArray(SwingBdvHandleWidget.RenamableBdvHandle[]::new);
+        list = new JList<>(data); //data has type Object[]
         list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         JScrollPane listScroller = new JScrollPane(list);
         listScroller.setPreferredSize(new Dimension(250, 80));
         list.addListSelectionListener((e)-> model.setValue(getValue()));
         getComponent().add(listScroller);
-    }
-
-    public static class RenamableBdvHandle {
-
-        public BdvHandle bdvh;
-
-        public RenamableBdvHandle(BdvHandle bdvh) {
-            this.bdvh = bdvh;
-        }
-
-        public String toString() {
-            return BdvHandleHelper.getWindowTitle(bdvh);
-        }
-
     }
 
 }

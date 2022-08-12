@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,6 +32,8 @@ import bdv.ui.SourcesTransferable;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
@@ -48,14 +50,17 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * Allows to drop drop SourceAndConverter from the SourceAndConverterServiceUI into the bdv windows
+ * Allows dropping SourceAndConverter from the SourceAndConverterServiceUI into the bdv windows
  *
  * Allows importing nodes from the SourceAndConverterServiceUI JTree
  */
 
 public class BdvTransferHandler extends TransferHandler {
+
+    protected static final Logger logger = LoggerFactory.getLogger(BdvTransferHandler.class);
+
     DataFlavor nodesFlavor;
-    DataFlavor[] flavors = new DataFlavor[2];
+    final DataFlavor[] flavors = new DataFlavor[2];
 
     public BdvTransferHandler() {
         try {
@@ -65,7 +70,7 @@ public class BdvTransferHandler extends TransferHandler {
             flavors[0] = nodesFlavor;
             flavors[1] = SourcesTransferable.flavor;
         } catch(ClassNotFoundException e) {
-            System.out.println("ClassNotFound: " + e.getMessage());
+            logger.warn("ClassNotFound: " + e.getMessage());
         }
     }
 
@@ -76,15 +81,13 @@ public class BdvTransferHandler extends TransferHandler {
     public void importSourcesAndConverters(TransferSupport support, List<SourceAndConverter<?>> sacs) {
         // Can be extended for custom action on sources import
         Optional<BdvHandle> bdvh = getBdvHandleFromViewerPanel(((bdv.viewer.ViewerPanel)support.getComponent()));
-        if (bdvh.isPresent()) {
-            SourceAndConverterServices.getSourceAndConverterDisplayService()
-                    .show(bdvh.get(), sacs.toArray(new SourceAndConverter[0]));
-        }
+        bdvh.ifPresent(bdvHandle -> SourceAndConverterServices.getBdvDisplayService()
+                .show(bdvHandle, sacs.toArray(new SourceAndConverter[0])));
     }
 
     public Optional<BdvHandle> getBdvHandleFromViewerPanel(ViewerPanel viewerPanel) {
         return SourceAndConverterServices.
-                getSourceAndConverterDisplayService()
+                getBdvDisplayService()
                 .getDisplays().stream().filter(bdvh -> bdvh.getViewerPanel().equals(viewerPanel)).findFirst();
     }
 
@@ -100,10 +103,8 @@ public class BdvTransferHandler extends TransferHandler {
                     }
                 }
             }
-            return false;
-        } else {
-            return false;
         }
+        return false;
     }
 
     @Override public boolean importData(TransferHandler.TransferSupport support) {
@@ -130,22 +131,27 @@ public class BdvTransferHandler extends TransferHandler {
                 Transferable t = support.getTransferable();
                 nodes = (DefaultMutableTreeNode[]) t.getTransferData(nodesFlavor);
             } catch (UnsupportedFlavorException ufe) {
-                System.err.println("UnsupportedFlavor: " + ufe.getMessage());
+                logger.warn("UnsupportedFlavor: " + ufe.getMessage());
             } catch (java.io.IOException ioe) {
-                System.err.println("I/O error: " + ioe.getMessage());
+                logger.error("I/O error: " + ioe.getMessage());
+            }
+
+            if (nodes==null) {
+                logger.warn("Null nodes found");
+                return false;
             }
 
             if (SourceAndConverterServices.getSourceAndConverterService() instanceof SourceAndConverterService) {
                 List<SourceAndConverter<?>> sacs = new ArrayList<>();
                 SourceAndConverterServiceUI ui =
                         ((SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getUI();
-
                 for (DefaultMutableTreeNode node : nodes) {
                     DefaultMutableTreeNode unwrapped = (DefaultMutableTreeNode) (node.getUserObject());
                     if (unwrapped.getUserObject() instanceof RenamableSourceAndConverter) {
                         sacs.add(((RenamableSourceAndConverter) unwrapped.getUserObject()).sac);
                     } else {
-                        for (SourceAndConverter sac : ui.getSourceAndConvertersFromChildrenOf(unwrapped)) {
+                        for (SourceAndConverter<?> sac : ui.getSourceAndConvertersFromChildrenOf(unwrapped)) {
+                            //noinspection UseBulkOperation
                             sacs.add(sac);
                         }
                     }
@@ -171,7 +177,7 @@ public class BdvTransferHandler extends TransferHandler {
 
     @Override
     protected Transferable createTransferable(JComponent c) {
-        System.out.println("Create BDV Transferable");
+        logger.debug("Create BDV Transferable");
         if (transferableSupplier!=null) {
             return transferableSupplier.apply(c);
         } else {

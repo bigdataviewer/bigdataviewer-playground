@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -61,7 +61,7 @@ public class WarpedSourceDemo {
 
     @Test
     public void demoRunOk() throws Exception {
-        main(new String[]{""});
+        main("");
     }
 
     @After
@@ -73,23 +73,23 @@ public class WarpedSourceDemo {
 
         // Get Model Source
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter("src/test/resources/mri-stack-multilevel.xml");
-        AbstractSpimData asd = importer.get();
+        AbstractSpimData<?> asd = importer.get();
 
-        SourceAndConverter sac = SourceAndConverterServices
+        SourceAndConverter<?> sac = SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(asd)
                 .get(0);
 
         SourceAndConverterServices
-                .getSourceAndConverterDisplayService()
+                .getBdvDisplayService()
                 .show(sac);
 
         // Gets active BdvHandle instance
-        BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
-        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+        SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
         new ViewerTransformAdjuster(bdvHandle, sac).run();
-        new BrightnessAutoAdjuster(sac, 0).run();
+        new BrightnessAutoAdjuster<>(sac, 0).run();
 
         List<RealTransform> transform_tested = new ArrayList<>();
 
@@ -126,14 +126,14 @@ public class WarpedSourceDemo {
 
         // Register sources and display source
         for (RealTransform rt : transform_tested) {
-            SourceAndConverter transformed_source = new SourceRealTransformer(rt).apply(sac);
+            SourceAndConverter<?> transformed_source = new SourceRealTransformer(rt).apply(sac);
 
             SourceAndConverterServices
                     .getSourceAndConverterService()
                     .register(transformed_source);
 
             SourceAndConverterServices
-                    .getSourceAndConverterDisplayService()
+                    .getBdvDisplayService()
                     .show(bdvHandle, transformed_source);
 
         }

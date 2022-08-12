@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -37,13 +37,21 @@ import sc.fiji.bdvpg.bvv.BvvCreator;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>Create Empty BVV Frame",
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>BVV - Create Empty BVV Frame",
     description = "Creates an empty Bvv window")
 public class BvvWindowCreatorCommand implements BdvPlaygroundActionCommand {
 
+    /**
+     * Title of the new BVV window
+     */
     @Parameter(label = "Title of the new BVV window")
     public String windowtitle = "BVV";
 
+    /**
+     * Number of timepoints (1 for a single timepoint)
+     */
     @Parameter(label = "Number of timepoints (1 for a single timepoint)")
     public int ntimepoints = 1;
 

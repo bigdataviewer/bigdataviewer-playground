@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -44,6 +44,8 @@ import sc.fiji.bdvpg.sourceandconverter.importer.Wave3DSourceGetter;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Create Sample Source")
 public class SampleSourceCreatorCommand implements BdvPlaygroundActionCommand {
 
@@ -51,7 +53,7 @@ public class SampleSourceCreatorCommand implements BdvPlaygroundActionCommand {
     String samplename;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter sac;
+    SourceAndConverter<?> sac;
 
     @Override
     public void run() {

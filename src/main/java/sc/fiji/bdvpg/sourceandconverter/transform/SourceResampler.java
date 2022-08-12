@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,24 +36,30 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Function;
 
-public class SourceResampler implements Runnable, Function<SourceAndConverter, SourceAndConverter> {
+public class SourceResampler implements Runnable, Function<SourceAndConverter<?>, SourceAndConverter<?>> {
 
-    SourceAndConverter sac_in;
+    final SourceAndConverter<?> sac_in;
 
-    SourceAndConverter model;
+    final SourceAndConverter<?> model;
 
-    boolean reuseMipMaps;
+    final boolean reuseMipMaps;
 
-    boolean interpolate;
+    final boolean interpolate;
 
-    boolean cache;
+    final boolean cache;
 
-    public SourceResampler(SourceAndConverter sac_in, SourceAndConverter model, boolean reuseMipmaps, boolean cache, boolean interpolate) {
+    final int defaultMipMapLevel;
+
+    private final String name;
+
+    public SourceResampler( SourceAndConverter<?> sac_in, SourceAndConverter<?> model, String name, boolean reuseMipmaps, boolean cache, boolean interpolate, int defaultMipMapLevel ) {
+        this.name = name;
         this.reuseMipMaps = reuseMipmaps;
         this.model = model;
         this.sac_in = sac_in;
         this.interpolate = interpolate;
         this.cache = cache;
+        this.defaultMipMapLevel = defaultMipMapLevel;
     }
 
     @Override
@@ -61,40 +67,44 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter, S
 
     }
 
-    public SourceAndConverter get() {
+    public SourceAndConverter<?> get() {
         return apply(sac_in);
     }
 
     @Override
-    public SourceAndConverter apply(SourceAndConverter src) {
-        Source srcRsampled =
+    public SourceAndConverter<?> apply(SourceAndConverter<?> src) {
+        Source<?> srcRsampled =
                 new ResampledSource(
                         src.getSpimSource(),
                         model.getSpimSource(),
+                        name,
                         reuseMipMaps,
                         cache,
-                        interpolate);
+                        interpolate,
+                        defaultMipMapLevel);
 
-        SourceAndConverter sac;
+        SourceAndConverter<?> sac;
         if (src.asVolatile()!=null) {
-            SourceAndConverter vsac;
-            Source vsrcRsampled;
+            SourceAndConverter<?> vsac;
+            Source<?> vsrcResampled;
             if (cache) {
-                vsrcRsampled = new VolatileSource(srcRsampled);
+                vsrcResampled = new VolatileSource(srcRsampled);
             } else {
-                vsrcRsampled = new ResampledSource(
+                vsrcResampled = new ResampledSource(
                         src.asVolatile().getSpimSource(),
                         model.getSpimSource(),
+                        name,
                         reuseMipMaps,
                         false,
-                        interpolate);
+                        interpolate,
+                        defaultMipMapLevel);
             }
-            vsac = new SourceAndConverter(vsrcRsampled,
+            vsac = new SourceAndConverter(vsrcResampled,
                     SourceAndConverterHelper.cloneConverter(src.asVolatile().getConverter(), src.asVolatile()));
-            sac = new SourceAndConverter<>(srcRsampled,
+            sac = new SourceAndConverter(srcRsampled,
                     SourceAndConverterHelper.cloneConverter(src.getConverter(), src),vsac);
         } else {
-            sac = new SourceAndConverter<>(srcRsampled,
+            sac = new SourceAndConverter(srcRsampled,
                     SourceAndConverterHelper.cloneConverter(src.getConverter(), src));
         }
 

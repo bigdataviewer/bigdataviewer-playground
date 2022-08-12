@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,12 +30,14 @@ package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import ij.IJ;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStarter;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStopper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
 
 import javax.swing.*;
@@ -46,6 +48,8 @@ import java.awt.event.WindowEvent;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Manual Sources Transformation",
 description = "Manual transformation of selected sources. Works only with a single bdv window (the active one)." +
         "The sources that are not displayed but selected are transformed. During the registration, the user is" +
@@ -53,11 +57,11 @@ description = "Manual transformation of selected sources. Works only with a sing
 
 public class ManualTransformCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(choices = {"Mutate", "Append"})
+    @Parameter(choices = {"Mutate", "Append", "Append (all timepoints)", "Append (timepoints before)", "Append (timepoints after)", "Wrap", "Log"})
     String mode = "Mutate";
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter
     BdvHandle bdvh;
@@ -65,15 +69,38 @@ public class ManualTransformCommand implements BdvPlaygroundActionCommand {
     public void run() {
         ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvh, sacs);
         ManualRegistrationStopper manualRegistrationStopper;
-
-        if (mode.equals("Mutate")) {
-            manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                    SourceTransformHelper::mutate
-            );
-        } else {
-            manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                    SourceTransformHelper::append
-            );
+        switch (mode) {
+            case "Mutate":
+                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                        SourceTransformHelper::mutate);
+                break;
+            case "Append":
+                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                        SourceTransformHelper::append);
+                break;
+            case "Append (all timepoints)":
+                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                        SourceTransformHelper::append);
+                manualRegistrationStopper.setTimeRange(0, SourceAndConverterHelper.getMaxTimepoint(sacs));
+                break;
+            case "Append (timepoints before)":
+                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                        SourceTransformHelper::append);
+                manualRegistrationStopper.setTimeRange(0, bdvh.getViewerPanel().state().getCurrentTimepoint()+1);
+                break;
+            case "Append (timepoints after)":
+                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                        SourceTransformHelper::append);
+                manualRegistrationStopper.setTimeRange(bdvh.getViewerPanel().state().getCurrentTimepoint(), SourceAndConverterHelper.getMaxTimepoint(sacs));
+                break;
+            case "Log":
+                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                        (transform, source) -> SourceTransformHelper.log(transform, source, IJ::log));
+                break;
+            default:
+                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
+                        SourceTransformHelper::createNewTransformedSourceAndConverter
+                );
         }
 
         manualRegistrationStarter.run();

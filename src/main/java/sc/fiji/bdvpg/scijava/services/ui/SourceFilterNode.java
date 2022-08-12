@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -77,7 +77,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
     /**
      * Filters SourceAndConverter to downstream nodes in the tree
      */
-    public Predicate<SourceAndConverter> filter;
+    public Predicate<SourceAndConverter<?>> filter;
 
     /**
      * Name of this node : displayed in the jtree
@@ -87,11 +87,11 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
     /**
      * Are the filtered sources displayed as direct children of this node ?
      */
-    boolean displayFilteredSources;
+    final boolean displayFilteredSources;
 
     DefaultTreeModel model;
 
-    public SourceFilterNode(DefaultTreeModel model, String name, Predicate<SourceAndConverter> filter, boolean displayFilteredSources) {
+    public SourceFilterNode(DefaultTreeModel model, String name, Predicate<SourceAndConverter<?>> filter, boolean displayFilteredSources) {
         super(name);
         this.model = model;
         this.name = name;
@@ -108,10 +108,10 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
     }
 
     // Holding current state = set of SourceAndConverter contained in the filter node
-    Set<SourceAndConverter> currentInputSacs = ConcurrentHashMap.newKeySet();
-    Set<SourceAndConverter> currentOutputSacs = ConcurrentHashMap.newKeySet();
+    final Set<SourceAndConverter<?>> currentInputSacs = ConcurrentHashMap.newKeySet();
+    final Set<SourceAndConverter<?>> currentOutputSacs = ConcurrentHashMap.newKeySet();
 
-    public boolean hasConsumed(SourceAndConverter sac) {
+    public boolean hasConsumed(SourceAndConverter<?> sac) {
         return currentOutputSacs.contains(sac);
     }
 
@@ -119,7 +119,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
     public synchronized void insert(MutableTreeNode newChild, int childIndex) { // is synchronized useful ?
 
         if (((DefaultMutableTreeNode)newChild).getUserObject() instanceof RenamableSourceAndConverter) {
-            SourceAndConverter sac = getSacFromNode(newChild);
+            SourceAndConverter<?> sac = getSacFromNode(newChild);
             if (currentInputSacs.contains(sac)) {
                 // Nothing to be done
             } else {
@@ -144,12 +144,12 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
             super.insert(newChild, childIndex);
             safeModelReloadAction(() -> model.nodesWereInserted(this, new int[]{childIndex}) ); // updates model in EDT thread
 
-            // Still : notifying the insertion of a new node, which can be a new filter node and thus needs recomputation
+            // Still : notifying the insertion of a new node, which can be a new filter node and thus needs to be recomputed
             this.update(new NodeAddedUpdateEvent(newChild));
         }
     }
 
-    private static SourceAndConverter getSacFromNode(MutableTreeNode newChild) {
+    private static SourceAndConverter<?> getSacFromNode(MutableTreeNode newChild) {
         return ((RenamableSourceAndConverter)(((DefaultMutableTreeNode)newChild).getUserObject())).sac;
     }
 
@@ -165,7 +165,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
      * Removes a source and converter from this node and children nodes
      * @param sac source to remove
      */
-    void remove(SourceAndConverter sac) {
+    void remove(SourceAndConverter<?> sac) {
         currentInputSacs.remove(sac);
         currentOutputSacs.remove(sac);
 
@@ -187,20 +187,20 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
 
     /**
      * Very important method which recomputes the tree based on the {@link UpdateEvent} notified
-     * ensures new and up to date recomputation of the whole tree
-     * @param event casted event
+     * ensures new and up-to-date computation of the whole tree
+     * @param event cast event
      */
     public void update(UpdateEvent event) {
         if (event instanceof NodeAddedUpdateEvent) {
             NodeAddedUpdateEvent nodeEvent = (NodeAddedUpdateEvent) event;
             assert this.isNodeChild(nodeEvent.getNode());
             if (nodeEvent.getNode() instanceof SourceFilterNode) {
-                for (SourceAndConverter sac : currentOutputSacs) {
+                for (SourceAndConverter<?> sac : currentOutputSacs) {
                     ((SourceFilterNode) nodeEvent.getNode()).add(new DefaultMutableTreeNode(new RenamableSourceAndConverter(sac)));
                 }
             }
         } else if (event instanceof FilterUpdateEvent) {
-            for (SourceAndConverter sac : currentInputSacs) {
+            for (SourceAndConverter<?> sac : currentInputSacs) {
                 if (filter.test(sac)) {
                     if (!currentOutputSacs.contains(sac)) {
                         // a blocked source is now passing
@@ -229,7 +229,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
             }
         } else if (event instanceof SourceUpdateEvent){
             SourceUpdateEvent sourceEvent = (SourceUpdateEvent) event;
-            SourceAndConverter sac = sourceEvent.getSource();
+            SourceAndConverter<?> sac = sourceEvent.getSource();
             if (filter.test(sac)) {
                 if (!currentOutputSacs.contains(sac)) {
                     // a blocked source is now passing
@@ -297,19 +297,19 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
      * There is no need to notified children nodes as the {@link SourceFilterNode#update(UpdateEvent)}
      * method will do the job itself
      *
-     * However this is true for the children only.
+     * However, this is true for the children only.
      *
      * Normally, such an event should be triggered from the top node, to ensure a complete update of
      * the full tree
      */
     public static class SourceUpdateEvent extends UpdateEvent {
-        final SourceAndConverter sac;
+        final SourceAndConverter<?> sac;
 
-        public SourceUpdateEvent(final SourceAndConverter sac) {
+        public SourceUpdateEvent(final SourceAndConverter<?> sac) {
             this.sac = sac;
         }
 
-        public SourceAndConverter getSource() {
+        public SourceAndConverter<?> getSource() {
             return sac;
         }
 

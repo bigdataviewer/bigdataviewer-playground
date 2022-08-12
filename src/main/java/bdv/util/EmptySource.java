@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,7 @@ package bdv.util;
 
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
+import mpicbg.spim.data.sequence.FinalVoxelDimensions;
 import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imglib2.*;
 import net.imglib2.position.FunctionRandomAccessible;
@@ -37,6 +38,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.Views;
+import sc.fiji.bdvpg.scijava.adapter.source.EmptySourceAdapter;
 
 import java.io.Serializable;
 import java.util.function.BiConsumer;
@@ -48,7 +50,7 @@ import java.util.function.BiConsumer;
  * This source can be thus used to define a template in order to Resample another source
  * with new bounds and voxel size, for instance as a model in {@link ResampledSource}
  *
- * Also this source can be serialized with the gson adapter {@link sc.fiji.bdvpg.services.serializers.plugins.EmptySourceAdapter}
+ * Also, this source can be serialized with the gson adapter {@link EmptySourceAdapter}
  * which is helpful to save such source easily.
  *
  */
@@ -56,7 +58,7 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
 
     transient final RandomAccessibleInterval<UnsignedShortType> rai;
 
-    EmptySourceParams params;
+    final EmptySourceParams params;
 
     transient protected final DefaultInterpolators< UnsignedShortType > interpolators = new DefaultInterpolators<>();
 
@@ -65,15 +67,16 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
     }
 
     public EmptySource(EmptySourceParams p) {
-       this(p.nx,p.ny,p.nz, p.at3D, p.name);
+       this(p.nx,p.ny,p.nz, p.at3D, p.name, p.voxelDimensions);
     }
 
-    public EmptySource(long nx, long ny, long nz, AffineTransform3D at3D, String name) {
+    public EmptySource( long nx, long ny, long nz, AffineTransform3D at3D, String name, VoxelDimensions voxelDimensions ) {
 
         params = new EmptySourceParams();
         params.nx = nx;
         params.ny = ny;
         params.nz = nz;
+        params.voxelDimensions = voxelDimensions;
 
         BiConsumer<Localizable, UnsignedShortType > fun = (l,t) -> t.set(0);
 
@@ -119,29 +122,7 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
 
     @Override
     public VoxelDimensions getVoxelDimensions() {
-        return new VoxelDimensions() {
-            @Override
-            public String unit() {
-                return "undefined";
-            }
-
-            @Override
-            public void dimensions(double[] dimensions) {
-                dimensions[0] = 1;
-                dimensions[1] = 1;
-                dimensions[2] = 1;
-            }
-
-            @Override
-            public double dimension(int d) {
-                return 1;
-            }
-
-            @Override
-            public int numDimensions() {
-                return 3;
-            }
-        };
+        return params.voxelDimensions;
     }
 
     @Override
@@ -149,10 +130,13 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
         return 1; // 0 or 1 ?
     }
 
-    static public class EmptySourceParams implements Cloneable, Serializable {
+    static public class EmptySourceParams implements Serializable {
         public long nx,ny,nz;
         public AffineTransform3D at3D;
         public String name;
+        transient VoxelDimensions voxelDimensions; // transient because it cannot be instantiated  without argument
+        public String unit = "pixel";
+        public double vx = 1.0, vy = 1.0, vz = 1.0;
 
         public EmptySourceParams() {
             nx = 1;
@@ -160,15 +144,33 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
             nz = 1;
             at3D = new AffineTransform3D();
             name = "";
+            voxelDimensions = new FinalVoxelDimensions( unit, vx, vy, vz );
+        }
+
+        public void setVoxelDimensions(String unit, double vx, double vy, double vz) {
+            this.unit = unit;
+            this.vx = vx;
+            this.vy = vy;
+            this.vz = vz;
+            voxelDimensions = new FinalVoxelDimensions( unit, vx, vy, vz );
         }
 
         public EmptySourceParams(EmptySourceParams p) {
             nx = p.nx;
             ny = p.ny;
             nz = p.nz;
+            vx = p.vx;
+            vy = p.vy;
+            vz = p.vz;
+            unit = p.unit;
             at3D = new AffineTransform3D();
             at3D.set(p.at3D);
             name = p.name;
+            voxelDimensions = p.voxelDimensions;
+            vx = p.vx;
+            vy = p.vy;
+            vz = p.vz;
+            unit = p.unit;
         }
     }
 }

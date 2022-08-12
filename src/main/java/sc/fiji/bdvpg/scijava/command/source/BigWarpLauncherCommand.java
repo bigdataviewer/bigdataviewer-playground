@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -37,6 +37,7 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.register.BigWarpLauncher;
 
 import java.util.Arrays;
@@ -48,6 +49,8 @@ import java.util.stream.Collectors;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Register>Launch BigWarp",
         description = "Starts BigWarp from existing sources")
 
@@ -57,10 +60,10 @@ public class BigWarpLauncherCommand implements BdvPlaygroundActionCommand {
     String bigwarpname;
 
     @Parameter(label = "Moving Source(s)")
-    SourceAndConverter[] movingsources;
+    SourceAndConverter<?>[] movingsources;
 
     @Parameter(label = "Fixed Source(s)")
-    SourceAndConverter[] fixedsources;
+    SourceAndConverter<?>[] fixedsources;
 
     @Parameter(type = ItemIO.OUTPUT)
     BdvHandle bdvhq;
@@ -69,23 +72,26 @@ public class BigWarpLauncherCommand implements BdvPlaygroundActionCommand {
     BdvHandle bdvhp;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter[] warpedsources;
+    SourceAndConverter<?>[] warpedsources;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter gridsource;
+    SourceAndConverter<?> gridsource;
 
     @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter warpmagnitudesource;
+    SourceAndConverter<?> warpmagnitudesource;
 
     @Parameter
 	SourceAndConverterBdvDisplayService bsds;
 
-    public void run() {
-        List<SourceAndConverter> movingSacs = Arrays.stream(movingsources).collect(Collectors.toList());
-        List<SourceAndConverter> fixedSacs = Arrays.stream(fixedsources).collect(Collectors.toList());
+    @Parameter
+    SourceAndConverterService sac_service;
 
-        List<ConverterSetup> converterSetups = Arrays.stream(movingsources).map(src -> bsds.getConverterSetup(src)).collect(Collectors.toList());
-        converterSetups.addAll(Arrays.stream(fixedsources).map(src -> bsds.getConverterSetup(src)).collect(Collectors.toList()));
+    public void run() {
+        List<SourceAndConverter<?>> movingSacs = Arrays.stream(movingsources).collect(Collectors.toList());
+        List<SourceAndConverter<?>> fixedSacs = Arrays.stream(fixedsources).collect(Collectors.toList());
+
+        List<ConverterSetup> converterSetups = Arrays.stream(movingsources).map(src -> sac_service.getConverterSetup(src)).collect(Collectors.toList());
+        converterSetups.addAll(Arrays.stream(fixedsources).map(src -> sac_service.getConverterSetup(src)).collect(Collectors.toList()));
 
         // Launch BigWarp
         BigWarpLauncher bwl = new BigWarpLauncher(movingSacs, fixedSacs, bigwarpname, converterSetups);

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,8 @@ package sc.fiji.bdvpg.behaviour;
 
 import bdv.util.BdvHandle;
 import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 /**
@@ -41,7 +43,9 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 public class EditorBehaviourUnInstaller implements Runnable {
 
-    BdvHandle bdvh;
+    protected static final Logger logger = LoggerFactory.getLogger(EditorBehaviourUnInstaller.class);
+
+    final BdvHandle bdvh;
 
     public EditorBehaviourUnInstaller(BdvHandle bdvh) {
         this.bdvh = bdvh;
@@ -50,14 +54,14 @@ public class EditorBehaviourUnInstaller implements Runnable {
     @Override
     public void run() {
 
-        SourceSelectorBehaviour ssb = (SourceSelectorBehaviour) SourceAndConverterServices.getSourceAndConverterDisplayService().getDisplayMetadata(
+        SourceSelectorBehaviour ssb = (SourceSelectorBehaviour) SourceAndConverterServices.getBdvDisplayService().getDisplayMetadata(
                 bdvh, SourceSelectorBehaviour.class.getSimpleName());
 
-        EditorBehaviourInstaller ebi = (EditorBehaviourInstaller) SourceAndConverterServices.getSourceAndConverterDisplayService().getDisplayMetadata(
+        EditorBehaviourInstaller ebi = (EditorBehaviourInstaller) SourceAndConverterServices.getBdvDisplayService().getDisplayMetadata(
                 bdvh, EditorBehaviourInstaller.class.getSimpleName());
 
         if ((ssb==null)||(ebi==null)) {
-            System.err.println("SourceSelectorBehaviour or EditorBehaviourInstaller cannot be retrieved. Cannot uninstall EditorBehaviour");
+            logger.error("SourceSelectorBehaviour or EditorBehaviourInstaller cannot be retrieved. Cannot uninstall EditorBehaviour");
             return;
         }
 
@@ -65,7 +69,7 @@ public class EditorBehaviourUnInstaller implements Runnable {
         ssb.removeToggleListener(ebi.getToggleListener());
 
         // Cleans the MetaData hashMap
-        SourceAndConverterServices.getSourceAndConverterDisplayService().setDisplayMetadata(
+        SourceAndConverterServices.getBdvDisplayService().setDisplayMetadata(
                 bdvh, EditorBehaviourInstaller.class.getSimpleName(), null);
 
     }

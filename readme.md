@@ -1,4 +1,4 @@
-[![](https://travis-ci.com/bigdataviewer/bigdataviewer-playground.svg?branch=master)](https://travis-ci.com/bigdataviewer/bigdataviewer-playground)
+[![](https://github.com/bigdataviewer/bigdataviewer-playground/actions/workflows/build-main.yml/badge.svg)](https://github.com/bigdataviewer/bigdataviewer-playground/actions/workflows/build-main.yml)
 [![Gitter](https://badges.gitter.im/bigdataviewer-playground/community.svg)](https://gitter.im/bigdataviewer-playground/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 
@@ -9,14 +9,14 @@ In this repository, we collect useful additions for the [BigDataViewer](https://
 User documentation is located can be found at [https://imagej.github.io/plugins/bdv/playground](https://imagej.github.io/plugins/bdv/playground)
 
 ## Coding guides
-We tried to follow these general guide lines:
+We tried to follow these general guidelines:
 * Specific (atomic) functionality lives in a class implementing [Runnable](https://docs.oracle.com/javase/7/docs/api/java/lang/Runnable.html)
   * More mandatory parameters for the functionality are handed over as additional constructor parameters.
   * Optional parameters are set with setter methods.
   * The `run()` method executes the concrete action.
   * Results are retrieved using getter methods. The getter methods may internally run the `run()` method if necessary.
 
-Pseudo code example:
+Pseudo-code example:
 ```
   Class Action {
     Action(BdvHandle)
@@ -39,7 +39,7 @@ This enables additional user access.
 * [Change the current viewer transform](https://github.com/haesleinhuepf/bigdataviewer-playground/blob/master/src/test/src/sc/fiji/bdv/navigate/ViewTransformSetAndLogDemo.java#L37-L40)
 * [Take a screenshot](https://github.com/haesleinhuepf/bigdataviewer-playground/blob/master/src/test/src/sc/fiji/bdv/screenshot/ScreenshotDemo.java)
 
-## List of Scijava Commands 
+## List of SciJava Commands 
 
 <details>
  <summary>Source Service State</summary>
@@ -92,7 +92,7 @@ Sets the number of timepoints in one or several BDV Windows
 
 
 ### [BdvSettingsCommand](https://github.com/bigdataviewer/bigdataviewer-playground/tree/master/src/main/java/sc/fiji/bdvpg/scijava/command/bdv/BdvSettingsCommand.java) [BigDataViewer>BDV>BDV - Preferences - Set (Key) Bindings]
-Sets actions linked to key / mouse event in BDV (WIP, currently not working)
+Set actions linked to key / mouse event in BDV (WIP, currently not working)
 
 
 ### [BdvSourcesAdderCommand](https://github.com/bigdataviewer/bigdataviewer-playground/tree/master/src/main/java/sc/fiji/bdvpg/scijava/command/bdv/BdvSourcesAdderCommand.java) [BigDataViewer>BDV>BDV - Show Sources]

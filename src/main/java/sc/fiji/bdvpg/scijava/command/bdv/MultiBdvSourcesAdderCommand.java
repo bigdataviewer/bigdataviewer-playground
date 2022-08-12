@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,6 +36,8 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Show Sources In Multiple BDV Windows",
         description = "Adds one or several sources into several existing BDV windows")
 public class MultiBdvSourcesAdderCommand implements BdvPlaygroundActionCommand {
@@ -44,12 +46,12 @@ public class MultiBdvSourcesAdderCommand implements BdvPlaygroundActionCommand {
     BdvHandle[] bdvhs;
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Override
     public void run() {
         for (BdvHandle bdvh : bdvhs) {
-            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvh, sacs);
+            SourceAndConverterServices.getBdvDisplayService().show(bdvh, sacs);
         }
     }
 }

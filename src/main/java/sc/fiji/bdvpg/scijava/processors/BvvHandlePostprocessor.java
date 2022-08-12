@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -35,6 +35,8 @@ import org.scijava.module.process.PostprocessorPlugin;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
@@ -51,6 +53,8 @@ import java.util.function.Consumer;
 @Plugin(type = PostprocessorPlugin.class)
 public class BvvHandlePostprocessor extends AbstractPostprocessorPlugin {
 
+    protected static final Logger logger = LoggerFactory.getLogger(BvvHandlePostprocessor.class);
+
     @Parameter
     SourceAndConverterBdvDisplayService bsds;
 
@@ -60,7 +64,7 @@ public class BvvHandlePostprocessor extends AbstractPostprocessorPlugin {
     @Parameter
     GuavaWeakCacheService cacheService;
 
-    public static Consumer<String> log = (str) -> System.out.println(BvvHandlePostprocessor.class.getSimpleName()+":"+str);
+    public static final Consumer<String> log = logger::debug;
 
     @Override
     public void process(Module module) {
@@ -73,13 +77,10 @@ public class BvvHandlePostprocessor extends AbstractPostprocessorPlugin {
                 os.addObject(bvvh);
                 //------------ Allows to remove the BdvHandle from the objectService when closed by the user
                 BvvHandleHelper.setBvvHandleCloseOperation(bvvh, cacheService,  os, bsds, true);
-                //------------ Renames window to ensure unicity
+                //------------ Renames window to ensure uniqueness
                 String windowTitle = BvvHandleHelper.getWindowTitle(bvvh);
                 windowTitle = BvvHandleHelper.getUniqueWindowTitle(os, windowTitle);
                 BvvHandleHelper.setWindowTitle(bvvh, windowTitle);
-                //for (int i=0;i<bdvh.getViewerPanel().getState().numSources();i++) {
-                //    bsds.registerBdvSource(bdvh,i);
-                //}
                 module.resolveOutput(name);
             }
         });

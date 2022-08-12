@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -40,6 +40,9 @@ import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.viewers.ViewerAdapter;
+import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
+import sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper;
 
 import java.util.List;
 
@@ -57,6 +60,7 @@ public class OrthoViewDemo {
 
     static ImageJ ij;
 
+    @SuppressWarnings("GrazieInspection")
     public static void main(String[] args) {
 
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
@@ -72,18 +76,20 @@ public class OrthoViewDemo {
         //SourceAndConverter sac = SourceAndConverterUtils.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandleX = SourceAndConverterServices.getSourceAndConverterDisplayService().getNewBdv();
+        BdvHandle bdvHandleX = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
         // Creates a BdvHandle
-        BdvHandle bdvHandleY = SourceAndConverterServices.getSourceAndConverterDisplayService().getNewBdv();
+        BdvHandle bdvHandleY = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
         // Creates a BdvHandles
-        BdvHandle bdvHandleZ = SourceAndConverterServices.getSourceAndConverterDisplayService().getNewBdv();
+        BdvHandle bdvHandleZ = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
 
         BdvHandle[] bdvhs = new BdvHandle[]{bdvHandleX,bdvHandleY,bdvHandleZ};
 
         // Get a handle on the sacs
-        final List< SourceAndConverter > sacs = SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();
+        final List< SourceAndConverter<?> > sacs = SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();
 
-        ViewerOrthoSyncStarter syncstart = new ViewerOrthoSyncStarter(bdvHandleX,bdvHandleY,bdvHandleZ, false);
+        ViewerOrthoSyncStarter syncstart = new ViewerOrthoSyncStarter(
+                new ViewerAdapter(bdvHandleX),
+                new ViewerAdapter(bdvHandleY),new ViewerAdapter(bdvHandleZ), false);
         ViewerTransformSyncStopper syncstop = new ViewerTransformSyncStopper(syncstart.getSynchronizers(), null);
 
         syncstart.run();
@@ -92,16 +98,16 @@ public class OrthoViewDemo {
         for (BdvHandle bdvHandle:bdvhs) {
 
             sacs.forEach( sac -> {
-                SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+                SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
                 new ViewerTransformAdjuster(bdvHandle, sac).run();
-                new BrightnessAutoAdjuster(sac, 0).run();
+                new BrightnessAutoAdjuster<>(sac, 0).run();
             });
 
             new ClickBehaviourInstaller(bdvHandle, (x,y) -> {
                 if (isSynchronizing) {
                     syncstop.run();
                 } else {
-                    syncstart.setBdvHandleInitialReference(bdvHandle);
+                    syncstart.setHandleInitialReference(new ViewerAdapter(bdvHandle));
                     syncstart.run();
                 }
                 isSynchronizing = !isSynchronizing;

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,11 +38,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
 
-public class SourceAndConverterServiceLoader extends SourceAndConverterSerializer implements Runnable{
+public class SourceAndConverterServiceLoader extends SourceAndConverterAdapter implements Runnable{
 
-    String filePath;
-    Context ctx;
-    boolean erasePreviousState;
+    final String filePath;
+    final Context ctx;
+    final boolean erasePreviousState;
 
     public SourceAndConverterServiceLoader(String filePath, String basePath, Context ctx, boolean erasePreviousState) {
         super(ctx, new File(basePath));
@@ -59,7 +59,7 @@ public class SourceAndConverterServiceLoader extends SourceAndConverterSerialize
     public void run() {
 
         // Empty service
-        SourceAndConverter[] sacs =
+        SourceAndConverter<?>[] sacs =
                 SourceAndConverterServices
                         .getSourceAndConverterService()
                         .getSourceAndConverters().toArray(new SourceAndConverter[0]);
@@ -75,7 +75,7 @@ public class SourceAndConverterServiceLoader extends SourceAndConverterSerialize
 
             Gson gson = new Gson();
             JsonArray rawSacsArray = gson.fromJson(fileReader, JsonArray.class);
-            System.out.println(rawSacsArray.size());
+            //System.out.println(rawSacsArray.size());
 
             for (int i = 0;i<rawSacsArray.size();i++) {
                 if (rawSacsArray.get(i).isJsonObject()) {

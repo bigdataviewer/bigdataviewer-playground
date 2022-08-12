@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -55,6 +55,9 @@ import java.util.Map;
  * @author HongKee Moon &lt;moon@mpi-cbg.de&gt;
  * @author Nicolas Chiaruttini biop.epfl.ch
  */
+
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class,
         menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>List BigDataServer Datasets")
 public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand
@@ -89,7 +92,7 @@ public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand
         createDatasetListUI(serverurl, nameList.toArray() );
     }
 
-    private boolean getDatasetList( final String remoteUrl, final ArrayList< String > nameList ) throws IOException
+    private void getDatasetList( final String remoteUrl, final ArrayList< String > nameList ) throws IOException
     {
         // Get JSON string from the server
         final URL url = new URL( remoteUrl + "/json/" );
@@ -110,22 +113,29 @@ public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand
             while ( reader.hasNext() )
             {
                 final String name = reader.nextName();
-                if ( name.equals( "id" ) )
-                    id = reader.nextString();
-                else if ( name.equals( "description" ) )
-                    description = reader.nextString();
-                else if ( name.equals( "thumbnailUrl" ) )
-                    thumbnailUrl = reader.nextString();
-                else if ( name.equals( "datasetUrl" ) )
-                    datasetUrl = reader.nextString();
-                else
-                    reader.skipValue();
+                switch (name) {
+                    case "id":
+                        id = reader.nextString();
+                        break;
+                    case "description":
+                        description = reader.nextString();
+                        break;
+                    case "thumbnailUrl":
+                        thumbnailUrl = reader.nextString();
+                        break;
+                    case "datasetUrl":
+                        datasetUrl = reader.nextString();
+                        break;
+                    default:
+                        reader.skipValue();
+                        break;
+                }
             }
 
             if ( id != null )
             {
                 nameList.add( id );
-                if ( thumbnailUrl != null && StringUtils.isNotEmpty( thumbnailUrl ) )
+                if ( StringUtils.isNotEmpty(thumbnailUrl) )
                     imageMap.put( id, new ImageIcon( new URL( thumbnailUrl ) ) );
                 if ( datasetUrl != null )
                     datasetUrlMap.put( id, datasetUrl );
@@ -138,7 +148,6 @@ public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand
 
         reader.close();
 
-        return true;
     }
 
     private void createDatasetListUI( final String remoteUrl, final Object[] values )

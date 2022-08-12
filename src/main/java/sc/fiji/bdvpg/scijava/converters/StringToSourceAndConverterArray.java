@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,13 +36,14 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import javax.swing.tree.TreePath;
 
+
 /**
- * TODO : allows multiple Paths splitted by a character ? Not sure it's fool proof
- * @param <I>
+ * TODO : allows multiple Paths split by a character ? Not sure it's fool proof
+ * @param <I> String class TODO understand this
  */
 
 @Plugin(type = org.scijava.convert.Converter.class)
-public class StringToSourceAndConverterArray<I extends String> extends AbstractConverter<I, SourceAndConverter[]> {
+public class StringToSourceAndConverterArray<I extends String> extends AbstractConverter<I, SourceAndConverter<?>[]> {
 
     @Parameter
     SourceAndConverterService sacsService;

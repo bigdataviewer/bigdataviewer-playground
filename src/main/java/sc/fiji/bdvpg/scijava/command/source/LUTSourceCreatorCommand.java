@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,8 @@ import net.imagej.display.ColorTables;
 import net.imagej.lut.LUTService;
 import net.imglib2.converter.Converter;
 import net.imglib2.display.ColorTable;
+import net.imglib2.type.numeric.ARGBType;
+import org.scijava.ItemIO;
 import org.scijava.command.DynamicCommand;
 import org.scijava.convert.ConvertService;
 import org.scijava.module.MutableModuleItem;
@@ -46,6 +48,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
+
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Create New Source (Set LUT)",
         initializer = "init",
@@ -69,17 +73,24 @@ public class LUTSourceCreatorCommand extends DynamicCommand implements BdvPlaygr
     private Map<String, URL> luts = null;
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
+
+    @Parameter(type = ItemIO.OUTPUT)
+    SourceAndConverter<?>[] sacs_out;
 
     @Override
     public void run() {
-        Converter bdvLut = cs.convert(table, Converter.class);
-
-        for (SourceAndConverter sac: sacs) {
-            ConverterChanger cc = new ConverterChanger(sac, bdvLut, bdvLut);
-            cc.run();
-            cc.get();
+        sacs_out = new SourceAndConverter[sacs.length];
+        for (int i = 0;i< sacs.length;i++) {
+            sacs_out[i] = convert(sacs[i]);
         }
+    }
+
+    private <T> SourceAndConverter<T> convert(SourceAndConverter<T> sac) {
+        Converter<T, ARGBType> bdvLut = cs.convert(table, Converter.class);
+        ConverterChanger<T,?> cc = new ConverterChanger<>(sac, bdvLut);
+        cc.run();
+        return cc.get();
     }
 
     // -- initializers --

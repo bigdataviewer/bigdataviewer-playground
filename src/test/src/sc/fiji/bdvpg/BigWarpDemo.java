@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,6 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import net.imglib2.type.numeric.ARGBType;
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
@@ -66,9 +65,9 @@ public class BigWarpDemo {
         // Import SpimData
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
 
-        AbstractSpimData spimData = importer.get();
+        AbstractSpimData<?> spimData = importer.get();
 
-        SourceAndConverter sacFixed = SourceAndConverterServices
+        SourceAndConverter<?> sacFixed = SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
@@ -77,35 +76,35 @@ public class BigWarpDemo {
 
         spimData = importer.get();
 
-        SourceAndConverter sacMoving = SourceAndConverterServices
+        SourceAndConverter<?> sacMoving = SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
 
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
-        // Show the sourceandconverter
-        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacFixed);
+        // Show the SourceAndConverter
+        SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacFixed);
 
-        SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(sacMoving)
+        SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(sacMoving)
                 .setColor(new ARGBType(ARGBType.rgba(0, 255, 255,0)));
 
-        new BrightnessAutoAdjuster(sacFixed, 0).run();
+        new BrightnessAutoAdjuster<>(sacFixed, 0).run();
 
-        new BrightnessAutoAdjuster(sacMoving, 0).run();
+        new BrightnessAutoAdjuster<>(sacMoving, 0).run();
 
         new ViewerTransformAdjuster(bdvHandle, sacFixed).run();
 
-        List<SourceAndConverter> movingSources = new ArrayList<>();
+        List<SourceAndConverter<?>> movingSources = new ArrayList<>();
         movingSources.add(sacMoving);
 
-        List<SourceAndConverter> fixedSources = new ArrayList<>();
+        List<SourceAndConverter<?>> fixedSources = new ArrayList<>();
         fixedSources.add(sacFixed);
 
-        List<ConverterSetup> converterSetups = movingSources.stream().map(src -> SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(src)).collect(Collectors.toList());
-        converterSetups.addAll(fixedSources.stream().map(src -> SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(src)).collect(Collectors.toList()));
+        List<ConverterSetup> converterSetups = movingSources.stream().map(src -> SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(src)).collect(Collectors.toList());
+        converterSetups.addAll(fixedSources.stream().map(src -> SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(src)).collect(Collectors.toList()));
 
         BigWarpLauncher bwl = new BigWarpLauncher(movingSources, fixedSources, "BigWarp Demo", converterSetups);
         bwl.run();
@@ -115,7 +114,7 @@ public class BigWarpDemo {
         bwl.getBigWarp().toggleMovingImageDisplay();
         bwl.getBigWarp().matchActiveViewerPanelToOther();
 
-        for (SourceAndConverter sac : bwl.getWarpedSources()) {
+        for (SourceAndConverter<?> sac : bwl.getWarpedSources()) {
             SourceAndConverterServices.getSourceAndConverterService()
                     .register(sac);
         }
@@ -131,9 +130,9 @@ public class BigWarpDemo {
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
         //importer.run();
 
-        AbstractSpimData spimData = importer.get();
+        AbstractSpimData<?> spimData = importer.get();
 
-        SourceAndConverter sacFixed = SourceAndConverterServices
+        SourceAndConverter<?> sacFixed = SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
@@ -143,35 +142,35 @@ public class BigWarpDemo {
 
         spimData = importer.get();
 
-        SourceAndConverter sacMoving = SourceAndConverterServices
+        SourceAndConverter<?> sacMoving = SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
 
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
-        // Show the sourceandconverter
-        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sacFixed);
+        // Show the SourceAndConverter
+        SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacFixed);
 
-        SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(sacMoving)
+        SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(sacMoving)
                 .setColor(new ARGBType(ARGBType.rgba(0, 255, 255,0)));
 
-        new BrightnessAutoAdjuster(sacFixed, 0).run();
+        new BrightnessAutoAdjuster<>(sacFixed, 0).run();
 
-        new BrightnessAutoAdjuster(sacMoving, 0).run();
+        new BrightnessAutoAdjuster<>(sacMoving, 0).run();
 
         new ViewerTransformAdjuster(bdvHandle, sacFixed).run();
 
-        List<SourceAndConverter> movingSources = new ArrayList<>();
+        List<SourceAndConverter<?>> movingSources = new ArrayList<>();
         movingSources.add(sacMoving);
 
-        List<SourceAndConverter> fixedSources = new ArrayList<>();
+        List<SourceAndConverter<?>> fixedSources = new ArrayList<>();
         fixedSources.add(sacFixed);
 
-        List<ConverterSetup> converterSetups = movingSources.stream().map(src -> SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(src)).collect(Collectors.toList());
-        converterSetups.addAll(fixedSources.stream().map(src -> SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(src)).collect(Collectors.toList()));
+        List<ConverterSetup> converterSetups = movingSources.stream().map(src -> SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(src)).collect(Collectors.toList());
+        converterSetups.addAll(fixedSources.stream().map(src -> SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(src)).collect(Collectors.toList()));
 
         BigWarpLauncher bwl = new BigWarpLauncher(movingSources, fixedSources, "BigWarp Demo", converterSetups);
         bwl.run();
@@ -181,7 +180,7 @@ public class BigWarpDemo {
         bwl.getBigWarp().toggleMovingImageDisplay();
         bwl.getBigWarp().matchActiveViewerPanelToOther();
 
-        for (SourceAndConverter sac : bwl.getWarpedSources()) {
+        for (SourceAndConverter<?> sac : bwl.getWarpedSources()) {
             SourceAndConverterServices.getSourceAndConverterService()
                     .register(sac);
         }
@@ -189,7 +188,7 @@ public class BigWarpDemo {
 
     @Test
     public void demoRunOk() {
-        main(new String[]{""});
+        main("");
     }
 
     @After

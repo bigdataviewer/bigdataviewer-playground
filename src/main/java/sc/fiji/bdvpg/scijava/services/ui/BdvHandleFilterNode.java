@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ import javax.swing.tree.DefaultTreeModel;
  * in the {@link BdvHandle}
  *
  * A listener to the state of the BdvHandle {@link ViewerStateChangeListener} allows to trigger a
- * {@link FilterUpdateEvent} to the node which in turns triggers the recomputation of the
+ * {@link FilterUpdateEvent} to the node which in turns starts to recompute the
  * downstream part of the UI tree see {@link SourceFilterNode} and {@link SourceAndConverterServiceUI}
  *
  * @author Nicolas Chiaruttini, BIOP, EPFL, 2020
@@ -46,12 +46,12 @@ import javax.swing.tree.DefaultTreeModel;
 
 public class BdvHandleFilterNode extends SourceFilterNode {
 
-    public BdvHandle bdvh;
-    String name;
+    public final BdvHandle bdvh;
+    final String name;
 
-    ViewerStateChangeListener vscl;
+    final ViewerStateChangeListener vscl;
 
-    public boolean filter(SourceAndConverter sac) {
+    public boolean filter(SourceAndConverter<?> sac) {
         return bdvh.getViewerPanel().state().getSources().contains(sac);
     }
 

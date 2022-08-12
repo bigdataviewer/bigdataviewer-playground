@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,10 @@ import bdv.viewer.SourceAndConverter;
 import com.google.gson.*;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterInspector;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
@@ -49,11 +52,13 @@ import java.util.stream.Collectors;
  *
  */
 
-public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer implements Runnable {
+public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter implements Runnable {
 
-    File f;
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterServiceSaver.class);
 
-    List<SourceAndConverter> sacs;
+    final File f;
+
+    List<SourceAndConverter<?>> sacs;
 
     public SourceAndConverterServiceSaver(File f, Context ctx) {
         this(f, ctx, SourceAndConverterServices
@@ -61,7 +66,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
                 .getSourceAndConverters());
     }
 
-    public SourceAndConverterServiceSaver(File f, Context ctx, List<SourceAndConverter> sacs) {
+    public SourceAndConverterServiceSaver(File f, Context ctx, List<SourceAndConverter<?>> sacs) {
         super(ctx, f.getParentFile());
         this.sacs = sacs;
         this.f = f;
@@ -71,15 +76,11 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
         idToSource = new HashMap<>();
     }
 
-
-    Set<SourceAndConverter> setOfSourcesNeedingSerialization = new HashSet<>();
+    final List<SourceAndConverter<?>> setOfSourcesNeedingSerialization = new ArrayList<>();
 
     @Override
     public void run() {
         synchronized (SourceAndConverterServiceSaver.class) {
-            /*sacs = SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .getSourceAndConverters();*/
 
             // Makes sure each source is associated to at least one sourceAndConverter
             // this happens via recursive source inspection
@@ -92,11 +93,9 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
             );
 
             // Then let's get back all the sacs - they may have increase in number
-            sacs = /*SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .getSourceAndConverters()*/
-                    new ArrayList<>(setOfSourcesNeedingSerialization);
+            sacs = new ArrayList<>(setOfSourcesNeedingSerialization);
 
+            sacs = SourceAndConverterHelper.sortDefaultGeneric(sacs);
 
             for (int i = 0; i < sacs.size(); i++) {
                 idToSac.put(i, sacs.get(i));
@@ -110,14 +109,14 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
             // Let's launch serialization of all SpimDatasets first
             // This forces a saving of all datasets before they can be required by other sourceAdnConverters
             // Serializes datasets - required to avoid serialization issues
-            Set<AbstractSpimData> asds = SourceAndConverterServices
+            Set<AbstractSpimData<?>> asds = SourceAndConverterServices
                     .getSourceAndConverterService()
                     .getSpimDatasets();
 
             // Avoid unnecessary serialization of unneeded spimdata
             asds = asds.stream()
                 .filter(asd -> {
-                    List<SourceAndConverter> sacs_in_asd = SourceAndConverterServices
+                    List<SourceAndConverter<?>> sacs_in_asd = SourceAndConverterServices
                             .getSourceAndConverterService()
                             .getSourceAndConverterFromSpimdata(asd);
                     return sacs_in_asd.stream()
@@ -127,12 +126,13 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterSerializer
             asds.forEach(gson::toJson);
 
             try {
-                //System.out.println(f.getAbsolutePath());
+                logger.info("Writing state file "+f.getAbsolutePath());
                 FileWriter writer = new FileWriter(f.getAbsolutePath());
                 gson.toJson(sacs, writer);
                 writer.flush();
                 writer.close();
             } catch (Exception e) {
+                logger.error("Couldn't write state file: "+e.getMessage());
                 e.printStackTrace();
             }
         }

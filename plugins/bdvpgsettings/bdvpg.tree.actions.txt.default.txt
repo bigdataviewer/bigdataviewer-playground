@@ -6,7 +6,6 @@
   "BDV - Set Number Of Timepoints",
   "BDV - Create empty BDV window",
   "BDV - Create Orthogonal Views",
-  "BDV - Screenshot",
   "BDV - Synchronize Views",
   "BDV - Remove Sources From BDV",
   "PopupLine",

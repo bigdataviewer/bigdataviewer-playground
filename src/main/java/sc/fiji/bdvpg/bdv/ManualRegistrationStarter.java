@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -60,7 +60,7 @@ import java.util.List;
  * this allows for a much stronger performance : you can actually register multiple
  * sources but only perform your registration based on a subset of them (those which are currently displayed).
  *
- * Limitation : if no other source is visible, you don't see waht's happening at all...
+ * Limitation : if no other source is visible, you don't see what's happening at all...
  *
  * @author : Nicolas Chiaruttini, BIOP, EPFL 2019
  *
@@ -70,23 +70,23 @@ public class ManualRegistrationStarter implements Runnable {
     /**
      * Sources that will be transformed
      */
-    SourceAndConverter[] sacs;
+    final SourceAndConverter<?>[] sacs;
 
     /**
      * From the sources that will be transformed, list of sources which were actually
      * displayed at the beginning of the action
      */
-    List<SourceAndConverter> originallyDisplayedSacs = new ArrayList<>();
+    final List<SourceAndConverter<?>> originallyDisplayedSacs = new ArrayList<>();
 
     /**
      * Transient transformed source displayed for the registration
      */
-    List<SourceAndConverter> displayedSacsWrapped = new ArrayList<>();
+    final List<SourceAndConverter<?>> displayedSacsWrapped = new ArrayList<>();
 
     /**
      * bdvHandle used for the manual registration
      */
-    BdvHandle bdvHandle;
+    final BdvHandle bdvHandle;
 
     /**
      * Current registration state
@@ -99,7 +99,7 @@ public class ManualRegistrationStarter implements Runnable {
      */
     TransformListener<AffineTransform3D> manualRegistrationListener;
 
-    public ManualRegistrationStarter(BdvHandle bdvHandle, SourceAndConverter... sacs) {
+    public ManualRegistrationStarter(BdvHandle bdvHandle, SourceAndConverter<?>... sacs) {
             this.sacs = sacs;
             this.bdvHandle = bdvHandle;
     }
@@ -107,22 +107,22 @@ public class ManualRegistrationStarter implements Runnable {
     @Override
     public void run() {
 
-        for (SourceAndConverter sourceAndConverter : sacs) {
+        for (SourceAndConverter<?> sourceAndConverter : sacs) {
 
             // Wraps into a Transformed Source, if the source was displayed originally
-            if (SourceAndConverterServices.getSourceAndConverterDisplayService().getDisplaysOf(sourceAndConverter).contains(bdvHandle)) {
-                if (SourceAndConverterServices.getSourceAndConverterDisplayService().isVisible(sourceAndConverter, bdvHandle)) {
-                    displayedSacsWrapped.add(new SourceAffineTransformer(sourceAndConverter, new AffineTransform3D()).getSourceOut());
+            if (SourceAndConverterServices.getBdvDisplayService().getDisplaysOf(sourceAndConverter).contains(bdvHandle)) {
+                if (SourceAndConverterServices.getBdvDisplayService().isVisible(sourceAndConverter, bdvHandle)) {
+                    displayedSacsWrapped.add(new SourceAffineTransformer<>(sourceAndConverter, new AffineTransform3D()).getSourceOut());
                     originallyDisplayedSacs.add(sourceAndConverter);
                 }
             }
         }
 
         // Remove from display the originally displayed sources
-        SourceAndConverterServices.getSourceAndConverterDisplayService().remove(bdvHandle, originallyDisplayedSacs.toArray(new SourceAndConverter[0]));
+        SourceAndConverterServices.getBdvDisplayService().remove(bdvHandle, originallyDisplayedSacs.toArray(new SourceAndConverter[0]));
 
         // Shows the displayed wrapped Source
-        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, displayedSacsWrapped.toArray(new SourceAndConverter[0]));
+        SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, displayedSacsWrapped.toArray(new SourceAndConverter[0]));
 
         // View of the BdvHandle before starting the registration
         AffineTransform3D originalViewTransform = new AffineTransform3D();
@@ -137,11 +137,11 @@ public class ManualRegistrationStarter implements Runnable {
                 currentRegistration.concatenate(originalViewTransform);
 
                 // Sets view transform fo transiently wrapped source to maintain relative position
-                displayedSacsWrapped.forEach(sac -> ((TransformedSource) sac.getSpimSource()).setFixedTransform(currentRegistration));
+                displayedSacsWrapped.forEach(sac -> ((TransformedSource<?>) sac.getSpimSource()).setFixedTransform(currentRegistration));
         };
 
         // Sets the listener
-        bdvHandle.getViewerPanel().addTransformListener(manualRegistrationListener);
+        bdvHandle.getViewerPanel().transformListeners().add(manualRegistrationListener);
     }
 
     public BdvHandle getBdvHandle() {
@@ -160,7 +160,7 @@ public class ManualRegistrationStarter implements Runnable {
      * Returns the transient wrapped transformed sources displayed (and then used by the user for the registration)
      * @return the transient wrapped transformed sources displayed (and then used by the user for the registration)
      */
-    public List<SourceAndConverter> getTransformedSourceAndConverterDisplayed() {
+    public List<SourceAndConverter<?>> getTransformedSourceAndConverterDisplayed() {
         return displayedSacsWrapped;
     }
 
@@ -168,7 +168,7 @@ public class ManualRegistrationStarter implements Runnable {
      * Returns the sources that need to be registered
      * @return the sources that need to be registered
      */
-    public SourceAndConverter[] getOriginalSourceAndConverter() {
+    public SourceAndConverter<?>[] getOriginalSourceAndConverter() {
         return sacs;
     }
 
@@ -176,7 +176,7 @@ public class ManualRegistrationStarter implements Runnable {
      * Returns the sources (within the sources that need to be transformed) that were originally displayed in the bdvHandle
      * @return the sources (within the sources that need to be transformed) that were originally displayed in the bdvHandle
      */
-    public List<SourceAndConverter> getOriginallyDisplayedSourceAndConverter() {
+    public List<SourceAndConverter<?>> getOriginallyDisplayedSourceAndConverter() {
         return originallyDisplayedSacs;
     }
 

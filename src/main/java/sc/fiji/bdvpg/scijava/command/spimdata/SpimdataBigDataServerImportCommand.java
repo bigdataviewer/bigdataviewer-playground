@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -43,6 +43,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>BDVDataset [BigDataServer]",
         label = "Command that opens a BDV dataset from a BigDataServer. Click on Show to display it.")
@@ -85,16 +86,23 @@ public class SpimdataBigDataServerImportCommand implements BdvPlaygroundActionCo
             while ( reader.hasNext() )
             {
                 final String name = reader.nextName();
-                if ( name.equals( "id" ) )
-                    id = reader.nextString();
-                else if ( name.equals( "description" ) )
-                    description = reader.nextString();
-                else if ( name.equals( "thumbnailUrl" ) )
-                    thumbnailUrl = reader.nextString();
-                else if ( name.equals( "datasetUrl" ) )
-                    datasetUrl = reader.nextString();
-                else
-                    reader.skipValue();
+                switch (name) {
+                    case "id":
+                        id = reader.nextString();
+                        break;
+                    case "description":
+                        description = reader.nextString();
+                        break;
+                    case "thumbnailUrl":
+                        thumbnailUrl = reader.nextString();
+                        break;
+                    case "datasetUrl":
+                        datasetUrl = reader.nextString();
+                        break;
+                    default:
+                        reader.skipValue();
+                        break;
+                }
             }
             if ( id != null )
             {

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,10 @@ import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
+
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Show Sources",
         description = "Adds one or several sources to an existing BDV window")
@@ -46,7 +49,7 @@ public class BdvSourcesAdderCommand implements BdvPlaygroundActionCommand {
     BdvHandle bdvh;
 
     @Parameter(label="Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter(label="Auto Contrast")
     boolean autocontrast;
@@ -57,16 +60,16 @@ public class BdvSourcesAdderCommand implements BdvPlaygroundActionCommand {
     @Override
     public void run() {
 
-        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvh, sacs);
+        SourceAndConverterServices.getBdvDisplayService().show(bdvh,  SourceAndConverterHelper.sortDefault(sacs));
         if (autocontrast) {
-            for (SourceAndConverter sac : sacs) {
+            for (SourceAndConverter<?> sac : sacs) {
                 int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
-                new BrightnessAutoAdjuster(sac, timepoint).run();
+                new BrightnessAutoAdjuster<>(sac, timepoint).run();
             }
         }
 
         if ((adjustviewonsource) && (sacs.length>0)) {
-            new ViewerTransformAdjuster(bdvh, sacs[0]).run();
+            new ViewerTransformAdjuster(bdvh, sacs).run();
         }
     }
 }

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,9 @@
 package sc.fiji.bdvpg.sourceandconverter.transform;
 
 import bdv.tools.transformation.TransformedSource;
+import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
+import net.imglib2.Volatile;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
@@ -47,21 +49,20 @@ import java.util.function.Function;
  * the transform is passed by value, not by reference, so it cannot be updated later on
  */
 
+public class SourceAffineTransformer<T,V extends Volatile<T>> implements Runnable, Function<SourceAndConverter<T>, SourceAndConverter<T>> {
 
-public class SourceAffineTransformer implements Runnable, Function<SourceAndConverter, SourceAndConverter> {
-
-    SourceAndConverter sourceIn;
+    SourceAndConverter<T> sourceIn;
     final AffineTransform3D at3D;
-    SourceAndConverter sourceOut;
+    SourceAndConverter<T> sourceOut;
 
-    public SourceAffineTransformer(SourceAndConverter src, AffineTransform3D at3D) {
+    public SourceAffineTransformer(SourceAndConverter<T> src, AffineTransform3D at3D) {
         this.sourceIn = src;
         this.at3D = at3D;
     }
 
     /**
      * Constructor without any source argument in order to use the functional interface only
-     * @param at3D
+     * @param at3D affine transform 3d
      */
     public SourceAffineTransformer(AffineTransform3D at3D) {
         this.at3D = at3D;
@@ -72,21 +73,22 @@ public class SourceAffineTransformer implements Runnable, Function<SourceAndConv
        sourceOut = apply(sourceIn);
     }
 
-    public SourceAndConverter getSourceOut() {
-        return apply(sourceIn);//sourceOut;
+    public SourceAndConverter<T> getSourceOut() {
+        return apply(sourceIn);
     }
 
-    public SourceAndConverter apply(SourceAndConverter in) {
-        SourceAndConverter sac;
-        TransformedSource src = new TransformedSource(in.getSpimSource());
+    public SourceAndConverter<T> apply(SourceAndConverter<T> in) {
+        SourceAndConverter<T> sac;
+        TransformedSource<T> src = new TransformedSource<>(in.getSpimSource());
         src.setFixedTransform(at3D);
         if (in.asVolatile()!=null) {
-            TransformedSource vsrc = new TransformedSource(in.asVolatile().getSpimSource(), src);
-            SourceAndConverter vout = new SourceAndConverter<>(vsrc, SourceAndConverterHelper.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));
+            TransformedSource<? extends Volatile<T>> vsrc = new TransformedSource<>(in.asVolatile().getSpimSource(), src);
+            SourceAndConverter<? extends Volatile<T>> vout = new SourceAndConverter(vsrc, SourceAndConverterHelper.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));
             sac = new SourceAndConverter<>(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in), vout);
         } else {
             sac = new SourceAndConverter<>(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in));
         }
         return sac;
     }
+
 }

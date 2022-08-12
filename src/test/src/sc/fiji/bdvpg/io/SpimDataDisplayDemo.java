@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -54,7 +54,7 @@ public class SpimDataDisplayDemo
 		ij.ui().showUI();
 
 		// Gets active BdvHandle instance
-		BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+		BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
 		// Import SpimData
 		new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").run();
@@ -62,9 +62,9 @@ public class SpimDataDisplayDemo
 
 		// Show all SourceAndConverter associated with above SpimData
 		SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
-			SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+			SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
 			new ViewerTransformAdjuster(bdvHandle, sac).run();
-			new BrightnessAutoAdjuster(sac, 0).run();
+			new BrightnessAutoAdjuster<>(sac, 0).run();
 		});
 	}
 

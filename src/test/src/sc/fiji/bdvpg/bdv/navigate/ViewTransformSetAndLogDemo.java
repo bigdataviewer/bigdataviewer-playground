@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,7 @@ import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import org.junit.After;
@@ -68,21 +69,21 @@ public class ViewTransformSetAndLogDemo {
 
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
-        RandomAccessibleInterval rai = ImageJFunctions.wrapReal(imp);
+        RandomAccessibleInterval<UnsignedByteType> rai = ImageJFunctions.wrapReal(imp);
         // Adds a third dimension because BDV needs 3D
         rai = Views.addDimension( rai, 0, 0 );
 
         // Makes BDV Source
-        Source source = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
-        SourceAndConverter sac = SourceAndConverterHelper.createSourceAndConverter(source);
+        Source<UnsignedByteType> source = new RandomAccessibleIntervalSource<>(rai, Util.getTypeFromInterval(rai), "blobs");
+        SourceAndConverter<UnsignedByteType> sac = SourceAndConverterHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
-        // Show the sourceandconverter
-        SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+        // Show the SourceAndConverter
+        SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
 
-        // Adjust view on sourceandconverter
+        // Adjust view on SourceAndConverter
         new ViewerTransformAdjuster(bdvHandle, sac).run();
 
         // add a click behavior for logging transforms

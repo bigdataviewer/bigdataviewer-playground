@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@
  */
 package bdv.util;
 
-import bdv.util.volatiles.SharedQueue;
+import bdv.cache.SharedQueue;
 import bdv.util.volatiles.VolatileViews;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
@@ -39,6 +39,7 @@ import net.imglib2.Volatile;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.NumericType;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedIntType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
@@ -71,7 +72,7 @@ public class VolatileSource<T extends NumericType<T>, V extends Volatile< T > & 
 
     final SharedQueue queue;
 
-    ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, RandomAccessibleInterval<V>>> cachedRAIs = new ConcurrentHashMap<>();
+    final ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, RandomAccessibleInterval<V>>> cachedRAIs = new ConcurrentHashMap<>();
 
     public VolatileSource(final Source<T> source) {
         this.originSource = source;
@@ -113,6 +114,7 @@ public class VolatileSource<T extends NumericType<T>, V extends Volatile< T > & 
         zero.setZero();
         ExtendedRandomAccessibleInterval<V, RandomAccessibleInterval< V >>
                 eView = Views.extendZero(getSource( t, level ));
+        //noinspection UnnecessaryLocalVariable
         RealRandomAccessible< V > realRandomAccessible = Views.interpolate( eView, interpolators.get(method) );
         return realRandomAccessible;
     }
@@ -148,7 +150,7 @@ public class VolatileSource<T extends NumericType<T>, V extends Volatile< T > & 
      * @return the volatile equivalent class of this NumericType instance
      */
 
-    static public Volatile getVolatileOf(NumericType t) {
+    static public Volatile<? extends NumericType> getVolatileOf(NumericType<?> t) {
         if (t instanceof UnsignedShortType) return new VolatileUnsignedShortType();
 
         if (t instanceof UnsignedIntType) return new VolatileUnsignedIntType();

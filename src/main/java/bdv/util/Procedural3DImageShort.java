@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -77,7 +77,7 @@ public class Procedural3DImageShort extends RealPoint implements RealRandomAcces
 
     public RealRandomAccessible<UnsignedShortType> getRRA() {
 
-        RealRandomAccessible<UnsignedShortType> rra = new RealRandomAccessible<UnsignedShortType>() {
+        return new RealRandomAccessible<UnsignedShortType>() {
             @Override
             public RealRandomAccess<UnsignedShortType> realRandomAccess() {
                 return copy();
@@ -93,8 +93,6 @@ public class Procedural3DImageShort extends RealPoint implements RealRandomAcces
                 return 3;
             }
         };
-
-        return rra;
     }
 
     public Source<UnsignedShortType> getSource(final Interval interval, AffineTransform3D at3D, String name) {
@@ -133,7 +131,7 @@ public class Procedural3DImageShort extends RealPoint implements RealRandomAcces
     }
 
     public Source<UnsignedShortType> getSource(final Interval interval, AffineTransform3D at3D, String name, VoxelDimensions voxDimensions) {
-        return new RealRandomAccessibleSource(getRRA(), new UnsignedShortType(), name, voxDimensions) {
+        return new RealRandomAccessibleSource<UnsignedShortType>(getRRA(), new UnsignedShortType(), name, voxDimensions) {
             @Override
             public Interval getInterval(final int t, final int level) {
                 return new FinalInterval(new long[]{0,0,0}, new long[]{1,1,1});

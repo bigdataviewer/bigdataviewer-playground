@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -40,6 +40,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Make Global Source Group",
 description = "Adds a node in the tree view which selects the sources specified in the command")
 
@@ -49,7 +51,7 @@ public class MakeGroupCommand implements BdvPlaygroundActionCommand {
     String groupname;
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter(label = "Display Sources")
     boolean displaysources;
@@ -59,7 +61,7 @@ public class MakeGroupCommand implements BdvPlaygroundActionCommand {
 
     @Override
     public void run() {
-        final Set<SourceAndConverter> sacs_set = new HashSet<>(Arrays.asList(sacs));
+        final Set<SourceAndConverter<?>> sacs_set = new HashSet<>(Arrays.asList(sacs));
         SourceFilterNode sfn = new SourceFilterNode(sac_service.getUI().getTreeModel(), groupname, sacs_set::contains, displaysources);
         sac_service.getUI().addNode(sfn);
     }

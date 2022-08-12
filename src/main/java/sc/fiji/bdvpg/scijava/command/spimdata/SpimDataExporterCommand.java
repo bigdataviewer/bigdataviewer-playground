@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,7 @@ package sc.fiji.bdvpg.scijava.command.spimdata;
 
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -40,29 +41,45 @@ import sc.fiji.bdvpg.spimdata.exporter.XmlFromSpimDataExporter;
 
 import java.io.File;
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin( type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>Save BDVDataset" )
 public class SpimDataExporterCommand implements BdvPlaygroundActionCommand {
 
     // To get associated spimdata
     @Parameter(label = "Select source(s)")
-    SourceAndConverter sac;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter(label = "Output File (XML)", style = "save")
     public File xmlfilepath;
 
+    @Parameter
+    Context context;
+
     public void run() {
 
-        if (SourceAndConverterServices.getSourceAndConverterService()
-                .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)==null) {
-            System.err.println("No BDVDataset associated to the chosen source - Aborting save command");
-            return;
+        if (sacs == null) {
+            System.err.println(" No source selected! ");
+        } else {
+
+            if (sacs.length>1) {
+                System.out.println("More than one source selected! Getting the first one to catch the linked spimdata object.");
+            }
+
+            SourceAndConverter<?> sac = sacs[0];
+
+            if (SourceAndConverterServices.getSourceAndConverterService()
+                    .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO) == null) {
+                System.err.println("No BDVDataset associated to the chosen source - Aborting save command");
+                return;
+            }
+
+            AbstractSpimData<?> asd =
+                    ((SourceAndConverterService.SpimDataInfo) SourceAndConverterServices.getSourceAndConverterService()
+                            .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)).asd;
+
+            new XmlFromSpimDataExporter(asd, xmlfilepath.getAbsolutePath(), context).run();
         }
-
-        AbstractSpimData asd =
-                ((SourceAndConverterService.SpimDataInfo)SourceAndConverterServices.getSourceAndConverterService()
-                .getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO)).asd;
-
-        new XmlFromSpimDataExporter(asd, xmlfilepath.getAbsolutePath()).run();
     }
 
 }

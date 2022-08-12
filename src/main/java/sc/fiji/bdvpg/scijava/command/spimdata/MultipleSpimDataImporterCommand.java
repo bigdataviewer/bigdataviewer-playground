@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,6 @@
 package sc.fiji.bdvpg.scijava.command.spimdata;
 
 import org.scijava.ItemVisibility;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -38,18 +37,20 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.io.File;
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin( type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>Open XML BDV Datasets" )
 public class MultipleSpimDataImporterCommand implements BdvPlaygroundActionCommand {
 
     /**
      * Note: Due to a bug in SciJava there needs to be some
      * text above the `File[]` parameter.
-     * Otherwise the UI for `File[]` is not built.
+     * Otherwise, the UI for `File[]` is not built.
      *
      * But then programmatically the message above is always shown...
      */
     @Parameter ( visibility = ItemVisibility.MESSAGE  )
-    private String message = "Please choose XML files:";
+    public String message = "Please choose XML files:";
 
     @Parameter(style="extensions:xml")
     public File[] files;

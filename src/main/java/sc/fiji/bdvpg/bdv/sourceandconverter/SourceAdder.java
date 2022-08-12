@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -45,16 +45,16 @@ import java.util.function.Consumer;
  * - the functional interface allows to use this action in a functional way,
  * in this case, the constructor without SourceAndConverter can be used
  *
- * TODO : think if this action is useful ? It looks ununsed because the direct call to SourceAndConverterServices.getSourceAndConverterDisplayService().show is more convenient
+ * TODO : think if this action is useful ? It looks unused because the direct call to SourceAndConverterServices.getSourceAndConverterDisplayService().show is more convenient
  *
  */
 
-public class SourceAdder implements Runnable, Consumer<SourceAndConverter[]>
+public class SourceAdder implements Runnable, Consumer<SourceAndConverter<?>[]>
 {
-	SourceAndConverter[] sacsIn;
-	BdvHandle bdvh;
+	SourceAndConverter<?>[] sacsIn;
+	final BdvHandle bdvh;
 
-	public SourceAdder(BdvHandle bdvh, SourceAndConverter... sacsIn) {
+	public SourceAdder(BdvHandle bdvh, SourceAndConverter<?>... sacsIn) {
 		this.sacsIn=sacsIn;
 		this.bdvh=bdvh;
 	}
@@ -68,7 +68,7 @@ public class SourceAdder implements Runnable, Consumer<SourceAndConverter[]>
 	}
 
 	@Override
-	public void accept(SourceAndConverter... sacs) {
-		SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvh, sacs);
+	public void accept(SourceAndConverter<?>... sacs) {
+		SourceAndConverterServices.getBdvDisplayService().show(bdvh, sacs);
 	}
 }

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,24 +32,24 @@ import bdv.viewer.SourceAndConverter;
 
 import java.util.stream.IntStream;
 
-public class SourceAndConverterAndTimeRange {
-    public final SourceAndConverter sac;
+public class SourceAndConverterAndTimeRange<T> {
+    public final SourceAndConverter<T> sac;
     private final int timePointBegin;
     private final int timePointEnd;
 
-    public SourceAndConverterAndTimeRange(SourceAndConverter sac, int timePointBegin, int timePointEnd) {
+    public SourceAndConverterAndTimeRange(SourceAndConverter<T> sac, int timePointBegin, int timePointEnd) {
         this.sac = sac;
         this.timePointBegin = timePointBegin;
         this.timePointEnd = timePointEnd;
     }
 
-    public SourceAndConverterAndTimeRange(SourceAndConverter sac, int timePoint) {
+    public SourceAndConverterAndTimeRange(SourceAndConverter<T> sac, int timePoint) {
         this.sac = sac;
         this.timePointBegin = timePoint;
         this.timePointEnd = timePoint+1;
     }
 
-    public SourceAndConverter getSourceAndConverter() {
+    public SourceAndConverter<T> getSourceAndConverter() {
         return sac;
     }
 

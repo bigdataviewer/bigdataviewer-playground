@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,8 @@ import net.imglib2.converter.Converters;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper function to transform RealTyped {@link bdv.viewer.Source} to {@link UnsignedShortType} source
@@ -47,6 +49,8 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
  */
 
 public class SourceToUnsignedShortConverter {
+
+    protected static final Logger logger = LoggerFactory.getLogger(SourceToUnsignedShortConverter.class);
 
     static public Source<UnsignedShortType> convertRealSource(Source<RealType> iniSrc) {
         Converter<RealType, UnsignedShortType> cvt = (i, o) -> o.set((int) i.getRealDouble());
@@ -98,7 +102,7 @@ public class SourceToUnsignedShortConverter {
     static public <T> Source<UnsignedShortType> convertSource(Source<T> iniSrc) {
         if (iniSrc.getType() instanceof UnsignedShortType) return (Source<UnsignedShortType>) iniSrc;
         if (iniSrc.getType() instanceof RealType) return convertRealSource((Source<RealType>) iniSrc);
-        System.err.println("Cannot convert source to Unsigned Short Type, "+iniSrc.getType().getClass().getSimpleName()+" cannot be converted to RealType");
+        logger.error("Cannot convert source to Unsigned Short Type, "+iniSrc.getType().getClass().getSimpleName()+" cannot be converted to RealType");
         return null;
     }
 }

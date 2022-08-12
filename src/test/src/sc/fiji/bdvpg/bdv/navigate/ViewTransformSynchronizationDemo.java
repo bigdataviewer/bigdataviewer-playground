@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -37,6 +37,7 @@ import ij.ImagePlus;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import org.junit.After;
@@ -45,6 +46,9 @@ import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
+import sc.fiji.bdvpg.viewers.ViewerAdapter;
+import sc.fiji.bdvpg.viewers.ViewerTransformSyncStarter;
+import sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper;
 
 /**
  * ViewTransformSynchronizationDemo
@@ -68,20 +72,20 @@ public class ViewTransformSynchronizationDemo {
 
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
-        RandomAccessibleInterval rai = ImageJFunctions.wrapReal(imp);
+        RandomAccessibleInterval<UnsignedByteType> rai = ImageJFunctions.wrapReal(imp);
         // Adds a third dimension because BDV needs 3D
         rai = Views.addDimension( rai, 0, 0 );
 
         // Makes BDV Source
-        Source source = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
-        SourceAndConverter sac = SourceAndConverterHelper.createSourceAndConverter(source);
+        Source<UnsignedByteType> source = new RandomAccessibleIntervalSource<>(rai, Util.getTypeFromInterval(rai), "blobs");
+        SourceAndConverter<UnsignedByteType> sac = SourceAndConverterHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle1 = SourceAndConverterServices.getSourceAndConverterDisplayService().getNewBdv();
+        BdvHandle bdvHandle1 = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
         // Creates a BdvHandle
-        BdvHandle bdvHandle2 = SourceAndConverterServices.getSourceAndConverterDisplayService().getNewBdv();
+        BdvHandle bdvHandle2 = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
         // Creates a BdvHandles
-        BdvHandle bdvHandle3 = SourceAndConverterServices.getSourceAndConverterDisplayService().getNewBdv();
+        BdvHandle bdvHandle3 = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
 
         BdvHandle[] bdvhs = new BdvHandle[]{bdvHandle1,bdvHandle2,bdvHandle3};
 
@@ -92,17 +96,17 @@ public class ViewTransformSynchronizationDemo {
         isSynchronizing = true;
 
         for (BdvHandle bdvHandle:bdvhs) {
-            // Show the sourceandconverter
-            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, sac);
+            // Show the SourceAndConverter
+            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
 
-            // Adjust view on sourceandconverter
+            // Adjust view on SourceAndConverter
             new ViewerTransformAdjuster(bdvHandle, sac).run();
 
             new ClickBehaviourInstaller(bdvHandle, (x,y) -> {
                 if (isSynchronizing) {
                     syncstop.run();
                 } else {
-                    syncstart.setBdvHandleInitialReference(bdvHandle);
+                    syncstart.setHandleInitialReference(new ViewerAdapter(bdvHandle));
                     syncstart.run();
                 }
                 isSynchronizing = !isSynchronizing;

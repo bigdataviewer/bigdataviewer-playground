@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,29 +29,25 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.*;
-import bdv.viewer.render.AccumulateProjectorFactory;
-import net.imglib2.type.numeric.ARGBType;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.BdvCreator;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerOrthoSyncStarter;
-import sc.fiji.bdvpg.bdv.projector.AccumulateAverageProjectorARGB;
-import sc.fiji.bdvpg.bdv.projector.AccumulateMixedProjectorARGBFactory;
-import sc.fiji.bdvpg.bdv.projector.Projector;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.viewers.ViewerAdapter;
+import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
+import sc.fiji.bdvpg.viewers.ViewerStateSyncStarter;
 
 import javax.swing.*;
 import java.awt.*;
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Create Orthogonal Views",
         description = "Creates 3 BDV windows with synchronized orthogonal views")
 public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand {
-
-    @Parameter(label = "Title of BDV windows")
-    public String windowtitle = "BDV";
 
     @Parameter(label = "Interpolate")
     public boolean interpolate = false;
@@ -59,11 +55,8 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
     @Parameter(label = "Number of timepoints (1 for a single timepoint)")
     public int ntimepoints = 1;
 
-    @Parameter(label = "Source Projection Mode", choices = { Projector.MIXED_PROJECTOR, Projector.SUM_PROJECTOR, Projector.AVERAGE_PROJECTOR})
-    public String projector;
-
     @Parameter(label = "Add cross overlay to show view plane locations")
-    public boolean drawcrosses;
+    public boolean drawcrosses = true;
 
     @Parameter(label = "Display (0 if you have one screen)")
     int screen = 0;
@@ -95,81 +88,59 @@ public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand 
     @Parameter(type = ItemIO.OUTPUT)
     public BdvHandle bdvhz;
 
+    @Parameter
+    SourceAndConverterBdvDisplayService sacDisplayService;
+
+    @Parameter
+    boolean synchronize_sources = true;
+
     @Override
     public void run() {
 
         bdvhx = createBdv("-Front", locationx, locationy);
-
         bdvhy = createBdv("-Right", locationx + sizex +10, locationy);
-
         bdvhz = createBdv("-Bottom", locationx, locationy + sizey +40);
 
-        new ViewerOrthoSyncStarter(bdvhx, bdvhz, bdvhy, synctime).run();
 
-       if (drawcrosses) {
-           addCross(bdvhx);
-           addCross(bdvhy);
-           addCross(bdvhz);
-       }
+        if (drawcrosses) {
+            BdvHandleHelper.addCenterCross(bdvhx);
+            BdvHandleHelper.addCenterCross(bdvhy);
+            BdvHandleHelper.addCenterCross(bdvhz);
+        }
+
+        bdvhx.getViewerPanel().state().setNumTimepoints(ntimepoints);
+        bdvhy.getViewerPanel().state().setNumTimepoints(ntimepoints);
+        bdvhz.getViewerPanel().state().setNumTimepoints(ntimepoints);
+
+        ViewerOrthoSyncStarter starter = new ViewerOrthoSyncStarter(new ViewerAdapter(bdvhx), new ViewerAdapter(bdvhz), new ViewerAdapter(bdvhy), synctime);
+        starter.run();
+
+        if (synchronize_sources) {
+            new ViewerStateSyncStarter(new ViewerAdapter(bdvhx), new ViewerAdapter(bdvhy), new ViewerAdapter(bdvhz)).run();
+        }
+
     }
 
     BdvHandle createBdv(String suffix, double locX, double locY) {
 
-        //------------ BdvHandleFrame
-        BdvOptions opts = BdvOptions.options().frameTitle(windowtitle +suffix).preferredSize(sizex, sizey);
-
-        // Create accumulate projector factory
-        AccumulateProjectorFactory<ARGBType> factory;
-        switch (projector) {
-            case Projector.MIXED_PROJECTOR:
-                factory = new AccumulateMixedProjectorARGBFactory(  );
-                opts = opts.accumulateProjectorFactory(factory);
-            case Projector.SUM_PROJECTOR:
-                // Default projector
-                break;
-            case Projector.AVERAGE_PROJECTOR:
-                factory = AccumulateAverageProjectorARGB.factory;
-                opts = opts.accumulateProjectorFactory(factory);
-                break;
-            default:
-        }
-
-        BdvCreator creator = new BdvCreator(opts, interpolate, ntimepoints);
-        creator.run();
-        BdvHandle bdvh = creator.get();
+        BdvHandle bdvh = sacDisplayService.getNewBdv();
+        BdvHandleHelper.setWindowTitle(bdvh, BdvHandleHelper.getWindowTitle(bdvh)+suffix);
 
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice[] gd = ge.getScreenDevices();
         JFrame frame = BdvHandleHelper.getJFrame(bdvh);
-        if( screen > -1 && screen < gd.length ) {
-            frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);
-        } else if( gd.length > 0 ) {
-            frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);
-        } else {
-            throw new RuntimeException( "No Screens Found" );
-        }
+        SwingUtilities.invokeLater(() -> {
+            if( screen > -1 && screen < gd.length ) {
+                frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);
+            } else if( gd.length > 0 ) {
+                frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);
+            } else {
+                throw new RuntimeException( "No Screens Found" );
+            }
+            frame.setSize(sizex, sizey);
+        });
 
         return bdvh;
-    }
-
-    void addCross(BdvHandle bdvh) {
-        final BdvOverlay overlay = new BdvOverlay()
-        {
-            @Override
-            protected void draw( final Graphics2D g )
-            {
-                int colorCode = this.info.getColor().get();
-                int w = bdvh.getViewerPanel().getWidth();
-                int h = bdvh.getViewerPanel().getHeight();
-                g.setColor(new Color(ARGBType.red(colorCode) , ARGBType.green(colorCode), ARGBType.blue(colorCode), ARGBType.alpha(colorCode) ));
-                g.drawLine(w/2, h/2-h/4,w/2, h/2+h/4 );
-                g.drawLine(w/2-w/4, h/2,w/2+w/4, h/2 );
-            }
-
-        };
-
-        BdvFunctions.showOverlay( overlay, "cross_overlay", BdvOptions.options().addTo( bdvh ) );
-        bdvh.getViewerPanel().setTimepoint(ntimepoints);
     }
 
 }

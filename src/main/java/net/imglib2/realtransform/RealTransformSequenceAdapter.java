@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,9 +28,12 @@
  */
 package net.imglib2.realtransform;
 
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.services.serializers.plugins.IClassRuntimeAdapter;
+import sc.fiji.persist.IClassAdapter;
 
 import java.lang.reflect.Type;
 
@@ -44,55 +47,34 @@ import java.lang.reflect.Type;
  * {@link RealTransformSequence#transforms} field of a {@link RealTransformSequence}
  */
 
-@Plugin(type = IClassRuntimeAdapter.class)
-public class RealTransformSequenceAdapter implements IClassRuntimeAdapter<RealTransform, RealTransformSequence> {
-    @Override
-    public Class<? extends RealTransform> getBaseClass() {
-        return RealTransform.class;
-    }
+@Plugin(type = IClassAdapter.class)
+public class RealTransformSequenceAdapter implements IClassAdapter<RealTransformSequence> {
 
     @Override
-    public Class<? extends RealTransformSequence> getRunTimeClass() {
+    public Class<? extends RealTransformSequence> getAdapterClass() {
         return RealTransformSequence.class;
     }
 
     @Override
-    public RealTransformSequence deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public RealTransformSequence deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) {
         JsonObject obj = jsonElement.getAsJsonObject();
-
         int nTransform = obj.get("size").getAsInt();
-
         RealTransformSequence rts = new RealTransformSequence();
-
         for (int iTransform = 0; iTransform<nTransform; iTransform++) {
-            // Special case in order to deserialize directly
-            // affine transforms to AffineTransform3D objects
-            JsonObject jsonObj = obj.get("realTransform_"+iTransform).getAsJsonObject();
-            if (jsonObj.has("affinetransform3d")) {
-                AffineTransform3D at3D = jsonDeserializationContext.deserialize(obj.get("realTransform_"+iTransform), AffineTransform3D.class);
-                rts.add(at3D);
-            } else {
-                RealTransform transform = jsonDeserializationContext.deserialize(obj.get("realTransform_"+iTransform), RealTransform.class);
-                rts.add(transform);
-            }
+            RealTransform transform = jsonDeserializationContext.deserialize(obj.get("realTransform_"+iTransform), RealTransform.class);
+            rts.add(transform);
         }
-
         return rts;
     }
 
     @Override
     public JsonElement serialize(RealTransformSequence rts, Type type, JsonSerializationContext jsonSerializationContext) {
-
         JsonObject obj = new JsonObject();
-
-        obj.addProperty("type", RealTransformSequence.class.getSimpleName());
-
         obj.addProperty("size", rts.transforms.size());
-
         for (int iTransform = 0; iTransform<rts.transforms.size(); iTransform++) {
-            obj.add("realTransform_"+iTransform, jsonSerializationContext.serialize(rts.transforms.get(iTransform)));
+            obj.add("realTransform_"+iTransform, jsonSerializationContext.serialize(rts.transforms.get(iTransform), RealTransform.class));
         }
-
         return obj;
     }
+
 }

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,9 @@
  */
 package sc.fiji.bdvpg.scijava.services.ui.swingdnd;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -40,8 +43,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TreeTransferHandler extends TransferHandler {
+
+    protected static final Logger logger = LoggerFactory.getLogger(TreeTransferHandler.class);
+
     DataFlavor nodesFlavor;
-    DataFlavor[] flavors = new DataFlavor[1];
+    final DataFlavor[] flavors = new DataFlavor[1];
     //DefaultMutableTreeNode[] nodesToRemove;
 
     public TreeTransferHandler() {
@@ -51,7 +57,7 @@ public class TreeTransferHandler extends TransferHandler {
             nodesFlavor = new DataFlavor(mimeType);
             flavors[0] = nodesFlavor;
         } catch(ClassNotFoundException e) {
-            System.out.println("ClassNotFound: " + e.getMessage());
+            logger.error("ClassNotFound: " + e.getMessage());
         }
     }
 
@@ -61,7 +67,7 @@ public class TreeTransferHandler extends TransferHandler {
     }
 
     //TransferHandler
-    @Override public boolean canImport(JComponent comp, DataFlavor flavor[]) {
+    @Override public boolean canImport(JComponent comp, DataFlavor[] flavor) {
         for (DataFlavor dataFlavor : flavor) {
             for (DataFlavor value : flavors) {
                 if (dataFlavor.equals(value)) {
@@ -122,9 +128,9 @@ public class TreeTransferHandler extends TransferHandler {
             Transferable t = support.getTransferable();
             nodes = (DefaultMutableTreeNode[]) t.getTransferData(nodesFlavor);
         } catch (UnsupportedFlavorException ufe) {
-            System.out.println("UnsupportedFlavor: " + ufe.getMessage());
+            logger.debug("UnsupportedFlavor: " + ufe.getMessage());
         } catch (java.io.IOException ioe) {
-            System.out.println("I/O error: " + ioe.getMessage());
+            logger.error("I/O error: " + ioe.getMessage());
         }
         // Get drop location info.
         int childIndex;
@@ -163,7 +169,7 @@ public class TreeTransferHandler extends TransferHandler {
     }
 
     public class NodesTransferable implements Transferable {
-        DefaultMutableTreeNode[] nodes;
+        final DefaultMutableTreeNode[] nodes;
 
         public NodesTransferable(DefaultMutableTreeNode[] nodes) {
             this.nodes = nodes;

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,6 +36,8 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -50,10 +52,14 @@ import java.util.function.Supplier;
 
 public class SourceAndConverterInspector {
 
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterInspector.class);
+
     /**
      * Appends all the metadata of a SourceAndConverter into a tree structure
+     * @param parent node below which the metadata nodes will be added
+     * @param sac source for which the metadata are fetched
      */
-    public static void appendMetadata(DefaultMutableTreeNode parent, SourceAndConverter sac) {
+    public static void appendMetadata(DefaultMutableTreeNode parent, SourceAndConverter<?> sac) {
         SourceAndConverterServices.getSourceAndConverterService().getMetadataKeys(sac)
                 .forEach(k -> {
                     DefaultMutableTreeNode nodeMetaKey = new DefaultMutableTreeNode(k);
@@ -74,23 +80,24 @@ public class SourceAndConverterInspector {
      *
      * @param parent parent node
      * @param sac source
+     * @param registerIntermediateSources if you want the intermediate sources registered in the source and converter service
      * @param sourceAndConverterService source service
      * @return the set of sources that were necessary to build the sac (including itself)
      */
-    public static Set<SourceAndConverter> appendInspectorResult(DefaultMutableTreeNode parent,
-                                                                SourceAndConverter sac,
+    public static Set<SourceAndConverter<?>> appendInspectorResult(DefaultMutableTreeNode parent,
+                                                                SourceAndConverter<?> sac,
                                                                 ISourceAndConverterService sourceAndConverterService,
                                                                 boolean registerIntermediateSources) {
-        Set<SourceAndConverter> subSources = new HashSet<>();
+        Set<SourceAndConverter<?>> subSources = new HashSet<>();
         subSources.add(sac);
 
         if (sac.getSpimSource() instanceof TransformedSource) {
             DefaultMutableTreeNode nodeTransformedSource = new DefaultMutableTreeNode("Transformed Source");
             parent.add(nodeTransformedSource);
-            TransformedSource source = (TransformedSource) sac.getSpimSource();
+            TransformedSource<?> source = (TransformedSource<?>) sac.getSpimSource();
 
             if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).size() > 0) {
-                // at least A sourceandconverteralready exists for this source
+                // at least a SourceAndConverter already exists for this source
                 sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeTransformedSource.add(wrappedSourceNode);
@@ -99,7 +106,7 @@ public class SourceAndConverterInspector {
                 );
             } else {
                 // no source and converter exist for this source : creates it
-                SourceAndConverter src = SourceAndConverterHelper.createSourceAndConverter(source.getWrappedSource());
+                SourceAndConverter<?> src = SourceAndConverterHelper.createSourceAndConverter(source.getWrappedSource());
                 if (registerIntermediateSources) {
                     sourceAndConverterService.register(src);
                 }
@@ -127,10 +134,10 @@ public class SourceAndConverterInspector {
         if (sac.getSpimSource() instanceof WarpedSource) {
             DefaultMutableTreeNode nodeWarpedSource = new DefaultMutableTreeNode("Warped Source");
             parent.add(nodeWarpedSource);
-            WarpedSource source = (WarpedSource) sac.getSpimSource();
+            WarpedSource<?> source = (WarpedSource<?>) sac.getSpimSource();
 
             if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).size() > 0) {
-                // at least A sourceandconverteralready exists for this source
+                // at least a SourceAndConverter already exists for this source
                 sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeWarpedSource.add(wrappedSourceNode);
@@ -139,7 +146,7 @@ public class SourceAndConverterInspector {
                 );
             } else {
                 // no source and converter exist for this source : creates it
-                SourceAndConverter src = SourceAndConverterHelper.createSourceAndConverter(source.getWrappedSource());
+                SourceAndConverter<?> src = SourceAndConverterHelper.createSourceAndConverter(source.getWrappedSource());
                 if (registerIntermediateSources) {
                     sourceAndConverterService.register(src);
                 }
@@ -163,13 +170,13 @@ public class SourceAndConverterInspector {
         if (sac.getSpimSource() instanceof ResampledSource) {
             DefaultMutableTreeNode nodeResampledSource = new DefaultMutableTreeNode("Resampled Source");
             parent.add(nodeResampledSource);
-            ResampledSource source = (ResampledSource) sac.getSpimSource();
+            ResampledSource<?> source = (ResampledSource<?>) sac.getSpimSource();
 
             DefaultMutableTreeNode nodeOrigin = new DefaultMutableTreeNode("Origin");
             nodeResampledSource.add(nodeOrigin);
 
             if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getOriginalSource()).size() > 0) {
-                // at least A sourceandconverteralready exists for this source
+                // at least a SourceAndConverter already exists for this source
                 sourceAndConverterService.getSourceAndConvertersFromSource(source.getOriginalSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeOrigin.add(wrappedSourceNode);
@@ -178,7 +185,7 @@ public class SourceAndConverterInspector {
                 );
             } else {
                 // no source and converter exist for this source : creates it
-                SourceAndConverter src = SourceAndConverterHelper.createSourceAndConverter(source.getOriginalSource());
+                SourceAndConverter<?> src = SourceAndConverterHelper.createSourceAndConverter(source.getOriginalSource());
                 if (registerIntermediateSources) {
                     sourceAndConverterService.register(src);
                 }
@@ -191,7 +198,7 @@ public class SourceAndConverterInspector {
             nodeResampledSource.add(nodeResampler);
 
             if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getModelResamplerSource()).size() > 0) {
-                // at least A sourceandconverteralready exists for this source
+                // at least a SourceAndConverter already exists for this source
                 sourceAndConverterService.getSourceAndConvertersFromSource(source.getModelResamplerSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeResampler.add(wrappedSourceNode);
@@ -200,7 +207,7 @@ public class SourceAndConverterInspector {
                 );
             } else {
                 // no source and converter exist for this source : creates it
-                SourceAndConverter src = SourceAndConverterHelper.createSourceAndConverter(source.getModelResamplerSource());
+                SourceAndConverter<?> src = SourceAndConverterHelper.createSourceAndConverter(source.getModelResamplerSource());
                 if (registerIntermediateSources) {
                     sourceAndConverterService.register(src);
                 }
@@ -221,7 +228,7 @@ public class SourceAndConverterInspector {
     }
 
     /**
-     * Returns the root 'sourceandconverter' in the sense that it finds
+     * Returns the root {@link SourceAndConverter} in the sense that it finds
      * the original source at the root of this source
      * <p>
      * for {@link ResampledSource} the model is ignored
@@ -232,18 +239,32 @@ public class SourceAndConverterInspector {
      * it shouldn't fall on a {@link ResampledSource} nor on a
      * {@link TransformedSource} nor on a {@link WarpedSource}
      * because these three class are wrappers
+     *
+     * @param sac source to check
+     * @param sacService source and converter service, useful to find the root
+     * @return root source and converter object
      */
-    public static SourceAndConverter getRootSourceAndConverter(SourceAndConverter sac, SourceAndConverterService sacService) {
+    public static SourceAndConverter<?> getRootSourceAndConverter(SourceAndConverter<?> sac, SourceAndConverterService sacService) {
         return getListToRootSourceAndConverter(sac, sacService).getLast();
     }
 
-    public static SourceAndConverter getRootSourceAndConverter(SourceAndConverter sac) {
+    /**
+     *
+     * @param sac the source to investigate
+     * @return the root source
+     */
+    public static SourceAndConverter<?> getRootSourceAndConverter(SourceAndConverter<?> sac) {
         return getListToRootSourceAndConverter(sac, (SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getLast();
     }
 
-    public static SourceAndConverter getRootSourceAndConverter(Source source) {
-        SourceAndConverter sac;
-        List<SourceAndConverter> sacs = SourceAndConverterServices.getSourceAndConverterService()
+    /**
+     *
+     * @param source the source to investigate
+     * @return the root source
+     */
+    public static SourceAndConverter<?> getRootSourceAndConverter(Source<?> source) {
+        SourceAndConverter<?> sac;
+        List<SourceAndConverter<?>> sacs = SourceAndConverterServices.getSourceAndConverterService()
                 .getSourceAndConvertersFromSource(source);
         if (sacs.size()==0) {
             sac = SourceAndConverterHelper.createSourceAndConverter(source);
@@ -253,38 +274,34 @@ public class SourceAndConverterInspector {
         return getListToRootSourceAndConverter(sac, (SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getLast();
     }
 
-    public static LinkedList<SourceAndConverter> getListToRootSourceAndConverter(SourceAndConverter sac, SourceAndConverterService sacService) {
+    /**
+     * TODO
+     * @param sac TODO
+     * @param sacService TODO
+     * @return TODO
+     */
+    public static LinkedList<SourceAndConverter<?>> getListToRootSourceAndConverter(SourceAndConverter<?> sac, SourceAndConverterService sacService) {
 
-        LinkedList<SourceAndConverter> chain = new LinkedList<>();
+        LinkedList<SourceAndConverter<?>> chain = new LinkedList<>();
 
         DefaultMutableTreeNode nodeSac = new DefaultMutableTreeNode(new
                 RenamableSourceAndConverter(sac));
 
         chain.add(sac);
 
-        appendInspectorResult(nodeSac,
-                sac, sacService, // Hum, why the casting ?
-                false);
+        appendInspectorResult(nodeSac, sac, sacService,false);
 
         DefaultMutableTreeNode current = nodeSac;
 
         while (current.getChildCount() > 0) {
-            System.out.println(">>>>");
             current = (DefaultMutableTreeNode) current.getFirstChild();
             if (current.getUserObject() instanceof RenamableSourceAndConverter) {
-
-                System.out.println("RSAC");
                 chain.add(((RenamableSourceAndConverter) (current.getUserObject())).sac);
-                System.out.println("Renamable SourceAndConverter found");
-                System.out.println(">"+chain.getLast());
             } else {
-                System.out.println("NO RSAC");
-                System.out.println("RenamableSourceAndConverter not contained " +
-                        "in first node of inspector result");
-                System.out.println("Class found = "+current.getUserObject().getClass().getSimpleName());
-                System.out.println("Object found = "+current.getUserObject());
-
-                //return null;
+                logger.debug("No renamable source found");
+                logger.debug("RenamableSourceAndConverter not contained in first node of inspector result");
+                logger.debug("Class found = "+current.getUserObject().getClass().getSimpleName());
+                logger.debug("Object found = "+current.getUserObject());
             }
         }
 

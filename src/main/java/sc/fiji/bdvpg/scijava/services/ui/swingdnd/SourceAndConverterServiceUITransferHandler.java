@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,8 @@ package sc.fiji.bdvpg.scijava.services.ui.swingdnd;
 import bdv.ui.SourcesTransferable;
 import bdv.viewer.SourceAndConverter;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
@@ -48,7 +50,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -62,8 +63,10 @@ import java.util.List;
 
 public class SourceAndConverterServiceUITransferHandler extends TreeTransferHandler {
 
+    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterServiceUITransferHandler.class);
+
     static DataFlavor nodesFlavor;
-    static DataFlavor[] flavors = new DataFlavor[2];
+    static final DataFlavor[] flavors = new DataFlavor[2];
 
     static {
         try {
@@ -73,7 +76,7 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
             flavors[0] = nodesFlavor;
             flavors[1] = SourcesTransferable.flavor;
         } catch(ClassNotFoundException e) {
-            System.out.println("ClassNotFound: " + e.getMessage());
+            logger.debug("ClassNotFound: " + e.getMessage());
         }
     }
 
@@ -142,7 +145,8 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
                 SourceAndConverterServiceUI ui =
                         ((SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getUI();
                 List<SourceAndConverter<?>> sacs = new ArrayList<>();
-                for (SourceAndConverter sac : ui.getSelectedSourceAndConverters()) {
+                //noinspection ManualArrayToCollectionCopy
+                for (SourceAndConverter<?> sac : ui.getSelectedSourceAndConverters((JTree) c)) {
                     sacs.add(sac);
                 }
                 //Collections.addAll(sacs, ui.getSelectedSourceAndConverters()); // Do not work, even if intellij suggests it
@@ -179,13 +183,13 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
                     if (f.getAbsolutePath().endsWith(".xml")) {
                         new SpimDataFromXmlImporter(f).run();
                     } else {
-                        System.out.println("Unsupported drop operation with file " + f.getAbsolutePath());
+                        logger.info("Unsupported drop operation with file " + f.getAbsolutePath());
                     }
                 }
             } else if (t.isDataFlavorSupported(nodesFlavor)) {
                 DefaultMutableTreeNode[] nodes = (DefaultMutableTreeNode[]) t.getTransferData(nodesFlavor);
                 if (nodes.length!=1) {
-                    System.err.println("Only one node should be dragged");
+                    logger.info("Only one node should be dragged");
                     return false;
                 }
                 if ((nodes[0]) instanceof SourceFilterNode) {
@@ -201,8 +205,8 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
                     return true;
 
                 } else {
-                    System.err.println("A source filter node should be selected");
-                    System.out.println("You have selected a node of class "+nodes[0].getClass().getName());
+                    logger.debug("A source filter node should be selected");
+                    logger.debug("You have selected a node of class "+nodes[0].getClass().getName());
                     return false;
                 }
 
@@ -241,11 +245,11 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
         public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
             if (flavor.equals(nodesFlavor)) {
                 return nodes;
-            }
-            if (flavor.equals(SourcesTransferable.flavor)) {
+            } else if (flavor.equals(SourcesTransferable.flavor)) {
                 return sourcesTransferable.getTransferData(SourcesTransferable.flavor);
+            } else {
+                throw new UnsupportedFlavorException(flavor);
             }
-            return null;
         }
     }
 }

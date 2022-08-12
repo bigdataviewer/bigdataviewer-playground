@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,6 @@
  */
 package bdv.util;
 
-//import bdv.SpimSource;
 import bdv.img.WarpedSource;
 import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.Interpolation;
@@ -43,6 +42,8 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.Views;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.ArrayList;
@@ -73,29 +74,35 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ResampledSource< T extends NumericType<T> & NativeType<T>> implements Source<T> {
 
+    protected static final Logger logger = LoggerFactory.getLogger(ResampledSource.class);
+
     /**
      * Hashmap to cache RAIs (mipmaps and timepoints), used only if {@link ResampledSource#cache} is true
      */
-    transient ConcurrentHashMap<Integer, ConcurrentHashMap<Integer,RandomAccessibleInterval<T>>> cachedRAIs
+    final transient ConcurrentHashMap<Integer, ConcurrentHashMap<Integer,RandomAccessibleInterval<T>>> cachedRAIs
             = new ConcurrentHashMap<>();
 
     /**
      * Origin source of type {@link T}
      */
-    Source<T> origin;
+    final Source<T> origin;
 
     /**
      * Model source, no need to be of type {@link T}
      */
-    Source<?> resamplingModel;
+    final Source<?> resamplingModel;
 
     protected final DefaultInterpolators< T > interpolators = new DefaultInterpolators<>();
 
-    protected Interpolation originInterpolation;
+    protected final Interpolation originInterpolation;
 
-    boolean reuseMipMaps;
+    final boolean reuseMipMaps;
 
-    boolean cache;
+    final int defaultMipMapLevel;
+
+    final boolean cache;
+
+    private final String name;
 
     /**
      * The origin source is accessed through its RealRandomAccessible representation :
@@ -105,29 +112,27 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
      *  - through its RandomAccessibleInterval bounds
      *  - and the Source affine transform
      *  - and mipmaps, if reuseMipMaps is true
-     *
-     * @param source origin source
+     *  @param source origin source
      *
      * @param resamplingModel model source used for resampling the origin source
-     *
-     * @param reuseMipMaps allows to reuse mipmaps of both the origin and the model source in the resampling
+     * @param name of the resampled source
+     * @param reuseMipMaps allows reusing mipmaps of both the origin and the model source in the resampling
      *  mipmap reuse tries to be clever by matching the voxel size between the model source and the origin source
      *  so for instance the model source mipmap level 0 will resample the origin mipmap level 2, if the voxel size
-     *  of the origin is much smaller then the model (and provided that the origin is also a multiresolution source)
+     *  of the origin is much smaller than the model (and provided that the origin is also a multiresolution source)
      *  the way the matching is performed is specified in {@link SourceAndConverterHelper#bestLevel(Source, int, double)}.
      *  For more details and limitation, please read the documentation in the linked method above
-     *
-     * @param cache specifies whether the result of the resampling should be cached.
+     *@param cache specifies whether the result of the resampling should be cached.
      *  This allows for a fast access of resampled source after the first computation - but the synchronization with
      *  the origin and model source is lost.
      *  TODO : check how the cache can be accessed / reset
-     *
-     * @param originInterpolation specifies whether the origin source should be interpolated of not in the resampling process
+     *@param originInterpolation specifies whether the origin source should be interpolated of not in the resampling process
      *
      */
-    public ResampledSource(Source<T> source, Source<T> resamplingModel, boolean reuseMipMaps, boolean cache, boolean originInterpolation) {
+    public ResampledSource( Source< T > source, Source< T > resamplingModel, String name, boolean reuseMipMaps, boolean cache, boolean originInterpolation, int defaultMipMapLevel ) {
         this.origin=source;
         this.resamplingModel=resamplingModel;
+        this.name = name;
         this.reuseMipMaps=reuseMipMaps;
         this.cache = cache;
         if (originInterpolation) {
@@ -135,10 +140,11 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         } else {
             this.originInterpolation = Interpolation.NEARESTNEIGHBOR;
         }
+        this.defaultMipMapLevel = defaultMipMapLevel;
         computeMipMapsCorrespondance();
     }
 
-    Map<Integer, Integer> mipmapModelToOrigin = new HashMap<>();
+    final Map<Integer, Integer> mipmapModelToOrigin = new HashMap<>();
 
     List<Double> originVoxSize;
 
@@ -183,15 +189,15 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
                 int match = bestMatch(middleDim);
                 mipmapModelToOrigin.put(l, match);
             } else {
-                mipmapModelToOrigin.put(l, 0); // Always taking the highest resolution
+                mipmapModelToOrigin.put(l, defaultMipMapLevel); // Always taking the highest resolution
             }
 
-            // For debugging resampling issues, please keep it
-            /*System.out.println("Model mipmap level "+l+" correspond to origin mipmap level "+mipmapModelToOrigin.get(l));
-            System.out.println("Model mipmap level "+l+" has a characteristic voxel size of "+
-                    SourceAndConverterUtils.getCharacteristicVoxelSize(resamplingModel,0,l));
-            System.out.println("Origin level "+mipmapModelToOrigin.get(l)+" has a characteristic voxel size of "+
-                    SourceAndConverterUtils.getCharacteristicVoxelSize(origin,0,mipmapModelToOrigin.get(l)));*/
+            // For debugging resampling issues
+            logger.debug("Model mipmap level "+l+" correspond to origin mipmap level "+mipmapModelToOrigin.get(l));
+            logger.debug("Model mipmap level "+l+" has a characteristic voxel size of "+
+                    SourceAndConverterHelper.getCharacteristicVoxelSize(resamplingModel,0,l));
+            logger.debug("Origin level "+mipmapModelToOrigin.get(l)+" has a characteristic voxel size of "+
+                    SourceAndConverterHelper.getCharacteristicVoxelSize(origin,0,mipmapModelToOrigin.get(l)));
 
         }
     }
@@ -233,19 +239,15 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
             }
 
             if (!cachedRAIs.get(t).containsKey(level)) {
-                if (cache) {
-                    RandomAccessibleInterval<T> nonCached = buildSource(t, level);
+                RandomAccessibleInterval<T> nonCached = buildSource(t, level);
 
-                    int[] blockSize = {64, 64, 64};
+                int[] blockSize = {64, 64, 64};
 
-                    if (nonCached.dimension(0) < 64) blockSize[0] = (int) nonCached.dimension(0);
-                    if (nonCached.dimension(1) < 64) blockSize[1] = (int) nonCached.dimension(1);
-                    if (nonCached.dimension(2) < 64) blockSize[2] = (int) nonCached.dimension(2);
+                if (nonCached.dimension(0) < 64) blockSize[0] = (int) nonCached.dimension(0);
+                if (nonCached.dimension(1) < 64) blockSize[1] = (int) nonCached.dimension(1);
+                if (nonCached.dimension(2) < 64) blockSize[2] = (int) nonCached.dimension(2);
 
-                    cachedRAIs.get(t).put(level, RAIHelper.wrapAsVolatileCachedCellImg(nonCached, blockSize));
-                } else {
-                    cachedRAIs.get(t).put(level,buildSource(t, level));
-                }
+                cachedRAIs.get(t).put(level, RAIHelper.wrapAsVolatileCachedCellImg(nonCached, blockSize));
             }
             return cachedRAIs.get(t).get(level);
         } else {
@@ -254,6 +256,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     }
 
+    @SuppressWarnings("UnnecessaryLocalVariable")
     public RandomAccessibleInterval<T> buildSource(int t, int level) {
         // Get current model source transformation
         AffineTransform3D at = new AffineTransform3D();
@@ -290,7 +293,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         zero.setZero();
         ExtendedRandomAccessibleInterval<T, RandomAccessibleInterval< T >>
                 eView = Views.extendZero(getSource( t, level ));
-        RealRandomAccessible< T > realRandomAccessible = Views.interpolate( eView, interpolators.get(method) );
+        @SuppressWarnings("UnnecessaryLocalVariable") RealRandomAccessible< T > realRandomAccessible = Views.interpolate( eView, interpolators.get(method) );
         return realRandomAccessible;
     }
 
@@ -301,12 +304,12 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
 
     @Override
     public T getType() {
-        return origin.getType();
+        return origin.getType().createVariable();
     }
 
     @Override
     public String getName() {
-        return origin.getName()+"_ResampledAs_"+resamplingModel.getName();
+        return name;
     }
 
     @Override
@@ -319,4 +322,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
         return resamplingModel.getNumMipmapLevels();
     }
 
+    public int getDefaultMipMapLevel() {
+        return defaultMipMapLevel;
+    }
 }

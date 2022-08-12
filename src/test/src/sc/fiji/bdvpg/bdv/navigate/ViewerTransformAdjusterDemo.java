@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,6 @@ import net.imagej.ImageJ;
 import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
@@ -56,31 +55,31 @@ public class ViewerTransformAdjusterDemo
         ij.ui().showUI();
 
         // Gets active BdvHandle instance
-        BdvHandle bdvHandle = SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
         // Import SpimData object
         SpimDataFromXmlImporter sdix = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml");
 
-        AbstractSpimData asd = sdix.get();
+        AbstractSpimData<?> asd = sdix.get();
 
-        // Register to the sourceandconverter service
+        // Register to the SourceAndConverter service
         SourceAndConverterServices.getSourceAndConverterService().register(asd);
 
-        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source -> {
-            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, source);
-        });
+        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source ->
+            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source)
+        );
 
         // Import SpimData object
         sdix = new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml");
 
         asd = sdix.get();
 
-        // Register to the sourceandconverter service
+        // Register to the SourceAndConverter service
         SourceAndConverterServices.getSourceAndConverterService().register(asd);
 
-        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source -> {
-            SourceAndConverterServices.getSourceAndConverterDisplayService().show(bdvHandle, source);
-        });
+        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source ->
+            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source)
+        );
 
         new ViewerTransformAdjuster(bdvHandle, SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
     }

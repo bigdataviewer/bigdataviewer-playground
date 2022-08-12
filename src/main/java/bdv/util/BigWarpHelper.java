@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -130,11 +130,9 @@ public class BigWarpHelper {
         for (int i = 0;i<nbLandmarks;i++) {
             for (int d = 0; d<nbDimensions; d++) {
                 fPts[d][i] = fixed_pts.get(i).getDoublePosition(d);
-                //System.out.println("fPts["+d+"]["+i+"]=" +fPts[d][i]);
             }
             for (int d = 0; d<nbDimensions; d++) {
                 mPts[d][i] = moving_pts.get(i).getDoublePosition(d);
-                //System.out.println("mPts["+d+"]["+i+"]=" +mPts[d][i]);
             }
         }
 

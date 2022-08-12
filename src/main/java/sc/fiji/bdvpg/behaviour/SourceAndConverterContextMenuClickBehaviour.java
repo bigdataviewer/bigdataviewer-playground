@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -53,22 +53,42 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 	final Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier;
 	String[] popupActions;
 
+	/**
+	 *
+	 * @param bdv bdv handle
+	 */
 	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv )
 	{
 		this(bdv,
 		() -> SourceAndConverterHelper.getSourceAndConvertersAtCurrentMousePosition( bdv ) );
 	}
 
+	/**
+	 *
+	 * @param bdv bdv handle
+	 * @param popupActions popup actions to be used in the clickbehaviour
+	 */
 	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv, String[] popupActions )
 	{
 		this(bdv, () -> SourceAndConverterHelper.getSourceAndConvertersAtCurrentMousePosition( bdv ), popupActions);
 	}
 
+	/**
+	 *
+	 * @param bdv bdv handle
+	 * @param sourcesSupplier a function which returns the source to act on
+	 */
 	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv, Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier )
 	{
 		this(bdv, sourcesSupplier, SourceAndConverterPopupMenu.defaultPopupActions);
 	}
 
+	/**
+	 *
+	 * @param bdv bdv handle
+	 * @param sourcesSupplier a function which returns the source to act on
+	 * @param popupActions popup actions to be used in the clickbehaviour
+	 */
 	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv, Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier, String[] popupActions )
 	{
 		this.bdv = bdv;
@@ -76,6 +96,11 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 		this.popupActions = popupActions;
 	}
 
+	/**
+	 *
+	 * @param x mouse position in x
+	 * @param y mouse position in y
+	 */
 	@Override
 	public void click( int x, int y )
 	{
@@ -84,27 +109,17 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 
 	private void showPopupMenu( BdvHandle bdv, int x, int y )
 	{
-		final List<SourceAndConverter> sacs = new ArrayList<>(sourcesSupplier.get());
-
-		//if ( sacs.size() == 0 )
-		//	return;
-
-		/*String message = "";
-		if (sacs.size()>1) {
-			message +=  sacs.size()+" sources selected";
-		} else {
-			for (SourceAndConverter sac:sacs) {
-				message += sac.getSpimSource().getName(); //"["+sac.getSpimSource().getClass().getSimpleName()+"]");
-			}
-		}
-
-		bdv.getViewerPanel().showMessage(message);*/
+		final List<SourceAndConverter<?>> sacs = new ArrayList<>(sourcesSupplier.get());
 
 		final SourceAndConverterPopupMenu popupMenu = new SourceAndConverterPopupMenu( () -> sacs.toArray(new SourceAndConverter[0]), popupActions );
 
 		popupMenu.getPopup().show( bdv.getViewerPanel().getDisplay(), x, y );
 	}
 
+	/**
+	 * Live removal of an action
+	 * @param name of the action to remove
+	 */
 	public synchronized void removeAction( String name )
 	{
 		final int index = ArrayUtils.indexOf( popupActions, name );
@@ -112,6 +127,9 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 			popupActions = ( String[] ) ArrayUtils.remove( popupActions, index );
 	}
 
+	/**
+	 * @param name of the action to add
+	 */
 	public synchronized void addAction( String name )
 	{
 		final int index = ArrayUtils.indexOf( popupActions, name );

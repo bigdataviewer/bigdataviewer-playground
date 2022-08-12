@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -31,17 +31,25 @@ package sc.fiji.bdvpg.bdv.navigate;
 import bdv.util.Affine3DHelpers;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import bdv.viewer.SynchronizedViewerState;
-import net.imglib2.Interval;
+import bdv.viewer.ViewerState;
+import net.imglib2.*;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.util.Intervals;
 import net.imglib2.util.LinAlgHelpers;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.viewers.ViewerAdapter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * BigDataViewer Playground Action --
  * Action which adjust the view of a {@link BdvHandle} to span a {@link SourceAndConverter}
  * See {@link ViewerTransformAdjuster#getTransform()} for details
  *
- * TODO : support the adjustement on a series of SourceAndConverter
+ * TODO : support the adjustment on a series of SourceAndConverter
  *
  * Usage example see ViewerTransformAdjusterDemo
  *
@@ -50,19 +58,37 @@ import net.imglib2.util.LinAlgHelpers;
 
 public class ViewerTransformAdjuster implements Runnable
 {
-	private final BdvHandle bdvHandle;
-	private final SourceAndConverter<?> source;
+	private final ViewerAdapter handle;
+	private final SourceAndConverter<?>[] sources;
 
 	public ViewerTransformAdjuster( BdvHandle bdvHandle, SourceAndConverter<?> source )
 	{
-		this.bdvHandle = bdvHandle;
-		this.source = source;
+		this(bdvHandle, new SourceAndConverter[]{source});
+	}
+
+	public ViewerTransformAdjuster( BdvHandle bdvHandle, SourceAndConverter<?>[] sources )
+	{
+		this.handle = new ViewerAdapter(bdvHandle);
+		this.sources = sources;
+	}
+
+	public ViewerTransformAdjuster(ViewerAdapter handle, SourceAndConverter<?>[] sources )
+	{
+		this.handle = handle;
+		this.sources = sources;
 	}
 
 	public void run()
 	{
-		final AffineTransform3D transform = getTransform();
-		bdvHandle.getViewerPanel().state().setViewerTransform(transform);
+		if (sources.length != 0) {
+			AffineTransform3D transform;
+			if (sources.length==1) {
+				transform = getTransform();
+			} else {
+				transform = getTransformMultiSources();
+			}
+			handle.state().setViewerTransform(transform);
+		}
 	}
 
 	/**
@@ -74,18 +100,22 @@ public class ViewerTransformAdjuster implements Runnable
 	 * <li>centered and scaled such that the full <em>dim_x</em> by
 	 * <em>dim_y</em> is visible.
 	 * </ul>
+	 * @return the view which is equivalent to the transform of the bdv window
 	 */
 	public AffineTransform3D getTransform( )
 	{
-		final SynchronizedViewerState state = bdvHandle.getViewerPanel().state();
+		final ViewerState state = handle.state();
 
-		final int viewerWidth = bdvHandle.getBdvHandle().getViewerPanel().getWidth();
-		final int viewerHeight = bdvHandle.getBdvHandle().getViewerPanel().getHeight();
+		final int viewerWidth = (int) handle.getWidth();
+		final int viewerHeight = (int) handle.getHeight();
 
 		final double cX = viewerWidth / 2.0;
 		final double cY = viewerHeight / 2.0;
 
 		final int timepoint = state.getCurrentTimepoint();
+
+		SourceAndConverter<?> source = sources[0];
+
 		if ( !source.getSpimSource().isPresent( timepoint ) )
 			return new AffineTransform3D();
 
@@ -145,5 +175,94 @@ public class ViewerTransformAdjuster implements Runnable
 		viewerTransform.set( viewerTransform.get( 0, 3 ) + cX - 0.5, 0, 3 );
 		viewerTransform.set( viewerTransform.get( 1, 3 ) + cY - 0.5, 1, 3 );
 		return viewerTransform;
+	}
+
+	public AffineTransform3D getTransformMultiSources() {
+		final ViewerState state = handle.state();
+
+		final int timepoint = state.getCurrentTimepoint();
+
+		List<RealInterval> intervalList = Arrays.stream(sources)
+				.filter(sourceAndConverter -> sourceAndConverter.getSpimSource()!=null)
+				.filter(sourceAndConverter -> sourceAndConverter.getSpimSource().isPresent(timepoint))
+				.map(sourceAndConverter -> {
+					Interval interval = sourceAndConverter.getSpimSource().getSource(timepoint,0);
+					AffineTransform3D sourceTransform = new AffineTransform3D();
+					sourceAndConverter.getSpimSource().getSourceTransform( timepoint, 0, sourceTransform );
+					RealPoint corner0 = new RealPoint(interval.min(0), interval.min(1), interval.min(2));
+					RealPoint corner1 = new RealPoint(interval.max(0), interval.max(1), interval.max(2));
+					sourceTransform.apply(corner0, corner0);
+					sourceTransform.apply(corner1, corner1);
+					return new FinalRealInterval(new double[]{
+								Math.min(corner0.getDoublePosition(0), corner1.getDoublePosition(0)),
+								Math.min(corner0.getDoublePosition(1), corner1.getDoublePosition(1)),
+								Math.min(corner0.getDoublePosition(2), corner1.getDoublePosition(2))},
+							new double[]{
+								Math.max(corner0.getDoublePosition(0), corner1.getDoublePosition(0)),
+								Math.max(corner0.getDoublePosition(1), corner1.getDoublePosition(1)),
+								Math.max(corner0.getDoublePosition(2), corner1.getDoublePosition(2))});
+				}).collect(Collectors.toList());
+
+		RealInterval boundingInterval = intervalList.stream().reduce(Intervals::union).get();
+
+		RealPoint center = new RealPoint(
+					(boundingInterval.realMin(0)+ boundingInterval.realMax(0))/2.0,
+					(boundingInterval.realMin(1)+ boundingInterval.realMax(1))/2.0,
+					(boundingInterval.realMin(2)+ boundingInterval.realMax(2))/2.0
+				);
+
+
+		final double[] centerGlobal = {center.getDoublePosition(0), center.getDoublePosition(1), center.getDoublePosition(2)};
+
+		final int viewerWidth = (int) handle.getWidth();
+		final int viewerHeight = (int) handle.getHeight();
+
+		AffineTransform3D viewerTransform = new AffineTransform3D();
+
+		handle.state().getViewerTransform(viewerTransform);
+
+		viewerTransform = BdvHandleHelper.getViewerTransformWithNewCenter(handle, centerGlobal);
+
+		// Let's scale: we need to find the coordinates on the screen of the big bounding box
+		RealPoint screenCoord = new RealPoint(0,0,0);
+		List<RealPoint> boxCorners = getBox(boundingInterval);
+
+		double currentMinScale = Double.MAX_VALUE;
+
+		final double cX = viewerWidth / 2.0;
+		final double cY = viewerHeight / 2.0;
+
+		for (RealPoint corner:boxCorners) {
+			viewerTransform.apply(corner, screenCoord);
+
+			double scaleX = Math.abs(cX/(screenCoord.getDoublePosition(0)-viewerWidth/2.0));
+			double scaleY = Math.abs(cY/(screenCoord.getDoublePosition(1)-viewerHeight/2.0));
+
+			currentMinScale = Math.min(currentMinScale,scaleX);
+			currentMinScale = Math.min(currentMinScale,scaleY);
+		}
+
+		viewerTransform.scale( currentMinScale );
+		handle.state().setViewerTransform(viewerTransform);
+
+		viewerTransform = BdvHandleHelper.getViewerTransformWithNewCenter(handle, centerGlobal);
+
+		return viewerTransform;
+	}
+
+	public static List<RealPoint> getBox(RealInterval ri) {
+		ArrayList<RealPoint> rps = new ArrayList<>();
+		for (int x=0; x<2; x++) {
+			for (int y=0; y<2; y++) {
+				for (int z=0; z<2; z++) {
+					rps.add(new RealPoint(
+							(x==0)?ri.realMin(0):ri.realMax(0),
+							(y==0)?ri.realMin(1):ri.realMax(1),
+							(z==0)?ri.realMin(2):ri.realMax(2)
+					));
+				}
+			}
+		}
+		return rps;
 	}
 }

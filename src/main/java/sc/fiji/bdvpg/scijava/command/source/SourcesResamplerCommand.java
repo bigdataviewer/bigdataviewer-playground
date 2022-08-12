@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,25 +29,30 @@
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
+import org.scijava.ItemIO;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
+
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Resample Source Based on Model Source")
 public class SourcesResamplerCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter
-    SourceAndConverter model;
+    SourceAndConverter<?> model;
 
     @Parameter(label="Re-use MipMaps")
     boolean reusemipmaps;
+
+    @Parameter(label="MipMap level if not re-used (0 = max resolution)")
+    int defaultmipmaplevel;
 
     @Parameter
     boolean interpolate;
@@ -55,14 +60,22 @@ public class SourcesResamplerCommand implements BdvPlaygroundActionCommand {
     @Parameter
     boolean cache;
 
+    @Parameter(label="Name(s) of the resampled source(s)")
+    String name; // CSV separate for multiple sources
+
+    @Parameter(type = ItemIO.OUTPUT)
+    SourceAndConverter<?>[] sacs_out;
+
+
     @Override
     public void run() {
         // Should not be parallel
-        for (SourceAndConverter sourceAndConverter : sacs) {
-            SourceAndConverterServices.getSourceAndConverterService().register(
-                    new SourceResampler(sourceAndConverter, model, reusemipmaps, cache, interpolate).get()
-            );
+        sacs_out = new SourceAndConverter<?>[sacs.length];
+        final String[] names = name.split( "," );
+        for (int i=0;i< sacs.length;i++) {
+            SourceAndConverter<?> sac = sacs[i];
+            sacs_out[i] = new SourceResampler(sac, model, names[i], reusemipmaps, cache, interpolate, defaultmipmaplevel).get();
         }
-
     }
+
 }

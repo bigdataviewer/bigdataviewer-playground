@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -71,15 +71,25 @@ import java.util.function.BiFunction;
 
 public class ManualRegistrationStopper implements Runnable {
 
-    ManualRegistrationStarter starter;
+    final ManualRegistrationStarter starter;
 
-    BiFunction<AffineTransform3D, SourceAndConverterAndTimeRange, SourceAndConverter> registrationPolicy;// = ManualRegistrationStopper::createNewTransformedSourceAndConverter;
+    final BiFunction<AffineTransform3D, SourceAndConverterAndTimeRange<?>, SourceAndConverter<?>> registrationPolicy;// = ManualRegistrationStopper::createNewTransformedSourceAndConverter;
 
-    SourceAndConverter[] transformedSources;
+    SourceAndConverter<?>[] transformedSources;
 
-    public ManualRegistrationStopper(ManualRegistrationStarter starter, BiFunction<AffineTransform3D, SourceAndConverterAndTimeRange, SourceAndConverter> registrationPolicy) {
+    public ManualRegistrationStopper(ManualRegistrationStarter starter, BiFunction<AffineTransform3D, SourceAndConverterAndTimeRange<?>, SourceAndConverter<?>> registrationPolicy) {
         this.starter = starter;
         this.registrationPolicy = registrationPolicy;
+        this.minTimepoint = starter.bdvHandle.getViewerPanel().state().getCurrentTimepoint();
+        this.maxTimepoint = starter.bdvHandle.getViewerPanel().state().getCurrentTimepoint()+1;
+    }
+
+    int minTimepoint;
+    int maxTimepoint;
+
+    public void setTimeRange(int min, int max) {
+        this.minTimepoint = min;
+        this.maxTimepoint = max;
     }
 
     @Override
@@ -89,37 +99,39 @@ public class ManualRegistrationStopper implements Runnable {
         AffineTransform3D transform3D = this.starter.getCurrentTransform().copy();
 
         // Stops BdvHandle listener
-        this.starter.getBdvHandle().getViewerPanel().removeTransformListener(starter.getListener());
+        this.starter.getBdvHandle().getViewerPanel().transformListeners().remove(starter.getListener());
 
-        // Removes temporary TransformedSourceAndConverter - a two step process in order to improve performance
-        List<SourceAndConverter> tempSacs = starter.getTransformedSourceAndConverterDisplayed();
-        SourceAndConverterServices.getSourceAndConverterDisplayService().remove(starter.bdvHandle,tempSacs.toArray(new SourceAndConverter[0]));
+        // Removes temporary TransformedSourceAndConverter - a two-step process in order to improve performance
+        List<SourceAndConverter<?>> tempSacs = starter.getTransformedSourceAndConverterDisplayed();
 
-        for (SourceAndConverter sac: tempSacs) {
+        SourceAndConverterServices.getBdvDisplayService().remove(starter.bdvHandle,tempSacs.toArray(new SourceAndConverter[0]));
+
+        for (SourceAndConverter<?> sac: tempSacs) {
             SourceAndConverterServices.getSourceAndConverterService().remove(sac);
         }
 
         int nSources = starter.getOriginalSourceAndConverter().length;
         transformedSources = new SourceAndConverter[nSources];
 
-        List<SourceAndConverter> transformedSacsToDisplay = new ArrayList<>();
+        List<SourceAndConverter<?>> transformedSacsToDisplay = new ArrayList<>();
         // Applies the policy
         for (int i=0;i<nSources;i++) {
-            SourceAndConverter sac  = this.starter.getOriginalSourceAndConverter()[i];
+            SourceAndConverter<?> sac  = this.starter.getOriginalSourceAndConverter()[i];
 
-            transformedSources[i] = registrationPolicy.apply(transform3D, new SourceAndConverterAndTimeRange(sac, starter.bdvHandle.getViewerPanel().state().getCurrentTimepoint()));
+            transformedSources[i] = registrationPolicy.apply(transform3D, new SourceAndConverterAndTimeRange<>(sac, minTimepoint, maxTimepoint));
             if (starter.getOriginallyDisplayedSourceAndConverter().contains(sac)) {
                 transformedSacsToDisplay.add(transformedSources[i]);
             }
         }
 
         // Calls display ( array for better performance )
-        SourceAndConverterServices.getSourceAndConverterDisplayService().show(starter.getBdvHandle(),
-                transformedSacsToDisplay.toArray(new SourceAndConverter[0]));
+        SourceAndConverterServices.getBdvDisplayService().show(starter.getBdvHandle(),
+                transformedSacsToDisplay.toArray(new SourceAndConverter<?>[0]));
 
     }
 
-    public SourceAndConverter[] getTransformedSources() {
+    public SourceAndConverter<?>[] getTransformedSources() {
         return transformedSources;
     }
+
 }

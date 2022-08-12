@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -33,11 +33,11 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 public class BrightnessAdjuster implements Runnable
 {
-	private final SourceAndConverter sac;
+	private final SourceAndConverter<?> sac;
 	private final double min;
 	private final double max;
 
-	public BrightnessAdjuster(final SourceAndConverter sac, double min, double max )
+	public BrightnessAdjuster(final SourceAndConverter<?> sac, double min, double max )
 	{
 		this.sac = sac;
 		this.min = min;
@@ -47,7 +47,7 @@ public class BrightnessAdjuster implements Runnable
 	@Override
 	public void run()
 	{
-		SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup( sac ).setDisplayRange(min, max);
+		SourceAndConverterServices.getSourceAndConverterService().getConverterSetup( sac ).setDisplayRange(min, max);
 	}
 
 }

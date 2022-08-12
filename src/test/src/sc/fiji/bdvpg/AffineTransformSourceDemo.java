@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -59,7 +59,7 @@ public class AffineTransformSourceDemo {
 
     @Test
     public void demoRunOk() {
-        main(new String[]{""});
+        main("");
     }
 
     @After
@@ -71,22 +71,22 @@ public class AffineTransformSourceDemo {
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = SourceAndConverterServices
-                .getSourceAndConverterDisplayService().getActiveBdv();
+                .getBdvDisplayService().getActiveBdv();
 
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
         //importer.run();
 
-        final AbstractSpimData spimData = importer.get();
+        final AbstractSpimData<?> spimData = importer.get();
 
-        SourceAndConverter sac = SourceAndConverterServices
+        SourceAndConverter<?> sac = SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
 
         new ViewerTransformAdjuster(bdvHandle, sac).run();
-        new BrightnessAutoAdjuster(sac, 0).run();
+        new BrightnessAutoAdjuster<>(sac, 0).run();
 
         ArrayList<SourceAndConverter<?>> sacs = new ArrayList<>();
         for (int x = 0; x < numberOfSourcesInOneAxis;x++) {
@@ -94,14 +94,15 @@ public class AffineTransformSourceDemo {
 
                 if (Math.random()>0.0) {
                     AffineTransform3D at3d = new AffineTransform3D();
+
                     at3d.rotate(2, Math.random());
                     at3d.scale(0.5 + Math.random() / 4, 0.5 + Math.random() / 4, 1);
                     at3d.translate(200 * x, 200 * y, 0);
 
-                    SourceAffineTransformer sat = new SourceAffineTransformer(sac, at3d);
+                    SourceAffineTransformer<?,?> sat = new SourceAffineTransformer<>(sac, at3d);
                     sat.run();
 
-                    SourceAndConverter transformedSac = sat.getSourceOut();
+                    SourceAndConverter<?> transformedSac = sat.getSourceOut();
 
                     sacs.add(transformedSac);
                 }
@@ -109,7 +110,7 @@ public class AffineTransformSourceDemo {
         }
 
         SourceAndConverterServices
-                .getSourceAndConverterDisplayService()
+                .getBdvDisplayService()
                 .show(bdvHandle, sacs.toArray(new SourceAndConverter[0]));
 
         SourceGroup sg = bdvHandle.getViewerPanel().state().getGroups().get(1);

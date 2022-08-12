@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,8 @@ package sc.fiji.bdvpg.spimdata.importer;
 import mpicbg.spim.data.SpimDataException;
 import mpicbg.spim.data.XmlIoSpimData;
 import mpicbg.spim.data.generic.AbstractSpimData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.io.File;
@@ -39,9 +41,11 @@ import java.util.regex.Pattern;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_LOCATION;
 
-public class SpimDataFromXmlImporter implements Runnable, Function<String, AbstractSpimData> {
+public class SpimDataFromXmlImporter implements Runnable, Function<String, AbstractSpimData<?>> {
 
-    String dataLocation;
+    protected static final Logger logger = LoggerFactory.getLogger(SpimDataFromXmlImporter.class);
+
+    final String dataLocation;
 
     public SpimDataFromXmlImporter( File file ) {
         this.dataLocation = file.getAbsolutePath();
@@ -56,13 +60,13 @@ public class SpimDataFromXmlImporter implements Runnable, Function<String, Abstr
         apply(dataLocation);
     }
 
-    public AbstractSpimData get() {
+    public AbstractSpimData<?> get() {
         return apply(dataLocation);
     }
 
     @Override
-    public AbstractSpimData apply(String dataLocation) {
-        AbstractSpimData sd = null;
+    public AbstractSpimData<?> apply(String dataLocation) {
+        AbstractSpimData<?> sd = null;
         try {
             sd = new XmlIoSpimData().load(dataLocation);
             SourceAndConverterServices.getSourceAndConverterService().register(sd);
@@ -72,10 +76,10 @@ public class SpimDataFromXmlImporter implements Runnable, Function<String, Abstr
                 if (parts[parts.length - 1]!=null) {
                     SourceAndConverterServices.getSourceAndConverterService().setSpimDataName(sd, parts[parts.length - 1]);
                 } else {
-                    System.err.println("Wrong parsing of spimdata name (not enough parts) : "+dataLocation);
+                    logger.error("Wrong parsing of spimdata name (not enough parts) : "+dataLocation);
                 }
             } else {
-                System.err.println("Wrong parsing of spimdata name (can't be splitted): "+dataLocation);
+                logger.error("Wrong parsing of spimdata name (can't be split): "+dataLocation);
             }
             SourceAndConverterServices.getSourceAndConverterService().setMetadata(sd, SPIM_DATA_LOCATION, dataLocation);
         } catch (SpimDataException e) {

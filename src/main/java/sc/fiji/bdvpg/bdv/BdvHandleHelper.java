@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,29 +29,46 @@
 package sc.fiji.bdvpg.bdv;
 
 import bdv.tools.brightness.ConverterSetup;
+import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
+import bdv.util.BdvOptions;
+import bdv.util.BdvOverlay;
 import bdv.viewer.Source;
 import net.imglib2.*;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.util.Intervals;
 import net.imglib2.util.LinAlgHelpers;
 import org.scijava.cache.CacheService;
 import org.scijava.object.ObjectService;
+import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.io.InputTriggerConfigHelper;
+import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
- * BDVUtils
+ * BdvHandleHelper
  * Author: haesleinhuepf, tischi, nicokiaru
  * 12 2019
  */
 public class BdvHandleHelper
 {
+
+    protected static final Logger logger = LoggerFactory.getLogger(BdvHandleHelper.class);
+
     /**
      * Creates a viewer transform with a new center position.
      *
@@ -67,8 +84,13 @@ public class BdvHandleHelper
      */
     public static AffineTransform3D getViewerTransformWithNewCenter( BdvHandle bdvHandle, double[] xyz )
     {
+        return getViewerTransformWithNewCenter(new ViewerAdapter(bdvHandle), xyz);
+    }
+
+    public static AffineTransform3D getViewerTransformWithNewCenter(ViewerAdapter handle, double[] xyz )
+    {
         final AffineTransform3D currentViewerTransform = new AffineTransform3D();
-        bdvHandle.getViewerPanel().state().getViewerTransform( currentViewerTransform );
+        handle.state().getViewerTransform( currentViewerTransform );
 
         AffineTransform3D adaptedViewerTransform = currentViewerTransform.copy();
 
@@ -86,13 +108,35 @@ public class BdvHandleHelper
 
         adaptedViewerTransform.translate( targetPositionInViewerInPixels );
 
-        final double[] windowCentreInViewerInPixels = new double[ 3 ];
-        windowCentreInViewerInPixels[ 0 ] = bdvHandle.getViewerPanel().getDisplay().getWidth() / 2.0;
-        windowCentreInViewerInPixels[ 1 ] = bdvHandle.getViewerPanel().getDisplay().getHeight() / 2.0;
+        final double[] windowCentreInViewerInPixels = getWindowCentreInPixelUnits( handle );
 
         adaptedViewerTransform.translate( windowCentreInViewerInPixels );
 
         return adaptedViewerTransform;
+    }
+
+    public static double[] getWindowCentreInPixelUnits( ViewerAdapter handle )
+    {
+        final double[] windowCentreInPixelUnits = new double[ 3 ];
+        windowCentreInPixelUnits[ 0 ] = handle.getWidth() / 2.0;
+        windowCentreInPixelUnits[ 1 ] = handle.getHeight() / 2.0;
+        return windowCentreInPixelUnits;
+    }
+
+
+    public static double[] getWindowCentreInPixelUnits( BdvHandle bdvHandle )
+    {
+        return getWindowCentreInPixelUnits(new ViewerAdapter(bdvHandle));
+    }
+
+    public static double[] getWindowCentreInCalibratedUnits( BdvHandle bdvHandle )
+    {
+        final double[] centreInPixelUnits = getWindowCentreInPixelUnits( bdvHandle );
+        final AffineTransform3D affineTransform3D = new AffineTransform3D();
+        bdvHandle.getViewerPanel().state().getViewerTransform( affineTransform3D );
+        final double[] centreInCalibratedUnits = new double[ 3 ];
+        affineTransform3D.inverse().apply( centreInPixelUnits, centreInCalibratedUnits );
+        return centreInCalibratedUnits;
     }
 
     public static double getViewerVoxelSpacing( BdvHandle bdv ) {
@@ -118,12 +162,12 @@ public class BdvHandleHelper
         final double viewerPhysicalVoxelSpacingX = viewerPhysicalWidth / windowWidth;
         final double viewerPhysicalVoxelSpacingY = viewerPhysicalHeight / windowHeight;
 
-        System.out.println( "[DEBUG] windowWidth = " + windowWidth );
-        System.out.println( "[DEBUG] windowHeight = " + windowHeight );
-        System.out.println( "[DEBUG] viewerPhysicalWidth = " + viewerPhysicalWidth );
-        System.out.println( "[DEBUG] viewerPhysicalHeight = " + viewerPhysicalHeight );
-        System.out.println( "[DEBUG] viewerPhysicalVoxelSpacingX = " + viewerPhysicalVoxelSpacingX );
-        System.out.println( "[DEBUG] viewerPhysicalVoxelSpacingY = " + viewerPhysicalVoxelSpacingY );
+        logger.debug( "windowWidth = " + windowWidth );
+        logger.debug( "windowHeight = " + windowHeight );
+        logger.debug( "viewerPhysicalWidth = " + viewerPhysicalWidth );
+        logger.debug( "viewerPhysicalHeight = " + viewerPhysicalHeight );
+        logger.debug( "viewerPhysicalVoxelSpacingX = " + viewerPhysicalVoxelSpacingX );
+        logger.debug( "viewerPhysicalVoxelSpacingY = " + viewerPhysicalVoxelSpacingY );
 
         return viewerPhysicalVoxelSpacingX;
     }
@@ -151,6 +195,11 @@ public class BdvHandleHelper
         return intersects;
     }
 
+    /**
+     * @param intervalA 3d interval A
+     * @param intervalB 3d interval B
+     * @return the intersection 3D interval between A and B
+     */
     public static FinalInterval intersect2D( final Interval intervalA, final Interval intervalB ) {
         assert intervalA.numDimensions() == intervalB.numDimensions();
 
@@ -164,6 +213,10 @@ public class BdvHandleHelper
         return new FinalInterval( min, max );
     }
 
+    /**
+     * @param bdvHandle bdv window
+     * @return an interval containing the bdv current view
+     */
     public static FinalRealInterval getViewerGlobalBoundingInterval(BdvHandle bdvHandle) {
         AffineTransform3D viewerTransform = new AffineTransform3D();
         bdvHandle.getViewerPanel().state().getViewerTransform( viewerTransform );
@@ -175,18 +228,30 @@ public class BdvHandleHelper
         return viewerTransform.estimateBounds( new FinalInterval( min, max ) );
     }
 
+    /**
+     *
+     * @param source source to probe
+     * @param timepoint timepoint probed for the source
+     * @return an interval containing the source
+     */
     public static Interval getSourceGlobalBoundingInterval( Source< ? > source, int timepoint ) {
         final AffineTransform3D sourceTransform = getSourceTransform( source, timepoint );
         final RandomAccessibleInterval< ? > rai = source.getSource(timepoint,0);
         return Intervals.smallestContainingInterval( sourceTransform.estimateBounds( rai ) );
     }
 
+    /**
+     *
+     * @param source source
+     * @param timepoint timepoint
+     * @return the transform of the source at its highest resolution level
+     */
     public static AffineTransform3D getSourceTransform( Source< ? > source, int timepoint ) {
         return getSourceTransform(source, timepoint, 0);
     }
 
     /**
-     * Returns the highest level where the sourceandconverter voxel spacings
+     * Returns the highest level where the {@link bdv.viewer.SourceAndConverter} voxel spacings
      * are inferior or equals to the requested ones.
      *
      * @param source the source
@@ -264,11 +329,11 @@ public class BdvHandleHelper
         wa = new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                super.windowClosing(e);
-                bdvsds.closeBdv(bdvh);
                 if (runnable!=null) {
                     runnable.run();
                 }
+                super.windowClosing(e);
+                bdvsds.closeBdv(bdvh);
                 topFrame.removeWindowListener(this); // Avoid memory leak
                 e.getWindow().dispose();
                 bdvh.close();
@@ -323,8 +388,9 @@ public class BdvHandleHelper
         List<BdvHandle> bdvs = os.getObjects(BdvHandle.class);
         boolean duplicateExist;
         String uniqueTitle = iniTitle;
-        duplicateExist = bdvs.stream().anyMatch(bdv ->
-                (bdv.toString().equals(iniTitle))||(getWindowTitle(bdv).equals(iniTitle)));
+        duplicateExist = bdvs.stream().filter(bdv ->
+            (bdv.toString().equals(iniTitle)) || (getWindowTitle(bdv).equals(iniTitle))
+        ).count()>1;
         while (duplicateExist) {
             if (uniqueTitle.matches(".+(_)\\d+")) {
                 int idx = Integer.parseInt(uniqueTitle.substring(uniqueTitle.lastIndexOf("_")+1));
@@ -344,4 +410,89 @@ public class BdvHandleHelper
         }
         return uniqueTitle;
     }
+
+    /**
+     * For debugging:
+     * - print actions and triggers of a bdv
+     * @param stringEater consumer of the string to print the bindings (system out, ij log, etc.)
+     * @param bdv ze bdv
+     */
+    public static void printBindings(BdvHandle bdv, Consumer<String> stringEater) {
+        stringEater.accept("--------------------- Behaviours");
+        bdv.getTriggerbindings().getConcatenatedBehaviourMap().getAllBindings().forEach((label,behaviour) -> {
+            stringEater.accept("Label: "+label);
+            stringEater.accept("\t"+behaviour.getClass().getSimpleName());
+        });
+        stringEater.accept("--------------------- Triggers");
+        bdv.getTriggerbindings().getConcatenatedInputTriggerMap().getAllBindings().forEach((trigger, actions) -> {
+            stringEater.accept("Trigger: "+trigger.toString());
+            for (String action : actions)
+                stringEater.accept("\t"+action);
+        });
+        stringEater.accept("--------------------- Key Action");
+        for (Object o : bdv.getKeybindings().getConcatenatedActionMap().allKeys()) {
+            stringEater.accept("\t"+o);
+        }
+        stringEater.accept("--------------------- Key Triggers");
+        if (bdv.getKeybindings().getConcatenatedInputMap()!=null) {
+            if (bdv.getKeybindings().getConcatenatedInputMap().allKeys()!=null) {
+                for (KeyStroke ks : bdv.getKeybindings().getConcatenatedInputMap().allKeys()) {
+                    stringEater.accept("\t" + ks + ":" + bdv.getKeybindings().getConcatenatedInputMap().get(ks));
+                }
+                stringEater.accept("Null keys in Keybindings ConcatenatedInputMap!");
+            }
+        } else {
+            stringEater.accept("Null Keybindings InputMap!");
+        }
+    }
+
+    /**
+     * Install trigger bindings according to the path specified
+     * See {@link BdvSettingsGUISetter}
+     * Key bindings can not be overridden yet
+     * @param bdv bdvhandle
+     * @param pathToBindings string path to the folder containing the yaml file
+     */
+    static void install(BdvHandle bdv, String pathToBindings) {
+        String yamlDataLocation = pathToBindings + File.separator + BdvSettingsGUISetter.bdvKeyConfigFileName;
+
+        InputTriggerConfig yamlConf = null;
+
+        try {
+            yamlConf = new InputTriggerConfig( YamlConfigIO.read( yamlDataLocation ) );
+        } catch (final Exception e) {
+            logger.warn("Could not create "+yamlDataLocation+" file. Using defaults instead.");
+        }
+
+        if (yamlConf!=null) {
+
+            bdv.getTriggerbindings().addInputTriggerMap(pathToBindings, InputTriggerConfigHelper.getInputTriggerMap(yamlConf), "transform");
+
+            // TODO : support replacement of key bindings bdv.getKeybindings().addInputMap("bdvpg", new InputMap(), "bdv", "navigation");
+        }
+
+    }
+
+    public static BdvOverlay addCenterCross(BdvHandle bdvh) {
+        final BdvOverlay overlay = new BdvOverlay()
+        {
+            @Override
+            protected void draw( final Graphics2D g )
+            {
+                int colorCode = this.info.getColor().get();
+                int w = bdvh.getViewerPanel().getWidth();
+                int h = bdvh.getViewerPanel().getHeight();
+                g.setColor(new Color(ARGBType.red(colorCode) , ARGBType.green(colorCode), ARGBType.blue(colorCode), ARGBType.alpha(colorCode) ));
+                g.drawLine(w/2, h/2-h/4,w/2, h/2+h/4 );
+                g.drawLine(w/2-w/4, h/2,w/2+w/4, h/2 );
+            }
+
+        };
+
+        int nTimepoints = bdvh.getViewerPanel().state().getNumTimepoints();
+        BdvFunctions.showOverlay( overlay, "cross_overlay", BdvOptions.options().addTo( bdvh ) );
+        bdvh.getViewerPanel().setTimepoint(nTimepoints);
+        return overlay;
+    }
+
 }

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -37,16 +37,9 @@ import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
-import java.util.stream.Collectors;
-
-/**
-
- */
 
 @Plugin(type = InputWidget.class, priority = Priority.EXTREMELY_HIGH)
 public class SwingBdvHandleWidget extends SwingInputWidget<BdvHandle> implements
@@ -66,9 +59,6 @@ public class SwingBdvHandleWidget extends SwingInputWidget<BdvHandle> implements
         return getSelectedBdvHandle();
     }
 
-    @Parameter
-    SourceAndConverterService sourceAndConverterService;
-
     JList list;
 
     public BdvHandle getSelectedBdvHandle() {
@@ -86,7 +76,7 @@ public class SwingBdvHandleWidget extends SwingInputWidget<BdvHandle> implements
                   .stream()
                   .map(RenamableBdvHandle::new)
                   .toArray(RenamableBdvHandle[]::new);
-        list = new JList(data); //data has type Object[]
+        list = new JList<>(data); //data has type Object[]
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane listScroller = new JScrollPane(list);
         listScroller.setPreferredSize(new Dimension(250, 80));
@@ -94,9 +84,9 @@ public class SwingBdvHandleWidget extends SwingInputWidget<BdvHandle> implements
         getComponent().add(listScroller);
     }
 
-    public class RenamableBdvHandle {
+    public static class RenamableBdvHandle {
 
-        public BdvHandle bdvh;
+        public final BdvHandle bdvh;
 
         public RenamableBdvHandle(BdvHandle bdvh) {
             this.bdvh = bdvh;

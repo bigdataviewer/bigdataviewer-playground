@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -28,12 +28,13 @@
  */
 package sc.fiji.bdvpg.bdv.config;
 
+import bdv.ui.settings.ModificationListener;
+import bdv.ui.settings.SettingsPage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.mastodon.app.ui.settings.ModificationListener;
-import org.mastodon.app.ui.settings.SettingsPage;
 import org.scijava.listeners.Listeners;
-import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterPopupMenu;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.*;
@@ -52,6 +53,8 @@ import java.util.List;
  */
 
 public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
+
+    protected static final Logger logger = LoggerFactory.getLogger(BdvPlaygroundContextualMenuSettingsPage.class);
 
     private final String treePath;
 
@@ -75,7 +78,7 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
                 e.printStackTrace();
             }
         } else {
-            System.err.println("Bdv Playground actions settings File "+jsonActionFile.getAbsolutePath()+" does not exist.");
+            logger.warn("Bdv Playground actions settings File "+jsonActionFile.getAbsolutePath()+" does not exist.");
         }
 
         panel = new BdvPgContextMenuEditor(iniActions);
@@ -135,7 +138,7 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
             out.println(actionsString);
             out.close();
         } catch (FileNotFoundException e) {
-            System.err.println("Could not print actions settings file "+jsonActionFile.getAbsolutePath());
+            logger.error("Could not print actions settings file "+jsonActionFile.getAbsolutePath());
             e.printStackTrace();
         }
     }
@@ -158,7 +161,7 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
             contextMenuActions.setDropMode(DropMode.INSERT);
             StringBuilder sb = new StringBuilder();
             for (String action:initialState) {
-                sb.append(action+"\n");
+                sb.append(action).append("\n");
             }
             contextMenuActions.setText(sb.toString());
 

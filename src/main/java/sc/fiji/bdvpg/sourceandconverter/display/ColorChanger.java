@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,16 +38,16 @@ import java.util.function.Consumer;
 
 /**
  * In contrast to ConverterChanger, this action do not create a new SourceAndConverter to change the color
- * of the displayed source. However this means that the converter has to be of instance ColorConverter
+ * of the displayed source. However, this means that the converter has to be of instance ColorConverter
  * One way around this is to create more generic converters from the beginning but this would have drawbacks:
  * - how to save the converter in spimdata ?
  */
-public class ColorChanger implements Runnable, Consumer<SourceAndConverter> {
+public class ColorChanger implements Runnable, Consumer<SourceAndConverter<?>> {
 
-    SourceAndConverter sac;
-    ARGBType color;
+    final SourceAndConverter<?> sac;
+    final ARGBType color;
 
-    public ColorChanger(SourceAndConverter sac, ARGBType color) {
+    public ColorChanger(SourceAndConverter<?> sac, ARGBType color) {
         this.sac = sac;
         this.color = color;
     }
@@ -65,8 +65,8 @@ public class ColorChanger implements Runnable, Consumer<SourceAndConverter> {
                 ((ColorConverter) sourceAndConverter.asVolatile().getConverter()).setColor(color);
             }
             // Updates display, if any
-            if ( SourceAndConverterServices.getSourceAndConverterDisplayService()!=null)
-                SourceAndConverterServices.getSourceAndConverterDisplayService().getConverterSetup(sourceAndConverter).setColor(color);
+            if ( SourceAndConverterServices.getBdvDisplayService()!=null)
+                SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(sourceAndConverter).setColor(color);
         } else {
             new SystemLogger().err("sourceAndConverter Converter is not an instance of Color Converter");
         }

@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -40,18 +40,16 @@ import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public class XmlHDF5SpimdataExporterTest {
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public final TemporaryFolder folder = new TemporaryFolder();
 
     static ImageJ ij;
 
-    @Test
+    @Test@Ignore
     public void run() throws Exception {
         // Need to initialize the services:
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
@@ -60,9 +58,9 @@ public class XmlHDF5SpimdataExporterTest {
 
         // Arrange
         // creates a Voronoi SourceAndConverter
-        SourceAndConverter sac = new VoronoiSourceGetter(new long[]{512,512,1},256,true).get();
+        SourceAndConverter<?> sac = new VoronoiSourceGetter(new long[]{512,512,1},256,true).get();
         // Puts it into a List
-        List<SourceAndConverter> sacs = new ArrayList<>();
+        List<SourceAndConverter<?>> sacs = new ArrayList<>();
         sacs.add(sac);
         // Makes temp file which will be deleted at the end of the test execution
         File fileXmlGen = folder.newFile("testVoronoi.xml");
@@ -85,7 +83,6 @@ public class XmlHDF5SpimdataExporterTest {
             System.out.println(line);
         }
         br.close();
-        line = null;
 
         br = new BufferedReader(new FileReader(fileXmlGen.getAbsoluteFile()));
         while ((line = br.readLine()) != null) {

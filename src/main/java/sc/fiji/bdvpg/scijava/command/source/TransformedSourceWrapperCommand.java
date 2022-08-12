@@ -2,7 +2,7 @@
  * #%L
  * BigDataViewer-Playground
  * %%
- * Copyright (C) 2019 - 2021 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * Copyright (C) 2019 - 2022 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,26 +30,29 @@ package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
+import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
-import java.util.Arrays;
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Wrap as Transformed Source")
 public class TransformedSourceWrapperCommand implements BdvPlaygroundActionCommand {
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
+
+    @Parameter(type = ItemIO.OUTPUT)
+    SourceAndConverter<?>[] sacs_out;
 
     @Override
     public void run() {
-        SourceAffineTransformer sat = new SourceAffineTransformer(null, new AffineTransform3D());
-        Arrays.stream(sacs).map(sat).forEach(sac ->
-                        SourceAndConverterServices.getSourceAndConverterService().register(sac)
-                );
+        sacs_out = new SourceAndConverter<?>[sacs.length];
+        for (int i=0;i< sacs.length;i++) {
+            sacs_out[i] = new SourceAffineTransformer<>(null, new AffineTransform3D()).apply((SourceAndConverter<Object>) sacs[i]);
+        }
     }
 }
