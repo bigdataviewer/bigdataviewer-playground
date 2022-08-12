@@ -91,20 +91,20 @@ public class ViewerStateSyncStarter implements Runnable {
                 if (stateToCopy.size()!=0) {
                     //System.out.println("adding "+stateToCopy.size()+" source to "+adapterTest);
                     if (adapterTest.bvvPanel!=null) {
-                        for (SourceAndConverter source : stateToCopy) {
+                        for (SourceAndConverter<?> source : stateToCopy) {
                             adapterTest.bvvPanel.getConverterSetups().put(source,
                                     SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(source));
                         }
                     } else {
                         // TODO : improve!
                         SourceAndConverterServices.getBdvDisplayService().getDisplays().forEach(bdvh -> {
-                                for (SourceAndConverter source : stateToCopy) {
+                                for (SourceAndConverter<?> source : stateToCopy) {
                                     bdvh.getConverterSetups().put(source, SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(source));
                                 }
                         });
                     }
                     adapterTest.state().addSources(stateToCopy);
-                    for (SourceAndConverter source : stateToCopy) {
+                    for (SourceAndConverter<?> source : stateToCopy) {
                         //if (adapter.state().isSourceActive(source)) {
                             adapterTest.state().setSourceActive(source, true);
                         //} else {

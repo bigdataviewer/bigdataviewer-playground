@@ -39,6 +39,7 @@ import net.imglib2.Volatile;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.NumericType;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedIntType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
@@ -149,7 +150,7 @@ public class VolatileSource<T extends NumericType<T>, V extends Volatile< T > & 
      * @return the volatile equivalent class of this NumericType instance
      */
 
-    static public Volatile getVolatileOf(NumericType t) {
+    static public Volatile<? extends NumericType> getVolatileOf(NumericType<?> t) {
         if (t instanceof UnsignedShortType) return new VolatileUnsignedShortType();
 
         if (t instanceof UnsignedIntType) return new VolatileUnsignedIntType();

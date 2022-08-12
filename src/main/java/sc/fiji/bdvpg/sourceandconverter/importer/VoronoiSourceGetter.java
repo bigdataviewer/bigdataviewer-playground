@@ -68,9 +68,9 @@ public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverte
     }
 
     @Override
-    public SourceAndConverter<?> get() {
-        RandomAccessibleInterval voronoi = getVoronoiTestLabelImage(imgSize, numPts, copyImg);
-        Source s = new RandomAccessibleIntervalSource<>( voronoi, new FloatType(), new AffineTransform3D(), "Voronoi_"+numPts+" Pts_["+imgSize[0]+","+imgSize[1]+","+imgSize[2]+"]" );
+    public SourceAndConverter<FloatType> get() {
+        RandomAccessibleInterval<FloatType> voronoi = getVoronoiTestLabelImage(imgSize, numPts, copyImg);
+        Source<FloatType> s = new RandomAccessibleIntervalSource<>( voronoi, new FloatType(), new AffineTransform3D(), "Voronoi_"+numPts+" Pts_["+imgSize[0]+","+imgSize[1]+","+imgSize[2]+"]" );
         return SourceAndConverterHelper.createSourceAndConverter(s);
     }
 
@@ -98,7 +98,7 @@ public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverte
         RandomAccessibleInterval< FloatType > labelImage = Views.interval( randomAccessible, interval );
 
         if (copyImg) {
-            final ArrayImg labelImageCopy = new ArrayImgFactory( Util.getTypeFromInterval( labelImage ) ).create( labelImage );
+            final ArrayImg<FloatType,?> labelImageCopy = new ArrayImgFactory( Util.getTypeFromInterval( labelImage ) ).create( labelImage );
 
             // Image copied to avoid computing it on the fly
             // https://github.com/imglib/imglib2-algorithm/blob/47cd6ed5c97cca4b316c92d4d3260086a335544d/src/main/java/net/imglib2/algorithm/util/Grids.java#L221 used for parallel copy

@@ -41,21 +41,21 @@ import sc.fiji.bdvpg.WarpedSourceDemo;
 public class TestWidgetDemoCommand implements Command {
 
     @Parameter
-    SourceAndConverter[] non_sorted_sources;
+    SourceAndConverter<?>[] non_sorted_sources;
 
 
     @Parameter(style = "sorted")
-    SourceAndConverter[] sorted_sources;
+    SourceAndConverter<?>[] sorted_sources;
 
     @Override
     public void run() {
         IJ.log("--- Non Sorted");
-        for(SourceAndConverter source: non_sorted_sources) {
+        for(SourceAndConverter<?> source: non_sorted_sources) {
             IJ.log(source.getSpimSource().getName());
         }
 
         IJ.log("--- Sorted");
-        for(SourceAndConverter source: sorted_sources) {
+        for(SourceAndConverter<?> source: sorted_sources) {
             IJ.log(source.getSpimSource().getName());
         }
     }

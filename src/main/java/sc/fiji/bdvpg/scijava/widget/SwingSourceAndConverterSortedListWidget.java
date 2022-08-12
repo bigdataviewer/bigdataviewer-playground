@@ -79,24 +79,24 @@ public class SwingSourceAndConverterSortedListWidget extends SwingInputWidget<So
     }
 
     @Override
-    public SourceAndConverter[] getValue() {
+    public SourceAndConverter<?>[] getValue() {
         return getSelectedSourceAndConverters();
     }
 
     @Parameter
 	SourceAndConverterService bss;
 
-    public SourceAndConverter[] getSelectedSourceAndConverters() {
+    public SourceAndConverter<?>[] getSelectedSourceAndConverters() {
        int nSources = sortedSourceList.getModel().getSize();
-       SourceAndConverter[] selection = new SourceAndConverter[nSources];
+       SourceAndConverter<?>[] selection = new SourceAndConverter[nSources];
        for (int i=0; i<nSources; i++) {
-           selection[i] = ((RenamableSourceAndConverter)sortedSourceList.getModel().getElementAt(i)).sac;
+           selection[i] = (sortedSourceList.getModel().getElementAt(i)).sac;
        }
        return selection;
     }
 
     JTree tree;
-    JList sortedSourceList;
+    JList<RenamableSourceAndConverter> sortedSourceList;
 
     @Override
     public void set(final WidgetModel model) {
@@ -114,7 +114,7 @@ public class SwingSourceAndConverterSortedListWidget extends SwingInputWidget<So
         innerPanel.add(scrollPaneTree);
         model.setValue(null);
 
-        sortedSourceList = new JList();
+        sortedSourceList = new JList<>();
         sortedSourceList.setDropMode(DropMode.INSERT);
         sortedSourceList.setModel(new CustomSourceListModel());
         sortedSourceList.setDragEnabled(true);

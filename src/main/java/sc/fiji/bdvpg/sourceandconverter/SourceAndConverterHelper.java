@@ -247,7 +247,7 @@ public class SourceAndConverterHelper {
      * @param type a pixel of type T
      * @return a suited converter
      */
-    public static< T extends RealType< T >>  Converter createConverterRealType( final T type ) {
+    public static< T extends RealType< T >>  Converter<T, ARGBType> createConverterRealType( final T type ) {
         final double typeMin = Math.max( 0, Math.min( type.getMinValue(), 65535 ) );
         final double typeMax = Math.max( 0, Math.min( type.getMaxValue(), 65535 ) );
         final RealARGBColorConverter< T > converter ;

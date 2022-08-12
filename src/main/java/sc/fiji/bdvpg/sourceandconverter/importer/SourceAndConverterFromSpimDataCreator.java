@@ -39,8 +39,10 @@ import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.sequence.Angle;
 import mpicbg.spim.data.sequence.Channel;
+import net.imglib2.Volatile;
 import net.imglib2.converter.Converter;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,19 +118,19 @@ public class SourceAndConverterFromSpimDataCreator {
 		WrapBasicImgLoader.removeWrapperIfPresent( asd );
 	}
 
-	private void createRealTypeSourceAndConverter( boolean nonVolatile, int setupId, String sourceName )
+	private void createRealTypeSourceAndConverter(boolean nonVolatile, int setupId, String sourceName )
 	{
 		final SpimSource<?> s = new SpimSource<>( asd, setupId, sourceName );
 
-		Converter nonVolatileConverter = SourceAndConverterHelper.createConverterRealType((RealType)s.getType()); // IN FACT THE CASTING IS NECESSARY!!
+		Converter<?, ARGBType> nonVolatileConverter = SourceAndConverterHelper.createConverterRealType((RealType)(s.getType())); // IN FACT THE CASTING IS NECESSARY!!
 
 		if (!nonVolatile ) {
 
-			final VolatileSpimSource vs = new VolatileSpimSource<>( asd, setupId, sourceName );
+			final VolatileSpimSource<?> vs = new VolatileSpimSource<>( asd, setupId, sourceName );
 
-			Converter volatileConverter = SourceAndConverterHelper.createConverterRealType((RealType)vs.getType());
+			Converter<?, ARGBType> volatileConverter = SourceAndConverterHelper.createConverterRealType((RealType)(vs.getType()));
 
-			setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter, new SourceAndConverter<>(vs, volatileConverter)));
+			setupIdToSourceAndConverter.put( setupId, new SourceAndConverter(s, nonVolatileConverter, new SourceAndConverter(vs, volatileConverter)));
 
 		} else {
 
