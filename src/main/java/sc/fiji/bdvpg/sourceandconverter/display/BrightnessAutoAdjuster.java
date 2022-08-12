@@ -83,7 +83,7 @@ public class BrightnessAutoAdjuster< T extends RealType< T >> implements Runnabl
 		}
 
 		final int numBins = 6535;
-		final Histogram1d< T > histogram = new Histogram1d<>( sampledPixels, new Real1dBinMapper<T>(minValue, maxValue, numBins, false) );
+		final Histogram1d< T > histogram = new Histogram1d<>( sampledPixels, new Real1dBinMapper<>(minValue, maxValue, numBins, false) );
 		final DiscreteFrequencyDistribution dfd = histogram.dfd();
 		final long[] bin = new long[] { 0 };
 		double cumulative = 0;

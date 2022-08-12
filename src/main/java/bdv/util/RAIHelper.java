@@ -72,7 +72,7 @@ public class RAIHelper {
         final long[] dimensions = Intervals.dimensionsAsLongArray(source);
         final CellGrid grid = new CellGrid(dimensions, blockSize);
 
-        final Caches.RandomAccessibleLoader<T> loader = new Caches.RandomAccessibleLoader<T>(Views.zeroMin(source));
+        final Caches.RandomAccessibleLoader<T> loader = new Caches.RandomAccessibleLoader<>(Views.zeroMin(source));
 
         final T type = Util.getTypeFromInterval(source);
 

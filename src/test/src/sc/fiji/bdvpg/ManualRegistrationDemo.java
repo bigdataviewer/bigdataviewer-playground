@@ -123,9 +123,7 @@ public class ManualRegistrationDemo {
 
             manualRegistrationStarter.run();
 
-            new ClickBehaviourInstaller(bdvHandle, (x, y) -> {
-                manualRegistrationStopper.run();
-            }).install("Stop Transformation", "ctrl M");
+            new ClickBehaviourInstaller(bdvHandle, (x, y) -> manualRegistrationStopper.run() ).install("Stop Transformation", "ctrl M");
 
         } else if (demoMode == MutateTransformedSourceAndConverter) {
 

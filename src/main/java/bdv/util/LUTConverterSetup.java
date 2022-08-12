@@ -52,6 +52,7 @@ public class LUTConverterSetup<R extends RealType< R >> implements ConverterSetu
 
     private final Listeners.List< SetupChangeListener > listeners = new Listeners.SynchronizedList<>();
 
+    @SafeVarargs
     public LUTConverterSetup(final RealLUTConverter<R> ... converters )
     {
         this( Arrays.asList( converters ) );

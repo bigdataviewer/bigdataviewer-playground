@@ -136,11 +136,15 @@ public class BdvTransferHandler extends TransferHandler {
                 logger.error("I/O error: " + ioe.getMessage());
             }
 
+            if (nodes==null) {
+                logger.warn("Null nodes found");
+                return false;
+            }
+
             if (SourceAndConverterServices.getSourceAndConverterService() instanceof SourceAndConverterService) {
                 List<SourceAndConverter<?>> sacs = new ArrayList<>();
                 SourceAndConverterServiceUI ui =
                         ((SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getUI();
-
                 for (DefaultMutableTreeNode node : nodes) {
                     DefaultMutableTreeNode unwrapped = (DefaultMutableTreeNode) (node.getUserObject());
                     if (unwrapped.getUserObject() instanceof RenamableSourceAndConverter) {

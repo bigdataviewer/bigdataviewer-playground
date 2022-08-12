@@ -436,6 +436,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      */
     Cache<BdvHandle, Map<String, Object>> displayToMetadata;
 
+    @SuppressWarnings("ConstantConditions")
     public void setDisplayMetadata( BdvHandle bdvh, String key, Object data )
     {
         if (bdvh == null) {
@@ -449,7 +450,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         displayToMetadata.getIfPresent( bdvh ).put( key, data );
     }
 
-    public Object getDisplayMetadata( BdvHandle bdvh, String key )
+    @SuppressWarnings("ConstantConditions")
+    public Object getDisplayMetadata(BdvHandle bdvh, String key )
     {
         if (displayToMetadata.getIfPresent(bdvh)!=null) {
             return displayToMetadata.getIfPresent(bdvh).get(key);
@@ -478,9 +480,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
             //------------ Allows to remove the BdvHandle from the objectService when closed by the user
             BdvHandleHelper.setBdvHandleCloseOperation( bdvh, cacheService, this, true,
-                    () -> {
-                        sacService.getUI().removeBdvHandleNodes( bdvh );
-                    } );
+                    () -> sacService.getUI().removeBdvHandleNodes( bdvh ));
 
             ( ( SourceFilterNode ) sacService.getUI().getTreeModel().getRoot() ).insert( node, 0 );
         }

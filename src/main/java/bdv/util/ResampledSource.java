@@ -116,11 +116,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
      *
      * @param resamplingModel model source used for resampling the origin source
      * @param name of the resampled source
-<<<<<<< HEAD
-     * @param reuseMipMaps allows to reuse mipmaps of both the origin and the model source in the resampling
-=======
      * @param reuseMipMaps allows reusing mipmaps of both the origin and the model source in the resampling
->>>>>>> bdv-0.4.1
      *  mipmap reuse tries to be clever by matching the voxel size between the model source and the origin source
      *  so for instance the model source mipmap level 0 will resample the origin mipmap level 2, if the voxel size
      *  of the origin is much smaller than the model (and provided that the origin is also a multiresolution source)
@@ -243,19 +239,15 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
             }
 
             if (!cachedRAIs.get(t).containsKey(level)) {
-                if (cache) {
-                    RandomAccessibleInterval<T> nonCached = buildSource(t, level);
+                RandomAccessibleInterval<T> nonCached = buildSource(t, level);
 
-                    int[] blockSize = {64, 64, 64};
+                int[] blockSize = {64, 64, 64};
 
-                    if (nonCached.dimension(0) < 64) blockSize[0] = (int) nonCached.dimension(0);
-                    if (nonCached.dimension(1) < 64) blockSize[1] = (int) nonCached.dimension(1);
-                    if (nonCached.dimension(2) < 64) blockSize[2] = (int) nonCached.dimension(2);
+                if (nonCached.dimension(0) < 64) blockSize[0] = (int) nonCached.dimension(0);
+                if (nonCached.dimension(1) < 64) blockSize[1] = (int) nonCached.dimension(1);
+                if (nonCached.dimension(2) < 64) blockSize[2] = (int) nonCached.dimension(2);
 
-                    cachedRAIs.get(t).put(level, RAIHelper.wrapAsVolatileCachedCellImg(nonCached, blockSize));
-                } else {
-                    cachedRAIs.get(t).put(level,buildSource(t, level));
-                }
+                cachedRAIs.get(t).put(level, RAIHelper.wrapAsVolatileCachedCellImg(nonCached, blockSize));
             }
             return cachedRAIs.get(t).get(level);
         } else {

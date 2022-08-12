@@ -59,7 +59,7 @@ public class MakeMetadataFilterNodeCommand implements BdvPlaygroundActionCommand
                 (sac) -> {
                     if (sac_service.containsMetadata(sac, key)) {
                         Object o = sac_service.getMetadata(sac, key);
-                        if ((o!=null)||(o instanceof String)) {
+                        if ((o!=null) && (o instanceof String)) {
                             String str = (String) o;
                             return str.matches(valueregex);
                         } else return false;

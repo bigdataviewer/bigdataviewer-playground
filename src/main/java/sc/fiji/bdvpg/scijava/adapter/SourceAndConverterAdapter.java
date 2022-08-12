@@ -170,11 +170,11 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
             Map<String,String> stringMetaData = jsonDeserializationContext
             .deserialize(jsonObject.get("string_metadata"), Map.class);//,jsonSerializationContext.serialize(stringMetaData));
 
-            stringMetaData.keySet().forEach(key -> {
+            stringMetaData.keySet().forEach(key ->
                 SourceAndConverterServices
                         .getSourceAndConverterService()
-                        .setMetadata(sac,key,stringMetaData.get(key));
-            });
+                        .setMetadata(sac,key,stringMetaData.get(key))
+            );
 
             return sac;
         }

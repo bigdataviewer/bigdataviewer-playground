@@ -93,7 +93,7 @@ public class ManualTransformCommand implements BdvPlaygroundActionCommand {
                 break;
             case "Log":
                 manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                        (transform, source) -> SourceTransformHelper.log(transform, source, (str) -> IJ.log(str)));
+                        (transform, source) -> SourceTransformHelper.log(transform, source, IJ::log));
                 break;
             default:
                 manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,

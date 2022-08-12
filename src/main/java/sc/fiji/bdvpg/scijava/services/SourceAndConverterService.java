@@ -162,15 +162,17 @@ public class SourceAndConverterService extends AbstractService implements SciJav
             logger.error("Sac : "+sac.getSpimSource().getName());
             logger.error("SpimSource class: "+sac.getSpimSource().getClass().getSimpleName());
             //return;
+        } else {
+            sacToMetadata.getIfPresent(sac).put(key, data);
         }
-        sacToMetadata.getIfPresent( sac ).put( key, data );
     }
 
     @Override
     public Object getMetadata( SourceAndConverter<?> sac, String key )
     {
-        if (sacToMetadata.getIfPresent(sac)!=null) {
-            return sacToMetadata.getIfPresent(sac).get(key);
+        Map<String, Object> meta = sacToMetadata.getIfPresent(sac);
+        if (meta!=null) {
+            return meta.get(key);
         } else {
             return null;
         }
@@ -402,14 +404,19 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         if (!isRegistered(sac)) {
             register(sac);
         }
+        Map<String, Object> meta = sacToMetadata.getIfPresent(sac);
 
+        if (meta == null) {
+            logger.error("getConverterSetup NPE : the source "+sac.getSpimSource().getName()+" has no metadata associated! ");
+            return null;
+        }
         // If no ConverterSetup is built then build it
-        if ( sacToMetadata.getIfPresent(sac).get( CONVERTER_SETUP ) == null) {
+        if ( meta.get( CONVERTER_SETUP ) == null) {
             ConverterSetup setup = SourceAndConverterHelper.createConverterSetup(sac);
-            sacToMetadata.getIfPresent(sac).put( CONVERTER_SETUP,  setup );
+            meta.put( CONVERTER_SETUP,  setup );
         }
 
-        return (ConverterSetup) sacToMetadata.getIfPresent(sac).get( CONVERTER_SETUP );
+        return (ConverterSetup) meta.get( CONVERTER_SETUP );
     }
 
     @Override
@@ -423,9 +430,10 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                 // Checks if it's the last of a spimdataset -> should shutdown cache
                 // ----------------------------
                 AbstractSpimData asd = null;
-                if (sacToMetadata.getIfPresent(sac)!=null) {
-                    if (sacToMetadata.getIfPresent(sac).get(SPIM_DATA_INFO) != null) {
-                        asd = ((SpimDataInfo) (sacToMetadata.getIfPresent(sac).get(SPIM_DATA_INFO))).asd;
+                Map<String, Object> meta = sacToMetadata.getIfPresent(sac);
+                if (meta!=null) {
+                    if (meta.get(SPIM_DATA_INFO) != null) {
+                        asd = ((SpimDataInfo) (meta.get(SPIM_DATA_INFO))).asd;
                     }
 
                     if (asd != null) {
@@ -498,7 +506,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     public List<SourceAndConverter<?>> getSourceAndConverters() {
         List<SourceAndConverter> list = objectService.getObjects(SourceAndConverter.class);
         List<SourceAndConverter<?>> nonRawList = new ArrayList<>();
-        list.forEach(source -> nonRawList.add(source));
+        list.forEach(nonRawList::add);
         return nonRawList;
     }
 
@@ -510,7 +518,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                 .filter(s -> ((SpimDataInfo) sacToMetadata.getIfPresent(s).get(SPIM_DATA_INFO)).asd.equals(asd))
                 .collect(Collectors.toList());
         List<SourceAndConverter<?>> list = new ArrayList<>();
-        rawList.forEach(source -> list.add(source));
+        rawList.forEach(list::add);
         return list;
     }
 
@@ -660,9 +668,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
                 }
             } else {
                 registerAction(ci.getMenuPath().getLeaf().toString(),
-                        (sacs) -> {
-                            commandService.run(ci, true);
-                        });
+                        (sacs) -> commandService.run(ci, true) );
                 logger.debug("Registering action entitled " + ci.getMenuPath().getMenuString() + " from command " + ci.getClassName() + " sacs ignored");
             }
         } catch (NullPointerException npe) {

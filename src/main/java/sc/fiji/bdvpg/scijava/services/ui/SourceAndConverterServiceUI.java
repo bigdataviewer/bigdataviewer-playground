@@ -484,16 +484,14 @@ public class SourceAndConverterServiceUI {
                 .collect(Collectors.groupingBy(Entity::getClass, Collectors.toList()));
 
         Map<Class, SourceFilterNode> classNodes = new HashMap<>();
-        entitiesByClass.keySet().forEach((c)-> {
-            classNodes.put(c, new SourceFilterNode(model,c.getSimpleName(),(sac)-> true, false));
-        });
+        entitiesByClass.keySet().forEach((c)-> classNodes.put(c, new SourceFilterNode(model,c.getSimpleName(),(sac)-> true, false)));
 
         List<SourceFilterNode> orderedNodes = new ArrayList<>(classNodes.values());
         orderedNodes.sort(Comparator.comparing(SourceFilterNode::getName));
         orderedNodes.forEach(nodeSpimData::add);
 
         Set<Entity> entitiesAlreadyRegistered = new HashSet<>();
-        entitiesByClass.forEach((c,el) -> {
+        entitiesByClass.forEach((c,el) ->
             el.forEach(entity -> {
                 if (!entitiesAlreadyRegistered.contains(entity)) {
                     // Attempt to use NamedEntity if applicable
@@ -513,8 +511,8 @@ public class SourceAndConverterServiceUI {
                     classNodes.get(c).add(nodeElement);
                     nodeElement.add(showAllSources);
                 }
-            });
-        });
+            })
+        );
 
     }
 

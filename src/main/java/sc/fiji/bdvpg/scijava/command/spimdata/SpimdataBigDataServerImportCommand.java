@@ -85,16 +85,23 @@ public class SpimdataBigDataServerImportCommand implements BdvPlaygroundActionCo
             while ( reader.hasNext() )
             {
                 final String name = reader.nextName();
-                if ( name.equals( "id" ) )
-                    id = reader.nextString();
-                else if ( name.equals( "description" ) )
-                    description = reader.nextString();
-                else if ( name.equals( "thumbnailUrl" ) )
-                    thumbnailUrl = reader.nextString();
-                else if ( name.equals( "datasetUrl" ) )
-                    datasetUrl = reader.nextString();
-                else
-                    reader.skipValue();
+                switch (name) {
+                    case "id":
+                        id = reader.nextString();
+                        break;
+                    case "description":
+                        description = reader.nextString();
+                        break;
+                    case "thumbnailUrl":
+                        thumbnailUrl = reader.nextString();
+                        break;
+                    case "datasetUrl":
+                        datasetUrl = reader.nextString();
+                        break;
+                    default:
+                        reader.skipValue();
+                        break;
+                }
             }
             if ( id != null )
             {

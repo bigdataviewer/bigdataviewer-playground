@@ -192,8 +192,6 @@ public class SourceTransformHelper {
                     updateBdvSource.invoke(ass, timePoint);
                 }
 
-            } catch (ClassCastException e) {
-                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -243,8 +241,6 @@ public class SourceTransformHelper {
                     updateBdvSource.invoke(ass, timePoint);
                 }
 
-            } catch (ClassCastException e) {
-                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -287,8 +283,6 @@ public class SourceTransformHelper {
                     updateBdvSource.invoke(ass, timePoint);
                 }
 
-            } catch (ClassCastException e) {
-                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }

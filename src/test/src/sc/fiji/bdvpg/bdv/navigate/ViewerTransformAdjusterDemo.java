@@ -65,9 +65,9 @@ public class ViewerTransformAdjusterDemo
         // Register to the sourceandconverter service
         SourceAndConverterServices.getSourceAndConverterService().register(asd);
 
-        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source -> {
-            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source);
-        });
+        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source ->
+            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source)
+        );
 
         // Import SpimData object
         sdix = new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml");
@@ -77,9 +77,9 @@ public class ViewerTransformAdjusterDemo
         // Register to the sourceandconverter service
         SourceAndConverterServices.getSourceAndConverterService().register(asd);
 
-        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source -> {
-            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source);
-        });
+        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source ->
+            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source)
+        );
 
         new ViewerTransformAdjuster(bdvHandle, SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
     }
