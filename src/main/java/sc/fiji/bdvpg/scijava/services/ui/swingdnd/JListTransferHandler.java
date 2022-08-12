@@ -116,15 +116,17 @@ public class JListTransferHandler extends TransferHandler {
                 final List<SourceAndConverter<?>> sacs = SourceAndConverterHelper.sortDefaultGeneric(
                         ((SourcesTransferable.SourceList) support.getTransferable().getTransferData(SourcesTransferable.flavor))
                                 .getSources());
-                JList target = (JList) (support.getComponent());
-                DefaultListModel model = (DefaultListModel) (target.getModel());
-                JList.DropLocation dropLocation = (JList.DropLocation) support.getDropLocation();
-                int idxInsert = dropLocation.getIndex();
-                for (SourceAndConverter source: sacs) {
-                    model.add(idxInsert, source);
-                    idxInsert++;
-                }
-                return true;
+                if (support.getComponent() instanceof JList) {
+                    JList target = (JList) (support.getComponent());
+                    DefaultListModel model = (DefaultListModel) (target.getModel());
+                    JList.DropLocation dropLocation = (JList.DropLocation) support.getDropLocation();
+                    int idxInsert = dropLocation.getIndex();
+                    for (SourceAndConverter source: sacs) {
+                        model.add(idxInsert, source);
+                        idxInsert++;
+                    }
+                    return true;
+                } else return false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -156,16 +158,19 @@ public class JListTransferHandler extends TransferHandler {
                         }
                     }
                 }
-
-                JList target = (JList) (support.getComponent());
-                DefaultListModel model = (DefaultListModel) (target.getModel());
-                JList.DropLocation dropLocation = (JList.DropLocation) support.getDropLocation();
-                int idxInsert = dropLocation.getIndex();
-                for (SourceAndConverter source: sacs) {
-                    model.add(idxInsert, source);
-                    idxInsert++;
+                if (support.getComponent() instanceof JList) {
+                    JList target = (JList) (support.getComponent());
+                    DefaultListModel model = (DefaultListModel) (target.getModel());
+                    JList.DropLocation dropLocation = (JList.DropLocation) support.getDropLocation();
+                    int idxInsert = dropLocation.getIndex();
+                    for (SourceAndConverter source : sacs) {
+                        model.add(idxInsert, source);
+                        idxInsert++;
+                    }
+                    return true;
+                } else {
+                    return false;
                 }
-                return true;
             } else {
                 // Unsupported drop
                 return false;

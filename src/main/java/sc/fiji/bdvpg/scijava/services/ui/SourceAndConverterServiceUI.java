@@ -536,7 +536,7 @@ public class SourceAndConverterServiceUI {
      * @return an array containing the list of all {@link SourceAndConverter} selected by the user:
      * - all children of a selected node are considered selected
      * - the list does not contain duplicates
-     * - the list is ordered according to {@link SourceAndConverterHelper#sortDefaultNoGeneric}
+     * - the list is ordered according to {@link SourceAndConverterHelper#sortDefault(SourceAndConverter[])}
      */
     public SourceAndConverter[] getSelectedSourceAndConverters(JTree tree) {
         Set<SourceAndConverter<?>> sacList = new HashSet<>(); // A set avoids duplicate SourceAndConverter

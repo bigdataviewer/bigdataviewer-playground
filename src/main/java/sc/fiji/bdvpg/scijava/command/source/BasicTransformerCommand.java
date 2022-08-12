@@ -91,9 +91,9 @@ public class BasicTransformerCommand implements BdvPlaygroundActionCommand {
                 }
                 if (globalchange) {
                     if (sac.getSpimSource() instanceof TransformedSource) {
-                        SourceTransformHelper.mutate(at3D_global, new SourceAndConverterAndTimeRange(sac, initimepoint, initimepoint+ntimepoints));
+                        SourceTransformHelper.mutate(at3D_global, new SourceAndConverterAndTimeRange<>(sac, initimepoint, initimepoint+ntimepoints));
                     } else {
-                        SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange(sac, initimepoint, initimepoint+ntimepoints));
+                        SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange<>(sac, initimepoint, initimepoint+ntimepoints));
                     }
                 } else {
                     for (int timepoint = initimepoint; timepoint< initimepoint+ntimepoints; timepoint++){
@@ -126,9 +126,9 @@ public class BasicTransformerCommand implements BdvPlaygroundActionCommand {
                         at3D_global.set(m);
 
                         if (sac.getSpimSource() instanceof TransformedSource) {
-                            SourceTransformHelper.mutate(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
+                            SourceTransformHelper.mutate(at3D_global, new SourceAndConverterAndTimeRange<>(sac, timepoint));
                         } else {
-                            SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
+                            SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange<>(sac, timepoint));
                         }
                         //SourceTransformHelper.append(at3D_global, new SourceAndConverterAndTimeRange(sac, timepoint));
                     }

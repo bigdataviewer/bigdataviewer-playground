@@ -92,7 +92,7 @@ public class SourceAndConverterFromSpimDataCreator {
 
 			final int setupId = setup.getId();
 
-			ViewerSetupImgLoader vsil = imgLoader.getSetupImgLoader(setupId);
+			ViewerSetupImgLoader<?,?> vsil = imgLoader.getSetupImgLoader(setupId);
 
 			String sourceName = createSetupName(setup);
 
@@ -119,7 +119,7 @@ public class SourceAndConverterFromSpimDataCreator {
 
 	private void createRealTypeSourceAndConverter( boolean nonVolatile, int setupId, String sourceName )
 	{
-		final SpimSource s = new SpimSource<>( asd, setupId, sourceName );
+		final SpimSource<?> s = new SpimSource<>( asd, setupId, sourceName );
 
 		Converter nonVolatileConverter = SourceAndConverterHelper.createConverterRealType((RealType)s.getType()); // IN FACT THE CASTING IS NECESSARY!!
 

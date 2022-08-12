@@ -49,7 +49,7 @@ public class MakeGroupCommand implements BdvPlaygroundActionCommand {
     String groupname;
 
     @Parameter(label = "Select Source(s)")
-    SourceAndConverter[] sacs;
+    SourceAndConverter<?>[] sacs;
 
     @Parameter(label = "Display Sources")
     boolean displaysources;
@@ -59,7 +59,7 @@ public class MakeGroupCommand implements BdvPlaygroundActionCommand {
 
     @Override
     public void run() {
-        final Set<SourceAndConverter> sacs_set = new HashSet<>(Arrays.asList(sacs));
+        final Set<SourceAndConverter<?>> sacs_set = new HashSet<>(Arrays.asList(sacs));
         SourceFilterNode sfn = new SourceFilterNode(sac_service.getUI().getTreeModel(), groupname, sacs_set::contains, displaysources);
         sac_service.getUI().addNode(sfn);
     }

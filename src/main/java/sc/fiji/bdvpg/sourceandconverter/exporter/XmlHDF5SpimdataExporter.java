@@ -158,8 +158,8 @@ public class XmlHDF5SpimdataExporter implements Runnable {
     public void run() {
 
         // Gets Concrete SpimSource
-        List<Source> srcs = sources.stream().map(SourceAndConverter::getSpimSource).collect(Collectors.toList());
-        Map<Source, Integer> idxSourceToSac = new HashMap<>();
+        List<Source<?>> srcs = sources.stream().map(SourceAndConverter::getSpimSource).collect(Collectors.toList());
+        Map<Source<?>, Integer> idxSourceToSac = new HashMap<>();
 
         // Convert To UnsignedShortType (limitation of current xml/hdf5 implementation)
         srcs.replaceAll(SourceToUnsignedShortConverter::convertSource);
@@ -350,7 +350,7 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 
     }
 
-    public AbstractSpimData get() {
+    public AbstractSpimData<?> get() {
         return spimData;
     }
 

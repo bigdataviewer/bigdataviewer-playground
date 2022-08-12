@@ -48,8 +48,8 @@ import java.util.Map;
 /**
  * Serializes SourceAndConverter objects
  */
-public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConverter>,
-        JsonDeserializer<SourceAndConverter> {
+public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConverter<?>>,
+        JsonDeserializer<SourceAndConverter<?>> {
 
     protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterAdapter.class);
 

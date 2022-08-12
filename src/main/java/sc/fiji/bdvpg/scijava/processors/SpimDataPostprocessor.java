@@ -64,7 +64,7 @@ public class SpimDataPostprocessor extends AbstractPostprocessorPlugin {
                }
            }
            if (object instanceof AbstractSpimData<?>[]) {
-               AbstractSpimData<?>[] asds = (AbstractSpimData[]) object;
+               AbstractSpimData<?>[] asds = (AbstractSpimData<?>[]) object;
                for (AbstractSpimData<?> asd:asds) {
                    logger.debug( "SpimData found." );
                    bss.register( asd );

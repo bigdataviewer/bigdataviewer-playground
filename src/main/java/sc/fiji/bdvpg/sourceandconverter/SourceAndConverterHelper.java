@@ -96,9 +96,9 @@ public class SourceAndConverterHelper {
      * @param source source
      * @return a sourceandconverter from the source
      */
-    public static SourceAndConverter<?> createSourceAndConverter(Source<?> source) {
+    public static <T> SourceAndConverter<T> createSourceAndConverter(Source<T> source) {
         Converter nonVolatileConverter;
-        SourceAndConverter<?> out;
+        SourceAndConverter<T> out;
         if (source.getType() instanceof RealType) {
 
             nonVolatileConverter = createConverterRealType((RealType) source.getType());
@@ -481,7 +481,7 @@ public class SourceAndConverterHelper {
     }
 
     public static SourceAndConverter<?>[] sortDefault(SourceAndConverter<?>[] sacs) {
-        return sortDefaultNoGeneric(Arrays.asList(sacs)).toArray(new SourceAndConverter[0]);
+        return sortDefaultGeneric(Arrays.asList(sacs)).toArray(new SourceAndConverter<?>[0]);
     }
 
     /**
