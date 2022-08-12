@@ -35,6 +35,7 @@ import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterInspector;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
@@ -94,6 +95,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter im
             // Then let's get back all the sacs - they may have increase in number
             sacs = new ArrayList<>(setOfSourcesNeedingSerialization);
 
+            sacs = SourceAndConverterHelper.sortDefaultGeneric(sacs);
 
             for (int i = 0; i < sacs.size(); i++) {
                 idToSac.put(i, sacs.get(i));
