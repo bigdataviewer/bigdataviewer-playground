@@ -61,6 +61,8 @@ import java.awt.event.WindowEvent;
  * author Nicolas Chiaruttini, BIOP, EPFL, 2020
  */
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Synchronize States",
             description = "Synchronizes the state of a set of BDV or BVV windows. A window popup should be closed" +
                     " to stop the synchronization")

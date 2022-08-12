@@ -43,6 +43,8 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
  * 12 2019
  */
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Log view transform",
         description = "Outputs the current view transform of a BDV window into the standard IJ logger")
 

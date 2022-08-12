@@ -46,6 +46,8 @@ import static org.scijava.ItemVisibility.MESSAGE;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, initializer = "init",  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Brightness (Interactive)")
 public class InteractiveBrightnessAdjusterCommand extends InteractiveCommand implements BdvPlaygroundActionCommand {
 

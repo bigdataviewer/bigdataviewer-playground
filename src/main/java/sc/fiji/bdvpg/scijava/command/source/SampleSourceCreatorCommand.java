@@ -44,6 +44,8 @@ import sc.fiji.bdvpg.sourceandconverter.importer.Wave3DSourceGetter;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Create Sample Source")
 public class SampleSourceCreatorCommand implements BdvPlaygroundActionCommand {
 

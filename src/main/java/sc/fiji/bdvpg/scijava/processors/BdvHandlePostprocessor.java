@@ -46,7 +46,7 @@ import java.util.function.Consumer;
  * BdvSourceAndConverterService
  * Also fix BDV Close operation
  */
-
+@SuppressWarnings("unused")
 @Plugin(type = PostprocessorPlugin.class)
 public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
 

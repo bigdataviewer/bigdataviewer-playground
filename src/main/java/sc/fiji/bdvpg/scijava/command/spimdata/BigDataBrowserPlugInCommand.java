@@ -55,6 +55,9 @@ import java.util.Map;
  * @author HongKee Moon &lt;moon@mpi-cbg.de&gt;
  * @author Nicolas Chiaruttini biop.epfl.ch
  */
+
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class,
         menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>List BigDataServer Datasets")
 public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand

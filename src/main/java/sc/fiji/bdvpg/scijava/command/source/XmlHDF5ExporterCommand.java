@@ -38,6 +38,8 @@ import sc.fiji.bdvpg.sourceandconverter.exporter.XmlHDF5SpimdataExporter;
 import java.io.File;
 import java.util.Arrays;
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Export Sources to XML/HDF5 Spimdataset")
 public class XmlHDF5ExporterCommand implements BdvPlaygroundActionCommand {
 

@@ -40,6 +40,8 @@ import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class,  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Brightness")
 public class BrightnessAdjusterCommand implements BdvPlaygroundActionCommand {
 

@@ -39,6 +39,8 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 import java.util.Arrays;
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Set BDV window (default)",
         description = "Set preferences of Bdv Window")
 public class BdvSetDefaultViewerSettingsCommand implements BdvPlaygroundActionCommand{

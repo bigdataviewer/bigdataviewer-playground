@@ -42,6 +42,7 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
  *
  * @author Nicolas Chiaruttini
  */
+@SuppressWarnings("unused")
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_HIGH)
 public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle>  {
 

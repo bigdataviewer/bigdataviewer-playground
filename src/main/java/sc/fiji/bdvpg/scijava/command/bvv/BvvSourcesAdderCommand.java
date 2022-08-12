@@ -43,6 +43,9 @@ import sc.fiji.bdvpg.viewers.ViewerAdapter;
 /**
  * Show sources in a BigVolumeViewer window - limited to 16 bit images
  */
+
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>BVV - Show Sources",
     description = "Show sources in a BigVolumeViewer window - limited to 16 bit images")
 public class BvvSourcesAdderCommand implements BdvPlaygroundActionCommand {

@@ -572,7 +572,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
 
-    Map<String, Consumer<SourceAndConverter<?>[]>> actionMap = new ConcurrentHashMap<>();
+    final Map<String, Consumer<SourceAndConverter<?>[]>> actionMap = new ConcurrentHashMap<>();
 
     public void registerAction(String actionName, Consumer<SourceAndConverter<?>[]> action) {
         if (actionMap.containsKey(actionName)) {
@@ -694,7 +694,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
    public static class SpimDataInfo {
 
         public final AbstractSpimData asd;
-        public int setupId;
+        public final int setupId;
 
         public SpimDataInfo(AbstractSpimData asd, int setupId) {
             this.asd = asd;

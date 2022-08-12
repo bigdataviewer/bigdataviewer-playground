@@ -42,6 +42,7 @@ import net.imglib2.type.numeric.ARGBType;
  * InputTriggerConfig inputTriggerConfig
  * AffineTransform3D sourceTransform
  */
+@SuppressWarnings("CanBeFinal")
 public class SerializableBdvOptions {
 
     public int width = -1;

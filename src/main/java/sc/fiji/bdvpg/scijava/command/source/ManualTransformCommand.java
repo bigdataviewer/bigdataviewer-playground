@@ -48,6 +48,8 @@ import java.awt.event.WindowEvent;
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Manual Sources Transformation",
 description = "Manual transformation of selected sources. Works only with a single bdv window (the active one)." +
         "The sources that are not displayed but selected are transformed. During the registration, the user is" +

@@ -53,8 +53,14 @@ import sc.fiji.bdvpg.bdv.supplier.IBdvSupplier;
 import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
 
 import java.lang.ref.WeakReference;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -76,16 +82,6 @@ import javax.swing.tree.DefaultTreeModel;
 public class SourceAndConverterBdvDisplayService extends AbstractService implements SciJavaService  {
 
     protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterBdvDisplayService.class);
-
-    /**
-     * Standard logger
-     */
-    public static Consumer<String> log = logger::debug;
-
-    /**
-     * Error logger
-     */
-    public static Consumer<String> errlog = logger::error;
 
     public static final String CONVERTER_SETUP = "ConverterSetup";
 
@@ -122,10 +118,10 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     public void setDefaultBdvSupplier(IBdvSupplier bdvSupplier) {
         this.bdvSupplier = bdvSupplier;
 
-        log.accept(" --- Serializing to save default bdv window of class "+bdvSupplier.getClass().getSimpleName());
+        logger.info(" --- Serializing to save default bdv window of class "+bdvSupplier.getClass().getSimpleName());
         Gson gson = ScijavaGsonHelper.getGson(ctx, true);
         String bdvSupplierSerialized = gson.toJson(bdvSupplier, IBdvSupplier.class);
-        log.accept("Bdv Supplier serialized into : "+bdvSupplierSerialized);
+        logger.info("Bdv Supplier serialized into : "+bdvSupplierSerialized);
         // Saved in prefs for next session
         Prefs.set("bigdataviewer.playground.supplier", bdvSupplierSerialized);
     }
@@ -133,7 +129,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     public BdvHandle getNewBdv() {
 
         if (bdvSupplier==null) {
-            log.accept(" --- Fetching or generating default bdv window");
+            logger.debug(" --- Fetching or generating default bdv window");
             Gson gson = ScijavaGsonHelper.getGson(ctx);
             String defaultBdvViewer = gson.toJson(new DefaultBdvSupplier(new SerializableBdvOptions()), IBdvSupplier.class);
             String  bdvSupplierJson = Prefs.get("bigdataviewer.playground.supplier", defaultBdvViewer);
@@ -141,10 +137,10 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
                 bdvSupplier = gson.fromJson(bdvSupplierJson, IBdvSupplier.class);
             } catch (Exception e) {
                 e.printStackTrace();
-                errlog.accept("Restoring default bdv supplier");
+                logger.info("Restoring default bdv supplier");
                 bdvSupplier = new DefaultBdvSupplier(new SerializableBdvOptions());
                 String bdvSupplierSerialized = gson.toJson(bdvSupplier, IBdvSupplier.class);
-                log.accept("Bdv Supplier serialized into : "+bdvSupplierSerialized);
+                logger.debug("Bdv Supplier serialized into : "+bdvSupplierSerialized);
                 // Saved in prefs for next session
                 Prefs.set("bigdataviewer.playground.supplier", bdvSupplierSerialized);
             }
@@ -304,7 +300,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
      * @param cvt converter
      */
     public void updateConverter(SourceAndConverter<?> source, Converter<?,?> cvt) {
-        errlog.accept("Unsupported operation : a new SourceAndConverterObject should be built. (TODO) ");
+        logger.error("Unsupported operation : a new SourceAndConverterObject should be built. (TODO) ");
     }
 
     /**
@@ -317,7 +313,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
         bdvSourceAndConverterService.setDisplayService(this);
         SourceAndConverterServices.setBdvDisplayService(this);
         // Catching bdv supplier from Prefs
-        log.accept("Bdv Playground Display Service initialized.");
+        logger.debug("Bdv Playground Display Service initialized.");
     }
 
     /**

@@ -36,6 +36,8 @@ import sc.fiji.bdvpg.bdv.navigate.RayCastPositionerSliderAdder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Add Z Slider",
         description = "Adds a z slider onto BDV windows")
 public class BdvZSliderAdderCommand implements BdvPlaygroundActionCommand{

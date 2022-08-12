@@ -45,6 +45,8 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
  * @author Nicolas Chiaruttini, EPFL 2021
  */
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Sources Affine Transformation",
 description = "Applies an affine transformation on several sources.")
 

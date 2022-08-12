@@ -47,7 +47,7 @@ import javax.swing.tree.DefaultTreeModel;
 public class BdvHandleFilterNode extends SourceFilterNode {
 
     public final BdvHandle bdvh;
-    String name;
+    final String name;
 
     final ViewerStateChangeListener vscl;
 

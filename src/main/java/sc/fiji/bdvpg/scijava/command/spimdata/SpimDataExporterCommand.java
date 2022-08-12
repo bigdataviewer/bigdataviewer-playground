@@ -41,6 +41,8 @@ import sc.fiji.bdvpg.spimdata.exporter.XmlFromSpimDataExporter;
 
 import java.io.File;
 
+@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+
 @Plugin( type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>Save BDVDataset" )
 public class SpimDataExporterCommand implements BdvPlaygroundActionCommand {
 
