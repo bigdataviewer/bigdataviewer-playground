@@ -117,20 +117,20 @@ public class SourceAndConverterHelper {
             try {
                 Source volatileSource = createVolatileRealType(source);
                 Converter volatileConverter = createConverterRealType((RealType) volatileSource.getType());
-                out = new SourceAndConverter(source, nonVolatileConverter,
+                out = new SourceAndConverter<>(source, nonVolatileConverter,
                         new SourceAndConverter<>(volatileSource, volatileConverter));
             } catch (Exception e) {
-                out = new SourceAndConverter(source, nonVolatileConverter);
+                out = new SourceAndConverter<>(source, nonVolatileConverter);
             }
         } else if (source.getType() instanceof ARGBType) {
             nonVolatileConverter = createConverterARGBType(source);
             try {
                 Source volatileSource = createVolatileARGBType(source);
                 Converter volatileConverter = createConverterARGBType(volatileSource);
-                out = new SourceAndConverter(source, nonVolatileConverter,
+                out = new SourceAndConverter<>(source, nonVolatileConverter,
                         new SourceAndConverter<>(volatileSource, volatileConverter));
             } catch (UnsupportedOperationException e) {
-                out = new SourceAndConverter(source, nonVolatileConverter);
+                out = new SourceAndConverter<>(source, nonVolatileConverter);
             }
         } else {
             logger.error("Cannot create SourceAndConverter and converter for sources of type "+source.getType());
@@ -195,11 +195,11 @@ public class SourceAndConverterHelper {
         }
     }
 
-    public static ConverterSetup createConverterSetup(SourceAndConverter sac) {
+    public static ConverterSetup createConverterSetup(SourceAndConverter<?> sac) {
         return  createConverterSetup(sac,-1);
     }
 
-    public static ConverterSetup createConverterSetup(SourceAndConverter sac, int legacyId) {
+    public static ConverterSetup createConverterSetup(SourceAndConverter<?> sac, int legacyId) {
         if (sac.getConverter() instanceof ColorConverter) {
 			return BigDataViewer.createConverterSetup(sac, -1);
 		} else if (sac.getConverter() instanceof RealLUTConverter) {
@@ -225,7 +225,7 @@ public class SourceAndConverterHelper {
      * @param source source
      * @return the volatile source
      */
-    private static Source createVolatileRealType(Source source) throws UnsupportedOperationException {
+    private static Source<?> createVolatileRealType(Source<?> source) throws UnsupportedOperationException {
         // TODO unsupported yet
         throw new UnsupportedOperationException("Unimplemented createVolatileRealType method in SourceAndConverterHelper");
     }
@@ -262,7 +262,7 @@ public class SourceAndConverterHelper {
      * @param source source
      * @return a compatible converter
      */
-    public static Converter createConverterARGBType( Source source ) {
+    public static Converter createConverterARGBType( Source<?> source ) {
         final Converter converter ;
         if ( source.getType() instanceof Volatile)
             converter = new ScaledARGBConverter.VolatileARGB( 0, 255 );
@@ -335,7 +335,7 @@ public class SourceAndConverterHelper {
 	 * @return voxel coordinate
 	 */
 	public static long[] getVoxelPositionInSource(
-			final Source source,
+			final Source<?> source,
 			final RealPoint globalPosition,
 			final int t,
 			final int level )
@@ -377,7 +377,7 @@ public class SourceAndConverterHelper {
      * @param sacs sources
      * @return the max timepoint found in this source according to the next method ( check limitations )
      */
-    public static int getMaxTimepoint(Source[] sacs) {
+    public static int getMaxTimepoint(Source<?>[] sacs) {
         int max = 0;
         for (Source<?> source : sacs) {
             int sourceMax = getMaxTimepoint(source);
@@ -588,7 +588,7 @@ public class SourceAndConverterHelper {
      * @param source source
      * @return the center point of the source (assuming not warped)
      */
-    public static RealPoint getSourceAndConverterCenterPoint(SourceAndConverter source) {
+    public static RealPoint getSourceAndConverterCenterPoint(SourceAndConverter<?> source) {
         AffineTransform3D sourceTransform = new AffineTransform3D();
         sourceTransform.identity();
 
@@ -611,8 +611,8 @@ public class SourceAndConverterHelper {
      * @param src converter source
      * @param dst converter dest
      */
-    public static void transferColorConverters(SourceAndConverter src, SourceAndConverter dst) {
-        transferColorConverters(new SourceAndConverter[]{src}, new SourceAndConverter[]{dst});
+    public static void transferColorConverters(SourceAndConverter<?> src, SourceAndConverter<?> dst) {
+        transferColorConverters(new SourceAndConverter<?>[]{src}, new SourceAndConverter<?>[]{dst});
     }
 
     /**
@@ -629,11 +629,11 @@ public class SourceAndConverterHelper {
      * @param srcs sources source
      * @param dsts sources dest
      */
-    public static void transferColorConverters(SourceAndConverter[] srcs, SourceAndConverter[] dsts) {
+    public static void transferColorConverters(SourceAndConverter<?>[] srcs, SourceAndConverter<?>[] dsts) {
         if ((srcs!=null)&&(dsts!=null))
         for (int i = 0;i<Math.min(srcs.length, dsts.length);i++) {
-            SourceAndConverter src = srcs[i];
-            SourceAndConverter dst = dsts[i];
+            SourceAndConverter<?> src = srcs[i];
+            SourceAndConverter<?> dst = dsts[i];
             if ((src!=null)&&(dst!=null))
             if ((dst.getConverter() instanceof ColorConverter) && (src.getConverter() instanceof ColorConverter)) {
                 ColorConverter conv_src = (ColorConverter) src.getConverter();
@@ -687,10 +687,10 @@ public class SourceAndConverterHelper {
      * @param voxSize target voxel size
      * @return mipmap level fitted for the voxel size
      */
-    public static int bestLevel(Source src, int t, double voxSize) {
+    public static int bestLevel(Source<?> src, int t, double voxSize) {
         List<Double> originVoxSize = new ArrayList<>();
         AffineTransform3D chainedSourceTransform = new AffineTransform3D();
-        Source rootOrigin = getRootSource(src, chainedSourceTransform);
+        Source<?> rootOrigin = getRootSource(src, chainedSourceTransform);
 
         for (int l=0;l<rootOrigin.getNumMipmapLevels();l++) {
             AffineTransform3D sourceTransform = new AffineTransform3D();
@@ -772,13 +772,13 @@ public class SourceAndConverterHelper {
      * @param source source
      * @return the root source : it's not derived from another source
      */
-    public static Source getRootSource(Source source, AffineTransform3D chainedSourceTransform) {
-        Source rootOrigin = source;
+    public static Source<?> getRootSource(Source<?> source, AffineTransform3D chainedSourceTransform) {
+        Source<?> rootOrigin = source;
         while ((rootOrigin instanceof WarpedSource)
                 ||(rootOrigin instanceof TransformedSource)
                 ||(rootOrigin instanceof ResampledSource)) {
             if (rootOrigin instanceof WarpedSource) {
-                rootOrigin = ((WarpedSource) rootOrigin).getWrappedSource();
+                rootOrigin = ((WarpedSource<?>) rootOrigin).getWrappedSource();
             } else if (rootOrigin instanceof TransformedSource) {
                 AffineTransform3D m = new AffineTransform3D();
                 ((TransformedSource<?>) rootOrigin).getFixedTransform(m);
@@ -809,9 +809,9 @@ public class SourceAndConverterHelper {
      * @param level mipmap level
      * @return the characteristic voxel size
      */
-    public static double getCharacteristicVoxelSize(Source src, int t, int level) {
+    public static double getCharacteristicVoxelSize(Source<?> src, int t, int level) {
         AffineTransform3D chainedSourceTransform = new AffineTransform3D();
-        Source root = getRootSource(src, chainedSourceTransform);
+        Source<?> root = getRootSource(src, chainedSourceTransform);
 
         AffineTransform3D sourceTransform = new AffineTransform3D();
         root.getSourceTransform(t, level, sourceTransform);
@@ -878,7 +878,7 @@ public class SourceAndConverterHelper {
         }
     }
 
-    public static List<Double> rayIntersect(Source source, int timepoint, RealPoint origin, RealPoint direction) {
+    public static List<Double> rayIntersect(Source<?> source, int timepoint, RealPoint origin, RealPoint direction) {
         if (source.isPresent(timepoint)) {
             if ((source instanceof AbstractSpimSource)
                 ||(source instanceof TransformedSource)
@@ -888,7 +888,7 @@ public class SourceAndConverterHelper {
         } else return new ArrayList<>();
     }
 
-    public static List<Double> rayIntersectRaiSource(Source source, int timepoint, RealPoint origin, RealPoint direction) {
+    public static List<Double> rayIntersectRaiSource(Source<?> source, int timepoint, RealPoint origin, RealPoint direction) {
         long[] dims = source.getSource(timepoint,0).dimensionsAsLongArray();
         AffineTransform3D at3d = new AffineTransform3D();
         source.getSourceTransform(timepoint,0,at3d);

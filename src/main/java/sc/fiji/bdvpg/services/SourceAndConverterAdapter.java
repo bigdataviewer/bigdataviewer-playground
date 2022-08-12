@@ -59,10 +59,10 @@ public class SourceAndConverterAdapter {
         return basePath;
     }
 
-    Map<Integer, SourceAndConverter> idToSac;
-    Map<SourceAndConverter, Integer> sacToId;
-    Map<Integer, Source> idToSource;
-    Map<Source, Integer> sourceToId;
+    Map<Integer, SourceAndConverter<?>> idToSac;
+    Map<SourceAndConverter<?>, Integer> sacToId;
+    Map<Integer, Source<?>> idToSource;
+    Map<Source<?>, Integer> sourceToId;
 
     public final Set<Integer> alreadyDeSerializedSacs = new HashSet<>();
     public final Map<Integer, JsonElement> idToJsonElement = new HashMap<>();
@@ -85,19 +85,19 @@ public class SourceAndConverterAdapter {
 
     }
 
-    public synchronized Map<Integer, SourceAndConverter> getIdToSac() {
+    public synchronized Map<Integer, SourceAndConverter<?>> getIdToSac() {
         return idToSac;
     }
 
-    public synchronized Map<SourceAndConverter, Integer> getSacToId() {
+    public synchronized Map<SourceAndConverter<?>, Integer> getSacToId() {
         return sacToId;
     }
 
-    public synchronized Map<Integer, Source> getIdToSource() {
+    public synchronized Map<Integer, Source<?>> getIdToSource() {
         return idToSource;
     }
 
-    public synchronized Map<Source, Integer> getSourceToId() {
+    public synchronized Map<Source<?>, Integer> getSourceToId() {
         return sourceToId;
     }
 

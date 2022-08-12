@@ -55,8 +55,8 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
 
     final sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer;
 
-    final Map<Class<? extends Source<?>>, ISourceAdapter> sourceSerializers = new HashMap<>();
-    final Map<String, ISourceAdapter> sourceSerializersFromName = new HashMap<>();
+    final Map<Class<? extends Source<?>>, ISourceAdapter<?>> sourceSerializers = new HashMap<>();
+    final Map<String, ISourceAdapter<?>> sourceSerializersFromName = new HashMap<>();
 
     public SourceAndConverterAdapter(sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer) {
         this.sacSerializer = sacSerializer;

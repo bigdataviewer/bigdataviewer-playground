@@ -40,6 +40,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import org.junit.After;
@@ -81,7 +82,7 @@ public class ManualRegistrationDemo {
 
     public static boolean isTransforming = false;
 
-    public static void main(String[] args) {
+    public static <T extends RealType<T>> void main(String[] args) {
 
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ij = new ImageJ();
@@ -89,22 +90,22 @@ public class ManualRegistrationDemo {
 
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
-        RandomAccessibleInterval rai = ImageJFunctions.wrapReal(imp);
+        RandomAccessibleInterval<T> rai = ImageJFunctions.wrapReal(imp);
         // Adds a third dimension because BDV needs 3D
         rai = Views.addDimension( rai, 0, 0 );
 
         // Makes BDV Source
-        Source source = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
+        Source<T> source = new RandomAccessibleIntervalSource<>(rai, Util.getTypeFromInterval(rai), "blobs");
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
 
         // Creates SourceAndConverter Reference
-        SourceAndConverter sacReference = SourceAndConverterHelper.createSourceAndConverter(source);
+        SourceAndConverter<T> sacReference = SourceAndConverterHelper.createSourceAndConverter(source);
 
         if (demoMode == CreateNewTransformedSourceAndConverter) {
 
-            SourceAndConverter sacToTransform;
+            SourceAndConverter<T> sacToTransform;
             sacToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
             new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
 
@@ -127,9 +128,9 @@ public class ManualRegistrationDemo {
 
         } else if (demoMode == MutateTransformedSourceAndConverter) {
 
-            SourceAndConverter sacToTransform;
+            SourceAndConverter<T> sacToTransform;
             sacToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
-            sacToTransform = new SourceAffineTransformer(sacToTransform, new AffineTransform3D()).getSourceOut();
+            sacToTransform = new SourceAffineTransformer<>(sacToTransform, new AffineTransform3D()).getSourceOut();
             new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
 
             SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacReference);
@@ -156,12 +157,12 @@ public class ManualRegistrationDemo {
                 isTransforming = !isTransforming;
             }).install("Toggle Transformation", "ctrl M");
         } else if (demoMode == MutateLastSpimdataTransformation) {
-            AbstractSpimData asd =  new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
+            AbstractSpimData<?> asd =  new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
 
             // Show all SourceAndConverter associated with above SpimData
             SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
                 SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
-                new BrightnessAutoAdjuster(sac, 0).run();
+                new BrightnessAutoAdjuster<>(sac, 0).run();
             });
 
             SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacReference);
@@ -191,12 +192,12 @@ public class ManualRegistrationDemo {
         }else if (demoMode == AppendNewSpimdataTransformation) {
             // TO complete
             // Import SpimData
-            AbstractSpimData asd =  new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
+            AbstractSpimData<?> asd =  new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
 
             // Show all SourceAndConverter associated with above SpimData
             SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
                 SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
-                new BrightnessAutoAdjuster(sac, 0).run();
+                new BrightnessAutoAdjuster<>(sac, 0).run();
             });
 
             SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacReference);

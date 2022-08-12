@@ -33,6 +33,7 @@ import net.imagej.display.ColorTables;
 import net.imagej.lut.LUTService;
 import net.imglib2.converter.Converter;
 import net.imglib2.display.ColorTable;
+import net.imglib2.type.numeric.ARGBType;
 import org.scijava.ItemIO;
 import org.scijava.command.DynamicCommand;
 import org.scijava.convert.ConvertService;
@@ -79,14 +80,17 @@ public class LUTSourceCreatorCommand extends DynamicCommand implements BdvPlaygr
 
     @Override
     public void run() {
-        Converter<?,?> bdvLut = cs.convert(table, Converter.class);
         sacs_out = new SourceAndConverter[sacs.length];
         for (int i = 0;i< sacs.length;i++) {
-            SourceAndConverter<?> sac = sacs[i];
-            ConverterChanger cc = new ConverterChanger(sac, bdvLut, bdvLut);
-            cc.run();
-            sacs_out[i] = cc.get();
+            sacs_out[i] = convert(sacs[i]);
         }
+    }
+
+    private <T> SourceAndConverter<T> convert(SourceAndConverter<T> sac) {
+        Converter<T, ARGBType> bdvLut = cs.convert(table, Converter.class);
+        ConverterChanger<T,?> cc = new ConverterChanger<>(sac, bdvLut);
+        cc.run();
+        return cc.get();
     }
 
     // -- initializers --

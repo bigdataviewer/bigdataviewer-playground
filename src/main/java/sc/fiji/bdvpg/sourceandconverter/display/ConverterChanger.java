@@ -50,6 +50,12 @@ public class  ConverterChanger<T,V extends Volatile<T>> implements Runnable, Fun
         volatileConverter = cvt;
     }
 
+    public ConverterChanger(SourceAndConverter<T> sac, Converter<T,ARGBType> cvtnv) {
+        sac_in = sac;
+        nonVolatileConverter = cvtnv;
+        volatileConverter = (Converter<V, ARGBType>) cvtnv;
+    }
+
     @Override
     public void run() {
         // Nothing

@@ -31,15 +31,18 @@ package sc.fiji.bdvpg.scijava.converters;
 import net.imglib2.converter.Converter;
 import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.display.ColorTable;
+import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.RealType;
 import org.scijava.convert.AbstractConverter;
 import org.scijava.plugin.Plugin;
 
 @Plugin(type = org.scijava.convert.Converter.class)
-public class ColorTableToRealLUTConverterConverter<I extends ColorTable, O extends Converter> extends AbstractConverter<I, O> {
+public class ColorTableToRealLUTConverterConverter<R extends RealType< R >, I extends ColorTable, O extends Converter> extends AbstractConverter<I, O> {
+
     @Override
-    public <T> T convert(Object src, Class<T> dest) {
+    public <O> O convert(Object src, Class<O> dest) {
         ColorTable ct = (ColorTable) src;
-        return (T) new RealLUTConverter<>(0,255,ct);
+        return (O) new RealLUTConverter<>(0,255,ct);
     }
 
     @Override
