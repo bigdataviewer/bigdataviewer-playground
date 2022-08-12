@@ -215,8 +215,7 @@ public class SourceAndConverterHelper {
 			}
 		} else {
 			logger.debug( "Unmodifiable ConverterSetup for Converters of class " + sac.getConverter().getClass() );
-			if (sac.asVolatile() != null)
-			{
+			if (sac.asVolatile() != null) {
 				return new UnmodifiableConverterSetup( sac.getConverter(), sac.asVolatile().getConverter() );
 			} else {
 				return new UnmodifiableConverterSetup( sac.getConverter() );
