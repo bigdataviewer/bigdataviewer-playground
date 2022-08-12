@@ -76,7 +76,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter im
         idToSource = new HashMap<>();
     }
 
-    final Set<SourceAndConverter<?>> setOfSourcesNeedingSerialization = new HashSet<>();
+    final List<SourceAndConverter<?>> setOfSourcesNeedingSerialization = new ArrayList<>();
 
     @Override
     public void run() {
