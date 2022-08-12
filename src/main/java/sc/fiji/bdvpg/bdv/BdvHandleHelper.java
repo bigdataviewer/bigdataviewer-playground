@@ -251,7 +251,7 @@ public class BdvHandleHelper
     }
 
     /**
-     * Returns the highest level where the sourceandconverter voxel spacings
+     * Returns the highest level where the {@link bdv.viewer.SourceAndConverter} voxel spacings
      * are inferior or equals to the requested ones.
      *
      * @param source the source
@@ -449,7 +449,7 @@ public class BdvHandleHelper
     /**
      * Install trigger bindings according to the path specified
      * See {@link BdvSettingsGUISetter}
-     * Key bindings can not be overriden yet
+     * Key bindings can not be overridden yet
      * @param bdv bdvhandle
      * @param pathToBindings string path to the folder containing the yaml file
      */

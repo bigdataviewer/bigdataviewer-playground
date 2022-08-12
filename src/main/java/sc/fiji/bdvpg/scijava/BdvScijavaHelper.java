@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Helper class that can be used to put a scijava Command into the menu bar of a BdvHandle
+ * Helper class that can be used to put a SciJava Command into the menu bar of a BdvHandle
  */
 
 public class BdvScijavaHelper {
@@ -78,11 +78,11 @@ public class BdvScijavaHelper {
 
             for (int i=0;i<skipTopLevels;i++) {path.remove(0);}
 
-            JMenuItem jmenuItemRoot = findOrCreateJMenu(bdvMenuBar, path);
-            if (jmenuItemRoot!=null) {
+            JMenuItem jMenuItemRoot = findOrCreateJMenu(bdvMenuBar, path);
+            if (jMenuItemRoot!=null) {
                 final JMenuItem jMenuItem = new JMenuItem(path.get(path.size() - 1));
                 jMenuItem.addActionListener(e -> runnable.run());
-                jmenuItemRoot.add(jMenuItem);
+                jMenuItemRoot.add(jMenuItem);
                 bdvMenuBar.updateUI();
             } else {
                 logger.error("Could not find or create jmenu ("+bdvMenuBar+", "+path+")");

@@ -44,10 +44,10 @@ import org.scijava.plugin.SciJavaPlugin;
  * from the {@link Source} and and the {@link BasicViewSetup} : see TODO
  * * Or to modify the SourceAndConverter once it has been created (applying display settings)
  *
- * TODO think if it can be useful to handle explicitely the case before the SourceAndConverter is created
+ * TODO think if it can be useful to handle explicitly the case before the SourceAndConverter is created
  *
  * When saving a SpimData object:
- * * it gets the sourceandconverter which is being saved, and can thus write its associated entity, when
+ * * it gets the SourceAndConverter which is being saved, and can thus write its associated entity, when
  * being given the BasicViewSetup and the SourceAndConverter
  *
  */
@@ -70,7 +70,7 @@ public interface EntityHandler extends SciJavaPlugin {
 
     /**
      * @param viewSetup currently being stored
-     * @param sac sourceand converter being saved
+     * @param sac SourceAndConverter being saved
      * @return true if this entity was written, the entity is not always necessarily written when saving the data
      */
     boolean writeEntity(BasicViewSetup viewSetup, SourceAndConverter<?> sac);
@@ -86,15 +86,15 @@ public interface EntityHandler extends SciJavaPlugin {
     /**
      * This method is called after the SourceAndConverter object is created
      * @param spimData object which is being opened
-     * @param viewSetup viewSetup associated to the sourceandconverter
-     * @param sac current sourceandconverter being opened from the spimData object
+     * @param viewSetup viewSetup associated to the SourceAndConverter
+     * @param sac current SourceAndConverter being opened from the spimData object
      * @return true is the entity was loaded
      */
     boolean loadEntity(AbstractSpimData<?> spimData, BasicViewSetup viewSetup, SourceAndConverter<?> sac);
 
     /**
      * If canCreateSourceAndConverter returns true, this function is called in order to
-     * create the sourceandconverter object instead of the default one. If another
+     * create the SourceAndConverter object instead of the default one. If another
      * entity enters in conflict with this one, one the first one is called, and a warning
      * message should appear TODO
      * @param spimData object being opened
@@ -102,7 +102,7 @@ public interface EntityHandler extends SciJavaPlugin {
      * @return the SourceAndConverter newly created
      */
     default SourceAndConverter<?> makeSourceAndConverter(AbstractSpimData<?> spimData, BasicViewSetup viewSetup) {
-        throw new UnsupportedOperationException("makeSourceAndConverter method needs to be overriden if used");
+        throw new UnsupportedOperationException("makeSourceAndConverter method needs to be overridden if used");
     }
 
 }

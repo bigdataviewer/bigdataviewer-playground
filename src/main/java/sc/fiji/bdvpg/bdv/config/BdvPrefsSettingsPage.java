@@ -41,7 +41,7 @@ import java.io.*;
 import java.util.Properties;
 
 /**
- * Settings Page to open, edit and resave the Bigdataviewer Preferences {@link Prefs} stored
+ * Settings Page to open, edit and save the Bigdataviewer Preferences {@link Prefs} stored
  * within the bigdataviewer.properties file
  * {@link SettingsPage} comes from Mastodon
  *
@@ -114,7 +114,7 @@ public class BdvPrefsSettingsPage implements SettingsPage {
     }
 
     /**
-     * Inner panel containing checkboxes and colorchoosers
+     * Inner panel containing check boxes and color choosers
      */
     static class BdvPrefsEditorPanel extends JPanel {
 

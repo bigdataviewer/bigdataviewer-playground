@@ -79,7 +79,7 @@ public class SpimDataFromXmlImporter implements Runnable, Function<String, Abstr
                     logger.error("Wrong parsing of spimdata name (not enough parts) : "+dataLocation);
                 }
             } else {
-                logger.error("Wrong parsing of spimdata name (can't be splitted): "+dataLocation);
+                logger.error("Wrong parsing of spimdata name (can't be split): "+dataLocation);
             }
             SourceAndConverterServices.getSourceAndConverterService().setMetadata(sd, SPIM_DATA_LOCATION, dataLocation);
         } catch (SpimDataException e) {

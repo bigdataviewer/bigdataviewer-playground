@@ -77,7 +77,7 @@ public class BvvHandlePostprocessor extends AbstractPostprocessorPlugin {
                 os.addObject(bvvh);
                 //------------ Allows to remove the BdvHandle from the objectService when closed by the user
                 BvvHandleHelper.setBvvHandleCloseOperation(bvvh, cacheService,  os, bsds, true);
-                //------------ Renames window to ensure unicity
+                //------------ Renames window to ensure uniqueness
                 String windowTitle = BvvHandleHelper.getWindowTitle(bvvh);
                 windowTitle = BvvHandleHelper.getUniqueWindowTitle(os, windowTitle);
                 BvvHandleHelper.setWindowTitle(bvvh, windowTitle);

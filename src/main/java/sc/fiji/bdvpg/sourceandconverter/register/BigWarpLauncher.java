@@ -72,7 +72,7 @@ public class BigWarpLauncher implements Runnable {
     // And a constructor with lists of Source:
     // public BigWarpLauncher(List<Source> movingSources, List<Source> fixedSources)
     // Do not work because constructors have same 'erasure'
-    // Option choosen -> a single constructor which checks the types of their inner objects
+    // Option chosen -> a single constructor which checks the types of their inner objects
     // Alternative maybe better option :
     // Use array : Source[] or SourceAndConverter[] (and maybe this issue was the reason for BigWarp choosing this in the beginning)
 

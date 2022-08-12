@@ -160,7 +160,7 @@ public class BdvSettingsGUISetter implements Runnable {
             //itc_bdvpg.add("not mapped", actionScreenshotName, "bdvpg"); // default bindings
 
             // Create default key bindings
-            // Initialise it with the default transforms bindings for 2d and 3d transformatino handlers
+            // Initialise it with the default transforms bindings for 2d and 3d transformation handlers
             InputTriggerDescriptionsBuilder builder = new InputTriggerDescriptionsBuilder();
             builder.addMap(InputTriggerConfigHelper.getInputTriggerMap(itc_default_2D),"transform_bdv_2D");
             builder.addMap(InputTriggerConfigHelper.getInputTriggerMap(itc_default_3D),"transform_bdv_3D");
@@ -184,7 +184,7 @@ public class BdvSettingsGUISetter implements Runnable {
 
         // ----------------------- TODO the key bindings...
 
-        // Is there a sourceandconverter context menu file ?
+        // Is there a SourceAndConverter context menu file ?
         String pathDefaultContextMenuSettings = dirDefaultSettings.getAbsolutePath()+File.separator+ treeActionsFileName;
         File treeActionsConfigFile = new File(pathDefaultContextMenuSettings);
         if (treeActionsConfigFile.exists()) {

@@ -86,7 +86,7 @@ public class SerializationTests {
     // TODO : more unit serialization tests!
 
     /**
-     * Just makes a loop serialize / deserialize / reserialize and checks
+     * Just makes a loop serialize / deserialize / re-serialize and checks
      * whether the string representation is identical
      *
      * @param gson serializer/deserializer

@@ -38,7 +38,7 @@ import javax.swing.tree.DefaultTreeModel;
  * in the {@link BdvHandle}
  *
  * A listener to the state of the BdvHandle {@link ViewerStateChangeListener} allows to trigger a
- * {@link FilterUpdateEvent} to the node which in turns triggers the recomputation of the
+ * {@link FilterUpdateEvent} to the node which in turns starts to recompute the
  * downstream part of the UI tree see {@link SourceFilterNode} and {@link SourceAndConverterServiceUI}
  *
  * @author Nicolas Chiaruttini, BIOP, EPFL, 2020

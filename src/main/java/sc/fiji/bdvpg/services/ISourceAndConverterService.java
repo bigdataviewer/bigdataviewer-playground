@@ -42,7 +42,7 @@ import java.util.function.Consumer;
  * Service which centralizes BDV Sources, independently of their display
  * BDV Sources can be registered to this Service.
  * This service stores Sources but on top of it,
- * It contains a Map which contains any object which can be linked to the sourceandconverter.
+ * It contains a Map which contains any object which can be linked to the SourceAndConverter.
  *
  * Objects needed for display should be created by a  BdvSourceAndConverterDisplayService
  * - Converter to ARGBType, ConverterSetup, and Volatile view
@@ -55,7 +55,7 @@ public interface ISourceAndConverterService
 {
 
     /**
-     * Reserved key for the data map. data.get(sourceandconverter).get(SPIM_DATA)
+     * Reserved key for the data map. data.get(SourceAndConverter).get(SPIM_DATA)
      * is expected to return a List of Spimdata Objects which refer to this sourceandconverter
      * whether a list of necessary is not obvious at the moment
      * TODO : make an example
@@ -147,14 +147,14 @@ public interface ISourceAndConverterService
     /**
      * Finds the list of corresponding registered sac for a source. This
      * is convenient to know because a single source can be associated with
-     * multiple sourceandconverters
-     * @param source to check ( not a sourceandconverter )
+     * multiple SourceAndConverters
+     * @param source to check ( not a SourceAndConverter )
      * @return a list of all sacs which wraps the same underlying source
      */
     List<SourceAndConverter<?>> getSourceAndConvertersFromSource( Source<?> source );
 
     /**
-     * Register an action ( a consumer of sourceandconverter array)
+     * Register an action ( a consumer of SourceAndConverter array)
      * @param actionName action name
      * @param action the action itself
      * TODO : link a description ?

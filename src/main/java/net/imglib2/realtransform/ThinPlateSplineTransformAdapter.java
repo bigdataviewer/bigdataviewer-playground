@@ -75,7 +75,7 @@ public class ThinPlateSplineTransformAdapter implements IClassAdapter<ThinplateS
         } catch (Exception e) {
             e.printStackTrace();
         }
-        logger.error("Could not get kernel from ThinplateSplineTransform");
+        logger.error("Could not get kernel from ThinPlateSplineTransform");
         return null;
     }
 

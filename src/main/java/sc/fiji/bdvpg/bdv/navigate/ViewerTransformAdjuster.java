@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  * Action which adjust the view of a {@link BdvHandle} to span a {@link SourceAndConverter}
  * See {@link ViewerTransformAdjuster#getTransform()} for details
  *
- * TODO : support the adjustement on a series of SourceAndConverter
+ * TODO : support the adjustment on a series of SourceAndConverter
  *
  * Usage example see ViewerTransformAdjusterDemo
  *

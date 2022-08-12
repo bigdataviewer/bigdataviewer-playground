@@ -95,10 +95,10 @@ public class ViewTransformSynchronizationDemo {
         isSynchronizing = true;
 
         for (BdvHandle bdvHandle:bdvhs) {
-            // Show the sourceandconverter
+            // Show the SourceAndConverter
             SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
 
-            // Adjust view on sourceandconverter
+            // Adjust view on SourceAndConverter
             new ViewerTransformAdjuster(bdvHandle, sac).run();
 
             new ClickBehaviourInstaller(bdvHandle, (x,y) -> {

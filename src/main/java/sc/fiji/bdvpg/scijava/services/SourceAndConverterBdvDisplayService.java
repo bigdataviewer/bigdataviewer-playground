@@ -65,7 +65,7 @@ import sc.fiji.persist.ScijavaGsonHelper;
 import javax.swing.tree.DefaultTreeModel;
 
 /**
- * Scijava Service which handles the Display of BDV SourceAndConverters in one or multiple BDV Windows
+ * SciJava Service which handles the Display of BDV SourceAndConverters in one or multiple BDV Windows
  * Pairs with BdvSourceAndConverterService, but this service is optional
  *
  * Handling multiple Sources displayed in potentially multiple BDV Windows
@@ -209,7 +209,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Displays a BDV sourceandconverter into the specified BdvHandle
+     * Displays a BDV SourceAndConverter into the specified BdvHandle
      * This function really is the core of this service
      * It mimicks or copies the functions of BdvVisTools because it is responsible to
      * create converter, volatiles, convertersetups and so on
@@ -221,10 +221,10 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Displays a BDV sourceandconverter into the specified BdvHandle
+     * Displays a BDV SourceAndConverter into the specified BdvHandle
      * This function really is the core of this service
-     * It mimicks or copies the functions of BdvVisTools because it is responsible to
-     * create converter, volatiles, convertersetups and so on
+     * It mimics or copies the functions of BdvVisTools because it is responsible to
+     * create converter, volatiles, converter setups and so on
      * @param sacs sources to display
      * @param visible whether to make the source active (=visible)
      * @param bdvh bdvhandle to append the sources
@@ -263,7 +263,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
 
 
     /**
-     * Removes a sourceandconverter from all BdvHandle displaying this sourceandconverter
+     * Removes a SourceAndConverter from all BdvHandle displaying this SourceAndConverter
      * Updates all references of other Sources present
      * @param sacs sources to remove
      */
@@ -272,7 +272,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Removes a sourceandconverter from the active Bdv
+     * Removes a SourceAndConverter from the active Bdv
      * Updates all references of other Sources present
      * @param sacs sources to remove from active bdv
      */
@@ -284,7 +284,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Removes a sourceandconverter from a BdvHandle
+     * Removes a SourceAndConverter from a BdvHandle
      * Updates all references of other Sources present
      * @param bdvh bdvhandle
      * @param sacs Array of SourceAndConverter
@@ -361,9 +361,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService impleme
     }
 
     /**
-     * Registers a sourceandconverter which has originated from a BdvHandle
-     * Useful for BigWarp where the grid and the deformation magnitude sourceandconverter are created
-     * into bigwarp
+     * Registers a SourceAndConverter which has originated from a BdvHandle
+     * Useful for BigWarp where the grid and the deformation magnitude SourceAndConverter are created
+     * into BigWarp
      * @param bdvh_in bdvhandle fetched for registration
      */
     public void registerBdvSource(BdvHandle bdvh_in) {

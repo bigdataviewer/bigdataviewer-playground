@@ -106,7 +106,7 @@ public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData<
         } else if (asds.size()==1) {
             return asds.get(0);
         } else {
-            logger.warn("Multiple spimdata with identical datalocation already in memory!");
+            logger.warn("Multiple spimdata with identical data location already in memory!");
             return asds.get(0);
         }
     }

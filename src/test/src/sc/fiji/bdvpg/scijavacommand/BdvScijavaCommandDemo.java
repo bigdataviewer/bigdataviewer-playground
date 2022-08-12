@@ -50,17 +50,17 @@ public class BdvScijavaCommandDemo {
         // Creates a BDV since none exists yet
         BdvHandle bdvh = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
-        // Adds a scijava Command in the menu bar
+        // Adds a SciJava Command in the menu bar
         BdvScijavaHelper
                 .addCommandToBdvHandleMenu(
                         bdvh,
                         ij.context(),
                         RenameBdv.class,
                         2, // Skips Plugins > BigDataViewer (two levels of menu hierarchy)
-                        "bdvh", bdvh // Fill in scijava parameters : key1, v1, key2, v2
+                        "bdvh", bdvh // Fill in SciJava parameters : key1, v1, key2, v2
                         );
 
-        // Adds a scijava Interactive Command as a card panel
+        // Adds a SciJava Interactive Command as a card panel
         bdvh.getSplitPanel().setCollapsed(false);
         bdvh.getCardPanel().addCard("Zoom",
                 ScijavaSwingUI.getPanel(ij.context(), BdvZoom.class, "bdvh", bdvh), true);

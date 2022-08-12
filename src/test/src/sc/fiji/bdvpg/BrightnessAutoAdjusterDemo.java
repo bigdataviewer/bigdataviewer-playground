@@ -81,11 +81,11 @@ public class BrightnessAutoAdjusterDemo
 
 	}
 
-	public static void addSource(BdvHandle bdvHandle, SourceAndConverter<?> sourceandconverter )
+	public static void addSource(BdvHandle bdvHandle, SourceAndConverter<?> sac )
 	{
-		new SourceAdder( bdvHandle, sourceandconverter ).run();
-		new ViewerTransformAdjuster( bdvHandle, sourceandconverter ).run();
-		new BrightnessAutoAdjuster<>( sourceandconverter,0 ).run();
+		new SourceAdder( bdvHandle, sac ).run();
+		new ViewerTransformAdjuster( bdvHandle, sac ).run();
+		new BrightnessAutoAdjuster<>( sac,0 ).run();
 	}
 
 	@Test

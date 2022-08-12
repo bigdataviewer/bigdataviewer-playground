@@ -69,7 +69,7 @@ import java.util.stream.Collectors;
  * - (optional) a volatile Source, which can be used for fast display and lazy processing
  * - a converter from the volatile Source type to VolatileARGBType, fot display purpose
  *
- * Mainly thie class supports RealTyped source and ARGBTyped source
+ * Mainly this class supports RealTyped source and ARGBTyped source
  * It can deal wth conversion of:
  * - Source to SourceAndConverter
  * - Spimdata to a List of SourceAndConverter
@@ -94,7 +94,7 @@ public class SourceAndConverterHelper {
      * Core function : makes SourceAndConverter object out of a Source
      * Mainly duplicated functions from BdvVisTools
      * @param source source
-     * @return a sourceandconverter from the source
+     * @return a SourceAndConverter from the source
      */
     public static <T> SourceAndConverter<T> createSourceAndConverter(Source<T> source) {
         Converter nonVolatileConverter;
@@ -120,7 +120,7 @@ public class SourceAndConverterHelper {
                 out = new SourceAndConverter(source, nonVolatileConverter);
             }
         } else {
-            logger.error("Cannot create sourceandconverter and converter for sources of type "+source.getType());
+            logger.error("Cannot create SourceAndConverter and converter for sources of type "+source.getType());
             return null;
         }
         return out;
@@ -139,7 +139,7 @@ public class SourceAndConverterHelper {
         } else if (source.getType() instanceof ARGBType) {
             return createConverterARGBType(source);
         } else {
-            logger.error("Cannot create converter for sourceandconverter of type "+source.getType().getClass().getSimpleName());
+            logger.error("Cannot create converter for SourceAndConverter of type "+source.getType().getClass().getSimpleName());
             return null;
         }
     }
@@ -228,9 +228,9 @@ public class SourceAndConverterHelper {
     }
 
     /**
-     * Creates ARGB converter from a RealTyped sourceandconverter.
+     * Creates ARGB converter from a RealTyped SourceAndConverter.
      * Supports Volatile RealTyped or non-volatile
-     * @param <T> realtype class
+     * @param <T> RealType class
      * @param type a pixel of type T
      * @return a suited converter
      */
@@ -244,7 +244,7 @@ public class SourceAndConverterHelper {
     }
 
     /**
-     * Creates ARGB converter from a RealTyped sourceandconverter.
+     * Creates ARGB converter from a RealTyped SourceAndConverter.
      * Supports Volatile ARGBType or non-volatile
      * @param source source
      * @return a compatible converter
@@ -652,7 +652,7 @@ public class SourceAndConverterHelper {
      * in one case or the other, the missing dimension is ignored, which we hope works
      * in most circumstances.
      *
-     * Other complication : the sourceandconverter could be a warped source, or a warped source
+     * Other complication : the SourceAndConverter could be a warped source, or a warped source
      * of a warped source of a transformed source, etc.
      *
      * The proper computation of the level required is complicated, and could be ill-defined:
@@ -743,7 +743,7 @@ public class SourceAndConverterHelper {
      * for an example of the use of this function
      * 
      * What the 'root' means is actually the origin source from which is derived the source
-     * so if a source has been affine tranformed, warped, resampled, potentially in successive steps
+     * so if a source has been affine transformed, warped, resampled, potentially in successive steps
      * this function should return the source it was derived from.
      * 
      * This function is used (for the moment) only when a source needs to be resampled
@@ -781,7 +781,7 @@ public class SourceAndConverterHelper {
     /**
      * see {@link SourceAndConverterHelper#getCharacteristicVoxelSize(AffineTransform3D)}
      * @param sac source
-     * @param t timepoiont
+     * @param t timepoint
      * @param level mipmap level
      * @return the characteristic voxel size for this level
      */

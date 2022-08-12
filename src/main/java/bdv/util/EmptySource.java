@@ -134,7 +134,7 @@ public class EmptySource implements Source<UnsignedShortType>, Serializable {
         public long nx,ny,nz;
         public AffineTransform3D at3D;
         public String name;
-        transient VoxelDimensions voxelDimensions; // transient because it cannot be instanciated  without argument
+        transient VoxelDimensions voxelDimensions; // transient because it cannot be instantiated  without argument
         public String unit = "pixel";
         public double vx = 1.0, vy = 1.0, vz = 1.0;
 

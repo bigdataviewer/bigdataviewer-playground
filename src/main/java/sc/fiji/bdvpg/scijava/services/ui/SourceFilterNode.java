@@ -144,7 +144,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
             super.insert(newChild, childIndex);
             safeModelReloadAction(() -> model.nodesWereInserted(this, new int[]{childIndex}) ); // updates model in EDT thread
 
-            // Still : notifying the insertion of a new node, which can be a new filter node and thus needs recomputation
+            // Still : notifying the insertion of a new node, which can be a new filter node and thus needs to be recomputed
             this.update(new NodeAddedUpdateEvent(newChild));
         }
     }
@@ -187,7 +187,7 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements Cloneabl
 
     /**
      * Very important method which recomputes the tree based on the {@link UpdateEvent} notified
-     * ensures new and up-to-date recomputation of the whole tree
+     * ensures new and up-to-date computation of the whole tree
      * @param event cast event
      */
     public void update(UpdateEvent event) {

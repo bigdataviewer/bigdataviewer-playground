@@ -140,7 +140,7 @@ public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConver
         String sourceClass = jsonObject.getAsJsonPrimitive("source_class").getAsString();
 
         if (!sourceSerializersFromName.containsKey(sourceClass)) {
-            logger.error("Unsupported deserialisation of "+sourceClass);
+            logger.error("Unsupported deserialization of "+sourceClass);
             throw new UnsupportedOperationException();
         }
 

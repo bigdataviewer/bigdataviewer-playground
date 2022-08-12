@@ -91,10 +91,10 @@ import java.util.stream.Collectors;
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService.CONVERTER_SETUP;
 
 /**
- * Scijava Service which centralizes BDV Sources, independently of their display
+ * SciJava Service which centralizes BDV Sources, independently of their display
  * BDV Sources can be registered to this Service.
  * This service adds the Source to the ObjectService, but on top of it,
- * It contains a Map which contains any object which can be linked to the sourceandconverter.
+ * It contains a Map which contains any object which can be linked to the {@link SourceAndConverter}.
  *
  * It also handles SpimData object, but split all Sources into individual ones
  *
@@ -114,13 +114,13 @@ public class SourceAndConverterService extends AbstractService implements SciJav
     }
 
     /**
-     * Scijava Object Service : will contain all the sourceAndConverters
+     * SciJava Object Service : will contain all the sourceAndConverters
      */
     @Parameter
     ObjectService objectService;
 
     /**
-     * Scriptservice : used for adding Source alias to help for scripting
+     * ScriptService : used for adding Source alias to help for scripting
      */
     @Parameter
     ScriptService scriptService;

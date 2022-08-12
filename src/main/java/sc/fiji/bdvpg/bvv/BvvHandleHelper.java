@@ -52,8 +52,8 @@ public class BvvHandleHelper {
     /**
      *
      * @param bvvh the BigVolumeViewer window handle
-     * @param cs scijava cache service
-     * @param os scijava objet service
+     * @param cs SciJava cache service
+     * @param os SciJava objet service
      * @param bdvsds bigdataviewer display service
      * @param putWindowOnTop if this window has to be put on top
      */
@@ -134,7 +134,7 @@ public class BvvHandleHelper {
 
     /**
      *
-     * @param os scijava object service
+     * @param os SciJava object service
      * @param iniTitle initial Title to set
      * @return a potentially modified title which is unique in the current scijava context
      */

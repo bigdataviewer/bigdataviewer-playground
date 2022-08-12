@@ -97,7 +97,7 @@ public class ViewerTransformSyncStarter implements Runnable {
 
     /**
      * Map which links each BdvHandle to the TimePointListener which has been added
-     * for synchronization purpose. This object contains all what's neede to stop
+     * for synchronization purpose. This object contains all what's needed to stop
      * the synchronization
      */
     final Map<ViewerAdapter, TimePointListener> handleToTimeListener = new HashMap<>();
@@ -156,7 +156,7 @@ public class ViewerTransformSyncStarter implements Runnable {
             // Building the TransformListener of currentBvvHandle
             TransformListener<AffineTransform3D> listener = (at3D) -> propagateTransformIfNecessary(at3D, currentHandle, nextHandle);
 
-            // Adding this transform listener to the currenBdvHandle
+            // Adding this transform listener to the current BdvHandle
             currentHandle.addTransformListener(listener);
 
             // Storing the transform listener -> needed to remove them in order to stop synchronization when needed

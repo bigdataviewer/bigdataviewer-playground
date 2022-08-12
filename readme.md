@@ -39,7 +39,7 @@ This enables additional user access.
 * [Change the current viewer transform](https://github.com/haesleinhuepf/bigdataviewer-playground/blob/master/src/test/src/sc/fiji/bdv/navigate/ViewTransformSetAndLogDemo.java#L37-L40)
 * [Take a screenshot](https://github.com/haesleinhuepf/bigdataviewer-playground/blob/master/src/test/src/sc/fiji/bdv/screenshot/ScreenshotDemo.java)
 
-## List of Scijava Commands 
+## List of SciJava Commands 
 
 <details>
  <summary>Source Service State</summary>

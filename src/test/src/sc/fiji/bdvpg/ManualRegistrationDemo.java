@@ -111,7 +111,7 @@ public class ManualRegistrationDemo {
             SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacReference);
             SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacToTransform);
 
-            // Adjust view on sourceandconverter
+            // Adjust view on SourceAndConverter
             new ViewerTransformAdjuster(bdvHandle, sacReference).run();
 
             ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacToTransform);
@@ -135,7 +135,7 @@ public class ManualRegistrationDemo {
             SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacReference);
             SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacToTransform);
 
-            // Adjust view on sourceandconverter
+            // Adjust view on SourceAndConverter
             new ViewerTransformAdjuster(bdvHandle, sacReference).run();
 
             ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacToTransform);

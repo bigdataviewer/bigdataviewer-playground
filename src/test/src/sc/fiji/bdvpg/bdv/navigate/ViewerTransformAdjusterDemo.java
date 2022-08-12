@@ -62,7 +62,7 @@ public class ViewerTransformAdjusterDemo
 
         AbstractSpimData<?> asd = sdix.get();
 
-        // Register to the sourceandconverter service
+        // Register to the SourceAndConverter service
         SourceAndConverterServices.getSourceAndConverterService().register(asd);
 
         SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source ->
@@ -74,7 +74,7 @@ public class ViewerTransformAdjusterDemo
 
         asd = sdix.get();
 
-        // Register to the sourceandconverter service
+        // Register to the SourceAndConverter service
         SourceAndConverterServices.getSourceAndConverterService().register(asd);
 
         SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source ->

@@ -86,11 +86,11 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter<?>
         SourceAndConverter<?> sac;
         if (src.asVolatile()!=null) {
             SourceAndConverter<?> vsac;
-            Source<?> vsrcRsampled;
+            Source<?> vsrcResampled;
             if (cache) {
-                vsrcRsampled = new VolatileSource(srcRsampled);
+                vsrcResampled = new VolatileSource(srcRsampled);
             } else {
-                vsrcRsampled = new ResampledSource(
+                vsrcResampled = new ResampledSource(
                         src.asVolatile().getSpimSource(),
                         model.getSpimSource(),
                         name,
@@ -99,7 +99,7 @@ public class SourceResampler implements Runnable, Function<SourceAndConverter<?>
                         interpolate,
                         defaultMipMapLevel);
             }
-            vsac = new SourceAndConverter(vsrcRsampled,
+            vsac = new SourceAndConverter(vsrcResampled,
                     SourceAndConverterHelper.cloneConverter(src.asVolatile().getConverter(), src.asVolatile()));
             sac = new SourceAndConverter(srcRsampled,
                     SourceAndConverterHelper.cloneConverter(src.getConverter(), src),vsac);

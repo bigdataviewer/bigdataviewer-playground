@@ -57,7 +57,7 @@ import java.util.function.Function;
  * <p>
  * This transformation chains maintains the center of the window in global coordinates constant
  * <p>
- * To avoid inifinite loop, the stop condition is : if the view transform is unnecessary (i.e.
+ * To avoid infinite loop, the stop condition is : if the view transform is unnecessary (i.e.
  * the target viewTransform is approximately equal
  * to the source viewTransform), then there's no need to trigger a view transform change to the next BdvHandle
  *
@@ -95,7 +95,7 @@ public class ViewerOrthoSyncStarter implements Runnable {
 
     /**
      * Map which links each BdvHandle to the TimePointListener which has been added
-     * for synchronization purpose. This object contains all what's neede to stop
+     * for synchronization purpose. This object contains all what's needed to stop
      * the synchronization, required in {@link ViewerTransformSyncStopper}
      */
     final Map<ViewerAdapter, TimePointListener> handleToTimeListener = new HashMap<>();

@@ -44,7 +44,7 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
  */
 
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Log view transform",
-        description = "Outputs the current view transfrom of a BDV window into the standard IJ logger")
+        description = "Outputs the current view transform of a BDV window into the standard IJ logger")
 
 public class ViewTransformLoggerCommand implements BdvPlaygroundActionCommand {
 

@@ -57,7 +57,7 @@ public class BdvPlaygroundStateSaver {
                 ij.context()
         ).run();
 
-        logger.info("Bdv PLayground state saved!");
+        logger.info("Bdv Playground state saved!");
 
     }
 

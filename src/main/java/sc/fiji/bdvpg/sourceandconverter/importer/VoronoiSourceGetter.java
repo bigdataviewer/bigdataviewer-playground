@@ -117,7 +117,7 @@ public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverte
     }
 
     /**
-     * Copy from a sourceandconverter that is just RandomAccessible to an IterableInterval. Latter one defines
+     * Copy from a {@link SourceAndConverter} that is just RandomAccessible to an IterableInterval. Latter one defines
      * size and location of the copy operation. It will query the same pixel locations of the
      * IterableInterval in the RandomAccessible. It is up to the developer to ensure that these
      * coordinates match.

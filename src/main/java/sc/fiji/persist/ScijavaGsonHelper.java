@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * Get serializers that registers all scijava registered adapters and runtime adapters
+ * Get serializers that registers all SciJava registered adapters and runtime adapters
  *
  * Note : some "simple" objects do not require specific adapters with json.
  *
@@ -126,10 +126,10 @@ public class ScijavaGsonHelper {
         // of runtime class serialization customisation
         log.accept("IClassAdapters : ");
         ctx.getService(IObjectScijavaAdapterService.class)
-                .getAdapters(IClassAdapter.class) // Gets all scijava class adapters (no runtime)
+                .getAdapters(IClassAdapter.class) // Gets all SciJava class adapters (no runtime)
                 .forEach(pi -> {
                     try {
-                        IClassAdapter<?> adapter = pi.createInstance(); // Instanciate the adapter (no argument should be present in the constructor, but auto-filled scijava parameters are allowed)
+                        IClassAdapter<?> adapter = pi.createInstance(); // Instantiate the adapter (no argument should be present in the constructor, but auto-filled SciJava parameters are allowed)
                         log.accept("\t "+adapter.getAdapterClass());
                         builder.registerTypeHierarchyAdapter(adapter.getAdapterClass(), adapter); // Register gson adapter
                     } catch (InstantiableException e) {

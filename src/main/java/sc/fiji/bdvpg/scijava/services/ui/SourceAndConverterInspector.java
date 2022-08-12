@@ -97,7 +97,7 @@ public class SourceAndConverterInspector {
             TransformedSource<?> source = (TransformedSource<?>) sac.getSpimSource();
 
             if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).size() > 0) {
-                // at least A sourceandconverteralready exists for this source
+                // at least a SourceAndConverter already exists for this source
                 sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeTransformedSource.add(wrappedSourceNode);
@@ -137,7 +137,7 @@ public class SourceAndConverterInspector {
             WarpedSource<?> source = (WarpedSource<?>) sac.getSpimSource();
 
             if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).size() > 0) {
-                // at least A sourceandconverteralready exists for this source
+                // at least a SourceAndConverter already exists for this source
                 sourceAndConverterService.getSourceAndConvertersFromSource(source.getWrappedSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeWarpedSource.add(wrappedSourceNode);
@@ -176,7 +176,7 @@ public class SourceAndConverterInspector {
             nodeResampledSource.add(nodeOrigin);
 
             if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getOriginalSource()).size() > 0) {
-                // at least A sourceandconverteralready exists for this source
+                // at least a SourceAndConverter already exists for this source
                 sourceAndConverterService.getSourceAndConvertersFromSource(source.getOriginalSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeOrigin.add(wrappedSourceNode);
@@ -198,7 +198,7 @@ public class SourceAndConverterInspector {
             nodeResampledSource.add(nodeResampler);
 
             if (sourceAndConverterService.getSourceAndConvertersFromSource(source.getModelResamplerSource()).size() > 0) {
-                // at least A sourceandconverteralready exists for this source
+                // at least a SourceAndConverter already exists for this source
                 sourceAndConverterService.getSourceAndConvertersFromSource(source.getModelResamplerSource()).forEach((src) -> {
                             DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
                             nodeResampler.add(wrappedSourceNode);
@@ -228,7 +228,7 @@ public class SourceAndConverterInspector {
     }
 
     /**
-     * Returns the root 'sourceandconverter' in the sense that it finds
+     * Returns the root {@link SourceAndConverter} in the sense that it finds
      * the original source at the root of this source
      * <p>
      * for {@link ResampledSource} the model is ignored
@@ -242,7 +242,7 @@ public class SourceAndConverterInspector {
      *
      * @param sac source to check
      * @param sacService source and converter service, useful to find the root
-     * @return root source and converer object
+     * @return root source and converter object
      */
     public static SourceAndConverter<?> getRootSourceAndConverter(SourceAndConverter<?> sac, SourceAndConverterService sacService) {
         return getListToRootSourceAndConverter(sac, sacService).getLast();

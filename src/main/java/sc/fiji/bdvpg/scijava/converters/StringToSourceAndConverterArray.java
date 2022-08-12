@@ -38,7 +38,7 @@ import javax.swing.tree.TreePath;
 
 
 /**
- * TODO : allows multiple Paths splitted by a character ? Not sure it's fool proof
+ * TODO : allows multiple Paths split by a character ? Not sure it's fool proof
  * @param <I> String class TODO understand this
  */
 

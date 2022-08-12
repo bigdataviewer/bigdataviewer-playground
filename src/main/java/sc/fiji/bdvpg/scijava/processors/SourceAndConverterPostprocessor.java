@@ -50,8 +50,6 @@ public class SourceAndConverterPostprocessor extends AbstractPostprocessorPlugin
     public void process(Module module) {
 
        module.getOutputs().forEach((name, object)-> {
-           //log.accept("input:\t"+name+"\tclass:\t"+object.getClass().getSimpleName());
-
            if (object instanceof SourceAndConverter<?>) {
                SourceAndConverter<?> sac = (SourceAndConverter<?>) object;
                logger.debug("Source found.");

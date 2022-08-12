@@ -58,7 +58,7 @@ import java.util.stream.Stream;
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
 
 /**
- * Swing UI for Scijava {@link SourceAndConverterService}
+ * Swing UI for SciJava {@link SourceAndConverterService}
  *
  * All the {@link SourceAndConverter} are inserted into the tree potentially multiple times,
  * in order to allow for multiple useful hierarchy to appear. The most basic example is a
@@ -67,7 +67,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  * by {@link Entity} class found in the spimdata object (Illumination, Angle, Channel ...)
  *
  * Nodes are {@link DefaultMutableTreeNode} containing potentially:
- * - {@link RenamableSourceAndConverter} (SourceAndConverter with an overriden toString method)
+ * - {@link RenamableSourceAndConverter} (SourceAndConverter with an overridden toString method)
  * - Filtering nodes : {@link SourceFilterNode} nodes that can filter SourceAndConverters,
  * they contain a {@link Predicate} {@link SourceAndConverter} that decides whether a SourceAndConverter
  * object should be included in the tree nodes below this filter;
@@ -205,7 +205,7 @@ public class SourceAndConverterServiceUI {
         int height = screenSize.height * 4 / 5;
         int width = screenSize.width / 6;
 
-        // set the jframe height and width
+        // set the jFrame height and width
         frame.setPreferredSize(new Dimension(width, height));
 
         frame.add(panel);
@@ -386,7 +386,7 @@ public class SourceAndConverterServiceUI {
      */
     private void updateSpimDataFilterNodes() {
         synchronized (tree) {
-            // Fetch All Spimdatas from all Sources
+            // Fetch All Spimdata from all Sources
             Set<AbstractSpimData<?>> currentSpimdatas = sourceAndConverterService.getSpimDatasets();
 
             Set<SpimDataFilterNode> obsoleteSpimDataFilterNodes = new HashSet<>();

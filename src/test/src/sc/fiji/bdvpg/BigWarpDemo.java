@@ -85,7 +85,7 @@ public class BigWarpDemo {
         // Creates a BdvHandle
         BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
-        // Show the sourceandconverter
+        // Show the SourceAndConverter
         SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacFixed);
 
         SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(sacMoving)
@@ -151,7 +151,7 @@ public class BigWarpDemo {
         // Creates a BdvHandle
         BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
-        // Show the sourceandconverter
+        // Show the SourceAndConverter
         SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacFixed);
 
         SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(sacMoving)
