@@ -33,11 +33,11 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Function;
 
-    public class SourceAndConverterDuplicator implements Runnable, Function<SourceAndConverter<?>, SourceAndConverter<?>> {
+public class SourceAndConverterDuplicator<T> implements Runnable, Function<SourceAndConverter<T>, SourceAndConverter<T>> {
 
-    final SourceAndConverter<?> sac_in;
+    final SourceAndConverter<T> sac_in;
 
-    public SourceAndConverterDuplicator(SourceAndConverter<?> sac) {
+    public SourceAndConverterDuplicator(SourceAndConverter<T> sac) {
         sac_in = sac;
     }
 
@@ -46,18 +46,18 @@ import java.util.function.Function;
         // Nothing
     }
 
-    public SourceAndConverter<?> get() {
+    public SourceAndConverter<T> get() {
         return apply(sac_in);
     }
 
     @Override
-    public SourceAndConverter<?> apply(SourceAndConverter<?> sourceAndConverter) {
+    public SourceAndConverter<T> apply(SourceAndConverter<T> sourceAndConverter) {
         SourceAndConverter<?> sac;
         if (sourceAndConverter.asVolatile() != null) {
             sac = new SourceAndConverter<>(
                     sourceAndConverter.getSpimSource(),
                     SourceAndConverterHelper.cloneConverter(sourceAndConverter.getConverter(), sourceAndConverter),
-                    new SourceAndConverter<>(sourceAndConverter.asVolatile().getSpimSource(),
+                    new SourceAndConverter(sourceAndConverter.asVolatile().getSpimSource(),
                             SourceAndConverterHelper.cloneConverter(sourceAndConverter.asVolatile().getConverter(), sourceAndConverter.asVolatile()))
             );
         } else {
@@ -65,8 +65,8 @@ import java.util.function.Function;
                     sourceAndConverter.getSpimSource(),
                     SourceAndConverterHelper.cloneConverter(sourceAndConverter.getConverter(), sourceAndConverter));
         }
-        //SourceAndConverterServices.getSourceAndConverterService().register(sac);
-        return sac;
+
+        return (SourceAndConverter<T>) sac;
     }
 
 }

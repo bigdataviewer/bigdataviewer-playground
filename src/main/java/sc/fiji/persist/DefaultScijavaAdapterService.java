@@ -56,6 +56,7 @@ public class DefaultScijavaAdapterService extends AbstractPTService<IObjectScija
         return IObjectScijavaAdapter.class;
     }
 
+    @SuppressWarnings("unused")
     @Parameter
     Context ctx;
 

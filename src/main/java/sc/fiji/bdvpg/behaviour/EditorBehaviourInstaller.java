@@ -110,7 +110,6 @@ public class EditorBehaviourInstaller implements Runnable {
         return popupActions;
     }
 
-
     final String editorActionsPath;
 
     public EditorBehaviourInstaller(SourceSelectorBehaviour ssb, String context) {

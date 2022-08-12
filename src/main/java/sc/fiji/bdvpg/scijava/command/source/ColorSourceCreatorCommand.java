@@ -68,9 +68,9 @@ public class ColorSourceCreatorCommand implements BdvPlaygroundActionCommand {
         assert c instanceof ColorConverter;
         ((ColorConverter) c).setColor(imglib2color);
 
-        Converter<V,ARGBType> vc = null;
+        Converter<V, ARGBType> vc = null;
         if (source.asVolatile() != null) {
-            vc = SourceAndConverterHelper.createConverter(source.asVolatile().getSpimSource());
+            vc = (Converter<V, ARGBType>) SourceAndConverterHelper.createConverter(source.asVolatile().getSpimSource());
             assert vc != null;
             ((ColorConverter) vc).setColor(imglib2color);
         }

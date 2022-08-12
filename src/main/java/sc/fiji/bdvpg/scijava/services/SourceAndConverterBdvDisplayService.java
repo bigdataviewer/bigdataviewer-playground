@@ -78,6 +78,7 @@ import javax.swing.tree.DefaultTreeModel;
  * Make its best to keep in synchronizations all of this, without creating errors nor memory leaks
  */
 
+@SuppressWarnings("unused") // Because SciJava parameters are filled through reflection
 @Plugin(type= Service.class)
 public class SourceAndConverterBdvDisplayService extends AbstractService implements SciJavaService  {
 

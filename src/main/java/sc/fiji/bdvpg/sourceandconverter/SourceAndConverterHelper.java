@@ -56,6 +56,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.volatiles.VolatileARGBType;
 import net.imglib2.util.Intervals;
 import org.scijava.vecmath.Point3d;
 import org.slf4j.Logger;
@@ -102,7 +103,6 @@ public class SourceAndConverterHelper {
 
     protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterHelper.class);
 
-
     /**
      * Core function : makes SourceAndConverter object out of a Source
      * Mainly duplicated functions from BdvVisTools
@@ -110,33 +110,38 @@ public class SourceAndConverterHelper {
      * @return a SourceAndConverter from the source
      */
     public static <T> SourceAndConverter<T> createSourceAndConverter(Source<T> source) {
-        Converter nonVolatileConverter;
-        SourceAndConverter<T> out;
         if (source.getType() instanceof RealType) {
-            nonVolatileConverter = createConverterRealType((RealType) source.getType());
-            try {
-                Source volatileSource = createVolatileRealType(source);
-                Converter volatileConverter = createConverterRealType((RealType) volatileSource.getType());
-                out = new SourceAndConverter<>(source, nonVolatileConverter,
-                        new SourceAndConverter<>(volatileSource, volatileConverter));
-            } catch (Exception e) {
-                out = new SourceAndConverter<>(source, nonVolatileConverter);
-            }
+            return (SourceAndConverter<T>) createSourceAndConverterRealType((Source<? extends RealType>)source);
         } else if (source.getType() instanceof ARGBType) {
-            nonVolatileConverter = createConverterARGBType(source);
-            try {
-                Source volatileSource = createVolatileARGBType(source);
-                Converter volatileConverter = createConverterARGBType(volatileSource);
-                out = new SourceAndConverter<>(source, nonVolatileConverter,
-                        new SourceAndConverter<>(volatileSource, volatileConverter));
-            } catch (UnsupportedOperationException e) {
-                out = new SourceAndConverter<>(source, nonVolatileConverter);
-            }
+            return (SourceAndConverter<T>) createSourceAndConverterARGBType((Source<ARGBType>) source);
         } else {
             logger.error("Cannot create SourceAndConverter and converter for sources of type "+source.getType());
             return null;
         }
-        return out;
+    }
+
+    private static <T extends RealType<T>, V extends Volatile<T>&RealType> SourceAndConverter<T> createSourceAndConverterRealType(Source<T> source) {
+        Converter<T, ARGBType> nonVolatileConverter = createConverterRealType(source.getType());
+        try {
+            Source<V> volatileSource = createVolatileRealType(source);
+            Converter<V, ARGBType> volatileConverter = createConverterRealType(volatileSource.getType());
+            return new SourceAndConverter<>(source, nonVolatileConverter,
+                    new SourceAndConverter<>(volatileSource, volatileConverter));
+        } catch (Exception e) {
+            return new SourceAndConverter<>(source, nonVolatileConverter);
+        }
+    }
+
+    private static SourceAndConverter<ARGBType> createSourceAndConverterARGBType(Source<ARGBType> source) {
+        Converter<ARGBType, ARGBType> nonVolatileConverter = new ScaledARGBConverter.ARGB( 0, 255 );
+        try {
+            Source<VolatileARGBType> volatileSource = createVolatileARGBType(source);
+            Converter<VolatileARGBType, ARGBType> volatileConverter = new ScaledARGBConverter.VolatileARGB( 0, 255 );
+            return new SourceAndConverter<>(source, nonVolatileConverter,
+                    new SourceAndConverter<>(volatileSource, volatileConverter));
+        } catch (Exception e) {
+            return new SourceAndConverter<>(source, nonVolatileConverter);
+        }
     }
 
     /**
@@ -146,11 +151,11 @@ public class SourceAndConverterHelper {
      * @param source source
      * @return one converter for the source
      */
-    public static Converter createConverter(Source source) {
+    public static <T> Converter<T, ARGBType> createConverter(Source<? extends T> source) {
         if (source.getType() instanceof RealType) {
-            return createConverterRealType((RealType)source.getType());//source);
+            return (Converter<T, ARGBType>) (createConverterRealType((RealType)(source.getType())));//source);
         } else if (source.getType() instanceof ARGBType) {
-            return createConverterARGBType(source);
+            return (Converter<T, ARGBType>) (createConverterARGBType(source));
         } else {
             logger.error("Cannot create converter for SourceAndConverter of type "+source.getType().getClass().getSimpleName());
             return null;
@@ -163,15 +168,15 @@ public class SourceAndConverterHelper {
      *            if necessary to clone the converter
      * @return a cloned converter ( could be the same instance ?)
      */
-    public static Converter cloneConverter(Converter converter, SourceAndConverter sac) {
+    public static <I,O> Converter<I,O> cloneConverter(Converter<I,O> converter, SourceAndConverter<?> sac) {
         if (converter instanceof ICloneableConverter) { // Extensibility of converters which implements ICloneableConverter
-            return ((ICloneableConverter) converter).duplicateConverter(sac);
+            return (Converter<I,O>) ((ICloneableConverter) converter).duplicateConverter(sac);
         } else if (converter instanceof ScaledARGBConverter.VolatileARGB) {
-            return new ScaledARGBConverter.VolatileARGB(((ScaledARGBConverter.VolatileARGB) converter).getMin(), ((ScaledARGBConverter.VolatileARGB) converter).getMax());
+            return (Converter<I,O>) new ScaledARGBConverter.VolatileARGB(((ScaledARGBConverter.VolatileARGB) converter).getMin(), ((ScaledARGBConverter.VolatileARGB) converter).getMax());
         } else if (converter instanceof ScaledARGBConverter.ARGB) {
-            return new ScaledARGBConverter.ARGB(((ScaledARGBConverter.ARGB) converter).getMin(),((ScaledARGBConverter.ARGB) converter).getMax());
+            return (Converter<I,O>) new ScaledARGBConverter.ARGB(((ScaledARGBConverter.ARGB) converter).getMin(),((ScaledARGBConverter.ARGB) converter).getMax());
         } else if (converter instanceof RealLUTConverter) {
-            return new RealLUTConverter(((RealLUTConverter) converter).getMin(),((RealLUTConverter) converter).getMax(),((RealLUTConverter) converter).getLUT());
+            return (Converter<I,O>) new RealLUTConverter(((RealLUTConverter) converter).getMin(),((RealLUTConverter) converter).getMax(),((RealLUTConverter) converter).getLUT());
         } else {
 
             Converter clonedConverter = BigDataViewer.createConverterToARGB((NumericType)sac.getSpimSource().getType());
@@ -185,7 +190,7 @@ public class SourceAndConverterHelper {
 					((ColorConverter)clonedConverter).setMax(((ColorConverter)converter).getMax());
 				}
 
-				return clonedConverter;
+				return (Converter<I,O>) clonedConverter;
 			}
 			else
 			{
@@ -225,7 +230,7 @@ public class SourceAndConverterHelper {
      * @param source source
      * @return the volatile source
      */
-    private static Source<?> createVolatileRealType(Source<?> source) throws UnsupportedOperationException {
+    private static <T, V extends Volatile<T>> Source<V> createVolatileRealType(Source<T> source) throws UnsupportedOperationException {
         // TODO unsupported yet
         throw new UnsupportedOperationException("Unimplemented createVolatileRealType method in SourceAndConverterHelper");
     }
@@ -236,7 +241,7 @@ public class SourceAndConverterHelper {
      * @param source the source
      * @return the volatile source created
      */
-    private static Source<?> createVolatileARGBType(Source<?> source) throws UnsupportedOperationException {
+    private static Source<VolatileARGBType> createVolatileARGBType(Source<ARGBType> source) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("Unimplemented createVolatileARGBType method in SourceAndConverterHelper");
     }
 
@@ -262,18 +267,14 @@ public class SourceAndConverterHelper {
      * @param source source
      * @return a compatible converter
      */
-    public static Converter createConverterARGBType( Source<?> source ) {
+     public static Converter<?, ARGBType> createConverterARGBType( Source<?> source ) {
         final Converter converter ;
         if ( source.getType() instanceof Volatile)
             converter = new ScaledARGBConverter.VolatileARGB( 0, 255 );
         else
             converter = new ScaledARGBConverter.ARGB( 0, 255 );
-
-        // Unsupported
-        //converter.getValueToColor().put( 0D, ARGBType.rgba( 0, 0, 0, 0) );
         return converter;
-    }
-
+     }
 
 	/**
 	 * Checks whether a given point (calibrated global coordinate)
@@ -437,9 +438,9 @@ public class SourceAndConverterHelper {
      * @param timePoint timepoint investigated
      * @return true if the source is present
      */
-    public static boolean isSourcePresentAt(SourceAndConverter<?> sac, int timePoint, RealPoint pt) {
+    public static <T> boolean isSourcePresentAt(SourceAndConverter<T> sac, int timePoint, RealPoint pt) {
 
-        RealRandomAccessible rra_ible = sac.getSpimSource().getInterpolatedSource(timePoint, 0, Interpolation.NEARESTNEIGHBOR);
+        RealRandomAccessible<T> rra_ible = sac.getSpimSource().getInterpolatedSource(timePoint, 0, Interpolation.NEARESTNEIGHBOR);
 
         if (rra_ible!=null) {
             // Get transformation of the source
@@ -447,13 +448,13 @@ public class SourceAndConverterHelper {
             sac.getSpimSource().getSourceTransform(timePoint, 0, sourceTransform);
 
             // Get access to the source at the pointer location
-            RealRandomAccess rra = rra_ible.realRandomAccess();
+            RealRandomAccess<T> rra = rra_ible.realRandomAccess();
             RealPoint iPt = new RealPoint(3);
             sourceTransform.inverse().apply(pt, iPt);
             rra.setPosition(iPt);
 
             // Gets converter -> will decide based on ARGB value whether the source is present or not
-            Converter<Object, ARGBType> cvt = (Converter<Object, ARGBType>) sac.getConverter();
+            Converter<T, ARGBType> cvt = sac.getConverter();
             ARGBType colorOut = new ARGBType();
             cvt.convert(rra.get(), colorOut);
 
@@ -461,7 +462,6 @@ public class SourceAndConverterHelper {
             int cValue = colorOut.get();
 
             // Alpha == 0 -> not present, otherwise it is present
-
             return ARGBType.alpha(cValue) != 0;
         } else {
             return false;
@@ -535,6 +535,7 @@ public class SourceAndConverterHelper {
      * @param sacs sources
      * @return ordered sources
      */
+    @SuppressWarnings("rawtypes")
     @Deprecated
     public static List<SourceAndConverter> sortDefaultNoGeneric(Collection<SourceAndConverter> sacs) {
         List<SourceAndConverter> sortedList = new ArrayList<>(sacs.size());
@@ -698,9 +699,6 @@ public class SourceAndConverterHelper {
             double mid = getCharacteristicVoxelSize(sourceTransform.concatenate(chainedSourceTransform));
             originVoxSize.add(mid);
         }
-
-        int level = 0;
-
 
         if (voxSize<originVoxSize.get(0)) return 0; // below highest resolution : return the highest resolution
 

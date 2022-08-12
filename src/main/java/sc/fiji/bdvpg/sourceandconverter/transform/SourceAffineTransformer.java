@@ -82,8 +82,8 @@ public class SourceAffineTransformer<T,V extends Volatile<T>> implements Runnabl
         TransformedSource<T> src = new TransformedSource<>(in.getSpimSource());
         src.setFixedTransform(at3D);
         if (in.asVolatile()!=null) {
-            TransformedSource<V> vsrc = new TransformedSource<>((Source<V>) in.asVolatile().getSpimSource(), src);
-            SourceAndConverter<V> vout = new SourceAndConverter<>(vsrc, SourceAndConverterHelper.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));
+            TransformedSource<? extends Volatile<T>> vsrc = new TransformedSource<>(in.asVolatile().getSpimSource(), src);
+            SourceAndConverter<? extends Volatile<T>> vout = new SourceAndConverter(vsrc, SourceAndConverterHelper.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));
             sac = new SourceAndConverter<>(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in), vout);
         } else {
             sac = new SourceAndConverter<>(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in));
