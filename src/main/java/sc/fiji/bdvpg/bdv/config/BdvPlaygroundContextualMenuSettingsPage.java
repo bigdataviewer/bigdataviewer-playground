@@ -161,7 +161,7 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
             contextMenuActions.setDropMode(DropMode.INSERT);
             StringBuilder sb = new StringBuilder();
             for (String action:initialState) {
-                sb.append(action+"\n");
+                sb.append(action).append("\n");
             }
             contextMenuActions.setText(sb.toString());
 

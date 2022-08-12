@@ -44,7 +44,6 @@ import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.bdv.config.BdvPrefsSettingsPage;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.HashMap;

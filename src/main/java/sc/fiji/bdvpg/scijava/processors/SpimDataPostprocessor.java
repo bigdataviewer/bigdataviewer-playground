@@ -38,8 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
-import java.util.function.Consumer;
-
 @Plugin(type = PostprocessorPlugin.class)
 public class SpimDataPostprocessor extends AbstractPostprocessorPlugin {
 

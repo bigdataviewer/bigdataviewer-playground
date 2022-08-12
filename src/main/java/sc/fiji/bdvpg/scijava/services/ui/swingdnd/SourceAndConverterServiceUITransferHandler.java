@@ -145,6 +145,7 @@ public class SourceAndConverterServiceUITransferHandler extends TreeTransferHand
                 SourceAndConverterServiceUI ui =
                         ((SourceAndConverterService) SourceAndConverterServices.getSourceAndConverterService()).getUI();
                 List<SourceAndConverter<?>> sacs = new ArrayList<>();
+                //noinspection ManualArrayToCollectionCopy
                 for (SourceAndConverter<?> sac : ui.getSelectedSourceAndConverters((JTree) c)) {
                     sacs.add(sac);
                 }

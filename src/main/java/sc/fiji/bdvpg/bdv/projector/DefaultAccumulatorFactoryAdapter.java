@@ -30,7 +30,6 @@ package sc.fiji.bdvpg.bdv.projector;
 
 import bdv.viewer.render.AccumulateProjectorARGB;
 import bdv.viewer.render.AccumulateProjectorFactory;
-import net.imglib2.type.numeric.ARGBType;
 import org.scijava.plugin.Plugin;
 import sc.fiji.persist.IClassRuntimeAdapter;
 

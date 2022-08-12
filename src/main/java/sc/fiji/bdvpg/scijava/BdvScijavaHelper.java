@@ -76,7 +76,9 @@ public class BdvScijavaHelper {
                     .map(String::trim)
                     .collect(Collectors.toList());
 
-            for (int i=0;i<skipTopLevels;i++) {path.remove(0);}
+            if (skipTopLevels > 0) {
+                path.subList(0, skipTopLevels).clear();
+            }
 
             JMenuItem jMenuItemRoot = findOrCreateJMenu(bdvMenuBar, path);
             if (jMenuItemRoot!=null) {

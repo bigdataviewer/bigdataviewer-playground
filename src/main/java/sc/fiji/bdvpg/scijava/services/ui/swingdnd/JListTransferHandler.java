@@ -154,6 +154,7 @@ public class JListTransferHandler extends TransferHandler {
                         sacs.add(((RenamableSourceAndConverter) unwrapped.getUserObject()).sac);
                     } else {
                         for (SourceAndConverter sac : ui.getSourceAndConvertersFromChildrenOf(unwrapped)) {
+                            //noinspection UseBulkOperation
                             sacs.add(sac);
                         }
                     }

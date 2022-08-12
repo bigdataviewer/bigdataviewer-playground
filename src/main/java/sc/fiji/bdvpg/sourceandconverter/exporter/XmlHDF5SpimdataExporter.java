@@ -47,7 +47,6 @@ import mpicbg.spim.data.sequence.*;
 import net.imglib2.FinalDimensions;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

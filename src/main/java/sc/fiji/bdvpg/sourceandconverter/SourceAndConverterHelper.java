@@ -28,15 +28,25 @@
  */
 package sc.fiji.bdvpg.sourceandconverter;
 
-import bdv.*;
+import bdv.AbstractSpimSource;
+import bdv.BigDataViewer;
 import bdv.img.WarpedSource;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.transformation.TransformedSource;
-import bdv.util.*;
+import bdv.util.BdvHandle;
+import bdv.util.LUTConverterSetup;
+import bdv.util.ResampledSource;
+import bdv.util.UnmodifiableConverterSetup;
 import bdv.viewer.Interpolation;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import net.imglib2.*;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
+import net.imglib2.Point;
+import net.imglib2.RealPoint;
+import net.imglib2.RealRandomAccess;
+import net.imglib2.RealRandomAccessible;
+import net.imglib2.Volatile;
 import net.imglib2.converter.Converter;
 import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.display.ColorConverter;
@@ -54,8 +64,11 @@ import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -276,7 +289,7 @@ public class SourceAndConverterHelper {
 	 * @return
 	 * 			boolean indicating whether the position falls within the source interval
 	 */
-	public static boolean isPositionWithinSourceInterval( SourceAndConverter< ? > source, RealPoint globalPosition, int timepoint, boolean sourceIs2d )
+	public static boolean isPositionWithinSourceInterval(SourceAndConverter< ? > source, RealPoint globalPosition, int timepoint, boolean sourceIs2d )
 	{
 		Source< ? > spimSource = source.getSpimSource();
 
