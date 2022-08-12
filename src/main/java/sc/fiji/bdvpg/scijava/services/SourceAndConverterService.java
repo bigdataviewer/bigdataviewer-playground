@@ -507,6 +507,7 @@ public class SourceAndConverterService extends AbstractService implements SciJav
         List<SourceAndConverter> list = objectService.getObjects(SourceAndConverter.class);
         List<SourceAndConverter<?>> nonRawList = new ArrayList<>();
         list.forEach(nonRawList::add);
+        nonRawList = SourceAndConverterHelper.sortDefaultGeneric(nonRawList);
         return nonRawList;
     }
 
