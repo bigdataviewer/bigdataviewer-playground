@@ -102,7 +102,7 @@ public class AffineTransformSourceDemo {
                     SourceAffineTransformer<?> sat = new SourceAffineTransformer<>(sac, at3d);
                     sat.run();
 
-                    SourceAndConverter<?> transformedSac = sat.getSourceOut();
+                    SourceAndConverter<?> transformedSac = sat.get();
 
                     sacs.add(transformedSac);
                 }

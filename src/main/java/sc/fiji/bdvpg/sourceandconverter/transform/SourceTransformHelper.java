@@ -43,7 +43,6 @@ import java.util.function.Consumer;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
 
-
 /**
  * Helper class that helps to apply an affinetransform to a {@link SourceAndConverter}
  *
@@ -51,7 +50,6 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  * on the spimsource class and on how you want to deal with the previous already existing
  * transforms
  */
-
 
 public class SourceTransformHelper {
     /**
@@ -133,6 +131,7 @@ public class SourceTransformHelper {
      * @param sacTR the source and a time range, combined in a single class {@link SourceAndConverterAndTimeRange}
      * @return the untransformed source, because the transformation has been canceled
      */
+    @SuppressWarnings("unused") // Because that's exactly the point of this method
     public static <T> SourceAndConverter<T> cancel(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange<T> sacTR) {
         return sacTR.sac;
     }
@@ -144,7 +143,7 @@ public class SourceTransformHelper {
      * @return the untransformed source, because the transformation has been canceled
      */
     public static <T> SourceAndConverter<T> log(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange<T> sacTR, Consumer<String> logger) {
-        System.out.println(affineTransform3D);
+        logger.accept(affineTransform3D.toString());
         return sacTR.sac;
     }
 
@@ -297,8 +296,8 @@ public class SourceTransformHelper {
      * @param sacTR source to transform
      * @return transformed source
      */
-    public static <T> SourceAndConverter<T> createNewTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange sacTR) {
-        return new SourceAffineTransformer<>(sacTR.sac, affineTransform3D).getSourceOut();
+    public static <T> SourceAndConverter<T> createNewTransformedSourceAndConverter(AffineTransform3D affineTransform3D, SourceAndConverterAndTimeRange<T> sacTR) {
+        return new SourceAffineTransformer<>(sacTR.sac, affineTransform3D).get();
     }
 
     /**

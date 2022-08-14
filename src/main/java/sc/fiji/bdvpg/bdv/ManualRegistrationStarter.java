@@ -112,7 +112,7 @@ public class ManualRegistrationStarter implements Runnable {
             // Wraps into a Transformed Source, if the source was displayed originally
             if (SourceAndConverterServices.getBdvDisplayService().getDisplaysOf(sourceAndConverter).contains(bdvHandle)) {
                 if (SourceAndConverterServices.getBdvDisplayService().isVisible(sourceAndConverter, bdvHandle)) {
-                    displayedSacsWrapped.add(new SourceAffineTransformer<>(sourceAndConverter, new AffineTransform3D()).getSourceOut());
+                    displayedSacsWrapped.add(new SourceAffineTransformer<>(sourceAndConverter, new AffineTransform3D()).get());
                     originallyDisplayedSacs.add(sourceAndConverter);
                 }
             }

@@ -51,7 +51,6 @@ import java.util.function.Function;
 public class SourceAffineTransformer<T> implements Runnable, Function<SourceAndConverter<T>, SourceAndConverter<T>> {
 
     SourceAndConverter<T> sourceIn;
-    SourceAndConverter<T> sourceOut;
 
     final AffineTransform3D at3D;
 
@@ -70,10 +69,10 @@ public class SourceAffineTransformer<T> implements Runnable, Function<SourceAndC
 
     @Override
     public void run() {
-       sourceOut = apply(sourceIn);
+
     }
 
-    public SourceAndConverter<T> getSourceOut() {
+    public SourceAndConverter<T> get() {
         return apply(sourceIn);
     }
 

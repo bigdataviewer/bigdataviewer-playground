@@ -104,7 +104,7 @@ public class ResamplingDemo {
         AffineTransform3D at3d = new AffineTransform3D();
         at3d.scale(600);
         at3d.translate(-100,-100,0);
-        SourceAndConverter<?> bigMandelbrot = new SourceAffineTransformer<>(mandelbrot, at3d).getSourceOut();
+        SourceAndConverter<?> bigMandelbrot = new SourceAffineTransformer<>(mandelbrot, at3d).get();
 
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, bigMandelbrot );
 

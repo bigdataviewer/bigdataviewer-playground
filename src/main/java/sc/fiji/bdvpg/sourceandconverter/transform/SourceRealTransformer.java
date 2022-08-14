@@ -40,7 +40,6 @@ public class SourceRealTransformer<T> implements Runnable, Function<SourceAndCon
 
     SourceAndConverter<T> sourceIn;
     final RealTransform rt;
-    SourceAndConverter<T> sourceOut;
     BoundingBoxEstimation bbest;
 
     public SourceRealTransformer(SourceAndConverter<T> src, RealTransform rt) {
@@ -68,11 +67,11 @@ public class SourceRealTransformer<T> implements Runnable, Function<SourceAndCon
 
     @Override
     public void run() {
-        sourceOut = apply(sourceIn);
+
     }
 
-    public SourceAndConverter<T> getSourceOut() {
-        return sourceOut;
+    public SourceAndConverter<T> get() {
+        return apply(sourceIn);
     }
 
     public SourceAndConverter<T> apply(SourceAndConverter<T> in) {
@@ -104,9 +103,9 @@ public class SourceRealTransformer<T> implements Runnable, Function<SourceAndCon
             vsrc.updateTransform(rt);
             vsrc.setIsTransformed(true);
             SourceAndConverter vout = new SourceAndConverter(vsrc, SourceAndConverterHelper.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));
-            return new SourceAndConverter(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in), vout);
+            return new SourceAndConverter<>(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in), vout);
         } else {
-            return new SourceAndConverter(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in));
+            return new SourceAndConverter<>(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in));
         }
     }
 }

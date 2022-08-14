@@ -72,7 +72,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Nicolas Chiaruttini, BIOP EPFL, 2020
  */
 
-public class ResampledSource< T extends NumericType<T> & NativeType<T>> implements Source<T> {
+public class ResampledSource< T extends NumericType<T>&NativeType<T>> implements Source<T> {
 
     protected static final Logger logger = LoggerFactory.getLogger(ResampledSource.class);
 
@@ -129,7 +129,7 @@ public class ResampledSource< T extends NumericType<T> & NativeType<T>> implemen
      *@param originInterpolation specifies whether the origin source should be interpolated of not in the resampling process
      *
      */
-    public ResampledSource( Source< T > source, Source< T > resamplingModel, String name, boolean reuseMipMaps, boolean cache, boolean originInterpolation, int defaultMipMapLevel ) {
+    public ResampledSource( Source< T > source, Source< ? > resamplingModel, String name, boolean reuseMipMaps, boolean cache, boolean originInterpolation, int defaultMipMapLevel ) {
         this.origin=source;
         this.resamplingModel=resamplingModel;
         this.name = name;

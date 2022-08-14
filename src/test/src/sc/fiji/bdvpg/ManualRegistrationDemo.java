@@ -130,7 +130,7 @@ public class ManualRegistrationDemo {
 
             SourceAndConverter<T> sacToTransform;
             sacToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
-            sacToTransform = new SourceAffineTransformer<>(sacToTransform, new AffineTransform3D()).getSourceOut();
+            sacToTransform = new SourceAffineTransformer<>(sacToTransform, new AffineTransform3D()).get();
             new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
 
             SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacReference);
