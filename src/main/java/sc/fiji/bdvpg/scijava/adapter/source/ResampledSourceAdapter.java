@@ -65,7 +65,7 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
 
 	@Override
 	public JsonElement serialize(SourceAndConverter sac, Type type,
-								 JsonSerializationContext jsonSerializationContext)
+		JsonSerializationContext jsonSerializationContext)
 	{
 		JsonObject obj = new JsonObject();
 

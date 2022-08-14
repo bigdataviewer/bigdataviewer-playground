@@ -41,7 +41,7 @@ import java.util.List;
  * Command which clear all sources currently contained in the SourceAndConverter
  * service
  */
-@SuppressWarnings({"unused", "CanBeFinal"})
+@SuppressWarnings({ "unused", "CanBeFinal" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu + "Clear Bdv Playground State")
 public class ClearSourceAndConverterService implements

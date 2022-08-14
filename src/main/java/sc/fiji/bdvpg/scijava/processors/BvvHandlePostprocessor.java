@@ -65,12 +65,13 @@ public class BvvHandlePostprocessor extends AbstractPostprocessorPlugin {
 		module.getOutputs().forEach((name, object) -> {
 			if (object instanceof BvvHandle) {
 				BvvHandle bvvh = (BvvHandle) object;
-				logger.debug("BvvHandle "+name+" found.");
+				logger.debug("BvvHandle " + name + " found.");
 				// ------------ Register BdvHandle in ObjectService
 				os.addObject(bvvh);
 				// ------------ Allows to remove the BdvHandle from the objectService
 				// when closed by the user
-				BvvHandleHelper.setBvvHandleCloseOperation(bvvh, cacheService, os, true);
+				BvvHandleHelper.setBvvHandleCloseOperation(bvvh, cacheService, os,
+					true);
 				// ------------ Renames window to ensure uniqueness
 				String windowTitle = BvvHandleHelper.getWindowTitle(bvvh);
 				windowTitle = BvvHandleHelper.getUniqueWindowTitle(os, windowTitle);

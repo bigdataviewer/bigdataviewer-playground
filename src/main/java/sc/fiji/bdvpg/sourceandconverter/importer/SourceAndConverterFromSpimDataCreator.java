@@ -128,7 +128,8 @@ public class SourceAndConverterFromSpimDataCreator {
 		final SpimSource<?> s = new SpimSource<>(asd, setupId, sourceName);
 
 		Converter<?, ARGBType> nonVolatileConverter = SourceAndConverterHelper
-			.createConverterRealType((RealType) (s.getType())); // IN FACT CASTING IS NECESSARY!!
+			.createConverterRealType((RealType) (s.getType())); // IN FACT CASTING IS
+																													// NECESSARY!!
 
 		if (!nonVolatile) {
 

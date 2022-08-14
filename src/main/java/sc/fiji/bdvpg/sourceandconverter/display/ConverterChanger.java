@@ -47,7 +47,8 @@ public class ConverterChanger<T> implements Runnable,
 	final Converter<? extends Volatile<T>, ARGBType> volatileConverter;
 
 	public ConverterChanger(SourceAndConverter<T> sac,
-		Converter<T, ARGBType> cvtnv, Converter<? extends Volatile<T>, ARGBType> cvt)
+		Converter<T, ARGBType> cvtnv,
+		Converter<? extends Volatile<T>, ARGBType> cvt)
 	{
 		sac_in = sac;
 		nonVolatileConverter = cvtnv;
@@ -75,10 +76,10 @@ public class ConverterChanger<T> implements Runnable,
 	public SourceAndConverter<T> apply(SourceAndConverter<T> sourceAndConverter) {
 		if (sourceAndConverter.asVolatile() != null) {
 			return new SourceAndConverter<>(sourceAndConverter.getSpimSource(),
-				nonVolatileConverter,
-					new SourceAndConverter(sourceAndConverter.asVolatile().getSpimSource(),
-					volatileConverter));
-		} else {
+				nonVolatileConverter, new SourceAndConverter(sourceAndConverter
+					.asVolatile().getSpimSource(), volatileConverter));
+		}
+		else {
 			return new SourceAndConverter<>(sourceAndConverter.getSpimSource(),
 				nonVolatileConverter);
 		}

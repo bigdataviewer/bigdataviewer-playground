@@ -36,7 +36,7 @@ import org.scijava.convert.AbstractConverter;
 import org.scijava.plugin.Plugin;
 
 @Plugin(type = org.scijava.convert.Converter.class)
-public class ColorTableToRealLUTConverterConverter< I extends ColorTable, O extends Converter>
+public class ColorTableToRealLUTConverterConverter<I extends ColorTable, O extends Converter>
 	extends AbstractConverter<I, O>
 {
 

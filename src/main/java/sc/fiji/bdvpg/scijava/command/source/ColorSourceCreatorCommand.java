@@ -42,7 +42,9 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.sourceandconverter.display.ConverterChanger;
 
-@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
@@ -64,9 +66,7 @@ public class ColorSourceCreatorCommand implements BdvPlaygroundActionCommand {
 		}
 	}
 
-	private <T> void createAndChangeConverter(
-		SourceAndConverter<T> source)
-	{
+	private <T> void createAndChangeConverter(SourceAndConverter<T> source) {
 		ARGBType imglib2color = new ARGBType(ARGBType.rgba(color.getRed(), color
 			.getGreen(), color.getBlue(), color.getAlpha()));
 
@@ -77,7 +77,8 @@ public class ColorSourceCreatorCommand implements BdvPlaygroundActionCommand {
 
 		Converter<? extends Volatile<T>, ARGBType> vc = null;
 		if (source.asVolatile() != null) {
-			vc = SourceAndConverterHelper.createConverter(source.asVolatile().getSpimSource());
+			vc = SourceAndConverterHelper.createConverter(source.asVolatile()
+				.getSpimSource());
 			assert vc != null;
 			((ColorConverter) vc).setColor(imglib2color);
 		}

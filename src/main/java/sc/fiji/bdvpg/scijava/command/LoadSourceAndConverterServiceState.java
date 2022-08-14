@@ -37,7 +37,7 @@ import sc.fiji.bdvpg.services.SourceAndConverterServiceLoader;
 
 import java.io.File;
 
-@SuppressWarnings({"unused", "CanBeFinal"})
+@SuppressWarnings({ "unused", "CanBeFinal" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
 		"Load Bdv Playground State (experimental)")

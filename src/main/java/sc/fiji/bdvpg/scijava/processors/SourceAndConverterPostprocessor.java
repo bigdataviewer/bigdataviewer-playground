@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
-@SuppressWarnings({"unused", "CanBeFinal"})
+@SuppressWarnings({ "unused", "CanBeFinal" })
 @Plugin(type = PostprocessorPlugin.class)
 public class SourceAndConverterPostprocessor extends
 	AbstractPostprocessorPlugin

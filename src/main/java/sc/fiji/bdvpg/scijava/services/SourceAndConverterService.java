@@ -101,7 +101,8 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService
  * BdvSourceAndConverterDisplayService: - Converter to ARGBType, ConverterSetup,
  * and Volatile view
  */
-@SuppressWarnings({"unused", "CanBeFinal"}) // Because parameters are set through reflection
+@SuppressWarnings({ "unused", "CanBeFinal" }) // Because parameters are set
+																							// through reflection
 @Plugin(type = Service.class, headless = true)
 public class SourceAndConverterService extends AbstractService implements
 	SciJavaService, ISourceAndConverterService
@@ -627,7 +628,9 @@ public class SourceAndConverterService extends AbstractService implements
 		logger.debug("Service initialized.");
 	}
 
-	public List<SourceAndConverter<?>> getSourceAndConvertersFromSource(Source src) {
+	public List<SourceAndConverter<?>> getSourceAndConvertersFromSource(
+		Source src)
+	{
 		return getSourceAndConverters().stream().filter(sac -> sac.getSpimSource()
 			.equals(src)).collect(Collectors.toList());
 	}
@@ -709,19 +712,23 @@ public class SourceAndConverterService extends AbstractService implements
 						registerAction(ci.getMenuPath().getLeaf().toString(), (sacs) -> {
 							// Todo : improve by sending the parameters all over again
 							for (SourceAndConverter sac : sacs) {
-								commandService.run(ci, true, input.getName(), sac);// .get(); not possible in this thread
+								commandService.run(ci, true, input.getName(), sac);// .get();
+																																		// not
+																																		// possible
+																																		// in this
+																																		// thread
 							}
 						});
-						logger.debug("Registering action entitled " + ci.getMenuPath().getLeaf().toString()
-								+ " from command " + ci.getClassName());
+						logger.debug("Registering action entitled " + ci.getMenuPath()
+							.getLeaf().toString() + " from command " + ci.getClassName());
 					}
 					if (input.getType().equals(SourceAndConverter[].class)) {
 						// It's an action which takes a SourceAndConverter List
 						registerAction(ci.getMenuPath().getLeaf().toString(), (sacs) -> {
 							commandService.run(ci, true, input.getName(), sacs);// .get();
 						});
-					    logger.debug("Registering action entitled " + ci.getMenuPath().getLeaf().toString()
-										+ " from command " + ci.getClassName());
+						logger.debug("Registering action entitled " + ci.getMenuPath()
+							.getLeaf().toString() + " from command " + ci.getClassName());
 					}
 				}
 			}
