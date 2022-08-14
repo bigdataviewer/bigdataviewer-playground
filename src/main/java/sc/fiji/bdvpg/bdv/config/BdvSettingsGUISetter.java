@@ -45,8 +45,10 @@ import org.scijava.ui.behaviour.util.Behaviours;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -108,12 +110,12 @@ public class BdvSettingsGUISetter implements Runnable {
 
     @Override
     public void run() {
-
+        /*
         try {
             UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         final SettingsPanel settings = new SettingsPanel();
 

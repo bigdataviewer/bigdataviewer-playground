@@ -29,7 +29,6 @@
 package sc.fiji.bdvpg.sourceandconverter.transform;
 
 import bdv.tools.transformation.TransformedSource;
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.Volatile;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -49,11 +48,12 @@ import java.util.function.Function;
  * the transform is passed by value, not by reference, so it cannot be updated later on
  */
 
-public class SourceAffineTransformer<T,V extends Volatile<T>> implements Runnable, Function<SourceAndConverter<T>, SourceAndConverter<T>> {
+public class SourceAffineTransformer<T> implements Runnable, Function<SourceAndConverter<T>, SourceAndConverter<T>> {
 
     SourceAndConverter<T> sourceIn;
-    final AffineTransform3D at3D;
     SourceAndConverter<T> sourceOut;
+
+    final AffineTransform3D at3D;
 
     public SourceAffineTransformer(SourceAndConverter<T> src, AffineTransform3D at3D) {
         this.sourceIn = src;

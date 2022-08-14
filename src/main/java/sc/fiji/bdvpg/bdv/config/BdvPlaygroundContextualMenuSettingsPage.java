@@ -37,8 +37,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.DropMode;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -49,7 +54,6 @@ import java.util.List;
 /**
  * TODO WIP : link keys and actions available in bigdataviewer playground
  * NOT WORKING
- * SettingsPage comes from Mastodon
  */
 
 public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {

@@ -99,7 +99,7 @@ public class AffineTransformSourceDemo {
                     at3d.scale(0.5 + Math.random() / 4, 0.5 + Math.random() / 4, 1);
                     at3d.translate(200 * x, 200 * y, 0);
 
-                    SourceAffineTransformer<?,?> sat = new SourceAffineTransformer<>(sac, at3d);
+                    SourceAffineTransformer<?> sat = new SourceAffineTransformer<>(sac, at3d);
                     sat.run();
 
                     SourceAndConverter<?> transformedSac = sat.getSourceOut();
