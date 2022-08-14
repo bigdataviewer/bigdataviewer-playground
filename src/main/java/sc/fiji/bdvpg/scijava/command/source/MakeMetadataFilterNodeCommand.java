@@ -67,7 +67,7 @@ public class MakeMetadataFilterNodeCommand implements
 			.getTreeModel(), groupname, (sac) -> {
 				if (sac_service.containsMetadata(sac, key)) {
 					Object o = sac_service.getMetadata(sac, key);
-					if ((o != null) && (o instanceof String)) {
+					if (o instanceof String) {
 						String str = (String) o;
 						return str.matches(valueregex);
 					}

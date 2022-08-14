@@ -38,6 +38,7 @@ import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 
 import java.util.Optional;
 
+@SuppressWarnings("unused")
 @Plugin(type = org.scijava.convert.Converter.class)
 public class StringToBdvHandle<I extends String, O extends BdvHandle> extends
 	AbstractConverter<I, O>

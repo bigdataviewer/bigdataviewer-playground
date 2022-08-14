@@ -42,6 +42,7 @@ import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import javax.swing.*;
 import java.awt.*;
 
+@SuppressWarnings("unused")
 @Plugin(type = InputWidget.class, priority = Priority.EXTREMELY_HIGH)
 public class SwingBdvHandleWidget extends SwingInputWidget<BdvHandle> implements
 	BdvHandleWidget<JPanel>

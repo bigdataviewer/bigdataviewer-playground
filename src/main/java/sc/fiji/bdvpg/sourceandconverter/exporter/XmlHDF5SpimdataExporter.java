@@ -137,8 +137,6 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 	final BiConsumer<SourceAndConverter<?>, BasicViewSetup> attributeAdder;
 
 	public void run() {
-		List<Source<?>> ori_srcs = sources.stream().map(
-			SourceAndConverter::getSpimSource).collect(Collectors.toList());
 
 		// Gets Concrete SpimSource
 		Map<Source<?>, Integer> idxSourceToSac = new HashMap<>();

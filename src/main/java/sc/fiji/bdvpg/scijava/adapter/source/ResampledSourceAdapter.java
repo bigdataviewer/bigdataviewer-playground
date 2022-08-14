@@ -32,7 +32,11 @@ package sc.fiji.bdvpg.scijava.adapter.source;
 import bdv.util.ResampledSource;
 import bdv.viewer.Interpolation;
 import bdv.viewer.SourceAndConverter;
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +65,7 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
 
 	@Override
 	public JsonElement serialize(SourceAndConverter sac, Type type,
-		JsonSerializationContext jsonSerializationContext)
+								 JsonSerializationContext jsonSerializationContext)
 	{
 		JsonObject obj = new JsonObject();
 

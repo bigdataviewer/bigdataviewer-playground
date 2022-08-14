@@ -109,8 +109,6 @@ public class ScijavaGsonHelper {
 						else {
 							runTimeAdapters.get(adapter.getBaseClass()).subClasses.add(adapter
 								.getRunTimeClass());
-							// builder.registerTypeHierarchyAdapter(adapter.getRunTimeClass(),
-							// adapter); // Register gson adapter
 						}
 					}
 					else {
@@ -118,8 +116,6 @@ public class ScijavaGsonHelper {
 							adapter.getBaseClass());
 						element.subClasses.add(adapter.getRunTimeClass());
 						runTimeAdapters.put(adapter.getBaseClass(), element);
-						// builder.registerTypeHierarchyAdapter(adapter.getRunTimeClass(),
-						// adapter); // Register gson adapter
 					}
 				}
 				catch (Exception e) {

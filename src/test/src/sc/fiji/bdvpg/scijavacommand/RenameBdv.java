@@ -37,6 +37,7 @@ import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 /**
  * Test command to demo {@link sc.fiji.bdvpg.scijava.BdvScijavaHelper}
  */
+@SuppressWarnings({"unused", "CanBeFinal"})
 @Plugin(type = Command.class, menuPath = "Plugins>BigDataViewer>Playground>Another sub menu>Rename Bdv Window")
 public class RenameBdv implements Command {
 

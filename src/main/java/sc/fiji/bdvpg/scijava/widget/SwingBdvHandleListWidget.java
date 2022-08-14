@@ -49,6 +49,7 @@ import java.util.stream.Collectors;
  * @author Nicolas Chiaruttini
  */
 
+@SuppressWarnings("unused")
 @Plugin(type = InputWidget.class, priority = Priority.EXTREMELY_HIGH)
 public class SwingBdvHandleListWidget extends SwingInputWidget<BdvHandle[]>
 	implements BdvHandleListWidget<JPanel>

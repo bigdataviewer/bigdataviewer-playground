@@ -77,6 +77,7 @@ public class BdvTransferHandler extends TransferHandler {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public void updateDropLocation(TransferSupport support, DropLocation dl) {
 		// Do nothing : can be extended for custom behaviour
 	}

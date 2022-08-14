@@ -157,8 +157,6 @@ public class BasicTransformerCommand implements BdvPlaygroundActionCommand {
 							SourceTransformHelper.append(at3D_global,
 								new SourceAndConverterAndTimeRange<>(sac, timepoint));
 						}
-						// SourceTransformHelper.append(at3D_global, new
-						// SourceAndConverterAndTimeRange(sac, timepoint));
 					}
 				}
 			}

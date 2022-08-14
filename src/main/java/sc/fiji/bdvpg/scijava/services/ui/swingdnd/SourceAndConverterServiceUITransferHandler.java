@@ -133,8 +133,7 @@ public class SourceAndConverterServiceUITransferHandler extends
 			}
 			DefaultMutableTreeNode[] nodes = copies.toArray(
 				new DefaultMutableTreeNode[0]);
-			/*DefaultMutableTreeNode[] nodesToRemove =
-			        toRemove.toArray(new DefaultMutableTreeNode[toRemove.size()]);*/
+
 			return new NodesTransferable(nodes);
 		}
 		return null;

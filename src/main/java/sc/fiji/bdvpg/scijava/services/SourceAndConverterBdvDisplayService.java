@@ -411,12 +411,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 		bdvh_in.getViewerPanel().state().getSources().forEach(sac -> {
 			if (!bdvSourceAndConverterService.isRegistered(sac)) {
 				bdvSourceAndConverterService.register(sac);
-				// bdvSourceAndConverterService.sacToMetadata.get(sac).put(CONVERTER_SETUP,
-				// bdvh_in.getConverterSetups().getConverterSetup(sac));
 			}
-			// TODO : if convertersetup is already present, check that it respond to
-			// this bdv,
-			// otherwise build it, or get it from bdvh_in
 		});
 	}
 

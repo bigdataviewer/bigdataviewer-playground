@@ -45,6 +45,8 @@ import java.util.Optional;
  * 
  * @param <I> a class that extends String (a bit weird TBH)
  */
+
+@SuppressWarnings("unused")
 @Plugin(type = org.scijava.convert.Converter.class)
 public class StringToBdvHandleArray<I extends String> extends
 	AbstractConverter<I, BdvHandle[]>

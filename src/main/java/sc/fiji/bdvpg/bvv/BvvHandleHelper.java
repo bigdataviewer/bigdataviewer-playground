@@ -32,7 +32,6 @@ package sc.fiji.bdvpg.bvv;
 import bvv.util.BvvHandle;
 import org.scijava.cache.CacheService;
 import org.scijava.object.ObjectService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -54,12 +53,10 @@ public class BvvHandleHelper {
 	 * @param bvvh the BigVolumeViewer window handle
 	 * @param cs SciJava cache service
 	 * @param os SciJava objet service
-	 * @param bdvsds bigdataviewer display service
 	 * @param putWindowOnTop if this window has to be put on top
 	 */
 	public static void setBvvHandleCloseOperation(BvvHandle bvvh, CacheService cs,
-		ObjectService os, SourceAndConverterBdvDisplayService bdvsds,
-		boolean putWindowOnTop)
+		ObjectService os, boolean putWindowOnTop)
 	{
 		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bvvh
 			.getViewerPanel());
@@ -69,15 +66,7 @@ public class BvvHandleHelper {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				super.windowClosing(e);
-
 				os.removeObject(bvvh);
-				// bdvsds.closeBdv(bdvh);
-				// e.getWindow().dispose();
-				/*if (Recorder.record) {
-				    // run("Select Bdv Window", "bdvh=bdv.util.BdvHandleFrame@e6c7718");
-				    String cmdrecord = "run(\"Close Bdv Window\", \"bdvh=" + getWindowTitle(bdvh) + "\");\n";
-				    Recorder.recordString(cmdrecord);
-				}*/
 			}
 
 			@Override
@@ -86,7 +75,7 @@ public class BvvHandleHelper {
 				cs.put("LAST_ACTIVE_BVVH", new WeakReference<>(bvvh));
 				// Very old school
 				/*if (Recorder.record) {
-				    // run("Select Bdv Window", "bdvh=bdv.util.BdvHandleFrame@e6c7718");
+				    // run("Select Bvv Window", "bdvh=bdv.util.BdvHandleFrame@e6c7718");
 				    String cmdrecord = "run(\"Select Bdv Window\", \"bdvh=" + getWindowTitle(bdvh) + "\");\n";
 				    Recorder.recordString(cmdrecord);
 				}*/

@@ -98,12 +98,6 @@ public class BdvSettingsGUISetter implements Runnable {
 
 	@Override
 	public void run() {
-		/*
-		try {
-		    UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}*/
 
 		final SettingsPanel settings = new SettingsPanel();
 
@@ -150,8 +144,7 @@ public class BdvSettingsGUISetter implements Runnable {
 			// ---- Bdv Playground specific bindings
 
 			InputTriggerConfig itc_bdvpg = new InputTriggerConfig();
-			// String actionScreenshotName =
-			// SourceAndConverterService.getCommandName(ScreenShotMakerCommand.class);
+
 			String actionContextMenu = "Sources Context Menu";
 
 			itc_bdvpg.add("not mapped", actionContextMenu, "bdvpg"); // default

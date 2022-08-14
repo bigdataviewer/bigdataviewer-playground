@@ -40,10 +40,8 @@ import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.sequence.Angle;
 import mpicbg.spim.data.sequence.Channel;
-import net.imglib2.Volatile;
 import net.imglib2.converter.Converter;
 import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,8 +128,7 @@ public class SourceAndConverterFromSpimDataCreator {
 		final SpimSource<?> s = new SpimSource<>(asd, setupId, sourceName);
 
 		Converter<?, ARGBType> nonVolatileConverter = SourceAndConverterHelper
-			.createConverterRealType((RealType) (s.getType())); // IN FACT THE CASTING
-																													// IS NECESSARY!!
+			.createConverterRealType((RealType) (s.getType())); // IN FACT CASTING IS NECESSARY!!
 
 		if (!nonVolatile) {
 

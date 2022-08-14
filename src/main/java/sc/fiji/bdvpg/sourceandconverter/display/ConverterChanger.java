@@ -29,7 +29,6 @@
 
 package sc.fiji.bdvpg.sourceandconverter.display;
 
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.Volatile;
 import net.imglib2.converter.Converter;
@@ -37,7 +36,7 @@ import net.imglib2.type.numeric.ARGBType;
 
 import java.util.function.Function;
 
-public class ConverterChanger<T, V extends Volatile<T>> implements Runnable,
+public class ConverterChanger<T> implements Runnable,
 	Function<SourceAndConverter<T>, SourceAndConverter<T>>
 {
 
@@ -45,10 +44,10 @@ public class ConverterChanger<T, V extends Volatile<T>> implements Runnable,
 
 	final Converter<T, ARGBType> nonVolatileConverter;
 
-	final Converter<V, ARGBType> volatileConverter;
+	final Converter<? extends Volatile<T>, ARGBType> volatileConverter;
 
 	public ConverterChanger(SourceAndConverter<T> sac,
-		Converter<T, ARGBType> cvtnv, Converter<V, ARGBType> cvt)
+		Converter<T, ARGBType> cvtnv, Converter<? extends Volatile<T>, ARGBType> cvt)
 	{
 		sac_in = sac;
 		nonVolatileConverter = cvtnv;
@@ -60,7 +59,7 @@ public class ConverterChanger<T, V extends Volatile<T>> implements Runnable,
 	{
 		sac_in = sac;
 		nonVolatileConverter = cvtnv;
-		volatileConverter = (Converter<V, ARGBType>) cvtnv;
+		volatileConverter = (Converter<? extends Volatile<T>, ARGBType>) cvtnv;
 	}
 
 	@Override
@@ -74,17 +73,14 @@ public class ConverterChanger<T, V extends Volatile<T>> implements Runnable,
 
 	@Override
 	public SourceAndConverter<T> apply(SourceAndConverter<T> sourceAndConverter) {
-		SourceAndConverter<T> sac;
 		if (sourceAndConverter.asVolatile() != null) {
-			sac = new SourceAndConverter<>(sourceAndConverter.getSpimSource(),
-				nonVolatileConverter, new SourceAndConverter<>(
-					(Source<V>) sourceAndConverter.asVolatile().getSpimSource(),
+			return new SourceAndConverter<>(sourceAndConverter.getSpimSource(),
+				nonVolatileConverter,
+					new SourceAndConverter(sourceAndConverter.asVolatile().getSpimSource(),
 					volatileConverter));
-		}
-		else {
-			sac = new SourceAndConverter<>(sourceAndConverter.getSpimSource(),
+		} else {
+			return new SourceAndConverter<>(sourceAndConverter.getSpimSource(),
 				nonVolatileConverter);
 		}
-		return sac;
 	}
 }

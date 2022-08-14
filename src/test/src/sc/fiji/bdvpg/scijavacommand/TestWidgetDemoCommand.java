@@ -36,7 +36,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.WarpedSourceDemo;
 
-
+@SuppressWarnings("unused")
 @Plugin(type = Command.class, menuPath = "Test>Sorted Sources")
 public class TestWidgetDemoCommand implements Command {
 

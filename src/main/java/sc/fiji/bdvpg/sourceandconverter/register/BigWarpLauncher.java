@@ -75,7 +75,6 @@ public class BigWarpLauncher implements Runnable {
 	// reason for BigWarp choosing this in the beginning)
 
 	final List<SourceAndConverter<?>> movingSources;
-	final List<SourceAndConverter<?>> fixedSources;
 
 	// List<SourceAndConverter> allRegisteredSources;
 
@@ -92,7 +91,6 @@ public class BigWarpLauncher implements Runnable {
 	{
 
 		this.movingSources = movingSources;
-		this.fixedSources = fixedSources;
 
 		this.bigWarpName = bigWarpName;
 

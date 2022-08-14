@@ -43,9 +43,6 @@ public class Wrapped2DTransformAs3DRealTransformRunTimeAdapter implements
 	IClassRuntimeAdapter<RealTransform, Wrapped2DTransformAs3D>
 {
 
-	protected static Logger logger = LoggerFactory.getLogger(
-		Wrapped2DTransformAs3DRealTransformRunTimeAdapter.class);
-
 	@Override
 	public Class<? extends RealTransform> getBaseClass() {
 		return RealTransform.class;

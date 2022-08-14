@@ -37,6 +37,7 @@ import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
 
 import java.io.File;
 
+@SuppressWarnings({"unused", "CanBeFinal"})
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
 		"Save Bdv Playground State (experimental)")

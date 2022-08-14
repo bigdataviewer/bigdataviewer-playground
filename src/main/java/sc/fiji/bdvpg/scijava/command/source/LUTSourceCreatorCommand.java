@@ -94,7 +94,7 @@ public class LUTSourceCreatorCommand extends DynamicCommand implements
 
 	private <T> SourceAndConverter<T> convert(SourceAndConverter<T> sac) {
 		Converter<T, ARGBType> bdvLut = cs.convert(table, Converter.class);
-		ConverterChanger<T, ?> cc = new ConverterChanger<>(sac, bdvLut);
+		ConverterChanger<T> cc = new ConverterChanger<>(sac, bdvLut);
 		cc.run();
 		return cc.get();
 	}

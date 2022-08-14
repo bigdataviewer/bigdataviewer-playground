@@ -100,7 +100,7 @@ public class Procedural3DImageShort extends RealPoint implements
 		};
 	}
 
-	public Source<UnsignedShortType> getSource(final Interval interval,
+	public Source<UnsignedShortType> getSource(
 		AffineTransform3D at3D, String name)
 	{
 		VoxelDimensions voxdimensions = new VoxelDimensions() {
@@ -127,22 +127,14 @@ public class Procedural3DImageShort extends RealPoint implements
 				return 3;
 			}
 		};
-		return getSource(interval, at3D, name, voxdimensions);
+		return getSource(at3D, name, voxdimensions);
 	}
 
-	public Source<UnsignedShortType> getSource(final Interval interval,
-		String name)
-	{
-		return getSource(interval, new AffineTransform3D(), name);
+	public Source<UnsignedShortType> getSource(String name)	{
+		return getSource(new AffineTransform3D(), name);
 	}
 
-	public Source<UnsignedShortType> getSource(String name) {
-		return getSource(new FinalInterval(new long[] { 0, 0, 0 }, new long[] { 1,
-			1, 1 }), name);
-	}
-
-	public Source<UnsignedShortType> getSource(final Interval interval,
-		AffineTransform3D at3D, String name, VoxelDimensions voxDimensions)
+	public Source<UnsignedShortType> getSource(AffineTransform3D at3D, String name, VoxelDimensions voxDimensions)
 	{
 		return new RealRandomAccessibleSource<UnsignedShortType>(getRRA(),
 			new UnsignedShortType(), name, voxDimensions)

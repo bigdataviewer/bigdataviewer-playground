@@ -61,6 +61,7 @@ import java.util.Set;
  * @author Nicolas Chiaruttini
  */
 
+@SuppressWarnings("unused")
 @Plugin(type = InputWidget.class, priority = Priority.EXTREMELY_HIGH)
 public class SwingSourceAndConverterWidget extends
 	SwingInputWidget<SourceAndConverter<?>> implements

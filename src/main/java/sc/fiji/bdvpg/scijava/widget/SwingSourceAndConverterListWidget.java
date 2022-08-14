@@ -58,6 +58,7 @@ import java.util.Set;
  * @author Nicolas Chiaruttini
  */
 
+@SuppressWarnings("unused")
 @Plugin(type = InputWidget.class)
 public class SwingSourceAndConverterListWidget extends
 	SwingInputWidget<SourceAndConverter<?>[]> implements

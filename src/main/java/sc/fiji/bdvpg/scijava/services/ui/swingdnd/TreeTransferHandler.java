@@ -90,12 +90,10 @@ public class TreeTransferHandler extends TransferHandler {
 		TreePath[] paths = tree.getSelectionPaths();
 		if (paths != null) {
 			List<DefaultMutableTreeNode> copies = new ArrayList<>();
-			List<DefaultMutableTreeNode> toRemove = new ArrayList<>();
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) paths[0]
 				.getLastPathComponent();
 			DefaultMutableTreeNode copy = copy(node);
 			copies.add(copy);
-			toRemove.add(node);
 			for (int i = 1; i < paths.length; i++) {
 				DefaultMutableTreeNode next = (DefaultMutableTreeNode) paths[i]
 					.getLastPathComponent();
@@ -109,13 +107,11 @@ public class TreeTransferHandler extends TransferHandler {
 				}
 				else { // sibling
 					copies.add(copy(next));
-					toRemove.add(next);
 				}
 			}
 			DefaultMutableTreeNode[] nodes = copies.toArray(
 				new DefaultMutableTreeNode[0]);
-			// DefaultMutableTreeNode[] nodesToRemove =
-			// toRemove.toArray(new DefaultMutableTreeNode[toRemove.size()]);
+
 			return new NodesTransferable(nodes);
 		}
 		return null;

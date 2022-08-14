@@ -101,7 +101,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService
  * BdvSourceAndConverterDisplayService: - Converter to ARGBType, ConverterSetup,
  * and Volatile view
  */
-
+@SuppressWarnings({"unused", "CanBeFinal"}) // Because parameters are set through reflection
 @Plugin(type = Service.class, headless = true)
 public class SourceAndConverterService extends AbstractService implements
 	SciJavaService, ISourceAndConverterService
@@ -125,6 +125,12 @@ public class SourceAndConverterService extends AbstractService implements
 	 */
 	@Parameter
 	ScriptService scriptService;
+
+	@Parameter
+	CommandService commandService;
+
+	@Parameter
+	IEntityHandlerService entityHandlerService;
 
 	/**
 	 * Display service : cannot be set through Parameter annotation due to
@@ -252,9 +258,6 @@ public class SourceAndConverterService extends AbstractService implements
 		}
 	}
 
-	@Parameter
-	IEntityHandlerService entityHandlerService;
-
 	/**
 	 * TODO nice documentation about {@link EntityHandler} and scijava extension
 	 * mechanism
@@ -334,29 +337,27 @@ public class SourceAndConverterService extends AbstractService implements
 
 					// createRealTypeSourceAndConverter( nonVolatile, setupId, sourceName
 					// );
-					final SpimSource s = new SpimSource<>(asd, setupId, sourceName);
+					final SpimSource<?> s = new SpimSource<>(asd, setupId, sourceName);
 
-					Converter nonVolatileConverter = SourceAndConverterHelper
-						.createConverterRealType((RealType) s.getType()); // IN FACT THE
-																															// CASTING IS
-																															// NECESSARY!!
+					// CASTING to RealType IS NECESSARY!!
+					Converter<?, ARGBType> nonVolatileConverter = SourceAndConverterHelper
+						.createConverterRealType((RealType) s.getType());
 
 					if (!nonVolatile) {
 
 						final VolatileSpimSource vs = new VolatileSpimSource<>(asd, setupId,
 							sourceName);
 
-						Converter volatileConverter = SourceAndConverterHelper
+						Converter<?, ARGBType> volatileConverter = SourceAndConverterHelper
 							.createConverterRealType((RealType) vs.getType());
 
-						setupIdToSourceAndConverter.put(setupId, new SourceAndConverter<>(s,
-							nonVolatileConverter, new SourceAndConverter<>(vs,
+						setupIdToSourceAndConverter.put(setupId, new SourceAndConverter(s,
+							nonVolatileConverter, new SourceAndConverter(vs,
 								volatileConverter)));
 
 					}
 					else {
-
-						setupIdToSourceAndConverter.put(setupId, new SourceAndConverter<>(s,
+						setupIdToSourceAndConverter.put(setupId, new SourceAndConverter(s,
 							nonVolatileConverter));
 					}
 
@@ -368,10 +369,10 @@ public class SourceAndConverterService extends AbstractService implements
 						sourceName);
 					final SpimSource s = new SpimSource<>(asd, setupId, sourceName);
 
-					Converter nonVolatileConverter = SourceAndConverterHelper
+					Converter<?, ARGBType> nonVolatileConverter = SourceAndConverterHelper
 						.createConverterARGBType(s);
 
-					Converter volatileConverter = SourceAndConverterHelper
+					Converter<?, ARGBType> volatileConverter = SourceAndConverterHelper
 						.createConverterARGBType(vs);
 					setupIdToSourceAndConverter.put(setupId, new SourceAndConverter<>(s,
 						nonVolatileConverter, new SourceAndConverter<>(vs,
@@ -626,7 +627,7 @@ public class SourceAndConverterService extends AbstractService implements
 		logger.debug("Service initialized.");
 	}
 
-	public List<SourceAndConverter> getSourceAndConvertersFromSource(Source src) {
+	public List<SourceAndConverter<?>> getSourceAndConvertersFromSource(Source src) {
 		return getSourceAndConverters().stream().filter(sac -> sac.getSpimSource()
 			.equals(src)).collect(Collectors.toList());
 	}
@@ -688,9 +689,6 @@ public class SourceAndConverterService extends AbstractService implements
 
 	}
 
-	@Parameter
-	CommandService commandService;
-
 	public void registerScijavaCommandInfo(CommandInfo ci) {
 		int nCountSourceAndConverter = 0;
 		int nCountSourceAndConverterList = 0;
@@ -711,28 +709,19 @@ public class SourceAndConverterService extends AbstractService implements
 						registerAction(ci.getMenuPath().getLeaf().toString(), (sacs) -> {
 							// Todo : improve by sending the parameters all over again
 							for (SourceAndConverter sac : sacs) {
-								commandService.run(ci, true, input.getName(), sac);// .get();
-																																		// TODO
-																																		// understand
-																																		// why get
-																																		// is
-																																		// impossible
+								commandService.run(ci, true, input.getName(), sac);// .get(); not possible in this thread
 							}
 						});
-						// log.accept("Registering action entitled " +
-						// ci.getMenuPath().getLeaf().toString() + " from command " +
-						// ci.getClassName());
-
+						logger.debug("Registering action entitled " + ci.getMenuPath().getLeaf().toString()
+								+ " from command " + ci.getClassName());
 					}
 					if (input.getType().equals(SourceAndConverter[].class)) {
 						// It's an action which takes a SourceAndConverter List
 						registerAction(ci.getMenuPath().getLeaf().toString(), (sacs) -> {
 							commandService.run(ci, true, input.getName(), sacs);// .get();
 						});
-
-						// log.accept("Registering action entitled " +
-						// ci.getMenuPath().getLeaf().toString() + " from command " +
-						// ci.getClassName());
+					    logger.debug("Registering action entitled " + ci.getMenuPath().getLeaf().toString()
+										+ " from command " + ci.getClassName());
 					}
 				}
 			}

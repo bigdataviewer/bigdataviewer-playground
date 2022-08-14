@@ -51,7 +51,7 @@ public class SourcesDuplicatorCommand implements BdvPlaygroundActionCommand {
 	public void run() {
 
 		for (SourceAndConverter<?> sac : sacs) {
-			new SourceAndConverterDuplicator(sac).get();
+			new SourceAndConverterDuplicator<>(sac).get();
 		}
 
 	}

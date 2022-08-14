@@ -45,6 +45,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import java.awt.Dimension;
 
+@SuppressWarnings("unused")
 @Plugin(type = InputWidget.class, priority = Priority.EXTREMELY_HIGH)
 public class SwingBvvHandleWidget extends SwingInputWidget<BvvHandle> implements
 	BvvHandleWidget<JPanel>

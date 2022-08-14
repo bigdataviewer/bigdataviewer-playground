@@ -55,7 +55,7 @@ public class SourceAndConverterDuplicator<T> implements Runnable,
 
 	@Override
 	public SourceAndConverter<T> apply(SourceAndConverter<T> sourceAndConverter) {
-		SourceAndConverter<?> sac;
+		SourceAndConverter<T> sac;
 		if (sourceAndConverter.asVolatile() != null) {
 			sac = new SourceAndConverter<>(sourceAndConverter.getSpimSource(),
 				SourceAndConverterHelper.cloneConverter(sourceAndConverter
@@ -70,7 +70,7 @@ public class SourceAndConverterDuplicator<T> implements Runnable,
 					.getConverter(), sourceAndConverter));
 		}
 
-		return (SourceAndConverter<T>) sac;
+		return sac;
 	}
 
 }

@@ -65,6 +65,7 @@ import java.awt.GridLayout;
  * @author Nicolas Chiaruttini
  */
 
+@SuppressWarnings("unused")
 @Plugin(type = InputWidget.class)
 public class SwingSourceAndConverterSortedListWidget extends
 	SwingInputWidget<SourceAndConverter<?>[]> implements

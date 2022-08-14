@@ -71,7 +71,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -239,12 +238,7 @@ public class SourceAndConverterHelper {
 	}
 
 	public static ConverterSetup createConverterSetup(SourceAndConverter<?> sac) {
-		return createConverterSetup(sac, -1);
-	}
 
-	public static ConverterSetup createConverterSetup(SourceAndConverter<?> sac,
-		int legacyId)
-	{
 		if (sac.getConverter() instanceof ColorConverter) {
 			return BigDataViewer.createConverterSetup(sac, -1);
 		}

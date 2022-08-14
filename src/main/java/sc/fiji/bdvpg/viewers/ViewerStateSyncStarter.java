@@ -43,7 +43,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ViewerStateSyncStarter implements Runnable {
 
-	BdvHandle[] bdvHandles;
 	/**
 	 * Array of BdvHandles to synchronize
 	 */

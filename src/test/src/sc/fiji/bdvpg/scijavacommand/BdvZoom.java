@@ -38,6 +38,7 @@ import org.scijava.widget.Button;
 /**
  * Test command to demo {@link sc.fiji.bdvpg.scijava.BdvScijavaHelper}
  */
+@SuppressWarnings({"unused", "CanBeFinal"})
 @Plugin(type = Command.class, menuPath = "Plugins>BigDataViewer>Playground>Zoom Controls")
 public class BdvZoom extends InteractiveCommand {
 

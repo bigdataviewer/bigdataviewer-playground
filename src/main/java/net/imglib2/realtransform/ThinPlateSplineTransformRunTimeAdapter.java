@@ -42,9 +42,6 @@ public class ThinPlateSplineTransformRunTimeAdapter implements
 	IClassRuntimeAdapter<RealTransform, ThinplateSplineTransform>
 {
 
-	protected static Logger logger = LoggerFactory.getLogger(
-		ThinPlateSplineTransformRunTimeAdapter.class);
-
 	@Override
 	public Class<? extends RealTransform> getBaseClass() {
 		return RealTransform.class;

@@ -43,6 +43,7 @@ import javax.swing.tree.TreePath;
  * @param <I> String class TODO understand this
  */
 
+@SuppressWarnings("unused")
 @Plugin(type = org.scijava.convert.Converter.class)
 public class StringToSourceAndConverterArray<I extends String> extends
 	AbstractConverter<I, SourceAndConverter<?>[]>
