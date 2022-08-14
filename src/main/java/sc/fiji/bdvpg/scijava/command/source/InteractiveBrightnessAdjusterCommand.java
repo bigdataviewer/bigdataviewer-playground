@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
@@ -42,90 +43,108 @@ import java.text.DecimalFormat;
 import static org.scijava.ItemVisibility.MESSAGE;
 
 /**
- *
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, initializer = "init",  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Brightness (Interactive)")
-public class InteractiveBrightnessAdjusterCommand extends InteractiveCommand implements BdvPlaygroundActionCommand {
+@Plugin(type = BdvPlaygroundActionCommand.class, initializer = "init",
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"Sources>Display>Set Sources Brightness (Interactive)")
+public class InteractiveBrightnessAdjusterCommand extends InteractiveCommand
+	implements BdvPlaygroundActionCommand
+{
 
-    @Parameter(label = "Sources :", required = false, description = "Label the sources controlled by this window", persist = false)
-    String customsourcelabel = "Label your sources here";
+	@Parameter(label = "Sources :", required = false,
+		description = "Label the sources controlled by this window",
+		persist = false)
+	String customsourcelabel = "Label your sources here";
 
-    @Parameter(label = "Select Source(s)")
-    SourceAndConverter<?>[] sacs;
+	@Parameter(label = "Select Source(s)")
+	SourceAndConverter<?>[] sacs;
 
-    @Parameter(visibility=MESSAGE, required=false, style = "text field")
-    String message = "Display Range [ NaN - NaN ]";
+	@Parameter(visibility = MESSAGE, required = false, style = "text field")
+	String message = "Display Range [ NaN - NaN ]";
 
-    @Parameter(callback = "updateMessage")
-    double min;
+	@Parameter(callback = "updateMessage")
+	double min;
 
-    @Parameter(callback = "updateMessage")
-    double max;
+	@Parameter(callback = "updateMessage")
+	double max;
 
-    @Parameter(label = "relative Minimum", style = "slider", min = "0", max = "1000", callback = "updateMessage")
-    double minslider;
+	@Parameter(label = "relative Minimum", style = "slider", min = "0",
+		max = "1000", callback = "updateMessage")
+	double minslider;
 
-    @Parameter(label = "relative Maximum", style = "slider", min = "0", max = "1000", callback = "updateMessage")
-    double maxslider;
+	@Parameter(label = "relative Maximum", style = "slider", min = "0",
+		max = "1000", callback = "updateMessage")
+	double maxslider;
 
-    boolean firstTimeCalled = true;
+	boolean firstTimeCalled = true;
 
-    boolean secondTimeCalled = true;
+	boolean secondTimeCalled = true;
 
-    public void run() {
-        if ((!firstTimeCalled)&&(!secondTimeCalled)) {
-            double minValue = min + minslider /1000.0*(max-min);
-            double maxValue = min + maxslider /1000.0*(max-min);
-            for (SourceAndConverter<?> source:sacs) {
-                new BrightnessAdjuster(source, minValue, maxValue).run();
-            }
-        } else {
-            init();
-            if (firstTimeCalled) {
-                firstTimeCalled = false;
-            } else if (secondTimeCalled) {
-                secondTimeCalled = false;
-            }
-        }
-    }
+	public void run() {
+		if ((!firstTimeCalled) && (!secondTimeCalled)) {
+			double minValue = min + minslider / 1000.0 * (max - min);
+			double maxValue = min + maxslider / 1000.0 * (max - min);
+			for (SourceAndConverter<?> source : sacs) {
+				new BrightnessAdjuster(source, minValue, maxValue).run();
+			}
+		}
+		else {
+			init();
+			if (firstTimeCalled) {
+				firstTimeCalled = false;
+			}
+			else if (secondTimeCalled) {
+				secondTimeCalled = false;
+			}
+		}
+	}
 
-    final DecimalFormat formatter = new DecimalFormat("#.###");
+	final DecimalFormat formatter = new DecimalFormat("#.###");
 
-    public void updateMessage() {
-        formatter.setMinimumFractionDigits(3);
-        double minValue = min + minslider /1000.0*(max-min);
-        double maxValue = min + maxslider /1000.0*(max-min);
-        message = "Display Range ["+ formatter.format(minValue) +" - "+ formatter.format(maxValue) +"]";
-    }
+	public void updateMessage() {
+		formatter.setMinimumFractionDigits(3);
+		double minValue = min + minslider / 1000.0 * (max - min);
+		double maxValue = min + maxslider / 1000.0 * (max - min);
+		message = "Display Range [" + formatter.format(minValue) + " - " + formatter
+			.format(maxValue) + "]";
+	}
 
+	public void init() {
+		if (sacs != null) if (sacs.length > 0) {
+			double minSource = SourceAndConverterServices
+				.getSourceAndConverterService().getConverterSetup(sacs[0])
+				.getDisplayRangeMin();
+			double maxSource = SourceAndConverterServices
+				.getSourceAndConverterService().getConverterSetup(sacs[0])
+				.getDisplayRangeMax();
 
-    public void init() {
-        if (sacs!=null)
-        if (sacs.length>0) {
-            double minSource = SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(sacs[0]).getDisplayRangeMin();
-            double maxSource = SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(sacs[0]).getDisplayRangeMax();
-
-            if (minSource>=0) {
-                min = 0;
-            } else {
-                min = minSource;
-            }
-            if (maxSource>65535) {
-                max = maxSource;
-            } else if (maxSource>255) {
-                max = 65535;
-            } else if (maxSource>1){
-                max = 255;
-            } else {
-                max = 1;
-            }
-            minslider = (minSource-min)/(max-min)*1000;
-            maxslider = (maxSource-min)/(max-min)*1000;
-            message = "Display Range [ NaN - NaN ]";
-        }
-    }
+			if (minSource >= 0) {
+				min = 0;
+			}
+			else {
+				min = minSource;
+			}
+			if (maxSource > 65535) {
+				max = maxSource;
+			}
+			else if (maxSource > 255) {
+				max = 65535;
+			}
+			else if (maxSource > 1) {
+				max = 255;
+			}
+			else {
+				max = 1;
+			}
+			minslider = (minSource - min) / (max - min) * 1000;
+			maxslider = (maxSource - min) / (max - min) * 1000;
+			message = "Display Range [ NaN - NaN ]";
+		}
+	}
 }

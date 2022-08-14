@@ -26,33 +26,41 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.services;
 
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 /**
- * Static methods to access BdvSourceAndConverterService and BdvSourceAndConverterDisplayService
+ * Static methods to access BdvSourceAndConverterService and
+ * BdvSourceAndConverterDisplayService
  */
 
-public class SourceAndConverterServices
-{
-    private static ISourceAndConverterService sourceAndConverterService;
+public class SourceAndConverterServices {
 
-    private static SourceAndConverterBdvDisplayService sourceAndConverterBdvDisplayService;
+	private static ISourceAndConverterService sourceAndConverterService;
 
-    public static ISourceAndConverterService getSourceAndConverterService() {
-        return sourceAndConverterService;
-    }
+	private static SourceAndConverterBdvDisplayService sourceAndConverterBdvDisplayService;
 
-    public static void setSourceAndConverterService(ISourceAndConverterService sourceAndConverterService) {
-        SourceAndConverterServices.sourceAndConverterService = sourceAndConverterService;
-    }
+	public static ISourceAndConverterService getSourceAndConverterService() {
+		return sourceAndConverterService;
+	}
 
-    public static SourceAndConverterBdvDisplayService getBdvDisplayService() {
-        return sourceAndConverterBdvDisplayService;
-    }
+	public static void setSourceAndConverterService(
+		ISourceAndConverterService sourceAndConverterService)
+	{
+		SourceAndConverterServices.sourceAndConverterService =
+			sourceAndConverterService;
+	}
 
-    public static void setBdvDisplayService(SourceAndConverterBdvDisplayService sourceAndConverterBdvDisplayService) {
-        SourceAndConverterServices.sourceAndConverterBdvDisplayService = sourceAndConverterBdvDisplayService;
-    }
+	public static SourceAndConverterBdvDisplayService getBdvDisplayService() {
+		return sourceAndConverterBdvDisplayService;
+	}
+
+	public static void setBdvDisplayService(
+		SourceAndConverterBdvDisplayService sourceAndConverterBdvDisplayService)
+	{
+		SourceAndConverterServices.sourceAndConverterBdvDisplayService =
+			sourceAndConverterBdvDisplayService;
+	}
 }

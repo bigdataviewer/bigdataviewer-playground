@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import org.scijava.plugin.Parameter;
@@ -39,67 +40,77 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 import java.util.Arrays;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Set BDV window (default)",
-        description = "Set preferences of Bdv Window")
-public class BdvSetDefaultViewerSettingsCommand implements BdvPlaygroundActionCommand{
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Set BDV window (default)",
+	description = "Set preferences of Bdv Window")
+public class BdvSetDefaultViewerSettingsCommand implements
+	BdvPlaygroundActionCommand
+{
 
-    @Parameter(label = "Click this checkbox to ignore all parameters and reset the default viewer", persist = false)
-    boolean resetToDefault = false;
+	@Parameter(
+		label = "Click this checkbox to ignore all parameters and reset the default viewer",
+		persist = false)
+	boolean resetToDefault = false;
 
-    @Parameter
-    int width = 640;
+	@Parameter
+	int width = 640;
 
-    @Parameter
-    int height = 480;
+	@Parameter
+	int height = 480;
 
-    @Parameter
-    String screenscales = "1, 0.75, 0.5, 0.25, 0.125";
+	@Parameter
+	String screenscales = "1, 0.75, 0.5, 0.25, 0.125";
 
-    @Parameter
-    long targetrenderms = 30;// * 1000000l;
+	@Parameter
+	long targetrenderms = 30;// * 1000000l;
 
-    @Parameter
-    int numrenderingthreads = 3;
+	@Parameter
+	int numrenderingthreads = 3;
 
-    @Parameter
-    int numsourcegroups = 10;
+	@Parameter
+	int numsourcegroups = 10;
 
-    @Parameter
-    String frametitle = "BigDataViewer";
+	@Parameter
+	String frametitle = "BigDataViewer";
 
-    @Parameter
-    boolean is2d = false;
+	@Parameter
+	boolean is2d = false;
 
-    @Parameter
-    boolean interpolate = false;
+	@Parameter
+	boolean interpolate = false;
 
-    @Parameter
-    int numtimepoints = 1;
+	@Parameter
+	int numtimepoints = 1;
 
-    @Parameter
-    SourceAndConverterBdvDisplayService sacDisplayService;
+	@Parameter
+	SourceAndConverterBdvDisplayService sacDisplayService;
 
-    @Override
-    public void run() {
-        if (resetToDefault) {
-            IBdvSupplier bdvSupplier = new DefaultBdvSupplier(new SerializableBdvOptions());
-            sacDisplayService.setDefaultBdvSupplier(bdvSupplier);
-        } else {
-            SerializableBdvOptions options = new SerializableBdvOptions();
-            options.frameTitle = frametitle;
-            options.is2D = is2d;
-            options.numRenderingThreads = numrenderingthreads;
-            options.screenScales = Arrays.stream(screenscales.split(",")).mapToDouble(Double::parseDouble).toArray();
-            options.height = height;
-            options.width = width;
-            options.numSourceGroups = numsourcegroups;
-            options.numTimePoints = numtimepoints;
-            options.interpolate = interpolate;
-            IBdvSupplier bdvSupplier = new DefaultBdvSupplier(options);
-            sacDisplayService.setDefaultBdvSupplier(bdvSupplier);
-        }
+	@Override
+	public void run() {
+		if (resetToDefault) {
+			IBdvSupplier bdvSupplier = new DefaultBdvSupplier(
+				new SerializableBdvOptions());
+			sacDisplayService.setDefaultBdvSupplier(bdvSupplier);
+		}
+		else {
+			SerializableBdvOptions options = new SerializableBdvOptions();
+			options.frameTitle = frametitle;
+			options.is2D = is2d;
+			options.numRenderingThreads = numrenderingthreads;
+			options.screenScales = Arrays.stream(screenscales.split(",")).mapToDouble(
+				Double::parseDouble).toArray();
+			options.height = height;
+			options.width = width;
+			options.numSourceGroups = numsourcegroups;
+			options.numTimePoints = numtimepoints;
+			options.interpolate = interpolate;
+			IBdvSupplier bdvSupplier = new DefaultBdvSupplier(options);
+			sacDisplayService.setDefaultBdvSupplier(bdvSupplier);
+		}
 
-    }
+	}
 }

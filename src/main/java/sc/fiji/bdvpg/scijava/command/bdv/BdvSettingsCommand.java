@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import org.scijava.plugin.Plugin;
@@ -33,17 +34,21 @@ import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Preferences - Set (Key) Bindings",
-        description = "Sets actions linked to key / mouse event in BDV")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"BDV>BDV - Preferences - Set (Key) Bindings",
+	description = "Sets actions linked to key / mouse event in BDV")
 
 public class BdvSettingsCommand implements BdvPlaygroundActionCommand {
 
-    @Override
-    public void run() {
-        String yamlLocation = BdvSettingsGUISetter.defaultBdvPgSettingsRootPath;
-        new BdvSettingsGUISetter(yamlLocation).run();
-    }
+	@Override
+	public void run() {
+		String yamlLocation = BdvSettingsGUISetter.defaultBdvPgSettingsRootPath;
+		new BdvSettingsGUISetter(yamlLocation).run();
+	}
 
 }

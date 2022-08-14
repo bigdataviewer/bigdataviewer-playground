@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.bdv.supplier;
 
 import bdv.util.BdvFunctions;
@@ -41,29 +42,32 @@ import net.imglib2.type.numeric.integer.ByteType;
 
 public class DefaultBdvSupplier implements IBdvSupplier {
 
-    public final SerializableBdvOptions sOptions;
+	public final SerializableBdvOptions sOptions;
 
-    public DefaultBdvSupplier(SerializableBdvOptions sOptions) {
-        this.sOptions = sOptions;
-    }
+	public DefaultBdvSupplier(SerializableBdvOptions sOptions) {
+		this.sOptions = sOptions;
+	}
 
-    @Override
-    public BdvHandle get() {
-        BdvOptions options = sOptions.getBdvOptions();
+	@Override
+	public BdvHandle get() {
+		BdvOptions options = sOptions.getBdvOptions();
 
-        // create dummy image to instantiate the BDV
-        ArrayImg<ByteType, ByteArray> dummyImg = ArrayImgs.bytes(2, 2, 2);
-        options = options.sourceTransform( new AffineTransform3D() );
-        BdvStackSource<ByteType> bss = BdvFunctions.show( dummyImg, "dummy", options );
-        BdvHandle bdv = bss.getBdvHandle();
+		// create dummy image to instantiate the BDV
+		ArrayImg<ByteType, ByteArray> dummyImg = ArrayImgs.bytes(2, 2, 2);
+		options = options.sourceTransform(new AffineTransform3D());
+		BdvStackSource<ByteType> bss = BdvFunctions.show(dummyImg, "dummy",
+			options);
+		BdvHandle bdv = bss.getBdvHandle();
 
-        if ( sOptions.interpolate ) bdv.getViewerPanel().setInterpolation( Interpolation.NLINEAR );
+		if (sOptions.interpolate) bdv.getViewerPanel().setInterpolation(
+			Interpolation.NLINEAR);
 
-        // remove dummy image
-        bdv.getViewerPanel().state().removeSource(bdv.getViewerPanel().state().getCurrentSource());
-        bdv.getViewerPanel().setNumTimepoints( sOptions.numTimePoints );
+		// remove dummy image
+		bdv.getViewerPanel().state().removeSource(bdv.getViewerPanel().state()
+			.getCurrentSource());
+		bdv.getViewerPanel().setNumTimepoints(sOptions.numTimePoints);
 
-        return bdv;
-    }
+		return bdv;
+	}
 
 }

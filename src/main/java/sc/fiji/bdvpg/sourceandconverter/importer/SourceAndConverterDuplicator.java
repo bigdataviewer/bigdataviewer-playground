@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.sourceandconverter.importer;
 
 import bdv.viewer.SourceAndConverter;
@@ -33,40 +34,43 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Function;
 
-public class SourceAndConverterDuplicator<T> implements Runnable, Function<SourceAndConverter<T>, SourceAndConverter<T>> {
+public class SourceAndConverterDuplicator<T> implements Runnable,
+	Function<SourceAndConverter<T>, SourceAndConverter<T>>
+{
 
-    final SourceAndConverter<T> sac_in;
+	final SourceAndConverter<T> sac_in;
 
-    public SourceAndConverterDuplicator(SourceAndConverter<T> sac) {
-        sac_in = sac;
-    }
+	public SourceAndConverterDuplicator(SourceAndConverter<T> sac) {
+		sac_in = sac;
+	}
 
-    @Override
-    public void run() {
-        // Nothing
-    }
+	@Override
+	public void run() {
+		// Nothing
+	}
 
-    public SourceAndConverter<T> get() {
-        return apply(sac_in);
-    }
+	public SourceAndConverter<T> get() {
+		return apply(sac_in);
+	}
 
-    @Override
-    public SourceAndConverter<T> apply(SourceAndConverter<T> sourceAndConverter) {
-        SourceAndConverter<?> sac;
-        if (sourceAndConverter.asVolatile() != null) {
-            sac = new SourceAndConverter<>(
-                    sourceAndConverter.getSpimSource(),
-                    SourceAndConverterHelper.cloneConverter(sourceAndConverter.getConverter(), sourceAndConverter),
-                    new SourceAndConverter(sourceAndConverter.asVolatile().getSpimSource(),
-                            SourceAndConverterHelper.cloneConverter(sourceAndConverter.asVolatile().getConverter(), sourceAndConverter.asVolatile()))
-            );
-        } else {
-            sac = new SourceAndConverter<>(
-                    sourceAndConverter.getSpimSource(),
-                    SourceAndConverterHelper.cloneConverter(sourceAndConverter.getConverter(), sourceAndConverter));
-        }
+	@Override
+	public SourceAndConverter<T> apply(SourceAndConverter<T> sourceAndConverter) {
+		SourceAndConverter<?> sac;
+		if (sourceAndConverter.asVolatile() != null) {
+			sac = new SourceAndConverter<>(sourceAndConverter.getSpimSource(),
+				SourceAndConverterHelper.cloneConverter(sourceAndConverter
+					.getConverter(), sourceAndConverter), new SourceAndConverter(
+						sourceAndConverter.asVolatile().getSpimSource(),
+						SourceAndConverterHelper.cloneConverter(sourceAndConverter
+							.asVolatile().getConverter(), sourceAndConverter.asVolatile())));
+		}
+		else {
+			sac = new SourceAndConverter<>(sourceAndConverter.getSpimSource(),
+				SourceAndConverterHelper.cloneConverter(sourceAndConverter
+					.getConverter(), sourceAndConverter));
+		}
 
-        return (SourceAndConverter<T>) sac;
-    }
+		return (SourceAndConverter<T>) sac;
+	}
 
 }

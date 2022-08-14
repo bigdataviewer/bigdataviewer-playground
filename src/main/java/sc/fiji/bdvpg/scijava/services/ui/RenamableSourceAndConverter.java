@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.services.ui;
 
 import bdv.viewer.SourceAndConverter;
@@ -35,11 +36,14 @@ import bdv.viewer.SourceAndConverter;
  */
 
 public class RenamableSourceAndConverter {
-    public final SourceAndConverter<?> sac;
-    public RenamableSourceAndConverter(SourceAndConverter<?> sac) {
-        this.sac = sac;
-    }
-    public String toString() {
-        return sac.getSpimSource().getName();
-    }
+
+	public final SourceAndConverter<?> sac;
+
+	public RenamableSourceAndConverter(SourceAndConverter<?> sac) {
+		this.sac = sac;
+	}
+
+	public String toString() {
+		return sac.getSpimSource().getName();
+	}
 }

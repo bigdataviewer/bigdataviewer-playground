@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.widget;
 
 import bdv.viewer.SourceAndConverter;
@@ -57,161 +58,170 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 
 /**
- * Swing implementation of {@link SourceAndConverterListWidget}
- *
- * This widget allows the user to control the order of the sources
- * that are selected, contrary to the other widget {@link SwingSourceAndConverterListWidget}
+ * Swing implementation of {@link SourceAndConverterListWidget} This widget
+ * allows the user to control the order of the sources that are selected,
+ * contrary to the other widget {@link SwingSourceAndConverterListWidget}
  *
  * @author Nicolas Chiaruttini
  */
 
 @Plugin(type = InputWidget.class)
-public class SwingSourceAndConverterSortedListWidget extends SwingInputWidget<SourceAndConverter<?>[]> implements
-        SourceAndConverterListWidget<JPanel> {
+public class SwingSourceAndConverterSortedListWidget extends
+	SwingInputWidget<SourceAndConverter<?>[]> implements
+	SourceAndConverterListWidget<JPanel>
+{
 
-    @Override
-    protected void doRefresh() {
-    }
+	@Override
+	protected void doRefresh() {}
 
-    @Override
-    public boolean supports(final WidgetModel model) {
-        return (model.getItem().getWidgetStyle().contains("sorted")) && (super.supports(model)) && (model.isType(SourceAndConverter[].class));
-    }
+	@Override
+	public boolean supports(final WidgetModel model) {
+		return (model.getItem().getWidgetStyle().contains("sorted")) &&
+			(super.supports(model)) && (model.isType(SourceAndConverter[].class));
+	}
 
-    @Override
-    public SourceAndConverter<?>[] getValue() {
-        return getSelectedSourceAndConverters();
-    }
+	@Override
+	public SourceAndConverter<?>[] getValue() {
+		return getSelectedSourceAndConverters();
+	}
 
-    @Parameter
+	@Parameter
 	SourceAndConverterService bss;
 
-    public SourceAndConverter<?>[] getSelectedSourceAndConverters() {
-       int nSources = sortedSourceList.getModel().getSize();
-       SourceAndConverter<?>[] selection = new SourceAndConverter[nSources];
-       for (int i=0; i<nSources; i++) {
-           selection[i] = (sortedSourceList.getModel().getElementAt(i)).sac;
-       }
-       return selection;
-    }
+	public SourceAndConverter<?>[] getSelectedSourceAndConverters() {
+		int nSources = sortedSourceList.getModel().getSize();
+		SourceAndConverter<?>[] selection = new SourceAndConverter[nSources];
+		for (int i = 0; i < nSources; i++) {
+			selection[i] = (sortedSourceList.getModel().getElementAt(i)).sac;
+		}
+		return selection;
+	}
 
-    JTree tree;
-    JList<RenamableSourceAndConverter> sortedSourceList;
+	JTree tree;
+	JList<RenamableSourceAndConverter> sortedSourceList;
 
-    @Override
-    public void set(final WidgetModel model) {
-        super.set(model);
-        getComponent().setLayout(new BorderLayout());
-        JPanel innerPanel = new JPanel(new BorderLayout());
-        innerPanel.setLayout(new GridLayout(0,2));
-        getComponent().add(innerPanel, BorderLayout.CENTER);
-        tree = new JTree(bss.getUI().getTreeModel());
-        tree.setCellRenderer(new SourceAndConverterTreeCellRenderer());
-        tree.setDragEnabled(true);
-        tree.setTransferHandler(new SourceAndConverterServiceUITransferHandler());
-        JScrollPane scrollPaneTree = new JScrollPane(tree);
-        scrollPaneTree.setPreferredSize(new Dimension(350, 200));
-        innerPanel.add(scrollPaneTree);
-        model.setValue(null);
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
+		getComponent().setLayout(new BorderLayout());
+		JPanel innerPanel = new JPanel(new BorderLayout());
+		innerPanel.setLayout(new GridLayout(0, 2));
+		getComponent().add(innerPanel, BorderLayout.CENTER);
+		tree = new JTree(bss.getUI().getTreeModel());
+		tree.setCellRenderer(new SourceAndConverterTreeCellRenderer());
+		tree.setDragEnabled(true);
+		tree.setTransferHandler(new SourceAndConverterServiceUITransferHandler());
+		JScrollPane scrollPaneTree = new JScrollPane(tree);
+		scrollPaneTree.setPreferredSize(new Dimension(350, 200));
+		innerPanel.add(scrollPaneTree);
+		model.setValue(null);
 
-        sortedSourceList = new JList<>();
-        sortedSourceList.setDropMode(DropMode.INSERT);
-        sortedSourceList.setModel(new CustomSourceListModel());
-        sortedSourceList.setDragEnabled(true);
-        sortedSourceList.setTransferHandler(new JListTransferHandler());
-        innerPanel.add(new JScrollPane(sortedSourceList));
+		sortedSourceList = new JList<>();
+		sortedSourceList.setDropMode(DropMode.INSERT);
+		sortedSourceList.setModel(new CustomSourceListModel());
+		sortedSourceList.setDragEnabled(true);
+		sortedSourceList.setTransferHandler(new JListTransferHandler());
+		innerPanel.add(new JScrollPane(sortedSourceList));
 
-        JLabel label = new JLabel("Drag and Drop sources from left to right");
-        getComponent().add(label, BorderLayout.NORTH);
-        JButton clearButton = new JButton("Clear selection");
-        clearButton.addActionListener((e) -> ((DefaultListModel) sortedSourceList.getModel()).clear());
-        getComponent().add(clearButton, BorderLayout.SOUTH);
+		JLabel label = new JLabel("Drag and Drop sources from left to right");
+		getComponent().add(label, BorderLayout.NORTH);
+		JButton clearButton = new JButton("Clear selection");
+		clearButton.addActionListener((e) -> ((DefaultListModel) sortedSourceList
+			.getModel()).clear());
+		getComponent().add(clearButton, BorderLayout.SOUTH);
 
-        ListDataListener ldl = new ListDataListener() {
-            @Override
-            public void intervalAdded(ListDataEvent e) {
-                model.setValue(getValue());
-            }
-            @Override
-            public void intervalRemoved(ListDataEvent e) {
-                model.setValue(getValue());
+		ListDataListener ldl = new ListDataListener() {
 
-            }
-            @Override
-            public void contentsChanged(ListDataEvent e) {
-                model.setValue(getValue());
-            }
-        };
+			@Override
+			public void intervalAdded(ListDataEvent e) {
+				model.setValue(getValue());
+			}
 
-        sortedSourceList.getModel().addListDataListener(ldl);
-        refreshWidget();
-        // Memory leak... How ot solve this ?
+			@Override
+			public void intervalRemoved(ListDataEvent e) {
+				model.setValue(getValue());
 
-        // -------------------------------- Memory leak! Cut heads of the Hydra of Lerna
-        // The part below helps solve the memory leak:
-        // with JTree not released the lastly selected path
-        // with Listeners holding references with objects of potentially big memory footprint (SourceAndConverters)
-        // Maybe related:
-        // https://bugs.openjdk.java.net/browse/JDK-6472844
-        // https://stackoverflow.com/questions/4517931/java-swing-jtree-is-not-garbage-collected
-        // this one more particularly :
+			}
 
-        sortedSourceList.addAncestorListener(new AncestorListener() {
-            @Override
-            public void ancestorAdded(AncestorEvent event) {
+			@Override
+			public void contentsChanged(ListDataEvent e) {
+				model.setValue(getValue());
+			}
+		};
 
-            }
+		sortedSourceList.getModel().addListDataListener(ldl);
+		refreshWidget();
+		// Memory leak... How ot solve this ?
 
-            @Override
-            public void ancestorRemoved(AncestorEvent event) {
-                sortedSourceList.clearSelection();
-                sortedSourceList.getModel().removeListDataListener(ldl);
-                DefaultListModel model = (DefaultListModel) sortedSourceList.getModel();
-                model.clear();
-                sortedSourceList.resetKeyboardActions();
-                sortedSourceList.removeAncestorListener(this);
-                sortedSourceList = null;
-            }
+		// -------------------------------- Memory leak! Cut heads of the Hydra of
+		// Lerna
+		// The part below helps solve the memory leak:
+		// with JTree not released the lastly selected path
+		// with Listeners holding references with objects of potentially big memory
+		// footprint (SourceAndConverters)
+		// Maybe related:
+		// https://bugs.openjdk.java.net/browse/JDK-6472844
+		// https://stackoverflow.com/questions/4517931/java-swing-jtree-is-not-garbage-collected
+		// this one more particularly :
 
-            @Override
-            public void ancestorMoved(AncestorEvent event) {
+		sortedSourceList.addAncestorListener(new AncestorListener() {
 
-            }
-        });
+			@Override
+			public void ancestorAdded(AncestorEvent event) {
 
-        tree.addAncestorListener(new AncestorListener() {
-            @Override
-            public void ancestorAdded(AncestorEvent event) {
-            }
+			}
 
-            @Override
-            public void ancestorRemoved(AncestorEvent event) {
-                tree.clearSelection();
-                tree.cancelEditing();
-                tree.resetKeyboardActions();
-                tree.updateUI();
-                scrollPaneTree.remove(tree);
-                getComponent().remove(scrollPaneTree);
-                tree.setModel(null);
-                tree.removeAncestorListener(this);
-                tree = null;
-            }
+			@Override
+			public void ancestorRemoved(AncestorEvent event) {
+				sortedSourceList.clearSelection();
+				sortedSourceList.getModel().removeListDataListener(ldl);
+				DefaultListModel model = (DefaultListModel) sortedSourceList.getModel();
+				model.clear();
+				sortedSourceList.resetKeyboardActions();
+				sortedSourceList.removeAncestorListener(this);
+				sortedSourceList = null;
+			}
 
-            @Override
-            public void ancestorMoved(AncestorEvent event) {
-            }
-        });
-        // -------------------------------- All heads cut (hopefully)
+			@Override
+			public void ancestorMoved(AncestorEvent event) {
 
-    }
+			}
+		});
 
-    static class CustomSourceListModel extends DefaultListModel {
-        @Override
-        public void add(int index, Object element) {
-            if (element instanceof SourceAndConverter) {
-                super.add(index, new RenamableSourceAndConverter((SourceAndConverter) element));
-            }
-        }
-    }
+		tree.addAncestorListener(new AncestorListener() {
+
+			@Override
+			public void ancestorAdded(AncestorEvent event) {}
+
+			@Override
+			public void ancestorRemoved(AncestorEvent event) {
+				tree.clearSelection();
+				tree.cancelEditing();
+				tree.resetKeyboardActions();
+				tree.updateUI();
+				scrollPaneTree.remove(tree);
+				getComponent().remove(scrollPaneTree);
+				tree.setModel(null);
+				tree.removeAncestorListener(this);
+				tree = null;
+			}
+
+			@Override
+			public void ancestorMoved(AncestorEvent event) {}
+		});
+		// -------------------------------- All heads cut (hopefully)
+
+	}
+
+	static class CustomSourceListModel extends DefaultListModel {
+
+		@Override
+		public void add(int index, Object element) {
+			if (element instanceof SourceAndConverter) {
+				super.add(index, new RenamableSourceAndConverter(
+					(SourceAndConverter) element));
+			}
+		}
+	}
 
 }

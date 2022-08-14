@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava;
 
 import org.scijava.Context;
@@ -47,63 +48,78 @@ import java.util.List;
 
 /**
  * Thanks to @frauzufall, helper class which build Swing UI of Scijava Commands
- *
- * This is convenient in particular in order to put an {@link org.scijava.command.InteractiveCommand}
- * as a Card in the BdvHandle {@link bdv.ui.CardPanel}
- *
+ * This is convenient in particular in order to put an
+ * {@link org.scijava.command.InteractiveCommand} as a Card in the BdvHandle
+ * {@link bdv.ui.CardPanel}
  */
 
 public class ScijavaSwingUI {
 
-    static public<C extends Command> JPanel getPanel(Context context, Class<C> scijavaCommand, Object... args) {
-        Module module;
-        JPanel panel = null;
-        try {
-            module = createModule(context, scijavaCommand, args);
-            panel = createModulePanel(context, module);
+	static public <C extends Command> JPanel getPanel(Context context,
+		Class<C> scijavaCommand, Object... args)
+	{
+		Module module;
+		JPanel panel = null;
+		try {
+			module = createModule(context, scijavaCommand, args);
+			panel = createModulePanel(context, module);
 
-        } catch (ModuleException e) {
-            e.printStackTrace();
-        }
-        return panel;
-    }
+		}
+		catch (ModuleException e) {
+			e.printStackTrace();
+		}
+		return panel;
+	}
 
-    static public Module createModule(Context context, Class<? extends Command> commandClass, Object... args) throws ModuleException {
-        Module module = context.getService(CommandService.class).getCommand(commandClass).createModule();
-        context.inject(module);
+	static public Module createModule(Context context,
+		Class<? extends Command> commandClass, Object... args)
+		throws ModuleException
+	{
+		Module module = context.getService(CommandService.class).getCommand(
+			commandClass).createModule();
+		context.inject(module);
 
-        setModuleInputs(module, args);
-        preprocessWithoutHarvesting(context,module);
-        return module;
-    }
+		setModuleInputs(module, args);
+		preprocessWithoutHarvesting(context, module);
+		return module;
+	}
 
-    static private <M extends Module> void preprocessWithoutHarvesting(Context context, M module) {
-        ModuleRunner moduleRunner = new ModuleRunner(context, module, preprocessorsWithoutHarvesting(context), Collections.emptyList());
-        moduleRunner.preProcess();
-    }
+	static private <M extends Module> void preprocessWithoutHarvesting(
+		Context context, M module)
+	{
+		ModuleRunner moduleRunner = new ModuleRunner(context, module,
+			preprocessorsWithoutHarvesting(context), Collections.emptyList());
+		moduleRunner.preProcess();
+	}
 
-    static private List<? extends PreprocessorPlugin> preprocessorsWithoutHarvesting(Context context) {
-        //remove input harvesters from preprocessing
-        List<PreprocessorPlugin> preprocessors = context.getService(PluginService.class).createInstancesOfType(PreprocessorPlugin.class);
-        preprocessors.removeIf(preprocessor -> preprocessor instanceof InputHarvester);
-        return preprocessors;
-    }
+	static private List<? extends PreprocessorPlugin>
+		preprocessorsWithoutHarvesting(Context context)
+	{
+		// remove input harvesters from preprocessing
+		List<PreprocessorPlugin> preprocessors = context.getService(
+			PluginService.class).createInstancesOfType(PreprocessorPlugin.class);
+		preprocessors.removeIf(
+			preprocessor -> preprocessor instanceof InputHarvester);
+		return preprocessors;
+	}
 
-    static private void setModuleInputs(Module module, Object[] args) {
-        assert(args.length % 2 == 0);
-        for (int i = 0; i < args.length-1; i+=2) {
-            String input = (String) args[i];
-            module.setInput(input, args[i+1]);
-            module.resolveInput(input);
-        }
-    }
+	static private void setModuleInputs(Module module, Object[] args) {
+		assert (args.length % 2 == 0);
+		for (int i = 0; i < args.length - 1; i += 2) {
+			String input = (String) args[i];
+			module.setInput(input, args[i + 1]);
+			module.resolveInput(input);
+		}
+	}
 
-    static public JPanel createModulePanel(Context context,Module module) throws ModuleException {
-        SwingInputHarvester swingInputHarvester = new SwingInputHarvester();
-        context.inject(swingInputHarvester);
-        InputPanel<JPanel, JPanel> inputPanel = new SwingInputPanel();
-        swingInputHarvester.buildPanel(inputPanel, module);
-        return inputPanel.getComponent();
-    }
+	static public JPanel createModulePanel(Context context, Module module)
+		throws ModuleException
+	{
+		SwingInputHarvester swingInputHarvester = new SwingInputHarvester();
+		context.inject(swingInputHarvester);
+		InputPanel<JPanel, JPanel> inputPanel = new SwingInputPanel();
+		swingInputHarvester.buildPanel(inputPanel, module);
+		return inputPanel.getComponent();
+	}
 
 }

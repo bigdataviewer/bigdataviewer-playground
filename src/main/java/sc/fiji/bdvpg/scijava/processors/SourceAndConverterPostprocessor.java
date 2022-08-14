@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.processors;
 
 import bdv.viewer.SourceAndConverter;
@@ -39,43 +40,48 @@ import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 @Plugin(type = PostprocessorPlugin.class)
-public class SourceAndConverterPostprocessor extends AbstractPostprocessorPlugin {
+public class SourceAndConverterPostprocessor extends
+	AbstractPostprocessorPlugin
+{
 
-    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterPostprocessor.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		SourceAndConverterPostprocessor.class);
 
-    @Parameter
-    SourceAndConverterService bss;
+	@Parameter
+	SourceAndConverterService bss;
 
-    @Override
-    public void process(Module module) {
+	@Override
+	public void process(Module module) {
 
-       module.getOutputs().forEach((name, object)-> {
-           if (object instanceof SourceAndConverter<?>) {
-               SourceAndConverter<?> sac = (SourceAndConverter<?>) object;
-               logger.debug("Source found.");
-               logger.debug("Is it registered ? ");
-               if (!bss.isRegistered(sac)) {
-                   logger.debug("No, registers it.");
-                   bss.register(sac);
-               } else {
-                   logger.debug("Yes.");
-               }
-               module.resolveOutput(name);
-           }
-           if (object instanceof SourceAndConverter<?>[]) {
-               SourceAndConverter<?>[] sacs = (SourceAndConverter<?>[]) object;
-               for (SourceAndConverter<?> sac:sacs) {
-                   logger.debug("Source found.");
-                   logger.debug("Is it registered ? ");
-                   if (!bss.isRegistered(sac)) {
-                       logger.debug("No.");
-                       bss.register(sac);
-                   } else {
-                       logger.debug("Yes.");
-                   }
-               }
-               module.resolveOutput(name);
-           }
-       });
-    }
+		module.getOutputs().forEach((name, object) -> {
+			if (object instanceof SourceAndConverter<?>) {
+				SourceAndConverter<?> sac = (SourceAndConverter<?>) object;
+				logger.debug("Source found.");
+				logger.debug("Is it registered ? ");
+				if (!bss.isRegistered(sac)) {
+					logger.debug("No, registers it.");
+					bss.register(sac);
+				}
+				else {
+					logger.debug("Yes.");
+				}
+				module.resolveOutput(name);
+			}
+			if (object instanceof SourceAndConverter<?>[]) {
+				SourceAndConverter<?>[] sacs = (SourceAndConverter<?>[]) object;
+				for (SourceAndConverter<?> sac : sacs) {
+					logger.debug("Source found.");
+					logger.debug("Is it registered ? ");
+					if (!bss.isRegistered(sac)) {
+						logger.debug("No.");
+						bss.register(sac);
+					}
+					else {
+						logger.debug("Yes.");
+					}
+				}
+				module.resolveOutput(name);
+			}
+		});
+	}
 }

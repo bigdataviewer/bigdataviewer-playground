@@ -26,9 +26,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.log;
 
-public class Logs
-{
+public class Logs {
+
 	public static final String BDV = "BigDataViewer";
 }

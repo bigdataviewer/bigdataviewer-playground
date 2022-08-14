@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.util.BdvHandle;
@@ -44,95 +45,107 @@ import javax.swing.*;
 import java.awt.event.WindowEvent;
 
 /**
- *
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Manual Sources Transformation",
-description = "Manual transformation of selected sources. Works only with a single bdv window (the active one)." +
-        "The sources that are not displayed but selected are transformed. During the registration, the user is" +
-        "placed in the reference of the moving sources. That's why they are not moving during the registration.")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"Sources>Transform>Manual Sources Transformation",
+	description = "Manual transformation of selected sources. Works only with a single bdv window (the active one)." +
+		"The sources that are not displayed but selected are transformed. During the registration, the user is" +
+		"placed in the reference of the moving sources. That's why they are not moving during the registration.")
 
 public class ManualTransformCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(choices = {"Mutate", "Append", "Append (all timepoints)", "Append (timepoints before)", "Append (timepoints after)", "Wrap", "Log"})
-    String mode = "Mutate";
+	@Parameter(choices = { "Mutate", "Append", "Append (all timepoints)",
+		"Append (timepoints before)", "Append (timepoints after)", "Wrap", "Log" })
+	String mode = "Mutate";
 
-    @Parameter(label = "Select Source(s)")
-    SourceAndConverter<?>[] sacs;
+	@Parameter(label = "Select Source(s)")
+	SourceAndConverter<?>[] sacs;
 
-    @Parameter
-    BdvHandle bdvh;
+	@Parameter
+	BdvHandle bdvh;
 
-    public void run() {
-        ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvh, sacs);
-        ManualRegistrationStopper manualRegistrationStopper;
-        switch (mode) {
-            case "Mutate":
-                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                        SourceTransformHelper::mutate);
-                break;
-            case "Append":
-                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                        SourceTransformHelper::append);
-                break;
-            case "Append (all timepoints)":
-                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                        SourceTransformHelper::append);
-                manualRegistrationStopper.setTimeRange(0, SourceAndConverterHelper.getMaxTimepoint(sacs));
-                break;
-            case "Append (timepoints before)":
-                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                        SourceTransformHelper::append);
-                manualRegistrationStopper.setTimeRange(0, bdvh.getViewerPanel().state().getCurrentTimepoint()+1);
-                break;
-            case "Append (timepoints after)":
-                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                        SourceTransformHelper::append);
-                manualRegistrationStopper.setTimeRange(bdvh.getViewerPanel().state().getCurrentTimepoint(), SourceAndConverterHelper.getMaxTimepoint(sacs));
-                break;
-            case "Log":
-                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                        (transform, source) -> SourceTransformHelper.log(transform, source, IJ::log));
-                break;
-            default:
-                manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
-                        SourceTransformHelper::createNewTransformedSourceAndConverter
-                );
-        }
+	public void run() {
+		ManualRegistrationStarter manualRegistrationStarter =
+			new ManualRegistrationStarter(bdvh, sacs);
+		ManualRegistrationStopper manualRegistrationStopper;
+		switch (mode) {
+			case "Mutate":
+				manualRegistrationStopper = new ManualRegistrationStopper(
+					manualRegistrationStarter, SourceTransformHelper::mutate);
+				break;
+			case "Append":
+				manualRegistrationStopper = new ManualRegistrationStopper(
+					manualRegistrationStarter, SourceTransformHelper::append);
+				break;
+			case "Append (all timepoints)":
+				manualRegistrationStopper = new ManualRegistrationStopper(
+					manualRegistrationStarter, SourceTransformHelper::append);
+				manualRegistrationStopper.setTimeRange(0, SourceAndConverterHelper
+					.getMaxTimepoint(sacs));
+				break;
+			case "Append (timepoints before)":
+				manualRegistrationStopper = new ManualRegistrationStopper(
+					manualRegistrationStarter, SourceTransformHelper::append);
+				manualRegistrationStopper.setTimeRange(0, bdvh.getViewerPanel().state()
+					.getCurrentTimepoint() + 1);
+				break;
+			case "Append (timepoints after)":
+				manualRegistrationStopper = new ManualRegistrationStopper(
+					manualRegistrationStarter, SourceTransformHelper::append);
+				manualRegistrationStopper.setTimeRange(bdvh.getViewerPanel().state()
+					.getCurrentTimepoint(), SourceAndConverterHelper.getMaxTimepoint(
+						sacs));
+				break;
+			case "Log":
+				manualRegistrationStopper = new ManualRegistrationStopper(
+					manualRegistrationStarter, (transform,
+						source) -> SourceTransformHelper.log(transform, source, IJ::log));
+				break;
+			default:
+				manualRegistrationStopper = new ManualRegistrationStopper(
+					manualRegistrationStarter,
+					SourceTransformHelper::createNewTransformedSourceAndConverter);
+		}
 
-        manualRegistrationStarter.run();
+		manualRegistrationStarter.run();
 
-        // JFrame holding apply and cancel button
-        JFrame frameStopManualTransformation = new JFrame();
-        JPanel pane = new JPanel();
+		// JFrame holding apply and cancel button
+		JFrame frameStopManualTransformation = new JFrame();
+		JPanel pane = new JPanel();
 
-        JButton buttonApply = new JButton("Apply And Finish");
-        buttonApply.addActionListener((e) -> {
-            manualRegistrationStopper.run();
-            frameStopManualTransformation.dispatchEvent(new WindowEvent(frameStopManualTransformation, WindowEvent.WINDOW_CLOSING));
-        });
+		JButton buttonApply = new JButton("Apply And Finish");
+		buttonApply.addActionListener((e) -> {
+			manualRegistrationStopper.run();
+			frameStopManualTransformation.dispatchEvent(new WindowEvent(
+				frameStopManualTransformation, WindowEvent.WINDOW_CLOSING));
+		});
 
-        JButton buttonCancel = new JButton("Cancel");
-        buttonCancel.addActionListener((e) -> {
-            new ManualRegistrationStopper(manualRegistrationStarter,
-                    // What to do with the new registration:
-                    //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
-                    SourceTransformHelper::cancel
-            ).run();
-            frameStopManualTransformation.dispatchEvent(new WindowEvent(frameStopManualTransformation, WindowEvent.WINDOW_CLOSING));
-            frameStopManualTransformation.dispose();
-        });
+		JButton buttonCancel = new JButton("Cancel");
+		buttonCancel.addActionListener((e) -> {
+			new ManualRegistrationStopper(manualRegistrationStarter,
+				// What to do with the new registration:
+				// (BiFunction<AffineTransform3D, SourceAndConverter,
+				// SourceAndConverter>)
+				SourceTransformHelper::cancel).run();
+			frameStopManualTransformation.dispatchEvent(new WindowEvent(
+				frameStopManualTransformation, WindowEvent.WINDOW_CLOSING));
+			frameStopManualTransformation.dispose();
+		});
 
-        pane.add(buttonApply);
-        pane.add(buttonCancel);
-        frameStopManualTransformation.add(pane);
+		pane.add(buttonApply);
+		pane.add(buttonCancel);
+		frameStopManualTransformation.add(pane);
 
-        frameStopManualTransformation.setTitle("Registration");
-        frameStopManualTransformation.pack();
-        frameStopManualTransformation.setVisible(true);
+		frameStopManualTransformation.setTitle("Registration");
+		frameStopManualTransformation.pack();
+		frameStopManualTransformation.setVisible(true);
 
-    }
+	}
 }

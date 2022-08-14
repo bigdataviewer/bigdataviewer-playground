@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.viewer;
 
 import bdv.util.BdvHandle;
@@ -50,83 +51,86 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 /**
- * I wanted to do this as an Interactive Command but there's no callback
- * when an interactive command is closed (bug https://github.com/scijava/scijava-common/issues/379)
- * so we cannot stop the synchronization appropriately.
- *
- * Hence the dirty JFrame the user has to close to stop synchronization ...
- *
- * TODO fix potential memory leaks which could be a consequence of this extra JFrame
- *
- * author Nicolas Chiaruttini, BIOP, EPFL, 2020
+ * I wanted to do this as an Interactive Command but there's no callback when an
+ * interactive command is closed (bug
+ * https://github.com/scijava/scijava-common/issues/379) so we cannot stop the
+ * synchronization appropriately. Hence the dirty JFrame the user has to close
+ * to stop synchronization ... TODO fix potential memory leaks which could be a
+ * consequence of this extra JFrame author Nicolas Chiaruttini, BIOP, EPFL, 2020
  */
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Synchronize States",
-            description = "Synchronizes the state of a set of BDV or BVV windows. A window popup should be closed" +
-                    " to stop the synchronization")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "Synchronize States",
+	description = "Synchronizes the state of a set of BDV or BVV windows. A window popup should be closed" +
+		" to stop the synchronization")
 public class StateSynchronizerCommand implements BdvPlaygroundActionCommand {
 
-    protected static final Logger logger = LoggerFactory.getLogger(StateSynchronizerCommand.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		StateSynchronizerCommand.class);
 
-    @Parameter(label = "Select Bdv Windows to synchronize", required = false)
-    BdvHandle[] bdvhs;
+	@Parameter(label = "Select Bdv Windows to synchronize", required = false)
+	BdvHandle[] bdvhs;
 
-    @Parameter(label = "Select Bvv Windows to synchronize", required = false)
-    BvvHandle[] bvvhs;
+	@Parameter(label = "Select Bvv Windows to synchronize", required = false)
+	BvvHandle[] bvvhs;
 
-    ViewerStateSyncStarter sync;
+	ViewerStateSyncStarter sync;
 
-    public void run() {
-        if (bdvhs==null) bdvhs = new BdvHandle[0];
-        if (bvvhs==null) bvvhs = new BvvHandle[0];
-        if (bvvhs.length+bdvhs.length<2) {
-            logger.error("You should select at least 2 windows!");
-            return;
-        }
+	public void run() {
+		if (bdvhs == null) bdvhs = new BdvHandle[0];
+		if (bvvhs == null) bvvhs = new BvvHandle[0];
+		if (bvvhs.length + bdvhs.length < 2) {
+			logger.error("You should select at least 2 windows!");
+			return;
+		}
 
-        ViewerAdapter[] handles = new ViewerAdapter[bdvhs.length+bvvhs.length];
-        for (int i = 0; i<bdvhs.length;i++) {
-            handles[i] = new ViewerAdapter(bdvhs[i]);
-        }
-        for (int i = 0; i<bvvhs.length;i++) {
-            handles[i + bdvhs.length] = new ViewerAdapter(bvvhs[i]);
-        }
-        // Starting synchronization of selected bdvhandles
-        sync = new ViewerStateSyncStarter(handles);
-        sync.run();
+		ViewerAdapter[] handles = new ViewerAdapter[bdvhs.length + bvvhs.length];
+		for (int i = 0; i < bdvhs.length; i++) {
+			handles[i] = new ViewerAdapter(bdvhs[i]);
+		}
+		for (int i = 0; i < bvvhs.length; i++) {
+			handles[i + bdvhs.length] = new ViewerAdapter(bvvhs[i]);
+		}
+		// Starting synchronization of selected bdvhandles
+		sync = new ViewerStateSyncStarter(handles);
+		sync.run();
 
-        // JFrame serving the purpose of stopping synchronization when it is being closed
-        JFrame frameStopSync = new JFrame();
-        frameStopSync.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                super.windowClosing(e);
-                new ViewerStateSyncStopper(sync.getSynchronizers()).run();
-                e.getWindow().dispose();
-            }
-        });
-        frameStopSync.setTitle("Close window to stop state synchronization");
+		// JFrame serving the purpose of stopping synchronization when it is being
+		// closed
+		JFrame frameStopSync = new JFrame();
+		frameStopSync.addWindowListener(new WindowAdapter() {
 
-        // Building JFrame with a simple panel and textarea
-        String text = "";
-        for (BdvHandle bdvh:bdvhs) {
-            text+= BdvHandleHelper.getWindowTitle(bdvh)+"\n";
-        }
-        for (BvvHandle bvvh:bvvhs) {
-            text+= BvvHandleHelper.getWindowTitle(bvvh)+"\n";
-        }
+			@Override
+			public void windowClosing(WindowEvent e) {
+				super.windowClosing(e);
+				new ViewerStateSyncStopper(sync.getSynchronizers()).run();
+				e.getWindow().dispose();
+			}
+		});
+		frameStopSync.setTitle("Close window to stop state synchronization");
 
-        JPanel pane = new JPanel();
-        JTextArea textArea = new JTextArea(text);
-        textArea.setEditable(false);
-        pane.add(textArea);
-        frameStopSync.add(pane);
-        frameStopSync.setPreferredSize(new Dimension(600,100));
+		// Building JFrame with a simple panel and textarea
+		String text = "";
+		for (BdvHandle bdvh : bdvhs) {
+			text += BdvHandleHelper.getWindowTitle(bdvh) + "\n";
+		}
+		for (BvvHandle bvvh : bvvhs) {
+			text += BvvHandleHelper.getWindowTitle(bvvh) + "\n";
+		}
 
-        frameStopSync.pack();
-        frameStopSync.setVisible(true);
-    }
+		JPanel pane = new JPanel();
+		JTextArea textArea = new JTextArea(text);
+		textArea.setEditable(false);
+		pane.add(textArea);
+		frameStopSync.add(pane);
+		frameStopSync.setPreferredSize(new Dimension(600, 100));
+
+		frameStopSync.pack();
+		frameStopSync.setVisible(true);
+	}
 
 }

@@ -26,36 +26,39 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package net.imglib2.realtransform;
 
 import org.scijava.plugin.Plugin;
 import sc.fiji.persist.IClassRuntimeAdapter;
 
 /**
- * Serializes and deserializes a {@link RealTransformSequence} object
- *
- * As long as each individual {@link RealTransform} object present in the sequence can be
- * serialized, the sequence should be serialized successfully
- *
- * This adapter is located in this package in order to access the protected
- * {@link RealTransformSequence#transforms} field of a {@link RealTransformSequence}
+ * Serializes and deserializes a {@link RealTransformSequence} object As long as
+ * each individual {@link RealTransform} object present in the sequence can be
+ * serialized, the sequence should be serialized successfully This adapter is
+ * located in this package in order to access the protected
+ * {@link RealTransformSequence#transforms} field of a
+ * {@link RealTransformSequence}
  */
 
 @Plugin(type = IClassRuntimeAdapter.class)
-public class RealTransformSequenceRunTimeAdapter implements IClassRuntimeAdapter<RealTransform, RealTransformSequence> {
-    @Override
-    public Class<? extends RealTransform> getBaseClass() {
-        return RealTransform.class;
-    }
+public class RealTransformSequenceRunTimeAdapter implements
+	IClassRuntimeAdapter<RealTransform, RealTransformSequence>
+{
 
-    @Override
-    public Class<? extends RealTransformSequence> getRunTimeClass() {
-        return RealTransformSequence.class;
-    }
+	@Override
+	public Class<? extends RealTransform> getBaseClass() {
+		return RealTransform.class;
+	}
 
-    @Override
-    public boolean useCustomAdapter() {
-        return false;
-    }
+	@Override
+	public Class<? extends RealTransformSequence> getRunTimeClass() {
+		return RealTransformSequence.class;
+	}
+
+	@Override
+	public boolean useCustomAdapter() {
+		return false;
+	}
 
 }

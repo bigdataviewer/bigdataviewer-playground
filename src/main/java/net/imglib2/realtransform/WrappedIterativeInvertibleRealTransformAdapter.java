@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package net.imglib2.realtransform;
 
 import com.google.gson.*;
@@ -36,27 +37,43 @@ import sc.fiji.persist.IClassAdapter;
 import java.lang.reflect.Type;
 
 @Plugin(type = IClassAdapter.class)
-public class WrappedIterativeInvertibleRealTransformAdapter implements IClassAdapter<WrappedIterativeInvertibleRealTransform> {
+public class WrappedIterativeInvertibleRealTransformAdapter implements
+	IClassAdapter<WrappedIterativeInvertibleRealTransform>
+{
 
-    @Override
-    public WrappedIterativeInvertibleRealTransform deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        JsonObject obj = jsonElement.getAsJsonObject();
-        RealTransform rt = jsonDeserializationContext.deserialize(obj.get("wrappedTransform"), RealTransform.class);
-        return new WrappedIterativeInvertibleRealTransform<>(rt);
-    }
+	@Override
+	public WrappedIterativeInvertibleRealTransform deserialize(
+		JsonElement jsonElement, Type type,
+		JsonDeserializationContext jsonDeserializationContext)
+		throws JsonParseException
+	{
+		JsonObject obj = jsonElement.getAsJsonObject();
+		RealTransform rt = jsonDeserializationContext.deserialize(obj.get(
+			"wrappedTransform"), RealTransform.class);
+		return new WrappedIterativeInvertibleRealTransform<>(rt);
+	}
 
-    @Override
-    public JsonElement serialize(WrappedIterativeInvertibleRealTransform wrappedIterativeInvertibleRealTransform, Type type, JsonSerializationContext jsonSerializationContext) {
-        JsonObject obj = new JsonObject();
-        obj.add("wrappedTransform", jsonSerializationContext.serialize(wrappedIterativeInvertibleRealTransform.getTransform(), RealTransform.class));
-        // TODO : get tolerance and maxiter wrappedIterativeInvertibleRealTransform.getOptimzer().getError().setTolerance();
-        // wrappedIterativeInvertibleRealTransform.getOptimzer().setTolerance().setTolerance( 0.000001 );   // keeps running until error is < 0.000001
-        // ixfm.getOptimzer().setMaxIters( 1000 ); // or 1000 iterations
-        return obj;
-    }
+	@Override
+	public JsonElement serialize(
+		WrappedIterativeInvertibleRealTransform wrappedIterativeInvertibleRealTransform,
+		Type type, JsonSerializationContext jsonSerializationContext)
+	{
+		JsonObject obj = new JsonObject();
+		obj.add("wrappedTransform", jsonSerializationContext.serialize(
+			wrappedIterativeInvertibleRealTransform.getTransform(),
+			RealTransform.class));
+		// TODO : get tolerance and maxiter
+		// wrappedIterativeInvertibleRealTransform.getOptimzer().getError().setTolerance();
+		// wrappedIterativeInvertibleRealTransform.getOptimzer().setTolerance().setTolerance(
+		// 0.000001 ); // keeps running until error is < 0.000001
+		// ixfm.getOptimzer().setMaxIters( 1000 ); // or 1000 iterations
+		return obj;
+	}
 
-    @Override
-    public Class<? extends WrappedIterativeInvertibleRealTransform> getAdapterClass() {
-        return WrappedIterativeInvertibleRealTransform.class;
-    }
+	@Override
+	public Class<? extends WrappedIterativeInvertibleRealTransform>
+		getAdapterClass()
+	{
+		return WrappedIterativeInvertibleRealTransform.class;
+	}
 }

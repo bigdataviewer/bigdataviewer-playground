@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.sourceandconverter.display;
 
 import bdv.viewer.Source;
@@ -36,49 +37,54 @@ import net.imglib2.type.numeric.ARGBType;
 
 import java.util.function.Function;
 
-public class  ConverterChanger<T,V extends Volatile<T>> implements Runnable, Function<SourceAndConverter<T>, SourceAndConverter<T>> {
+public class ConverterChanger<T, V extends Volatile<T>> implements Runnable,
+	Function<SourceAndConverter<T>, SourceAndConverter<T>>
+{
 
-    final SourceAndConverter<T> sac_in;
+	final SourceAndConverter<T> sac_in;
 
-    final Converter<T, ARGBType> nonVolatileConverter;
+	final Converter<T, ARGBType> nonVolatileConverter;
 
-    final Converter<V,ARGBType> volatileConverter;
+	final Converter<V, ARGBType> volatileConverter;
 
-    public ConverterChanger(SourceAndConverter<T> sac, Converter<T,ARGBType> cvtnv, Converter<V,ARGBType> cvt) {
-        sac_in = sac;
-        nonVolatileConverter = cvtnv;
-        volatileConverter = cvt;
-    }
+	public ConverterChanger(SourceAndConverter<T> sac,
+		Converter<T, ARGBType> cvtnv, Converter<V, ARGBType> cvt)
+	{
+		sac_in = sac;
+		nonVolatileConverter = cvtnv;
+		volatileConverter = cvt;
+	}
 
-    public ConverterChanger(SourceAndConverter<T> sac, Converter<T,ARGBType> cvtnv) {
-        sac_in = sac;
-        nonVolatileConverter = cvtnv;
-        volatileConverter = (Converter<V, ARGBType>) cvtnv;
-    }
+	public ConverterChanger(SourceAndConverter<T> sac,
+		Converter<T, ARGBType> cvtnv)
+	{
+		sac_in = sac;
+		nonVolatileConverter = cvtnv;
+		volatileConverter = (Converter<V, ARGBType>) cvtnv;
+	}
 
-    @Override
-    public void run() {
-        // Nothing
-    }
+	@Override
+	public void run() {
+		// Nothing
+	}
 
-    public SourceAndConverter<T> get() {
-        return apply(sac_in);
-    }
+	public SourceAndConverter<T> get() {
+		return apply(sac_in);
+	}
 
-    @Override
-    public SourceAndConverter<T> apply(SourceAndConverter<T> sourceAndConverter) {
-        SourceAndConverter<T> sac;
-        if (sourceAndConverter.asVolatile()!=null) {
-            sac = new SourceAndConverter<>(
-                    sourceAndConverter.getSpimSource(),
-                    nonVolatileConverter,
-                    new SourceAndConverter<>((Source<V>) sourceAndConverter.asVolatile().getSpimSource(), volatileConverter)
-            );
-        } else {
-            sac = new SourceAndConverter<>(
-                    sourceAndConverter.getSpimSource(),
-                    nonVolatileConverter);
-        }
-        return sac;
-    }
+	@Override
+	public SourceAndConverter<T> apply(SourceAndConverter<T> sourceAndConverter) {
+		SourceAndConverter<T> sac;
+		if (sourceAndConverter.asVolatile() != null) {
+			sac = new SourceAndConverter<>(sourceAndConverter.getSpimSource(),
+				nonVolatileConverter, new SourceAndConverter<>(
+					(Source<V>) sourceAndConverter.asVolatile().getSpimSource(),
+					volatileConverter));
+		}
+		else {
+			sac = new SourceAndConverter<>(sourceAndConverter.getSpimSource(),
+				nonVolatileConverter);
+		}
+		return sac;
+	}
 }

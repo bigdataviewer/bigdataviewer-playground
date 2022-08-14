@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
@@ -35,29 +36,32 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Add Metadata To Sources",
-description = "Adds a metadata string to selected sources")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "Sources>Add Metadata To Sources",
+	description = "Adds a metadata string to selected sources")
 
 public class AddMetadataCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(label = "Select Source(s)")
-    SourceAndConverter<?>[] sacs;
+	@Parameter(label = "Select Source(s)")
+	SourceAndConverter<?>[] sacs;
 
-    @Parameter(label = "Key")
-    String key;
+	@Parameter(label = "Key")
+	String key;
 
-    @Parameter(label = "Value")
-    String value;
+	@Parameter(label = "Value")
+	String value;
 
-    @Parameter
-    SourceAndConverterService sac_service;
+	@Parameter
+	SourceAndConverterService sac_service;
 
-    @Override
-    public void run() {
-        for (SourceAndConverter<?> sac : sacs) {
-            sac_service.setMetadata(sac, key, value);
-        }
-    }
+	@Override
+	public void run() {
+		for (SourceAndConverter<?> sac : sacs) {
+			sac_service.setMetadata(sac, key, value);
+		}
+	}
 }

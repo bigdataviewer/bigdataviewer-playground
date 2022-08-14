@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.viewers;
 
 import bdv.util.BdvHandle;
@@ -42,107 +43,121 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ViewerStateSyncStarter implements Runnable {
 
-    BdvHandle[] bdvHandles;
-    /**
-     * Array of BdvHandles to synchronize
-     */
-    final ViewerAdapter[] handles;
+	BdvHandle[] bdvHandles;
+	/**
+	 * Array of BdvHandles to synchronize
+	 */
+	final ViewerAdapter[] handles;
 
-    public ViewerStateSyncStarter(ViewerAdapter... handles) {
-        this.handles = handles;
-    }
+	public ViewerStateSyncStarter(ViewerAdapter... handles) {
+		this.handles = handles;
+	}
 
-    /**
-     * Map which links each BdvHandle to the TransformListener which has been added
-     * for synchronization purpose. This object contains all what's needed to stop
-     * the synchronization
-     */
-    final Map<ViewerAdapter, ViewerStateChangeListener> handleToStateListener = new HashMap<>();
+	/**
+	 * Map which links each BdvHandle to the TransformListener which has been
+	 * added for synchronization purpose. This object contains all what's needed
+	 * to stop the synchronization
+	 */
+	final Map<ViewerAdapter, ViewerStateChangeListener> handleToStateListener =
+		new HashMap<>();
 
-    final AtomicBoolean isPropagating = new AtomicBoolean();
+	final AtomicBoolean isPropagating = new AtomicBoolean();
 
-    @Override
-    public void run() {
-        isPropagating.set(false);
-        for (ViewerAdapter handle : handles) {
-            ViewerStateChangeListener stateListener = new BasicStateListener(handle, isPropagating);
-            handle.state().changeListeners().add(stateListener);
-            handleToStateListener.put(handle, stateListener);
-        }
-    }
+	@Override
+	public void run() {
+		isPropagating.set(false);
+		for (ViewerAdapter handle : handles) {
+			ViewerStateChangeListener stateListener = new BasicStateListener(handle,
+				isPropagating);
+			handle.state().changeListeners().add(stateListener);
+			handleToStateListener.put(handle, stateListener);
+		}
+	}
 
-    public Map<ViewerAdapter, ViewerStateChangeListener> getSynchronizers() {
-        return handleToStateListener;
-    }
+	public Map<ViewerAdapter, ViewerStateChangeListener> getSynchronizers() {
+		return handleToStateListener;
+	}
 
-    ViewerAdapter currentPropagating = null;
+	ViewerAdapter currentPropagating = null;
 
-    void updateState(ViewerAdapter adapter) {
-        isPropagating.set(true); // to ignore subsequent changes
-        currentPropagating = adapter;
-        for (ViewerAdapter adapterTest:handles) {
-            if (!adapter.equals(adapterTest)) {
-                HashSet<SourceAndConverter<?>> stateToCopy = new HashSet<>(adapter.state().getSources());
-                HashSet<SourceAndConverter<?>> stateToAdapt = new HashSet<>(adapterTest.state().getSources());
-                stateToAdapt.removeIf(source -> source.getSpimSource() instanceof PlaceHolderSource);// Get rid of overlays
-                stateToCopy.removeIf(source -> source.getSpimSource() instanceof PlaceHolderSource); // Get rid of overlays
-                // Is there any missing source in state to adapt ?
-                stateToCopy.removeAll(stateToAdapt);
-                if (stateToCopy.size()!=0) {
-                    //System.out.println("adding "+stateToCopy.size()+" source to "+adapterTest);
-                    if (adapterTest.bvvPanel!=null) {
-                        for (SourceAndConverter<?> source : stateToCopy) {
-                            adapterTest.bvvPanel.getConverterSetups().put(source,
-                                    SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(source));
-                        }
-                    } else {
-                        // TODO : improve!
-                        SourceAndConverterServices.getBdvDisplayService().getDisplays().forEach(bdvh -> {
-                                for (SourceAndConverter<?> source : stateToCopy) {
-                                    bdvh.getConverterSetups().put(source, SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(source));
-                                }
-                        });
-                    }
-                    adapterTest.state().addSources(stateToCopy);
-                    for (SourceAndConverter<?> source : stateToCopy) {
-                        //if (adapter.state().isSourceActive(source)) {
-                            adapterTest.state().setSourceActive(source, true);
-                        //} else {
-                        //    adapterTest.state().setSourceActive(source, false);
-                        //}
-                    }
-                }
+	void updateState(ViewerAdapter adapter) {
+		isPropagating.set(true); // to ignore subsequent changes
+		currentPropagating = adapter;
+		for (ViewerAdapter adapterTest : handles) {
+			if (!adapter.equals(adapterTest)) {
+				HashSet<SourceAndConverter<?>> stateToCopy = new HashSet<>(adapter
+					.state().getSources());
+				HashSet<SourceAndConverter<?>> stateToAdapt = new HashSet<>(adapterTest
+					.state().getSources());
+				stateToAdapt.removeIf(source -> source
+					.getSpimSource() instanceof PlaceHolderSource);// Get rid of overlays
+				stateToCopy.removeIf(source -> source
+					.getSpimSource() instanceof PlaceHolderSource); // Get rid of overlays
+				// Is there any missing source in state to adapt ?
+				stateToCopy.removeAll(stateToAdapt);
+				if (stateToCopy.size() != 0) {
+					// System.out.println("adding "+stateToCopy.size()+" source to
+					// "+adapterTest);
+					if (adapterTest.bvvPanel != null) {
+						for (SourceAndConverter<?> source : stateToCopy) {
+							adapterTest.bvvPanel.getConverterSetups().put(source,
+								SourceAndConverterServices.getSourceAndConverterService()
+									.getConverterSetup(source));
+						}
+					}
+					else {
+						// TODO : improve!
+						SourceAndConverterServices.getBdvDisplayService().getDisplays()
+							.forEach(bdvh -> {
+								for (SourceAndConverter<?> source : stateToCopy) {
+									bdvh.getConverterSetups().put(source,
+										SourceAndConverterServices.getSourceAndConverterService()
+											.getConverterSetup(source));
+								}
+							});
+					}
+					adapterTest.state().addSources(stateToCopy);
+					for (SourceAndConverter<?> source : stateToCopy) {
+						// if (adapter.state().isSourceActive(source)) {
+						adapterTest.state().setSourceActive(source, true);
+						// } else {
+						// adapterTest.state().setSourceActive(source, false);
+						// }
+					}
+				}
 
-                // Is there any source in extra in the one to adapt ?
-                stateToAdapt.removeAll(new HashSet<>(adapter.state().getSources()));
-                if (stateToAdapt.size()!=0) {
-                    //System.out.println("removing "+stateToAdapt.size()+" source to "+adapterTest);
-                    adapterTest.state().removeSources(stateToAdapt);
-                }
-            }
-        }
-        currentPropagating = null;
-        isPropagating.set(false);
-    }
+				// Is there any source in extra in the one to adapt ?
+				stateToAdapt.removeAll(new HashSet<>(adapter.state().getSources()));
+				if (stateToAdapt.size() != 0) {
+					// System.out.println("removing "+stateToAdapt.size()+" source to
+					// "+adapterTest);
+					adapterTest.state().removeSources(stateToAdapt);
+				}
+			}
+		}
+		currentPropagating = null;
+		isPropagating.set(false);
+	}
 
-    class BasicStateListener implements ViewerStateChangeListener {
+	class BasicStateListener implements ViewerStateChangeListener {
 
-        final ViewerAdapter current;
-        final AtomicBoolean isPropagating;
+		final ViewerAdapter current;
+		final AtomicBoolean isPropagating;
 
-        BasicStateListener(ViewerAdapter current, AtomicBoolean isPropagating) {
-            this.current = current;
-            this.isPropagating = isPropagating;
-        }
+		BasicStateListener(ViewerAdapter current, AtomicBoolean isPropagating) {
+			this.current = current;
+			this.isPropagating = isPropagating;
+		}
 
-        @Override
-        public void viewerStateChanged(ViewerStateChange change) {
-            switch (change) {
-                case NUM_SOURCES_CHANGED:
-                    if ((!isPropagating.get())||(currentPropagating ==current)) {
-                        updateState(current);
-                    } break;
-            }
-        }
-    }
+		@Override
+		public void viewerStateChanged(ViewerStateChange change) {
+			switch (change) {
+				case NUM_SOURCES_CHANGED:
+					if ((!isPropagating.get()) || (currentPropagating == current)) {
+						updateState(current);
+					}
+					break;
+			}
+		}
+	}
 }

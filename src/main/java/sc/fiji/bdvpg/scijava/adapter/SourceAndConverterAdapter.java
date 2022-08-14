@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.adapter;
 
 import bdv.viewer.Source;
@@ -48,137 +49,163 @@ import java.util.Map;
 /**
  * Serializes SourceAndConverter objects
  */
-public class SourceAndConverterAdapter implements JsonSerializer<SourceAndConverter<?>>,
-        JsonDeserializer<SourceAndConverter<?>> {
+public class SourceAndConverterAdapter implements
+	JsonSerializer<SourceAndConverter<?>>, JsonDeserializer<SourceAndConverter<?>>
+{
 
-    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterAdapter.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		SourceAndConverterAdapter.class);
 
-    final sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer;
+	final sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer;
 
-    final Map<Class<? extends Source<?>>, ISourceAdapter<?>> sourceSerializers = new HashMap<>();
-    final Map<String, ISourceAdapter<?>> sourceSerializersFromName = new HashMap<>();
+	final Map<Class<? extends Source<?>>, ISourceAdapter<?>> sourceSerializers =
+		new HashMap<>();
+	final Map<String, ISourceAdapter<?>> sourceSerializersFromName =
+		new HashMap<>();
 
-    public SourceAndConverterAdapter(sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer) {
-        this.sacSerializer = sacSerializer;
-        sacSerializer.getScijavaContext().getService(IObjectScijavaAdapterService.class)
-                .getAdapters(ISourceAdapter.class)
-                .forEach(pi -> {
-                    try {
-                        ISourceAdapter adapter = pi.createInstance();
-                        adapter.setSacSerializer(sacSerializer);
-                        sourceSerializers.put(adapter.getSourceClass(), adapter);
-                        sourceSerializersFromName.put(adapter.getSourceClass().getName(), adapter);
-                    } catch (InstantiableException e) {
-                        e.printStackTrace();
-                    }
-                });
-    }
+	public SourceAndConverterAdapter(
+		sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer)
+	{
+		this.sacSerializer = sacSerializer;
+		sacSerializer.getScijavaContext().getService(
+			IObjectScijavaAdapterService.class).getAdapters(ISourceAdapter.class)
+			.forEach(pi -> {
+				try {
+					ISourceAdapter adapter = pi.createInstance();
+					adapter.setSacSerializer(sacSerializer);
+					sourceSerializers.put(adapter.getSourceClass(), adapter);
+					sourceSerializersFromName.put(adapter.getSourceClass().getName(),
+						adapter);
+				}
+				catch (InstantiableException e) {
+					e.printStackTrace();
+				}
+			});
+	}
 
-    @Override
-    public JsonElement serialize(SourceAndConverter sourceAndConverter,
-                                 Type type,
-                                 JsonSerializationContext jsonSerializationContext) {
-        try {
-            JsonObject obj = new JsonObject();
-            obj.addProperty("source_name", sourceAndConverter.getSpimSource().getName());
-            obj.addProperty("source_class", sourceAndConverter.getSpimSource().getClass().getName());
-            obj.addProperty("converter_class", sourceAndConverter.getConverter().getClass().toString());
-            obj.addProperty("source_id", sacSerializer.getSacToId().get(sourceAndConverter));
+	@Override
+	public JsonElement serialize(SourceAndConverter sourceAndConverter, Type type,
+		JsonSerializationContext jsonSerializationContext)
+	{
+		try {
+			JsonObject obj = new JsonObject();
+			obj.addProperty("source_name", sourceAndConverter.getSpimSource()
+				.getName());
+			obj.addProperty("source_class", sourceAndConverter.getSpimSource()
+				.getClass().getName());
+			obj.addProperty("converter_class", sourceAndConverter.getConverter()
+				.getClass().toString());
+			obj.addProperty("source_id", sacSerializer.getSacToId().get(
+				sourceAndConverter));
 
-            if (sourceAndConverter.getConverter() instanceof ColorConverter) {
-                ColorConverter colorConverter = (ColorConverter) sourceAndConverter.getConverter();
-                obj.add("color", jsonSerializationContext.serialize(colorConverter.getColor().get()));
-                double min = SourceAndConverterServices.getSourceAndConverterService()
-                        .getConverterSetup(sourceAndConverter).getDisplayRangeMin();
-                double max = SourceAndConverterServices.getSourceAndConverterService()
-                        .getConverterSetup(sourceAndConverter).getDisplayRangeMax();
-                obj.addProperty("converter_setup_min", min);
-                obj.addProperty("converter_setup_max", max);
-            }
+			if (sourceAndConverter.getConverter() instanceof ColorConverter) {
+				ColorConverter colorConverter = (ColorConverter) sourceAndConverter
+					.getConverter();
+				obj.add("color", jsonSerializationContext.serialize(colorConverter
+					.getColor().get()));
+				double min = SourceAndConverterServices.getSourceAndConverterService()
+					.getConverterSetup(sourceAndConverter).getDisplayRangeMin();
+				double max = SourceAndConverterServices.getSourceAndConverterService()
+					.getConverterSetup(sourceAndConverter).getDisplayRangeMax();
+				obj.addProperty("converter_setup_min", min);
+				obj.addProperty("converter_setup_max", max);
+			}
 
-            Map<String, String> stringMetaData = new HashMap<>();
+			Map<String, String> stringMetaData = new HashMap<>();
 
-            SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .getMetadataKeys(sourceAndConverter)
-                    .forEach(key -> {
-                        Object o = SourceAndConverterServices
-                                    .getSourceAndConverterService()
-                                    .getMetadata(sourceAndConverter, key);
-                        if (o instanceof String) {
-                            stringMetaData.put(key,(String)o);
-                        }
-                    });
+			SourceAndConverterServices.getSourceAndConverterService().getMetadataKeys(
+				sourceAndConverter).forEach(key -> {
+					Object o = SourceAndConverterServices.getSourceAndConverterService()
+						.getMetadata(sourceAndConverter, key);
+					if (o instanceof String) {
+						stringMetaData.put(key, (String) o);
+					}
+				});
 
-            JsonElement element = serializeSubClass(sourceAndConverter, SourceAndConverter.class, jsonSerializationContext);
-            obj.add("sac", element);
-            obj.add("string_metadata",jsonSerializationContext.serialize(stringMetaData));
-            return obj;
-        } catch (UnsupportedOperationException e) {
-            logger.error("Could not serialize source "+ sourceAndConverter.getSpimSource().getName() + " of class "+ sourceAndConverter.getSpimSource().getClass().getName());
-            return null;
-        }
-    }
+			JsonElement element = serializeSubClass(sourceAndConverter,
+				SourceAndConverter.class, jsonSerializationContext);
+			obj.add("sac", element);
+			obj.add("string_metadata", jsonSerializationContext.serialize(
+				stringMetaData));
+			return obj;
+		}
+		catch (UnsupportedOperationException e) {
+			logger.error("Could not serialize source " + sourceAndConverter
+				.getSpimSource().getName() + " of class " + sourceAndConverter
+					.getSpimSource().getClass().getName());
+			return null;
+		}
+	}
 
-    JsonElement serializeSubClass (SourceAndConverter<?> sourceAndConverter,
-                                          Type type,
-                                          JsonSerializationContext jsonSerializationContext) throws UnsupportedOperationException {
+	JsonElement serializeSubClass(SourceAndConverter<?> sourceAndConverter,
+		Type type, JsonSerializationContext jsonSerializationContext)
+		throws UnsupportedOperationException
+	{
 
-        if (!sourceSerializers.containsKey(sourceAndConverter.getSpimSource().getClass())) {
-            logger.error("Unsupported serialisation of "+sourceAndConverter.getSpimSource().getClass());
-            throw new UnsupportedOperationException();
-        }
+		if (!sourceSerializers.containsKey(sourceAndConverter.getSpimSource()
+			.getClass()))
+		{
+			logger.error("Unsupported serialisation of " + sourceAndConverter
+				.getSpimSource().getClass());
+			throw new UnsupportedOperationException();
+		}
 
-        return sourceSerializers.get(sourceAndConverter.getSpimSource().getClass())
-                .serialize(sourceAndConverter, SourceAndConverter.class, jsonSerializationContext);
-    }
+		return sourceSerializers.get(sourceAndConverter.getSpimSource().getClass())
+			.serialize(sourceAndConverter, SourceAndConverter.class,
+				jsonSerializationContext);
+	}
 
-    @Override
-    public SourceAndConverter<?> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        JsonObject jsonObject = jsonElement.getAsJsonObject();
+	@Override
+	public SourceAndConverter<?> deserialize(JsonElement jsonElement, Type type,
+		JsonDeserializationContext jsonDeserializationContext)
+		throws JsonParseException
+	{
+		JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-        String sourceClass = jsonObject.getAsJsonPrimitive("source_class").getAsString();
+		String sourceClass = jsonObject.getAsJsonPrimitive("source_class")
+			.getAsString();
 
-        if (!sourceSerializersFromName.containsKey(sourceClass)) {
-            logger.error("Unsupported deserialization of "+sourceClass);
-            throw new UnsupportedOperationException();
-        }
+		if (!sourceSerializersFromName.containsKey(sourceClass)) {
+			logger.error("Unsupported deserialization of " + sourceClass);
+			throw new UnsupportedOperationException();
+		}
 
-        SourceAndConverter<?> sac = sourceSerializersFromName.get(sourceClass)
-                .deserialize(jsonObject.get("sac"), SourceAndConverter.class, jsonDeserializationContext);
+		SourceAndConverter<?> sac = sourceSerializersFromName.get(sourceClass)
+			.deserialize(jsonObject.get("sac"), SourceAndConverter.class,
+				jsonDeserializationContext);
 
-        if (sac != null) {
-            if (jsonObject.getAsJsonPrimitive("color")!=null) {
-                // Now the color
-                int color = jsonObject.getAsJsonPrimitive("color").getAsInt();
-                new ColorChanger(sac,  new ARGBType(color)).run(); // TO deal with volatile and non-volatile
-                // Min Max display
-                SourceAndConverterServices.getSourceAndConverterService()
-                        .getConverterSetup(sac).setDisplayRange(
-                                jsonObject.getAsJsonPrimitive("converter_setup_min").getAsDouble(),
-                                jsonObject.getAsJsonPrimitive("converter_setup_max").getAsDouble());
-            }
+		if (sac != null) {
+			if (jsonObject.getAsJsonPrimitive("color") != null) {
+				// Now the color
+				int color = jsonObject.getAsJsonPrimitive("color").getAsInt();
+				new ColorChanger(sac, new ARGBType(color)).run(); // TO deal with
+																													// volatile and
+																													// non-volatile
+				// Min Max display
+				SourceAndConverterServices.getSourceAndConverterService()
+					.getConverterSetup(sac).setDisplayRange(jsonObject.getAsJsonPrimitive(
+						"converter_setup_min").getAsDouble(), jsonObject.getAsJsonPrimitive(
+							"converter_setup_max").getAsDouble());
+			}
 
-            // unique identifier
-            int idSource = jsonObject.getAsJsonPrimitive("source_id").getAsInt();
-            sacSerializer.getIdToSac().put(idSource, sac);
-            sacSerializer.getSacToId().put(sac, idSource);
-            sacSerializer.getSourceToId().put(sac.getSpimSource(), idSource);
-            sacSerializer.getIdToSource().put(idSource, sac.getSpimSource());
-            sacSerializer.alreadyDeSerializedSacs.add(idSource);
+			// unique identifier
+			int idSource = jsonObject.getAsJsonPrimitive("source_id").getAsInt();
+			sacSerializer.getIdToSac().put(idSource, sac);
+			sacSerializer.getSacToId().put(sac, idSource);
+			sacSerializer.getSourceToId().put(sac.getSpimSource(), idSource);
+			sacSerializer.getIdToSource().put(idSource, sac.getSpimSource());
+			sacSerializer.alreadyDeSerializedSacs.add(idSource);
 
-            Map<String,String> stringMetaData = jsonDeserializationContext
-            .deserialize(jsonObject.get("string_metadata"), Map.class);//,jsonSerializationContext.serialize(stringMetaData));
+			Map<String, String> stringMetaData = jsonDeserializationContext
+				.deserialize(jsonObject.get("string_metadata"), Map.class);// ,jsonSerializationContext.serialize(stringMetaData));
 
-            stringMetaData.keySet().forEach(key ->
-                SourceAndConverterServices
-                        .getSourceAndConverterService()
-                        .setMetadata(sac,key,stringMetaData.get(key))
-            );
+			stringMetaData.keySet().forEach(key -> SourceAndConverterServices
+				.getSourceAndConverterService().setMetadata(sac, key, stringMetaData
+					.get(key)));
 
-            return sac;
-        }
+			return sac;
+		}
 
-        return null;
-    }
+		return null;
+	}
 }

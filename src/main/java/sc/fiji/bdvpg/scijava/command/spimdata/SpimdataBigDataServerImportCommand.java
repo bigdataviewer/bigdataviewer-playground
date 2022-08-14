@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.spimdata;
 
 import com.google.gson.stream.JsonReader;
@@ -43,76 +44,83 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>BDVDataset [BigDataServer]",
-        label = "Command that opens a BDV dataset from a BigDataServer. Click on Show to display it.")
-public class SpimdataBigDataServerImportCommand implements BdvPlaygroundActionCommand
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"BDVDataset>BDVDataset [BigDataServer]",
+	label = "Command that opens a BDV dataset from a BigDataServer. Click on Show to display it.")
+public class SpimdataBigDataServerImportCommand implements
+	BdvPlaygroundActionCommand
 {
-    @Parameter(label = "Big Data Server URL")
-    String urlserver = "http://tomancak-srv1.mpi-cbg.de:8081";
 
-    @Parameter(label = "Dataset Name")
-    String datasetname = "Drosophila";
+	@Parameter(label = "Big Data Server URL")
+	String urlserver = "http://tomancak-srv1.mpi-cbg.de:8081";
 
-    @Override
-    public void run()
-    {
-        try {
-            Map<String,String> BDSList = getDatasetList(urlserver);
-            final String urlString = BDSList.get(datasetname);
-            new SpimDataFromXmlImporter(urlString).get();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+	@Parameter(label = "Dataset Name")
+	String datasetname = "Drosophila";
 
-    public static Map<String,String> getDatasetList( final String remoteUrl ) throws IOException {
+	@Override
+	public void run() {
+		try {
+			Map<String, String> BDSList = getDatasetList(urlserver);
+			final String urlString = BDSList.get(datasetname);
+			new SpimDataFromXmlImporter(urlString).get();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-        Map< String, String > datasetUrlMap = new HashMap<>();
+	public static Map<String, String> getDatasetList(final String remoteUrl)
+		throws IOException
+	{
 
-        // Get JSON string from the server
-        final URL url = new URL( remoteUrl + "/json/" );
-        final InputStream is = url.openStream();
-        final JsonReader reader = new JsonReader( new InputStreamReader( is, StandardCharsets.UTF_8) );
+		Map<String, String> datasetUrlMap = new HashMap<>();
 
-        reader.beginObject();
-        while ( reader.hasNext() )
-        {
-            // skipping id
-            reader.nextName();
-            reader.beginObject();
-            String id = null, description = null, thumbnailUrl = null, datasetUrl = null;
-            while ( reader.hasNext() )
-            {
-                final String name = reader.nextName();
-                switch (name) {
-                    case "id":
-                        id = reader.nextString();
-                        break;
-                    case "description":
-                        description = reader.nextString();
-                        break;
-                    case "thumbnailUrl":
-                        thumbnailUrl = reader.nextString();
-                        break;
-                    case "datasetUrl":
-                        datasetUrl = reader.nextString();
-                        break;
-                    default:
-                        reader.skipValue();
-                        break;
-                }
-            }
-            if ( id != null )
-            {
-                datasetUrlMap.put( id, datasetUrl );
-            }
-            reader.endObject();
-        }
-        reader.endObject();
-        reader.close();
-        return datasetUrlMap;
-    }
+		// Get JSON string from the server
+		final URL url = new URL(remoteUrl + "/json/");
+		final InputStream is = url.openStream();
+		final JsonReader reader = new JsonReader(new InputStreamReader(is,
+			StandardCharsets.UTF_8));
+
+		reader.beginObject();
+		while (reader.hasNext()) {
+			// skipping id
+			reader.nextName();
+			reader.beginObject();
+			String id = null, description = null, thumbnailUrl = null, datasetUrl =
+				null;
+			while (reader.hasNext()) {
+				final String name = reader.nextName();
+				switch (name) {
+					case "id":
+						id = reader.nextString();
+						break;
+					case "description":
+						description = reader.nextString();
+						break;
+					case "thumbnailUrl":
+						thumbnailUrl = reader.nextString();
+						break;
+					case "datasetUrl":
+						datasetUrl = reader.nextString();
+						break;
+					default:
+						reader.skipValue();
+						break;
+				}
+			}
+			if (id != null) {
+				datasetUrlMap.put(id, datasetUrl);
+			}
+			reader.endObject();
+		}
+		reader.endObject();
+		reader.close();
+		return datasetUrlMap;
+	}
 
 }

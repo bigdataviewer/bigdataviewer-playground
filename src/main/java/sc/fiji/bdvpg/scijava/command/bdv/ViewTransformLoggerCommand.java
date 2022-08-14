@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
@@ -38,36 +39,38 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 /**
- * ViewTransformLoggerCommand
- * Author: @haesleinhuepf
- * 12 2019
+ * ViewTransformLoggerCommand Author: @haesleinhuepf 12 2019
  */
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Log view transform",
-        description = "Outputs the current view transform of a BDV window into the standard IJ logger")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Log view transform",
+	description = "Outputs the current view transform of a BDV window into the standard IJ logger")
 
 public class ViewTransformLoggerCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter
-    BdvHandle bdvh;
+	@Parameter
+	BdvHandle bdvh;
 
-    @Parameter
-    LogService ls;
+	@Parameter
+	LogService ls;
 
-    @Override
-    public void run() {
-        new ViewerTransformLogger(bdvh, new Logger() {
-            @Override
-            public void out(String msg) {
-                ls.info(msg);
-            }
+	@Override
+	public void run() {
+		new ViewerTransformLogger(bdvh, new Logger() {
 
-            @Override
-            public void err(String msg) {
-                ls.error(msg);
-            }
-        }).run();
-    }
+			@Override
+			public void out(String msg) {
+				ls.info(msg);
+			}
+
+			@Override
+			public void err(String msg) {
+				ls.error(msg);
+			}
+		}).run();
+	}
 }

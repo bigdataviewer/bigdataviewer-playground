@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
@@ -37,45 +38,48 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Resample Source Based on Model Source")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu +
+	"Sources>Resample Source Based on Model Source")
 public class SourcesResamplerCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(label = "Select Source(s)")
-    SourceAndConverter<?>[] sacs;
+	@Parameter(label = "Select Source(s)")
+	SourceAndConverter<?>[] sacs;
 
-    @Parameter
-    SourceAndConverter<?> model;
+	@Parameter
+	SourceAndConverter<?> model;
 
-    @Parameter(label="Re-use MipMaps")
-    boolean reusemipmaps;
+	@Parameter(label = "Re-use MipMaps")
+	boolean reusemipmaps;
 
-    @Parameter(label="MipMap level if not re-used (0 = max resolution)")
-    int defaultmipmaplevel;
+	@Parameter(label = "MipMap level if not re-used (0 = max resolution)")
+	int defaultmipmaplevel;
 
-    @Parameter
-    boolean interpolate;
+	@Parameter
+	boolean interpolate;
 
-    @Parameter
-    boolean cache;
+	@Parameter
+	boolean cache;
 
-    @Parameter(label="Name(s) of the resampled source(s)")
-    String name; // CSV separate for multiple sources
+	@Parameter(label = "Name(s) of the resampled source(s)")
+	String name; // CSV separate for multiple sources
 
-    @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter<?>[] sacs_out;
+	@Parameter(type = ItemIO.OUTPUT)
+	SourceAndConverter<?>[] sacs_out;
 
-
-    @Override
-    public void run() {
-        // Should not be parallel
-        sacs_out = new SourceAndConverter<?>[sacs.length];
-        final String[] names = name.split( "," );
-        for (int i=0;i< sacs.length;i++) {
-            SourceAndConverter<?> sac = sacs[i];
-            sacs_out[i] = new SourceResampler(sac, model, names[i], reusemipmaps, cache, interpolate, defaultmipmaplevel).get();
-        }
-    }
+	@Override
+	public void run() {
+		// Should not be parallel
+		sacs_out = new SourceAndConverter<?>[sacs.length];
+		final String[] names = name.split(",");
+		for (int i = 0; i < sacs.length; i++) {
+			SourceAndConverter<?> sac = sacs[i];
+			sacs_out[i] = new SourceResampler(sac, model, names[i], reusemipmaps,
+				cache, interpolate, defaultmipmaplevel).get();
+		}
+	}
 
 }

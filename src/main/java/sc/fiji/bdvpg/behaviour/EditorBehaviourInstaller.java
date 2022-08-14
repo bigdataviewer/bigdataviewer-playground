@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.behaviour;
 
 import bdv.util.BdvHandle;
@@ -50,113 +51,128 @@ import java.io.FileReader;
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getCommandName;
 
 /**
- * BDV Actions called by default on each BDV Window being created
- * See {@link EditorBehaviourUnInstaller} to remove the default editor and replace by a custom if necessary
+ * BDV Actions called by default on each BDV Window being created See
+ * {@link EditorBehaviourUnInstaller} to remove the default editor and replace
+ * by a custom if necessary
  *
  * @author Nicolas Chiaruttini, BIOP, EPFL 2020
  */
 
 public class EditorBehaviourInstaller implements Runnable {
 
-    protected static final Logger logger = LoggerFactory.getLogger(EditorBehaviourInstaller.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		EditorBehaviourInstaller.class);
 
-    final SourceSelectorBehaviour ssb;
-    final BdvHandle bdvh;
+	final SourceSelectorBehaviour ssb;
+	final BdvHandle bdvh;
 
-    private ToggleListener toggleListener;
+	private ToggleListener toggleListener;
 
-    public String[] getEditorPopupActions() {
-        // TODO : fix the file path containing default actions
-        File f = BdvSettingsGUISetter.getActionFile(editorActionsPath, "editor");//new File("bdvpgsettings"+File.separator+"DefaultEditorActions.json");
-        String[] popupActions = {
-                getCommandName(BdvSourcesShowCommand.class),
-                getCommandName(BasicTransformerCommand.class),
-                getCommandName(BdvSourcesRemoverCommand.class),
-                "Inspect Sources",
-                "PopupLine",
-                getCommandName(SourcesInvisibleMakerCommand.class),
-                getCommandName(InteractiveBrightnessAdjusterCommand.class),
-                getCommandName(SourceColorChangerCommand.class),
-                "PopupLine",
-                getCommandName(SourcesRemoverCommand.class)};
+	public String[] getEditorPopupActions() {
+		// TODO : fix the file path containing default actions
+		File f = BdvSettingsGUISetter.getActionFile(editorActionsPath, "editor");// new
+																																							// File("bdvpgsettings"+File.separator+"DefaultEditorActions.json");
+		String[] popupActions = { getCommandName(BdvSourcesShowCommand.class),
+			getCommandName(BasicTransformerCommand.class), getCommandName(
+				BdvSourcesRemoverCommand.class), "Inspect Sources", "PopupLine",
+			getCommandName(SourcesInvisibleMakerCommand.class), getCommandName(
+				InteractiveBrightnessAdjusterCommand.class), getCommandName(
+					SourceColorChangerCommand.class), "PopupLine", getCommandName(
+						SourcesRemoverCommand.class) };
 
-        if (f.exists()) {
-            try {
-                Gson gson = new Gson();
-                popupActions = gson.fromJson(new FileReader(f.getAbsoluteFile()), String[].class);
-                if ((popupActions== null)||(popupActions.length==0)) {
-                    popupActions = new String[]{"Warning: Empty "+f.getAbsolutePath()+" config file."};
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        } else {
-            File fdefault = new File(f.getAbsolutePath()+".default.txt");
-            if (fdefault.exists()) {
-                try {
-                    Gson gson = new Gson();
-                    popupActions = gson.fromJson(new FileReader(fdefault.getAbsoluteFile()), String[].class);
-                    if ((popupActions== null)||(popupActions.length==0)) {
-                        popupActions = new String[]{"Warning: Empty "+fdefault.getAbsolutePath()+" config file."};
-                    }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                logger.error("Bdv Playground actions settings File "+f.getAbsolutePath()+" does not exist.");
-                logger.error("Bdv Playground default actions settings File "+fdefault.getAbsolutePath()+" does not exist.");
-            }
-        }
-        return popupActions;
-    }
+		if (f.exists()) {
+			try {
+				Gson gson = new Gson();
+				popupActions = gson.fromJson(new FileReader(f.getAbsoluteFile()),
+					String[].class);
+				if ((popupActions == null) || (popupActions.length == 0)) {
+					popupActions = new String[] { "Warning: Empty " + f
+						.getAbsolutePath() + " config file." };
+				}
+			}
+			catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		else {
+			File fdefault = new File(f.getAbsolutePath() + ".default.txt");
+			if (fdefault.exists()) {
+				try {
+					Gson gson = new Gson();
+					popupActions = gson.fromJson(new FileReader(fdefault
+						.getAbsoluteFile()), String[].class);
+					if ((popupActions == null) || (popupActions.length == 0)) {
+						popupActions = new String[] { "Warning: Empty " + fdefault
+							.getAbsolutePath() + " config file." };
+					}
+				}
+				catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+			else {
+				logger.error("Bdv Playground actions settings File " + f
+					.getAbsolutePath() + " does not exist.");
+				logger.error("Bdv Playground default actions settings File " + fdefault
+					.getAbsolutePath() + " does not exist.");
+			}
+		}
+		return popupActions;
+	}
 
-    final String editorActionsPath;
+	final String editorActionsPath;
 
-    public EditorBehaviourInstaller(SourceSelectorBehaviour ssb, String context) {
-        this.ssb = ssb;
-        this.bdvh = ssb.getBdvHandle();
-        this.editorActionsPath = context;
-    }
+	public EditorBehaviourInstaller(SourceSelectorBehaviour ssb, String context) {
+		this.ssb = ssb;
+		this.bdvh = ssb.getBdvHandle();
+		this.editorActionsPath = context;
+	}
 
-    @Override
-    public void run() {
-        Behaviours editor = new Behaviours(new InputTriggerConfig());
+	@Override
+	public void run() {
+		Behaviours editor = new Behaviours(new InputTriggerConfig());
 
-        ClickBehaviour delete = (x, y) -> bdvh.getViewerPanel().state().removeSources(ssb.getSelectedSources());
+		ClickBehaviour delete = (x, y) -> bdvh.getViewerPanel().state()
+			.removeSources(ssb.getSelectedSources());
 
-        editor.behaviour(delete, "remove-sources-from-bdv", "DELETE");
+		editor.behaviour(delete, "remove-sources-from-bdv", "DELETE");
 
-        editor.behaviour(new SourceAndConverterContextMenuClickBehaviour( bdvh, ssb::getSelectedSources, getEditorPopupActions() ), "Sources Context Menu", "button3");
+		editor.behaviour(new SourceAndConverterContextMenuClickBehaviour(bdvh,
+			ssb::getSelectedSources, getEditorPopupActions()), "Sources Context Menu",
+			"button3");
 
-        toggleListener = new ToggleListener() {
-            @Override
-            public void isEnabled() {
-                bdvh.getViewerPanel().showMessage("Editor Mode");
-                // Enable the editor behaviours when the selector is enabled
-                editor.install(bdvh.getTriggerbindings(), "sources-editor");
-            }
+		toggleListener = new ToggleListener() {
 
-            @Override
-            public void isDisabled() {
-                bdvh.getViewerPanel().showMessage("Navigation Mode");
-                // Disable the editor behaviours the selector is disabled
-                bdvh.getTriggerbindings().removeInputTriggerMap("sources-editor");
-                bdvh.getTriggerbindings().removeBehaviourMap("sources-editor");
-            }
-        };
+			@Override
+			public void isEnabled() {
+				bdvh.getViewerPanel().showMessage("Editor Mode");
+				// Enable the editor behaviours when the selector is enabled
+				editor.install(bdvh.getTriggerbindings(), "sources-editor");
+			}
 
-        // One way to chain the behaviour : install and uninstall on source selector toggling:
-        // The delete key will act only when the source selection mode is on
-        ssb.addToggleListener(toggleListener);
+			@Override
+			public void isDisabled() {
+				bdvh.getViewerPanel().showMessage("Navigation Mode");
+				// Disable the editor behaviours the selector is disabled
+				bdvh.getTriggerbindings().removeInputTriggerMap("sources-editor");
+				bdvh.getTriggerbindings().removeBehaviourMap("sources-editor");
+			}
+		};
 
-        // Provides a way to retrieve this installer -> can be used to uninstalling it {@link EditorBehaviourUninstaller}
-        SourceAndConverterServices.getBdvDisplayService().setDisplayMetadata(
-                bdvh, EditorBehaviourInstaller.class.getSimpleName(), this);
+		// One way to chain the behaviour : install and uninstall on source selector
+		// toggling:
+		// The delete key will act only when the source selection mode is on
+		ssb.addToggleListener(toggleListener);
 
-    }
+		// Provides a way to retrieve this installer -> can be used to uninstalling
+		// it {@link EditorBehaviourUninstaller}
+		SourceAndConverterServices.getBdvDisplayService().setDisplayMetadata(bdvh,
+			EditorBehaviourInstaller.class.getSimpleName(), this);
 
-    public ToggleListener getToggleListener() {
-        return toggleListener;
-    }
+	}
+
+	public ToggleListener getToggleListener() {
+		return toggleListener;
+	}
 
 }

@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.processors;
 
 import bdv.util.BdvHandle;
@@ -41,33 +42,32 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import java.util.function.Consumer;
 
 /**
- * Ensures BdvHandle is stored into ObjectService
- * and all containing Sources as well are stored into the BdvSourceAndConverterDisplayService and
- * BdvSourceAndConverterService
- * Also fix BDV Close operation
+ * Ensures BdvHandle is stored into ObjectService and all containing Sources as
+ * well are stored into the BdvSourceAndConverterDisplayService and
+ * BdvSourceAndConverterService Also fix BDV Close operation
  */
 @SuppressWarnings("unused")
 @Plugin(type = PostprocessorPlugin.class)
 public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
 
-    protected static final Logger logger = LoggerFactory.getLogger(BdvHandlePostprocessor.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		BdvHandlePostprocessor.class);
 
-    @Parameter
-    SourceAndConverterBdvDisplayService bsds;
+	@Parameter
+	SourceAndConverterBdvDisplayService bsds;
 
-    public static Consumer<String> log = logger::debug;
+	public static Consumer<String> log = logger::debug;
 
-    @Override
-    public void process(Module module) {
+	@Override
+	public void process(Module module) {
 
-        module.getOutputs().forEach((name, object)-> {
-            if (object instanceof BdvHandle)
-            {
-                bsds.registerBdvHandle( (BdvHandle) object );
-                module.resolveOutput(name);
-            }
-        });
+		module.getOutputs().forEach((name, object) -> {
+			if (object instanceof BdvHandle) {
+				bsds.registerBdvHandle((BdvHandle) object);
+				module.resolveOutput(name);
+			}
+		});
 
-    }
+	}
 
 }

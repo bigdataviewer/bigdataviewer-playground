@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.adapter.source;
 
 import bdv.viewer.Source;
@@ -36,13 +37,18 @@ import sc.fiji.persist.IObjectScijavaAdapter;
 
 import java.lang.reflect.Type;
 
-public interface ISourceAdapter<S extends Source> extends IObjectScijavaAdapter {
+public interface ISourceAdapter<S extends Source> extends
+	IObjectScijavaAdapter
+{
 
-    void setSacSerializer(SourceAndConverterAdapter sacSerializer);
+	void setSacSerializer(SourceAndConverterAdapter sacSerializer);
 
-    Class<S> getSourceClass();
+	Class<S> getSourceClass();
 
-    JsonElement serialize(SourceAndConverter<?> sac, Type type, JsonSerializationContext jsonSerializationContext);
+	JsonElement serialize(SourceAndConverter<?> sac, Type type,
+		JsonSerializationContext jsonSerializationContext);
 
-    SourceAndConverter<?> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException;
+	SourceAndConverter<?> deserialize(JsonElement jsonElement, Type type,
+		JsonDeserializationContext jsonDeserializationContext)
+		throws JsonParseException;
 }

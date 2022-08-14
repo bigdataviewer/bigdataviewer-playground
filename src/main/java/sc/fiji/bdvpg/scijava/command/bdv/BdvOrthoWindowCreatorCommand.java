@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.*;
@@ -43,104 +44,117 @@ import sc.fiji.bdvpg.viewers.ViewerStateSyncStarter;
 import javax.swing.*;
 import java.awt.*;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Create Orthogonal Views",
-        description = "Creates 3 BDV windows with synchronized orthogonal views")
-public class BdvOrthoWindowCreatorCommand implements BdvPlaygroundActionCommand {
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Create Orthogonal Views",
+	description = "Creates 3 BDV windows with synchronized orthogonal views")
+public class BdvOrthoWindowCreatorCommand implements
+	BdvPlaygroundActionCommand
+{
 
-    @Parameter(label = "Interpolate")
-    public boolean interpolate = false;
+	@Parameter(label = "Interpolate")
+	public boolean interpolate = false;
 
-    @Parameter(label = "Number of timepoints (1 for a single timepoint)")
-    public int ntimepoints = 1;
+	@Parameter(label = "Number of timepoints (1 for a single timepoint)")
+	public int ntimepoints = 1;
 
-    @Parameter(label = "Add cross overlay to show view plane locations")
-    public boolean drawcrosses = true;
+	@Parameter(label = "Add cross overlay to show view plane locations")
+	public boolean drawcrosses = true;
 
-    @Parameter(label = "Display (0 if you have one screen)")
-    int screen = 0;
+	@Parameter(label = "Display (0 if you have one screen)")
+	int screen = 0;
 
-    @Parameter(label = "X Front Window location")
-    int locationx = 150;
+	@Parameter(label = "X Front Window location")
+	int locationx = 150;
 
-    @Parameter(label = "Y Front Window location")
-    int locationy = 150;
+	@Parameter(label = "Y Front Window location")
+	int locationy = 150;
 
-    @Parameter(label = "Window Width")
-    int sizex = 500;
+	@Parameter(label = "Window Width")
+	int sizex = 500;
 
-    @Parameter(label = "Window Height")
-    int sizey = 500;
+	@Parameter(label = "Window Height")
+	int sizey = 500;
 
-    //@Parameter(label = "Synchronize time") // honestly no reason not to synchronize the time
-    public boolean synctime = true;
+	// @Parameter(label = "Synchronize time") // honestly no reason not to
+	// synchronize the time
+	public boolean synctime = true;
 
-    /**
-     * This triggers: BdvHandlePostprocessor
-     */
-    @Parameter(type = ItemIO.OUTPUT)
-    public BdvHandle bdvhx;
+	/**
+	 * This triggers: BdvHandlePostprocessor
+	 */
+	@Parameter(type = ItemIO.OUTPUT)
+	public BdvHandle bdvhx;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    public BdvHandle bdvhy;
+	@Parameter(type = ItemIO.OUTPUT)
+	public BdvHandle bdvhy;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    public BdvHandle bdvhz;
+	@Parameter(type = ItemIO.OUTPUT)
+	public BdvHandle bdvhz;
 
-    @Parameter
-    SourceAndConverterBdvDisplayService sacDisplayService;
+	@Parameter
+	SourceAndConverterBdvDisplayService sacDisplayService;
 
-    @Parameter
-    boolean synchronize_sources = true;
+	@Parameter
+	boolean synchronize_sources = true;
 
-    @Override
-    public void run() {
+	@Override
+	public void run() {
 
-        bdvhx = createBdv("-Front", locationx, locationy);
-        bdvhy = createBdv("-Right", locationx + sizex +10, locationy);
-        bdvhz = createBdv("-Bottom", locationx, locationy + sizey +40);
+		bdvhx = createBdv("-Front", locationx, locationy);
+		bdvhy = createBdv("-Right", locationx + sizex + 10, locationy);
+		bdvhz = createBdv("-Bottom", locationx, locationy + sizey + 40);
 
+		if (drawcrosses) {
+			BdvHandleHelper.addCenterCross(bdvhx);
+			BdvHandleHelper.addCenterCross(bdvhy);
+			BdvHandleHelper.addCenterCross(bdvhz);
+		}
 
-        if (drawcrosses) {
-            BdvHandleHelper.addCenterCross(bdvhx);
-            BdvHandleHelper.addCenterCross(bdvhy);
-            BdvHandleHelper.addCenterCross(bdvhz);
-        }
+		bdvhx.getViewerPanel().state().setNumTimepoints(ntimepoints);
+		bdvhy.getViewerPanel().state().setNumTimepoints(ntimepoints);
+		bdvhz.getViewerPanel().state().setNumTimepoints(ntimepoints);
 
-        bdvhx.getViewerPanel().state().setNumTimepoints(ntimepoints);
-        bdvhy.getViewerPanel().state().setNumTimepoints(ntimepoints);
-        bdvhz.getViewerPanel().state().setNumTimepoints(ntimepoints);
+		ViewerOrthoSyncStarter starter = new ViewerOrthoSyncStarter(
+			new ViewerAdapter(bdvhx), new ViewerAdapter(bdvhz), new ViewerAdapter(
+				bdvhy), synctime);
+		starter.run();
 
-        ViewerOrthoSyncStarter starter = new ViewerOrthoSyncStarter(new ViewerAdapter(bdvhx), new ViewerAdapter(bdvhz), new ViewerAdapter(bdvhy), synctime);
-        starter.run();
+		if (synchronize_sources) {
+			new ViewerStateSyncStarter(new ViewerAdapter(bdvhx), new ViewerAdapter(
+				bdvhy), new ViewerAdapter(bdvhz)).run();
+		}
 
-        if (synchronize_sources) {
-            new ViewerStateSyncStarter(new ViewerAdapter(bdvhx), new ViewerAdapter(bdvhy), new ViewerAdapter(bdvhz)).run();
-        }
+	}
 
-    }
+	BdvHandle createBdv(String suffix, double locX, double locY) {
 
-    BdvHandle createBdv(String suffix, double locX, double locY) {
+		BdvHandle bdvh = sacDisplayService.getNewBdv();
+		BdvHandleHelper.setWindowTitle(bdvh, BdvHandleHelper.getWindowTitle(bdvh) +
+			suffix);
 
-        BdvHandle bdvh = sacDisplayService.getNewBdv();
-        BdvHandleHelper.setWindowTitle(bdvh, BdvHandleHelper.getWindowTitle(bdvh)+suffix);
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] gd = ge.getScreenDevices();
+		JFrame frame = BdvHandleHelper.getJFrame(bdvh);
+		SwingUtilities.invokeLater(() -> {
+			if (screen > -1 && screen < gd.length) {
+				frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x +
+					(int) locX, (int) locY);
+			}
+			else if (gd.length > 0) {
+				frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x +
+					(int) locX, (int) locY);
+			}
+			else {
+				throw new RuntimeException("No Screens Found");
+			}
+			frame.setSize(sizex, sizey);
+		});
 
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice[] gd = ge.getScreenDevices();
-        JFrame frame = BdvHandleHelper.getJFrame(bdvh);
-        SwingUtilities.invokeLater(() -> {
-            if( screen > -1 && screen < gd.length ) {
-                frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);
-            } else if( gd.length > 0 ) {
-                frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x+(int)locX, (int)locY);
-            } else {
-                throw new RuntimeException( "No Screens Found" );
-            }
-            frame.setSize(sizex, sizey);
-        });
-
-        return bdvh;
-    }
+		return bdvh;
+	}
 
 }

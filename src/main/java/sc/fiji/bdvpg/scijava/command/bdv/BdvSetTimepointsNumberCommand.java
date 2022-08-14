@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
@@ -34,23 +35,28 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Set Number Of Timepoints",
-    description = "Sets the number of timepoints in one or several BDV Windows")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Set Number Of Timepoints",
+	description = "Sets the number of timepoints in one or several BDV Windows")
 
-public class BdvSetTimepointsNumberCommand implements BdvPlaygroundActionCommand {
+public class BdvSetTimepointsNumberCommand implements
+	BdvPlaygroundActionCommand
+{
 
-    @Parameter(label = "Select BDV Windows")
-    BdvHandle[] bdvhs;
+	@Parameter(label = "Select BDV Windows")
+	BdvHandle[] bdvhs;
 
-    @Parameter(label = "Number of timepoints, min = 1", min = "1")
-    int numberoftimepoints;
+	@Parameter(label = "Number of timepoints, min = 1", min = "1")
+	int numberoftimepoints;
 
-    public void run() {
-        for (BdvHandle bdvh : bdvhs) {
-            bdvh.getViewerPanel().setNumTimepoints(numberoftimepoints);
-        }
-    }
+	public void run() {
+		for (BdvHandle bdvh : bdvhs) {
+			bdvh.getViewerPanel().setNumTimepoints(numberoftimepoints);
+		}
+	}
 
 }

@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.converters;
 
 import bdv.util.BdvHandle;
@@ -41,38 +42,43 @@ import java.util.Optional;
 
 /**
  * Does not trim spaces!!! "BigDataViewer" is different to " BigDataViewer"
+ * 
  * @param <I> a class that extends String (a bit weird TBH)
  */
 @Plugin(type = org.scijava.convert.Converter.class)
-public class StringToBdvHandleArray<I extends String> extends AbstractConverter<I, BdvHandle[]> {
-    @Parameter
-    ObjectService os;
+public class StringToBdvHandleArray<I extends String> extends
+	AbstractConverter<I, BdvHandle[]>
+{
 
-    @Override
-    public <T> T convert(Object src, Class<T> dest) {
-        String input = (String) src;
-        String[] bdvNames = input.split(",");
-        List<BdvHandle> bdvhs = new ArrayList<>();
-        for (String bdvName:bdvNames) {
-            Optional<BdvHandle> ans = os.getObjects(BdvHandle.class).stream().filter(bdvh ->
-                    (bdvh.toString().equals(bdvName)) || (BdvHandleHelper.getWindowTitle(bdvh).equals(bdvName))
-            ).findFirst();
-            ans.ifPresent(bdvhs::add);
-        }
-        if (bdvhs.size()==0) {
-            return null;
-        } else {
-            return (T) bdvhs.toArray(new BdvHandle[0]);
-        }
-    }
+	@Parameter
+	ObjectService os;
 
-    @Override
-    public Class<BdvHandle[]> getOutputType() {
-        return BdvHandle[].class;
-    }
+	@Override
+	public <T> T convert(Object src, Class<T> dest) {
+		String input = (String) src;
+		String[] bdvNames = input.split(",");
+		List<BdvHandle> bdvhs = new ArrayList<>();
+		for (String bdvName : bdvNames) {
+			Optional<BdvHandle> ans = os.getObjects(BdvHandle.class).stream().filter(
+				bdvh -> (bdvh.toString().equals(bdvName)) || (BdvHandleHelper
+					.getWindowTitle(bdvh).equals(bdvName))).findFirst();
+			ans.ifPresent(bdvhs::add);
+		}
+		if (bdvhs.size() == 0) {
+			return null;
+		}
+		else {
+			return (T) bdvhs.toArray(new BdvHandle[0]);
+		}
+	}
 
-    @Override
-    public Class<I> getInputType() {
-        return (Class<I>) String.class;
-    }
+	@Override
+	public Class<BdvHandle[]> getOutputType() {
+		return BdvHandle[].class;
+	}
+
+	@Override
+	public Class<I> getInputType() {
+		return (Class<I>) String.class;
+	}
 }

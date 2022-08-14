@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.spimdata.exporter;
 
 import bdv.spimdata.SpimDataMinimal;
@@ -58,97 +59,121 @@ import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_INFO;
 
 public class XmlFromSpimDataExporter implements Runnable {
 
-    protected static final Logger logger = LoggerFactory.getLogger(XmlFromSpimDataExporter.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		XmlFromSpimDataExporter.class);
 
-    final AbstractSpimData<?> spimData;
+	final AbstractSpimData<?> spimData;
 
-    final String dataLocation;
+	final String dataLocation;
 
-    final Context context;
+	final Context context;
 
-    public static boolean isPathValid(String path) {
-        try {
-            Paths.get(path);
-        } catch (InvalidPathException ex) {
-            return false;
-        }
-        return true;
-    }
+	public static boolean isPathValid(String path) {
+		try {
+			Paths.get(path);
+		}
+		catch (InvalidPathException ex) {
+			return false;
+		}
+		return true;
+	}
 
-    public XmlFromSpimDataExporter (AbstractSpimData<?> spimData, String dataLocation, Context ctx) {
-        this.spimData = spimData;
-        if (isPathValid(dataLocation)) {
-            spimData.setBasePath(new File(dataLocation));
-        } else {
-            logger.error("Trying to save spimdata into an invalid file Path : "+dataLocation);
-        }
-        this.dataLocation = dataLocation;
-        this.context = ctx;
-    }
+	public XmlFromSpimDataExporter(AbstractSpimData<?> spimData,
+		String dataLocation, Context ctx)
+	{
+		this.spimData = spimData;
+		if (isPathValid(dataLocation)) {
+			spimData.setBasePath(new File(dataLocation));
+		}
+		else {
+			logger.error("Trying to save spimdata into an invalid file Path : " +
+				dataLocation);
+		}
+		this.dataLocation = dataLocation;
+		this.context = ctx;
+	}
 
-    @Override
-    public void run() {
-        try {
+	@Override
+	public void run() {
+		try {
 
-            if (context!=null) {
-                // System.out.println(" Handling SciJava extra attributes");
-                // We can handle the extra attributes, see {@link IEntityHandlerService}
-                Map<Class<? extends Entity>, EntityHandler> entityClassToHandler = new HashMap<>();
+			if (context != null) {
+				// System.out.println(" Handling SciJava extra attributes");
+				// We can handle the extra attributes, see {@link IEntityHandlerService}
+				Map<Class<? extends Entity>, EntityHandler> entityClassToHandler =
+					new HashMap<>();
 
-                IEntityHandlerService entityHandlerService = context.getService(IEntityHandlerService.class);
+				IEntityHandlerService entityHandlerService = context.getService(
+					IEntityHandlerService.class);
 
-                // For convenience : map setup id with sacs
-                Map<Integer, SourceAndConverter<?>> idToSac = new HashMap<>();
+				// For convenience : map setup id with sacs
+				Map<Integer, SourceAndConverter<?>> idToSac = new HashMap<>();
 
-                SourceAndConverterService sac_service = context.getService(SourceAndConverterService.class);
+				SourceAndConverterService sac_service = context.getService(
+					SourceAndConverterService.class);
 
-                sac_service.getSourceAndConverterFromSpimdata(spimData).forEach(sac -> {
-                        SourceAndConverterService.SpimDataInfo sdi = (SourceAndConverterService.SpimDataInfo) sac_service.getMetadata(sac, SPIM_DATA_INFO);
-                        idToSac.put(sdi.setupId, sac);
-                });
+				sac_service.getSourceAndConverterFromSpimdata(spimData).forEach(sac -> {
+					SourceAndConverterService.SpimDataInfo sdi =
+						(SourceAndConverterService.SpimDataInfo) sac_service.getMetadata(
+							sac, SPIM_DATA_INFO);
+					idToSac.put(sdi.setupId, sac);
+				});
 
-                entityHandlerService.getHandlers(EntityHandler.class).forEach(pi -> {
-                    try {
-                        EntityHandler handler = pi.createInstance();
-                        entityClassToHandler.put(handler.getEntityType(), handler);
-                        //log.accept("Plugin found for entity class "+handler.getEntityType().getSimpleName());
-                    } catch (InstantiableException e) {
-                        e.printStackTrace();
-                    }
-                });
+				entityHandlerService.getHandlers(EntityHandler.class).forEach(pi -> {
+					try {
+						EntityHandler handler = pi.createInstance();
+						entityClassToHandler.put(handler.getEntityType(), handler);
+						// log.accept("Plugin found for entity class
+						// "+handler.getEntityType().getSimpleName());
+					}
+					catch (InstantiableException e) {
+						e.printStackTrace();
+					}
+				});
 
-                final AbstractSequenceDescription< ?, ?, ? > seq = spimData.getSequenceDescription();
+				final AbstractSequenceDescription<?, ?, ?> seq = spimData
+					.getSequenceDescription();
 
-                for ( final BasicViewSetup setup : seq.getViewSetupsOrdered() ) {
+				for (final BasicViewSetup setup : seq.getViewSetupsOrdered()) {
 
-                    // Execute {@link EntityHandler}, if a compatible entity is found in the spimdata, compatible with an entity class handler
-                    entityClassToHandler.keySet().forEach(entityClass -> {
-                        Entity e = setup.getAttribute(entityClass);
-                        if (e!=null) {
-                            if (idToSac.containsKey(setup)) {
-                                SourceAndConverter<?> sac = idToSac.get(setup);
-                                entityClassToHandler.get(entityClass).writeEntity(setup, sac);//.loadEntity(asd, setup);
-                            } else {
-                                logger.warn("No source found for setup "+setup);
-                            }
-                        }
-                    });
-                }
-            }
+					// Execute {@link EntityHandler}, if a compatible entity is found in
+					// the spimdata, compatible with an entity class handler
+					entityClassToHandler.keySet().forEach(entityClass -> {
+						Entity e = setup.getAttribute(entityClass);
+						if (e != null) {
+							if (idToSac.containsKey(setup)) {
+								SourceAndConverter<?> sac = idToSac.get(setup);
+								entityClassToHandler.get(entityClass).writeEntity(setup, sac);// .loadEntity(asd,
+																																							// setup);
+							}
+							else {
+								logger.warn("No source found for setup " + setup);
+							}
+						}
+					});
+				}
+			}
 
-            SourceAndConverterServices.getSourceAndConverterService().setSpimDataName(spimData, dataLocation);
-            SourceAndConverterServices.getSourceAndConverterService().setMetadata(spimData, SPIM_DATA_LOCATION, dataLocation);
+			SourceAndConverterServices.getSourceAndConverterService().setSpimDataName(
+				spimData, dataLocation);
+			SourceAndConverterServices.getSourceAndConverterService().setMetadata(
+				spimData, SPIM_DATA_LOCATION, dataLocation);
 
-            if (spimData instanceof SpimData) {
-                (new XmlIoSpimData()).save((SpimData) spimData, dataLocation);
-            } else if (spimData instanceof SpimDataMinimal) {
-                (new XmlIoSpimDataMinimal()).save((SpimDataMinimal) spimData, dataLocation);
-            } else {
-                logger.error("Cannot save SpimData of class : "+spimData.getClass().getSimpleName());
-            }
-        } catch (SpimDataException e) {
-            e.printStackTrace();
-        }
-    }
+			if (spimData instanceof SpimData) {
+				(new XmlIoSpimData()).save((SpimData) spimData, dataLocation);
+			}
+			else if (spimData instanceof SpimDataMinimal) {
+				(new XmlIoSpimDataMinimal()).save((SpimDataMinimal) spimData,
+					dataLocation);
+			}
+			else {
+				logger.error("Cannot save SpimData of class : " + spimData.getClass()
+					.getSimpleName());
+			}
+		}
+		catch (SpimDataException e) {
+			e.printStackTrace();
+		}
+	}
 
 }

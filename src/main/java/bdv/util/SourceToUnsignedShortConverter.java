@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package bdv.util;
 
 import bdv.viewer.Interpolation;
@@ -42,67 +43,83 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Helper function to transform RealTyped {@link bdv.viewer.Source} to {@link UnsignedShortType} source
- *
- * TODO : improved conversion or retire... the conversion is not modular it's a direct casting to int
- *
+ * Helper function to transform RealTyped {@link bdv.viewer.Source} to
+ * {@link UnsignedShortType} source TODO : improved conversion or retire... the
+ * conversion is not modular it's a direct casting to int
  */
 
 public class SourceToUnsignedShortConverter {
 
-    protected static final Logger logger = LoggerFactory.getLogger(SourceToUnsignedShortConverter.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		SourceToUnsignedShortConverter.class);
 
-    static public Source<UnsignedShortType> convertRealSource(Source<RealType> iniSrc) {
-        Converter<RealType, UnsignedShortType> cvt = (i, o) -> o.set((int) i.getRealDouble());
-        Source<UnsignedShortType> cvtSrc = new Source<UnsignedShortType>() {
-            @Override
-            public boolean isPresent(int t) {
-                return iniSrc.isPresent(t);
-            }
+	static public Source<UnsignedShortType> convertRealSource(
+		Source<RealType> iniSrc)
+	{
+		Converter<RealType, UnsignedShortType> cvt = (i, o) -> o.set((int) i
+			.getRealDouble());
+		Source<UnsignedShortType> cvtSrc = new Source<UnsignedShortType>() {
 
-            @Override
-            public RandomAccessibleInterval<UnsignedShortType> getSource(int t, int level) {
-                return Converters.convert(iniSrc.getSource(t,level),cvt,new UnsignedShortType());
-            }
+			@Override
+			public boolean isPresent(int t) {
+				return iniSrc.isPresent(t);
+			}
 
-            @Override
-            public RealRandomAccessible<UnsignedShortType> getInterpolatedSource(int t, int level, Interpolation method) {
-                return Converters.convert(iniSrc.getInterpolatedSource(t,level,method),cvt,new UnsignedShortType());
-            }
+			@Override
+			public RandomAccessibleInterval<UnsignedShortType> getSource(int t,
+				int level)
+			{
+				return Converters.convert(iniSrc.getSource(t, level), cvt,
+					new UnsignedShortType());
+			}
 
-            @Override
-            public void getSourceTransform(int t, int level, AffineTransform3D transform) {
-                iniSrc.getSourceTransform(t,level,transform);
-            }
+			@Override
+			public RealRandomAccessible<UnsignedShortType> getInterpolatedSource(
+				int t, int level, Interpolation method)
+			{
+				return Converters.convert(iniSrc.getInterpolatedSource(t, level,
+					method), cvt, new UnsignedShortType());
+			}
 
-            @Override
-            public UnsignedShortType getType() {
-                return new UnsignedShortType();
-            }
+			@Override
+			public void getSourceTransform(int t, int level,
+				AffineTransform3D transform)
+			{
+				iniSrc.getSourceTransform(t, level, transform);
+			}
 
-            @Override
-            public String getName() {
-                return iniSrc.getName();
-            }
+			@Override
+			public UnsignedShortType getType() {
+				return new UnsignedShortType();
+			}
 
-            @Override
-            public VoxelDimensions getVoxelDimensions() {
-                return iniSrc.getVoxelDimensions();
-            }
+			@Override
+			public String getName() {
+				return iniSrc.getName();
+			}
 
-            @Override
-            public int getNumMipmapLevels() {
-                return iniSrc.getNumMipmapLevels();
-            }
-        };
+			@Override
+			public VoxelDimensions getVoxelDimensions() {
+				return iniSrc.getVoxelDimensions();
+			}
 
-        return cvtSrc;
-    }
+			@Override
+			public int getNumMipmapLevels() {
+				return iniSrc.getNumMipmapLevels();
+			}
+		};
 
-    static public <T> Source<UnsignedShortType> convertSource(Source<T> iniSrc) {
-        if (iniSrc.getType() instanceof UnsignedShortType) return (Source<UnsignedShortType>) iniSrc;
-        if (iniSrc.getType() instanceof RealType) return convertRealSource((Source<RealType>) iniSrc);
-        logger.error("Cannot convert source to Unsigned Short Type, "+iniSrc.getType().getClass().getSimpleName()+" cannot be converted to RealType");
-        return null;
-    }
+		return cvtSrc;
+	}
+
+	static public <T> Source<UnsignedShortType> convertSource(Source<T> iniSrc) {
+		if (iniSrc.getType() instanceof UnsignedShortType)
+			return (Source<UnsignedShortType>) iniSrc;
+		if (iniSrc.getType() instanceof RealType) return convertRealSource(
+			(Source<RealType>) iniSrc);
+		logger.error("Cannot convert source to Unsigned Short Type, " + iniSrc
+			.getType().getClass().getSimpleName() +
+			" cannot be converted to RealType");
+		return null;
+	}
 }

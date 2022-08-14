@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.bvv;
 
 import bvv.util.BvvFunctions;
@@ -40,17 +41,16 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import java.util.function.Supplier;
 
 /**
- * BigDataViewer Playground Action --
- *
- * Creates a BigVolumeViewer - should be replaced by Sciview
+ * BigDataViewer Playground Action -- Creates a BigVolumeViewer - should be
+ * replaced by Sciview
  */
 
-public class BvvCreator implements Runnable, Supplier<BvvHandle>
-{
+public class BvvCreator implements Runnable, Supplier<BvvHandle> {
+
 	private BvvOptions bvvOptions;
 	private final int numTimePoints;
 
-	public BvvCreator( ) {
+	public BvvCreator() {
 		this.bvvOptions = BvvOptions.options();
 		this.numTimePoints = 1;
 	}
@@ -60,7 +60,7 @@ public class BvvCreator implements Runnable, Supplier<BvvHandle>
 		this.numTimePoints = 1;
 	}
 
-	public BvvCreator(BvvOptions bvvOptions, int numTimePoints ) {
+	public BvvCreator(BvvOptions bvvOptions, int numTimePoints) {
 		this.bvvOptions = bvvOptions;
 		this.numTimePoints = numTimePoints;
 	}
@@ -70,18 +70,17 @@ public class BvvCreator implements Runnable, Supplier<BvvHandle>
 	}
 
 	/**
-	 * Hack: add an image and remove it after the
-	 * bvvHandle has been created.
-	 * - not done for bvv
+	 * Hack: add an image and remove it after the bvvHandle has been created. -
+	 * not done for bvv
 	 */
 	public BvvHandle get() {
-		//Random random = new Random();
+		// Random random = new Random();
 		Img<UnsignedShortType> dummyImg = ArrayImgs.unsignedShorts(2, 2, 2);
 		dummyImg.forEach(t -> t.set(0));
 
-		bvvOptions = bvvOptions.sourceTransform( new AffineTransform3D() );
+		bvvOptions = bvvOptions.sourceTransform(new AffineTransform3D());
 
-		BvvStackSource<?> bss = BvvFunctions.show( dummyImg, "dummy", bvvOptions );
+		BvvStackSource<?> bss = BvvFunctions.show(dummyImg, "dummy", bvvOptions);
 
 		BvvHandle bvv = bss.getBvvHandle();
 

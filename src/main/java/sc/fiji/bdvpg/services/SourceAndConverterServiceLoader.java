@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.services;
 
 import bdv.viewer.SourceAndConverter;
@@ -38,59 +39,63 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
 
-public class SourceAndConverterServiceLoader extends SourceAndConverterAdapter implements Runnable{
+public class SourceAndConverterServiceLoader extends SourceAndConverterAdapter
+	implements Runnable
+{
 
-    final String filePath;
-    final Context ctx;
-    final boolean erasePreviousState;
+	final String filePath;
+	final Context ctx;
+	final boolean erasePreviousState;
 
-    public SourceAndConverterServiceLoader(String filePath, String basePath, Context ctx, boolean erasePreviousState) {
-        super(ctx, new File(basePath));
-        this.filePath = filePath;
-        idToSac = new HashMap<>();
-        sacToId = new HashMap<>();
-        sourceToId = new HashMap<>();
-        idToSource = new HashMap<>();
-        this.erasePreviousState = erasePreviousState;
-        this.ctx = ctx;
-    }
+	public SourceAndConverterServiceLoader(String filePath, String basePath,
+		Context ctx, boolean erasePreviousState)
+	{
+		super(ctx, new File(basePath));
+		this.filePath = filePath;
+		idToSac = new HashMap<>();
+		sacToId = new HashMap<>();
+		sourceToId = new HashMap<>();
+		idToSource = new HashMap<>();
+		this.erasePreviousState = erasePreviousState;
+		this.ctx = ctx;
+	}
 
-    @Override
-    public void run() {
+	@Override
+	public void run() {
 
-        // Empty service
-        SourceAndConverter<?>[] sacs =
-                SourceAndConverterServices
-                        .getSourceAndConverterService()
-                        .getSourceAndConverters().toArray(new SourceAndConverter[0]);
+		// Empty service
+		SourceAndConverter<?>[] sacs = SourceAndConverterServices
+			.getSourceAndConverterService().getSourceAndConverters().toArray(
+				new SourceAndConverter[0]);
 
-        if (erasePreviousState) {
-            SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .remove(sacs);
-        }
+		if (erasePreviousState) {
+			SourceAndConverterServices.getSourceAndConverterService().remove(sacs);
+		}
 
-        try {
-            FileReader fileReader = new FileReader(filePath);
+		try {
+			FileReader fileReader = new FileReader(filePath);
 
-            Gson gson = new Gson();
-            JsonArray rawSacsArray = gson.fromJson(fileReader, JsonArray.class);
-            //System.out.println(rawSacsArray.size());
+			Gson gson = new Gson();
+			JsonArray rawSacsArray = gson.fromJson(fileReader, JsonArray.class);
+			// System.out.println(rawSacsArray.size());
 
-            for (int i = 0;i<rawSacsArray.size();i++) {
-                if (rawSacsArray.get(i).isJsonObject()) {
-                    idToJsonElement.put(rawSacsArray.get(i).getAsJsonObject().get("source_id").getAsInt(), rawSacsArray.get(i));
-                } else {
-                    // Source couldn't be serialized
-                    System.err.println("Error : source "+i+" couldn't be serialized");
-                }
-            }
+			for (int i = 0; i < rawSacsArray.size(); i++) {
+				if (rawSacsArray.get(i).isJsonObject()) {
+					idToJsonElement.put(rawSacsArray.get(i).getAsJsonObject().get(
+						"source_id").getAsInt(), rawSacsArray.get(i));
+				}
+				else {
+					// Source couldn't be serialized
+					System.err.println("Error : source " + i + " couldn't be serialized");
+				}
+			}
 
-            //SourceAndConverter[] sacs_loaded =
-            getGson().fromJson(rawSacsArray, SourceAndConverter[].class);
+			// SourceAndConverter[] sacs_loaded =
+			getGson().fromJson(rawSacsArray, SourceAndConverter[].class);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 }

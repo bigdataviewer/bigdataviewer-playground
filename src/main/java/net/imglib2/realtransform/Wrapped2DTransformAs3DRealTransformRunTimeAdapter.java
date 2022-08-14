@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package net.imglib2.realtransform;
 
 import org.scijava.plugin.Plugin;
@@ -38,23 +39,26 @@ import sc.fiji.persist.IClassRuntimeAdapter;
  */
 
 @Plugin(type = IClassRuntimeAdapter.class)
-public class Wrapped2DTransformAs3DRealTransformRunTimeAdapter implements IClassRuntimeAdapter<RealTransform, Wrapped2DTransformAs3D> {
+public class Wrapped2DTransformAs3DRealTransformRunTimeAdapter implements
+	IClassRuntimeAdapter<RealTransform, Wrapped2DTransformAs3D>
+{
 
-    protected static Logger logger = LoggerFactory.getLogger(Wrapped2DTransformAs3DRealTransformRunTimeAdapter.class);
+	protected static Logger logger = LoggerFactory.getLogger(
+		Wrapped2DTransformAs3DRealTransformRunTimeAdapter.class);
 
-    @Override
-    public Class<? extends RealTransform> getBaseClass() {
-        return RealTransform.class;
-    }
+	@Override
+	public Class<? extends RealTransform> getBaseClass() {
+		return RealTransform.class;
+	}
 
-    @Override
-    public Class<? extends Wrapped2DTransformAs3D> getRunTimeClass() {
-        return Wrapped2DTransformAs3D.class;
-    }
+	@Override
+	public Class<? extends Wrapped2DTransformAs3D> getRunTimeClass() {
+		return Wrapped2DTransformAs3D.class;
+	}
 
-    @Override
-    public boolean useCustomAdapter() {
-        return false;
-    }
+	@Override
+	public boolean useCustomAdapter() {
+		return false;
+	}
 
 }

@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package bdv.util;
 
 import net.imglib2.RandomAccessibleInterval;
@@ -56,48 +57,63 @@ import static net.imglib2.img.basictypeaccess.AccessFlags.VOLATILE;
 import static net.imglib2.type.PrimitiveType.*;
 
 /**
- * Helper function to cache a {@link RandomAccessibleInterval}
- *
- * TODO : replace by an helper function moved to imglib2 when available
- *
+ * Helper function to cache a {@link RandomAccessibleInterval} TODO : replace by
+ * an helper function moved to imglib2 when available
  */
 
 public class RAIHelper {
 
-    @SuppressWarnings( { "unchecked", "rawtypes" } )
-    public static <T extends NativeType<T>> RandomAccessibleInterval<T> wrapAsVolatileCachedCellImg(
-            final RandomAccessibleInterval<T> source,
-            final int[] blockSize) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <T extends NativeType<T>> RandomAccessibleInterval<T>
+		wrapAsVolatileCachedCellImg(final RandomAccessibleInterval<T> source,
+			final int[] blockSize)
+	{
 
-        final long[] dimensions = Intervals.dimensionsAsLongArray(source);
-        final CellGrid grid = new CellGrid(dimensions, blockSize);
+		final long[] dimensions = Intervals.dimensionsAsLongArray(source);
+		final CellGrid grid = new CellGrid(dimensions, blockSize);
 
-        final Caches.RandomAccessibleLoader<T> loader = new Caches.RandomAccessibleLoader<>(Views.zeroMin(source));
+		final Caches.RandomAccessibleLoader<T> loader =
+			new Caches.RandomAccessibleLoader<>(Views.zeroMin(source));
 
-        final T type = Util.getTypeFromInterval(source);
+		final T type = Util.getTypeFromInterval(source);
 
-        final CachedCellImg<T, ?> img;
-        final Cache<Long, Cell<?>> cache =
-                new SoftRefLoaderCache().withLoader(LoadedCellCacheLoader.get(grid, loader, type, AccessFlags.setOf(VOLATILE)));
+		final CachedCellImg<T, ?> img;
+		final Cache<Long, Cell<?>> cache = new SoftRefLoaderCache().withLoader(
+			LoadedCellCacheLoader.get(grid, loader, type, AccessFlags.setOf(
+				VOLATILE)));
 
-        if (GenericByteType.class.isInstance(type)) {
-            img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(BYTE, AccessFlags.setOf(VOLATILE)));
-        } else if (GenericShortType.class.isInstance(type)) {
-            img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(SHORT, AccessFlags.setOf(VOLATILE)));
-        } else if (GenericIntType.class.isInstance(type)) {
-            img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(INT, AccessFlags.setOf(VOLATILE)));
-        } else if (GenericLongType.class.isInstance(type)) {
-            img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(LONG, AccessFlags.setOf(VOLATILE)));
-        } else if (FloatType.class.isInstance(type)) {
-            img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(FLOAT, AccessFlags.setOf(VOLATILE)));
-        } else if (DoubleType.class.isInstance(type)) {
-            img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(DOUBLE, AccessFlags.setOf(VOLATILE)));
-        } else if (ARGBType.class.isInstance(type)) {
-            img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(INT, AccessFlags.setOf(VOLATILE)));
-        }else {
-            img = null;
-        }
+		if (GenericByteType.class.isInstance(type)) {
+			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
+				BYTE, AccessFlags.setOf(VOLATILE)));
+		}
+		else if (GenericShortType.class.isInstance(type)) {
+			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
+				SHORT, AccessFlags.setOf(VOLATILE)));
+		}
+		else if (GenericIntType.class.isInstance(type)) {
+			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(INT,
+				AccessFlags.setOf(VOLATILE)));
+		}
+		else if (GenericLongType.class.isInstance(type)) {
+			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
+				LONG, AccessFlags.setOf(VOLATILE)));
+		}
+		else if (FloatType.class.isInstance(type)) {
+			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
+				FLOAT, AccessFlags.setOf(VOLATILE)));
+		}
+		else if (DoubleType.class.isInstance(type)) {
+			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
+				DOUBLE, AccessFlags.setOf(VOLATILE)));
+		}
+		else if (ARGBType.class.isInstance(type)) {
+			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(INT,
+				AccessFlags.setOf(VOLATILE)));
+		}
+		else {
+			img = null;
+		}
 
-        return img;
-    }
+		return img;
+	}
 }

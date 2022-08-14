@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.adapter;
 
 import com.google.gson.*;
@@ -47,67 +48,74 @@ import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_LOCATI
 /**
  * Serializes SpimData objects
  */
-public class AbstractSpimdataAdapter implements JsonSerializer<AbstractSpimData<?>>,
-        JsonDeserializer<AbstractSpimData<?>> {
+public class AbstractSpimdataAdapter implements
+	JsonSerializer<AbstractSpimData<?>>, JsonDeserializer<AbstractSpimData<?>>
+{
 
-    protected static final Logger logger = LoggerFactory.getLogger(AbstractSpimData.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		AbstractSpimData.class);
 
-    final SourceAndConverterAdapter sacSerializer;
+	final SourceAndConverterAdapter sacSerializer;
 
-    int spimdataCounter = 0;
+	int spimdataCounter = 0;
 
-    public AbstractSpimdataAdapter(SourceAndConverterAdapter sacSerializer) {
-        this.sacSerializer = sacSerializer;
-    }
+	public AbstractSpimdataAdapter(SourceAndConverterAdapter sacSerializer) {
+		this.sacSerializer = sacSerializer;
+	}
 
-    @Override
-    public JsonElement serialize(AbstractSpimData asd,
-                                 Type type,
-                                 JsonSerializationContext jsonSerializationContext) {
-        JsonObject obj = new JsonObject();
-        String dataLocation = (String) SourceAndConverterServices
-                .getSourceAndConverterService()
-                .getMetadata(asd, SPIM_DATA_LOCATION );
-        if ((dataLocation == null)||(dataLocation.equals(""))) {
-            dataLocation = new File(sacSerializer.getBasePath(), "_bdvdataset_"+spimdataCounter+".xml").getAbsolutePath();
-            while (new File(dataLocation).exists()) {
-                spimdataCounter++;
-                dataLocation = new File(sacSerializer.getBasePath(), "_bdvdataset_"+spimdataCounter+".xml").getAbsolutePath();
-            }
-            spimdataCounter++;
-            logger.info("Previously unsaved bdv dataset, saving it to "+dataLocation);
-            new XmlFromSpimDataExporter(asd, dataLocation, sacSerializer.getScijavaContext() ).run();
-        }
-        obj.addProperty("datalocation", dataLocation);
-        return obj;
-    }
+	@Override
+	public JsonElement serialize(AbstractSpimData asd, Type type,
+		JsonSerializationContext jsonSerializationContext)
+	{
+		JsonObject obj = new JsonObject();
+		String dataLocation = (String) SourceAndConverterServices
+			.getSourceAndConverterService().getMetadata(asd, SPIM_DATA_LOCATION);
+		if ((dataLocation == null) || (dataLocation.equals(""))) {
+			dataLocation = new File(sacSerializer.getBasePath(), "_bdvdataset_" +
+				spimdataCounter + ".xml").getAbsolutePath();
+			while (new File(dataLocation).exists()) {
+				spimdataCounter++;
+				dataLocation = new File(sacSerializer.getBasePath(), "_bdvdataset_" +
+					spimdataCounter + ".xml").getAbsolutePath();
+			}
+			spimdataCounter++;
+			logger.info("Previously unsaved bdv dataset, saving it to " +
+				dataLocation);
+			new XmlFromSpimDataExporter(asd, dataLocation, sacSerializer
+				.getScijavaContext()).run();
+		}
+		obj.addProperty("datalocation", dataLocation);
+		return obj;
+	}
 
-    @Override
-    public AbstractSpimData<?> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        String datalocation = jsonElement.getAsJsonObject().get("datalocation").getAsString();
-        //System.out.println("Deserialization of "+datalocation);
-        if (datalocation.endsWith(".qpath")) {
-            logger.error("qpath project unhandled in deserialization!");
-        }
-        List<AbstractSpimData<?>> asds =
-                SourceAndConverterServices
-                        .getSourceAndConverterService()
-                        .getSpimDatasets()
-                        .stream()
-                        .filter(asd ->
-                                SourceAndConverterServices
-                                        .getSourceAndConverterService()
-                                        .getMetadata(asd, SPIM_DATA_LOCATION)
-                                        .equals(datalocation)).collect(Collectors.toList());
+	@Override
+	public AbstractSpimData<?> deserialize(JsonElement jsonElement, Type type,
+		JsonDeserializationContext jsonDeserializationContext)
+		throws JsonParseException
+	{
+		String datalocation = jsonElement.getAsJsonObject().get("datalocation")
+			.getAsString();
+		// System.out.println("Deserialization of "+datalocation);
+		if (datalocation.endsWith(".qpath")) {
+			logger.error("qpath project unhandled in deserialization!");
+		}
+		List<AbstractSpimData<?>> asds = SourceAndConverterServices
+			.getSourceAndConverterService().getSpimDatasets().stream().filter(
+				asd -> SourceAndConverterServices.getSourceAndConverterService()
+					.getMetadata(asd, SPIM_DATA_LOCATION).equals(datalocation)).collect(
+						Collectors.toList());
 
-        // SpimData not found
-        if (asds.size()==0) {
-            return new SpimDataFromXmlImporter(datalocation).get();
-        } else if (asds.size()==1) {
-            return asds.get(0);
-        } else {
-            logger.warn("Multiple spimdata with identical data location already in memory!");
-            return asds.get(0);
-        }
-    }
+		// SpimData not found
+		if (asds.size() == 0) {
+			return new SpimDataFromXmlImporter(datalocation).get();
+		}
+		else if (asds.size() == 1) {
+			return asds.get(0);
+		}
+		else {
+			logger.warn(
+				"Multiple spimdata with identical data location already in memory!");
+			return asds.get(0);
+		}
+	}
 }

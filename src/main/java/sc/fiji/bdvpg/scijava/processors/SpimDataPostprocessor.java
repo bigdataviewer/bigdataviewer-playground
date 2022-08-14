@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.processors;
 
 import mpicbg.spim.data.generic.AbstractSpimData;
@@ -41,34 +42,35 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 @Plugin(type = PostprocessorPlugin.class)
 public class SpimDataPostprocessor extends AbstractPostprocessorPlugin {
 
-    protected static final Logger logger = LoggerFactory.getLogger(SpimDataPostprocessor.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		SpimDataPostprocessor.class);
 
-    @Parameter
+	@Parameter
 	SourceAndConverterService bss;
 
-    @Override
-    public void process(Module module) {
+	@Override
+	public void process(Module module) {
 
-       module.getOutputs().forEach((name, object)-> {
-           //log.accept("input:\t"+name+"\tclass:\t"+object.getClass().getSimpleName());
-           if (object instanceof AbstractSpimData) {
-               AbstractSpimData<?> asd = (AbstractSpimData<?>) object;
-               logger.debug("SpimData found.");
-               bss.register(asd);
-               module.resolveOutput(name);
-               if (module.getInputs().containsKey("datasetname")) {
-                   String datasetname = (String) module.getInputs().get("datasetname");
-                   bss.setSpimDataName(asd, datasetname);
-               }
-           }
-           if (object instanceof AbstractSpimData<?>[]) {
-               AbstractSpimData<?>[] asds = (AbstractSpimData<?>[]) object;
-               for (AbstractSpimData<?> asd:asds) {
-                   logger.debug( "SpimData found." );
-                   bss.register( asd );
-                   module.resolveOutput( name );
-               }
-            }
-       });
-    }
+		module.getOutputs().forEach((name, object) -> {
+			// log.accept("input:\t"+name+"\tclass:\t"+object.getClass().getSimpleName());
+			if (object instanceof AbstractSpimData) {
+				AbstractSpimData<?> asd = (AbstractSpimData<?>) object;
+				logger.debug("SpimData found.");
+				bss.register(asd);
+				module.resolveOutput(name);
+				if (module.getInputs().containsKey("datasetname")) {
+					String datasetname = (String) module.getInputs().get("datasetname");
+					bss.setSpimDataName(asd, datasetname);
+				}
+			}
+			if (object instanceof AbstractSpimData<?>[]) {
+				AbstractSpimData<?>[] asds = (AbstractSpimData<?>[]) object;
+				for (AbstractSpimData<?> asd : asds) {
+					logger.debug("SpimData found.");
+					bss.register(asd);
+					module.resolveOutput(name);
+				}
+			}
+		});
+	}
 }

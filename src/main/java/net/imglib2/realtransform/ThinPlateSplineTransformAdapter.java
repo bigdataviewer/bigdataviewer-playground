@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package net.imglib2.realtransform;
 
 import com.google.gson.*;
@@ -42,70 +43,90 @@ import java.lang.reflect.Type;
  * Adapter for ThinPlateSplineTransform Objects
  */
 @Plugin(type = IClassAdapter.class)
-public class ThinPlateSplineTransformAdapter implements IClassAdapter<ThinplateSplineTransform> {
+public class ThinPlateSplineTransformAdapter implements
+	IClassAdapter<ThinplateSplineTransform>
+{
 
-    protected static final Logger logger = LoggerFactory.getLogger(ThinPlateSplineTransformAdapter.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		ThinPlateSplineTransformAdapter.class);
 
-    @Override
-    public ThinplateSplineTransform deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
-        JsonObject obj = jsonElement.getAsJsonObject();
-        double[][] srcPts = context.deserialize(obj.get("srcPts"), double[][].class);
-        double[][] tgtPts = context.deserialize(obj.get("tgtPts"), double[][].class);
-        return new ThinplateSplineTransform(srcPts, tgtPts);
-    }
+	@Override
+	public ThinplateSplineTransform deserialize(JsonElement jsonElement,
+		Type type, JsonDeserializationContext context) throws JsonParseException
+	{
+		JsonObject obj = jsonElement.getAsJsonObject();
+		double[][] srcPts = context.deserialize(obj.get("srcPts"),
+			double[][].class);
+		double[][] tgtPts = context.deserialize(obj.get("tgtPts"),
+			double[][].class);
+		return new ThinplateSplineTransform(srcPts, tgtPts);
+	}
 
-    @Override
-    public JsonElement serialize(ThinplateSplineTransform thinplateSplineTransform, Type type, JsonSerializationContext jsonSerializationContext) {
-        ThinPlateR2LogRSplineKernelTransform kernel = getKernel(thinplateSplineTransform);
-        assert kernel != null;
-        double[][] srcPts = getSrcPts(kernel);
-        double[][] tgtPts = getTgtPts(kernel);
+	@Override
+	public JsonElement serialize(
+		ThinplateSplineTransform thinplateSplineTransform, Type type,
+		JsonSerializationContext jsonSerializationContext)
+	{
+		ThinPlateR2LogRSplineKernelTransform kernel = getKernel(
+			thinplateSplineTransform);
+		assert kernel != null;
+		double[][] srcPts = getSrcPts(kernel);
+		double[][] tgtPts = getTgtPts(kernel);
 
-        JsonObject obj = new JsonObject();
-        obj.add("srcPts", jsonSerializationContext.serialize(srcPts));
-        obj.add("tgtPts", jsonSerializationContext.serialize(tgtPts));
-        return obj;
-    }
+		JsonObject obj = new JsonObject();
+		obj.add("srcPts", jsonSerializationContext.serialize(srcPts));
+		obj.add("tgtPts", jsonSerializationContext.serialize(tgtPts));
+		return obj;
+	}
 
-    public static ThinPlateR2LogRSplineKernelTransform getKernel(ThinplateSplineTransform thinplateSplineTransform) {
-        try {
-            Field kernelField = ThinplateSplineTransform.class.getDeclaredField("tps");
-            kernelField.setAccessible(true);
-            return (ThinPlateR2LogRSplineKernelTransform) kernelField.get(thinplateSplineTransform);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        logger.error("Could not get kernel from ThinPlateSplineTransform");
-        return null;
-    }
+	public static ThinPlateR2LogRSplineKernelTransform getKernel(
+		ThinplateSplineTransform thinplateSplineTransform)
+	{
+		try {
+			Field kernelField = ThinplateSplineTransform.class.getDeclaredField(
+				"tps");
+			kernelField.setAccessible(true);
+			return (ThinPlateR2LogRSplineKernelTransform) kernelField.get(
+				thinplateSplineTransform);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		logger.error("Could not get kernel from ThinPlateSplineTransform");
+		return null;
+	}
 
-    public static double[][] getSrcPts(ThinPlateR2LogRSplineKernelTransform kernel) {
-        return kernel.getSourceLandmarks();
-    }
+	public static double[][] getSrcPts(
+		ThinPlateR2LogRSplineKernelTransform kernel)
+	{
+		return kernel.getSourceLandmarks();
+	}
 
-    public static double[][] getTgtPts(ThinPlateR2LogRSplineKernelTransform kernel) {
-        double[][] srcPts = kernel.getSourceLandmarks(); // srcPts
+	public static double[][] getTgtPts(
+		ThinPlateR2LogRSplineKernelTransform kernel)
+	{
+		double[][] srcPts = kernel.getSourceLandmarks(); // srcPts
 
-        int nbLandmarks = kernel.getNumLandmarks();
-        int nbDimensions = kernel.getNumDims();
+		int nbLandmarks = kernel.getNumLandmarks();
+		int nbDimensions = kernel.getNumDims();
 
-        double[][] tgtPts = new double[nbDimensions][nbLandmarks];
+		double[][] tgtPts = new double[nbDimensions][nbLandmarks];
 
-        for (int i = 0;i<nbLandmarks;i++) {
-            double[] srcPt = new double[nbDimensions];
-            for (int d = 0; d<nbDimensions; d++) {
-                srcPt[d] = srcPts[d][i];
-            }
-            double[] tgtPt = kernel.apply(srcPt);
-            for (int d = 0; d<nbDimensions; d++) {
-                tgtPts[d][i] = tgtPt[d];
-            }
-        }
-        return tgtPts;
-    }
+		for (int i = 0; i < nbLandmarks; i++) {
+			double[] srcPt = new double[nbDimensions];
+			for (int d = 0; d < nbDimensions; d++) {
+				srcPt[d] = srcPts[d][i];
+			}
+			double[] tgtPt = kernel.apply(srcPt);
+			for (int d = 0; d < nbDimensions; d++) {
+				tgtPts[d][i] = tgtPt[d];
+			}
+		}
+		return tgtPts;
+	}
 
-    @Override
-    public Class<? extends ThinplateSplineTransform> getAdapterClass() {
-        return ThinplateSplineTransform.class;
-    }
+	@Override
+	public Class<? extends ThinplateSplineTransform> getAdapterClass() {
+		return ThinplateSplineTransform.class;
+	}
 }

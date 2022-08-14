@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.viewers;
 
 import bdv.util.BdvHandle;
@@ -42,119 +43,129 @@ import net.imglib2.realtransform.AffineTransform3D;
 
 public class ViewerAdapter {
 
-    final tpietzsch.example2.VolumeViewerPanel bvvPanel;
-    final ViewerPanel bdvPanel;
+	final tpietzsch.example2.VolumeViewerPanel bvvPanel;
+	final ViewerPanel bdvPanel;
 
-    public ViewerAdapter(bdv.viewer.ViewerPanel viewerPanel) {
-        bvvPanel = null;
-        bdvPanel = viewerPanel;
-    }
+	public ViewerAdapter(bdv.viewer.ViewerPanel viewerPanel) {
+		bvvPanel = null;
+		bdvPanel = viewerPanel;
+	}
 
-    public ViewerAdapter(tpietzsch.example2.VolumeViewerPanel viewerPanel) {
-        bvvPanel = viewerPanel;
-        bdvPanel = null;
-    }
+	public ViewerAdapter(tpietzsch.example2.VolumeViewerPanel viewerPanel) {
+		bvvPanel = viewerPanel;
+		bdvPanel = null;
+	}
 
-    public ViewerAdapter(BdvHandle bdv) {
-        bvvPanel = null;
-        bdvPanel = bdv.getViewerPanel();
-    }
+	public ViewerAdapter(BdvHandle bdv) {
+		bvvPanel = null;
+		bdvPanel = bdv.getViewerPanel();
+	}
 
-    public ViewerAdapter(BvvHandle bvv) {
-        bvvPanel = bvv.getViewerPanel();
-        bdvPanel = null;
-    }
+	public ViewerAdapter(BvvHandle bvv) {
+		bvvPanel = bvv.getViewerPanel();
+		bdvPanel = null;
+	}
 
-    public double getWidth() {
-        if (bdvPanel!=null) return bdvPanel.getWidth();
-        return bvvPanel.getWidth();
-    }
+	public double getWidth() {
+		if (bdvPanel != null) return bdvPanel.getWidth();
+		return bvvPanel.getWidth();
+	}
 
-    public double getHeight() {
-        if (bdvPanel!=null) return bdvPanel.getHeight();
-        return bvvPanel.getHeight();
-    }
+	public double getHeight() {
+		if (bdvPanel != null) return bdvPanel.getHeight();
+		return bvvPanel.getHeight();
+	}
 
-    public ViewerState state() {
-        if (bdvPanel!=null) return bdvPanel.state();
-        return bvvPanel.state();
-    }
+	public ViewerState state() {
+		if (bdvPanel != null) return bdvPanel.state();
+		return bvvPanel.state();
+	}
 
-    public void requestRepaint() {
-        if (bdvPanel!=null) {
-            bdvPanel.requestRepaint();
-        } else {
-            bvvPanel.requestRepaint();
-        }
-    }
+	public void requestRepaint() {
+		if (bdvPanel != null) {
+			bdvPanel.requestRepaint();
+		}
+		else {
+			bvvPanel.requestRepaint();
+		}
+	}
 
-    public void addTransformListener(TransformListener<AffineTransform3D> listener) {
-        if (bdvPanel!=null) {
-            bdvPanel.transformListeners().add(listener);
-        } else {
-            bvvPanel.addTransformListener(listener);
-        }
-    }
+	public void addTransformListener(
+		TransformListener<AffineTransform3D> listener)
+	{
+		if (bdvPanel != null) {
+			bdvPanel.transformListeners().add(listener);
+		}
+		else {
+			bvvPanel.addTransformListener(listener);
+		}
+	}
 
-    public void setTimepoint(int timepoint) {
-        if (bdvPanel!=null) {
-            bdvPanel.setTimepoint(timepoint);
-        } else {
-            bvvPanel.setTimepoint(timepoint);
-        }
-    }
+	public void setTimepoint(int timepoint) {
+		if (bdvPanel != null) {
+			bdvPanel.setTimepoint(timepoint);
+		}
+		else {
+			bvvPanel.setTimepoint(timepoint);
+		}
+	}
 
-    public void addTimePointListener(TimePointListener timeListener) {
-        if (bdvPanel!=null) {
-            bdvPanel.timePointListeners().add(timeListener);
-        } else {
-            bvvPanel.addTimePointListener(timeListener);
-        }
-    }
+	public void addTimePointListener(TimePointListener timeListener) {
+		if (bdvPanel != null) {
+			bdvPanel.timePointListeners().add(timeListener);
+		}
+		else {
+			bvvPanel.addTimePointListener(timeListener);
+		}
+	}
 
-    public void removeTransformListener(TransformListener<AffineTransform3D> listener) {
-        if (bdvPanel!=null) {
-            bdvPanel.transformListeners().remove(listener);
-        } else {
-            bvvPanel.removeTransformListener(listener);
-        }
-    }
+	public void removeTransformListener(
+		TransformListener<AffineTransform3D> listener)
+	{
+		if (bdvPanel != null) {
+			bdvPanel.transformListeners().remove(listener);
+		}
+		else {
+			bvvPanel.removeTransformListener(listener);
+		}
+	}
 
-    public void removeTimePointListener(TimePointListener listener) {
-        if (bdvPanel!=null) {
-            bdvPanel.timePointListeners().remove(listener);
-        } else {
-            bvvPanel.removeTimePointListener(listener);
-        }
-    }
+	public void removeTimePointListener(TimePointListener listener) {
+		if (bdvPanel != null) {
+			bdvPanel.timePointListeners().remove(listener);
+		}
+		else {
+			bvvPanel.removeTimePointListener(listener);
+		}
+	}
 
-    // Override this so that two vieweradapter with the same object will be equals
-    @Override
-    public int hashCode() {
-        if (bdvPanel!=null) return bdvPanel.hashCode();
-        return bvvPanel.hashCode();
-    }
+	// Override this so that two vieweradapter with the same object will be equals
+	@Override
+	public int hashCode() {
+		if (bdvPanel != null) return bdvPanel.hashCode();
+		return bvvPanel.hashCode();
+	}
 
-    // Overriding equals() to compare two Complex objects
-    @Override
-    public boolean equals(Object o) {
+	// Overriding equals() to compare two Complex objects
+	@Override
+	public boolean equals(Object o) {
 
-        // If the object is compared with itself then return true
-        if (o == this) {
-            return true;
-        }
+		// If the object is compared with itself then return true
+		if (o == this) {
+			return true;
+		}
 
-        /* Check if o is an instance of Complex or not
-          "null instanceof [type]" also returns false */
-        if (!(o instanceof ViewerAdapter)) {
-            return false;
-        }
+		/* Check if o is an instance of Complex or not
+		  "null instanceof [type]" also returns false */
+		if (!(o instanceof ViewerAdapter)) {
+			return false;
+		}
 
-        // typecast o to Complex so that we can compare data members
-        ViewerAdapter c = (ViewerAdapter) o;
+		// typecast o to Complex so that we can compare data members
+		ViewerAdapter c = (ViewerAdapter) o;
 
-        // Compare the data members and return accordingly
-        if (c.bdvPanel!=null) return c.bdvPanel.equals(this.bdvPanel);
-        return c.bvvPanel.equals(this.bvvPanel);
-    }
+		// Compare the data members and return accordingly
+		if (c.bdvPanel != null) return c.bdvPanel.equals(this.bdvPanel);
+		return c.bvvPanel.equals(this.bvvPanel);
+	}
 }

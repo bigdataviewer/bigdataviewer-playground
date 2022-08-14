@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command;
 
 import org.scijava.Context;
@@ -36,17 +37,21 @@ import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
 
 import java.io.File;
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Save Bdv Playground State (experimental)")
-public class SaveSourceAndConverterServiceState implements BdvPlaygroundActionCommand {
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"Save Bdv Playground State (experimental)")
+public class SaveSourceAndConverterServiceState implements
+	BdvPlaygroundActionCommand
+{
 
-    @Parameter(label = "Save state file (json)", style = "save")
-    File file;
+	@Parameter(label = "Save state file (json)", style = "save")
+	File file;
 
-    @Parameter
-    Context ctx;
+	@Parameter
+	Context ctx;
 
-    @Override
-    public void run() {
-        new SourceAndConverterServiceSaver(file, ctx).run();
-    }
+	@Override
+	public void run() {
+		new SourceAndConverterServiceSaver(file, ctx).run();
+	}
 }

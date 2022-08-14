@@ -26,18 +26,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.sourceandconverter.display;
 
 import bdv.viewer.SourceAndConverter;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
-public class BrightnessAdjuster implements Runnable
-{
+public class BrightnessAdjuster implements Runnable {
+
 	private final SourceAndConverter<?> sac;
 	private final double min;
 	private final double max;
 
-	public BrightnessAdjuster(final SourceAndConverter<?> sac, double min, double max )
+	public BrightnessAdjuster(final SourceAndConverter<?> sac, double min,
+		double max)
 	{
 		this.sac = sac;
 		this.min = min;
@@ -45,9 +47,9 @@ public class BrightnessAdjuster implements Runnable
 	}
 
 	@Override
-	public void run()
-	{
-		SourceAndConverterServices.getSourceAndConverterService().getConverterSetup( sac ).setDisplayRange(min, max);
+	public void run() {
+		SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(
+			sac).setDisplayRange(min, max);
 	}
 
 }

@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
@@ -40,29 +41,34 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Make Global Source Group",
-description = "Adds a node in the tree view which selects the sources specified in the command")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "Sources>Make Global Source Group",
+	description = "Adds a node in the tree view which selects the sources specified in the command")
 
 public class MakeGroupCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(label = "Name of the group")
-    String groupname;
+	@Parameter(label = "Name of the group")
+	String groupname;
 
-    @Parameter(label = "Select Source(s)")
-    SourceAndConverter<?>[] sacs;
+	@Parameter(label = "Select Source(s)")
+	SourceAndConverter<?>[] sacs;
 
-    @Parameter(label = "Display Sources")
-    boolean displaysources;
+	@Parameter(label = "Display Sources")
+	boolean displaysources;
 
-    @Parameter
-    SourceAndConverterService sac_service;
+	@Parameter
+	SourceAndConverterService sac_service;
 
-    @Override
-    public void run() {
-        final Set<SourceAndConverter<?>> sacs_set = new HashSet<>(Arrays.asList(sacs));
-        SourceFilterNode sfn = new SourceFilterNode(sac_service.getUI().getTreeModel(), groupname, sacs_set::contains, displaysources);
-        sac_service.getUI().addNode(sfn);
-    }
+	@Override
+	public void run() {
+		final Set<SourceAndConverter<?>> sacs_set = new HashSet<>(Arrays.asList(
+			sacs));
+		SourceFilterNode sfn = new SourceFilterNode(sac_service.getUI()
+			.getTreeModel(), groupname, sacs_set::contains, displaysources);
+		sac_service.getUI().addNode(sfn);
+	}
 }

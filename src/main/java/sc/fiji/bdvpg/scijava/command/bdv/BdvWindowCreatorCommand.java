@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
@@ -36,24 +37,28 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Create empty BDV window",
-    description = "Creates an empty BDV window")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Create empty BDV window",
+	description = "Creates an empty BDV window")
 public class BdvWindowCreatorCommand implements BdvPlaygroundActionCommand {
 
-    /**
-     * This triggers: {@link sc.fiji.bdvpg.scijava.processors.BdvHandlePostprocessor}
-     */
-    @Parameter(type = ItemIO.OUTPUT)
-    public BdvHandle bdvh;
+	/**
+	 * This triggers:
+	 * {@link sc.fiji.bdvpg.scijava.processors.BdvHandlePostprocessor}
+	 */
+	@Parameter(type = ItemIO.OUTPUT)
+	public BdvHandle bdvh;
 
-    @Parameter
-    SourceAndConverterBdvDisplayService sacDisplayService;
+	@Parameter
+	SourceAndConverterBdvDisplayService sacDisplayService;
 
-    @Override
-    public void run() {
-        bdvh = sacDisplayService.getNewBdv();
-    }
+	@Override
+	public void run() {
+		bdvh = sacDisplayService.getNewBdv();
+	}
 
 }

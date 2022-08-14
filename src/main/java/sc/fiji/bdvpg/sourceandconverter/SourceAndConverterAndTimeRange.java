@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.sourceandconverter;
 
 import bdv.viewer.SourceAndConverter;
@@ -33,28 +34,33 @@ import bdv.viewer.SourceAndConverter;
 import java.util.stream.IntStream;
 
 public class SourceAndConverterAndTimeRange<T> {
-    public final SourceAndConverter<T> sac;
-    private final int timePointBegin;
-    private final int timePointEnd;
 
-    public SourceAndConverterAndTimeRange(SourceAndConverter<T> sac, int timePointBegin, int timePointEnd) {
-        this.sac = sac;
-        this.timePointBegin = timePointBegin;
-        this.timePointEnd = timePointEnd;
-    }
+	public final SourceAndConverter<T> sac;
+	private final int timePointBegin;
+	private final int timePointEnd;
 
-    public SourceAndConverterAndTimeRange(SourceAndConverter<T> sac, int timePoint) {
-        this.sac = sac;
-        this.timePointBegin = timePoint;
-        this.timePointEnd = timePoint+1;
-    }
+	public SourceAndConverterAndTimeRange(SourceAndConverter<T> sac,
+		int timePointBegin, int timePointEnd)
+	{
+		this.sac = sac;
+		this.timePointBegin = timePointBegin;
+		this.timePointEnd = timePointEnd;
+	}
 
-    public SourceAndConverter<T> getSourceAndConverter() {
-        return sac;
-    }
+	public SourceAndConverterAndTimeRange(SourceAndConverter<T> sac,
+		int timePoint)
+	{
+		this.sac = sac;
+		this.timePointBegin = timePoint;
+		this.timePointEnd = timePoint + 1;
+	}
 
-    public IntStream getTimePoints() {
-        return IntStream.range(timePointBegin, timePointEnd);
-    }
+	public SourceAndConverter<T> getSourceAndConverter() {
+		return sac;
+	}
+
+	public IntStream getTimePoints() {
+		return IntStream.range(timePointBegin, timePointEnd);
+	}
 
 }

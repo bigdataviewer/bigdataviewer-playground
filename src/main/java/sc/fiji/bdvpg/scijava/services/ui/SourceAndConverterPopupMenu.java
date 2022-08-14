@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.services.ui;
 
 import bdv.viewer.SourceAndConverter;
@@ -46,69 +47,76 @@ import java.util.function.Supplier;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getCommandName;
 
-public class SourceAndConverterPopupMenu
-{
+public class SourceAndConverterPopupMenu {
+
 	private JPopupMenu popup;
 	private final Supplier<SourceAndConverter<?>[]> sacs_supplier;
 
-	 final public static String[] defaultPopupActions = {
-			getCommandName(BdvSourcesAdderCommand.class),
-			getCommandName(BdvSourcesShowCommand.class),
-			getCommandName(BdvSourcesRemoverCommand.class),
-			"Inspect Sources",
-			"PopupLine",
-			getCommandName(SourcesInvisibleMakerCommand.class),
-			getCommandName(SourcesVisibleMakerCommand.class),
-			getCommandName(InteractiveBrightnessAdjusterCommand.class),
-			getCommandName(SourceColorChangerCommand.class),
-			"PopupLine",
-			getCommandName(BasicTransformerCommand.class),
-			getCommandName(SourcesDuplicatorCommand.class),
-			getCommandName(ManualTransformCommand.class),
-			getCommandName(TransformedSourceWrapperCommand.class),
-			getCommandName(SourcesResamplerCommand.class),
-			getCommandName(ColorSourceCreatorCommand.class),
-			getCommandName(LUTSourceCreatorCommand.class),
-			"PopupLine",
-			getCommandName(SourcesRemoverCommand.class),
-			getCommandName(XmlHDF5ExporterCommand.class),
-			"PopupLine",
-			getCommandName(MakeMetadataFilterNodeCommand.class)
+	final public static String[] defaultPopupActions = { getCommandName(
+		BdvSourcesAdderCommand.class), getCommandName(BdvSourcesShowCommand.class),
+		getCommandName(BdvSourcesRemoverCommand.class), "Inspect Sources",
+		"PopupLine", getCommandName(SourcesInvisibleMakerCommand.class),
+		getCommandName(SourcesVisibleMakerCommand.class), getCommandName(
+			InteractiveBrightnessAdjusterCommand.class), getCommandName(
+				SourceColorChangerCommand.class), "PopupLine", getCommandName(
+					BasicTransformerCommand.class), getCommandName(
+						SourcesDuplicatorCommand.class), getCommandName(
+							ManualTransformCommand.class), getCommandName(
+								TransformedSourceWrapperCommand.class), getCommandName(
+									SourcesResamplerCommand.class), getCommandName(
+										ColorSourceCreatorCommand.class), getCommandName(
+											LUTSourceCreatorCommand.class), "PopupLine",
+		getCommandName(SourcesRemoverCommand.class), getCommandName(
+			XmlHDF5ExporterCommand.class), "PopupLine", getCommandName(
+				MakeMetadataFilterNodeCommand.class)
 
-	 };
+	};
 
-	 String[] popupActions;
+	String[] popupActions;
 
-	public SourceAndConverterPopupMenu( Supplier<SourceAndConverter<?>[]> sacs_supplier, String path, String context ) {
+	public SourceAndConverterPopupMenu(
+		Supplier<SourceAndConverter<?>[]> sacs_supplier, String path,
+		String context)
+	{
 		this.sacs_supplier = sacs_supplier;
 		this.popupActions = defaultPopupActions;
 
-		File f = BdvSettingsGUISetter.getActionFile(path,context);
+		File f = BdvSettingsGUISetter.getActionFile(path, context);
 		if (f.exists()) {
 			try {
 				Gson gson = new Gson();
-				popupActions = gson.fromJson(new FileReader(f.getAbsoluteFile()), String[].class);
-				if ((popupActions== null)||(popupActions.length==0)) {
-					popupActions = new String[]{"Warning: Empty "+f.getAbsolutePath()+" config file."};
+				popupActions = gson.fromJson(new FileReader(f.getAbsoluteFile()),
+					String[].class);
+				if ((popupActions == null) || (popupActions.length == 0)) {
+					popupActions = new String[] { "Warning: Empty " + f
+						.getAbsolutePath() + " config file." };
 				}
-			} catch (FileNotFoundException e) {
+			}
+			catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
-		} else {
-			File fdefault = new File(f.getAbsolutePath()+".default.txt");
+		}
+		else {
+			File fdefault = new File(f.getAbsolutePath() + ".default.txt");
 			if (fdefault.exists()) {
 				try {
 					Gson gson = new Gson();
-					popupActions = gson.fromJson(new FileReader(fdefault.getAbsoluteFile()), String[].class);
-					if ((popupActions== null)||(popupActions.length==0)) {
-						popupActions = new String[]{"Warning: Empty "+fdefault.getAbsolutePath()+" config file."};
+					popupActions = gson.fromJson(new FileReader(fdefault
+						.getAbsoluteFile()), String[].class);
+					if ((popupActions == null) || (popupActions.length == 0)) {
+						popupActions = new String[] { "Warning: Empty " + fdefault
+							.getAbsolutePath() + " config file." };
 					}
-				} catch (FileNotFoundException e) {
+				}
+				catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}
-			} else {
-				System.err.println("Bdv Playground actions settings File "+f.getAbsolutePath()+" does not exist.");
-				System.err.println("Bdv Playground default actions settings File "+fdefault.getAbsolutePath()+" does not exist.");
+			}
+			else {
+				System.err.println("Bdv Playground actions settings File " + f
+					.getAbsolutePath() + " does not exist.");
+				System.err.println("Bdv Playground default actions settings File " +
+					fdefault.getAbsolutePath() + " does not exist.");
 
 			}
 		}
@@ -116,27 +124,30 @@ public class SourceAndConverterPopupMenu
 		createPopupMenu();
 	}
 
-	public SourceAndConverterPopupMenu( Supplier<SourceAndConverter<?>[]> sacs_supplier )
+	public SourceAndConverterPopupMenu(
+		Supplier<SourceAndConverter<?>[]> sacs_supplier)
 	{
-		this(sacs_supplier,"", "tree");
+		this(sacs_supplier, "", "tree");
 	}
 
-	public SourceAndConverterPopupMenu( Supplier<SourceAndConverter<?>[]> sacs_supplier, String[] actions )
+	public SourceAndConverterPopupMenu(
+		Supplier<SourceAndConverter<?>[]> sacs_supplier, String[] actions)
 	{
 		this.sacs_supplier = sacs_supplier;
 		this.popupActions = actions;
 		createPopupMenu();
 	}
 
-	private void createPopupMenu()
-	{
+	private void createPopupMenu() {
 		popup = new JPopupMenu();
 
-		for (String actionName:popupActions){
+		for (String actionName : popupActions) {
 			if (actionName.equals("PopupLine")) {
 				this.addPopupLine();
-			} else{
-				this.addPopupAction(actionName, SourceAndConverterServices.getSourceAndConverterService().getAction(actionName));
+			}
+			else {
+				this.addPopupAction(actionName, SourceAndConverterServices
+					.getSourceAndConverterService().getAction(actionName));
 			}
 		}
 	}
@@ -149,23 +160,27 @@ public class SourceAndConverterPopupMenu
 	}
 
 	/**
-	 * Adds a line and an action which consumes all the selected SourceAndConverter objects
-	 * in the popup Menu
+	 * Adds a line and an action which consumes all the selected
+	 * SourceAndConverter objects in the popup Menu
+	 * 
 	 * @param action action method
 	 * @param actionName action name
 	 */
-	public void addPopupAction( String actionName, Consumer<SourceAndConverter<?>[]> action ) {
+	public void addPopupAction(String actionName,
+		Consumer<SourceAndConverter<?>[]> action)
+	{
 		JMenuItem menuItem = new JMenuItem(actionName);
 		if (action == null) {
-			menuItem.addActionListener(e -> System.err.println("No action defined for action named "+actionName));
-		} else {
+			menuItem.addActionListener(e -> System.err.println(
+				"No action defined for action named " + actionName));
+		}
+		else {
 			menuItem.addActionListener(e -> action.accept(sacs_supplier.get()));
 		}
 		popup.add(menuItem);
 	}
 
-	public JPopupMenu getPopup()
-	{
+	public JPopupMenu getPopup() {
 		return popup;
 	}
 }

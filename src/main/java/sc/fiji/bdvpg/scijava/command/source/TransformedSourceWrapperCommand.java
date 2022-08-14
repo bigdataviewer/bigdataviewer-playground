@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
@@ -37,22 +38,29 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Transform>Wrap as Transformed Source")
-public class TransformedSourceWrapperCommand implements BdvPlaygroundActionCommand {
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"Sources>Transform>Wrap as Transformed Source")
+public class TransformedSourceWrapperCommand implements
+	BdvPlaygroundActionCommand
+{
 
-    @Parameter(label = "Select Source(s)")
-    SourceAndConverter<?>[] sacs;
+	@Parameter(label = "Select Source(s)")
+	SourceAndConverter<?>[] sacs;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter<?>[] sacs_out;
+	@Parameter(type = ItemIO.OUTPUT)
+	SourceAndConverter<?>[] sacs_out;
 
-    @Override
-    public void run() {
-        sacs_out = new SourceAndConverter<?>[sacs.length];
-        for (int i=0;i< sacs.length;i++) {
-            sacs_out[i] = new SourceAffineTransformer<>(null, new AffineTransform3D()).apply((SourceAndConverter<Object>) sacs[i]);
-        }
-    }
+	@Override
+	public void run() {
+		sacs_out = new SourceAndConverter<?>[sacs.length];
+		for (int i = 0; i < sacs.length; i++) {
+			sacs_out[i] = new SourceAffineTransformer<>(null, new AffineTransform3D())
+				.apply((SourceAndConverter<Object>) sacs[i]);
+		}
+	}
 }
