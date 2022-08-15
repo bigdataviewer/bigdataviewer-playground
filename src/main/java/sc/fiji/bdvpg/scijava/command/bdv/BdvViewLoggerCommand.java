@@ -29,88 +29,48 @@
 
 package sc.fiji.bdvpg.scijava.command.bdv;
 
+import bdv.util.BdvHandle;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
-import sc.fiji.bdvpg.bdv.supplier.IBdvSupplier;
-import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformLogger;
+import sc.fiji.bdvpg.log.Logger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
-import java.util.Arrays;
+/**
+ * ViewTransformLoggerCommand Author: @haesleinhuepf 12 2019
+ */
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Set BDV window (default)",
-	description = "Set preferences of Bdv Window")
-public class BdvSetDefaultViewerSettingsCommand implements
-	BdvPlaygroundActionCommand
-{
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Log view transform",
+	description = "Outputs the current view transform of a BDV window into the standard IJ logger")
 
-	@Parameter(
-		label = "Click this checkbox to ignore all parameters and reset the default viewer",
-		persist = false)
-	boolean resetToDefault = false;
+public class BdvViewLoggerCommand implements BdvPlaygroundActionCommand {
 
 	@Parameter
-	int width = 640;
+	BdvHandle bdvh;
 
 	@Parameter
-	int height = 480;
-
-	@Parameter
-	String screenscales = "1, 0.75, 0.5, 0.25, 0.125";
-
-	@Parameter
-	long targetrenderms = 30;// * 1000000l;
-
-	@Parameter
-	int numrenderingthreads = 3;
-
-	@Parameter
-	int numsourcegroups = 10;
-
-	@Parameter
-	String frametitle = "BigDataViewer";
-
-	@Parameter
-	boolean is2d = false;
-
-	@Parameter
-	boolean interpolate = false;
-
-	@Parameter
-	int numtimepoints = 1;
-
-	@Parameter
-	SourceAndConverterBdvDisplayService sacDisplayService;
+	LogService ls;
 
 	@Override
 	public void run() {
-		if (resetToDefault) {
-			IBdvSupplier bdvSupplier = new DefaultBdvSupplier(
-				new SerializableBdvOptions());
-			sacDisplayService.setDefaultBdvSupplier(bdvSupplier);
-		}
-		else {
-			SerializableBdvOptions options = new SerializableBdvOptions();
-			options.frameTitle = frametitle;
-			options.is2D = is2d;
-			options.numRenderingThreads = numrenderingthreads;
-			options.screenScales = Arrays.stream(screenscales.split(",")).mapToDouble(
-				Double::parseDouble).toArray();
-			options.height = height;
-			options.width = width;
-			options.numSourceGroups = numsourcegroups;
-			options.numTimePoints = numtimepoints;
-			options.interpolate = interpolate;
-			IBdvSupplier bdvSupplier = new DefaultBdvSupplier(options);
-			sacDisplayService.setDefaultBdvSupplier(bdvSupplier);
-		}
+		new ViewerTransformLogger(bdvh, new Logger() {
 
+			@Override
+			public void out(String msg) {
+				ls.info(msg);
+			}
+
+			@Override
+			public void err(String msg) {
+				ls.error(msg);
+			}
+		}).run();
 	}
 }

@@ -136,6 +136,9 @@ public class WarpedSourceDemo {
                     .getBdvDisplayService()
                     .show(bdvHandle, transformed_source);
 
+            bdvHandle.getViewerPanel().showDebugTileOverlay();
+            bdvHandle.getViewerPanel().getDisplay().repaint();
+
         }
 
     }

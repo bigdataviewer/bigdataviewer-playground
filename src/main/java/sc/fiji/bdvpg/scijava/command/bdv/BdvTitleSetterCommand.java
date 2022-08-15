@@ -30,10 +30,9 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
-import ij.IJ;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.navigate.RayCastPositionerSliderAdder;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
@@ -42,18 +41,19 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Add Z Slider",
-	description = "Adds a z slider onto BDV windows")
-public class BdvZSliderAdderCommand implements BdvPlaygroundActionCommand {
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Set Title",
+	description = "Sets the title of a BDV Windows")
 
-	@Parameter(label = "Select BDV Windows")
-	BdvHandle[] bdvhs;
+public class BdvTitleSetterCommand implements BdvPlaygroundActionCommand {
 
-	@Override
+	@Parameter(label = "Select BDV Window")
+	BdvHandle bdvh;
+
+	@Parameter(label = "title")
+	String title;
+
 	public void run() {
-		if (bdvhs.length == 0) IJ.log("Please make sure to select a Bdv window.");
-		for (BdvHandle bdvh : bdvhs) {
-			new RayCastPositionerSliderAdder(bdvh).run();
-		}
+		BdvHandleHelper.setWindowTitle(bdvh, title);
 	}
+
 }

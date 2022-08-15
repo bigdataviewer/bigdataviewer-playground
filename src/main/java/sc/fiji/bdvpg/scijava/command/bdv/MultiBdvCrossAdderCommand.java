@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
+import ij.IJ;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
@@ -41,19 +42,18 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Set Title",
-	description = "Sets the title of a BDV Windows")
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Add center cross",
+	description = "Adds a centering cross onto BDV windows")
+public class MultiBdvCrossAdderCommand implements BdvPlaygroundActionCommand {
 
-public class BdvSetTitleCommand implements BdvPlaygroundActionCommand {
+	@Parameter(label = "Select BDV Windows")
+	BdvHandle[] bdvhs;
 
-	@Parameter(label = "Select BDV Window")
-	BdvHandle bdvh;
-
-	@Parameter(label = "title")
-	String title;
-
+	@Override
 	public void run() {
-		BdvHandleHelper.setWindowTitle(bdvh, title);
+		if (bdvhs.length == 0) IJ.log("Please make sure to select a Bdv window.");
+		for (BdvHandle bdvh : bdvhs) {
+			BdvHandleHelper.addCenterCross(bdvh);
+		}
 	}
-
 }

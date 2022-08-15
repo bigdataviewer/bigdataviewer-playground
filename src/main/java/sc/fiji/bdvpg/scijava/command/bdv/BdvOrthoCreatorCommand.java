@@ -51,7 +51,7 @@ import java.awt.*;
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Create Orthogonal Views",
 	description = "Creates 3 BDV windows with synchronized orthogonal views")
-public class BdvOrthoWindowCreatorCommand implements
+public class BdvOrthoCreatorCommand implements
 	BdvPlaygroundActionCommand
 {
 

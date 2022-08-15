@@ -30,35 +30,30 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
-import org.scijava.ItemIO;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformLogger;
+import sc.fiji.bdvpg.log.Logger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Create empty BDV window",
-	description = "Creates an empty BDV window")
-public class BdvWindowCreatorCommand implements BdvPlaygroundActionCommand {
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Add debug overlay",
+	description = "Adds the overlay of the bdv tiled renderer")
 
-	/**
-	 * This triggers:
-	 * {@link sc.fiji.bdvpg.scijava.processors.BdvHandlePostprocessor}
-	 */
-	@Parameter(type = ItemIO.OUTPUT)
-	public BdvHandle bdvh;
+public class BdvDebugOverlayAdderCommand implements BdvPlaygroundActionCommand {
 
 	@Parameter
-	SourceAndConverterBdvDisplayService sacDisplayService;
+	BdvHandle bdvh;
 
 	@Override
 	public void run() {
-		bdvh = sacDisplayService.getNewBdv();
+		bdvh.getViewerPanel().showDebugTileOverlay();
+		bdvh.getViewerPanel().getDisplay().repaint();
 	}
-
 }

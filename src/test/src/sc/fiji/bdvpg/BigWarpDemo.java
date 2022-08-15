@@ -184,6 +184,23 @@ public class BigWarpDemo {
             SourceAndConverterServices.getSourceAndConverterService()
                     .register(sac);
         }
+
+        BdvHandle bdvh = SourceAndConverterServices
+                .getBdvDisplayService()
+                .getNewBdv();
+
+        SourceAndConverterServices
+                .getBdvDisplayService()
+                .show(bdvh, bwl.getWarpedSources()[0]);
+
+        SourceAndConverterServices
+                .getBdvDisplayService()
+                .show(bdvh, fixedSources.get(0));
+
+        bdvh.getViewerPanel().showDebugTileOverlay();
+        bdvh.getViewerPanel().getDisplay().repaint();
+
+        new ViewerTransformAdjuster(bdvh, bwl.getWarpedSources()[0]).run();
     }
 
     @Test

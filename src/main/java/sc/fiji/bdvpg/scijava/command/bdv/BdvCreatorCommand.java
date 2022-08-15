@@ -30,32 +30,35 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
-import bdv.viewer.SourceAndConverter;
+import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Zoom to source",
-	description = "Displays one or several sources into a new BDV window")
-public class BdvSourcesGotoCommand implements BdvPlaygroundActionCommand {
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Create empty BDV window",
+	description = "Creates an empty BDV window")
+public class BdvCreatorCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select BDV Window")
-	BdvHandle bdvh;
+	/**
+	 * This triggers:
+	 * {@link sc.fiji.bdvpg.scijava.processors.BdvHandlePostprocessor}
+	 */
+	@Parameter(type = ItemIO.OUTPUT)
+	public BdvHandle bdvh;
 
-	@Parameter(label = "Select Source(s)")
-	SourceAndConverter<?>[] sacs;
+	@Parameter
+	SourceAndConverterBdvDisplayService sacDisplayService;
 
 	@Override
 	public void run() {
-		if (sacs.length > 0) {
-			new ViewerTransformAdjuster(bdvh, sacs).run();
-		}
+		bdvh = sacDisplayService.getNewBdv();
 	}
+
 }

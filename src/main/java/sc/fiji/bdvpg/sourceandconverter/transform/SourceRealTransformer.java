@@ -36,6 +36,7 @@ import net.imglib2.realtransform.RealTransform;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class SourceRealTransformer<T> implements Runnable,
 	Function<SourceAndConverter<T>, SourceAndConverter<T>>
@@ -68,6 +69,12 @@ public class SourceRealTransformer<T> implements Runnable,
 		this.method = method;
 	}
 
+	Supplier<Boolean> cullingMethod = () -> false; // to be safe
+
+	public void setCulling(Supplier<Boolean> cullingMethod) {
+		this.cullingMethod = cullingMethod;
+	}
+
 	public void setBoundingBoxEstimator(BoundingBoxEstimation bbest) {
 		this.bbest = bbest;
 	}
@@ -85,17 +92,17 @@ public class SourceRealTransformer<T> implements Runnable,
 		final WarpedSource<T> src;
 		if (bbest != null) {
 			src = new WarpedSource<>(in.getSpimSource(), "Transformed_" + in
-				.getSpimSource().getName(), () -> true);
+				.getSpimSource().getName(), cullingMethod);
 			src.setBoundingBoxEstimator(bbest);
 		}
 		else if (method != null) {
 			src = new WarpedSource<>(in.getSpimSource(), "Transformed_" + in
-				.getSpimSource().getName(), () -> true);
+				.getSpimSource().getName(), cullingMethod);
 			src.setBoundingBoxEstimator(new BoundingBoxEstimation(method));
 		}
 		else {
 			src = new WarpedSource<>(in.getSpimSource(), "Transformed_" + in
-				.getSpimSource().getName(), () -> false);
+				.getSpimSource().getName(), cullingMethod);
 			src.setBoundingBoxEstimator(new BoundingBoxEstimation(
 				BoundingBoxEstimation.Method.VOLUME));
 		}

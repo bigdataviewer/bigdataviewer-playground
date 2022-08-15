@@ -30,11 +30,10 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
-import org.scijava.log.LogService;
+import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformLogger;
-import sc.fiji.bdvpg.log.Logger;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformChanger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
@@ -47,30 +46,39 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Log view transform",
-	description = "Outputs the current view transform of a BDV window into the standard IJ logger")
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Change view transform",
+	description = "Applies a simple view transform (translation / rotation) to a BDV window")
+public class BdvViewTransformatorCommand implements BdvPlaygroundActionCommand {
 
-public class ViewTransformLoggerCommand implements BdvPlaygroundActionCommand {
-
-	@Parameter
+	@Parameter(label = "Select BDV Windows")
 	BdvHandle bdvh;
 
-	@Parameter
-	LogService ls;
+	@Parameter(label = "Translate in X")
+	public Double translatex = 0.0;
+
+	@Parameter(label = "Translate in Y")
+	public Double translatey = 0.0;
+
+	@Parameter(label = "Translate in Z")
+	public Double translatez = 0.0;
+
+	@Parameter(label = "Rotate around X")
+	public Double rotatearoundx = 0.0;
+
+	@Parameter(label = "Rotate around Y")
+	public Double rotatearoundy = 0.0;
+
+	@Parameter(label = "Rotate around Z")
+	public Double rotatearoundz = 0.0;
 
 	@Override
 	public void run() {
-		new ViewerTransformLogger(bdvh, new Logger() {
+		AffineTransform3D affineTransform3D = new AffineTransform3D();
+		affineTransform3D.translate(translatex, translatey, translatez);
+		affineTransform3D.rotate(0, rotatearoundx);
+		affineTransform3D.rotate(1, rotatearoundy);
+		affineTransform3D.rotate(2, rotatearoundz);
 
-			@Override
-			public void out(String msg) {
-				ls.info(msg);
-			}
-
-			@Override
-			public void err(String msg) {
-				ls.error(msg);
-			}
-		}).run();
+		new ViewerTransformChanger(bdvh, affineTransform3D, true, 0).run();
 	}
 }

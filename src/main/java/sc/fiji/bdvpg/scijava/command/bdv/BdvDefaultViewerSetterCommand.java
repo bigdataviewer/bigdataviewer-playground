@@ -29,34 +29,88 @@
 
 package sc.fiji.bdvpg.scijava.command.bdv;
 
-import bdv.util.BdvHandle;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
+import sc.fiji.bdvpg.bdv.supplier.IBdvSupplier;
+import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+
+import java.util.Arrays;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Set Number Of Timepoints",
-	description = "Sets the number of timepoints in one or several BDV Windows")
-
-public class BdvSetTimepointsNumberCommand implements
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Set BDV window (default)",
+	description = "Set preferences of Bdv Window")
+public class BdvDefaultViewerSetterCommand implements
 	BdvPlaygroundActionCommand
 {
 
-	@Parameter(label = "Select BDV Windows")
-	BdvHandle[] bdvhs;
+	@Parameter(
+		label = "Click this checkbox to ignore all parameters and reset the default viewer",
+		persist = false)
+	boolean resetToDefault = false;
 
-	@Parameter(label = "Number of timepoints, min = 1", min = "1")
-	int numberoftimepoints;
+	@Parameter
+	int width = 640;
 
+	@Parameter
+	int height = 480;
+
+	@Parameter
+	String screenscales = "1, 0.75, 0.5, 0.25, 0.125";
+
+	@Parameter
+	long targetrenderms = 30;// * 1000000l;
+
+	@Parameter
+	int numrenderingthreads = 3;
+
+	@Parameter
+	int numsourcegroups = 10;
+
+	@Parameter
+	String frametitle = "BigDataViewer";
+
+	@Parameter
+	boolean is2d = false;
+
+	@Parameter
+	boolean interpolate = false;
+
+	@Parameter
+	int numtimepoints = 1;
+
+	@Parameter
+	SourceAndConverterBdvDisplayService sacDisplayService;
+
+	@Override
 	public void run() {
-		for (BdvHandle bdvh : bdvhs) {
-			bdvh.getViewerPanel().setNumTimepoints(numberoftimepoints);
+		if (resetToDefault) {
+			IBdvSupplier bdvSupplier = new DefaultBdvSupplier(
+				new SerializableBdvOptions());
+			sacDisplayService.setDefaultBdvSupplier(bdvSupplier);
 		}
-	}
+		else {
+			SerializableBdvOptions options = new SerializableBdvOptions();
+			options.frameTitle = frametitle;
+			options.is2D = is2d;
+			options.numRenderingThreads = numrenderingthreads;
+			options.screenScales = Arrays.stream(screenscales.split(",")).mapToDouble(
+				Double::parseDouble).toArray();
+			options.height = height;
+			options.width = width;
+			options.numSourceGroups = numsourcegroups;
+			options.numTimePoints = numtimepoints;
+			options.interpolate = interpolate;
+			IBdvSupplier bdvSupplier = new DefaultBdvSupplier(options);
+			sacDisplayService.setDefaultBdvSupplier(bdvSupplier);
+		}
 
+	}
 }
