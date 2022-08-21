@@ -68,6 +68,7 @@ import org.scijava.service.Service;
 import org.scijava.ui.UIService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.cache.GlobalCache;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
@@ -86,6 +87,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -226,6 +228,7 @@ public class SourceAndConverterService extends AbstractService implements
 		}
 		if (sacToMetadata.getIfPresent(sac) == null) {
 			Map<String, Object> sourceData = new HashMap<>();
+			sourceData.put(UNIQUE_ID_KEY, getNewUniqueId());
 			sacToMetadata.put(sac, sourceData);
 		}
 		/*
@@ -253,10 +256,31 @@ public class SourceAndConverterService extends AbstractService implements
 		if (uiAvailable) ui.update(sac);
 	}
 
+	public static String UNIQUE_ID_KEY = "Unique_ID";
+	AtomicInteger sourceCounter = new AtomicInteger(0);
+
+	public int getNewUniqueId() {
+		return sourceCounter.incrementAndGet();
+	}
+
+	public int getUniqueId(SourceAndConverter<?> sac) {
+		return (Integer) getMetadata(sac, UNIQUE_ID_KEY);
+	}
+
+	public void setUniqueId(SourceAndConverter<?> sac, Integer id) {
+		setMetadata(sac, UNIQUE_ID_KEY, new Integer(id));
+	}
+
 	public synchronized void register(Collection<SourceAndConverter<?>> sources) {
 		for (SourceAndConverter<?> sac : sources) {
 			this.register(sac);
 		}
+	}
+
+	GlobalCache globalCache = new GlobalCache();
+
+	public GlobalCache getCache() {
+		return globalCache;
 	}
 
 	/**

@@ -45,6 +45,7 @@ import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.Views;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.ArrayList;
@@ -273,7 +274,7 @@ public class ResampledSource<T extends NumericType<T> & NativeType<T>>
 					.dimension(2);
 
 				cachedRAIs.get(t).put(level, RAIHelper.wrapAsVolatileCachedCellImg(
-					nonCached, blockSize));
+					nonCached, blockSize, this, t, level));
 			}
 			return cachedRAIs.get(t).get(level);
 		}

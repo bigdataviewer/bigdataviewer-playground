@@ -29,18 +29,20 @@
 
 package bdv.util;
 
+import net.imglib2.cache.ref.BoundedSoftRefLoaderCache;
+import sc.fiji.bdvpg.cache.BdvPGLoaderCache;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.lazy.Caches;
 import net.imglib2.cache.Cache;
 import net.imglib2.cache.img.CachedCellImg;
 import net.imglib2.cache.img.LoadedCellCacheLoader;
-import net.imglib2.cache.ref.SoftRefLoaderCache;
 import net.imglib2.img.basictypeaccess.AccessFlags;
 import net.imglib2.img.basictypeaccess.ArrayDataAccessFactory;
 import net.imglib2.img.cell.Cell;
 import net.imglib2.img.cell.CellGrid;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.GenericByteType;
 import net.imglib2.type.numeric.integer.GenericIntType;
 import net.imglib2.type.numeric.integer.GenericLongType;
@@ -50,11 +52,18 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Intervals;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 //import org.janelia.saalfeldlab.n5.imglib2.RandomAccessibleLoader;
 //import org.janelia.saalfeldlab.n5.imglib2.RandomAccessibleLoader;
 
 import static net.imglib2.img.basictypeaccess.AccessFlags.VOLATILE;
-import static net.imglib2.type.PrimitiveType.*;
+import static net.imglib2.type.PrimitiveType.BYTE;
+import static net.imglib2.type.PrimitiveType.INT;
+import static net.imglib2.type.PrimitiveType.SHORT;
+import static net.imglib2.type.PrimitiveType.LONG;
+import static net.imglib2.type.PrimitiveType.FLOAT;
+import static net.imglib2.type.PrimitiveType.DOUBLE;
 
 /**
  * Helper function to cache a {@link RandomAccessibleInterval} TODO : replace by
@@ -63,10 +72,12 @@ import static net.imglib2.type.PrimitiveType.*;
 
 public class RAIHelper {
 
+	private static Logger logger = LoggerFactory.getLogger(RAIHelper.class);
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <T extends NativeType<T>> RandomAccessibleInterval<T>
 		wrapAsVolatileCachedCellImg(final RandomAccessibleInterval<T> source,
-			final int[] blockSize)
+			final int[] blockSize, Object objectSource, int timepoint, int level)
 	{
 
 		final long[] dimensions = Intervals.dimensionsAsLongArray(source);
@@ -77,8 +88,13 @@ public class RAIHelper {
 
 		final T type = Util.getTypeFromInterval(source);
 
+		final long costPerValue = getBitsPerBlock(blockSize, type);
+
 		final CachedCellImg<T, ?> img;
-		final Cache<Long, Cell<?>> cache = new SoftRefLoaderCache().withLoader(
+		final Cache<Long, Cell<?>> cache =
+				//new BoundedSoftRefLoaderCache(100)
+				new BdvPGLoaderCache(objectSource, timepoint, level)
+						.withLoader(
 			LoadedCellCacheLoader.get(grid, loader, type, AccessFlags.setOf(
 				VOLATILE)));
 
@@ -115,5 +131,21 @@ public class RAIHelper {
 		}
 
 		return img;
+	}
+
+	private static <T extends NativeType<T>> long getBitsPerBlock(int[] blockSize, T type) {
+		long nElements = 1;
+		for (int d : blockSize) nElements*=d;
+		return nElements*getBitsPerElement(type);
+	}
+
+	private static <T extends NativeType<T>> long getBitsPerElement(T type) {
+
+		if (RealType.class.isInstance(type)) {
+			return ((RealType)type).getBitsPerPixel();
+		} else {
+			logger.warn("Unknow number of bits for pixel type "+type.getClass().getSimpleName()+" assuming 8 bits");
+			return 8;
+		}
 	}
 }

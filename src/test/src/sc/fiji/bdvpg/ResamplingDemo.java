@@ -52,6 +52,8 @@ public class ResamplingDemo {
 
     static ImageJ ij;
 
+    static boolean cache = true;
+
     static public void main(String... args) {
         // Arrange
         // create the ImageJ application context with all available services
@@ -105,12 +107,12 @@ public class ResamplingDemo {
         at3d.translate(-100,-100,0);
         SourceAndConverter<UnsignedShortType> bigMandelbrot = new SourceAffineTransformer<>(mandelbrot, at3d).get();
 
-        SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, bigMandelbrot );
+        //SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, bigMandelbrot );
 
         new BrightnessAdjuster(bigMandelbrot,0,800).run();
 
         // Resample generative source as model source
-        SourceResampler<UnsignedShortType> sr = new SourceResampler<>(bigMandelbrot, sac, "resampled", false,false, false,0);
+        SourceResampler<UnsignedShortType> sr = new SourceResampler<>(bigMandelbrot, sac, "resampled", false,cache, false,0);
         SourceAndConverter<?> resampledMandelbrot = sr.get();
 
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, resampledMandelbrot );
@@ -129,24 +131,24 @@ public class ResamplingDemo {
         // DOWNSAMPLING
         EmptySourceAndConverterCreator downSampledModel = new EmptySourceAndConverterCreator("DownSampled",sac,0,4,4,4);//, factory);
 
-        sr = new SourceResampler<>(sac, downSampledModel.get(), "downsampled", false,false, true,0);
+        sr = new SourceResampler<>(sac, downSampledModel.get(), "downsampled", false,cache, true,0);
         SourceAndConverter<UnsignedShortType> downsampledSource = sr.get();
 
-        SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, downsampledSource );
+        //SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, downsampledSource );
         new ColorChanger( downsampledSource, new ARGBType(ARGBType.rgba(255, 120,0,255))).run();
 
         // DOWNSAMPLING With Mipmap Reuse
 
-        sr = new SourceResampler<>(sac, downSampledModel.get(), "downsampled-with-mipmap", true,false, true,0);
+        sr = new SourceResampler<>(sac, downSampledModel.get(), "downsampled-with-mipmap", true,cache, true,0);
         SourceAndConverter<UnsignedShortType> downsampledSourceWithMipmaps = sr.get();
 
-        SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, downsampledSourceWithMipmaps );
+        //SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, downsampledSourceWithMipmaps );
         new ColorChanger( downsampledSourceWithMipmaps, new ARGBType(ARGBType.rgba(120, 120,0,255))).run();
 
         // UPSAMPLING
         EmptySourceAndConverterCreator upSampledModel = new EmptySourceAndConverterCreator("UpSampled",sac,0,0.2,0.2,0.2);//, factory);
 
-        sr = new SourceResampler<>(sac, upSampledModel.get(), "upsampled", false,false, true,0);
+        sr = new SourceResampler<>(sac, upSampledModel.get(), "upsampled", false,cache, true,0);
         SourceAndConverter<UnsignedShortType> upsampledSource = sr.get();
 
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, upsampledSource );
