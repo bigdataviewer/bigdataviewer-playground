@@ -46,19 +46,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 
 /**
- * A cache that forwards to some other cache (usually
- * {@link WeakRefLoaderCache}) and additionally keeps {@link SoftReference}s to
- * the <em>N</em> most recently accessed values.
- *
- * A bidirectional map between key types S and T (source and target).
- * This is used to create adapters exposing a T→V cache as a S→V cache.
- *
- * @param <K>
- *            key type
- * @param <V>
- *            value type
- *
- * @author Tobias Pietzsch
+ * TODO
  */
 public class BdvPGLoaderCache< K, V > implements LoaderCache< K, V >
 {

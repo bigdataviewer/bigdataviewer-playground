@@ -2,11 +2,12 @@ package sc.fiji.bdvpg.cache;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.RemovalCause;
+import com.github.benmanes.caffeine.cache.Weigher;
 import ij.IJ;
+import net.imglib2.img.cell.Cell;
 
 import java.lang.ref.WeakReference;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class GlobalCache {
 
@@ -19,15 +20,25 @@ public class GlobalCache {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                IJ.log("Cache estimated size : "+cache.estimatedSize());
+                IJ.log("Cache estimated size : "+cache.stats().requestCount()+" / "+maxNumberOfPixels);
             }
         }).start();
 
     }
 
+    final long maxNumberOfPixels = 100_000_000;// Runtime.getRuntime().maxMemory() / 2;
+
     final Cache< Key, Object > cache = Caffeine.newBuilder()
-            .maximumSize( 100 )
+            .maximumWeight(maxNumberOfPixels)
+            //.maximumSize(100)
             .softValues()
+            .weigher((Weigher<Key, Object>) (key, value) -> {
+                if (value instanceof Cell) {
+                    return (int) ((Cell) value).size();
+                } else return 1;
+            })
+            .removalListener((Key key, Object object, RemovalCause cause) ->
+                    System.out.printf("Key %s was removed (%s)%n", key, cause))
             .build();
 
     void touch( final Key key ) {
