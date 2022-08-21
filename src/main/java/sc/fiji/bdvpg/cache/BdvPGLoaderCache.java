@@ -70,7 +70,7 @@ public class BdvPGLoaderCache< K, V > implements LoaderCache< K, V >
 	{
 		final V value = cache.getIfPresent( key );
 		if (value!=null)
-			globalCache.touch(GlobalCache.getKey(source, timepoint, level, key ));
+			globalCache.touch(GlobalCache.getKey(source, timepoint, level, key ), value);
 		return value;
 	}
 
