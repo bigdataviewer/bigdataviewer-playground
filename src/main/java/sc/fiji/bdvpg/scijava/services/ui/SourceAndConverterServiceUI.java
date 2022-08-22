@@ -51,6 +51,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
+import java.util.Timer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -207,6 +208,32 @@ public class SourceAndConverterServiceUI {
 
 		// set the jFrame height and width
 		frame.setPreferredSize(new Dimension(width, height));
+
+		JLabel cacheLabel = new JLabel("Cache");
+
+		panel.add(cacheLabel, BorderLayout.SOUTH);
+
+		TimerTask periodicLogger = new TimerTask() {
+			@Override
+			public void run() {
+				SwingUtilities.invokeLater(() -> {
+					cacheLabel.setText("Cache size : " + (sourceAndConverterService.getCache().getEstimatedSize() / (1024 * 1024)) + " Mb (" + (int) (100.0 * (double) sourceAndConverterService.getCache().getEstimatedSize() / (double) sourceAndConverterService.getCache().getMaxSize()) + " %)");
+				});
+			}
+		};
+
+		Timer time = new Timer(); // Instantiate Timer Object
+		time.schedule(periodicLogger, 0, 2000);
+
+		cacheLabel.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mouseClicked(MouseEvent e){
+				if(e.getClickCount()==2){
+					sourceAndConverterService.getCache().invalidateAll();
+					SwingUtilities.invokeLater(() -> {cacheLabel.setText("Cache cleared.");});
+				}
+			}
+		});
 
 		frame.add(panel);
 		frame.pack();

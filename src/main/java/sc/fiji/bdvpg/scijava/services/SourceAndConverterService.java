@@ -277,7 +277,7 @@ public class SourceAndConverterService extends AbstractService implements
 		}
 	}
 
-	GlobalCache globalCache = new GlobalCache();
+	final GlobalCache globalCache = GlobalCache.builder().maxSize(500_000_000).log().create();
 
 	public GlobalCache getCache() {
 		return globalCache;

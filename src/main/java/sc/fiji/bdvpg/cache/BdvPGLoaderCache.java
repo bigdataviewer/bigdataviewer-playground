@@ -35,13 +35,9 @@ package sc.fiji.bdvpg.cache;
 
 import net.imglib2.cache.CacheLoader;
 import net.imglib2.cache.LoaderCache;
-import net.imglib2.cache.ref.BoundedSoftRefLoaderCache;
-import net.imglib2.cache.ref.GuardedStrongRefLoaderCache;
-import net.imglib2.cache.ref.SoftRefLoaderCache;
 import net.imglib2.cache.ref.WeakRefLoaderCache;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
-import java.lang.ref.SoftReference;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 
@@ -50,7 +46,7 @@ import java.util.function.Predicate;
  */
 public class BdvPGLoaderCache< K, V > implements LoaderCache< K, V >
 {
-	private final LoaderCache< K, V > cache = new WeakRefLoaderCache<>();//new BoundedSoftRefLoaderCache<>(1000);
+	private final LoaderCache< K, V > cache = new WeakRefLoaderCache<>();
 
 	private final GlobalCache globalCache;
 
@@ -98,12 +94,14 @@ public class BdvPGLoaderCache< K, V > implements LoaderCache< K, V >
 	public void invalidate( final K key )
 	{
 		cache.invalidate( key );
+		globalCache.invalidate( GlobalCache.getKey(source, timepoint, level, key ) );
 	}
 
 	@Override
 	public void invalidateIf( final long parallelismThreshold, final Predicate< K > condition )
 	{
 		cache.invalidateIf( parallelismThreshold, condition );
+		globalCache.invalidateIf( GlobalCache.getCondition(source, timepoint, level, condition ) );
 	}
 
 	@Override
