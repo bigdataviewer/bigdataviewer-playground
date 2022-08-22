@@ -48,7 +48,7 @@ public class BdvPGLoaderCache< K, V > implements LoaderCache< K, V >
 {
 	private final LoaderCache< K, V > cache = new WeakRefLoaderCache<>();
 
-	private final GlobalCache globalCache;
+	private final AbstractGlobalCache globalCache;
 
 	private final Object source;
 
@@ -61,12 +61,19 @@ public class BdvPGLoaderCache< K, V > implements LoaderCache< K, V >
 		globalCache = SourceAndConverterServices.getSourceAndConverterService().getCache();
 	}
 
+	public BdvPGLoaderCache(Object source) {
+		this.source = source;
+		this.timepoint = -1;
+		this.level = -1;
+		globalCache = SourceAndConverterServices.getSourceAndConverterService().getCache();
+	}
+
 	@Override
 	public V getIfPresent( final K key )
 	{
 		final V value = cache.getIfPresent( key );
 		if (value!=null)
-			globalCache.touch(GlobalCache.getKey(source, timepoint, level, key ), value);
+			globalCache.touch(BoundedLinkedHashMapGlobalCache.getKey(source, timepoint, level, key ), value);
 		return value;
 	}
 
@@ -74,7 +81,7 @@ public class BdvPGLoaderCache< K, V > implements LoaderCache< K, V >
 	public V get( final K key, final CacheLoader< ? super K, ? extends V > loader ) throws ExecutionException
 	{
 		final V value = cache.get( key, loader );
-		globalCache.put(GlobalCache.getKey(source, timepoint, level, key ), value);
+		globalCache.put(BoundedLinkedHashMapGlobalCache.getKey(source, timepoint, level, key ), value);
 		return value;
 	}
 
@@ -94,14 +101,14 @@ public class BdvPGLoaderCache< K, V > implements LoaderCache< K, V >
 	public void invalidate( final K key )
 	{
 		cache.invalidate( key );
-		globalCache.invalidate( GlobalCache.getKey(source, timepoint, level, key ) );
+		globalCache.invalidate( BoundedLinkedHashMapGlobalCache.getKey(source, timepoint, level, key ) );
 	}
 
 	@Override
 	public void invalidateIf( final long parallelismThreshold, final Predicate< K > condition )
 	{
 		cache.invalidateIf( parallelismThreshold, condition );
-		globalCache.invalidateIf( GlobalCache.getCondition(source, timepoint, level, condition ) );
+		globalCache.invalidateIf( BoundedLinkedHashMapGlobalCache.getCondition(source, timepoint, level, condition ) );
 	}
 
 	@Override

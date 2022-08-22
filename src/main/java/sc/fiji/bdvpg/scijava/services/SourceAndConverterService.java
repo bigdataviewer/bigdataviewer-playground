@@ -34,6 +34,8 @@ import bdv.ViewerImgLoader;
 import bdv.ViewerSetupImgLoader;
 import bdv.VolatileSpimSource;
 import bdv.img.cache.VolatileGlobalCellCache;
+import bdv.img.hdf5.Hdf5ImageLoader;
+import bdv.img.n5.N5ImageLoader;
 import bdv.spimdata.WrapBasicImgLoader;
 import bdv.tools.brightness.ConverterSetup;
 import bdv.viewer.Source;
@@ -43,10 +45,12 @@ import com.google.common.cache.CacheBuilder;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.base.Entity;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
+import mpicbg.spim.data.generic.sequence.BasicImgLoader;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.sequence.Angle;
 import mpicbg.spim.data.sequence.Channel;
 import net.imagej.patcher.LegacyInjector;
+import net.imglib2.cache.LoaderCache;
 import net.imglib2.converter.Converter;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
@@ -68,7 +72,9 @@ import org.scijava.service.Service;
 import org.scijava.ui.UIService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.cache.GlobalCache;
+import sc.fiji.bdvpg.cache.AbstractGlobalCache;
+import sc.fiji.bdvpg.cache.BdvPGLoaderCache;
+import sc.fiji.bdvpg.cache.BoundedLinkedHashMapGlobalCache;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
@@ -79,6 +85,7 @@ import sc.fiji.bdvpg.spimdata.IEntityHandlerService;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -277,10 +284,40 @@ public class SourceAndConverterService extends AbstractService implements
 		}
 	}
 
-	final GlobalCache globalCache = GlobalCache.builder().maxSize(500_000_000).log().create();
+	final BoundedLinkedHashMapGlobalCache globalCache = AbstractGlobalCache.builder().log().createLinkedHashMap();
 
-	public GlobalCache getCache() {
+	public BoundedLinkedHashMapGlobalCache getCache() {
 		return globalCache;
+	}
+
+	private boolean replaceSpimDataCacheByGlobalCache(AbstractSpimData<?> asd) {
+		LoaderCache loaderCache = new BdvPGLoaderCache(asd);
+		BasicImgLoader imageLoader = asd.getSequenceDescription().getImgLoader();
+		VolatileGlobalCellCache cache = new VolatileGlobalCellCache(10, Math.max(1,Runtime.getRuntime().availableProcessors()-1));
+		// Now override the backingCache field of the VolatileGlobalCellCache
+		try {
+			Field backingCacheField = VolatileGlobalCellCache.class.getDeclaredField("backingCache");
+			backingCacheField.setAccessible(true);
+			backingCacheField.set(cache,loaderCache);
+			// Now overrides the cache in the ImageLoader
+			if (imageLoader instanceof Hdf5ImageLoader) {
+				Field cacheField = Hdf5ImageLoader.class.getDeclaredField("cache");
+				cacheField.setAccessible(true);
+				cacheField.set(imageLoader,cache);
+				return true;
+			} else if (imageLoader instanceof N5ImageLoader) {
+				Field cacheField = N5ImageLoader.class.getDeclaredField("cache");
+				cacheField.setAccessible(true);
+				cacheField.set(imageLoader,cache);
+				return true;
+			} else {
+				return false;
+			}
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			e.printStackTrace();
+			return false;
+		}
+
 	}
 
 	/**
@@ -428,6 +465,14 @@ public class SourceAndConverterService extends AbstractService implements
 		});
 
 		WrapBasicImgLoader.removeWrapperIfPresent(asd);
+
+		boolean success = replaceSpimDataCacheByGlobalCache(asd);
+
+		if (!success) {
+			logger.warn("Could not link abstract spimdata cache to Bdv Playground global cache");
+		} else {
+			logger.info("Spimdata "+asd+" is using the Bdv Playground global cache.");
+		}
 
 	}
 

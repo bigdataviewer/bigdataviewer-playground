@@ -30,7 +30,7 @@
 package sc.fiji.bdvpg.services;
 
 import bdv.tools.brightness.ConverterSetup;
-import sc.fiji.bdvpg.cache.GlobalCache;
+import sc.fiji.bdvpg.cache.BoundedLinkedHashMapGlobalCache;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
@@ -250,6 +250,6 @@ public interface ISourceAndConverterService {
 	 */
 	boolean containsMetadata(AbstractSpimData<?> asd, String key);
 
-	GlobalCache  getCache();
+	BoundedLinkedHashMapGlobalCache getCache();
 
 }
