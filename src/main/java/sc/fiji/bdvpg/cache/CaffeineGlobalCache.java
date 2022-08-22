@@ -52,17 +52,18 @@ public class CaffeineGlobalCache extends AbstractGlobalCache {
     }
 
     public void put(GlobalCacheKey key, Object value) {
-        cache.touch(key, value);
+        cache.put(key, value);
     }
 
     @Override
     public Object get(GlobalCacheKey key) throws ExecutionException {
-        return cache.get(key);
+        logger.error("Cannot use get");
+        return null;
     }
 
     @Override
     public Object getIfPresent(GlobalCacheKey key) {
-        return cache.get(key);
+        return cache.getIfPresent(key);
     }
 
     @Override

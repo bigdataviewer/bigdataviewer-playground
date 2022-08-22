@@ -92,7 +92,7 @@ abstract public class AbstractGlobalCache implements Cache<GlobalCacheKey, Objec
     public static class GlobalCacheBuilder{
         private boolean log = false;
         private int msBetweenLog = 2000;
-        private long maxCacheSize = Runtime.getRuntime().maxMemory() ==  Long.MAX_VALUE ? 2*1024*1024*1024 : (long) (Runtime.getRuntime().maxMemory() * 0.75);
+        private long maxCacheSize = Runtime.getRuntime().maxMemory() ==  Long.MAX_VALUE ? 2*1024*1024*1024 : (long) (Runtime.getRuntime().maxMemory() * 0.5);
 
         public GlobalCacheBuilder log() {
             log = true;

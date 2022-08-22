@@ -284,9 +284,12 @@ public class SourceAndConverterService extends AbstractService implements
 		}
 	}
 
-	final BoundedLinkedHashMapGlobalCache globalCache = AbstractGlobalCache.builder().log().createLinkedHashMap();
+	final AbstractGlobalCache globalCache = AbstractGlobalCache.builder().log()
+			.createLinkedHashMap();
+	//		.createCaffeineCache();
 
-	public BoundedLinkedHashMapGlobalCache getCache() {
+
+	public AbstractGlobalCache getCache() {
 		return globalCache;
 	}
 

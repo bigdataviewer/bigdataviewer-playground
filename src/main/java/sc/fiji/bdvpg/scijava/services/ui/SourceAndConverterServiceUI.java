@@ -217,7 +217,7 @@ public class SourceAndConverterServiceUI {
 			@Override
 			public void run() {
 				SwingUtilities.invokeLater(() -> {
-					cacheLabel.setText("Cache size : " + (sourceAndConverterService.getCache().getEstimatedSize() / (1024 * 1024)) + " Mb (" + (int) (100.0 * (double) sourceAndConverterService.getCache().getEstimatedSize() / (double) sourceAndConverterService.getCache().getMaxSize()) + " %)");
+					cacheLabel.setText(sourceAndConverterService.getCache().toString());
 				});
 			}
 		};
