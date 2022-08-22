@@ -1,18 +1,24 @@
 package sc.fiji.bdvpg.cache;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.RemovalCause;
-import com.github.benmanes.caffeine.cache.Weigher;
 import ij.IJ;
+import net.imglib2.img.basictypeaccess.ByteAccess;
+import net.imglib2.img.basictypeaccess.FloatAccess;
+import net.imglib2.img.basictypeaccess.IntAccess;
+import net.imglib2.img.basictypeaccess.ShortAccess;
 import net.imglib2.img.cell.Cell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class GlobalCache {
+
+    final static Logger logger = LoggerFactory.getLogger(GlobalCache.class);
 
     public GlobalCache() {
 
@@ -23,31 +29,16 @@ public class GlobalCache {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                //IJ.log("Cache estimated size : "+cache.stats().requestCount()+" / "+maxNumberOfPixels);
+                IJ.log("Cache size : "+(cache.getCost()/(1024*1024))+" Mb ("+(int)(100.0*(double) cache.getCost()/ (double) cache.getMaxCost())+" %)");
             }
         }).start();
 
     }
 
-    final long maxNumberOfPixels = 100_000_000;// Runtime.getRuntime().maxMemory() / 2;
-
-    /*final Cache< Key, Object > cache = Caffeine.newBuilder()
-            .maximumWeight(maxNumberOfPixels)
-            //.maximumSize(100)
-            .softValues()
-            .weigher((Weigher<Key, Object>) (key, value) -> {
-                if (value instanceof Cell) {
-                    return (int) ((Cell) value).size();
-                } else return 1;
-            })
-            .removalListener((Key key, Object object, RemovalCause cause) ->
-                    System.out.printf("Key %s was removed (%s)%n", key, cause))
-            .build();*/
-
-    SoftRefs cache = new SoftRefs(100);
+    SoftRefs cache = new SoftRefs(100, 2_000_000_000);
 
     void touch( final Key key, Object value ) {
-        //cache..getIfPresent(key); // Touch
+        //cache.getIfPresent(key); // Touch
         cache.touch(key, value);
     }
 
@@ -57,6 +48,7 @@ public class GlobalCache {
 
     public void put(Key key, Object value) {
         cache.touch(key, value);
+        //cache.put(key, value);
     }
 
     public static class Key
@@ -68,7 +60,6 @@ public class GlobalCache {
         private final int level;
 
         private final WeakReference<Object> key;
-
 
         public Key( final Object source, final int timepoint, final int level, final Object key )
         {
@@ -111,23 +102,61 @@ public class GlobalCache {
         }
     }
 
+    public static long getWeight(Object object) {
+        if (object instanceof Cell) {
+            Cell cell = ((Cell) object);
+            Object data = cell.getData();
+
+            if (ShortAccess.class.isInstance(data)) {
+                return 2*cell.size();
+            } else if (ByteAccess.class.isInstance(data)) {
+                return cell.size();
+            } else if (FloatAccess.class.isInstance(data)) {
+                return 4*cell.size();
+            } else if (IntAccess.class.isInstance(data)) {
+                return 4*cell.size();
+            } else {
+                logger.info("Unknown data class of cell object "+data.getClass());
+                return cell.size();
+            }
+
+        } else {
+            logger.info("Unknown class of cached object "+object.getClass());
+            return 1;
+        }
+    }
+
     static class SoftRefs extends LinkedHashMap< Key, SoftReference< Object >>
     {
         private static final long serialVersionUID = 1L;
 
-        private final int maxSoftRefs;
+        private final long maxCost;
 
-        public SoftRefs( final int maxSoftRefs )
+        AtomicLong totalWeight = new AtomicLong();
+
+        HashMap<Key, Long> cost = new HashMap<>();
+
+        public SoftRefs( final int iniSize, final long maxCost  )
         {
-            super( maxSoftRefs, 0.75f, true );
-            this.maxSoftRefs = maxSoftRefs;
+            super( iniSize, 0.75f, true );
+            this.maxCost = maxCost;
+        }
+
+        public long getCost() {
+            return totalWeight.get();
+        }
+
+        public long getMaxCost() {
+            return maxCost;
         }
 
         @Override
         protected boolean removeEldestEntry( final Map.Entry< Key, SoftReference< Object > > eldest )
         {
-            if ( size() > maxSoftRefs )
+            if ( totalWeight.get() > maxCost )
             {
+                totalWeight.addAndGet(-cost.get(eldest.getKey()));
+                cost.remove(eldest.getKey());
                 eldest.getValue().clear();
                 return true;
             }
@@ -138,15 +167,23 @@ public class GlobalCache {
         synchronized public void touch( final Key key, final Object value )
         {
             final SoftReference< Object > ref = get( key );
-            if ( ref == null || ref.get() == null )
-                put( key, new SoftReference<>( value ) );
+            if ( ref == null ) {
+                long costValue = getWeight(value);
+                totalWeight.addAndGet(costValue);
+                cost.put(key, costValue);
+                put(key, new SoftReference<>(value));
+            } else if (ref.get() == null ) {
+                put(key, new SoftReference<>(value));
+            }
         }
 
         @Override
         public synchronized void clear()
         {
-            for ( final SoftReference< Object > ref : values() )
+            for ( final SoftReference< Object > ref : values() ) {
                 ref.clear();
+            }
+            cost.clear();
             super.clear();
         }
     }
