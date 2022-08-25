@@ -314,7 +314,10 @@ public class SourceAndConverterService extends AbstractService implements
 				cacheField.set(imageLoader,cache);
 				return true;
 			} else {
-				return false;
+				Field cacheField = imageLoader.getClass().getDeclaredField("cache");
+				cacheField.setAccessible(true);
+				cacheField.set(imageLoader,cache);
+				return true;
 			}
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			e.printStackTrace();
