@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.spimdata.importer;
 
 import mpicbg.spim.data.SpimDataException;
@@ -41,52 +42,61 @@ import java.util.regex.Pattern;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_LOCATION;
 
-public class SpimDataFromXmlImporter implements Runnable, Function<String, AbstractSpimData<?>> {
+public class SpimDataFromXmlImporter implements Runnable,
+	Function<String, AbstractSpimData<?>>
+{
 
-    protected static final Logger logger = LoggerFactory.getLogger(SpimDataFromXmlImporter.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		SpimDataFromXmlImporter.class);
 
-    final String dataLocation;
+	final String dataLocation;
 
-    public SpimDataFromXmlImporter( File file ) {
-        this.dataLocation = file.getAbsolutePath();
-    }
+	public SpimDataFromXmlImporter(File file) {
+		this.dataLocation = file.getAbsolutePath();
+	}
 
-    public SpimDataFromXmlImporter( String dataLocation) {
-        this.dataLocation = dataLocation;
-    }
+	public SpimDataFromXmlImporter(String dataLocation) {
+		this.dataLocation = dataLocation;
+	}
 
-    @Override
-    public void run() {
-        apply(dataLocation);
-    }
+	@Override
+	public void run() {
+		apply(dataLocation);
+	}
 
-    public AbstractSpimData<?> get() {
-        return apply(dataLocation);
-    }
+	public AbstractSpimData<?> get() {
+		return apply(dataLocation);
+	}
 
-    @Override
-    public AbstractSpimData<?> apply(String dataLocation) {
-        AbstractSpimData<?> sd = null;
-        try {
-            sd = new XmlIoSpimData().load(dataLocation);
-            SourceAndConverterServices.getSourceAndConverterService().register(sd);
-            String pattern = Pattern.quote(System.getProperty("file.separator"));
-            String[] parts = dataLocation.split(pattern);
-            if (parts.length>0) {
-                if (parts[parts.length - 1]!=null) {
-                    SourceAndConverterServices.getSourceAndConverterService().setSpimDataName(sd, parts[parts.length - 1]);
-                } else {
-                    logger.error("Wrong parsing of spimdata name (not enough parts) : "+dataLocation);
-                }
-            } else {
-                logger.error("Wrong parsing of spimdata name (can't be split): "+dataLocation);
-            }
-            SourceAndConverterServices.getSourceAndConverterService().setMetadata(sd, SPIM_DATA_LOCATION, dataLocation);
-        } catch (SpimDataException e) {
-            e.printStackTrace();
-        }
-        return sd;
-    }
-
+	@Override
+	public AbstractSpimData<?> apply(String dataLocation) {
+		AbstractSpimData<?> sd = null;
+		try {
+			sd = new XmlIoSpimData().load(dataLocation);
+			SourceAndConverterServices.getSourceAndConverterService().register(sd);
+			String pattern = Pattern.quote(System.getProperty("file.separator"));
+			String[] parts = dataLocation.split(pattern);
+			if (parts.length > 0) {
+				if (parts[parts.length - 1] != null) {
+					SourceAndConverterServices.getSourceAndConverterService()
+						.setSpimDataName(sd, parts[parts.length - 1]);
+				}
+				else {
+					logger.error("Wrong parsing of spimdata name (not enough parts) : " +
+						dataLocation);
+				}
+			}
+			else {
+				logger.error("Wrong parsing of spimdata name (can't be split): " +
+					dataLocation);
+			}
+			SourceAndConverterServices.getSourceAndConverterService().setMetadata(sd,
+				SPIM_DATA_LOCATION, dataLocation);
+		}
+		catch (SpimDataException e) {
+			e.printStackTrace();
+		}
+		return sd;
+	}
 
 }

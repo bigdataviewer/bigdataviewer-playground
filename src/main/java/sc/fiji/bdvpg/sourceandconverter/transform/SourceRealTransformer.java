@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.sourceandconverter.transform;
 
 import bdv.img.WarpedSource;
@@ -35,78 +36,110 @@ import net.imglib2.realtransform.RealTransform;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
-public class SourceRealTransformer<T> implements Runnable, Function<SourceAndConverter<T>,SourceAndConverter<T>> {
+public class SourceRealTransformer<T> implements Runnable,
+	Function<SourceAndConverter<T>, SourceAndConverter<T>>
+{
 
-    SourceAndConverter<T> sourceIn;
-    final RealTransform rt;
-    SourceAndConverter<T> sourceOut;
-    BoundingBoxEstimation bbest;
+	SourceAndConverter<T> sourceIn;
+	final RealTransform rt;
+	BoundingBoxEstimation bbest;
 
-    public SourceRealTransformer(SourceAndConverter<T> src, RealTransform rt) {
-        this.sourceIn = src;
-        this.rt = rt;
-    }
+	public SourceRealTransformer(SourceAndConverter<T> src, RealTransform rt) {
+		this.sourceIn = src;
+		this.rt = rt;
+	}
 
-    /**
-     * Constructor without any source argument in order to use the functional interface only
-     * @param rt real transform object
-     */
-    public SourceRealTransformer(RealTransform rt) {
-        this.rt = rt;
-    }
+	/**
+	 * Constructor without any source argument in order to use the functional
+	 * interface only
+	 * 
+	 * @param rt real transform object
+	 */
+	public SourceRealTransformer(RealTransform rt) {
+		this.rt = rt;
+	}
 
-    BoundingBoxEstimation.Method method;
+	BoundingBoxEstimation.Method method;
 
-    public void setBoundingBoxEstimatorMethod(BoundingBoxEstimation.Method method) {
-        this.method = method;
-    }
+	public void setBoundingBoxEstimatorMethod(
+		BoundingBoxEstimation.Method method)
+	{
+		this.method = method;
+	}
 
-    public void setBoundingBoxEstimator(BoundingBoxEstimation bbest) {
-        this.bbest = bbest;
-    }
+	Supplier<Boolean> cullingMethod = () -> false; // to be safe
 
-    @Override
-    public void run() {
-        sourceOut = apply(sourceIn);
-    }
+	public void setCulling(Supplier<Boolean> cullingMethod) {
+		this.cullingMethod = cullingMethod;
+	}
 
-    public SourceAndConverter<T> getSourceOut() {
-        return sourceOut;
-    }
+	public void setBoundingBoxEstimator(BoundingBoxEstimation bbest) {
+		this.bbest = bbest;
+	}
 
-    public SourceAndConverter<T> apply(SourceAndConverter<T> in) {
-        final WarpedSource<T> src;
-        if (bbest!=null) {
-            src = new WarpedSource<>(in.getSpimSource(), "Transformed_"+in.getSpimSource().getName(), () -> true);
-            src.setBoundingBoxEstimator(bbest);
-        } else if (method!=null) {
-            src = new WarpedSource<>(in.getSpimSource(), "Transformed_"+in.getSpimSource().getName(), () -> true);
-            src.setBoundingBoxEstimator(new BoundingBoxEstimation(method));
-        } else {
-            src = new WarpedSource<>(in.getSpimSource(), "Transformed_"+in.getSpimSource().getName(), () -> false);
-            src.setBoundingBoxEstimator(new BoundingBoxEstimation(BoundingBoxEstimation.Method.VOLUME));
-        }
-        src.updateTransform(rt);
-        src.setIsTransformed(true);
-        if (in.asVolatile()!=null) {
-            final WarpedSource<?> vsrc;
-            if (bbest!=null) {
-                vsrc = new WarpedSource<>(in.asVolatile().getSpimSource(), "Transformed_"+in.asVolatile().getSpimSource().getName(), () -> true);//f.apply(in.asVolatile().getSpimSource());
-                vsrc.setBoundingBoxEstimator(bbest);
-            } else if (method!=null) {
-                vsrc = new WarpedSource<>(in.asVolatile().getSpimSource(), "Transformed_"+in.asVolatile().getSpimSource().getName(), () -> true);//f.apply(in.asVolatile().getSpimSource());
-                vsrc.setBoundingBoxEstimator(new BoundingBoxEstimation(method));
-            } else {
-                vsrc = new WarpedSource<>(in.asVolatile().getSpimSource(), "Transformed_"+in.asVolatile().getSpimSource().getName(), () -> false);//f.apply(in.asVolatile().getSpimSource());
-                vsrc.setBoundingBoxEstimator(new BoundingBoxEstimation(BoundingBoxEstimation.Method.VOLUME));
-            }
-            vsrc.updateTransform(rt);
-            vsrc.setIsTransformed(true);
-            SourceAndConverter vout = new SourceAndConverter(vsrc, SourceAndConverterHelper.cloneConverter(in.asVolatile().getConverter(), in.asVolatile()));
-            return new SourceAndConverter(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in), vout);
-        } else {
-            return new SourceAndConverter(src, SourceAndConverterHelper.cloneConverter(in.getConverter(), in));
-        }
-    }
+	@Override
+	public void run() {
+
+	}
+
+	public SourceAndConverter<T> get() {
+		return apply(sourceIn);
+	}
+
+	public SourceAndConverter<T> apply(SourceAndConverter<T> in) {
+		final WarpedSource<T> src;
+		if (bbest != null) {
+			src = new WarpedSource<>(in.getSpimSource(), "Transformed_" + in
+				.getSpimSource().getName(), cullingMethod);
+			src.setBoundingBoxEstimator(bbest);
+		}
+		else if (method != null) {
+			src = new WarpedSource<>(in.getSpimSource(), "Transformed_" + in
+				.getSpimSource().getName(), cullingMethod);
+			src.setBoundingBoxEstimator(new BoundingBoxEstimation(method));
+		}
+		else {
+			src = new WarpedSource<>(in.getSpimSource(), "Transformed_" + in
+				.getSpimSource().getName(), cullingMethod);
+			src.setBoundingBoxEstimator(new BoundingBoxEstimation(
+				BoundingBoxEstimation.Method.VOLUME));
+		}
+		src.updateTransform(rt);
+		src.setIsTransformed(true);
+		if (in.asVolatile() != null) {
+			final WarpedSource<?> vsrc;
+			if (bbest != null) {
+				vsrc = new WarpedSource<>(in.asVolatile().getSpimSource(),
+					"Transformed_" + in.asVolatile().getSpimSource().getName(),
+					() -> true);// f.apply(in.asVolatile().getSpimSource());
+				vsrc.setBoundingBoxEstimator(bbest);
+			}
+			else if (method != null) {
+				vsrc = new WarpedSource<>(in.asVolatile().getSpimSource(),
+					"Transformed_" + in.asVolatile().getSpimSource().getName(),
+					() -> true);// f.apply(in.asVolatile().getSpimSource());
+				vsrc.setBoundingBoxEstimator(new BoundingBoxEstimation(method));
+			}
+			else {
+				vsrc = new WarpedSource<>(in.asVolatile().getSpimSource(),
+					"Transformed_" + in.asVolatile().getSpimSource().getName(),
+					() -> false);// f.apply(in.asVolatile().getSpimSource());
+				vsrc.setBoundingBoxEstimator(new BoundingBoxEstimation(
+					BoundingBoxEstimation.Method.VOLUME));
+			}
+			vsrc.updateTransform(rt);
+			vsrc.setIsTransformed(true);
+			SourceAndConverter vout = new SourceAndConverter(vsrc,
+				SourceAndConverterHelper.cloneConverter(in.asVolatile().getConverter(),
+					in.asVolatile()));
+			return new SourceAndConverter<>(src, SourceAndConverterHelper
+				.cloneConverter(in.getConverter(), in), vout);
+		}
+		else {
+			return new SourceAndConverter<>(src, SourceAndConverterHelper
+				.cloneConverter(in.getConverter(), in));
+		}
+	}
 }

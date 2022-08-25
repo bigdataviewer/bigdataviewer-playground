@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
@@ -37,37 +38,22 @@ import sc.fiji.bdvpg.log.Logger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
-/**
- * ViewTransformLoggerCommand
- * Author: @haesleinhuepf
- * 12 2019
- */
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Add debug overlay",
+	description = "Adds the overlay of the bdv tiled renderer")
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Log view transform",
-        description = "Outputs the current view transform of a BDV window into the standard IJ logger")
+public class BdvDebugOverlayAdderCommand implements BdvPlaygroundActionCommand {
 
-public class ViewTransformLoggerCommand implements BdvPlaygroundActionCommand {
+	@Parameter
+	BdvHandle bdvh;
 
-    @Parameter
-    BdvHandle bdvh;
-
-    @Parameter
-    LogService ls;
-
-    @Override
-    public void run() {
-        new ViewerTransformLogger(bdvh, new Logger() {
-            @Override
-            public void out(String msg) {
-                ls.info(msg);
-            }
-
-            @Override
-            public void err(String msg) {
-                ls.error(msg);
-            }
-        }).run();
-    }
+	@Override
+	public void run() {
+		bdvh.getViewerPanel().showDebugTileOverlay();
+		bdvh.getViewerPanel().getDisplay().repaint();
+	}
 }

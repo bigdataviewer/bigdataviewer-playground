@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
@@ -49,74 +50,79 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Create New Source (Set LUT)",
-        initializer = "init",
-        description = "Duplicate one or several sources and sets an (identical) Look Up Table for these duplicated sources")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"Sources>Display>Create New Source (Set LUT)", initializer = "init",
+	description = "Duplicate one or several sources and sets an (identical) Look Up Table for these duplicated sources")
 
-public class LUTSourceCreatorCommand extends DynamicCommand implements BdvPlaygroundActionCommand {
+public class LUTSourceCreatorCommand extends DynamicCommand implements
+	BdvPlaygroundActionCommand
+{
 
-    @Parameter
-    LUTService lutservice;
+	@Parameter
+	LUTService lutservice;
 
-    @Parameter(label = "LUT name", persist = false, callback = "nameChanged")
-    String choice = "Gray";
+	@Parameter(label = "LUT name", persist = false, callback = "nameChanged")
+	String choice = "Gray";
 
-    @Parameter(required = false, label = "LUT", persist = false)
-    ColorTable table = ColorTables.GRAYS;
+	@Parameter(required = false, label = "LUT", persist = false)
+	ColorTable table = ColorTables.GRAYS;
 
-    @Parameter
-    ConvertService cs;
+	@Parameter
+	ConvertService cs;
 
-    // -- other fields --
-    private Map<String, URL> luts = null;
+	// -- other fields --
+	private Map<String, URL> luts = null;
 
-    @Parameter(label = "Select Source(s)")
-    SourceAndConverter<?>[] sacs;
+	@Parameter(label = "Select Source(s)")
+	SourceAndConverter<?>[] sacs;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter<?>[] sacs_out;
+	@Parameter(type = ItemIO.OUTPUT)
+	SourceAndConverter<?>[] sacs_out;
 
-    @Override
-    public void run() {
-        sacs_out = new SourceAndConverter[sacs.length];
-        for (int i = 0;i< sacs.length;i++) {
-            sacs_out[i] = convert(sacs[i]);
-        }
-    }
+	@Override
+	public void run() {
+		sacs_out = new SourceAndConverter[sacs.length];
+		for (int i = 0; i < sacs.length; i++) {
+			sacs_out[i] = convert(sacs[i]);
+		}
+	}
 
-    private <T> SourceAndConverter<T> convert(SourceAndConverter<T> sac) {
-        Converter<T, ARGBType> bdvLut = cs.convert(table, Converter.class);
-        ConverterChanger<T,?> cc = new ConverterChanger<>(sac, bdvLut);
-        cc.run();
-        return cc.get();
-    }
+	private <T> SourceAndConverter<T> convert(SourceAndConverter<T> sac) {
+		Converter<T, ARGBType> bdvLut = cs.convert(table, Converter.class);
+		ConverterChanger<T> cc = new ConverterChanger<>(sac, bdvLut);
+		cc.run();
+		return cc.get();
+	}
 
-    // -- initializers --
+	// -- initializers --
 
-    protected void init() {
-        luts = lutservice.findLUTs();
-        final ArrayList<String> choices = new ArrayList<>();
-        for (final Map.Entry<String, URL> entry : luts.entrySet()) {
-            choices.add(entry.getKey());
-        }
-        Collections.sort(choices);
-        final MutableModuleItem<String> input =
-                getInfo().getMutableInput("choice", String.class);
-        input.setChoices(choices);
-        input.setValue(this, choices.get(0));
-        nameChanged();
-    }
+	protected void init() {
+		luts = lutservice.findLUTs();
+		final ArrayList<String> choices = new ArrayList<>();
+		for (final Map.Entry<String, URL> entry : luts.entrySet()) {
+			choices.add(entry.getKey());
+		}
+		Collections.sort(choices);
+		final MutableModuleItem<String> input = getInfo().getMutableInput("choice",
+			String.class);
+		input.setChoices(choices);
+		input.setValue(this, choices.get(0));
+		nameChanged();
+	}
 
-    // -- callbacks --
+	// -- callbacks --
 
-    protected void nameChanged() {
-        try {
-            table = lutservice.loadLUT(luts.get(choice));
-        }
-        catch (final Exception e) {
-            // nada
-        }
-    }
+	protected void nameChanged() {
+		try {
+			table = lutservice.loadLUT(luts.get(choice));
+		}
+		catch (final Exception e) {
+			// nada
+		}
+	}
 }

@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.processors;
 
 import bdv.util.BdvHandle;
@@ -44,22 +45,22 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
  */
 @SuppressWarnings("unused")
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_HIGH)
-public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle>  {
+public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle> {
 
-    @Parameter
-    SourceAndConverterBdvDisplayService sacDisplayService;
+	@Parameter
+	SourceAndConverterBdvDisplayService sacDisplayService;
 
-    public ActiveBdvPreprocessor() {
-        super( BdvHandle.class );
-    }
+	public ActiveBdvPreprocessor() {
+		super(BdvHandle.class);
+	}
 
-    // -- SingleInputProcessor methods --
+	// -- SingleInputProcessor methods --
 
-    @Override
-    public BdvHandle getValue() {
+	@Override
+	public BdvHandle getValue() {
 
-        return sacDisplayService.getActiveBdv();
+		return sacDisplayService.getActiveBdv();
 
-    }
+	}
 
 }

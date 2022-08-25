@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.tools.brightness.ConverterSetup;
@@ -45,68 +46,75 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- *
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Register>Launch BigWarp",
-        description = "Starts BigWarp from existing sources")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "Sources>Register>Launch BigWarp",
+	description = "Starts BigWarp from existing sources")
 
 public class BigWarpLauncherCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(label = "Window title for BigWarp")
-    String bigwarpname;
+	@Parameter(label = "Window title for BigWarp")
+	String bigwarpname;
 
-    @Parameter(label = "Moving Source(s)")
-    SourceAndConverter<?>[] movingsources;
+	@Parameter(label = "Moving Source(s)")
+	SourceAndConverter<?>[] movingsources;
 
-    @Parameter(label = "Fixed Source(s)")
-    SourceAndConverter<?>[] fixedsources;
+	@Parameter(label = "Fixed Source(s)")
+	SourceAndConverter<?>[] fixedsources;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    BdvHandle bdvhq;
+	@Parameter(type = ItemIO.OUTPUT)
+	BdvHandle bdvhq;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    BdvHandle bdvhp;
+	@Parameter(type = ItemIO.OUTPUT)
+	BdvHandle bdvhp;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter<?>[] warpedsources;
+	@Parameter(type = ItemIO.OUTPUT)
+	SourceAndConverter<?>[] warpedsources;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter<?> gridsource;
+	@Parameter(type = ItemIO.OUTPUT)
+	SourceAndConverter<?> gridsource;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter<?> warpmagnitudesource;
+	@Parameter(type = ItemIO.OUTPUT)
+	SourceAndConverter<?> warpmagnitudesource;
 
-    @Parameter
+	@Parameter
 	SourceAndConverterBdvDisplayService bsds;
 
-    @Parameter
-    SourceAndConverterService sac_service;
+	@Parameter
+	SourceAndConverterService sac_service;
 
-    public void run() {
-        List<SourceAndConverter<?>> movingSacs = Arrays.stream(movingsources).collect(Collectors.toList());
-        List<SourceAndConverter<?>> fixedSacs = Arrays.stream(fixedsources).collect(Collectors.toList());
+	public void run() {
+		List<SourceAndConverter<?>> movingSacs = Arrays.stream(movingsources)
+			.collect(Collectors.toList());
+		List<SourceAndConverter<?>> fixedSacs = Arrays.stream(fixedsources).collect(
+			Collectors.toList());
 
-        List<ConverterSetup> converterSetups = Arrays.stream(movingsources).map(src -> sac_service.getConverterSetup(src)).collect(Collectors.toList());
-        converterSetups.addAll(Arrays.stream(fixedsources).map(src -> sac_service.getConverterSetup(src)).collect(Collectors.toList()));
+		List<ConverterSetup> converterSetups = Arrays.stream(movingsources).map(
+			src -> sac_service.getConverterSetup(src)).collect(Collectors.toList());
+		converterSetups.addAll(Arrays.stream(fixedsources).map(src -> sac_service
+			.getConverterSetup(src)).collect(Collectors.toList()));
 
-        // Launch BigWarp
-        BigWarpLauncher bwl = new BigWarpLauncher(movingSacs, fixedSacs, bigwarpname, converterSetups);
-        bwl.run();
+		// Launch BigWarp
+		BigWarpLauncher bwl = new BigWarpLauncher(movingSacs, fixedSacs,
+			bigwarpname, converterSetups);
+		bwl.run();
 
-        // Output bdvh handles -> will be put in the object service
-        bdvhq = bwl.getBdvHandleQ();
-        bdvhp = bwl.getBdvHandleP();
+		// Output bdvh handles -> will be put in the object service
+		bdvhq = bwl.getBdvHandleQ();
+		bdvhp = bwl.getBdvHandleP();
 
-        bsds.pairClosing(bdvhq, bdvhp);
+		bsds.pairClosing(bdvhq, bdvhp);
 
-        gridsource = bwl.getGridSource();
-        warpmagnitudesource = bwl.getWarpMagnitudeSource();
-        warpedsources = bwl.getWarpedSources();
+		gridsource = bwl.getGridSource();
+		warpmagnitudesource = bwl.getWarpMagnitudeSource();
+		warpedsources = bwl.getWarpedSources();
 
-    }
+	}
 
 }

@@ -26,90 +26,87 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.sourceandconverter.transform;
 
 import bdv.util.ResampledSource;
 import bdv.util.VolatileSource;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
+import net.imglib2.Volatile;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.NumericType;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.function.Function;
 
-public class SourceResampler implements Runnable, Function<SourceAndConverter<?>, SourceAndConverter<?>> {
+public class SourceResampler<T extends NumericType<T> & NativeType<T>>
+	implements Runnable, Function<SourceAndConverter<T>, SourceAndConverter<T>>
+{
 
-    final SourceAndConverter<?> sac_in;
+	final SourceAndConverter<T> sac_in;
 
-    final SourceAndConverter<?> model;
+	final SourceAndConverter<?> model;
 
-    final boolean reuseMipMaps;
+	final boolean reuseMipMaps;
 
-    final boolean interpolate;
+	final boolean interpolate;
 
-    final boolean cache;
+	final boolean cache;
 
-    final int defaultMipMapLevel;
+	final int defaultMipMapLevel;
 
-    private final String name;
+	private final String name;
 
-    public SourceResampler( SourceAndConverter<?> sac_in, SourceAndConverter<?> model, String name, boolean reuseMipmaps, boolean cache, boolean interpolate, int defaultMipMapLevel ) {
-        this.name = name;
-        this.reuseMipMaps = reuseMipmaps;
-        this.model = model;
-        this.sac_in = sac_in;
-        this.interpolate = interpolate;
-        this.cache = cache;
-        this.defaultMipMapLevel = defaultMipMapLevel;
-    }
+	public SourceResampler(SourceAndConverter<T> sac_in,
+		SourceAndConverter<?> model, String name, boolean reuseMipmaps,
+		boolean cache, boolean interpolate, int defaultMipMapLevel)
+	{
+		this.name = name;
+		this.reuseMipMaps = reuseMipmaps;
+		this.model = model;
+		this.sac_in = sac_in;
+		this.interpolate = interpolate;
+		this.cache = cache;
+		this.defaultMipMapLevel = defaultMipMapLevel;
+	}
 
-    @Override
-    public void run() {
+	@Override
+	public void run() {
 
-    }
+	}
 
-    public SourceAndConverter<?> get() {
-        return apply(sac_in);
-    }
+	public SourceAndConverter<T> get() {
+		return apply(sac_in);
+	}
 
-    @Override
-    public SourceAndConverter<?> apply(SourceAndConverter<?> src) {
-        Source<?> srcRsampled =
-                new ResampledSource(
-                        src.getSpimSource(),
-                        model.getSpimSource(),
-                        name,
-                        reuseMipMaps,
-                        cache,
-                        interpolate,
-                        defaultMipMapLevel);
+	@Override
+	public SourceAndConverter<T> apply(SourceAndConverter<T> src) {
+		Source<T> srcRsampled = new ResampledSource<>(src.getSpimSource(), model
+			.getSpimSource(), name, reuseMipMaps, cache, interpolate,
+			defaultMipMapLevel);
 
-        SourceAndConverter<?> sac;
-        if (src.asVolatile()!=null) {
-            SourceAndConverter<?> vsac;
-            Source<?> vsrcResampled;
-            if (cache) {
-                vsrcResampled = new VolatileSource(srcRsampled);
-            } else {
-                vsrcResampled = new ResampledSource(
-                        src.asVolatile().getSpimSource(),
-                        model.getSpimSource(),
-                        name,
-                        reuseMipMaps,
-                        false,
-                        interpolate,
-                        defaultMipMapLevel);
-            }
-            vsac = new SourceAndConverter(vsrcResampled,
-                    SourceAndConverterHelper.cloneConverter(src.asVolatile().getConverter(), src.asVolatile()));
-            sac = new SourceAndConverter(srcRsampled,
-                    SourceAndConverterHelper.cloneConverter(src.getConverter(), src),vsac);
-        } else {
-            sac = new SourceAndConverter(srcRsampled,
-                    SourceAndConverterHelper.cloneConverter(src.getConverter(), src));
-        }
-
-
-
-        return sac;
-    }
+		SourceAndConverter<T> sac;
+		if (src.asVolatile() != null) {
+			SourceAndConverter<? extends Volatile<T>> vsac;
+			Source<? extends Volatile<T>> vsrcResampled;
+			if (cache) {
+				vsrcResampled = new VolatileSource<>(srcRsampled);
+			}
+			else {
+				vsrcResampled = new ResampledSource(src.asVolatile().getSpimSource(),
+					model.getSpimSource(), name, reuseMipMaps, false, interpolate,
+					defaultMipMapLevel);
+			}
+			vsac = new SourceAndConverter(vsrcResampled, SourceAndConverterHelper
+				.cloneConverter(src.asVolatile().getConverter(), src.asVolatile()));
+			sac = new SourceAndConverter<>(srcRsampled, SourceAndConverterHelper
+				.cloneConverter(src.getConverter(), src), vsac);
+		}
+		else {
+			sac = new SourceAndConverter<>(srcRsampled, SourceAndConverterHelper
+				.cloneConverter(src.getConverter(), src));
+		}
+		return sac;
+	}
 }

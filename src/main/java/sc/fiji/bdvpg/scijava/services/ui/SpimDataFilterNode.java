@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.services.ui;
 
 import bdv.viewer.SourceAndConverter;
@@ -41,34 +42,39 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
  */
 public class SpimDataFilterNode extends SourceFilterNode {
 
-    final AbstractSpimData<?> asd;
-    final SourceAndConverterService sourceAndConverterService;
+	final AbstractSpimData<?> asd;
+	final SourceAndConverterService sourceAndConverterService;
 
-    public boolean filter(SourceAndConverter<?> sac) {
-        return (sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO ))&&(( SourceAndConverterService.SpimDataInfo)sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO)).asd.equals(asd);
-    }
+	public boolean filter(SourceAndConverter<?> sac) {
+		return (sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO)) &&
+			((SourceAndConverterService.SpimDataInfo) sourceAndConverterService
+				.getMetadata(sac, SPIM_DATA_INFO)).asd.equals(asd);
+	}
 
-    public SpimDataFilterNode(DefaultTreeModel model, String defaultName, AbstractSpimData<?> spimdata, SourceAndConverterService sourceAndConverterService) {
-        super(model, defaultName,null, false);
-        this.sourceAndConverterService = sourceAndConverterService;
-        this.filter = this::filter;
-        asd = spimdata;
-    }
+	public SpimDataFilterNode(DefaultTreeModel model, String defaultName,
+		AbstractSpimData<?> spimdata,
+		SourceAndConverterService sourceAndConverterService)
+	{
+		super(model, defaultName, null, false);
+		this.sourceAndConverterService = sourceAndConverterService;
+		this.filter = this::filter;
+		asd = spimdata;
+	}
 
-    String getName(AbstractSpimData<?> spimdata, String defaultName) {
-        return defaultName;
-    }
+	String getName(AbstractSpimData<?> spimdata, String defaultName) {
+		return defaultName;
+	}
 
-    public String toString() {
-        return name;
-    }
+	public String toString() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    @Override
-    public Object clone() {
-        return new SpimDataFilterNode(model, name, asd, sourceAndConverterService);
-    }
+	@Override
+	public Object clone() {
+		return new SpimDataFilterNode(model, name, asd, sourceAndConverterService);
+	}
 }

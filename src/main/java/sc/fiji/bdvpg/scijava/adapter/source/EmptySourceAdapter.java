@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.adapter.source;
 
 import bdv.util.EmptySource;
@@ -38,33 +39,42 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import java.lang.reflect.Type;
 
 @Plugin(type = ISourceAdapter.class)
-public class EmptySourceAdapter implements ISourceAdapter<EmptySource>{
+public class EmptySourceAdapter implements ISourceAdapter<EmptySource> {
 
-    SourceAndConverterAdapter sacSerializer;
+	SourceAndConverterAdapter sacSerializer;
 
-    @Override
-    public void setSacSerializer(SourceAndConverterAdapter sacSerializer) {
-        this.sacSerializer = sacSerializer;
-    }
+	@Override
+	public void setSacSerializer(SourceAndConverterAdapter sacSerializer) {
+		this.sacSerializer = sacSerializer;
+	}
 
-    @Override
-    public Class<EmptySource> getSourceClass() {
-        return EmptySource.class;
-    }
+	@Override
+	public Class<EmptySource> getSourceClass() {
+		return EmptySource.class;
+	}
 
-    @Override
-    public JsonElement serialize(SourceAndConverter<?> sac, Type type, JsonSerializationContext jsonSerializationContext) {
-        JsonObject obj = new JsonObject();
-        EmptySource source = (EmptySource) sac.getSpimSource();
-        obj.add("empty_source_parameters", jsonSerializationContext.serialize(source.getParameters()));
-        return obj;
-    }
+	@Override
+	public JsonElement serialize(SourceAndConverter<?> sac, Type type,
+		JsonSerializationContext jsonSerializationContext)
+	{
+		JsonObject obj = new JsonObject();
+		EmptySource source = (EmptySource) sac.getSpimSource();
+		obj.add("empty_source_parameters", jsonSerializationContext.serialize(source
+			.getParameters()));
+		return obj;
+	}
 
-    @Override
-    public SourceAndConverter<?> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        JsonObject obj = jsonElement.getAsJsonObject();
-        EmptySource.EmptySourceParams sourceParams = jsonDeserializationContext.deserialize(obj.get("empty_source_parameters"), EmptySource.EmptySourceParams.class);
+	@Override
+	public SourceAndConverter<?> deserialize(JsonElement jsonElement, Type type,
+		JsonDeserializationContext jsonDeserializationContext)
+		throws JsonParseException
+	{
+		JsonObject obj = jsonElement.getAsJsonObject();
+		EmptySource.EmptySourceParams sourceParams = jsonDeserializationContext
+			.deserialize(obj.get("empty_source_parameters"),
+				EmptySource.EmptySourceParams.class);
 
-        return SourceAndConverterHelper.createSourceAndConverter(new EmptySource(sourceParams));
-    }
+		return SourceAndConverterHelper.createSourceAndConverter(new EmptySource(
+			sourceParams));
+	}
 }

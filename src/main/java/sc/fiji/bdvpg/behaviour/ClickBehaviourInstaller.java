@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.behaviour;
 
 import bdv.util.BdvHandle;
@@ -34,12 +35,13 @@ import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
 
-public class ClickBehaviourInstaller
-{
+public class ClickBehaviourInstaller {
+
 	private final BdvHandle bdvHandle;
 	private final Behaviour behaviour;
 
-	public ClickBehaviourInstaller( BdvHandle bdvHandle, ClickBehaviour behaviour )
+	public ClickBehaviourInstaller(BdvHandle bdvHandle,
+		ClickBehaviour behaviour)
 	{
 		this.bdvHandle = bdvHandle;
 		this.behaviour = behaviour;
@@ -49,12 +51,12 @@ public class ClickBehaviourInstaller
 	 * TODO: probably just create one behaviour for each BDV?
 	 *
 	 * @param name name of the behaviour
-	 * @param trigger how this behaviour is triggered, see wiki of behaviour ui SciJava
+	 * @param trigger how this behaviour is triggered, see wiki of behaviour ui
+	 *          SciJava
 	 */
-	public void install( String name, String trigger )
-	{
-		Behaviours behaviours = new Behaviours( new InputTriggerConfig() );
-		behaviours.install( bdvHandle.getTriggerbindings(), name );
-		behaviours.behaviour( behaviour, name, trigger ) ;
+	public void install(String name, String trigger) {
+		Behaviours behaviours = new Behaviours(new InputTriggerConfig());
+		behaviours.install(bdvHandle.getTriggerbindings(), name);
+		behaviours.behaviour(behaviour, name, trigger);
 	}
 }

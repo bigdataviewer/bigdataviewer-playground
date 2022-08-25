@@ -26,8 +26,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava;
 
 public class ScijavaBdvDefaults {
-    final public static String RootMenu = "Plugins>BigDataViewer-Playground>";
+
+	final public static String RootMenu = "Plugins>BigDataViewer-Playground>";
 }

@@ -26,31 +26,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformLogger;
+import sc.fiji.bdvpg.log.Logger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+/**
+ * ViewTransformLoggerCommand Author: @haesleinhuepf 12 2019
+ */
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Set Number Of Timepoints",
-    description = "Sets the number of timepoints in one or several BDV Windows")
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-public class BdvSetTimepointsNumberCommand implements BdvPlaygroundActionCommand {
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Log view transform",
+	description = "Outputs the current view transform of a BDV window into the standard IJ logger")
 
-    @Parameter(label = "Select BDV Windows")
-    BdvHandle[] bdvhs;
+public class BdvViewLoggerCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(label = "Number of timepoints, min = 1", min = "1")
-    int numberoftimepoints;
+	@Parameter
+	BdvHandle bdvh;
 
-    public void run() {
-        for (BdvHandle bdvh : bdvhs) {
-            bdvh.getViewerPanel().setNumTimepoints(numberoftimepoints);
-        }
-    }
+	@Parameter
+	LogService ls;
 
+	@Override
+	public void run() {
+		new ViewerTransformLogger(bdvh, new Logger() {
+
+			@Override
+			public void out(String msg) {
+				ls.info(msg);
+			}
+
+			@Override
+			public void err(String msg) {
+				ls.error(msg);
+			}
+		}).run();
+	}
 }

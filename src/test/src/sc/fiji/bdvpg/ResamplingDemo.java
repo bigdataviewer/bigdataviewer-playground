@@ -32,9 +32,9 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
-import net.imglib2.cache.img.DiskCachedCellImgOptions;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
@@ -48,11 +48,11 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
-import static net.imglib2.cache.img.DiskCachedCellImgOptions.options;
-
 public class ResamplingDemo {
 
     static ImageJ ij;
+
+    static boolean cache = true;
 
     static public void main(String... args) {
         // Arrange
@@ -83,7 +83,8 @@ public class ResamplingDemo {
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter("src/test/resources/mri-stack-multilevel.xml");
         AbstractSpimData<?> asd = importer.get();
 
-        SourceAndConverter<?> sac = SourceAndConverterServices
+        SourceAndConverter<UnsignedShortType> sac = (SourceAndConverter<UnsignedShortType>)
+                SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(asd)
                 .get(0);
@@ -100,18 +101,18 @@ public class ResamplingDemo {
         new BrightnessAutoAdjuster<>( sac, 0 ).run();
 
         // Get generative source (works with warped source as well)
-        SourceAndConverter<?> mandelbrot = new MandelbrotSourceGetter().get();
+        SourceAndConverter<UnsignedShortType> mandelbrot = new MandelbrotSourceGetter().get();
         AffineTransform3D at3d = new AffineTransform3D();
         at3d.scale(600);
         at3d.translate(-100,-100,0);
-        SourceAndConverter<?> bigMandelbrot = new SourceAffineTransformer<>(mandelbrot, at3d).getSourceOut();
+        SourceAndConverter<UnsignedShortType> bigMandelbrot = new SourceAffineTransformer<>(mandelbrot, at3d).get();
 
-        SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, bigMandelbrot );
+        //SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, bigMandelbrot );
 
         new BrightnessAdjuster(bigMandelbrot,0,800).run();
 
         // Resample generative source as model source
-        SourceResampler sr = new SourceResampler(bigMandelbrot, sac, "resampled", false,false, false,0);
+        SourceResampler<UnsignedShortType> sr = new SourceResampler<>(bigMandelbrot, sac, "resampled", false,cache, false,0);
         SourceAndConverter<?> resampledMandelbrot = sr.get();
 
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, resampledMandelbrot );
@@ -127,40 +128,28 @@ public class ResamplingDemo {
         //SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, sac );
         new ViewerTransformAdjuster( bdvHandle, sac ).run();
 
-        // Make edge display on demand
-        final int[] cellDimensions = new int[] { 32, 32, 32 };
-
-        // Cached Image Factory Options
-        final DiskCachedCellImgOptions factoryOptions = options()
-                .cellDimensions( cellDimensions )
-                .cacheType( DiskCachedCellImgOptions.CacheType.BOUNDED )
-                .maxCacheSize( 1 );
-
-        // Creates cached image factory of Type UnsignedShort
-        // final DiskCachedCellImgFactory<UnsignedShortType> factory = new DiskCachedCellImgFactory<>( new UnsignedShortType(), factoryOptions );
-
         // DOWNSAMPLING
         EmptySourceAndConverterCreator downSampledModel = new EmptySourceAndConverterCreator("DownSampled",sac,0,4,4,4);//, factory);
 
-        sr = new SourceResampler(sac, downSampledModel.get(), "downsampled", false,false, true,0);
-        SourceAndConverter<?> downsampledSource = sr.get();
+        sr = new SourceResampler<>(sac, downSampledModel.get(), "downsampled", false,cache, true,0);
+        SourceAndConverter<UnsignedShortType> downsampledSource = sr.get();
 
-        SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, downsampledSource );
+        //SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, downsampledSource );
         new ColorChanger( downsampledSource, new ARGBType(ARGBType.rgba(255, 120,0,255))).run();
 
         // DOWNSAMPLING With Mipmap Reuse
 
-        sr = new SourceResampler(sac, downSampledModel.get(), "downsampled-with-mipmap", true,false, true,0);
-        SourceAndConverter<?> downsampledSourceWithMipmaps = sr.get();
+        sr = new SourceResampler<>(sac, downSampledModel.get(), "downsampled-with-mipmap", true,cache, true,0);
+        SourceAndConverter<UnsignedShortType> downsampledSourceWithMipmaps = sr.get();
 
-        SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, downsampledSourceWithMipmaps );
+        //SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, downsampledSourceWithMipmaps );
         new ColorChanger( downsampledSourceWithMipmaps, new ARGBType(ARGBType.rgba(120, 120,0,255))).run();
 
         // UPSAMPLING
         EmptySourceAndConverterCreator upSampledModel = new EmptySourceAndConverterCreator("UpSampled",sac,0,0.2,0.2,0.2);//, factory);
 
-        sr = new SourceResampler(sac, upSampledModel.get(), "upsampled", false,false, true,0);
-        SourceAndConverter<?> upsampledSource = sr.get();
+        sr = new SourceResampler<>(sac, upSampledModel.get(), "upsampled", false,cache, true,0);
+        SourceAndConverter<UnsignedShortType> upsampledSource = sr.get();
 
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, upsampledSource );
 

@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.sourceandconverter.importer;
 
 import bdv.util.EmptySource;
@@ -42,230 +43,229 @@ import java.util.function.Supplier;
 
 /**
  * Action which generates a new Source which samples and spans a space region
- * defined by either :
- * - an affine transform and a number of voxels
- * - or a model source and voxel sizes
- *
- * Mipmap unsupported
+ * defined by either : - an affine transform and a number of voxels - or a model
+ * source and voxel sizes Mipmap unsupported
  */
 
-public class EmptySourceAndConverterCreator implements Runnable, Supplier<SourceAndConverter<?>> {
+public class EmptySourceAndConverterCreator implements Runnable,
+	Supplier<SourceAndConverter<?>>
+{
 
-    private final AffineTransform3D at3D;
+	private final AffineTransform3D at3D;
 
-    private final long nx, ny, nz;
+	private final long nx, ny, nz;
 
-    private final String name;
+	private final String name;
 
-    private final VoxelDimensions voxelDimensions;
+	private final VoxelDimensions voxelDimensions;
 
-    private static final VoxelDimensions defaultVoxelDimensions = new FinalVoxelDimensions( "pixel", 1.0, 1.0, 1.0 );
+	private static final VoxelDimensions defaultVoxelDimensions =
+		new FinalVoxelDimensions("pixel", 1.0, 1.0, 1.0);
 
-    /**
-     * Simple constructor
-     * @param name name of the source
-     * @param interval interval imaged by the source
-     * @param sizeVoxX voxel size in x
-     * @param sizeVoxY voxel size in y
-     * @param sizeVoxZ voxel size in z
-     */
-    public EmptySourceAndConverterCreator(
-            String name,
-            RealInterval interval,
-            double sizeVoxX, double sizeVoxY, double sizeVoxZ
-    ) {
-        this.name = name;
+	/**
+	 * Simple constructor
+	 * 
+	 * @param name name of the source
+	 * @param interval interval imaged by the source
+	 * @param sizeVoxX voxel size in x
+	 * @param sizeVoxY voxel size in y
+	 * @param sizeVoxZ voxel size in z
+	 */
+	public EmptySourceAndConverterCreator(String name, RealInterval interval,
+		double sizeVoxX, double sizeVoxY, double sizeVoxZ)
+	{
+		this.name = name;
 
-        AffineTransform3D at3D = new AffineTransform3D();
-        this.nx = (long) ((interval.realMax(0)- interval.realMin(0))/sizeVoxX);
-        this.ny = (long) ((interval.realMax(1)- interval.realMin(1))/sizeVoxY);
-        this.nz = (long) ((interval.realMax(2)- interval.realMin(2))/sizeVoxZ);
-        at3D.scale(sizeVoxX, sizeVoxY, sizeVoxZ);
-        at3D.translate(interval.realMin(0), interval.realMin(1), interval.realMin(2));
-        this.at3D = at3D;
-        this.voxelDimensions = defaultVoxelDimensions;
-    }
+		AffineTransform3D at3D = new AffineTransform3D();
+		this.nx = (long) ((interval.realMax(0) - interval.realMin(0)) / sizeVoxX);
+		this.ny = (long) ((interval.realMax(1) - interval.realMin(1)) / sizeVoxY);
+		this.nz = (long) ((interval.realMax(2) - interval.realMin(2)) / sizeVoxZ);
+		at3D.scale(sizeVoxX, sizeVoxY, sizeVoxZ);
+		at3D.translate(interval.realMin(0), interval.realMin(1), interval.realMin(
+			2));
+		this.at3D = at3D;
+		this.voxelDimensions = defaultVoxelDimensions;
+	}
 
-    /**
-     * Simple constructor
-     * @param name name of the source
-     * @param interval interval imaged by the source
-     * @param nx number of voxels in x
-     * @param ny number of voxels in y
-     * @param nz number of voxels in z
-     */
-    public EmptySourceAndConverterCreator(
-            String name,
-            RealInterval interval,
-            long nx, long ny, long nz
-    ) {
-        this(name, interval, nx, ny, nz, defaultVoxelDimensions);
-    }
+	/**
+	 * Simple constructor
+	 * 
+	 * @param name name of the source
+	 * @param interval interval imaged by the source
+	 * @param nx number of voxels in x
+	 * @param ny number of voxels in y
+	 * @param nz number of voxels in z
+	 */
+	public EmptySourceAndConverterCreator(String name, RealInterval interval,
+		long nx, long ny, long nz)
+	{
+		this(name, interval, nx, ny, nz, defaultVoxelDimensions);
+	}
 
-    /**
-     * Simple constructor
-     * @param name name of the source
-     * @param interval interval imaged by the source
-     * @param nx number of voxels in x
-     * @param ny number of voxels in y
-     * @param nz number of voxels in z
-     */
-    public EmptySourceAndConverterCreator(
-            String name,
-            RealInterval interval,
-            long nx, long ny, long nz,
-            VoxelDimensions voxelDimensions
-    ) {
-        this.nx = nx;
-        this.ny = ny;
-        this.nz = nz;
-        this.name = name;
+	/**
+	 * Simple constructor
+	 * 
+	 * @param name name of the source
+	 * @param interval interval imaged by the source
+	 * @param nx number of voxels in x
+	 * @param ny number of voxels in y
+	 * @param nz number of voxels in z
+	 */
+	public EmptySourceAndConverterCreator(String name, RealInterval interval,
+		long nx, long ny, long nz, VoxelDimensions voxelDimensions)
+	{
+		this.nx = nx;
+		this.ny = ny;
+		this.nz = nz;
+		this.name = name;
 
-        AffineTransform3D at3D = new AffineTransform3D();
-        double sizePx = (interval.realMax(0)- interval.realMin(0))/(double) nx;
-        double sizePy = (interval.realMax(1)- interval.realMin(1))/(double) ny;
-        double sizePz = (interval.realMax(2)- interval.realMin(2))/(double) nz;
-        at3D.scale(sizePx, sizePy, sizePz);
-        at3D.translate(interval.realMin(0), interval.realMin(1), interval.realMin(2));
-        this.at3D = at3D;
-        this.voxelDimensions = voxelDimensions;
-    }
+		AffineTransform3D at3D = new AffineTransform3D();
+		double sizePx = (interval.realMax(0) - interval.realMin(0)) / (double) nx;
+		double sizePy = (interval.realMax(1) - interval.realMin(1)) / (double) ny;
+		double sizePz = (interval.realMax(2) - interval.realMin(2)) / (double) nz;
+		at3D.scale(sizePx, sizePy, sizePz);
+		at3D.translate(interval.realMin(0), interval.realMin(1), interval.realMin(
+			2));
+		this.at3D = at3D;
+		this.voxelDimensions = voxelDimensions;
+	}
 
-    /**
-     * Simple constructor
-     * @param name name of the source
-     * @param at3D affine transform of the source
-     * @param nx number of voxels in x
-     * @param ny number of voxels in y
-     * @param nz number of voxels in z
-     */
-    public EmptySourceAndConverterCreator(
-            String name,
-            AffineTransform3D at3D,
-            long nx, long ny, long nz
-    ) {
-        this.nx = nx;
-        this.ny = ny;
-        this.nz = nz;
-        this.at3D = at3D;
-        this.name = name;
-        this.voxelDimensions = defaultVoxelDimensions;
-    }
+	/**
+	 * Simple constructor
+	 * 
+	 * @param name name of the source
+	 * @param at3D affine transform of the source
+	 * @param nx number of voxels in x
+	 * @param ny number of voxels in y
+	 * @param nz number of voxels in z
+	 */
+	public EmptySourceAndConverterCreator(String name, AffineTransform3D at3D,
+		long nx, long ny, long nz)
+	{
+		this.nx = nx;
+		this.ny = ny;
+		this.nz = nz;
+		this.at3D = at3D;
+		this.name = name;
+		this.voxelDimensions = defaultVoxelDimensions;
+	}
 
-    /**
-     * Constructor where the region and sampling is defined by a model source
-     * This constructor translates information from the model source into
-     * an affine transform and a number of voxels
-     * @param name name of the source
-     * @param model model source and converter : defines the portion of space sampled
-     * @param timePoint timepoint of the model chosen for the model
-     * @param voxSizeX overrides the model voxel size for a new one  - in bdv current units (x)
-     * @param voxSizeY overrides the model voxel size for a new one - in bdv current units (y)
-     * @param voxSizeZ overrides the model voxel size for a new one - in bdv current units (z)
-     */
-    public EmptySourceAndConverterCreator(
-            String name,
-            SourceAndConverter<?> model,
-            int timePoint,
-            double voxSizeX, double voxSizeY, double voxSizeZ
-    ) {
-        this.voxelDimensions = defaultVoxelDimensions;
+	/**
+	 * Constructor where the region and sampling is defined by a model source This
+	 * constructor translates information from the model source into an affine
+	 * transform and a number of voxels
+	 * 
+	 * @param name name of the source
+	 * @param model model source and converter : defines the portion of space
+	 *          sampled
+	 * @param timePoint timepoint of the model chosen for the model
+	 * @param voxSizeX overrides the model voxel size for a new one - in bdv
+	 *          current units (x)
+	 * @param voxSizeY overrides the model voxel size for a new one - in bdv
+	 *          current units (y)
+	 * @param voxSizeZ overrides the model voxel size for a new one - in bdv
+	 *          current units (z)
+	 */
+	public EmptySourceAndConverterCreator(String name,
+		SourceAndConverter<?> model, int timePoint, double voxSizeX,
+		double voxSizeY, double voxSizeZ)
+	{
+		this.voxelDimensions = defaultVoxelDimensions;
 
-        // Gets model RAI
-        RandomAccessibleInterval<?> rai = model.getSpimSource().getSource(timePoint,0);
+		// Gets model RAI
+		RandomAccessibleInterval<?> rai = model.getSpimSource().getSource(timePoint,
+			0);
 
-        long nPixModelX = rai.dimension(0);
-        long nPixModelY = rai.dimension(1);
-        long nPixModelZ = rai.dimension(2);
+		long nPixModelX = rai.dimension(0);
+		long nPixModelY = rai.dimension(1);
+		long nPixModelZ = rai.dimension(2);
 
-        // Gets transform of model RAI
-        AffineTransform3D at3Dorigin = new AffineTransform3D();
+		// Gets transform of model RAI
+		AffineTransform3D at3Dorigin = new AffineTransform3D();
 
-        model.getSpimSource().getSourceTransform(timePoint,0,at3Dorigin);
+		model.getSpimSource().getSourceTransform(timePoint, 0, at3Dorigin);
 
-        // Computes Voxel Size of model source (x, y, z)
-        // And how it should be resampled to match the specified voxsize into the constructor
-        // Origin
-        double[] x0 = new double[3];
-        at3Dorigin.apply(new double[]{0,0,0}, x0);
+		// Computes Voxel Size of model source (x, y, z)
+		// And how it should be resampled to match the specified voxsize into the
+		// constructor
+		// Origin
+		double[] x0 = new double[3];
+		at3Dorigin.apply(new double[] { 0, 0, 0 }, x0);
 
-        // xMax
-        double[] pt = new double[3];
-        double dist;
+		// xMax
+		double[] pt = new double[3];
+		double dist;
 
-        at3Dorigin.apply(new double[]{1,0,0},pt);
+		at3Dorigin.apply(new double[] { 1, 0, 0 }, pt);
 
-        dist = (pt[0]-x0[0])*(pt[0]-x0[0]) +
-                (pt[1]-x0[1])*(pt[1]-x0[1]) +
-                (pt[2]-x0[2])*(pt[2]-x0[2]);
+		dist = (pt[0] - x0[0]) * (pt[0] - x0[0]) + (pt[1] - x0[1]) * (pt[1] -
+			x0[1]) + (pt[2] - x0[2]) * (pt[2] - x0[2]);
 
-        double distx =  Math.sqrt(dist);
+		double distx = Math.sqrt(dist);
 
-        dist = Math.sqrt(dist)*nPixModelX;
+		dist = Math.sqrt(dist) * nPixModelX;
 
-        double nPixX = dist/voxSizeX;
+		double nPixX = dist / voxSizeX;
 
-        at3Dorigin.apply(new double[]{0,1,0},pt);
+		at3Dorigin.apply(new double[] { 0, 1, 0 }, pt);
 
-        dist = (pt[0]-x0[0])*(pt[0]-x0[0]) +
-                (pt[1]-x0[1])*(pt[1]-x0[1]) +
-                (pt[2]-x0[2])*(pt[2]-x0[2]);
+		dist = (pt[0] - x0[0]) * (pt[0] - x0[0]) + (pt[1] - x0[1]) * (pt[1] -
+			x0[1]) + (pt[2] - x0[2]) * (pt[2] - x0[2]);
 
-        double disty =  Math.sqrt(dist);
+		double disty = Math.sqrt(dist);
 
-        dist = Math.sqrt(dist)*nPixModelY;
-        double nPixY = dist/voxSizeY;
+		dist = Math.sqrt(dist) * nPixModelY;
+		double nPixY = dist / voxSizeY;
 
-        at3Dorigin.apply(new double[]{0,0,1},pt);
+		at3Dorigin.apply(new double[] { 0, 0, 1 }, pt);
 
-        dist = (pt[0]-x0[0])*(pt[0]-x0[0]) +
-                (pt[1]-x0[1])*(pt[1]-x0[1]) +
-                (pt[2]-x0[2])*(pt[2]-x0[2]);
+		dist = (pt[0] - x0[0]) * (pt[0] - x0[0]) + (pt[1] - x0[1]) * (pt[1] -
+			x0[1]) + (pt[2] - x0[2]) * (pt[2] - x0[2]);
 
-        double distz =  Math.sqrt(dist);
+		double distz = Math.sqrt(dist);
 
-        dist = Math.sqrt(dist)*nPixModelZ;
-        double nPixZ = dist/voxSizeZ;
+		dist = Math.sqrt(dist) * nPixModelZ;
+		double nPixZ = dist / voxSizeZ;
 
-        // Gets original affine transform and rescales it accordingly
-        double[] m = at3Dorigin.getRowPackedCopy();
+		// Gets original affine transform and rescales it accordingly
+		double[] m = at3Dorigin.getRowPackedCopy();
 
-        m[0] = m[0]/distx * voxSizeX;
-        m[4] = m[4]/distx * voxSizeX;
-        m[8] = m[8]/distx * voxSizeX;
+		m[0] = m[0] / distx * voxSizeX;
+		m[4] = m[4] / distx * voxSizeX;
+		m[8] = m[8] / distx * voxSizeX;
 
-        m[1] = m[1]/disty * voxSizeY;
-        m[5] = m[5]/disty * voxSizeY;
-        m[9] = m[9]/disty * voxSizeY;
+		m[1] = m[1] / disty * voxSizeY;
+		m[5] = m[5] / disty * voxSizeY;
+		m[9] = m[9] / disty * voxSizeY;
 
-        m[2] = m[2]/distz * voxSizeZ;
-        m[6] = m[6]/distz * voxSizeZ;
-        m[10] = m[10]/distz * voxSizeZ;
+		m[2] = m[2] / distz * voxSizeZ;
+		m[6] = m[6] / distz * voxSizeZ;
+		m[10] = m[10] / distz * voxSizeZ;
 
-        at3Dorigin.set(m);
+		at3Dorigin.set(m);
 
-        this.name = name;
-        this.at3D = at3Dorigin;
-        this.nx = (long) nPixX;
-        this.ny = (long) nPixY;
-        this.nz = (long) nPixZ;
+		this.name = name;
+		this.at3D = at3Dorigin;
+		this.nx = (long) nPixX;
+		this.ny = (long) nPixY;
+		this.nz = (long) nPixZ;
 
-    }
+	}
 
-    @Override
-    public void run() {
+	@Override
+	public void run() {
 
-    }
+	}
 
-    @Override
-    public SourceAndConverter<?> get() {
+	@Override
+	public SourceAndConverter<?> get() {
 
-        Source<?> src = new EmptySource(nx,ny,nz,at3D,name,voxelDimensions);
+		Source<?> src = new EmptySource(nx, ny, nz, at3D, name, voxelDimensions);
 
-        SourceAndConverter<?> sac;
+		SourceAndConverter<?> sac;
 
-        sac = SourceAndConverterHelper.createSourceAndConverter(src);
+		sac = SourceAndConverterHelper.createSourceAndConverter(src);
 
-        return sac;
-    }
+		return sac;
+	}
 }

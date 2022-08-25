@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package bdv.util;
 
 import bdv.tools.brightness.ConverterSetup;
@@ -36,67 +37,59 @@ import org.scijava.listeners.Listeners;
 import java.util.Arrays;
 import java.util.List;
 
-public class UnmodifiableConverterSetup implements ConverterSetup
-{
-    protected final List< Converter< ? , ? > > converters;
+public class UnmodifiableConverterSetup implements ConverterSetup {
 
-    private final Listeners.List< SetupChangeListener > listeners = new Listeners.SynchronizedList<>();
+	protected final List<Converter<?, ?>> converters;
 
-    public UnmodifiableConverterSetup( final Converter< ? , ? > ... converters )
-    {
-        this( Arrays.asList( converters ) );
-    }
+	private final Listeners.List<SetupChangeListener> listeners =
+		new Listeners.SynchronizedList<>();
 
-    public UnmodifiableConverterSetup( final List< Converter< ? , ? > > converters  )
-    {
-        this.converters = converters;
-    }
+	public UnmodifiableConverterSetup(final Converter<?, ?>... converters) {
+		this(Arrays.asList(converters));
+	}
 
-    @Override
-    public void setDisplayRange( final double min, final double max )
-    {
-        // Do nothing : unsupported
-    }
+	public UnmodifiableConverterSetup(final List<Converter<?, ?>> converters) {
+		this.converters = converters;
+	}
 
-    @Override
-    public void setColor( final ARGBType color )
-    {
-        // Do nothing : unsupported
-    }
+	@Override
+	public void setDisplayRange(final double min, final double max) {
+		// Do nothing : unsupported
+	}
 
-    @Override
-    public boolean supportsColor()
-    {
-        return false;
-    }
+	@Override
+	public void setColor(final ARGBType color) {
+		// Do nothing : unsupported
+	}
 
-    @Override
-    public Listeners<SetupChangeListener> setupChangeListeners() {
-        return listeners;
-    }
+	@Override
+	public boolean supportsColor() {
+		return false;
+	}
 
-    @Override
-    public int getSetupId()
-    {
-        return 0;
-    }
+	@Override
+	public Listeners<SetupChangeListener> setupChangeListeners() {
+		return listeners;
+	}
 
-    @Override
-    public double getDisplayRangeMin()
-    {
-        return 0;
-    }
+	@Override
+	public int getSetupId() {
+		return 0;
+	}
 
-    @Override
-    public double getDisplayRangeMax()
-    {
-        return 1;
-    }
+	@Override
+	public double getDisplayRangeMin() {
+		return 0;
+	}
 
-    @Override
-    public ARGBType getColor()
-    {
-        return null;
-    }
+	@Override
+	public double getDisplayRangeMax() {
+		return 1;
+	}
+
+	@Override
+	public ARGBType getColor() {
+		return null;
+	}
 
 }

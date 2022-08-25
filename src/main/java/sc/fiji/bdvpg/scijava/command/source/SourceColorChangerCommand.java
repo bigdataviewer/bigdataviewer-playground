@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
@@ -38,24 +39,28 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Color")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "Sources>Display>Set Sources Color")
 public class SourceColorChangerCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter
-    ColorRGB color = new ColorRGB(255,255,255);
+	@Parameter
+	ColorRGB color = new ColorRGB(255, 255, 255);
 
-    @Parameter(label = "Select Source(s)")
-    SourceAndConverter<?>[] sacs;
+	@Parameter(label = "Select Source(s)")
+	SourceAndConverter<?>[] sacs;
 
-    @Override
-    public void run() {
-        ARGBType imglib2color = new ARGBType(ARGBType.rgba(color.getRed(), color.getGreen(), color.getBlue(), 255));// Fully opaque color.getAlpha()));
-        for (SourceAndConverter<?> sac : sacs) {
-            new ColorChanger(sac, imglib2color).run();
-        }
-        SourceAndConverterServices.getBdvDisplayService().updateDisplays( sacs );
-    }
+	@Override
+	public void run() {
+		ARGBType imglib2color = new ARGBType(ARGBType.rgba(color.getRed(), color
+			.getGreen(), color.getBlue(), 255));// Fully opaque color.getAlpha()));
+		for (SourceAndConverter<?> sac : sacs) {
+			new ColorChanger(sac, imglib2color).run();
+		}
+		SourceAndConverterServices.getBdvDisplayService().updateDisplays(sacs);
+	}
 
 }

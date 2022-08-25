@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command;
 
 import org.scijava.plugin.Parameter;
@@ -33,18 +34,23 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Show Bdv Playground Window")
-public class ShowSourceAndConverterServiceWindow implements BdvPlaygroundActionCommand {
+@SuppressWarnings({ "unused", "CanBeFinal" })
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "Show Bdv Playground Window")
+public class ShowSourceAndConverterServiceWindow implements
+	BdvPlaygroundActionCommand
+{
 
-    @Parameter
-    SourceAndConverterService sacs;
+	@Parameter
+	SourceAndConverterService sacs;
 
-    public void run() {
-        if (sacs.getUI()!=null) {
-            sacs.getUI().show();
-        } else {
-            System.err.println("Error : no UI available");
-        }
-    }
+	public void run() {
+		if (sacs.getUI() != null) {
+			sacs.getUI().show();
+		}
+		else {
+			System.err.println("Error : no UI available");
+		}
+	}
 
 }

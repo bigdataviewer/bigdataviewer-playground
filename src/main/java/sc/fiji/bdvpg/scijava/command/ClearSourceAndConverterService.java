@@ -26,8 +26,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijava.command;
 
+package sc.fiji.bdvpg.scijava.command;
 
 import bdv.viewer.SourceAndConverter;
 import org.scijava.plugin.Parameter;
@@ -38,17 +38,22 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import java.util.List;
 
 /**
- * Command which clear all sources currently contained in the SourceAndConverter service
+ * Command which clear all sources currently contained in the SourceAndConverter
+ * service
  */
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Clear Bdv Playground State")
-public class ClearSourceAndConverterService implements BdvPlaygroundActionCommand {
+@SuppressWarnings({ "unused", "CanBeFinal" })
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "Clear Bdv Playground State")
+public class ClearSourceAndConverterService implements
+	BdvPlaygroundActionCommand
+{
 
-    @Parameter
-    SourceAndConverterService sac_service;
+	@Parameter
+	SourceAndConverterService sac_service;
 
-    @Override
-    public void run() {
-        List<SourceAndConverter<?>> sources = sac_service.getSourceAndConverters();
-        sac_service.remove(sources.toArray(new SourceAndConverter[0]));
-    }
+	@Override
+	public void run() {
+		List<SourceAndConverter<?>> sources = sac_service.getSourceAndConverters();
+		sac_service.remove(sources.toArray(new SourceAndConverter[0]));
+	}
 }

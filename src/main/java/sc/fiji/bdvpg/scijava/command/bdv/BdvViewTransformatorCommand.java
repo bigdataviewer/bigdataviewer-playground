@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
@@ -37,46 +38,47 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 /**
- * ViewTransformLoggerCommand
- * Author: @haesleinhuepf
- * 12 2019
+ * ViewTransformLoggerCommand Author: @haesleinhuepf 12 2019
  */
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Change view transform",
-    description = "Applies a simple view transform (translation / rotation) to a BDV window")
-public class ViewTransformatorCommand implements BdvPlaygroundActionCommand {
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Change view transform",
+	description = "Applies a simple view transform (translation / rotation) to a BDV window")
+public class BdvViewTransformatorCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(label = "Select BDV Windows")
-    BdvHandle bdvh;
+	@Parameter(label = "Select BDV Windows")
+	BdvHandle bdvh;
 
-    @Parameter(label="Translate in X")
-    public Double translatex = 0.0;
+	@Parameter(label = "Translate in X")
+	public Double translatex = 0.0;
 
-    @Parameter(label="Translate in Y")
-    public Double translatey = 0.0;
+	@Parameter(label = "Translate in Y")
+	public Double translatey = 0.0;
 
-    @Parameter(label="Translate in Z")
-    public Double translatez = 0.0;
+	@Parameter(label = "Translate in Z")
+	public Double translatez = 0.0;
 
-    @Parameter(label="Rotate around X")
-    public Double rotatearoundx = 0.0;
+	@Parameter(label = "Rotate around X")
+	public Double rotatearoundx = 0.0;
 
-    @Parameter(label="Rotate around Y")
-    public Double rotatearoundy = 0.0;
+	@Parameter(label = "Rotate around Y")
+	public Double rotatearoundy = 0.0;
 
-    @Parameter(label="Rotate around Z")
-    public Double rotatearoundz = 0.0;
+	@Parameter(label = "Rotate around Z")
+	public Double rotatearoundz = 0.0;
 
-    @Override
-    public void run() {
-        AffineTransform3D affineTransform3D = new AffineTransform3D();
-        affineTransform3D.translate(translatex, translatey, translatez);
-        affineTransform3D.rotate(0, rotatearoundx);
-        affineTransform3D.rotate(1, rotatearoundy);
-        affineTransform3D.rotate(2, rotatearoundz);
+	@Override
+	public void run() {
+		AffineTransform3D affineTransform3D = new AffineTransform3D();
+		affineTransform3D.translate(translatex, translatey, translatez);
+		affineTransform3D.rotate(0, rotatearoundx);
+		affineTransform3D.rotate(1, rotatearoundy);
+		affineTransform3D.rotate(2, rotatearoundz);
 
-        new ViewerTransformChanger(bdvh, affineTransform3D, true, 0).run();
-    }
+		new ViewerTransformChanger(bdvh, affineTransform3D, true, 0).run();
+	}
 }

@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.adapter.source;
 
 import bdv.tools.transformation.TransformedSource;
@@ -40,65 +41,81 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 import java.lang.reflect.Type;
 
 @Plugin(type = ISourceAdapter.class)
-public class TransformedSourceAdapter implements ISourceAdapter<TransformedSource> {
+public class TransformedSourceAdapter implements
+	ISourceAdapter<TransformedSource>
+{
 
-    SourceAndConverterAdapter sacSerializer;
+	SourceAndConverterAdapter sacSerializer;
 
-    @Override
-    public void setSacSerializer(SourceAndConverterAdapter sacSerializer) {
-        this.sacSerializer = sacSerializer;
-    }
+	@Override
+	public void setSacSerializer(SourceAndConverterAdapter sacSerializer) {
+		this.sacSerializer = sacSerializer;
+	}
 
-    @Override
-    public Class<TransformedSource> getSourceClass() {
-        return TransformedSource.class;
-    }
+	@Override
+	public Class<TransformedSource> getSourceClass() {
+		return TransformedSource.class;
+	}
 
-    @Override
-    public JsonElement serialize(SourceAndConverter sac, Type type, JsonSerializationContext jsonSerializationContext) {
-        JsonObject obj = new JsonObject();
+	@Override
+	public JsonElement serialize(SourceAndConverter sac, Type type,
+		JsonSerializationContext jsonSerializationContext)
+	{
+		JsonObject obj = new JsonObject();
 
-        TransformedSource source = (TransformedSource) sac.getSpimSource();
-        AffineTransform3D fixedTr = new AffineTransform3D();
-        AffineTransform3D incrTr = new AffineTransform3D();
-        source.getIncrementalTransform(incrTr);
-        source.getFixedTransform(fixedTr);
+		TransformedSource source = (TransformedSource) sac.getSpimSource();
+		AffineTransform3D fixedTr = new AffineTransform3D();
+		AffineTransform3D incrTr = new AffineTransform3D();
+		source.getIncrementalTransform(incrTr);
+		source.getFixedTransform(fixedTr);
 
-        obj.add("affinetransform_fixed", jsonSerializationContext.serialize(fixedTr, RealTransform.class));
-        Integer idWrapped = sacSerializer.getSourceToId().get(source.getWrappedSource());
+		obj.add("affinetransform_fixed", jsonSerializationContext.serialize(fixedTr,
+			RealTransform.class));
+		Integer idWrapped = sacSerializer.getSourceToId().get(source
+			.getWrappedSource());
 
-        if (idWrapped==null) {
-            System.err.println(source.getName()+" can't be serialized : the wrapped source "+source.getWrappedSource().getName()+" couldn't be identified. ");
-            return null;
-        }
+		if (idWrapped == null) {
+			System.err.println(source.getName() +
+				" can't be serialized : the wrapped source " + source.getWrappedSource()
+					.getName() + " couldn't be identified. ");
+			return null;
+		}
 
-        obj.addProperty("wrapped_source_id", idWrapped);
-        return obj;
-    }
+		obj.addProperty("wrapped_source_id", idWrapped);
+		return obj;
+	}
 
-    @Override
-    public SourceAndConverter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        JsonObject obj = jsonElement.getAsJsonObject();
-        int wrappedSourceId = obj.getAsJsonPrimitive("wrapped_source_id").getAsInt();
-        SourceAndConverter wrappedSac;
-        if (sacSerializer.getIdToSac().containsKey(wrappedSourceId)) {
-            // Already deserialized
-            wrappedSac = sacSerializer.getIdToSac().get(wrappedSourceId);
-        } else {
-            // Should be deserialized first
-            JsonElement element = sacSerializer.idToJsonElement.get(wrappedSourceId);
-            wrappedSac = sacSerializer.getGson().fromJson(element, SourceAndConverter.class);
-        }
+	@Override
+	public SourceAndConverter deserialize(JsonElement jsonElement, Type type,
+		JsonDeserializationContext jsonDeserializationContext)
+		throws JsonParseException
+	{
+		JsonObject obj = jsonElement.getAsJsonObject();
+		int wrappedSourceId = obj.getAsJsonPrimitive("wrapped_source_id")
+			.getAsInt();
+		SourceAndConverter wrappedSac;
+		if (sacSerializer.getIdToSac().containsKey(wrappedSourceId)) {
+			// Already deserialized
+			wrappedSac = sacSerializer.getIdToSac().get(wrappedSourceId);
+		}
+		else {
+			// Should be deserialized first
+			JsonElement element = sacSerializer.idToJsonElement.get(wrappedSourceId);
+			wrappedSac = sacSerializer.getGson().fromJson(element,
+				SourceAndConverter.class);
+		}
 
-        if (wrappedSac == null) {
-            System.err.println("Couldn't deserialize wrapped source");
-            return null;
-        }
+		if (wrappedSac == null) {
+			System.err.println("Couldn't deserialize wrapped source");
+			return null;
+		}
 
-        AffineTransform3D at3d = jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("affinetransform_fixed"), RealTransform.class);
+		AffineTransform3D at3d = jsonDeserializationContext.deserialize(jsonElement
+			.getAsJsonObject().get("affinetransform_fixed"), RealTransform.class);
 
-        SourceAndConverter sac = new SourceAffineTransformer(wrappedSac, at3d).getSourceOut();
+		SourceAndConverter sac = new SourceAffineTransformer(wrappedSac, at3d)
+			.get();
 
-        return sac;
-    }
+		return sac;
+	}
 }

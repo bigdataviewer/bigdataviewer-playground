@@ -26,20 +26,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package bdv.util;
 
+import net.imglib2.cache.ref.BoundedSoftRefLoaderCache;
+import sc.fiji.bdvpg.cache.BdvPGLoaderCache;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.lazy.Caches;
 import net.imglib2.cache.Cache;
 import net.imglib2.cache.img.CachedCellImg;
 import net.imglib2.cache.img.LoadedCellCacheLoader;
-import net.imglib2.cache.ref.SoftRefLoaderCache;
 import net.imglib2.img.basictypeaccess.AccessFlags;
 import net.imglib2.img.basictypeaccess.ArrayDataAccessFactory;
 import net.imglib2.img.cell.Cell;
 import net.imglib2.img.cell.CellGrid;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.GenericByteType;
 import net.imglib2.type.numeric.integer.GenericIntType;
 import net.imglib2.type.numeric.integer.GenericLongType;
@@ -49,55 +52,100 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Intervals;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 //import org.janelia.saalfeldlab.n5.imglib2.RandomAccessibleLoader;
 //import org.janelia.saalfeldlab.n5.imglib2.RandomAccessibleLoader;
 
 import static net.imglib2.img.basictypeaccess.AccessFlags.VOLATILE;
-import static net.imglib2.type.PrimitiveType.*;
+import static net.imglib2.type.PrimitiveType.BYTE;
+import static net.imglib2.type.PrimitiveType.INT;
+import static net.imglib2.type.PrimitiveType.SHORT;
+import static net.imglib2.type.PrimitiveType.LONG;
+import static net.imglib2.type.PrimitiveType.FLOAT;
+import static net.imglib2.type.PrimitiveType.DOUBLE;
 
 /**
- * Helper function to cache a {@link RandomAccessibleInterval}
- *
- * TODO : replace by an helper function moved to imglib2 when available
- *
+ * Helper function to cache a {@link RandomAccessibleInterval} TODO : replace by
+ * an helper function moved to imglib2 when available
  */
 
 public class RAIHelper {
 
-    @SuppressWarnings( { "unchecked", "rawtypes" } )
-    public static <T extends NativeType<T>> RandomAccessibleInterval<T> wrapAsVolatileCachedCellImg(
-            final RandomAccessibleInterval<T> source,
-            final int[] blockSize) {
+	private static Logger logger = LoggerFactory.getLogger(RAIHelper.class);
 
-        final long[] dimensions = Intervals.dimensionsAsLongArray(source);
-        final CellGrid grid = new CellGrid(dimensions, blockSize);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <T extends NativeType<T>> RandomAccessibleInterval<T>
+		wrapAsVolatileCachedCellImg(final RandomAccessibleInterval<T> source,
+			final int[] blockSize, Object objectSource, int timepoint, int level)
+	{
 
-        final Caches.RandomAccessibleLoader<T> loader = new Caches.RandomAccessibleLoader<>(Views.zeroMin(source));
+		final long[] dimensions = Intervals.dimensionsAsLongArray(source);
+		final CellGrid grid = new CellGrid(dimensions, blockSize);
 
-        final T type = Util.getTypeFromInterval(source);
+		final Caches.RandomAccessibleLoader<T> loader =
+			new Caches.RandomAccessibleLoader<>(Views.zeroMin(source));
 
-        final CachedCellImg<T, ?> img;
-        final Cache<Long, Cell<?>> cache =
-                new SoftRefLoaderCache().withLoader(LoadedCellCacheLoader.get(grid, loader, type, AccessFlags.setOf(VOLATILE)));
+		final T type = Util.getTypeFromInterval(source);
 
-        if (GenericByteType.class.isInstance(type)) {
-            img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(BYTE, AccessFlags.setOf(VOLATILE)));
-        } else if (GenericShortType.class.isInstance(type)) {
-            img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(SHORT, AccessFlags.setOf(VOLATILE)));
-        } else if (GenericIntType.class.isInstance(type)) {
-            img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(INT, AccessFlags.setOf(VOLATILE)));
-        } else if (GenericLongType.class.isInstance(type)) {
-            img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(LONG, AccessFlags.setOf(VOLATILE)));
-        } else if (FloatType.class.isInstance(type)) {
-            img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(FLOAT, AccessFlags.setOf(VOLATILE)));
-        } else if (DoubleType.class.isInstance(type)) {
-            img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(DOUBLE, AccessFlags.setOf(VOLATILE)));
-        } else if (ARGBType.class.isInstance(type)) {
-            img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(INT, AccessFlags.setOf(VOLATILE)));
-        }else {
-            img = null;
-        }
+		final long costPerValue = getBitsPerBlock(blockSize, type);
 
-        return img;
-    }
+		final CachedCellImg<T, ?> img;
+		final Cache<Long, Cell<?>> cache =
+				//new BoundedSoftRefLoaderCache(100)
+				new BdvPGLoaderCache(objectSource, timepoint, level)
+						.withLoader(
+			LoadedCellCacheLoader.get(grid, loader, type, AccessFlags.setOf(
+				VOLATILE)));
+
+		if (GenericByteType.class.isInstance(type)) {
+			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
+				BYTE, AccessFlags.setOf(VOLATILE)));
+		}
+		else if (GenericShortType.class.isInstance(type)) {
+			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
+				SHORT, AccessFlags.setOf(VOLATILE)));
+		}
+		else if (GenericIntType.class.isInstance(type)) {
+			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(INT,
+				AccessFlags.setOf(VOLATILE)));
+		}
+		else if (GenericLongType.class.isInstance(type)) {
+			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
+				LONG, AccessFlags.setOf(VOLATILE)));
+		}
+		else if (FloatType.class.isInstance(type)) {
+			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
+				FLOAT, AccessFlags.setOf(VOLATILE)));
+		}
+		else if (DoubleType.class.isInstance(type)) {
+			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
+				DOUBLE, AccessFlags.setOf(VOLATILE)));
+		}
+		else if (ARGBType.class.isInstance(type)) {
+			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(INT,
+				AccessFlags.setOf(VOLATILE)));
+		}
+		else {
+			img = null;
+		}
+
+		return img;
+	}
+
+	private static <T extends NativeType<T>> long getBitsPerBlock(int[] blockSize, T type) {
+		long nElements = 1;
+		for (int d : blockSize) nElements*=d;
+		return nElements*getBitsPerElement(type);
+	}
+
+	private static <T extends NativeType<T>> long getBitsPerElement(T type) {
+
+		if (RealType.class.isInstance(type)) {
+			return ((RealType)type).getBitsPerPixel();
+		} else {
+			logger.warn("Unknow number of bits for pixel type "+type.getClass().getSimpleName()+" assuming 8 bits");
+			return 8;
+		}
+	}
 }

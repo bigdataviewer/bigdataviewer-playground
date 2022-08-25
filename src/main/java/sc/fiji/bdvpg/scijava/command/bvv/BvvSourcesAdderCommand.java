@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.bvv;
 
 import bdv.viewer.SourceAndConverter;
@@ -44,41 +45,45 @@ import sc.fiji.bdvpg.viewers.ViewerAdapter;
  * Show sources in a BigVolumeViewer window - limited to 16 bit images
  */
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>BVV - Show Sources",
-    description = "Show sources in a BigVolumeViewer window - limited to 16 bit images")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "BVV>BVV - Show Sources",
+	description = "Show sources in a BigVolumeViewer window - limited to 16 bit images")
 public class BvvSourcesAdderCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(label = "Select BVV Window(s)")
-    BvvHandle bvvh;
+	@Parameter(label = "Select BVV Window(s)")
+	BvvHandle bvvh;
 
-    @Parameter(label="Adjust View on Source")
-    boolean adjustviewonsource;
+	@Parameter(label = "Adjust View on Source")
+	boolean adjustviewonsource;
 
-    @Parameter(label = "Select source(s)")
-    SourceAndConverter<?>[] sacs;
+	@Parameter(label = "Select source(s)")
+	SourceAndConverter<?>[] sacs;
 
-    @Override
-    public void run() {
+	@Override
+	public void run() {
 
-        for (SourceAndConverter<?> sac : sacs) {
-            if (sac.getSpimSource().getType() instanceof UnsignedShortType) {
+		for (SourceAndConverter<?> sac : sacs) {
+			if (sac.getSpimSource().getType() instanceof UnsignedShortType) {
 
-                bvvh.getConverterSetups()
-                        .put(sac, SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(sac));
-                bvvh.getViewerPanel()
-                        .state().addSource(sac);
+				bvvh.getConverterSetups().put(sac, SourceAndConverterServices
+					.getSourceAndConverterService().getConverterSetup(sac));
+				bvvh.getViewerPanel().state().addSource(sac);
 
-                bvvh.getViewerPanel().state().setSourceActive(sac, true);
-            } else {
-                IJ.log("Source "+sac.getSpimSource().getName()+" is not an unsigned 16 bit image. Bvv does not support this kind of images (yet).");
-            }
-        }
+				bvvh.getViewerPanel().state().setSourceActive(sac, true);
+			}
+			else {
+				IJ.log("Source " + sac.getSpimSource().getName() +
+					" is not an unsigned 16 bit image. Bvv does not support this kind of images (yet).");
+			}
+		}
 
-        if ((adjustviewonsource) && (sacs.length>0)) {
-            new ViewerTransformAdjuster(new ViewerAdapter(bvvh), sacs).run();
-        }
+		if ((adjustviewonsource) && (sacs.length > 0)) {
+			new ViewerTransformAdjuster(new ViewerAdapter(bvvh), sacs).run();
+		}
 
-    }
+	}
 }

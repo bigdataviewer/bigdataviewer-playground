@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package net.imglib2.realtransform;
 
 import com.google.gson.*;
@@ -37,27 +38,35 @@ import java.lang.reflect.Type;
  * Affine transform 3D adapter
  */
 @Plugin(type = IClassAdapter.class)
-public class AffineTransform3DAdapter implements IClassAdapter<AffineTransform3D> {
+public class AffineTransform3DAdapter implements
+	IClassAdapter<AffineTransform3D>
+{
 
-    @Override
-    public AffineTransform3D deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        double[] rowPackedCopy =
-        jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("affinetransform3d"), double[].class);
-        AffineTransform3D at3d = new AffineTransform3D();
-        at3d.set(rowPackedCopy);
-        return at3d;
-    }
+	@Override
+	public AffineTransform3D deserialize(JsonElement jsonElement, Type type,
+		JsonDeserializationContext jsonDeserializationContext)
+		throws JsonParseException
+	{
+		double[] rowPackedCopy = jsonDeserializationContext.deserialize(jsonElement
+			.getAsJsonObject().get("affinetransform3d"), double[].class);
+		AffineTransform3D at3d = new AffineTransform3D();
+		at3d.set(rowPackedCopy);
+		return at3d;
+	}
 
-    @Override
-    public JsonElement serialize(AffineTransform3D affineTransform3D, Type type, JsonSerializationContext jsonSerializationContext) {
-        JsonObject obj = new JsonObject();
-        obj.add("affinetransform3d", jsonSerializationContext.serialize(affineTransform3D.getRowPackedCopy()));
-        return obj;
-    }
+	@Override
+	public JsonElement serialize(AffineTransform3D affineTransform3D, Type type,
+		JsonSerializationContext jsonSerializationContext)
+	{
+		JsonObject obj = new JsonObject();
+		obj.add("affinetransform3d", jsonSerializationContext.serialize(
+			affineTransform3D.getRowPackedCopy()));
+		return obj;
+	}
 
-    @Override
-    public Class<? extends AffineTransform3D> getAdapterClass() {
-        return AffineTransform3D.class;
-    }
+	@Override
+	public Class<? extends AffineTransform3D> getAdapterClass() {
+		return AffineTransform3D.class;
+	}
 
 }

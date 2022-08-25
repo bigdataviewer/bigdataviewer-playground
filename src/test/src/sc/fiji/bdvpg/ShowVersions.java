@@ -39,8 +39,6 @@ import org.scijava.util.VersionUtils;
 
 public class ShowVersions {
 
-    static ImageJ ij;
-
     static public void main(String... args) {
         // create the ImageJ application context with all available services
         final ImageJ ij = new ImageJ();

@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.spimdata;
 
 import org.scijava.ItemVisibility;
@@ -37,28 +38,31 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.io.File;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin( type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>Open XML BDV Datasets" )
-public class MultipleSpimDataImporterCommand implements BdvPlaygroundActionCommand {
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDVDataset>Open XML BDV Datasets")
+public class MultipleSpimDataImporterCommand implements
+	BdvPlaygroundActionCommand
+{
 
-    /**
-     * Note: Due to a bug in SciJava there needs to be some
-     * text above the `File[]` parameter.
-     * Otherwise, the UI for `File[]` is not built.
-     *
-     * But then programmatically the message above is always shown...
-     */
-    @Parameter ( visibility = ItemVisibility.MESSAGE  )
-    public String message = "Please choose XML files:";
+	/**
+	 * Note: Due to a bug in SciJava there needs to be some text above the
+	 * `File[]` parameter. Otherwise, the UI for `File[]` is not built. But then
+	 * programmatically the message above is always shown...
+	 */
+	@Parameter(visibility = ItemVisibility.MESSAGE)
+	public String message = "Please choose XML files:";
 
-    @Parameter(style="extensions:xml")
-    public File[] files;
+	@Parameter(style = "extensions:xml")
+	public File[] files;
 
-    public void run() {
-        for (File file : files) {
-            new SpimDataFromXmlImporter(file).get();
-        }
-    }
+	public void run() {
+		for (File file : files) {
+			new SpimDataFromXmlImporter(file).get();
+		}
+	}
 
 }

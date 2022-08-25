@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
@@ -40,47 +41,51 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Show Sources (new Bdv window)",
-        description = "Displays one or several sources into a new BDV window")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"BDV>BDV - Show Sources (new Bdv window)",
+	description = "Displays one or several sources into a new BDV window")
 public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(label="Select Source(s)")
-    SourceAndConverter<?>[] sacs;
+	@Parameter(label = "Select Source(s)")
+	SourceAndConverter<?>[] sacs;
 
-    @Parameter(label="Auto Contrast")
-    boolean autocontrast;
+	@Parameter(label = "Auto Contrast")
+	boolean autocontrast;
 
-    @Parameter(label="Adjust View on Source")
-    boolean adjustviewonsource;
+	@Parameter(label = "Adjust View on Source")
+	boolean adjustviewonsource;
 
-    @Parameter(label = "Interpolate")
-    public boolean interpolate = false;
+	@Parameter(label = "Interpolate")
+	public boolean interpolate = false;
 
-    /**
-     * This triggers: BdvHandlePostprocessor
-     */
-    @Parameter(type = ItemIO.OUTPUT)
-    public BdvHandle bdvh;
+	/**
+	 * This triggers: BdvHandlePostprocessor
+	 */
+	@Parameter(type = ItemIO.OUTPUT)
+	public BdvHandle bdvh;
 
-    @Parameter
-    SourceAndConverterBdvDisplayService sacDisplayService;
+	@Parameter
+	SourceAndConverterBdvDisplayService sacDisplayService;
 
-    @Override
-    public void run() {
-        bdvh = sacDisplayService.getNewBdv();
+	@Override
+	public void run() {
+		bdvh = sacDisplayService.getNewBdv();
 
-        SourceAndConverterServices.getBdvDisplayService().show(bdvh, sacs);
-        if (autocontrast) {
-            for (SourceAndConverter<?> sac : sacs) {
-                int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
-                new BrightnessAutoAdjuster<>(sac, timepoint).run();
-            }
-        }
+		SourceAndConverterServices.getBdvDisplayService().show(bdvh, sacs);
+		if (autocontrast) {
+			for (SourceAndConverter<?> sac : sacs) {
+				int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
+				new BrightnessAutoAdjuster<>(sac, timepoint).run();
+			}
+		}
 
-        if ((adjustviewonsource) && (sacs.length>0)) {
-            new ViewerTransformAdjuster(bdvh, sacs).run();
-        }
-    }
+		if ((adjustviewonsource) && (sacs.length > 0)) {
+			new ViewerTransformAdjuster(bdvh, sacs).run();
+		}
+	}
 }

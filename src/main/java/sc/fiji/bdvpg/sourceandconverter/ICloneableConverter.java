@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.sourceandconverter;
 
 import bdv.viewer.SourceAndConverter;
@@ -33,10 +34,11 @@ import net.imglib2.converter.Converter;
 import net.imglib2.type.numeric.ARGBType;
 
 /**
- * Empty interface which allows duplicating custom converters in dependent repositories
+ * Empty interface which allows duplicating custom converters in dependent
+ * repositories
  */
 public interface ICloneableConverter<T> {
 
-    Converter<T, ARGBType> duplicateConverter(SourceAndConverter<T> source);
+	Converter<T, ARGBType> duplicateConverter(SourceAndConverter<T> source);
 
 }

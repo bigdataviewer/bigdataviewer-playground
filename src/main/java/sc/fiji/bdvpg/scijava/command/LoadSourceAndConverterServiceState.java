@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command;
 
 import org.scijava.Context;
@@ -36,20 +37,26 @@ import sc.fiji.bdvpg.services.SourceAndConverterServiceLoader;
 
 import java.io.File;
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Load Bdv Playground State (experimental)")
-public class LoadSourceAndConverterServiceState implements BdvPlaygroundActionCommand {
+@SuppressWarnings({ "unused", "CanBeFinal" })
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"Load Bdv Playground State (experimental)")
+public class LoadSourceAndConverterServiceState implements
+	BdvPlaygroundActionCommand
+{
 
-    @Parameter(label = "Open state file (json)", style = "open")
-    File file;
+	@Parameter(label = "Open state file (json)", style = "open")
+	File file;
 
-    @Parameter
-    Context ctx;
+	@Parameter
+	Context ctx;
 
-    @Parameter(label = "Erase current state")
-    Boolean erasepreviousstate;
+	@Parameter(label = "Erase current state")
+	Boolean erasepreviousstate;
 
-    @Override
-    public void run() {
-        new SourceAndConverterServiceLoader(file.getAbsolutePath(), file.getParent(), ctx, erasepreviousstate).run();
-    }
+	@Override
+	public void run() {
+		new SourceAndConverterServiceLoader(file.getAbsolutePath(), file
+			.getParent(), ctx, erasepreviousstate).run();
+	}
 }

@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
@@ -40,43 +41,48 @@ import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
 import sc.fiji.bdvpg.sourceandconverter.importer.Wave3DSourceGetter;
 
 /**
- *
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Create Sample Source")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "Sources>Create Sample Source")
 public class SampleSourceCreatorCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(label="Sample name", choices = {"Mandelbrot", "Wave3D", "Voronoi", "Big Voronoi"})
-    String samplename;
+	@Parameter(label = "Sample name", choices = { "Mandelbrot", "Wave3D",
+		"Voronoi", "Big Voronoi" })
+	String samplename;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter<?> sac;
+	@Parameter(type = ItemIO.OUTPUT)
+	SourceAndConverter<?> sac;
 
-    @Override
-    public void run() {
-        switch(samplename) {
+	@Override
+	public void run() {
+		switch (samplename) {
 
-            case "Mandelbrot":
-                sac = (new MandelbrotSourceGetter()).get();
-                break;
+			case "Mandelbrot":
+				sac = (new MandelbrotSourceGetter()).get();
+				break;
 
-            case "Wave3D":
-                sac = (new Wave3DSourceGetter()).get();
-                break;
+			case "Wave3D":
+				sac = (new Wave3DSourceGetter()).get();
+				break;
 
-            case "Voronoi":
-                sac = (new VoronoiSourceGetter(new long[]{512, 512, 1}, 256, true).get());
-                break;
+			case "Voronoi":
+				sac = (new VoronoiSourceGetter(new long[] { 512, 512, 1 }, 256, true)
+					.get());
+				break;
 
-            case "Big Voronoi":
-                sac = (new VoronoiSourceGetter(new long[]{2048, 2048, 2048}, 65536, false).get());
-                break;
+			case "Big Voronoi":
+				sac = (new VoronoiSourceGetter(new long[] { 2048, 2048, 2048 }, 65536,
+					false).get());
+				break;
 
-            default:
-                new SystemLogger().err("Invalid sample name");
-        }
-    }
+			default:
+				new SystemLogger().err("Invalid sample name");
+		}
+	}
 }

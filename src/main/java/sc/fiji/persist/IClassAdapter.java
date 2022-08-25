@@ -26,14 +26,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.persist;
 
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSerializer;
 
-public interface IClassAdapter<T> extends IObjectScijavaAdapter, JsonSerializer<T>,
-        JsonDeserializer<T> {
+public interface IClassAdapter<T> extends IObjectScijavaAdapter,
+	JsonSerializer<T>, JsonDeserializer<T>
+{
 
-    Class<? extends T> getAdapterClass();
+	Class<? extends T> getAdapterClass();
 
 }

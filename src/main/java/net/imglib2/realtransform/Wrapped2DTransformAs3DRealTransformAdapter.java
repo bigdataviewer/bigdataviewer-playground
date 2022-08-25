@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package net.imglib2.realtransform;
 
 import com.google.gson.*;
@@ -41,32 +42,43 @@ import java.lang.reflect.Type;
  */
 
 @Plugin(type = IClassAdapter.class)
-public class Wrapped2DTransformAs3DRealTransformAdapter implements IClassAdapter<Wrapped2DTransformAs3D> {
+public class Wrapped2DTransformAs3DRealTransformAdapter implements
+	IClassAdapter<Wrapped2DTransformAs3D>
+{
 
-    protected static final Logger logger = LoggerFactory.getLogger(Wrapped2DTransformAs3DRealTransformAdapter.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		Wrapped2DTransformAs3DRealTransformAdapter.class);
 
-    @Override
-    public Wrapped2DTransformAs3D deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        JsonObject obj = jsonElement.getAsJsonObject();
-        RealTransform rt = jsonDeserializationContext.deserialize(obj.get("wrappedTransform"), RealTransform.class);
+	@Override
+	public Wrapped2DTransformAs3D deserialize(JsonElement jsonElement, Type type,
+		JsonDeserializationContext jsonDeserializationContext)
+		throws JsonParseException
+	{
+		JsonObject obj = jsonElement.getAsJsonObject();
+		RealTransform rt = jsonDeserializationContext.deserialize(obj.get(
+			"wrappedTransform"), RealTransform.class);
 
-        if (!(rt instanceof InvertibleRealTransform)) {
-            logger.error("Wrapped transform not invertible -> deserialization impossible...");
-            return null;
-        }
+		if (!(rt instanceof InvertibleRealTransform)) {
+			logger.error(
+				"Wrapped transform not invertible -> deserialization impossible...");
+			return null;
+		}
 
-        return new Wrapped2DTransformAs3D((InvertibleRealTransform) rt);
-    }
+		return new Wrapped2DTransformAs3D((InvertibleRealTransform) rt);
+	}
 
-    @Override
-    public JsonElement serialize(Wrapped2DTransformAs3D wrapped2DTransformAs3D, Type type, JsonSerializationContext jsonSerializationContext) {
-        JsonObject obj = new JsonObject();
-        obj.add("wrappedTransform", jsonSerializationContext.serialize(wrapped2DTransformAs3D.getTransform(), RealTransform.class));
-        return obj;
-    }
+	@Override
+	public JsonElement serialize(Wrapped2DTransformAs3D wrapped2DTransformAs3D,
+		Type type, JsonSerializationContext jsonSerializationContext)
+	{
+		JsonObject obj = new JsonObject();
+		obj.add("wrappedTransform", jsonSerializationContext.serialize(
+			wrapped2DTransformAs3D.getTransform(), RealTransform.class));
+		return obj;
+	}
 
-    @Override
-    public Class<? extends Wrapped2DTransformAs3D> getAdapterClass() {
-        return Wrapped2DTransformAs3D.class;
-    }
+	@Override
+	public Class<? extends Wrapped2DTransformAs3D> getAdapterClass() {
+		return Wrapped2DTransformAs3D.class;
+	}
 }

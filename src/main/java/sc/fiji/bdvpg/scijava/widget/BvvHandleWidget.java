@@ -26,10 +26,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.widget;
 
 import bvv.util.BvvHandle;
 import org.scijava.widget.InputWidget;
 
-public interface BvvHandleWidget<U> extends InputWidget<BvvHandle, U> {
-}
+public interface BvvHandleWidget<U> extends InputWidget<BvvHandle, U> {}

@@ -40,53 +40,54 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-/** {@link CacheService} implementation wrapping a guava {@link Cache}.
- *
- * Modifications by Nicolas Chiaruttini :
- * - using weak keys
- * - logs content
- * - cache can be retrieved
- * @author Mark Hiner, Nicolas Chiaruttini
- * This service is used to link the SpimData Object to its BdvHandle
+/**
+ * {@link CacheService} implementation wrapping a guava {@link Cache}.
+ * Modifications by Nicolas Chiaruttini : - using weak keys - logs content -
+ * cache can be retrieved
+ * 
+ * @author Mark Hiner, Nicolas Chiaruttini This service is used to link the
+ *         SpimData Object to its BdvHandle
  */
 
 @Plugin(type = Service.class)
-public class GuavaWeakCacheService extends AbstractService implements CacheService {
+public class GuavaWeakCacheService extends AbstractService implements
+	CacheService
+{
 
-    private Cache<Object, Object> cache;
+	private Cache<Object, Object> cache;
 
-    public Cache<Object, Object> getCache() {
-        return cache;
-    }
+	public Cache<Object, Object> getCache() {
+		return cache;
+	}
 
-    public void logCache(Consumer<String> logger) {
-        cache.asMap().forEach((key, value) -> {
-            logger.accept(key.getClass().getSimpleName() + ":" + key);
-            logger.accept("\t" + value.getClass().getSimpleName() + ":" + value);
+	public void logCache(Consumer<String> logger) {
+		cache.asMap().forEach((key, value) -> {
+			logger.accept(key.getClass().getSimpleName() + ":" + key);
+			logger.accept("\t" + value.getClass().getSimpleName() + ":" + value);
 
-        });
-    }
+		});
+	}
 
-    @Override
-    public void initialize() {
-        cache = CacheBuilder.newBuilder().weakKeys().build();
-    }
+	@Override
+	public void initialize() {
+		cache = CacheBuilder.newBuilder().weakKeys().build();
+	}
 
-    @Override
-    public void put(final Object key, final Object value) {
-        cache.put(key, value);
-    }
+	@Override
+	public void put(final Object key, final Object value) {
+		cache.put(key, value);
+	}
 
-    @Override
-    public Object get(final Object key) {
-        return cache.getIfPresent(key);
-    }
+	@Override
+	public Object get(final Object key) {
+		return cache.getIfPresent(key);
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <V> V get(final Object key, final Callable<V> valueLoader)
-            throws ExecutionException
-    {
-        return (V) cache.get(key, valueLoader);
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public <V> V get(final Object key, final Callable<V> valueLoader)
+		throws ExecutionException
+	{
+		return (V) cache.get(key, valueLoader);
+	}
 }

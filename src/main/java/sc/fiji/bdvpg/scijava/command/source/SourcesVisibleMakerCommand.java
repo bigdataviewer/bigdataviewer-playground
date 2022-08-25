@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
@@ -35,21 +36,25 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Make Sources Visible")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"Sources>Display>Make Sources Visible")
 public class SourcesVisibleMakerCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(label = "Select Source(s)")
-    SourceAndConverter<?>[] sacs;
+	@Parameter(label = "Select Source(s)")
+	SourceAndConverter<?>[] sacs;
 
-    @Parameter
-    SourceAndConverterBdvDisplayService bsds;
+	@Parameter
+	SourceAndConverterBdvDisplayService bsds;
 
-    @Override
-    public void run() {
-        for (SourceAndConverter<?> sac:sacs) {
-            bsds.setVisible(sac, true);
-        }
-    }
+	@Override
+	public void run() {
+		for (SourceAndConverter<?> sac : sacs) {
+			bsds.setVisible(sac, true);
+		}
+	}
 }

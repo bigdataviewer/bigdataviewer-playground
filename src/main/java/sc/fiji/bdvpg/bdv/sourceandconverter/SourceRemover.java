@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.bdv.sourceandconverter;
 
 import bdv.util.BdvHandle;
@@ -35,34 +36,35 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import java.util.function.Consumer;
 
 /**
- * BigDataViewer Playground Action --
- * Removes a {@link SourceAndConverter} from a {@link BdvHandle}
- *
- * Note : - the functional interface allows to use this action in a functional way,
- * in this case, the constructor without SourceAndConverter can be used
- *
- * TODO : think if this action is useful ? It looks unused because the direct call to SourceAndConverterServices.getSourceAndConverterDisplayService().remove is more convenient
- *
+ * BigDataViewer Playground Action -- Removes a {@link SourceAndConverter} from
+ * a {@link BdvHandle} Note : - the functional interface allows to use this
+ * action in a functional way, in this case, the constructor without
+ * SourceAndConverter can be used TODO : think if this action is useful ? It
+ * looks unused because the direct call to
+ * SourceAndConverterServices.getSourceAndConverterDisplayService().remove is
+ * more convenient
  */
 
-public class SourceRemover implements Runnable, Consumer<SourceAndConverter<?>[]>
+public class SourceRemover implements Runnable,
+	Consumer<SourceAndConverter<?>[]>
 {
+
 	final SourceAndConverter<?> sacIn;
 	final BdvHandle bdvh;
 
 	public SourceRemover(BdvHandle bdvh, SourceAndConverter<?> sacIn) {
-		this.sacIn =sacIn;
-		this.bdvh=bdvh;
+		this.sacIn = sacIn;
+		this.bdvh = bdvh;
 	}
 
 	public SourceRemover(SourceAndConverter<?> sacIn) {
-		this.sacIn =sacIn;
-		this.bdvh=null;
+		this.sacIn = sacIn;
+		this.bdvh = null;
 	}
 
 	public SourceRemover() {
-		this.sacIn =null;
-		this.bdvh=null;
+		this.sacIn = null;
+		this.bdvh = null;
 	}
 
 	public void run() {
@@ -71,10 +73,11 @@ public class SourceRemover implements Runnable, Consumer<SourceAndConverter<?>[]
 
 	@Override
 	public void accept(SourceAndConverter... sacs) {
-		if (bdvh==null) {
+		if (bdvh == null) {
 			// Remove from all displays
 			SourceAndConverterServices.getBdvDisplayService().removeFromAllBdvs(sacs);
-		} else {
+		}
+		else {
 			// Remove from a specific bdvHandle
 			SourceAndConverterServices.getBdvDisplayService().remove(bdvh, sacs);
 		}

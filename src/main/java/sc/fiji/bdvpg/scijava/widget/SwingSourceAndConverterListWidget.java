@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.widget;
 
 import bdv.viewer.SourceAndConverter;
@@ -50,114 +51,130 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Swing implementation of {@link SourceAndConverterListWidget}.
- *
- * Note the rather complex {@link SwingSourceAndConverterListWidget#set} method to avoid memory leak
+ * Swing implementation of {@link SourceAndConverterListWidget}. Note the rather
+ * complex {@link SwingSourceAndConverterListWidget#set} method to avoid memory
+ * leak
  *
  * @author Nicolas Chiaruttini
  */
 
+@SuppressWarnings("unused")
 @Plugin(type = InputWidget.class)
-public class SwingSourceAndConverterListWidget extends SwingInputWidget<SourceAndConverter<?>[]> implements
-        SourceAndConverterListWidget<JPanel> {
+public class SwingSourceAndConverterListWidget extends
+	SwingInputWidget<SourceAndConverter<?>[]> implements
+	SourceAndConverterListWidget<JPanel>
+{
 
-    @Override
-    protected void doRefresh() {
-    }
+	@Override
+	protected void doRefresh() {}
 
-    @Override
-    public boolean supports(final WidgetModel model) {
-        if (model.getItem().getWidgetStyle().contains("sorted")) return false;
-        return super.supports(model) && model.isType(SourceAndConverter[].class);
-    }
+	@Override
+	public boolean supports(final WidgetModel model) {
+		if (model.getItem().getWidgetStyle().contains("sorted")) return false;
+		return super.supports(model) && model.isType(SourceAndConverter[].class);
+	}
 
-    @Override
-    public SourceAndConverter<?>[] getValue() {
-        return SourceAndConverterHelper.sortDefault(getSelectedSourceAndConverters());
-    }
+	@Override
+	public SourceAndConverter<?>[] getValue() {
+		return SourceAndConverterHelper.sortDefault(
+			getSelectedSourceAndConverters());
+	}
 
-    @Parameter
+	@Parameter
 	SourceAndConverterService bss;
 
-    public SourceAndConverter<?>[] getSelectedSourceAndConverters() {
-        Set<SourceAndConverter<?>> sacList = new HashSet<>(); // A set avoids duplicate SourceAndConverter
-        for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
-            if (((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject() instanceof RenamableSourceAndConverter) {
-                Object userObj = ((RenamableSourceAndConverter) ((DefaultMutableTreeNode) tp.getLastPathComponent()).getUserObject()).sac;
-                sacList.add((SourceAndConverter<?>) userObj);
-            } else {
-                sacList.addAll(getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) tp.getLastPathComponent()));
-            }
-        }
-        return sacList.toArray(new SourceAndConverter[0]);
-    }
+	public SourceAndConverter<?>[] getSelectedSourceAndConverters() {
+		Set<SourceAndConverter<?>> sacList = new HashSet<>(); // A set avoids
+																													// duplicate
+																													// SourceAndConverter
+		for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
+			if (((DefaultMutableTreeNode) tp.getLastPathComponent())
+				.getUserObject() instanceof RenamableSourceAndConverter)
+			{
+				Object userObj =
+					((RenamableSourceAndConverter) ((DefaultMutableTreeNode) tp
+						.getLastPathComponent()).getUserObject()).sac;
+				sacList.add((SourceAndConverter<?>) userObj);
+			}
+			else {
+				sacList.addAll(getSourceAndConvertersFromChildrenOf(
+					(DefaultMutableTreeNode) tp.getLastPathComponent()));
+			}
+		}
+		return sacList.toArray(new SourceAndConverter[0]);
+	}
 
-    private Set<SourceAndConverter<?>> getSourceAndConvertersFromChildrenOf(DefaultMutableTreeNode node) {
-        Set<SourceAndConverter<?>> sacs = new HashSet<>();
-        for (int i=0;i<node.getChildCount();i++) {
-            DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
-            if (child.getUserObject() instanceof RenamableSourceAndConverter) {
-                Object userObj = ((RenamableSourceAndConverter) (child.getUserObject())).sac;
-                sacs.add((SourceAndConverter<?>) userObj);
-            } else {
-                sacs.addAll(getSourceAndConvertersFromChildrenOf(child));
-            }
-        }
-        return sacs;
-    }
+	private Set<SourceAndConverter<?>> getSourceAndConvertersFromChildrenOf(
+		DefaultMutableTreeNode node)
+	{
+		Set<SourceAndConverter<?>> sacs = new HashSet<>();
+		for (int i = 0; i < node.getChildCount(); i++) {
+			DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(
+				i);
+			if (child.getUserObject() instanceof RenamableSourceAndConverter) {
+				Object userObj = ((RenamableSourceAndConverter) (child
+					.getUserObject())).sac;
+				sacs.add((SourceAndConverter<?>) userObj);
+			}
+			else {
+				sacs.addAll(getSourceAndConvertersFromChildrenOf(child));
+			}
+		}
+		return sacs;
+	}
 
-    JTree tree;
+	JTree tree;
 
-    @Override
-    public void set(final WidgetModel model) {
-        super.set(model);
-        tree = new JTree(bss.getUI().getTreeModel());
-        tree.setCellRenderer(new SourceAndConverterTreeCellRenderer());
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
+		tree = new JTree(bss.getUI().getTreeModel());
+		tree.setCellRenderer(new SourceAndConverterTreeCellRenderer());
 
-        JScrollPane scrollPane = new JScrollPane(tree);
-        scrollPane.setPreferredSize(new Dimension(350, 200));
-        getComponent().add(scrollPane);
-        refreshWidget();
-        model.setValue(null);
-        TreeSelectionListener tsl = (e)-> model.setValue(getValue());
-        tree.addTreeSelectionListener(tsl); // Memory leak... How ot solve this ?
+		JScrollPane scrollPane = new JScrollPane(tree);
+		scrollPane.setPreferredSize(new Dimension(350, 200));
+		getComponent().add(scrollPane);
+		refreshWidget();
+		model.setValue(null);
+		TreeSelectionListener tsl = (e) -> model.setValue(getValue());
+		tree.addTreeSelectionListener(tsl); // Memory leak... How ot solve this ?
 
-        // -------------------------------- Memory leak! Cut heads of the Hydra of Lerna
-        // The part below helps solve the memory leak:
-        // with JTree not released the lastly selected path
-        // with Listeners holding references with objects of potentially big memory footprint (SourceAndConverters)
-        // Maybe related:
-        // https://bugs.openjdk.java.net/browse/JDK-6472844
-        // https://stackoverflow.com/questions/4517931/java-swing-jtree-is-not-garbage-collected
-        // this one more particularly :
+		// -------------------------------- Memory leak! Cut heads of the Hydra of
+		// Lerna
+		// The part below helps solve the memory leak:
+		// with JTree not released the lastly selected path
+		// with Listeners holding references with objects of potentially big memory
+		// footprint (SourceAndConverters)
+		// Maybe related:
+		// https://bugs.openjdk.java.net/browse/JDK-6472844
+		// https://stackoverflow.com/questions/4517931/java-swing-jtree-is-not-garbage-collected
+		// this one more particularly :
 
+		tree.addAncestorListener(new AncestorListener() {
 
-        tree.addAncestorListener(new AncestorListener() {
-            @Override
-            public void ancestorAdded(AncestorEvent event) {
-            }
+			@Override
+			public void ancestorAdded(AncestorEvent event) {}
 
-            @Override
-            public void ancestorRemoved(AncestorEvent event) {
-                tree.removeTreeSelectionListener(tsl);
-                tree.clearSelection();
-                tree.cancelEditing();
-                //tree.clearToggledPaths();
-                tree.resetKeyboardActions();
-                tree.updateUI();
-                scrollPane.remove(tree);
-                getComponent().remove(scrollPane);
-                tree.setModel(null);
-                tree.removeAncestorListener(this);
-                tree = null;
-            }
+			@Override
+			public void ancestorRemoved(AncestorEvent event) {
+				tree.removeTreeSelectionListener(tsl);
+				tree.clearSelection();
+				tree.cancelEditing();
+				// tree.clearToggledPaths();
+				tree.resetKeyboardActions();
+				tree.updateUI();
+				scrollPane.remove(tree);
+				getComponent().remove(scrollPane);
+				tree.setModel(null);
+				tree.removeAncestorListener(this);
+				tree = null;
+			}
 
-            @Override
-            public void ancestorMoved(AncestorEvent event) {
-            }
-        });
-        // -------------------------------- All heads cut (hopefully)
+			@Override
+			public void ancestorMoved(AncestorEvent event) {}
+		});
+		// -------------------------------- All heads cut (hopefully)
 
-    }
+	}
 
 }

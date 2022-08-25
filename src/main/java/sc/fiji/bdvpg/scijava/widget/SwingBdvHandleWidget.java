@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.widget;
 
 import bdv.util.BdvHandle;
@@ -41,61 +42,59 @@ import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import javax.swing.*;
 import java.awt.*;
 
+@SuppressWarnings("unused")
 @Plugin(type = InputWidget.class, priority = Priority.EXTREMELY_HIGH)
 public class SwingBdvHandleWidget extends SwingInputWidget<BdvHandle> implements
-        BdvHandleWidget<JPanel> {
+	BdvHandleWidget<JPanel>
+{
 
-    @Override
-    protected void doRefresh() {
-    }
+	@Override
+	protected void doRefresh() {}
 
-    @Override
-    public boolean supports(final WidgetModel model) {
-        return super.supports(model) && model.isType(BdvHandle.class);
-    }
+	@Override
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isType(BdvHandle.class);
+	}
 
-    @Override
-    public BdvHandle getValue() {
-        return getSelectedBdvHandle();
-    }
+	@Override
+	public BdvHandle getValue() {
+		return getSelectedBdvHandle();
+	}
 
-    JList list;
+	JList list;
 
-    public BdvHandle getSelectedBdvHandle() {
-        return ((RenamableBdvHandle) list.getSelectedValue()).bdvh;
-    }
+	public BdvHandle getSelectedBdvHandle() {
+		return ((RenamableBdvHandle) list.getSelectedValue()).bdvh;
+	}
 
-    @Parameter
-    ObjectService os;
+	@Parameter
+	ObjectService os;
 
-    @Override
-    public void set(final WidgetModel model) {
-        super.set(model);
-        RenamableBdvHandle[] data =
-                os.getObjects(BdvHandle.class)
-                  .stream()
-                  .map(RenamableBdvHandle::new)
-                  .toArray(RenamableBdvHandle[]::new);
-        list = new JList<>(data); //data has type Object[]
-        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane listScroller = new JScrollPane(list);
-        listScroller.setPreferredSize(new Dimension(250, 80));
-        list.addListSelectionListener((e)-> model.setValue(getValue()));
-        getComponent().add(listScroller);
-    }
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
+		RenamableBdvHandle[] data = os.getObjects(BdvHandle.class).stream().map(
+			RenamableBdvHandle::new).toArray(RenamableBdvHandle[]::new);
+		list = new JList<>(data); // data has type Object[]
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		JScrollPane listScroller = new JScrollPane(list);
+		listScroller.setPreferredSize(new Dimension(250, 80));
+		list.addListSelectionListener((e) -> model.setValue(getValue()));
+		getComponent().add(listScroller);
+	}
 
-    public static class RenamableBdvHandle {
+	public static class RenamableBdvHandle {
 
-        public final BdvHandle bdvh;
+		public final BdvHandle bdvh;
 
-        public RenamableBdvHandle(BdvHandle bdvh) {
-            this.bdvh = bdvh;
-        }
+		public RenamableBdvHandle(BdvHandle bdvh) {
+			this.bdvh = bdvh;
+		}
 
-        public String toString() {
-            return BdvHandleHelper.getWindowTitle(bdvh);
-        }
+		public String toString() {
+			return BdvHandleHelper.getWindowTitle(bdvh);
+		}
 
-    }
+	}
 
 }

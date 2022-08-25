@@ -64,7 +64,7 @@ public class BigWarp2DTest {
         BigWarpInit.add(bwdata, tgt, 1, 0, false);
         bwdata.wrapUp();
 
-        BigWarp<?> bw = new BigWarp<>(bwdata, "bw test", null);
+        new BigWarp<>(bwdata, "bw test", null);
     }
 
     public static <T extends NativeType<T> & RealType<T>> Source<T> loadSource( String path, double zOffset )

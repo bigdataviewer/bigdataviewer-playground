@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.services;
 
 import bdv.viewer.SourceAndConverter;
@@ -43,99 +44,99 @@ import java.io.FileWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/** Big Objective : save the state of all open sources
- * By Using Gson and specific serialization depending on SourceAndConverter classes
- *
- * TODO : take care of sources not built with SourceAndConverter
- *
- * TODO : BUG do not work if the same spimdata is opened several times!
- *
+/**
+ * Big Objective : save the state of all open sources By Using Gson and specific
+ * serialization depending on SourceAndConverter classes TODO : take care of
+ * sources not built with SourceAndConverter TODO : BUG do not work if the same
+ * spimdata is opened several times!
  */
 
-public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter implements Runnable {
+public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter
+	implements Runnable
+{
 
-    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterServiceSaver.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		SourceAndConverterServiceSaver.class);
 
-    final File f;
+	final File f;
 
-    List<SourceAndConverter<?>> sacs;
+	List<SourceAndConverter<?>> sacs;
 
-    public SourceAndConverterServiceSaver(File f, Context ctx) {
-        this(f, ctx, SourceAndConverterServices
-                .getSourceAndConverterService()
-                .getSourceAndConverters());
-    }
+	public SourceAndConverterServiceSaver(File f, Context ctx) {
+		this(f, ctx, SourceAndConverterServices.getSourceAndConverterService()
+			.getSourceAndConverters());
+	}
 
-    public SourceAndConverterServiceSaver(File f, Context ctx, List<SourceAndConverter<?>> sacs) {
-        super(ctx, f.getParentFile());
-        this.sacs = sacs;
-        this.f = f;
-        idToSac = new HashMap<>();
-        sacToId = new HashMap<>();
-        sourceToId = new HashMap<>();
-        idToSource = new HashMap<>();
-    }
+	public SourceAndConverterServiceSaver(File f, Context ctx,
+		List<SourceAndConverter<?>> sacs)
+	{
+		super(ctx, f.getParentFile());
+		this.sacs = sacs;
+		this.f = f;
+		idToSac = new HashMap<>();
+		sacToId = new HashMap<>();
+		sourceToId = new HashMap<>();
+		idToSource = new HashMap<>();
+	}
 
-    final List<SourceAndConverter<?>> setOfSourcesNeedingSerialization = new ArrayList<>();
+	final List<SourceAndConverter<?>> setOfSourcesNeedingSerialization =
+		new ArrayList<>();
 
-    @Override
-    public void run() {
-        synchronized (SourceAndConverterServiceSaver.class) {
+	@Override
+	public void run() {
+		synchronized (SourceAndConverterServiceSaver.class) {
 
-            // Makes sure each source is associated to at least one sourceAndConverter
-            // this happens via recursive source inspection
+			// Makes sure each source is associated to at least one sourceAndConverter
+			// this happens via recursive source inspection
 
-            sacs.forEach(sac ->
-                setOfSourcesNeedingSerialization.addAll(SourceAndConverterInspector.appendInspectorResult(new DefaultMutableTreeNode(),
-                        sac,
-                        SourceAndConverterServices.getSourceAndConverterService(),
-                        true))
-            );
+			sacs.forEach(sac -> setOfSourcesNeedingSerialization.addAll(
+				SourceAndConverterInspector.appendInspectorResult(
+					new DefaultMutableTreeNode(), sac, SourceAndConverterServices
+						.getSourceAndConverterService(), true)));
 
-            // Then let's get back all the sacs - they may have increase in number
-            sacs = new ArrayList<>(setOfSourcesNeedingSerialization);
+			// Then let's get back all the sacs - they may have increase in number
+			sacs = new ArrayList<>(setOfSourcesNeedingSerialization);
 
-            sacs = SourceAndConverterHelper.sortDefaultGeneric(sacs);
+			sacs = SourceAndConverterHelper.sortDefaultGeneric(sacs);
 
-            for (int i = 0; i < sacs.size(); i++) {
-                idToSac.put(i, sacs.get(i));
-                sacToId.put(sacs.get(i), i);
-                idToSource.put(i, sacs.get(i).getSpimSource());
-                sourceToId.put(sacs.get(i).getSpimSource(), i);
-            }
+			for (int i = 0; i < sacs.size(); i++) {
+				idToSac.put(i, sacs.get(i));
+				sacToId.put(sacs.get(i), i);
+				idToSource.put(i, sacs.get(i).getSpimSource());
+				sourceToId.put(sacs.get(i).getSpimSource(), i);
+			}
 
-            Gson gson = getGson();
+			Gson gson = getGson();
 
-            // Let's launch serialization of all SpimDatasets first
-            // This forces a saving of all datasets before they can be required by other sourceAdnConverters
-            // Serializes datasets - required to avoid serialization issues
-            Set<AbstractSpimData<?>> asds = SourceAndConverterServices
-                    .getSourceAndConverterService()
-                    .getSpimDatasets();
+			// Let's launch serialization of all SpimDatasets first
+			// This forces a saving of all datasets before they can be required by
+			// other sourceAdnConverters
+			// Serializes datasets - required to avoid serialization issues
+			Set<AbstractSpimData<?>> asds = SourceAndConverterServices
+				.getSourceAndConverterService().getSpimDatasets();
 
-            // Avoid unnecessary serialization of unneeded spimdata
-            asds = asds.stream()
-                .filter(asd -> {
-                    List<SourceAndConverter<?>> sacs_in_asd = SourceAndConverterServices
-                            .getSourceAndConverterService()
-                            .getSourceAndConverterFromSpimdata(asd);
-                    return sacs_in_asd.stream()
-                            .anyMatch(sac -> sacs.contains(sac));
-                }).collect(Collectors.toSet());
+			// Avoid unnecessary serialization of unneeded spimdata
+			asds = asds.stream().filter(asd -> {
+				List<SourceAndConverter<?>> sacs_in_asd = SourceAndConverterServices
+					.getSourceAndConverterService().getSourceAndConverterFromSpimdata(
+						asd);
+				return sacs_in_asd.stream().anyMatch(sac -> sacs.contains(sac));
+			}).collect(Collectors.toSet());
 
-            asds.forEach(gson::toJson);
+			asds.forEach(gson::toJson);
 
-            try {
-                logger.info("Writing state file "+f.getAbsolutePath());
-                FileWriter writer = new FileWriter(f.getAbsolutePath());
-                gson.toJson(sacs, writer);
-                writer.flush();
-                writer.close();
-            } catch (Exception e) {
-                logger.error("Couldn't write state file: "+e.getMessage());
-                e.printStackTrace();
-            }
-        }
-    }
+			try {
+				logger.info("Writing state file " + f.getAbsolutePath());
+				FileWriter writer = new FileWriter(f.getAbsolutePath());
+				gson.toJson(sacs, writer);
+				writer.flush();
+				writer.close();
+			}
+			catch (Exception e) {
+				logger.error("Couldn't write state file: " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	}
 
 }

@@ -26,38 +26,39 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package net.imglib2.realtransform;
 
 import org.scijava.plugin.Plugin;
 import sc.fiji.persist.IClassRuntimeAdapter;
 
 /**
- * Serializes and deserializes {@link InvertibleRealTransformSequence} object
- *
- * As long as each individual {@link RealTransform} object present in the sequence can be
- * serialized, and implements {@link InvertibleRealTransform},
- * the sequence should be serialized successfully
- *
- * This adapter is located in this package in order to access the protected
- * {@link InvertibleRealTransformSequence#transforms} field
- * of an {@link InvertibleRealTransformSequence}
+ * Serializes and deserializes {@link InvertibleRealTransformSequence} object As
+ * long as each individual {@link RealTransform} object present in the sequence
+ * can be serialized, and implements {@link InvertibleRealTransform}, the
+ * sequence should be serialized successfully This adapter is located in this
+ * package in order to access the protected
+ * {@link InvertibleRealTransformSequence#transforms} field of an
+ * {@link InvertibleRealTransformSequence}
  */
 @Plugin(type = IClassRuntimeAdapter.class)
-public class InvertibleRealTransformSequenceRunTimeAdapter implements IClassRuntimeAdapter<RealTransform, InvertibleRealTransformSequence> {
+public class InvertibleRealTransformSequenceRunTimeAdapter implements
+	IClassRuntimeAdapter<RealTransform, InvertibleRealTransformSequence>
+{
 
-    @Override
-    public Class<? extends RealTransform> getBaseClass() {
-        return RealTransform.class;
-    }
+	@Override
+	public Class<? extends RealTransform> getBaseClass() {
+		return RealTransform.class;
+	}
 
-    @Override
-    public Class<? extends InvertibleRealTransformSequence> getRunTimeClass() {
-        return InvertibleRealTransformSequence.class;
-    }
+	@Override
+	public Class<? extends InvertibleRealTransformSequence> getRunTimeClass() {
+		return InvertibleRealTransformSequence.class;
+	}
 
-    @Override
-    public boolean useCustomAdapter() {
-        return false;
-    }
+	@Override
+	public boolean useCustomAdapter() {
+		return false;
+	}
 
 }

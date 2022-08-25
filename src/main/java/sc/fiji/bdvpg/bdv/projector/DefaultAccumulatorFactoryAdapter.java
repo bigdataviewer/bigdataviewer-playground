@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.bdv.projector;
 
 import bdv.viewer.render.AccumulateProjectorARGB;
@@ -34,26 +35,29 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.persist.IClassRuntimeAdapter;
 
 /**
- * For serialization of {@link  AccumulateProjectorARGB.Factory} objects
- * Because the standard factory is not serializable
+ * For serialization of {@link AccumulateProjectorARGB.Factory} objects Because
+ * the standard factory is not serializable
  */
 
 @Plugin(type = IClassRuntimeAdapter.class)
-public class DefaultAccumulatorFactoryAdapter implements IClassRuntimeAdapter<AccumulateProjectorFactory, AccumulateProjectorARGB.Factory> {
-    // TODO : Fix
-    @Override
-    public Class<? extends AccumulateProjectorFactory> getBaseClass() {
-        return AccumulateProjectorFactory.class;
-    }
+public class DefaultAccumulatorFactoryAdapter implements
+	IClassRuntimeAdapter<AccumulateProjectorFactory, AccumulateProjectorARGB.Factory>
+{
 
-    @Override
-    public Class<? extends AccumulateProjectorARGB.Factory> getRunTimeClass() {
-        return AccumulateProjectorARGB.Factory.class;
-    }
+	// TODO : Fix
+	@Override
+	public Class<? extends AccumulateProjectorFactory> getBaseClass() {
+		return AccumulateProjectorFactory.class;
+	}
 
-    @Override
-    public boolean useCustomAdapter() {
-        return false;
-    }
+	@Override
+	public Class<? extends AccumulateProjectorARGB.Factory> getRunTimeClass() {
+		return AccumulateProjectorARGB.Factory.class;
+	}
+
+	@Override
+	public boolean useCustomAdapter() {
+		return false;
+	}
 
 }

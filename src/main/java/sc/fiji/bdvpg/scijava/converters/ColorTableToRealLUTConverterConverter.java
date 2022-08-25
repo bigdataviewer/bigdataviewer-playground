@@ -26,32 +26,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.converters;
 
 import net.imglib2.converter.Converter;
 import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.display.ColorTable;
-import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.type.numeric.RealType;
 import org.scijava.convert.AbstractConverter;
 import org.scijava.plugin.Plugin;
 
 @Plugin(type = org.scijava.convert.Converter.class)
-public class ColorTableToRealLUTConverterConverter<R extends RealType< R >, I extends ColorTable, O extends Converter> extends AbstractConverter<I, O> {
+public class ColorTableToRealLUTConverterConverter<I extends ColorTable, O extends Converter>
+	extends AbstractConverter<I, O>
+{
 
-    @Override
-    public <O> O convert(Object src, Class<O> dest) {
-        ColorTable ct = (ColorTable) src;
-        return (O) new RealLUTConverter<>(0,255,ct);
-    }
+	@Override
+	public <O> O convert(Object src, Class<O> dest) {
+		ColorTable ct = (ColorTable) src;
+		return (O) new RealLUTConverter<>(0, 255, ct);
+	}
 
-    @Override
-    public Class<O> getOutputType() {
-        return (Class<O>) RealLUTConverter.class;
-    }
+	@Override
+	public Class<O> getOutputType() {
+		return (Class<O>) RealLUTConverter.class;
+	}
 
-    @Override
-    public Class<I> getInputType() {
-        return (Class<I>) ColorTable.class;
-    }
+	@Override
+	public Class<I> getInputType() {
+		return (Class<I>) ColorTable.class;
+	}
 }

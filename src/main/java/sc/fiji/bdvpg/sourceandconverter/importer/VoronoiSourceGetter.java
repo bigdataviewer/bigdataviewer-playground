@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.sourceandconverter.importer;
 
 import bdv.util.RandomAccessibleIntervalSource;
@@ -48,145 +49,158 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class VoronoiSourceGetter implements Runnable, Supplier<SourceAndConverter<?>> {
+public class VoronoiSourceGetter implements Runnable,
+	Supplier<SourceAndConverter<?>>
+{
 
-    // Size of the image in pixels
-    final long[] imgSize;
-    // Number of random points that will define voronoi cells
-    final int numPts;
-    // Flags if the image should be computed completely
-    final boolean copyImg;
+	// Size of the image in pixels
+	final long[] imgSize;
+	// Number of random points that will define voronoi cells
+	final int numPts;
+	// Flags if the image should be computed completely
+	final boolean copyImg;
 
-    public VoronoiSourceGetter(final long[] imgSize, int numPts, boolean copyImg) {
-        this.imgSize = imgSize;
-        this.numPts = numPts;
-        this.copyImg = copyImg;
-    }
+	public VoronoiSourceGetter(final long[] imgSize, int numPts,
+		boolean copyImg)
+	{
+		this.imgSize = imgSize;
+		this.numPts = numPts;
+		this.copyImg = copyImg;
+	}
 
-    public void run() {
-        // Useless
-    }
+	public void run() {
+		// Useless
+	}
 
-    @Override
-    public SourceAndConverter<FloatType> get() {
-        RandomAccessibleInterval<FloatType> voronoi = getVoronoiTestLabelImage(imgSize, numPts, copyImg);
-        Source<FloatType> s = new RandomAccessibleIntervalSource<>( voronoi, new FloatType(), new AffineTransform3D(), "Voronoi_"+numPts+" Pts_["+imgSize[0]+","+imgSize[1]+","+imgSize[2]+"]" );
-        return SourceAndConverterHelper.createSourceAndConverter(s);
-    }
+	@Override
+	public SourceAndConverter<FloatType> get() {
+		RandomAccessibleInterval<FloatType> voronoi = getVoronoiTestLabelImage(
+			imgSize, numPts, copyImg);
+		Source<FloatType> s = new RandomAccessibleIntervalSource<>(voronoi,
+			new FloatType(), new AffineTransform3D(), "Voronoi_" + numPts + " Pts_[" +
+				imgSize[0] + "," + imgSize[1] + "," + imgSize[2] + "]");
+		return SourceAndConverterHelper.createSourceAndConverter(s);
+	}
 
-    public static RandomAccessibleInterval<FloatType> getVoronoiTestLabelImage(final long[] imgTestSize, int numPts, boolean copyImg) {
+	public static RandomAccessibleInterval<FloatType> getVoronoiTestLabelImage(
+		final long[] imgTestSize, int numPts, boolean copyImg)
+	{
 
-        // the interval in which to create random points
-        FinalInterval interval = new FinalInterval( imgTestSize );
+		// the interval in which to create random points
+		FinalInterval interval = new FinalInterval(imgTestSize);
 
-        // create an IterableRealInterval
-        IterableRealInterval< FloatType > realInterval = createRandomPoints( interval, numPts );
+		// create an IterableRealInterval
+		IterableRealInterval<FloatType> realInterval = createRandomPoints(interval,
+			numPts);
 
-        // using nearest neighbor search we will be able to return a value an any position in space
-        NearestNeighborSearch< FloatType > search =
-                new NearestNeighborSearchOnKDTree<>(
-                        new KDTree<>( realInterval ) );
+		// using nearest neighbor search we will be able to return a value an any
+		// position in space
+		NearestNeighborSearch<FloatType> search =
+			new NearestNeighborSearchOnKDTree<>(new KDTree<>(realInterval));
 
-        // make it into RealRandomAccessible using nearest neighbor search
-        RealRandomAccessible< FloatType > realRandomAccessible =
-                Views.interpolate( search, new NearestNeighborSearchInterpolatorFactory<>() );
+		// make it into RealRandomAccessible using nearest neighbor search
+		RealRandomAccessible<FloatType> realRandomAccessible = Views.interpolate(
+			search, new NearestNeighborSearchInterpolatorFactory<>());
 
-        // convert it into a RandomAccessible which can be displayed
-        RandomAccessible< FloatType > randomAccessible = Views.raster( realRandomAccessible );
+		// convert it into a RandomAccessible which can be displayed
+		RandomAccessible<FloatType> randomAccessible = Views.raster(
+			realRandomAccessible);
 
-        // set the initial interval as area to view
-        RandomAccessibleInterval< FloatType > labelImage = Views.interval( randomAccessible, interval );
+		// set the initial interval as area to view
+		RandomAccessibleInterval<FloatType> labelImage = Views.interval(
+			randomAccessible, interval);
 
-        if (copyImg) {
-            final ArrayImg<FloatType,?> labelImageCopy = new ArrayImgFactory( Util.getTypeFromInterval( labelImage ) ).create( labelImage );
+		if (copyImg) {
+			final ArrayImg<FloatType, ?> labelImageCopy = new ArrayImgFactory(Util
+				.getTypeFromInterval(labelImage)).create(labelImage);
 
-            // Image copied to avoid computing it on the fly
-            // https://github.com/imglib/imglib2-algorithm/blob/47cd6ed5c97cca4b316c92d4d3260086a335544d/src/main/java/net/imglib2/algorithm/util/Grids.java#L221 used for parallel copy
+			// Image copied to avoid computing it on the fly
+			// https://github.com/imglib/imglib2-algorithm/blob/47cd6ed5c97cca4b316c92d4d3260086a335544d/src/main/java/net/imglib2/algorithm/util/Grids.java#L221
+			// used for parallel copy
 
-            Grids.collectAllContainedIntervals(imgTestSize, new int[]{64, 64, 64})
-                    .forEach(blockinterval -> copy(labelImage, Views.interval(labelImageCopy, blockinterval)));
+			Grids.collectAllContainedIntervals(imgTestSize, new int[] { 64, 64, 64 })
+				.forEach(blockinterval -> copy(labelImage, Views.interval(
+					labelImageCopy, blockinterval)));
 
-            // Alternative non parallel copy
-            //LoopBuilder.setImages(labelImage, labelImageCopy).forEachPixel(Type::set);
-            return labelImageCopy;
+			// Alternative non parallel copy
+			// LoopBuilder.setImages(labelImage,
+			// labelImageCopy).forEachPixel(Type::set);
+			return labelImageCopy;
 
-        } else {
+		}
+		else {
 
-            return labelImage;
-        }
-    }
+			return labelImage;
+		}
+	}
 
-    /**
-     * Copy from a {@link SourceAndConverter} that is just RandomAccessible to an IterableInterval. Latter one defines
-     * size and location of the copy operation. It will query the same pixel locations of the
-     * IterableInterval in the RandomAccessible. It is up to the developer to ensure that these
-     * coordinates match.
-     *
-     * Note that both, input and output could be Views, Img or anything that implements
-     * those interfaces.
-     *
-     * @param source - a RandomAccess as sourceandconverter that can be infinite
-     * @param target - an IterableInterval as target
-     * @param <T> - type the accessed values
-     */
-    public static < T extends Type< T >> void copy(final RandomAccessible< T > source,
-                                                   final IterableInterval< T > target )
-    {
-        // create a cursor that automatically localizes itself on every move
-        Cursor< T > targetCursor = target.localizingCursor();
-        RandomAccess< T > sourceRandomAccess = source.randomAccess();
+	/**
+	 * Copy from a {@link SourceAndConverter} that is just RandomAccessible to an
+	 * IterableInterval. Latter one defines size and location of the copy
+	 * operation. It will query the same pixel locations of the IterableInterval
+	 * in the RandomAccessible. It is up to the developer to ensure that these
+	 * coordinates match. Note that both, input and output could be Views, Img or
+	 * anything that implements those interfaces.
+	 *
+	 * @param source - a RandomAccess as sourceandconverter that can be infinite
+	 * @param target - an IterableInterval as target
+	 * @param <T> - type the accessed values
+	 */
+	public static <T extends Type<T>> void copy(final RandomAccessible<T> source,
+		final IterableInterval<T> target)
+	{
+		// create a cursor that automatically localizes itself on every move
+		Cursor<T> targetCursor = target.localizingCursor();
+		RandomAccess<T> sourceRandomAccess = source.randomAccess();
 
-        // iterate over the input cursor
-        while ( targetCursor.hasNext())
-        {
-            // move input cursor forward
-            targetCursor.fwd();
+		// iterate over the input cursor
+		while (targetCursor.hasNext()) {
+			// move input cursor forward
+			targetCursor.fwd();
 
-            // set the output cursor to the position of the input cursor
-            sourceRandomAccess.setPosition( targetCursor );
+			// set the output cursor to the position of the input cursor
+			sourceRandomAccess.setPosition(targetCursor);
 
-            // set the value of this pixel of the output image, every Type supports T.set( T type )
-            targetCursor.get().set( sourceRandomAccess.get() );
-        }
+			// set the value of this pixel of the output image, every Type supports
+			// T.set( T type )
+			targetCursor.get().set(sourceRandomAccess.get());
+		}
 
-    }
+	}
 
-    /**
-     * Create a number of n-dimensional random points in a certain interval
-     * having a random intensity 0...1
-     *
-     * @param interval - the interval in which points are created
-     * @param numPoints - the amount of points
-     *
-     * @return a RealPointSampleList (which is an IterableRealInterval)
-     */
-    public static RealPointSampleList< FloatType > createRandomPoints(
-            RealInterval interval, int numPoints )
-    {
-        // the number of dimensions
-        int numDimensions = interval.numDimensions();
+	/**
+	 * Create a number of n-dimensional random points in a certain interval having
+	 * a random intensity 0...1
+	 *
+	 * @param interval - the interval in which points are created
+	 * @param numPoints - the amount of points
+	 * @return a RealPointSampleList (which is an IterableRealInterval)
+	 */
+	public static RealPointSampleList<FloatType> createRandomPoints(
+		RealInterval interval, int numPoints)
+	{
+		// the number of dimensions
+		int numDimensions = interval.numDimensions();
 
-        // a random number generator
-        Random rnd = new Random( 2001);//System.currentTimeMillis() );
+		// a random number generator
+		Random rnd = new Random(2001);// System.currentTimeMillis() );
 
-        // a list of Samples with coordinates
-        RealPointSampleList< FloatType > elements =
-                new RealPointSampleList<>( numDimensions );
+		// a list of Samples with coordinates
+		RealPointSampleList<FloatType> elements = new RealPointSampleList<>(
+			numDimensions);
 
-        for ( int i = 0; i < numPoints; ++i )
-        {
-            RealPoint point = new RealPoint( numDimensions );
+		for (int i = 0; i < numPoints; ++i) {
+			RealPoint point = new RealPoint(numDimensions);
 
-            for ( int d = 0; d < numDimensions; ++d )
-                point.setPosition( rnd.nextDouble() *
-                        ( interval.realMax( d ) - interval.realMin( d ) ) + interval.realMin( d ), d );
+			for (int d = 0; d < numDimensions; ++d)
+				point.setPosition(rnd.nextDouble() * (interval.realMax(d) - interval
+					.realMin(d)) + interval.realMin(d), d);
 
-            // add a new element with a random intensity in the range 0...1
-            elements.add( point, new FloatType( rnd.nextFloat()*255 ) );
-        }
+			// add a new element with a random intensity in the range 0...1
+			elements.add(point, new FloatType(rnd.nextFloat() * 255));
+		}
 
-        return elements;
-    }
-
+		return elements;
+	}
 
 }

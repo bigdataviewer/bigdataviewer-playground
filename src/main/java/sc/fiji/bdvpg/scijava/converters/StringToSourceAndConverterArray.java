@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.converters;
 
 import bdv.viewer.SourceAndConverter;
@@ -36,36 +37,42 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import javax.swing.tree.TreePath;
 
-
 /**
  * TODO : allows multiple Paths split by a character ? Not sure it's fool proof
+ * 
  * @param <I> String class TODO understand this
  */
 
+@SuppressWarnings("unused")
 @Plugin(type = org.scijava.convert.Converter.class)
-public class StringToSourceAndConverterArray<I extends String> extends AbstractConverter<I, SourceAndConverter<?>[]> {
+public class StringToSourceAndConverterArray<I extends String> extends
+	AbstractConverter<I, SourceAndConverter<?>[]>
+{
 
-    @Parameter
-    SourceAndConverterService sacsService;
+	@Parameter
+	SourceAndConverterService sacsService;
 
-    @Override
-    public <T> T convert(Object src, Class<T> dest) {
-        String str = (String) src;
-        TreePath tp = sacsService.getUI().getTreePathFromString(str);
-        if (tp!=null) {
-            return (T) sacsService.getUI().getSourceAndConvertersFromTreePath(tp).toArray(new SourceAndConverter[0]);//sacsService.getUI().getSourceAndConvertersFromTreePath(tp).toArray(new SourceAndConverter[0]);
-        } else {
-            return null;
-        }
-    }
+	@Override
+	public <T> T convert(Object src, Class<T> dest) {
+		String str = (String) src;
+		TreePath tp = sacsService.getUI().getTreePathFromString(str);
+		if (tp != null) {
+			return (T) sacsService.getUI().getSourceAndConvertersFromTreePath(tp)
+				.toArray(new SourceAndConverter[0]);// sacsService.getUI().getSourceAndConvertersFromTreePath(tp).toArray(new
+																						// SourceAndConverter[0]);
+		}
+		else {
+			return null;
+		}
+	}
 
-    @Override
-    public Class getOutputType() {
-        return SourceAndConverter[].class;
-    }
+	@Override
+	public Class getOutputType() {
+		return SourceAndConverter[].class;
+	}
 
-    @Override
-    public Class<I> getInputType() {
-        return (Class<I>) String.class;
-    }
+	@Override
+	public Class<I> getInputType() {
+		return (Class<I>) String.class;
+	}
 }

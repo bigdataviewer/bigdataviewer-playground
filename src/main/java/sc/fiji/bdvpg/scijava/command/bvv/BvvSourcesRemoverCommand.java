@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.bvv;
 
 import bdv.viewer.SourceAndConverter;
@@ -35,22 +36,25 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BVV>BVV - Remove Sources From BVV",
-        description = "Removes one or several sources from an existing BVV window")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "BVV>BVV - Remove Sources From BVV",
+	description = "Removes one or several sources from an existing BVV window")
 public class BvvSourcesRemoverCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter
-    BvvHandle bvvh;
+	@Parameter
+	BvvHandle bvvh;
 
-    @Parameter(label="Select Source(s)")
-    SourceAndConverter<?>[] sacs;
+	@Parameter(label = "Select Source(s)")
+	SourceAndConverter<?>[] sacs;
 
-    @Override
-    public void run() {
-        for (SourceAndConverter<?> sac : sacs) {
-            bvvh.getViewerPanel().state().removeSource(sac);
-        }
-    }
+	@Override
+	public void run() {
+		for (SourceAndConverter<?> sac : sacs) {
+			bvvh.getViewerPanel().state().removeSource(sac);
+		}
+	}
 }

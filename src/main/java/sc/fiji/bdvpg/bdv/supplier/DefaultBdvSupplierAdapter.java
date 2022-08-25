@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.bdv.supplier;
 
 import org.scijava.plugin.Plugin;
@@ -36,21 +37,23 @@ import sc.fiji.persist.IClassRuntimeAdapter;
  */
 
 @Plugin(type = IClassRuntimeAdapter.class)
-public class DefaultBdvSupplierAdapter implements IClassRuntimeAdapter<IBdvSupplier, DefaultBdvSupplier> {
+public class DefaultBdvSupplierAdapter implements
+	IClassRuntimeAdapter<IBdvSupplier, DefaultBdvSupplier>
+{
 
-    @Override
-    public Class<? extends IBdvSupplier> getBaseClass() {
-        return IBdvSupplier.class;
-    }
+	@Override
+	public Class<? extends IBdvSupplier> getBaseClass() {
+		return IBdvSupplier.class;
+	}
 
-    @Override
-    public Class<? extends DefaultBdvSupplier> getRunTimeClass() {
-        return DefaultBdvSupplier.class;
-    }
+	@Override
+	public Class<? extends DefaultBdvSupplier> getRunTimeClass() {
+		return DefaultBdvSupplier.class;
+	}
 
-    @Override
-    public boolean useCustomAdapter() {
-        return false;
-    }
+	@Override
+	public boolean useCustomAdapter() {
+		return false;
+	}
 
 }

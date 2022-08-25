@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
@@ -38,49 +39,57 @@ import sc.fiji.bdvpg.sourceandconverter.exporter.XmlHDF5SpimdataExporter;
 import java.io.File;
 import java.util.Arrays;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Export Sources to XML/HDF5 Spimdataset")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"Sources>Export Sources to XML/HDF5 Spimdataset")
 public class XmlHDF5ExporterCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(label = "Select Source(s)")
-    SourceAndConverter<?>[] sacs;
+	@Parameter(label = "Select Source(s)")
+	SourceAndConverter<?>[] sacs;
 
-    @Parameter(label = "Each source is an independent", choices = {"Channel", "Tile"})
-    String entitytype;
+	@Parameter(label = "Each source is an independent", choices = { "Channel",
+		"Tile" })
+	String entitytype;
 
-    @Parameter(label="# of Threads")
-    int nthreads = 4;
+	@Parameter(label = "# of Threads")
+	int nthreads = 4;
 
-    @Parameter(label="Timepoint start (0 = first timepoint)")
-    int timepointbegin = 0;
+	@Parameter(label = "Timepoint start (0 = first timepoint)")
+	int timepointbegin = 0;
 
-    @Parameter(label="Number of timepoint to export (minimum 1)", min = "1")
-    int numberoftimepointtoexport = 1;
-    int timepointend = -1;
+	@Parameter(label = "Number of timepoint to export (minimum 1)", min = "1")
+	int numberoftimepointtoexport = 1;
+	int timepointend = -1;
 
-    @Parameter(label = "Scale factor between pyramid levels")
-    int scalefactor = 4;
+	@Parameter(label = "Scale factor between pyramid levels")
+	int scalefactor = 4;
 
-    @Parameter
-    int blocksizex = 64;
+	@Parameter
+	int blocksizex = 64;
 
-    @Parameter
-    int blocksizey = 64;
+	@Parameter
+	int blocksizey = 64;
 
-    @Parameter
-    int blocksizez = 64;
+	@Parameter
+	int blocksizez = 64;
 
-    @Parameter(label = "Dimensions in pixel above which a new resolution level should be created")
-    int thresholdformipmap = 512;
+	@Parameter(
+		label = "Dimensions in pixel above which a new resolution level should be created")
+	int thresholdformipmap = 512;
 
-    @Parameter(label="Output file (XML)", style = "save")
-    File xmlfile;
+	@Parameter(label = "Output file (XML)", style = "save")
+	File xmlfile;
 
-    @Override
-    public void run() {
-        timepointend = timepointbegin + numberoftimepointtoexport;
-        new XmlHDF5SpimdataExporter(Arrays.asList(sacs), entitytype, nthreads, timepointbegin, timepointend, scalefactor, blocksizex, blocksizey, blocksizez, thresholdformipmap, xmlfile).run();
-    }
+	@Override
+	public void run() {
+		timepointend = timepointbegin + numberoftimepointtoexport;
+		new XmlHDF5SpimdataExporter(Arrays.asList(sacs), entitytype, nthreads,
+			timepointbegin, timepointend, scalefactor, blocksizex, blocksizey,
+			blocksizez, thresholdformipmap, xmlfile).run();
+	}
 
 }

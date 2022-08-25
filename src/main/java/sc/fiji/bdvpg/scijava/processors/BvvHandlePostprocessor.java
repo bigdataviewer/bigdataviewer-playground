@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.processors;
 
 import bvv.util.BvvHandle;
@@ -39,52 +40,46 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-
-import java.util.function.Consumer;
 
 /**
- * Ensures BdvHandle is stored into ObjectService
- * and all containing Sources as well are stored into the BdvSourceAndConverterDisplayService and
- * BdvSourceAndConverterService
- * Also fix BDV Close operation
+ * Ensures BdvHandle is stored into ObjectService and all containing Sources as
+ * well are stored into the BdvSourceAndConverterDisplayService and
+ * BdvSourceAndConverterService Also fix BDV Close operation
  */
-
+@SuppressWarnings("unused")
 @Plugin(type = PostprocessorPlugin.class)
 public class BvvHandlePostprocessor extends AbstractPostprocessorPlugin {
 
-    protected static final Logger logger = LoggerFactory.getLogger(BvvHandlePostprocessor.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		BvvHandlePostprocessor.class);
 
-    @Parameter
-    SourceAndConverterBdvDisplayService bsds;
+	@Parameter
+	ObjectService os;
 
-    @Parameter
-    ObjectService os;
+	@Parameter
+	GuavaWeakCacheService cacheService;
 
-    @Parameter
-    GuavaWeakCacheService cacheService;
+	@Override
+	public void process(Module module) {
 
-    public static final Consumer<String> log = logger::debug;
+		module.getOutputs().forEach((name, object) -> {
+			if (object instanceof BvvHandle) {
+				BvvHandle bvvh = (BvvHandle) object;
+				logger.debug("BvvHandle " + name + " found.");
+				// ------------ Register BdvHandle in ObjectService
+				os.addObject(bvvh);
+				// ------------ Allows to remove the BdvHandle from the objectService
+				// when closed by the user
+				BvvHandleHelper.setBvvHandleCloseOperation(bvvh, cacheService, os,
+					true);
+				// ------------ Renames window to ensure uniqueness
+				String windowTitle = BvvHandleHelper.getWindowTitle(bvvh);
+				windowTitle = BvvHandleHelper.getUniqueWindowTitle(os, windowTitle);
+				BvvHandleHelper.setWindowTitle(bvvh, windowTitle);
+				module.resolveOutput(name);
+			}
+		});
 
-    @Override
-    public void process(Module module) {
-
-        module.getOutputs().forEach((name, object)-> {
-            if (object instanceof BvvHandle) {
-                BvvHandle bvvh = (BvvHandle) object;
-                log.accept("BdvHandle found.");
-                //------------ Register BdvHandle in ObjectService
-                os.addObject(bvvh);
-                //------------ Allows to remove the BdvHandle from the objectService when closed by the user
-                BvvHandleHelper.setBvvHandleCloseOperation(bvvh, cacheService,  os, bsds, true);
-                //------------ Renames window to ensure uniqueness
-                String windowTitle = BvvHandleHelper.getWindowTitle(bvvh);
-                windowTitle = BvvHandleHelper.getUniqueWindowTitle(os, windowTitle);
-                BvvHandleHelper.setWindowTitle(bvvh, windowTitle);
-                module.resolveOutput(name);
-            }
-        });
-
-    }
+	}
 
 }

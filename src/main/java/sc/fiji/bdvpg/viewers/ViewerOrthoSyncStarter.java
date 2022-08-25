@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.viewers;
 
 import bdv.viewer.TimePointListener;
@@ -39,322 +40,313 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * BigDataViewer Playground Action --
- * Action which synchronizes the display location of 3 {@link BvvHandle}
- *
- * Works in combination with the action {@link ViewerTransformSyncStopper}
- *
- *
- * Principle : for every changed view transform of a specific BdvHandle,
- * the view transform change is triggered to the following BdvHandle in a closed loop manner
- *
- * Each transform is passed to next one by rolling the axes so that 3 swaps lead to an identical transform:
- *
- * // For ortho view : switches axis:
- * //  X, Y, Z (bdvHandle[0])
- * //  X,-Z, Y (bdvHandle[1]) Right View
- * // -Z, Y, X (bdvHandle[2]) Bottom View
+ * BigDataViewer Playground Action -- Action which synchronizes the display
+ * location of 3 {@link BvvHandle} Works in combination with the action
+ * {@link ViewerTransformSyncStopper} Principle : for every changed view
+ * transform of a specific BdvHandle, the view transform change is triggered to
+ * the following BdvHandle in a closed loop manner Each transform is passed to
+ * next one by rolling the axes so that 3 swaps lead to an identical transform:
+ * // For ortho view : switches axis: // X, Y, Z (bdvHandle[0]) // X,-Z, Y
+ * (bdvHandle[1]) Right View // -Z, Y, X (bdvHandle[2]) Bottom View
  * <p>
- * This transformation chains maintains the center of the window in global coordinates constant
+ * This transformation chains maintains the center of the window in global
+ * coordinates constant
  * <p>
- * To avoid infinite loop, the stop condition is : if the view transform is unnecessary (i.e.
- * the target viewTransform is approximately equal
- * to the source viewTransform), then there's no need to trigger a view transform change to the next BdvHandle
- *
- * See OrthoViewDemo for a usage example
+ * To avoid infinite loop, the stop condition is : if the view transform is
+ * unnecessary (i.e. the target viewTransform is approximately equal to the
+ * source viewTransform), then there's no need to trigger a view transform
+ * change to the next BdvHandle See OrthoViewDemo for a usage example
  *
  * @author Nicolas Chiaruttini, BIOP EPFL, nicolas.chiaruttini@epfl.ch
  */
 
 public class ViewerOrthoSyncStarter implements Runnable {
 
-    /**
-     * Array of BdvHandles to synchronize
-     */
-    final ViewerAdapter[] handles = new ViewerAdapter[3]; // Front Right Bottom
+	/**
+	 * Array of BdvHandles to synchronize
+	 */
+	final ViewerAdapter[] handles = new ViewerAdapter[3]; // Front Right Bottom
 
-    /**
-     * Reference to the BdvHandle which will serve as a reference for the
-     * first synchronization. Most of the time this has to be the BdvHandle
-     * currently used by the user. If not set, the first synchronization
-     * will look like it's a random BdvHandle which is used (one not in focus)
-     */
-    ViewerAdapter handleInitialReference = null;
+	/**
+	 * Reference to the BdvHandle which will serve as a reference for the first
+	 * synchronization. Most of the time this has to be the BdvHandle currently
+	 * used by the user. If not set, the first synchronization will look like it's
+	 * a random BdvHandle which is used (one not in focus)
+	 */
+	ViewerAdapter handleInitialReference = null;
 
-    /**
-     * Map which links each BdvHandle to the TransformListener which has been added
-     * for synchronization purpose. This object contains all what's needed to stop
-     * the synchronization, required in {@link ViewerTransformSyncStopper}
-     */
-    final Map<ViewerAdapter, TransformListener<AffineTransform3D>> handleToTransformListener = new HashMap<>();
+	/**
+	 * Map which links each BdvHandle to the TransformListener which has been
+	 * added for synchronization purpose. This object contains all what's needed
+	 * to stop the synchronization, required in {@link ViewerTransformSyncStopper}
+	 */
+	final Map<ViewerAdapter, TransformListener<AffineTransform3D>> handleToTransformListener =
+		new HashMap<>();
 
-    /**
-     * Optional time synchronization between BdvHandles
-     */
-    final boolean synchronizeTime;
+	/**
+	 * Optional time synchronization between BdvHandles
+	 */
+	final boolean synchronizeTime;
 
-    /**
-     * Map which links each BdvHandle to the TimePointListener which has been added
-     * for synchronization purpose. This object contains all what's needed to stop
-     * the synchronization, required in {@link ViewerTransformSyncStopper}
-     */
-    final Map<ViewerAdapter, TimePointListener> handleToTimeListener = new HashMap<>();
+	/**
+	 * Map which links each BdvHandle to the TimePointListener which has been
+	 * added for synchronization purpose. This object contains all what's needed
+	 * to stop the synchronization, required in {@link ViewerTransformSyncStopper}
+	 */
+	final Map<ViewerAdapter, TimePointListener> handleToTimeListener =
+		new HashMap<>();
 
-    public ViewerOrthoSyncStarter(ViewerAdapter handleX, ViewerAdapter handleY, ViewerAdapter handleZ, boolean syncTime) {
-        this.handles[0] = handleX;
-        this.handles[1] = handleY;
-        this.handles[2] = handleZ;
-        this.synchronizeTime = syncTime;
-    }
+	public ViewerOrthoSyncStarter(ViewerAdapter handleX, ViewerAdapter handleY,
+		ViewerAdapter handleZ, boolean syncTime)
+	{
+		this.handles[0] = handleX;
+		this.handles[1] = handleY;
+		this.handles[2] = handleZ;
+		this.synchronizeTime = syncTime;
+	}
 
-    public void setHandleInitialReference(ViewerAdapter handle) {
-        handleInitialReference = handle;
-    }
+	public void setHandleInitialReference(ViewerAdapter handle) {
+		handleInitialReference = handle;
+	}
 
-    @Override
-    public void run() {
+	@Override
+	public void run() {
 
-        // Getting transform for initial sync
-        AffineTransform3D at3Dorigin = getViewTransformForInitialSynchronization();
+		// Getting transform for initial sync
+		AffineTransform3D at3Dorigin = getViewTransformForInitialSynchronization();
 
-        // Building circularly linked listeners with stop condition when all transforms are equal,
-        // cf javadoc
-        // Building the TransformListener of currentBdvHandle
-        TransformListener<AffineTransform3D> listener;
+		// Building circularly linked listeners with stop condition when all
+		// transforms are equal,
+		// cf javadoc
+		// Building the TransformListener of currentBdvHandle
+		TransformListener<AffineTransform3D> listener;
 
+		// Adding this transform listener to the current BdvHandle
+		listener = (at3D) -> propagateTransformIfNecessary(at3D, handles[0],
+			handles[1], this::getRotatedView0);
 
-        // Adding this transform listener to the current BdvHandle
-        listener = (at3D) -> propagateTransformIfNecessary(at3D,
-                handles[0],
-                handles[1],
-                this::getRotatedView0);
+		handles[0].addTransformListener(listener);
+		handleToTransformListener.put(handles[0], listener);
 
-        handles[0].addTransformListener(listener);
-        handleToTransformListener.put(handles[0], listener);
+		listener = (at3D) -> propagateTransformIfNecessary(at3D, handles[1],
+			handles[2], this::getRotatedView1);
 
-        listener = (at3D) -> propagateTransformIfNecessary(at3D,
-                handles[1],
-                handles[2],
-                this::getRotatedView1);
+		handles[1].addTransformListener(listener);
+		handleToTransformListener.put(handles[1], listener);
 
-        handles[1].addTransformListener(listener);
-        handleToTransformListener.put(handles[1], listener);
+		listener = (at3D) -> propagateTransformIfNecessary(at3D, handles[2],
+			handles[0], this::getRotatedView2);
+		handles[2].addTransformListener(listener);
+		handleToTransformListener.put(handles[2], listener);
 
-        listener = (at3D) -> propagateTransformIfNecessary(at3D,
-                handles[2],
-                handles[0],
-                this::getRotatedView2);
-        handles[2].addTransformListener(listener);
-        handleToTransformListener.put(handles[2], listener);
+		if (synchronizeTime) {
+			TimePointListener timeListener;
+			timeListener = (timepoint) -> {
+				if (handles[1].state().getCurrentTimepoint() != timepoint) handles[1]
+					.setTimepoint(timepoint);
+			};
 
-        if (synchronizeTime) {
-            TimePointListener timeListener;
-            timeListener = (timepoint) -> {
-                if (handles[1].state().getCurrentTimepoint() != timepoint)
-                    handles[1].setTimepoint(timepoint);
-            };
+			handles[0].addTimePointListener(timeListener);
+			handleToTimeListener.put(handles[0], timeListener);
 
-            handles[0].addTimePointListener(timeListener);
-            handleToTimeListener.put(handles[0], timeListener);
+			timeListener = (timepoint) -> {
+				if (handles[2].state().getCurrentTimepoint() != timepoint) handles[2]
+					.setTimepoint(timepoint);
+			};
 
-            timeListener = (timepoint) -> {
-                if (handles[2].state().getCurrentTimepoint() != timepoint)
-                    handles[2].setTimepoint(timepoint);
-            };
+			handles[1].addTimePointListener(timeListener);
+			handleToTimeListener.put(handles[1], timeListener);
 
-            handles[1].addTimePointListener(timeListener);
-            handleToTimeListener.put(handles[1], timeListener);
+			timeListener = (timepoint) -> {
+				if (handles[0].state().getCurrentTimepoint() != timepoint) handles[0]
+					.setTimepoint(timepoint);
+			};
 
+			handles[2].addTimePointListener(timeListener);
+			handleToTimeListener.put(handles[2], timeListener);
+		}
 
-            timeListener = (timepoint) -> {
-                if (handles[0].state().getCurrentTimepoint() != timepoint)
-                    handles[0].setTimepoint(timepoint);
-            };
+		// Setting first transform for initial synchronization,
+		// but only if the two necessary objects are present (the origin BvvHandle
+		// and the transform
+		if ((handleInitialReference != null) && (at3Dorigin != null)) {
+			for (ViewerAdapter handle : handles) {
+				handle.state().setViewerTransform(at3Dorigin.copy());
+				handle.requestRepaint();
+				if (synchronizeTime) {
+					handle.state().setCurrentTimepoint(handle.state()
+						.getCurrentTimepoint());
+				}
+			}
+		}
+	}
 
-            handles[2].addTimePointListener(timeListener);
-            handleToTimeListener.put(handles[2], timeListener);
-        }
+	void propagateTransformIfNecessary(AffineTransform3D at3D,
+		ViewerAdapter currentHandle, ViewerAdapter nextHandle,
+		Function<double[], double[]> rotator)
+	{
 
+		// Is the transform necessary ? That's the stop condition
 
-        // Setting first transform for initial synchronization,
-        // but only if the two necessary objects are present (the origin BvvHandle and the transform
-        if ((handleInitialReference != null) && (at3Dorigin != null)) {
-            for (ViewerAdapter handle : handles) {
-                handle.state().setViewerTransform(at3Dorigin.copy());
-                handle.requestRepaint();
-                if (synchronizeTime) {
-                    handle.state().setCurrentTimepoint(
-                            handle.state().getCurrentTimepoint()
-                    );
-                }
-            }
-        }
-    }
+		double cur_wcx = currentHandle.getWidth() / 2.0; // Current Window Center X
+		double cur_wcy = currentHandle.getHeight() / 2.0; // Current Window Center Y
 
-    void propagateTransformIfNecessary(AffineTransform3D at3D, ViewerAdapter currentHandle, ViewerAdapter nextHandle, Function<double[], double[]> rotator) {
+		RealPoint centerScreenCurrentBvv = new RealPoint(cur_wcx, cur_wcy, 0);
+		RealPoint centerScreenGlobalCoord = new RealPoint(3);
 
-        // Is the transform necessary ? That's the stop condition
+		at3D.inverse().apply(centerScreenCurrentBvv, centerScreenGlobalCoord);
 
-        double cur_wcx = currentHandle.getWidth() / 2.0; // Current Window Center X
-        double cur_wcy = currentHandle.getHeight() / 2.0; // Current Window Center Y
+		// Now compute what should be the matrix in the next BVV frame:
+		AffineTransform3D nextAffineTransform = new AffineTransform3D();
 
-        RealPoint centerScreenCurrentBvv = new RealPoint(cur_wcx, cur_wcy, 0);
-        RealPoint centerScreenGlobalCoord = new RealPoint(3);
+		// It should have the same scaling and rotation than the current view
+		nextAffineTransform.set(at3D);
 
-        at3D.inverse().apply(centerScreenCurrentBvv, centerScreenGlobalCoord);
+		// No Shift
+		nextAffineTransform.set(0, 0, 3);
+		nextAffineTransform.set(0, 1, 3);
+		nextAffineTransform.set(0, 2, 3);
 
-        // Now compute what should be the matrix in the next BVV frame:
-        AffineTransform3D nextAffineTransform = new AffineTransform3D();
+		// Rotates axis according to rotator
+		nextAffineTransform.set(rotator.apply(nextAffineTransform
+			.getRowPackedCopy()));
 
-        // It should have the same scaling and rotation than the current view
-        nextAffineTransform.set(at3D);
+		// But the center of the window should be centerScreenGlobalCoord
+		// Let's compute the shift
+		double next_wcx = nextHandle.getWidth() / 2.0; // Next Window Center X
+		double next_wcy = nextHandle.getHeight() / 2.0; // Next Window Center Y
 
-        // No Shift
-        nextAffineTransform.set(0, 0, 3);
-        nextAffineTransform.set(0, 1, 3);
-        nextAffineTransform.set(0, 2, 3);
+		RealPoint centerScreenNextBvv = new RealPoint(next_wcx, next_wcy, 0);
+		RealPoint shiftNextBvv = new RealPoint(3);
 
-        // Rotates axis according to rotator
-        nextAffineTransform.set(rotator.apply(nextAffineTransform.getRowPackedCopy()));
+		nextAffineTransform.inverse().apply(centerScreenNextBvv, shiftNextBvv);
 
-        // But the center of the window should be centerScreenGlobalCoord
-        // Let's compute the shift
-        double next_wcx = nextHandle.getWidth() / 2.0; // Next Window Center X
-        double next_wcy = nextHandle.getHeight() / 2.0; // Next Window Center Y
+		double sx = -centerScreenGlobalCoord.getDoublePosition(0) + shiftNextBvv
+			.getDoublePosition(0);
+		double sy = -centerScreenGlobalCoord.getDoublePosition(1) + shiftNextBvv
+			.getDoublePosition(1);
+		double sz = -centerScreenGlobalCoord.getDoublePosition(2) + shiftNextBvv
+			.getDoublePosition(2);
 
-        RealPoint centerScreenNextBvv = new RealPoint(next_wcx, next_wcy, 0);
-        RealPoint shiftNextBvv = new RealPoint(3);
+		RealPoint shiftWindow = new RealPoint(sx, sy, sz);
+		RealPoint shiftMatrix = new RealPoint(3);
+		nextAffineTransform.apply(shiftWindow, shiftMatrix);
 
-        nextAffineTransform.inverse().apply(centerScreenNextBvv, shiftNextBvv);
+		nextAffineTransform.set(shiftMatrix.getDoublePosition(0), 0, 3);
+		nextAffineTransform.set(shiftMatrix.getDoublePosition(1), 1, 3);
+		nextAffineTransform.set(shiftMatrix.getDoublePosition(2), 2, 3);
 
-        double sx = -centerScreenGlobalCoord.getDoublePosition(0) + shiftNextBvv.getDoublePosition(0);
-        double sy = -centerScreenGlobalCoord.getDoublePosition(1) + shiftNextBvv.getDoublePosition(1);
-        double sz = -centerScreenGlobalCoord.getDoublePosition(2) + shiftNextBvv.getDoublePosition(2);
+		// Is the transform necessary ? That's the stop condition
+		AffineTransform3D ati = new AffineTransform3D();
+		nextHandle.state().getViewerTransform(ati);
 
-        RealPoint shiftWindow = new RealPoint(sx, sy, sz);
-        RealPoint shiftMatrix = new RealPoint(3);
-        nextAffineTransform.apply(shiftWindow, shiftMatrix);
+		if (!MatrixApproxEquals(nextAffineTransform.getRowPackedCopy(), ati
+			.getRowPackedCopy()))
+		{
+			// Yes -> triggers a transform change to the nextBvvHandle
+			// For ortho view : switches axis:
+			// X --> Y
+			// Y --> Z
+			// Z --> X
+			// Calling it three times leads to an identical transform, hence the
+			// stopping condition is triggered
+			AffineTransform3D nextAt3D = nextAffineTransform.copy();
+			nextAt3D.set(nextAffineTransform.getRowPackedCopy());
+			nextHandle.state().setViewerTransform(nextAt3D);
+			nextHandle.requestRepaint();
+		}
 
-        nextAffineTransform.set(shiftMatrix.getDoublePosition(0), 0, 3);
-        nextAffineTransform.set(shiftMatrix.getDoublePosition(1), 1, 3);
-        nextAffineTransform.set(shiftMatrix.getDoublePosition(2), 2, 3);
+	}
 
-        // Is the transform necessary ? That's the stop condition
-        AffineTransform3D ati = new AffineTransform3D();
-        nextHandle.state().getViewerTransform(ati);
+	public double[] getRotatedView0(double[] m) {
+		return new double[] { m[0], m[1], m[2], m[3], -m[8], -m[9], -m[10], m[7],
+			m[4], m[5], m[6], m[11],
 
-        if (!MatrixApproxEquals(nextAffineTransform.getRowPackedCopy(), ati.getRowPackedCopy())) {
-            // Yes -> triggers a transform change to the nextBvvHandle
-            // For ortho view : switches axis:
-            // X --> Y
-            // Y --> Z
-            // Z --> X
-            // Calling it three times leads to an identical transform, hence the stopping condition is triggered
-            AffineTransform3D nextAt3D = nextAffineTransform.copy();
-            nextAt3D.set(nextAffineTransform.getRowPackedCopy());
-            nextHandle.state().setViewerTransform(nextAt3D);
-            nextHandle.requestRepaint();
-        }
+		};
+	}
 
-    }
+	public double[] getRotatedView1(double[] m) {
+		return new double[] {
 
-    public double[] getRotatedView0(double[] m) {
-        return new double[]{
-                m[0], m[1], m[2],
-                m[3],
-                -m[8], -m[9], -m[10],
-                m[7],
-                m[4], m[5], m[6],
-                m[11],
+			m[4], m[5], m[6], m[3], m[8], m[9], m[10], m[7], m[0], m[1], m[2], m[11],
 
-        };
-    }
+		};
+	}
 
-    public double[] getRotatedView1(double[] m) {
-        return new double[]{
+	public double[] getRotatedView2(double[] m) {
+		return new double[] { m[8], m[9], m[10], m[3], m[4], m[5], m[6], m[7],
+			-m[0], -m[1], -m[2], m[11], };
+	}
 
-                m[4], m[5], m[6],
-                m[3],
-                m[8], m[9], m[10],
-                m[7],
-                m[0], m[1], m[2],
-                m[11],
+	/**
+	 * A simple search to identify the view transform of the BvvHandle that will
+	 * be used for the initial synchronization (first reference)
+	 *
+	 * @return the view transform of the BvvHandle that will be used for the
+	 *         initial synchronization
+	 */
+	private AffineTransform3D getViewTransformForInitialSynchronization() {
+		AffineTransform3D at3Dorigin = null;
+		for (ViewerAdapter handle : handles) {
+			// if the BvvHandle is the one that should be used for initial
+			// synchronization
+			if (handle.equals(handleInitialReference)) {
+				// Storing the transform that will be used for first synchronization
+				at3Dorigin = new AffineTransform3D();
+				handle.state().getViewerTransform(at3Dorigin);
+			}
+		}
+		return at3Dorigin;
+	}
 
-        };
-    }
+	/**
+	 * output of this action : this map can be used to stop the synchronization
+	 * see {@link ViewerTransformSyncStopper}
+	 *
+	 * @return map of {@link TransformListener} which can be used to stop the
+	 *         synchronization
+	 */
+	public Map<ViewerAdapter, TransformListener<AffineTransform3D>>
+		getSynchronizers()
+	{
+		return handleToTransformListener;
+	}
 
-    public double[] getRotatedView2(double[] m) {
-        return new double[]{
-                m[8], m[9], m[10],
-                m[3],
-                m[4], m[5], m[6],
-                m[7],
-                -m[0], -m[1], -m[2],
-                m[11],
-        };
-    }
+	public boolean isSynchronizingTime() {
+		return synchronizeTime;
+	}
 
-    /**
-     * A simple search to identify the view transform of the BvvHandle that will be used
-     * for the initial synchronization (first reference)
-     *
-     * @return the view transform of the BvvHandle that will be used for the initial synchronization
-     */
-    private AffineTransform3D getViewTransformForInitialSynchronization() {
-        AffineTransform3D at3Dorigin = null;
-        for (ViewerAdapter handle : handles) {
-            // if the BvvHandle is the one that should be used for initial synchronization
-            if (handle.equals(handleInitialReference)) {
-                // Storing the transform that will be used for first synchronization
-                at3Dorigin = new AffineTransform3D();
-                handle.state().getViewerTransform(at3Dorigin);
-            }
-        }
-        return at3Dorigin;
-    }
+	/**
+	 * output of this action : this map can be used to stop the synchronization
+	 * see {@link ViewerTransformSyncStopper}
+	 *
+	 * @return map of {@link TimePointListener} which can be used to stop the
+	 *         synchronization
+	 */
+	public Map<ViewerAdapter, TimePointListener> getTimeSynchronizers() {
+		return handleToTimeListener;
+	}
 
-    /**
-     * output of this action : this map can be used to stop the synchronization
-     * see {@link ViewerTransformSyncStopper}
-     *
-     * @return map of {@link TransformListener} which can be used to stop the synchronization
-     */
-    public Map<ViewerAdapter, TransformListener<AffineTransform3D>> getSynchronizers() {
-        return handleToTransformListener;
-    }
-
-    public boolean isSynchronizingTime() {
-        return synchronizeTime;
-    }
-
-    /**
-     * output of this action : this map can be used to stop the synchronization
-     * see {@link ViewerTransformSyncStopper}
-     *
-     * @return map of {@link TimePointListener} which can be used to stop the synchronization
-     */
-    public Map<ViewerAdapter, TimePointListener> getTimeSynchronizers() {
-        return handleToTimeListener;
-    }
-
-    /**
-     * Tests whether two arrays of double are approximately equal
-     * Used internally with {@link AffineTransform3D#getRowPackedCopy()}
-     * To test if two matrices are approximately equal
-     *
-     * @param m1 first matrix of double
-     * @param m2 second matrix of double
-     * @return if these matrices are approx equal
-     */
-    public static boolean MatrixApproxEquals(double[] m1, double[] m2) {
-        assert m1.length == m2.length;
-        boolean ans = true;
-        for (int i=0;i<m1.length;i++) {
-            if (Math.abs(m1[i]-m2[i])>1e6*Math.ulp(Math.min(Math.abs(m1[i]), Math.abs(m2[i])))) {
-                ans = false;
-                break;
-            }
-        }
-        return ans;
-    }
+	/**
+	 * Tests whether two arrays of double are approximately equal Used internally
+	 * with {@link AffineTransform3D#getRowPackedCopy()} To test if two matrices
+	 * are approximately equal
+	 *
+	 * @param m1 first matrix of double
+	 * @param m2 second matrix of double
+	 * @return if these matrices are approx equal
+	 */
+	public static boolean MatrixApproxEquals(double[] m1, double[] m2) {
+		assert m1.length == m2.length;
+		boolean ans = true;
+		for (int i = 0; i < m1.length; i++) {
+			if (Math.abs(m1[i] - m2[i]) > 1e6 * Math.ulp(Math.min(Math.abs(m1[i]),
+				Math.abs(m2[i]))))
+			{
+				ans = false;
+				break;
+			}
+		}
+		return ans;
+	}
 }

@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package net.imglib2.realtransform;
 
 import net.imglib2.realtransform.inverse.WrappedIterativeInvertibleRealTransform;
@@ -33,20 +34,25 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.persist.IClassRuntimeAdapter;
 
 @Plugin(type = IClassRuntimeAdapter.class)
-public class WrappedIterativeInvertibleRealTransformRunTimeAdapter implements IClassRuntimeAdapter<RealTransform, WrappedIterativeInvertibleRealTransform> {
-    @Override
-    public Class<? extends RealTransform> getBaseClass() {
-        return RealTransform.class;
-    }
+public class WrappedIterativeInvertibleRealTransformRunTimeAdapter implements
+	IClassRuntimeAdapter<RealTransform, WrappedIterativeInvertibleRealTransform>
+{
 
-    @Override
-    public Class<? extends WrappedIterativeInvertibleRealTransform> getRunTimeClass() {
-        return WrappedIterativeInvertibleRealTransform.class;
-    }
+	@Override
+	public Class<? extends RealTransform> getBaseClass() {
+		return RealTransform.class;
+	}
 
-    @Override
-    public boolean useCustomAdapter() {
-        return false;
-    }
+	@Override
+	public Class<? extends WrappedIterativeInvertibleRealTransform>
+		getRunTimeClass()
+	{
+		return WrappedIterativeInvertibleRealTransform.class;
+	}
+
+	@Override
+	public boolean useCustomAdapter() {
+		return false;
+	}
 
 }

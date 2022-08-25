@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package net.imglib2.realtransform;
 
 import org.scijava.plugin.Plugin;
@@ -36,20 +37,22 @@ import sc.fiji.persist.IClassRuntimeAdapter;
  */
 
 @Plugin(type = IClassRuntimeAdapter.class)
-public class AffineTransform3DRunTimeAdapter implements IClassRuntimeAdapter<RealTransform, AffineTransform3D> {
+public class AffineTransform3DRunTimeAdapter implements
+	IClassRuntimeAdapter<RealTransform, AffineTransform3D>
+{
 
-    @Override
-    public Class<? extends RealTransform> getBaseClass() {
-        return RealTransform.class;
-    }
+	@Override
+	public Class<? extends RealTransform> getBaseClass() {
+		return RealTransform.class;
+	}
 
-    @Override
-    public Class<? extends AffineTransform3D> getRunTimeClass() {
-        return AffineTransform3D.class;
-    }
+	@Override
+	public Class<? extends AffineTransform3D> getRunTimeClass() {
+		return AffineTransform3D.class;
+	}
 
-    @Override
-    public boolean useCustomAdapter() {
-        return false;
-    }
+	@Override
+	public boolean useCustomAdapter() {
+		return false;
+	}
 }

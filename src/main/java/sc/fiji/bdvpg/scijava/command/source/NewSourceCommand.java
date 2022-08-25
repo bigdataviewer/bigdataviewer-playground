@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
@@ -37,44 +38,50 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.sourceandconverter.importer.EmptySourceAndConverterCreator;
 
 /**
- * Command which creates an empty Source based on a model Source
- * The created source will cover the same portion of space as the model source,
- * but with the specified voxel size, and at a specific timepoint
+ * Command which creates an empty Source based on a model Source The created
+ * source will cover the same portion of space as the model source, but with the
+ * specified voxel size, and at a specific timepoint
  *
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>New Source Based on Model Source",
-description = "Defines an empty source which occupied the same volume as a model source but with a potentially" +
-        " different voxel size. Works with a single timepoint.")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"Sources>New Source Based on Model Source",
+	description = "Defines an empty source which occupied the same volume as a model source but with a potentially" +
+		" different voxel size. Works with a single timepoint.")
 
 public class NewSourceCommand implements BdvPlaygroundActionCommand {
-    
-    @Parameter(label = "Model Source", description = "Defines the portion of space covered by the new source")
-    SourceAndConverter<?> model;
 
-    @Parameter(label = "Source name")
-    String name;
+	@Parameter(label = "Model Source",
+		description = "Defines the portion of space covered by the new source")
+	SourceAndConverter<?> model;
 
-    @Parameter(type = ItemIO.OUTPUT)
-    SourceAndConverter<?> sac;
-    
-    @Parameter(label = "Voxel Size X")
-    double voxsizex;
+	@Parameter(label = "Source name")
+	String name;
 
-    @Parameter(label = "Voxel Size Y")
-    double voxsizey;
+	@Parameter(type = ItemIO.OUTPUT)
+	SourceAndConverter<?> sac;
 
-    @Parameter(label = "Voxel Size Z")
-    double voxsizez;
+	@Parameter(label = "Voxel Size X")
+	double voxsizex;
 
-    @Parameter(label = "Timepoint (0 based index)")
-    int timepoint;
+	@Parameter(label = "Voxel Size Y")
+	double voxsizey;
 
-    @Override
-    public void run() {
-        sac = new EmptySourceAndConverterCreator(name, model, timepoint, voxsizex, voxsizey, voxsizez).get();//, factory).get();
-    }
+	@Parameter(label = "Voxel Size Z")
+	double voxsizez;
+
+	@Parameter(label = "Timepoint (0 based index)")
+	int timepoint;
+
+	@Override
+	public void run() {
+		sac = new EmptySourceAndConverterCreator(name, model, timepoint, voxsizex,
+			voxsizey, voxsizez).get();// , factory).get();
+	}
 }

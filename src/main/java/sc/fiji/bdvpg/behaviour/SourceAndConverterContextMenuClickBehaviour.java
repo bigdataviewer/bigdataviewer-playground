@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.behaviour;
 
 import bdv.util.BdvHandle;
@@ -41,55 +42,57 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * Behaviour that shows the context menu of actions available that will act on the sources
- * provided by the supplier
+ * Behaviour that shows the context menu of actions available that will act on
+ * the sources provided by the supplier
  *
  * @author Nicolas Chiaruttini, BIOP, EPFL 2020
  */
 
-public class SourceAndConverterContextMenuClickBehaviour implements ClickBehaviour
+public class SourceAndConverterContextMenuClickBehaviour implements
+	ClickBehaviour
 {
+
 	final BdvHandle bdv;
 	final Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier;
 	String[] popupActions;
 
 	/**
-	 *
 	 * @param bdv bdv handle
 	 */
-	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv )
-	{
-		this(bdv,
-		() -> SourceAndConverterHelper.getSourceAndConvertersAtCurrentMousePosition( bdv ) );
+	public SourceAndConverterContextMenuClickBehaviour(BdvHandle bdv) {
+		this(bdv, () -> SourceAndConverterHelper
+			.getSourceAndConvertersAtCurrentMousePosition(bdv));
 	}
 
 	/**
-	 *
 	 * @param bdv bdv handle
 	 * @param popupActions popup actions to be used in the clickbehaviour
 	 */
-	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv, String[] popupActions )
+	public SourceAndConverterContextMenuClickBehaviour(BdvHandle bdv,
+		String[] popupActions)
 	{
-		this(bdv, () -> SourceAndConverterHelper.getSourceAndConvertersAtCurrentMousePosition( bdv ), popupActions);
+		this(bdv, () -> SourceAndConverterHelper
+			.getSourceAndConvertersAtCurrentMousePosition(bdv), popupActions);
 	}
 
 	/**
-	 *
 	 * @param bdv bdv handle
 	 * @param sourcesSupplier a function which returns the source to act on
 	 */
-	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv, Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier )
+	public SourceAndConverterContextMenuClickBehaviour(BdvHandle bdv,
+		Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier)
 	{
 		this(bdv, sourcesSupplier, SourceAndConverterPopupMenu.defaultPopupActions);
 	}
 
 	/**
-	 *
 	 * @param bdv bdv handle
 	 * @param sourcesSupplier a function which returns the source to act on
 	 * @param popupActions popup actions to be used in the clickbehaviour
 	 */
-	public SourceAndConverterContextMenuClickBehaviour( BdvHandle bdv, Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier, String[] popupActions )
+	public SourceAndConverterContextMenuClickBehaviour(BdvHandle bdv,
+		Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier,
+		String[] popupActions)
 	{
 		this.bdv = bdv;
 		this.sourcesSupplier = sourcesSupplier;
@@ -97,45 +100,43 @@ public class SourceAndConverterContextMenuClickBehaviour implements ClickBehavio
 	}
 
 	/**
-	 *
 	 * @param x mouse position in x
 	 * @param y mouse position in y
 	 */
 	@Override
-	public void click( int x, int y )
-	{
-		showPopupMenu( bdv, x, y );
+	public void click(int x, int y) {
+		showPopupMenu(bdv, x, y);
 	}
 
-	private void showPopupMenu( BdvHandle bdv, int x, int y )
-	{
-		final List<SourceAndConverter<?>> sacs = new ArrayList<>(sourcesSupplier.get());
+	private void showPopupMenu(BdvHandle bdv, int x, int y) {
+		final List<SourceAndConverter<?>> sacs = new ArrayList<>(sourcesSupplier
+			.get());
 
-		final SourceAndConverterPopupMenu popupMenu = new SourceAndConverterPopupMenu( () -> sacs.toArray(new SourceAndConverter[0]), popupActions );
+		final SourceAndConverterPopupMenu popupMenu =
+			new SourceAndConverterPopupMenu(() -> sacs.toArray(
+				new SourceAndConverter[0]), popupActions);
 
-		popupMenu.getPopup().show( bdv.getViewerPanel().getDisplay(), x, y );
+		popupMenu.getPopup().show(bdv.getViewerPanel().getDisplay(), x, y);
 	}
 
 	/**
 	 * Live removal of an action
+	 * 
 	 * @param name of the action to remove
 	 */
-	public synchronized void removeAction( String name )
-	{
-		final int index = ArrayUtils.indexOf( popupActions, name );
-		if ( index != -1 )
-			popupActions = ( String[] ) ArrayUtils.remove( popupActions, index );
+	public synchronized void removeAction(String name) {
+		final int index = ArrayUtils.indexOf(popupActions, name);
+		if (index != -1) popupActions = (String[]) ArrayUtils.remove(popupActions,
+			index);
 	}
 
 	/**
 	 * @param name of the action to add
 	 */
-	public synchronized void addAction( String name )
-	{
-		final int index = ArrayUtils.indexOf( popupActions, name );
-		if ( index == -1 )
-			popupActions = ( String[] ) ArrayUtils.add( popupActions, name );
+	public synchronized void addAction(String name) {
+		final int index = ArrayUtils.indexOf(popupActions, name);
+		if (index == -1) popupActions = (String[]) ArrayUtils.add(popupActions,
+			name);
 	}
-
 
 }

@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.converters;
 
 import bdv.util.BdvHandle;
@@ -37,26 +38,30 @@ import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 
 import java.util.Optional;
 
+@SuppressWarnings("unused")
 @Plugin(type = org.scijava.convert.Converter.class)
-public class StringToBdvHandle<I extends String, O extends BdvHandle> extends AbstractConverter<I, O> {
-    @Parameter
-    ObjectService os;
+public class StringToBdvHandle<I extends String, O extends BdvHandle> extends
+	AbstractConverter<I, O>
+{
 
-    @Override
-    public <T> T convert(Object src, Class<T> dest) {
-        Optional<BdvHandle> ans =  os.getObjects(BdvHandle.class).stream().filter(bdvh ->
-                (bdvh.toString().equals(src))||(BdvHandleHelper.getWindowTitle(bdvh).equals(src))
-        ).findFirst();
-        return (T) ans.orElse(null);
-    }
+	@Parameter
+	ObjectService os;
 
-    @Override
-    public Class<O> getOutputType() {
-        return (Class<O>) BdvHandle.class;
-    }
+	@Override
+	public <T> T convert(Object src, Class<T> dest) {
+		Optional<BdvHandle> ans = os.getObjects(BdvHandle.class).stream().filter(
+			bdvh -> (bdvh.toString().equals(src)) || (BdvHandleHelper.getWindowTitle(
+				bdvh).equals(src))).findFirst();
+		return (T) ans.orElse(null);
+	}
 
-    @Override
-    public Class<I> getInputType() {
-        return (Class<I>) String.class;
-    }
+	@Override
+	public Class<O> getOutputType() {
+		return (Class<O>) BdvHandle.class;
+	}
+
+	@Override
+	public Class<I> getInputType() {
+		return (Class<I>) String.class;
+	}
 }

@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.bdv.navigate;
 
 import bdv.util.BdvHandle;
@@ -33,83 +34,88 @@ import bdv.viewer.animate.SimilarityTransformAnimator;
 import net.imglib2.realtransform.AffineTransform3D;
 
 /**
- * Action which changes the current viewerTransform
- * of a {@link BdvHandle} with the input {@link AffineTransform3D}
+ * Action which changes the current viewerTransform of a {@link BdvHandle} with
+ * the input {@link AffineTransform3D} See ViewTransformSetAndLogDemo for usage
+ * examples
  *
- * See ViewTransformSetAndLogDemo for usage examples
- *
- * @author haesleinhuepf, tischi
- * - 12 2019
- * - 11 2020 @tischi: add option to animate; add option to apply absolute or relative (concatenate)
+ * @author haesleinhuepf, tischi - 12 2019 - 11 2020 @tischi: add option to
+ *         animate; add option to apply absolute or relative (concatenate)
  */
 
 public class ViewerTransformChanger implements Runnable {
 
-    /**
-     * The bdvHandle of which the viewer transform should be changed
-     */
-    private final BdvHandle bdvHandle;
+	/**
+	 * The bdvHandle of which the viewer transform should be changed
+	 */
+	private final BdvHandle bdvHandle;
 
-    /**
-     * The new viewer transform (either relative or absolute, see below)
-     */
-    private AffineTransform3D transform;
+	/**
+	 * The new viewer transform (either relative or absolute, see below)
+	 */
+	private AffineTransform3D transform;
 
-    /**
-     * If {@code true} the transform will be concatenated (applied relative) to the current transform.
-     * This is useful, e.g., when one wants to rotate the current view. In this
-     * case the transform would only contain the rotation.
-     *
-     * If {@code false} the transform will be applied (absolute).
-     * This is useful, e.g., if one has stored a particular viewer transform, e.g.,
-     * in some sort of bookmark and wants to come back to it.
-     */
-    private final boolean concatenateToCurrentTransform;
+	/**
+	 * If {@code true} the transform will be concatenated (applied relative) to
+	 * the current transform. This is useful, e.g., when one wants to rotate the
+	 * current view. In this case the transform would only contain the rotation.
+	 * If {@code false} the transform will be applied (absolute). This is useful,
+	 * e.g., if one has stored a particular viewer transform, e.g., in some sort
+	 * of bookmark and wants to come back to it.
+	 */
+	private final boolean concatenateToCurrentTransform;
 
-    /**
-     * If <=0 the transform will be applied immediately.
-     * If >0 the change from the current transform to the new transform will be animated.
-     */
-    private final int animationDurationMillis;
+	/**
+	 * If <=0 the transform will be applied immediately. If >0 the change from the
+	 * current transform to the new transform will be animated.
+	 */
+	private final int animationDurationMillis;
 
-    public ViewerTransformChanger( BdvHandle bdvHandle, AffineTransform3D transform, boolean concatenateToCurrentTransform ) {
-        this.bdvHandle = bdvHandle;
-        this.transform = transform;
-        this.concatenateToCurrentTransform = concatenateToCurrentTransform;
-        this.animationDurationMillis = 0;
-    }
+	public ViewerTransformChanger(BdvHandle bdvHandle,
+		AffineTransform3D transform, boolean concatenateToCurrentTransform)
+	{
+		this.bdvHandle = bdvHandle;
+		this.transform = transform;
+		this.concatenateToCurrentTransform = concatenateToCurrentTransform;
+		this.animationDurationMillis = 0;
+	}
 
-    public ViewerTransformChanger( BdvHandle bdvHandle, AffineTransform3D transform, boolean concatenateToCurrentTransform, int animationDurationMillis ) {
-        this.bdvHandle = bdvHandle;
-        this.transform = transform;
-        this.concatenateToCurrentTransform = concatenateToCurrentTransform;
-        this.animationDurationMillis = animationDurationMillis;
-    }
+	public ViewerTransformChanger(BdvHandle bdvHandle,
+		AffineTransform3D transform, boolean concatenateToCurrentTransform,
+		int animationDurationMillis)
+	{
+		this.bdvHandle = bdvHandle;
+		this.transform = transform;
+		this.concatenateToCurrentTransform = concatenateToCurrentTransform;
+		this.animationDurationMillis = animationDurationMillis;
+	}
 
-    @Override
-    public void run() {
+	@Override
+	public void run() {
 
-        if ( concatenateToCurrentTransform )
-        {
-            AffineTransform3D view = new AffineTransform3D();
-            bdvHandle.getViewerPanel().state().getViewerTransform( view );
-            transform = view.concatenate( transform );
-        }
+		if (concatenateToCurrentTransform) {
+			AffineTransform3D view = new AffineTransform3D();
+			bdvHandle.getViewerPanel().state().getViewerTransform(view);
+			transform = view.concatenate(transform);
+		}
 
-        if ( animationDurationMillis <= 0 ) {
-            bdvHandle.getViewerPanel().state().setViewerTransform( transform );
-        } else {
-            final AffineTransform3D currentViewerTransform = new AffineTransform3D();
-            bdvHandle.getViewerPanel().state().getViewerTransform( currentViewerTransform );
+		if (animationDurationMillis <= 0) {
+			bdvHandle.getViewerPanel().state().setViewerTransform(transform);
+		}
+		else {
+			final AffineTransform3D currentViewerTransform = new AffineTransform3D();
+			bdvHandle.getViewerPanel().state().getViewerTransform(
+				currentViewerTransform);
 
-            final SimilarityTransformAnimator similarityTransformAnimator =
-                    new SimilarityTransformAnimator(
-                            currentViewerTransform,
-                            transform,
-                            0, 0,  // TODO: understand what this does
-                            animationDurationMillis  );
+			final SimilarityTransformAnimator similarityTransformAnimator =
+				new SimilarityTransformAnimator(currentViewerTransform, transform, 0, 0, // TODO:
+																																									// understand
+																																									// what
+																																									// this
+																																									// does
+					animationDurationMillis);
 
-            bdvHandle.getViewerPanel().setTransformAnimator( similarityTransformAnimator );
-        }
-    }
+			bdvHandle.getViewerPanel().setTransformAnimator(
+				similarityTransformAnimator);
+		}
+	}
 }

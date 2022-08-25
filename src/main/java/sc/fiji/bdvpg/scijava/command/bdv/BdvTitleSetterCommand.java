@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
@@ -35,21 +36,24 @@ import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Set Title",
-    description = "Sets the title of a BDV Windows")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Set Title",
+	description = "Sets the title of a BDV Windows")
 
-public class BdvSetTitleCommand implements BdvPlaygroundActionCommand {
+public class BdvTitleSetterCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(label = "Select BDV Window")
-    BdvHandle bdvh;
+	@Parameter(label = "Select BDV Window")
+	BdvHandle bdvh;
 
-    @Parameter(label = "title")
-    String title;
+	@Parameter(label = "title")
+	String title;
 
-    public void run() {
-        BdvHandleHelper.setWindowTitle(bdvh, title);
-    }
+	public void run() {
+		BdvHandleHelper.setWindowTitle(bdvh, title);
+	}
 
 }

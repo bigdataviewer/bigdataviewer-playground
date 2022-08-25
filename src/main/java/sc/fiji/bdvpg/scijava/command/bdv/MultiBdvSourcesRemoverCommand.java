@@ -26,34 +26,37 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
-import org.scijava.ItemIO;
+import bdv.viewer.SourceAndConverter;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Create empty BDV window",
-    description = "Creates an empty BDV window")
-public class BdvWindowCreatorCommand implements BdvPlaygroundActionCommand {
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"BDV>BDV - Remove Sources In Multiple BDV Windows",
+	description = "Removes one or several sources from several existing BDV windows")
+public class MultiBdvSourcesRemoverCommand implements BdvPlaygroundActionCommand {
 
-    /**
-     * This triggers: {@link sc.fiji.bdvpg.scijava.processors.BdvHandlePostprocessor}
-     */
-    @Parameter(type = ItemIO.OUTPUT)
-    public BdvHandle bdvh;
+	@Parameter(label = "Select BDV Windows")
+	BdvHandle[] bdvhs;
 
-    @Parameter
-    SourceAndConverterBdvDisplayService sacDisplayService;
+	@Parameter(label = "Select Source(s)")
+	SourceAndConverter<?>[] sacs;
 
-    @Override
-    public void run() {
-        bdvh = sacDisplayService.getNewBdv();
-    }
-
+	@Override
+	public void run() {
+		for (BdvHandle bdvh : bdvhs) {
+			SourceAndConverterServices.getBdvDisplayService().remove(bdvh, sacs);
+		}
+	}
 }

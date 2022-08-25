@@ -36,6 +36,7 @@ import mpicbg.spim.data.sequence.VoxelDimensions;
 import net.imagej.ImageJ;
 import net.imglib2.FinalRealInterval;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
 import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
@@ -75,7 +76,7 @@ public class SimpleResamplingDemo {
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter("src/test/resources/mri-stack-multilevel.xml");
         AbstractSpimData<?> asd = importer.get();
 
-        SourceAndConverter<?> sac = SourceAndConverterServices
+        SourceAndConverter<UnsignedShortType> sac = (SourceAndConverter<UnsignedShortType>) SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(asd)
                 .get(0);
@@ -98,10 +99,8 @@ public class SimpleResamplingDemo {
                 100,100,100, voxelDimensions).get();
 
         // Resample generative source as model source
-        SourceAndConverter<?> box =
-                new SourceResampler(sac, model, "crop", false,false, false,0).get();
-
-        final VoxelDimensions voxelDimensionsInResampledSource = box.getSpimSource().getVoxelDimensions();
+        SourceAndConverter<UnsignedShortType> box =
+                new SourceResampler<>(sac, model, "crop", false,false, false,0).get();
 
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, box );
 

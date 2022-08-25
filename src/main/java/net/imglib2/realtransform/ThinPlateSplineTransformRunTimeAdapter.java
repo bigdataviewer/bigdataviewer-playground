@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package net.imglib2.realtransform;
 
 import org.scijava.plugin.Plugin;
@@ -37,23 +38,23 @@ import sc.fiji.persist.IClassRuntimeAdapter;
  * Adapter for ThinPlateSplineTransform Objects
  */
 @Plugin(type = IClassRuntimeAdapter.class)
-public class ThinPlateSplineTransformRunTimeAdapter implements IClassRuntimeAdapter<RealTransform, ThinplateSplineTransform> {
+public class ThinPlateSplineTransformRunTimeAdapter implements
+	IClassRuntimeAdapter<RealTransform, ThinplateSplineTransform>
+{
 
-    protected static Logger logger = LoggerFactory.getLogger(ThinPlateSplineTransformRunTimeAdapter.class);
+	@Override
+	public Class<? extends RealTransform> getBaseClass() {
+		return RealTransform.class;
+	}
 
-    @Override
-    public Class<? extends RealTransform> getBaseClass() {
-        return RealTransform.class;
-    }
+	@Override
+	public Class<? extends ThinplateSplineTransform> getRunTimeClass() {
+		return ThinplateSplineTransform.class;
+	}
 
-    @Override
-    public Class<? extends ThinplateSplineTransform> getRunTimeClass() {
-        return ThinplateSplineTransform.class;
-    }
-
-    @Override
-    public boolean useCustomAdapter() {
-        return false;
-    }
+	@Override
+	public boolean useCustomAdapter() {
+		return false;
+	}
 
 }

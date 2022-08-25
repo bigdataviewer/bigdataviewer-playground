@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.viewers;
 
 import bdv.viewer.TimePointListener;
@@ -36,43 +37,38 @@ import net.imglib2.realtransform.AffineTransform3D;
 import java.util.Map;
 
 /**
- * BigDataViewer Playground Action --
- * Action which stops the synchronization of the display location of a {@link BvvHandle}
- * Works in combination with the action ViewerTransformSyncStarter
- * and {@link ViewerOrthoSyncStarter}
- *
- * See ViewTransformSynchronizationDemo for a usage example
+ * BigDataViewer Playground Action -- Action which stops the synchronization of
+ * the display location of a {@link BvvHandle} Works in combination with the
+ * action ViewerTransformSyncStarter and {@link ViewerOrthoSyncStarter} See
+ * ViewTransformSynchronizationDemo for a usage example
  *
  * @author Nicolas Chiaruttini, BIOP EPFL, nicolas.chiaruttini@epfl.ch
  */
 
 public class ViewerTransformSyncStopper implements Runnable {
 
-    final Map<ViewerAdapter, TransformListener<AffineTransform3D>> handleToTransformListener;
+	final Map<ViewerAdapter, TransformListener<AffineTransform3D>> handleToTransformListener;
 
-    final Map<ViewerAdapter, TimePointListener> handleToTimePointListener;
+	final Map<ViewerAdapter, TimePointListener> handleToTimePointListener;
 
-    public ViewerTransformSyncStopper(
-            Map<ViewerAdapter,TransformListener<AffineTransform3D>> handleToTransformListener,
-            Map<ViewerAdapter, TimePointListener> handleToTimePointListener) {
-       this.handleToTransformListener = handleToTransformListener;
-       this.handleToTimePointListener = handleToTimePointListener;
-    }
+	public ViewerTransformSyncStopper(
+		Map<ViewerAdapter, TransformListener<AffineTransform3D>> handleToTransformListener,
+		Map<ViewerAdapter, TimePointListener> handleToTimePointListener)
+	{
+		this.handleToTransformListener = handleToTransformListener;
+		this.handleToTimePointListener = handleToTimePointListener;
+	}
 
-    @Override
-    public void run() {
-        handleToTransformListener.forEach((handle, listener) -> {
-            if ((handle != null))
-                    handle.removeTransformListener(listener);
-            }
-        );
-        if (handleToTimePointListener !=null) {
-            handleToTimePointListener.forEach((handle, listener) -> {
-                    if (handle != null)
-                        handle.removeTimePointListener(listener);
-                }
-            );
-        }
-    }
+	@Override
+	public void run() {
+		handleToTransformListener.forEach((handle, listener) -> {
+			if ((handle != null)) handle.removeTransformListener(listener);
+		});
+		if (handleToTimePointListener != null) {
+			handleToTimePointListener.forEach((handle, listener) -> {
+				if (handle != null) handle.removeTimePointListener(listener);
+			});
+		}
+	}
 
 }

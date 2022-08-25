@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.services;
 
 import bdv.viewer.Source;
@@ -46,60 +47,62 @@ import java.util.function.Consumer;
 
 public class SourceAndConverterAdapter {
 
-    protected static final Logger logger = LoggerFactory.getLogger(SourceAndConverterAdapter.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		SourceAndConverterAdapter.class);
 
-    final File basePath;
+	final File basePath;
 
-    public SourceAndConverterAdapter(Context ctx, File basePath) {
-        this.ctx = ctx;
-        this.basePath = basePath;
-    }
+	public SourceAndConverterAdapter(Context ctx, File basePath) {
+		this.ctx = ctx;
+		this.basePath = basePath;
+	}
 
-    public File getBasePath() {
-        return basePath;
-    }
+	public File getBasePath() {
+		return basePath;
+	}
 
-    Map<Integer, SourceAndConverter<?>> idToSac;
-    Map<SourceAndConverter<?>, Integer> sacToId;
-    Map<Integer, Source<?>> idToSource;
-    Map<Source<?>, Integer> sourceToId;
+	Map<Integer, SourceAndConverter<?>> idToSac;
+	Map<SourceAndConverter<?>, Integer> sacToId;
+	Map<Integer, Source<?>> idToSource;
+	Map<Source<?>, Integer> sourceToId;
 
-    public final Set<Integer> alreadyDeSerializedSacs = new HashSet<>();
-    public final Map<Integer, JsonElement> idToJsonElement = new HashMap<>();
+	public final Set<Integer> alreadyDeSerializedSacs = new HashSet<>();
+	public final Map<Integer, JsonElement> idToJsonElement = new HashMap<>();
 
-    final Context ctx;
+	final Context ctx;
 
-    public Context getScijavaContext() {
-        return ctx;
-    }
+	public Context getScijavaContext() {
+		return ctx;
+	}
 
-    public static Consumer<String> log = logger::debug;
+	public static Consumer<String> log = logger::debug;
 
-    public Gson getGson() {
-        GsonBuilder builder = ScijavaGsonHelper.getGsonBuilder(ctx, true);
+	public Gson getGson() {
+		GsonBuilder builder = ScijavaGsonHelper.getGsonBuilder(ctx, true);
 
-        builder .registerTypeHierarchyAdapter(SourceAndConverter.class, new sc.fiji.bdvpg.scijava.adapter.SourceAndConverterAdapter(this))
-                .registerTypeHierarchyAdapter(AbstractSpimData.class, new AbstractSpimdataAdapter(this));
+		builder.registerTypeHierarchyAdapter(SourceAndConverter.class,
+			new sc.fiji.bdvpg.scijava.adapter.SourceAndConverterAdapter(this))
+			.registerTypeHierarchyAdapter(AbstractSpimData.class,
+				new AbstractSpimdataAdapter(this));
 
-        return builder.create();
+		return builder.create();
 
-    }
+	}
 
-    public synchronized Map<Integer, SourceAndConverter<?>> getIdToSac() {
-        return idToSac;
-    }
+	public synchronized Map<Integer, SourceAndConverter<?>> getIdToSac() {
+		return idToSac;
+	}
 
-    public synchronized Map<SourceAndConverter<?>, Integer> getSacToId() {
-        return sacToId;
-    }
+	public synchronized Map<SourceAndConverter<?>, Integer> getSacToId() {
+		return sacToId;
+	}
 
-    public synchronized Map<Integer, Source<?>> getIdToSource() {
-        return idToSource;
-    }
+	public synchronized Map<Integer, Source<?>> getIdToSource() {
+		return idToSource;
+	}
 
-    public synchronized Map<Source<?>, Integer> getSourceToId() {
-        return sourceToId;
-    }
-
+	public synchronized Map<Source<?>, Integer> getSourceToId() {
+		return sourceToId;
+	}
 
 }

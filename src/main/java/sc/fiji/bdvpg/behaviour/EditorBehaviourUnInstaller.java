@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.behaviour;
 
 import bdv.util.BdvHandle;
@@ -35,43 +36,48 @@ import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 /**
- * Removes an editor behaviour installed
- * See {@link EditorBehaviourInstaller}
+ * Removes an editor behaviour installed See {@link EditorBehaviourInstaller}
  *
  * @author Nicolas Chiaruttini, BIOP, EPFL 2020
  */
 
 public class EditorBehaviourUnInstaller implements Runnable {
 
-    protected static final Logger logger = LoggerFactory.getLogger(EditorBehaviourUnInstaller.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		EditorBehaviourUnInstaller.class);
 
-    final BdvHandle bdvh;
+	final BdvHandle bdvh;
 
-    public EditorBehaviourUnInstaller(BdvHandle bdvh) {
-        this.bdvh = bdvh;
-    }
+	public EditorBehaviourUnInstaller(BdvHandle bdvh) {
+		this.bdvh = bdvh;
+	}
 
-    @Override
-    public void run() {
+	@Override
+	public void run() {
 
-        SourceSelectorBehaviour ssb = (SourceSelectorBehaviour) SourceAndConverterServices.getBdvDisplayService().getDisplayMetadata(
-                bdvh, SourceSelectorBehaviour.class.getSimpleName());
+		SourceSelectorBehaviour ssb =
+			(SourceSelectorBehaviour) SourceAndConverterServices
+				.getBdvDisplayService().getDisplayMetadata(bdvh,
+					SourceSelectorBehaviour.class.getSimpleName());
 
-        EditorBehaviourInstaller ebi = (EditorBehaviourInstaller) SourceAndConverterServices.getBdvDisplayService().getDisplayMetadata(
-                bdvh, EditorBehaviourInstaller.class.getSimpleName());
+		EditorBehaviourInstaller ebi =
+			(EditorBehaviourInstaller) SourceAndConverterServices
+				.getBdvDisplayService().getDisplayMetadata(bdvh,
+					EditorBehaviourInstaller.class.getSimpleName());
 
-        if ((ssb==null)||(ebi==null)) {
-            logger.error("SourceSelectorBehaviour or EditorBehaviourInstaller cannot be retrieved. Cannot uninstall EditorBehaviour");
-            return;
-        }
+		if ((ssb == null) || (ebi == null)) {
+			logger.error(
+				"SourceSelectorBehaviour or EditorBehaviourInstaller cannot be retrieved. Cannot uninstall EditorBehaviour");
+			return;
+		}
 
-        ebi.getToggleListener().isDisabled();
-        ssb.removeToggleListener(ebi.getToggleListener());
+		ebi.getToggleListener().isDisabled();
+		ssb.removeToggleListener(ebi.getToggleListener());
 
-        // Cleans the MetaData hashMap
-        SourceAndConverterServices.getBdvDisplayService().setDisplayMetadata(
-                bdvh, EditorBehaviourInstaller.class.getSimpleName(), null);
+		// Cleans the MetaData hashMap
+		SourceAndConverterServices.getBdvDisplayService().setDisplayMetadata(bdvh,
+			EditorBehaviourInstaller.class.getSimpleName(), null);
 
-    }
+	}
 
 }

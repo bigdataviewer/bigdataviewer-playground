@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.sourceandconverter.register;
 
 import bdv.gui.BigWarpViewerOptions;
@@ -42,147 +43,154 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Can launch BigWarp with:
- * - Two lists of SourceAndConverter
- *
- * Output:
- * - The two BdvHandle
- *
- * Limitation :
- * - Cache is null in BigWarpInit
- *
- * In order to retrieve the transform, TODO
+ * Can launch BigWarp with: - Two lists of SourceAndConverter Output: - The two
+ * BdvHandle Limitation : - Cache is null in BigWarpInit In order to retrieve
+ * the transform, TODO
  */
 
 public class BigWarpLauncher implements Runnable {
 
-    final BigWarp.BigWarpData<?> bwData;
+	final BigWarp.BigWarpData<?> bwData;
 
-    BigWarp<?> bigWarp;
+	BigWarp<?> bigWarp;
 
-    final String bigWarpName;
+	final String bigWarpName;
 
-    BdvHandle bdvHandleP;
+	BdvHandle bdvHandleP;
 
-    BdvHandle bdvHandleQ;
+	BdvHandle bdvHandleQ;
 
-    // Issue with constructor :
-    // Making a constructor with lists of SourceAndConverters:
-    // public BigWarpLauncher(List<SourceAndConverter> movingSources, List<SourceAndConverter> fixedSources)
-    // And a constructor with lists of Source:
-    // public BigWarpLauncher(List<Source> movingSources, List<Source> fixedSources)
-    // Do not work because constructors have same 'erasure'
-    // Option chosen -> a single constructor which checks the types of their inner objects
-    // Alternative maybe better option :
-    // Use array : Source[] or SourceAndConverter[] (and maybe this issue was the reason for BigWarp choosing this in the beginning)
+	// Issue with constructor :
+	// Making a constructor with lists of SourceAndConverters:
+	// public BigWarpLauncher(List<SourceAndConverter> movingSources,
+	// List<SourceAndConverter> fixedSources)
+	// And a constructor with lists of Source:
+	// public BigWarpLauncher(List<Source> movingSources, List<Source>
+	// fixedSources)
+	// Do not work because constructors have same 'erasure'
+	// Option chosen -> a single constructor which checks the types of their inner
+	// objects
+	// Alternative maybe better option :
+	// Use array : Source[] or SourceAndConverter[] (and maybe this issue was the
+	// reason for BigWarp choosing this in the beginning)
 
-    final List<SourceAndConverter<?>> movingSources;
-    final List<SourceAndConverter<?>> fixedSources;
+	final List<SourceAndConverter<?>> movingSources;
 
-    //List<SourceAndConverter> allRegisteredSources;
+	// List<SourceAndConverter> allRegisteredSources;
 
-    SourceAndConverter<?> gridSource;
-    SourceAndConverter<?> warpMagnitudeSource;
+	SourceAndConverter<?> gridSource;
+	SourceAndConverter<?> warpMagnitudeSource;
 
-    SourceAndConverter<?>[] warpedSources;
+	SourceAndConverter<?>[] warpedSources;
 
+	final Map<ConverterSetup, double[]> displaysettings = new HashMap<>();
 
-    final Map<ConverterSetup, double[]> displaysettings = new HashMap<>();
+	public BigWarpLauncher(List<SourceAndConverter<?>> movingSources,
+		List<SourceAndConverter<?>> fixedSources, String bigWarpName,
+		List<ConverterSetup> allConverterSetups)
+	{
 
-    public BigWarpLauncher(List<SourceAndConverter<?>> movingSources, List<SourceAndConverter<?>> fixedSources, String bigWarpName, List<ConverterSetup> allConverterSetups) {
+		this.movingSources = movingSources;
 
-        this.movingSources = movingSources;
-        this.fixedSources = fixedSources;
+		this.bigWarpName = bigWarpName;
 
-        this.bigWarpName = bigWarpName;
+		List<SourceAndConverter<?>> allSources = new ArrayList<>();
+		allSources.addAll(movingSources);
+		allSources.addAll(fixedSources);
 
-            List<SourceAndConverter<?>> allSources = new ArrayList<>();
-            allSources.addAll(movingSources);
-            allSources.addAll(fixedSources);
+		int[] mvSrcIndices = new int[movingSources.size()];
+		for (int i = 0; i < movingSources.size(); i++) {
+			mvSrcIndices[i] = i;
+		}
 
-            int[] mvSrcIndices = new int[movingSources.size()];
-            for (int i = 0; i < movingSources.size(); i++) {
-                mvSrcIndices[i] = i;
-            }
+		int[] fxSrcIndices = new int[fixedSources.size()];
+		for (int i = 0; i < fixedSources.size(); i++) {
+			fxSrcIndices[i] = i + movingSources.size();
+		}
 
-            int[] fxSrcIndices = new int[fixedSources.size()];
-            for (int i = 0; i < fixedSources.size(); i++) {
-                fxSrcIndices[i] = i+movingSources.size();
-            }
+		if (allConverterSetups == null) {
+			allConverterSetups = new ArrayList<>();
+		}
 
-            if (allConverterSetups==null) {
-                allConverterSetups = new ArrayList<>();
-            }
+		// Stores display settings before BigWarp
+		allConverterSetups.forEach(setup -> displaysettings.put(setup,
+			new double[] { setup.getDisplayRangeMin(), setup.getDisplayRangeMax() }));
 
-            // Stores display settings before BigWarp
-            allConverterSetups.forEach(setup -> displaysettings.put(setup, new double[]{setup.getDisplayRangeMin(), setup.getDisplayRangeMax()}));
+		bwData = new BigWarp.BigWarpData(allSources, allConverterSetups, null,
+			mvSrcIndices, fxSrcIndices);
 
-            bwData = new BigWarp.BigWarpData(allSources, allConverterSetups, null, mvSrcIndices, fxSrcIndices);
+	}
 
-    }
+	boolean force2d = false;
 
-    boolean force2d = false;
+	public void set2d() {
+		force2d = true;
+	}
 
-    public void set2d() {
-        force2d = true;
-    }
+	@Override
+	public void run() {
+		try {
+			if (force2d) {
+				bigWarp = new BigWarp<>(bwData, bigWarpName, BigWarpViewerOptions
+					.options().is2D(true), null);
+			}
+			else {
+				bigWarp = new BigWarp<>(bwData, bigWarpName, null);
+			}
+			// What does P and Q stand for ? Not sure about the moving and the fixed
+			// one
+			bdvHandleP = new ViewerPanelHandle(bigWarp.getViewerFrameP()
+				.getViewerPanel(), bigWarpName + "_Moving");
+			bdvHandleQ = new ViewerPanelHandle(bigWarp.getViewerFrameQ()
+				.getViewerPanel(), bigWarpName + "_Fixed");
 
-    @Override
-    public void run() {
-        try {
-            if (force2d) {
-                bigWarp = new BigWarp<>(bwData, bigWarpName, BigWarpViewerOptions.options().is2D(true),null);
-            } else {
-                bigWarp = new BigWarp<>(bwData, bigWarpName, null);
-            }
-            // What does P and Q stand for ? Not sure about the moving and the fixed one
-            bdvHandleP = new ViewerPanelHandle(bigWarp.getViewerFrameP().getViewerPanel(), bigWarpName+"_Moving");
-            bdvHandleQ = new ViewerPanelHandle(bigWarp.getViewerFrameQ().getViewerPanel(), bigWarpName+"_Fixed");
+			warpedSources = new SourceAndConverter[movingSources.size()];
 
-            warpedSources = new SourceAndConverter[movingSources.size()];
+			for (int i = 0; i < warpedSources.length; i++) {
+				warpedSources[i] = bdvHandleP.getViewerPanel().state().getSources().get(
+					i);
+			}
 
-            for (int i=0;i<warpedSources.length;i++) {
-                warpedSources[i] = bdvHandleP.getViewerPanel().state().getSources().get(i);
-            }
+			int nSources = bdvHandleP.getViewerPanel().state().getSources().size();
+			gridSource = bdvHandleP.getViewerPanel().state().getSources().get(
+				nSources - 1);
+			warpMagnitudeSource = bdvHandleP.getViewerPanel().state().getSources()
+				.get(nSources - 2);
 
-            int nSources = bdvHandleP.getViewerPanel().state().getSources().size();
-            gridSource = bdvHandleP.getViewerPanel().state().getSources().get(nSources-1);
-            warpMagnitudeSource = bdvHandleP.getViewerPanel().state().getSources().get(nSources-2);
+			// Restores display settings
+			displaysettings.keySet().forEach(setup -> setup.setDisplayRange(
+				displaysettings.get(setup)[0], displaysettings.get(setup)[1]));
 
-            // Restores display settings
-            displaysettings.keySet().forEach(setup ->
-                    setup.setDisplayRange(displaysettings.get(setup)[0], displaysettings.get(setup)[1])
-            );
+		}
+		catch (SpimDataException e) {
+			e.printStackTrace();
+		}
+	}
 
-        } catch (SpimDataException e) {
-            e.printStackTrace();
-        }
-    }
+	// Outputs
 
-    // Outputs
+	public BdvHandle getBdvHandleP() {
+		return bdvHandleP;
+	}
 
-    public BdvHandle getBdvHandleP() {
-        return bdvHandleP;
-    }
+	public BdvHandle getBdvHandleQ() {
+		return bdvHandleQ;
+	}
 
-    public BdvHandle getBdvHandleQ() {
-        return bdvHandleQ;
-    }
+	public BigWarp<?> getBigWarp() {
+		return bigWarp;
+	}
 
-    public BigWarp<?> getBigWarp() {
-        return bigWarp;
-    }
+	public SourceAndConverter<?> getGridSource() {
+		return gridSource;
+	}
 
-    public SourceAndConverter<?> getGridSource() {
-        return gridSource;
-    }
+	public SourceAndConverter<?> getWarpMagnitudeSource() {
+		return warpMagnitudeSource;
+	}
 
-    public SourceAndConverter<?> getWarpMagnitudeSource() {
-        return warpMagnitudeSource;
-    }
-
-    public SourceAndConverter<?>[] getWarpedSources() {
-        return warpedSources;
-    }
+	public SourceAndConverter<?>[] getWarpedSources() {
+		return warpedSources;
+	}
 
 }

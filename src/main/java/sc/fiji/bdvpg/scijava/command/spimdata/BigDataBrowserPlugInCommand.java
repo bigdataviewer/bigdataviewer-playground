@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.spimdata;
 
 import com.google.gson.stream.JsonReader;
@@ -56,157 +57,154 @@ import java.util.Map;
  * @author Nicolas Chiaruttini biop.epfl.ch
  */
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-        menuPath = ScijavaBdvDefaults.RootMenu+"BDVDataset>List BigDataServer Datasets")
-public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand
-{
-    private final Map< String, ImageIcon > imageMap = new HashMap<>();
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"BDVDataset>List BigDataServer Datasets")
+public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand {
 
-    private final Map< String, String > datasetUrlMap = new HashMap<>();
+	private final Map<String, ImageIcon> imageMap = new HashMap<>();
 
-    @Parameter(required = false)
-    String serverurl = "http://tomancak-srv1.mpi-cbg.de:8081";
+	private final Map<String, String> datasetUrlMap = new HashMap<>();
 
-    @Parameter
-    CommandService cs;
+	@Parameter(required = false)
+	String serverurl = "http://tomancak-srv1.mpi-cbg.de:8081";
 
-    @Parameter
-    LogService ls;
+	@Parameter
+	CommandService cs;
 
-    @Override
-    public void run()
-    {
-        final ArrayList< String > nameList = new ArrayList<>();
-        try
-        {
-            getDatasetList(serverurl, nameList );
-        }
-        catch ( final IOException e )
-        {
-            ls.error("Error connecting to server at " + serverurl);
-            e.printStackTrace();
-            return;
-        }
-        createDatasetListUI(serverurl, nameList.toArray() );
-    }
+	@Parameter
+	LogService ls;
 
-    private void getDatasetList( final String remoteUrl, final ArrayList< String > nameList ) throws IOException
-    {
-        // Get JSON string from the server
-        final URL url = new URL( remoteUrl + "/json/" );
+	@Override
+	public void run() {
+		final ArrayList<String> nameList = new ArrayList<>();
+		try {
+			getDatasetList(serverurl, nameList);
+		}
+		catch (final IOException e) {
+			ls.error("Error connecting to server at " + serverurl);
+			e.printStackTrace();
+			return;
+		}
+		createDatasetListUI(serverurl, nameList.toArray());
+	}
 
-        final InputStream is = url.openStream();
-        final JsonReader reader = new JsonReader( new InputStreamReader( is, StandardCharsets.UTF_8) );
+	private void getDatasetList(final String remoteUrl,
+		final ArrayList<String> nameList) throws IOException
+	{
+		// Get JSON string from the server
+		final URL url = new URL(remoteUrl + "/json/");
 
-        reader.beginObject();
+		final InputStream is = url.openStream();
+		final JsonReader reader = new JsonReader(new InputStreamReader(is,
+			StandardCharsets.UTF_8));
 
-        while ( reader.hasNext() )
-        {
-            // skipping id
-            reader.nextName();
+		reader.beginObject();
 
-            reader.beginObject();
+		while (reader.hasNext()) {
+			// skipping id
+			reader.nextName();
 
-            String id = null, description = null, thumbnailUrl = null, datasetUrl = null;
-            while ( reader.hasNext() )
-            {
-                final String name = reader.nextName();
-                switch (name) {
-                    case "id":
-                        id = reader.nextString();
-                        break;
-                    case "description":
-                        description = reader.nextString();
-                        break;
-                    case "thumbnailUrl":
-                        thumbnailUrl = reader.nextString();
-                        break;
-                    case "datasetUrl":
-                        datasetUrl = reader.nextString();
-                        break;
-                    default:
-                        reader.skipValue();
-                        break;
-                }
-            }
+			reader.beginObject();
 
-            if ( id != null )
-            {
-                nameList.add( id );
-                if ( StringUtils.isNotEmpty(thumbnailUrl) )
-                    imageMap.put( id, new ImageIcon( new URL( thumbnailUrl ) ) );
-                if ( datasetUrl != null )
-                    datasetUrlMap.put( id, datasetUrl );
-            }
+			String id = null, description = null, thumbnailUrl = null, datasetUrl =
+				null;
+			while (reader.hasNext()) {
+				final String name = reader.nextName();
+				switch (name) {
+					case "id":
+						id = reader.nextString();
+						break;
+					case "description":
+						description = reader.nextString();
+						break;
+					case "thumbnailUrl":
+						thumbnailUrl = reader.nextString();
+						break;
+					case "datasetUrl":
+						datasetUrl = reader.nextString();
+						break;
+					default:
+						reader.skipValue();
+						break;
+				}
+			}
 
-            reader.endObject();
-        }
+			if (id != null) {
+				nameList.add(id);
+				if (StringUtils.isNotEmpty(thumbnailUrl)) imageMap.put(id,
+					new ImageIcon(new URL(thumbnailUrl)));
+				if (datasetUrl != null) datasetUrlMap.put(id, datasetUrl);
+			}
 
-        reader.endObject();
+			reader.endObject();
+		}
 
-        reader.close();
+		reader.endObject();
 
-    }
+		reader.close();
 
-    private void createDatasetListUI( final String remoteUrl, final Object[] values )
-    {
+	}
 
+	private void createDatasetListUI(final String remoteUrl,
+		final Object[] values)
+	{
 
-        final JList< ? > list = new JList<>( values );
-        list.setCellRenderer( new ThumbnailListRenderer() );
-        list.addMouseListener( new MouseAdapter()
-        {
-            @Override
-            public void mouseClicked( final MouseEvent evt )
-            {
-                final JList< ? > list = ( JList< ? > ) evt.getSource();
-                if ( evt.getClickCount() == 2 )
-                {
-                    final int index = list.locationToIndex( evt.getPoint() );
-                    final String key = String.valueOf( list.getModel().getElementAt( index ) );
-                    final String filename = datasetUrlMap.get( key );
-                    final String title = new File( filename ).getName();
+		final JList<?> list = new JList<>(values);
+		list.setCellRenderer(new ThumbnailListRenderer());
+		list.addMouseListener(new MouseAdapter() {
 
-                    cs.run(SpimdataBigDataServerImportCommand.class,true,
-                            "urlserver",remoteUrl,
-                            "datasetname", title);
-                }
-            }
-        } );
+			@Override
+			public void mouseClicked(final MouseEvent evt) {
+				final JList<?> list = (JList<?>) evt.getSource();
+				if (evt.getClickCount() == 2) {
+					final int index = list.locationToIndex(evt.getPoint());
+					final String key = String.valueOf(list.getModel().getElementAt(
+						index));
+					final String filename = datasetUrlMap.get(key);
+					final String title = new File(filename).getName();
 
-        final JScrollPane scroll = new JScrollPane( list );
-        scroll.setPreferredSize( new Dimension( 600, 800 ) );
+					cs.run(SpimdataBigDataServerImportCommand.class, true, "urlserver",
+						remoteUrl, "datasetname", title);
+				}
+			}
+		});
 
-        final JFrame frame = new JFrame();
-        frame.setTitle( "BigDataServer Browser - " + remoteUrl );
-        frame.add( scroll );
-        frame.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
-        frame.pack();
-        frame.setLocationRelativeTo( null );
-        frame.setVisible( true );
-    }
+		final JScrollPane scroll = new JScrollPane(list);
+		scroll.setPreferredSize(new Dimension(600, 800));
 
-    public class ThumbnailListRenderer extends DefaultListCellRenderer
-    {
-        private static final long serialVersionUID = 1L;
+		final JFrame frame = new JFrame();
+		frame.setTitle("BigDataServer Browser - " + remoteUrl);
+		frame.add(scroll);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.pack();
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+	}
 
-        Font font = new Font( "helvetica", Font.BOLD, 12 );
+	public class ThumbnailListRenderer extends DefaultListCellRenderer {
 
-        @Override
-        public Component getListCellRendererComponent(
-                final JList< ? > list, final Object value, final int index,
-                final boolean isSelected, final boolean cellHasFocus )
-        {
+		private static final long serialVersionUID = 1L;
 
-            final JLabel label = ( JLabel ) super.getListCellRendererComponent(
-                    list, value, index, isSelected, cellHasFocus );
-            label.setIcon( imageMap.get(value) );
-            label.setHorizontalTextPosition( JLabel.RIGHT );
-            label.setFont( font );
-            return label;
-        }
-    }
+		Font font = new Font("helvetica", Font.BOLD, 12);
+
+		@Override
+		public Component getListCellRendererComponent(final JList<?> list,
+			final Object value, final int index, final boolean isSelected,
+			final boolean cellHasFocus)
+		{
+
+			final JLabel label = (JLabel) super.getListCellRendererComponent(list,
+				value, index, isSelected, cellHasFocus);
+			label.setIcon(imageMap.get(value));
+			label.setHorizontalTextPosition(JLabel.RIGHT);
+			label.setFont(font);
+			return label;
+		}
+	}
 
 }

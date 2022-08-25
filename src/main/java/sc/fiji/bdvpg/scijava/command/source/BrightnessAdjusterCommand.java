@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.source;
 
 import bdv.viewer.SourceAndConverter;
@@ -36,27 +37,30 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
 
 /**
- *
  * @author Nicolas Chiaruttini, EPFL 2020
  */
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class,  menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Display>Set Sources Brightness")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"Sources>Display>Set Sources Brightness")
 public class BrightnessAdjusterCommand implements BdvPlaygroundActionCommand {
 
-    @Parameter(label = "Select Source(s)")
-    SourceAndConverter<?>[] sacs;
+	@Parameter(label = "Select Source(s)")
+	SourceAndConverter<?>[] sacs;
 
-    @Parameter()
-    double min;
+	@Parameter()
+	double min;
 
-    @Parameter()
-    double max;
+	@Parameter()
+	double max;
 
-    public void run() {
-        for (SourceAndConverter<?> source:sacs) {
-            new BrightnessAdjuster(source, min, max).run();
-        }
-    }
+	public void run() {
+		for (SourceAndConverter<?> source : sacs) {
+			new BrightnessAdjuster(source, min, max).run();
+		}
+	}
 }

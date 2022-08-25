@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package net.imglib2.realtransform;
 
 import com.google.gson.*;
@@ -37,61 +38,77 @@ import sc.fiji.persist.IClassAdapter;
 import java.lang.reflect.Type;
 
 /**
- * Serializes and deserializes {@link InvertibleRealTransformSequence} object
- *
- * As long as each individual {@link RealTransform} object present in the sequence can be
- * serialized, and implements {@link InvertibleRealTransform},
- * the sequence should be serialized successfully
- *
- * This adapter is located in this package in order to access the protected
- * {@link InvertibleRealTransformSequence#transforms} field
- * of an {@link InvertibleRealTransformSequence}
+ * Serializes and deserializes {@link InvertibleRealTransformSequence} object As
+ * long as each individual {@link RealTransform} object present in the sequence
+ * can be serialized, and implements {@link InvertibleRealTransform}, the
+ * sequence should be serialized successfully This adapter is located in this
+ * package in order to access the protected
+ * {@link InvertibleRealTransformSequence#transforms} field of an
+ * {@link InvertibleRealTransformSequence}
  */
 @Plugin(type = IClassAdapter.class)
-public class InvertibleRealTransformSequenceAdapter implements IClassAdapter<InvertibleRealTransformSequence> {
+public class InvertibleRealTransformSequenceAdapter implements
+	IClassAdapter<InvertibleRealTransformSequence>
+{
 
-    protected static final Logger logger = LoggerFactory.getLogger(InvertibleRealTransformSequenceAdapter.class);
+	protected static final Logger logger = LoggerFactory.getLogger(
+		InvertibleRealTransformSequenceAdapter.class);
 
-    @Override
-    public Class<? extends InvertibleRealTransformSequence> getAdapterClass() {
-        return InvertibleRealTransformSequence.class;
-    }
+	@Override
+	public Class<? extends InvertibleRealTransformSequence> getAdapterClass() {
+		return InvertibleRealTransformSequence.class;
+	}
 
-    @Override
-    public InvertibleRealTransformSequence deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        JsonObject obj = jsonElement.getAsJsonObject();
+	@Override
+	public InvertibleRealTransformSequence deserialize(JsonElement jsonElement,
+		Type type, JsonDeserializationContext jsonDeserializationContext)
+		throws JsonParseException
+	{
+		JsonObject obj = jsonElement.getAsJsonObject();
 
-        int nTransform = obj.get("size").getAsInt();
+		int nTransform = obj.get("size").getAsInt();
 
-        InvertibleRealTransformSequence irts = new InvertibleRealTransformSequence();
+		InvertibleRealTransformSequence irts =
+			new InvertibleRealTransformSequence();
 
-        for (int iTransform = 0; iTransform<nTransform; iTransform++) {
-            // Special case in order to deserialize directly
-            // affine transforms to AffineTransform3D objects
-            JsonObject jsonObj = obj.get("realTransform_"+iTransform).getAsJsonObject();
-            if (jsonObj.has("affinetransform3d")) {
-                AffineTransform3D at3D = jsonDeserializationContext.deserialize(obj.get("realTransform_"+iTransform), AffineTransform3D.class);
-                irts.add(at3D);
-            } else {
-                RealTransform transform = jsonDeserializationContext.deserialize(obj.get("realTransform_"+iTransform), RealTransform.class);
-                if (transform instanceof InvertibleRealTransform) {
-                    irts.add((InvertibleRealTransform) transform);
-                } else {
-                    logger.error("Deserialization error: "+transform+" of class "+transform.getClass().getSimpleName()+" is not invertible!");
-                    return null;
-                }
-            }
-        }
-        return irts;
-    }
+		for (int iTransform = 0; iTransform < nTransform; iTransform++) {
+			// Special case in order to deserialize directly
+			// affine transforms to AffineTransform3D objects
+			JsonObject jsonObj = obj.get("realTransform_" + iTransform)
+				.getAsJsonObject();
+			if (jsonObj.has("affinetransform3d")) {
+				AffineTransform3D at3D = jsonDeserializationContext.deserialize(obj.get(
+					"realTransform_" + iTransform), AffineTransform3D.class);
+				irts.add(at3D);
+			}
+			else {
+				RealTransform transform = jsonDeserializationContext.deserialize(obj
+					.get("realTransform_" + iTransform), RealTransform.class);
+				if (transform instanceof InvertibleRealTransform) {
+					irts.add((InvertibleRealTransform) transform);
+				}
+				else {
+					logger.error("Deserialization error: " + transform + " of class " +
+						transform.getClass().getSimpleName() + " is not invertible!");
+					return null;
+				}
+			}
+		}
+		return irts;
+	}
 
-    @Override
-    public JsonElement serialize(InvertibleRealTransformSequence irts, Type type, JsonSerializationContext jsonSerializationContext) {
-        JsonObject obj = new JsonObject();
-        obj.addProperty("size", irts.transforms.size());
-        for (int iTransform = 0; iTransform<irts.transforms.size(); iTransform++) {
-            obj.add("realTransform_"+iTransform, jsonSerializationContext.serialize(irts.transforms.get(iTransform), RealTransform.class));
-        }
-        return obj;
-    }
+	@Override
+	public JsonElement serialize(InvertibleRealTransformSequence irts, Type type,
+		JsonSerializationContext jsonSerializationContext)
+	{
+		JsonObject obj = new JsonObject();
+		obj.addProperty("size", irts.transforms.size());
+		for (int iTransform = 0; iTransform < irts.transforms
+			.size(); iTransform++)
+		{
+			obj.add("realTransform_" + iTransform, jsonSerializationContext.serialize(
+				irts.transforms.get(iTransform), RealTransform.class));
+		}
+		return obj;
+	}
 }

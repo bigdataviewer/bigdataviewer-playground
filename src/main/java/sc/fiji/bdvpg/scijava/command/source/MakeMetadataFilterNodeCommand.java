@@ -26,6 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.source;
 
 import org.scijava.plugin.Parameter;
@@ -35,39 +36,45 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"Sources>Make Metadata Filter Node",
-description = "Adds a node in the tree view which selects the sources which contain a certain key metadata and which matches a certain regular expression")
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "Sources>Make Metadata Filter Node",
+	description = "Adds a node in the tree view which selects the sources which contain a certain key metadata and which matches a certain regular expression")
 
-public class MakeMetadataFilterNodeCommand implements BdvPlaygroundActionCommand {
+public class MakeMetadataFilterNodeCommand implements
+	BdvPlaygroundActionCommand
+{
 
-    @Parameter(label = "Name of the node")
-    String groupname;
+	@Parameter(label = "Name of the node")
+	String groupname;
 
-    @Parameter(label = "Select Metadata Key")
-    String key;
+	@Parameter(label = "Select Metadata Key")
+	String key;
 
-    @Parameter(label = "Regular expression for Metadata Value (\".*\" matches everything)")
-    String valueregex = ".*";
+	@Parameter(
+		label = "Regular expression for Metadata Value (\".*\" matches everything)")
+	String valueregex = ".*";
 
-    @Parameter
-    SourceAndConverterService sac_service;
+	@Parameter
+	SourceAndConverterService sac_service;
 
-    @Override
-    public void run() {
-        SourceFilterNode sfn = new SourceFilterNode(sac_service.getUI().getTreeModel(),
-                groupname,
-                (sac) -> {
-                    if (sac_service.containsMetadata(sac, key)) {
-                        Object o = sac_service.getMetadata(sac, key);
-                        if ((o!=null) && (o instanceof String)) {
-                            String str = (String) o;
-                            return str.matches(valueregex);
-                        } else return false;
-                    } else return false;
-                },
-                false);
-        sac_service.getUI().addNode(sfn);
-    }
+	@Override
+	public void run() {
+		SourceFilterNode sfn = new SourceFilterNode(sac_service.getUI()
+			.getTreeModel(), groupname, (sac) -> {
+				if (sac_service.containsMetadata(sac, key)) {
+					Object o = sac_service.getMetadata(sac, key);
+					if (o instanceof String) {
+						String str = (String) o;
+						return str.matches(valueregex);
+					}
+					else return false;
+				}
+				else return false;
+			}, false);
+		sac_service.getUI().addNode(sfn);
+	}
 }

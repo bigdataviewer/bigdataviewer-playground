@@ -26,30 +26,37 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
-import ij.IJ;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.navigate.RayCastPositionerSliderAdder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
-@SuppressWarnings({"CanBeFinal", "unused"}) // Because SciJava command fields are set by SciJava pre-processors
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu+"BDV>BDV - Add Z Slider",
-        description = "Adds a z slider onto BDV windows")
-public class BdvZSliderAdderCommand implements BdvPlaygroundActionCommand{
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Set Number Of Timepoints",
+	description = "Sets the number of timepoints in one or several BDV Windows")
 
-    @Parameter(label = "Select BDV Windows")
-    BdvHandle[] bdvhs;
+public class MultiBdvTimepointsSetterCommand implements
+	BdvPlaygroundActionCommand
+{
 
-    @Override
-    public void run() {
-        if (bdvhs.length==0) IJ.log("Please make sure to select a Bdv window.");
-        for (BdvHandle bdvh:bdvhs) {
-            new RayCastPositionerSliderAdder(bdvh).run();
-        }
-    }
+	@Parameter(label = "Select BDV Windows")
+	BdvHandle[] bdvhs;
+
+	@Parameter(label = "Number of timepoints, min = 1", min = "1")
+	int numberoftimepoints;
+
+	public void run() {
+		for (BdvHandle bdvh : bdvhs) {
+			bdvh.getViewerPanel().setNumTimepoints(numberoftimepoints);
+		}
+	}
+
 }
