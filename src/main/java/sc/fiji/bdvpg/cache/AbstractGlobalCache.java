@@ -89,10 +89,14 @@ abstract public class AbstractGlobalCache implements Cache<GlobalCacheKey, Objec
 
     public abstract <V> void touch(GlobalCacheKey key, V value);
 
+    final static String LINKED_HASH_MAP = "LinkedHashMap";
+    final static String CAFFEINE = "Caffeine";
+
     public static class GlobalCacheBuilder{
         private boolean log = false;
         private int msBetweenLog = 2000;
         private long maxCacheSize = Runtime.getRuntime().maxMemory() ==  Long.MAX_VALUE ? 2*1024*1024*1024 : (long) (Runtime.getRuntime().maxMemory() * 0.5);
+        String cacheType = CAFFEINE;
 
         public GlobalCacheBuilder log() {
             log = true;
@@ -104,12 +108,22 @@ abstract public class AbstractGlobalCache implements Cache<GlobalCacheKey, Objec
             return this;
         }
 
-        public BoundedLinkedHashMapGlobalCache createLinkedHashMap() {
-            return new BoundedLinkedHashMapGlobalCache(100, maxCacheSize, log, msBetweenLog);
+        public GlobalCacheBuilder caffeine() {
+            cacheType = CAFFEINE;
+            return this;
         }
 
-        public CaffeineGlobalCache createCaffeineCache() {
-            return new CaffeineGlobalCache(maxCacheSize, log, msBetweenLog);
+        public GlobalCacheBuilder linkedHashMap() {
+            cacheType = LINKED_HASH_MAP;
+            return this;
+        }
+
+        public AbstractGlobalCache create() {
+            switch (cacheType) {
+                case CAFFEINE: return new CaffeineGlobalCache(maxCacheSize, log, msBetweenLog);
+                case LINKED_HASH_MAP: return new BoundedLinkedHashMapGlobalCache(100, maxCacheSize, log, msBetweenLog);
+                default: throw new UnsupportedOperationException("Cannot create cache of type "+cacheType);
+            }
         }
 
     }

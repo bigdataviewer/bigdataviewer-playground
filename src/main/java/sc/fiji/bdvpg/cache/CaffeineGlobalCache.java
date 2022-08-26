@@ -3,18 +3,12 @@ package sc.fiji.bdvpg.cache;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Weigher;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.ref.SoftReference;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
 public class CaffeineGlobalCache extends AbstractGlobalCache {
@@ -96,7 +90,8 @@ public class CaffeineGlobalCache extends AbstractGlobalCache {
 
     @Override
     public String toString() {
-        return "Cache size : " + (cache.estimatedSize());
+        long totalBytes = cache.policy().eviction().get().weightedSize().getAsLong();
+        return "Cache size : " + (totalBytes/ (1024 * 1024)) + " Mb (" + (int) (100.0 * (double) totalBytes / (double) maxCacheSize) + " %)";
     }
 
 }
