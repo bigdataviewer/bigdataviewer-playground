@@ -125,7 +125,7 @@
 		<reflections.version>0.9.11</reflections.version>
 
 		<!-- package version below are determined by the parent pom but need to be upgraded or temporarily fixed for bugs -->
-		<bigwarp_fiji.version>7.0.6-SNAPSHOT</bigwarp_fiji.version>
+		<bigwarp_fiji.version>7.0.6</bigwarp_fiji.version>
 		<ejml.version>0.24</ejml.version>
 
 	</properties>
