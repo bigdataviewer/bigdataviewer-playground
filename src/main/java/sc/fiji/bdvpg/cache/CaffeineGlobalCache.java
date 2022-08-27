@@ -1,3 +1,4 @@
+
 package sc.fiji.bdvpg.cache;
 
 import com.github.benmanes.caffeine.cache.Cache;
@@ -13,85 +14,91 @@ import java.util.function.Predicate;
 
 public class CaffeineGlobalCache extends AbstractGlobalCache {
 
-    final static Logger logger = LoggerFactory.getLogger(CaffeineGlobalCache.class);
+	final static Logger logger = LoggerFactory.getLogger(
+		CaffeineGlobalCache.class);
 
-    final Cache<GlobalCacheKey, Object> cache;
+	final Cache<GlobalCacheKey, Object> cache;
 
-    final long maxCacheSize;
+	final long maxCacheSize;
 
-    CaffeineGlobalCache(long maxCacheSize, boolean log, int msBetweenLogs) {
-        this.maxCacheSize = maxCacheSize;
-        cache = Caffeine.newBuilder()
-                .maximumWeight(maxCacheSize)
-                .softValues()
-                .weigher((Weigher<GlobalCacheKey, Object>) (key, value) -> (int) AbstractGlobalCache.getWeight(value))
-                .build();
+	CaffeineGlobalCache(long maxCacheSize, boolean log, int msBetweenLogs) {
+		this.maxCacheSize = maxCacheSize;
+		cache = Caffeine.newBuilder().maximumWeight(maxCacheSize).softValues()
+			.weigher((Weigher<GlobalCacheKey, Object>) (key,
+				value) -> (int) AbstractGlobalCache.getWeight(value)).build();
 
-        if (log) {
-            TimerTask periodicLogger = new TimerTask() {
-                @Override
-                public void run() {
-                    logger.info(CaffeineGlobalCache.this.toString());
-                }
-            };
+		if (log) {
+			TimerTask periodicLogger = new TimerTask() {
 
-            Timer time = new Timer(); // Instantiate Timer Object
-            time.schedule(periodicLogger, 0, msBetweenLogs);
-        }
+				@Override
+				public void run() {
+					logger.info(CaffeineGlobalCache.this.toString());
+				}
+			};
 
-    }
+			Timer time = new Timer(); // Instantiate Timer Object
+			time.schedule(periodicLogger, 0, msBetweenLogs);
+		}
 
-    public void setMaxSize(long maxCacheSize) {
-        throw new UnsupportedOperationException("Can't changed caffeine backed max cache size");
-    }
+	}
 
-    public void put(GlobalCacheKey key, Object value) {
-        cache.put(key, value);
-    }
+	public void setMaxSize(long maxCacheSize) {
+		throw new UnsupportedOperationException(
+			"Can't changed caffeine backed max cache size");
+	}
 
-    @Override
-    public Object get(GlobalCacheKey key) throws ExecutionException {
-        logger.error("Cannot use get");
-        return null;
-    }
+	public void put(GlobalCacheKey key, Object value) {
+		cache.put(key, value);
+	}
 
-    @Override
-    public Object getIfPresent(GlobalCacheKey key) {
-        return cache.getIfPresent(key);
-    }
+	@Override
+	public Object get(GlobalCacheKey key) throws ExecutionException {
+		logger.error("Cannot use get");
+		return null;
+	}
 
-    @Override
-    public void invalidate(GlobalCacheKey key) {
-        cache.invalidate(key);
-    }
+	@Override
+	public Object getIfPresent(GlobalCacheKey key) {
+		return cache.getIfPresent(key);
+	}
 
-    @Override
-    public void invalidateIf(long parallelismThreshold, Predicate<GlobalCacheKey> condition) {
-        throw new UnsupportedOperationException("Can't invalidate based on predicate");
-    }
+	@Override
+	public void invalidate(GlobalCacheKey key) {
+		cache.invalidate(key);
+	}
 
-    @Override
-    public void invalidateAll(long parallelismThreshold) {
-        cache.invalidateAll();
-    }
+	@Override
+	public void invalidateIf(long parallelismThreshold,
+		Predicate<GlobalCacheKey> condition)
+	{
+		throw new UnsupportedOperationException(
+			"Can't invalidate based on predicate");
+	}
 
-    public long getMaxSize() {
-        return maxCacheSize;
-    }
+	@Override
+	public void invalidateAll(long parallelismThreshold) {
+		cache.invalidateAll();
+	}
 
-    public long getEstimatedSize() {
-        return cache.estimatedSize()*1_000_000;
-    }
+	public long getMaxSize() {
+		return maxCacheSize;
+	}
 
-    @Override
-    public <V> void touch(GlobalCacheKey key, V value) {
-        cache.getIfPresent(key); // for frequency use
-    }
+	public long getEstimatedSize() {
+		return cache.estimatedSize() * 1_000_000;
+	}
 
-    @Override
-    public String toString() {
-        long totalBytes = cache.policy().eviction().get().weightedSize().getAsLong();
-        return "Cache size : " + (totalBytes/ (1024 * 1024)) + " Mb (" + (int) (100.0 * (double) totalBytes / (double) maxCacheSize) + " %)";
-    }
+	@Override
+	public <V> void touch(GlobalCacheKey key, V value) {
+		cache.getIfPresent(key); // for frequency use
+	}
+
+	@Override
+	public String toString() {
+		long totalBytes = cache.policy().eviction().get().weightedSize()
+			.getAsLong();
+		return "Cache size : " + (totalBytes / (1024 * 1024)) + " Mb (" +
+			(int) (100.0 * (double) totalBytes / (double) maxCacheSize) + " %)";
+	}
 
 }

@@ -50,7 +50,7 @@ public class Wave3DSourceGetter implements Runnable,
 	public SourceAndConverter<UnsignedShortType> get() {
 		Source<UnsignedShortType> s = new Procedural3DImageShort(p -> (int) ((Math
 			.sin(p[0] / 20) * Math.sin(p[1] / 40) * Math.sin(p[2] / 5) + 1) * 100))
-				.getSource( "Wave 3D");
+				.getSource("Wave 3D");
 
 		return SourceAndConverterHelper.createSourceAndConverter(s);
 	}

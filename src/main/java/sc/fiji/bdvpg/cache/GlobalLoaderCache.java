@@ -31,6 +31,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package sc.fiji.bdvpg.cache;
 
 import net.imglib2.cache.CacheLoader;
@@ -42,16 +43,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 
 /**
- * LoaderCache which uses BigDataViewer-Playground global cache.
- * See {@link AbstractGlobalCache}
- *
- * Can be used to cache multi-timepoint multi-resolution bdv {@link bdv.viewer.Source}s
+ * LoaderCache which uses BigDataViewer-Playground global cache. See
+ * {@link AbstractGlobalCache} Can be used to cache multi-timepoint
+ * multi-resolution bdv {@link bdv.viewer.Source}s
  *
  * @author Nicolas Chiaruttini
  */
-public class GlobalLoaderCache< K, V > implements LoaderCache< K, V >
-{
-	private final LoaderCache< K, V > cache = new WeakRefLoaderCache<>();
+public class GlobalLoaderCache<K, V> implements LoaderCache<K, V> {
+
+	private final LoaderCache<K, V> cache = new WeakRefLoaderCache<>();
 
 	private final AbstractGlobalCache globalCache;
 
@@ -61,7 +61,9 @@ public class GlobalLoaderCache< K, V > implements LoaderCache< K, V >
 
 	/**
 	 * Creates a loader cache object for a 3D rai of a source
-	 * @param source used in the keys of the global cache to know which object it belongs to
+	 * 
+	 * @param source used in the keys of the global cache to know which object it
+	 *          belongs to
 	 * @param timepoint timepoint of the rai cached
 	 * @param level
 	 */
@@ -69,67 +71,70 @@ public class GlobalLoaderCache< K, V > implements LoaderCache< K, V >
 		this.source = source;
 		this.timepoint = timepoint;
 		this.level = level;
-		globalCache = SourceAndConverterServices.getSourceAndConverterService().getCache();
+		globalCache = SourceAndConverterServices.getSourceAndConverterService()
+			.getCache();
 	}
 
 	/**
 	 * Creates a loader cache object for a specific source object
-	 * @param source used in the keys of the global cache to know which object it belongs to
+	 * 
+	 * @param source used in the keys of the global cache to know which object it
+	 *          belongs to
 	 */
 	public GlobalLoaderCache(Object source) {
 		this.source = source;
 		this.timepoint = -1;
 		this.level = -1;
-		globalCache = SourceAndConverterServices.getSourceAndConverterService().getCache();
+		globalCache = SourceAndConverterServices.getSourceAndConverterService()
+			.getCache();
 	}
 
 	@Override
-	public V getIfPresent( final K key )
-	{
-		final V value = cache.getIfPresent( key );
-		if (value!=null)
-			globalCache.touch(BoundedLinkedHashMapGlobalCache.getKey(source, timepoint, level, key ), value);
+	public V getIfPresent(final K key) {
+		final V value = cache.getIfPresent(key);
+		if (value != null) globalCache.touch(BoundedLinkedHashMapGlobalCache.getKey(
+			source, timepoint, level, key), value);
 		return value;
 	}
 
 	@Override
-	public V get( final K key, final CacheLoader< ? super K, ? extends V > loader ) throws ExecutionException
+	public V get(final K key, final CacheLoader<? super K, ? extends V> loader)
+		throws ExecutionException
 	{
-		final V value = cache.get( key, loader );
-		globalCache.put(BoundedLinkedHashMapGlobalCache.getKey(source, timepoint, level, key ), value);
+		final V value = cache.get(key, loader);
+		globalCache.put(BoundedLinkedHashMapGlobalCache.getKey(source, timepoint,
+			level, key), value);
 		return value;
 	}
 
 	@Override
-	public void persist( final K key )
-	{}
+	public void persist(final K key) {}
 
 	@Override
-	public void persistIf( final Predicate< K > condition )
-	{}
+	public void persistIf(final Predicate<K> condition) {}
 
 	@Override
-	public void persistAll()
-	{}
+	public void persistAll() {}
 
 	@Override
-	public void invalidate( final K key )
-	{
-		cache.invalidate( key );
-		globalCache.invalidate( BoundedLinkedHashMapGlobalCache.getKey(source, timepoint, level, key ) );
+	public void invalidate(final K key) {
+		cache.invalidate(key);
+		globalCache.invalidate(BoundedLinkedHashMapGlobalCache.getKey(source,
+			timepoint, level, key));
 	}
 
 	@Override
-	public void invalidateIf( final long parallelismThreshold, final Predicate< K > condition )
+	public void invalidateIf(final long parallelismThreshold,
+		final Predicate<K> condition)
 	{
-		cache.invalidateIf( parallelismThreshold, condition );
-		globalCache.invalidateIf( BoundedLinkedHashMapGlobalCache.getCondition(source, timepoint, level, condition ) );
+		cache.invalidateIf(parallelismThreshold, condition);
+		globalCache.invalidateIf(BoundedLinkedHashMapGlobalCache.getCondition(
+			source, timepoint, level, condition));
 	}
 
 	@Override
-	public void invalidateAll( final long parallelismThreshold )
-	{
-		cache.invalidateAll( parallelismThreshold );
+	public void invalidateAll(final long parallelismThreshold) {
+		cache.invalidateAll(parallelismThreshold);
 	}
 
 }

@@ -214,6 +214,7 @@ public class SourceAndConverterServiceUI {
 		panel.add(cacheLabel, BorderLayout.SOUTH);
 
 		TimerTask periodicLogger = new TimerTask() {
+
 			@Override
 			public void run() {
 				SwingUtilities.invokeLater(() -> {
@@ -225,12 +226,15 @@ public class SourceAndConverterServiceUI {
 		Timer time = new Timer(); // Instantiate Timer Object
 		time.schedule(periodicLogger, 0, 2000);
 
-		cacheLabel.addMouseListener(new MouseAdapter(){
+		cacheLabel.addMouseListener(new MouseAdapter() {
+
 			@Override
-			public void mouseClicked(MouseEvent e){
-				if(e.getClickCount()==2){
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
 					sourceAndConverterService.getCache().invalidateAll();
-					SwingUtilities.invokeLater(() -> {cacheLabel.setText("Cache cleared.");});
+					SwingUtilities.invokeLater(() -> {
+						cacheLabel.setText("Cache cleared.");
+					});
 				}
 			}
 		});

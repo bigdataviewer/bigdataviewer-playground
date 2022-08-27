@@ -307,30 +307,35 @@ public class SourceAndConverterService extends AbstractService implements
 	private boolean replaceSpimDataCacheByGlobalCache(AbstractSpimData<?> asd) {
 		LoaderCache loaderCache = new GlobalLoaderCache(asd);
 		BasicImgLoader imageLoader = asd.getSequenceDescription().getImgLoader();
-		VolatileGlobalCellCache cache = new VolatileGlobalCellCache(10, Math.max(1,Runtime.getRuntime().availableProcessors()-1));
+		VolatileGlobalCellCache cache = new VolatileGlobalCellCache(10, Math.max(1,
+			Runtime.getRuntime().availableProcessors() - 1));
 		// Now override the backingCache field of the VolatileGlobalCellCache
 		try {
-			Field backingCacheField = VolatileGlobalCellCache.class.getDeclaredField("backingCache");
+			Field backingCacheField = VolatileGlobalCellCache.class.getDeclaredField(
+				"backingCache");
 			backingCacheField.setAccessible(true);
-			backingCacheField.set(cache,loaderCache);
+			backingCacheField.set(cache, loaderCache);
 			// Now overrides the cache in the ImageLoader
 			if (imageLoader instanceof Hdf5ImageLoader) {
 				Field cacheField = Hdf5ImageLoader.class.getDeclaredField("cache");
 				cacheField.setAccessible(true);
-				cacheField.set(imageLoader,cache);
-				return true;
-			} else if (imageLoader instanceof N5ImageLoader) {
-				Field cacheField = N5ImageLoader.class.getDeclaredField("cache");
-				cacheField.setAccessible(true);
-				cacheField.set(imageLoader,cache);
-				return true;
-			} else {
-				Field cacheField = imageLoader.getClass().getDeclaredField("cache");
-				cacheField.setAccessible(true);
-				cacheField.set(imageLoader,cache);
+				cacheField.set(imageLoader, cache);
 				return true;
 			}
-		} catch (NoSuchFieldException | IllegalAccessException e) {
+			else if (imageLoader instanceof N5ImageLoader) {
+				Field cacheField = N5ImageLoader.class.getDeclaredField("cache");
+				cacheField.setAccessible(true);
+				cacheField.set(imageLoader, cache);
+				return true;
+			}
+			else {
+				Field cacheField = imageLoader.getClass().getDeclaredField("cache");
+				cacheField.setAccessible(true);
+				cacheField.set(imageLoader, cache);
+				return true;
+			}
+		}
+		catch (NoSuchFieldException | IllegalAccessException e) {
 			e.printStackTrace();
 			return false;
 		}
@@ -486,9 +491,12 @@ public class SourceAndConverterService extends AbstractService implements
 		boolean success = replaceSpimDataCacheByGlobalCache(asd);
 
 		if (!success) {
-			logger.warn("Could not link abstract spimdata cache to Bdv Playground global cache");
-		} else {
-			logger.info("Spimdata "+asd+" is using the Bdv Playground global cache.");
+			logger.warn(
+				"Could not link abstract spimdata cache to Bdv Playground global cache");
+		}
+		else {
+			logger.info("Spimdata " + asd +
+				" is using the Bdv Playground global cache.");
 		}
 
 	}
@@ -706,17 +714,20 @@ public class SourceAndConverterService extends AbstractService implements
 		logger.info(" --- Setting global cache ");
 
 		Gson gson = new Gson();
-		String defaultCacheBuilder = gson.toJson(GlobalCacheBuilder.builder(), GlobalCacheBuilder.class);
-		String cacheBuilderJson = prefService.get(this.getClass(), "cache.builder", defaultCacheBuilder);
+		String defaultCacheBuilder = gson.toJson(GlobalCacheBuilder.builder(),
+			GlobalCacheBuilder.class);
+		String cacheBuilderJson = prefService.get(this.getClass(), "cache.builder",
+			defaultCacheBuilder);
 
 		try {
-			globalCache =
-					gson.fromJson(cacheBuilderJson, GlobalCacheBuilder.class)
-					.create();
-		} catch (Exception e) {
+			globalCache = gson.fromJson(cacheBuilderJson, GlobalCacheBuilder.class)
+				.create();
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Restoring default cache builder");
-			String cacheBuilderSerialized = gson.toJson(GlobalCacheBuilder.builder(),GlobalCacheBuilder.class);
+			String cacheBuilderSerialized = gson.toJson(GlobalCacheBuilder.builder(),
+				GlobalCacheBuilder.class);
 			logger.debug("Cache builder serialized into : " + cacheBuilderSerialized);
 			// Saved in prefs for next session
 			prefService.put(this.getClass(), "cache.builder", cacheBuilderSerialized);

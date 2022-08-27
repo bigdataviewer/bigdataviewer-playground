@@ -45,7 +45,9 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 	menuPath = ScijavaBdvDefaults.RootMenu +
 		"BDV>BDV - Remove Sources In Multiple BDV Windows",
 	description = "Removes one or several sources from several existing BDV windows")
-public class MultiBdvSourcesRemoverCommand implements BdvPlaygroundActionCommand {
+public class MultiBdvSourcesRemoverCommand implements
+	BdvPlaygroundActionCommand
+{
 
 	@Parameter(label = "Select BDV Windows")
 	BdvHandle[] bdvhs;

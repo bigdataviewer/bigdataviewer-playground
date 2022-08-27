@@ -1,3 +1,4 @@
+
 package sc.fiji.bdvpg.scijava.command;
 
 import com.google.gson.Gson;
@@ -12,94 +13,118 @@ import sc.fiji.bdvpg.cache.GlobalCacheBuilder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
-@Plugin(type = Command.class,
-        menuPath = ScijavaBdvDefaults.RootMenu + "Set cache options",
-        description = "Sets Bdv Playground cache options (needs a restart)", initializer = "initialize")
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu +
+	"Set cache options",
+	description = "Sets Bdv Playground cache options (needs a restart)",
+	initializer = "initialize")
 public class CacheOptionsCommand implements Command {
 
-    final public static Logger logger = LoggerFactory.getLogger(CacheOptionsCommand.class);
+	final public static Logger logger = LoggerFactory.getLogger(
+		CacheOptionsCommand.class);
 
-    @Parameter
-    PrefService prefs;
+	@Parameter
+	PrefService prefs;
 
-    @Parameter(label = "Cache type", choices = {"Caffeine", "LinkedHashMap"}, persist = false)
-    String cache_type;
+	@Parameter(label = "Cache type", choices = { "Caffeine", "LinkedHashMap" },
+		persist = false)
+	String cache_type;
 
-    @Parameter(label = "Log cache (ms between log), negative to avoid logging", persist = false)
-    int log_ms;
+	@Parameter(label = "Log cache (ms between log), negative to avoid logging",
+		persist = false)
+	int log_ms;
 
-    @Parameter(label = "Rule: use a ratio of all memory available (%)", callback = "useRatio", persist = false)
-    int mem_ratio_pc;
+	@Parameter(label = "Rule: use a ratio of all memory available (%)",
+		callback = "useRatio", persist = false)
+	int mem_ratio_pc;
 
-    @Parameter(label = "Rule: set a size for cache (Mb)", callback = "useMbForCache", persist = false)
-    int mem_for_cache_mb;
+	@Parameter(label = "Rule: set a size for cache (Mb)",
+		callback = "useMbForCache", persist = false)
+	int mem_for_cache_mb;
 
-    @Parameter(label = "Rule: set a size for the rest of the application (Mb)", callback = "useMbForElse", persist = false)
-    int mem_for_everything_else_mb;
+	@Parameter(label = "Rule: set a size for the rest of the application (Mb)",
+		callback = "useMbForElse", persist = false)
+	int mem_for_everything_else_mb;
 
-    @Parameter(label = "Reset to default", callback = "reset")
-    Button button;
+	@Parameter(label = "Reset to default", callback = "reset")
+	Button button;
 
-    @Override
-    public void run() {
-        GlobalCacheBuilder builder = GlobalCacheBuilder.builder();
-        switch (cache_type) {
-            case GlobalCacheBuilder.CAFFEINE:builder.caffeine();break;
-            case GlobalCacheBuilder.LINKED_HASH_MAP:builder.linkedHashMap();break;
-        }
-        if (log_ms>0) builder.log(log_ms);
-        if (mem_for_cache_mb>0) builder.memoryForCache((long) mem_for_cache_mb * 1024L * 1024L);
-        if (mem_for_everything_else_mb>0) builder.memoryForEverythingElse((long) mem_for_everything_else_mb * 1024L * 1024L);
-        if (mem_ratio_pc>0) builder.memoryRatioForCache(((double)mem_ratio_pc)/100);
+	@Override
+	public void run() {
+		GlobalCacheBuilder builder = GlobalCacheBuilder.builder();
+		switch (cache_type) {
+			case GlobalCacheBuilder.CAFFEINE:
+				builder.caffeine();
+				break;
+			case GlobalCacheBuilder.LINKED_HASH_MAP:
+				builder.linkedHashMap();
+				break;
+		}
+		if (log_ms > 0) builder.log(log_ms);
+		if (mem_for_cache_mb > 0) builder.memoryForCache((long) mem_for_cache_mb *
+			1024L * 1024L);
+		if (mem_for_everything_else_mb > 0) builder.memoryForEverythingElse(
+			(long) mem_for_everything_else_mb * 1024L * 1024L);
+		if (mem_ratio_pc > 0) builder.memoryRatioForCache(((double) mem_ratio_pc) /
+			100);
 
-        String serializedCacheBuilder = new Gson().toJson(builder, GlobalCacheBuilder.class);
+		String serializedCacheBuilder = new Gson().toJson(builder,
+			GlobalCacheBuilder.class);
 
-        logger.info("Cache builder : "+serializedCacheBuilder);
+		logger.info("Cache builder : " + serializedCacheBuilder);
 
-        prefs.put(SourceAndConverterService.class, "cache.builder", serializedCacheBuilder);
-    }
+		prefs.put(SourceAndConverterService.class, "cache.builder",
+			serializedCacheBuilder);
+	}
 
-    void initialize() {
-        Gson gson = new Gson();
-        String defaultCacheBuilder = gson.toJson(GlobalCacheBuilder.builder(), GlobalCacheBuilder.class);
-        String cacheBuilderJson = prefs.get(SourceAndConverterService.class,"cache.builder",
-                defaultCacheBuilder);
-        try {
-            GlobalCacheBuilder builder = gson.fromJson(cacheBuilderJson, GlobalCacheBuilder.class);
-            setParametersFromBuilder(builder);
-        } catch (Exception e) {
-            reset();
-        }
-    }
+	void initialize() {
+		Gson gson = new Gson();
+		String defaultCacheBuilder = gson.toJson(GlobalCacheBuilder.builder(),
+			GlobalCacheBuilder.class);
+		String cacheBuilderJson = prefs.get(SourceAndConverterService.class,
+			"cache.builder", defaultCacheBuilder);
+		try {
+			GlobalCacheBuilder builder = gson.fromJson(cacheBuilderJson,
+				GlobalCacheBuilder.class);
+			setParametersFromBuilder(builder);
+		}
+		catch (Exception e) {
+			reset();
+		}
+	}
 
-    void setParametersFromBuilder(GlobalCacheBuilder builder) {
-        cache_type = builder.getCacheType();
-        mem_ratio_pc = builder.getMemoryRatioForCache()>0? (int)(builder.getMemoryRatioForCache()*100): -1;
-        mem_for_cache_mb = builder.getMemoryInBytesForCache()>0? (int) (builder.getMemoryInBytesForCache() / (1024 * 1024)) : -1;
-        mem_for_everything_else_mb = builder.getMemoryInBytesForEverythingElse()>0? (int) (builder.getMemoryInBytesForEverythingElse() / (1024 * 1024)) : -1;
-        if (builder.getLog()) {
-            log_ms = builder.getMsBetweenLog();
-        } else {
-            log_ms = -1;
-        }
-    }
+	void setParametersFromBuilder(GlobalCacheBuilder builder) {
+		cache_type = builder.getCacheType();
+		mem_ratio_pc = builder.getMemoryRatioForCache() > 0 ? (int) (builder
+			.getMemoryRatioForCache() * 100) : -1;
+		mem_for_cache_mb = builder.getMemoryInBytesForCache() > 0 ? (int) (builder
+			.getMemoryInBytesForCache() / (1024 * 1024)) : -1;
+		mem_for_everything_else_mb = builder.getMemoryInBytesForEverythingElse() > 0
+			? (int) (builder.getMemoryInBytesForEverythingElse() / (1024 * 1024))
+			: -1;
+		if (builder.getLog()) {
+			log_ms = builder.getMsBetweenLog();
+		}
+		else {
+			log_ms = -1;
+		}
+	}
 
-    void reset() {
-        setParametersFromBuilder(GlobalCacheBuilder.builder());
-    }
+	void reset() {
+		setParametersFromBuilder(GlobalCacheBuilder.builder());
+	}
 
-    void useRatio() {
-        mem_for_cache_mb = -1;
-        mem_for_everything_else_mb = -1;
-    }
+	void useRatio() {
+		mem_for_cache_mb = -1;
+		mem_for_everything_else_mb = -1;
+	}
 
-    void useMbForCache() {
-        mem_ratio_pc = -1;
-        mem_for_everything_else_mb = -1;
-    }
+	void useMbForCache() {
+		mem_ratio_pc = -1;
+		mem_for_everything_else_mb = -1;
+	}
 
-    void useMbForElse() {
-        mem_ratio_pc = -1;
-        mem_for_cache_mb = -1;
-    }
+	void useMbForElse() {
+		mem_ratio_pc = -1;
+		mem_for_cache_mb = -1;
+	}
 }

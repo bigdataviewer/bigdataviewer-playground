@@ -61,7 +61,7 @@ public class MandelbrotSourceGetter implements Runnable,
 				re = squre - squim + p[0];
 			}
 			return i;
-		}).getSource( "Mandelbrot Set");
+		}).getSource("Mandelbrot Set");
 
 		return SourceAndConverterHelper.createSourceAndConverter(s);
 	}
