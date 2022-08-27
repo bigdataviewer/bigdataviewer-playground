@@ -60,7 +60,7 @@ public class GlobalLoaderCache<K, V> implements LoaderCache<K, V> {
 	 * @param source used in the keys of the global cache to know which object it
 	 *          belongs to
 	 * @param timepoint timepoint of the rai cached
-	 * @param level
+	 * @param level resolution level
 	 */
 	public GlobalLoaderCache(Object source, int timepoint, int level) {
 		this.source = source;

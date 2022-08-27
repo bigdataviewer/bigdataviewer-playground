@@ -110,6 +110,7 @@ public class EmptySourceAndConverterCreator implements Runnable,
 	 * @param nx number of voxels in x
 	 * @param ny number of voxels in y
 	 * @param nz number of voxels in z
+	 * @param voxelDimensions voxel dimensions of this source
 	 */
 	public EmptySourceAndConverterCreator(String name, RealInterval interval,
 		long nx, long ny, long nz, VoxelDimensions voxelDimensions)

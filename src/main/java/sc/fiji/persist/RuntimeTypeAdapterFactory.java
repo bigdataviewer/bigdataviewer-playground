@@ -139,15 +139,6 @@ import java.util.Map;
  * name to the {@link #of} factory method. If you don't supply an explicit type
  * field name, {@code "type"} will be used.
  * 
- * <pre>
- * 
- * {
- * 	&#64;code
- * 	RuntimeTypeAdapterFactory<Shape> shapeAdapterFactory =
- * 		RuntimeTypeAdapterFactory.of(Shape.class, "type");
- * }
- * </pre>
- * 
  * Next register all of your subtypes. Every subtype must be explicitly
  * registered. This protects your application from injection attacks. If you
  * don't supply an explicit type label, the type's simple name will be used.
@@ -173,17 +164,7 @@ import java.util.Map;
  * </pre>
  * 
  * Like {@code GsonBuilder}, this API supports chaining:
- * 
- * <pre>
- * 
- * {
- * 	&#64;code
- * 	RuntimeTypeAdapterFactory<Shape> shapeAdapterFactory =
- * 		RuntimeTypeAdapterFactory.of(Shape.class).registerSubtype(
- * 			Rectangle.class).registerSubtype(Circle.class).registerSubtype(
- * 				Diamond.class);
- * }
- * </pre>
+ *
  *
  * Serialization and deserialization In order to serialize and deserialize a
  * polymorphic object, you must specify the base type explicitly.

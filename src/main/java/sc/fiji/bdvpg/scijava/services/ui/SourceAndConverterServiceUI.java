@@ -599,6 +599,7 @@ public class SourceAndConverterServiceUI {
 	}
 
 	/**
+	 * @param tree the tree view of sourceandconverters
 	 * @return an array containing the list of all {@link SourceAndConverter}
 	 *         selected by the user: - all children of a selected node are
 	 *         considered selected - the list does not contain duplicates - the

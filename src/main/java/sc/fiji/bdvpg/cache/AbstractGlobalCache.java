@@ -51,7 +51,7 @@ import java.util.function.Predicate;
  * global cache. Two implementations are provided: - a Caffeine backed cache
  * {@link CaffeineGlobalCache} - and a LinkedHashMap cache
  * {@link BoundedLinkedHashMapGlobalCache} The
- * {@link AbstractGlobalCache.Builder} object can be serialized to store the
+ * {@link GlobalCacheBuilder} object can be serialized to store the
  * cache configuration The global caching allows to bound the memory used when
  * many sources are potentially accessed in a random manner by the program. The
  * reason to use many sources is if the user wants to work on different spim

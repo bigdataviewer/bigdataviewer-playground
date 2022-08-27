@@ -136,6 +136,8 @@ public class ResampledSource<T extends NumericType<T> & NativeType<T>>
 	 *          accessed / reset
 	 * @param originInterpolation specifies whether the origin source should be
 	 *          interpolated of not in the resampling process
+	 * @param defaultMipMapLevel mipmap level chosen to resample the origin source
+	 *                           if reuseMipMaps is false
 	 */
 	public ResampledSource(Source<T> source, Source<?> resamplingModel,
 		String name, boolean reuseMipMaps, boolean cache,

@@ -59,7 +59,8 @@ public class SourceTransformHelper {
 	 *
 	 * @param affineTransform3D affine transform 3d
 	 * @param sacTR source to transform
-	 * @return transformed source<
+	 * @param <T> the pixel type of this source and converter object
+	 * @return transformed source
 	 */
 	public static <T> SourceAndConverter<T> mutate(
 		AffineTransform3D affineTransform3D,
@@ -95,6 +96,7 @@ public class SourceTransformHelper {
 	 *
 	 * @param affineTransform3D affine transform to append
 	 * @param sacTR source to transform
+	 * @param <T> the pixel type of this source and converter object
 	 * @return a transformed source ( same as the input for append, unless it's
 	 *         not possible )
 	 */
@@ -124,7 +126,7 @@ public class SourceTransformHelper {
 	/**
 	 * branch between setTransformedSourceAndConverter and
 	 * setLastSpimdataTransformation depending on the source class
-	 *
+	 * @param <T> the pixel type of this source and converter object
 	 * @param affineTransform3D affine transform 3d
 	 * @param sacTR source to transform
 	 * @return transformed source
@@ -159,7 +161,7 @@ public class SourceTransformHelper {
 
 	/**
 	 * Ignores registration
-	 * 
+	 * @param <T> the pixel type of this source and converter object
 	 * @param affineTransform3D affine transform 3D
 	 * @param sacTR the source and a time range, combined in a single class
 	 *          {@link SourceAndConverterAndTimeRange}
@@ -176,10 +178,11 @@ public class SourceTransformHelper {
 
 	/**
 	 * Ignores registration, and prints the matrix with the standard out
-	 * 
+	 * @param <T> the pixel type of this source and converter object
 	 * @param affineTransform3D affine transform 3D
 	 * @param sacTR the source and a time range, combined in a single class
 	 *          {@link SourceAndConverterAndTimeRange}
+	 * @param logger where to display the affine transform
 	 * @return the untransformed source, because the transformation has been
 	 *         canceled
 	 */
@@ -194,7 +197,7 @@ public class SourceTransformHelper {
 	/**
 	 * if a source has a linked spimdata, mutates the last registration to account
 	 * for changes
-	 * 
+	 * @param <T> the pixel type of this source and converter object
 	 * @param affineTransform3D affine transform
 	 * @param sacTR source to transform
 	 * @return the transformed source (equals to the input, the underlying
@@ -254,8 +257,8 @@ public class SourceTransformHelper {
 	/**
 	 * if a source has a linked spimdata, mutates the last registration to account
 	 * for changes contrary to mutate, the previous transform is erased and not
-	 * preconcatenates
-	 * 
+	 * preconcatenated
+	 * @param <T> the pixel type of this source and converter object
 	 * @param affineTransform3D affine transform 3d
 	 * @param sacTR source to transform
 	 * @return transformed source
@@ -312,7 +315,7 @@ public class SourceTransformHelper {
 	/**
 	 * if a source has a linked spimdata, appends a new transformation in the
 	 * registration model
-	 * 
+	 * @param <T> the pixel type of this source and converter object
 	 * @param affineTransform3D affine transform 3d
 	 * @param sacTR source to transform
 	 * @return transformed source
@@ -364,7 +367,7 @@ public class SourceTransformHelper {
 	/**
 	 * Wraps into transformed sources the registered sources Note : time range is
 	 * ignored (using TransformedSource)
-	 * 
+	 * @param <T> the pixel type of this source and converter object
 	 * @param affineTransform3D affine transform 3d
 	 * @param sacTR source to transform
 	 * @return transformed source
@@ -379,7 +382,7 @@ public class SourceTransformHelper {
 	/**
 	 * provided a source was already a transformed source, updates the inner
 	 * affineTransform3D Note : timerange ignored
-	 * 
+	 * @param <T> the pixel type of this source and converter object
 	 * @param affineTransform3D affine transform 3d
 	 * @param sacTR source to transform
 	 * @return mutated transformed source, if possible
@@ -400,7 +403,7 @@ public class SourceTransformHelper {
 	 * provided a source was already a transformed source, sets the inner
 	 * affineTransform3D Contrary to mutateTransformedSourceAndConverter, the
 	 * original transform is not preconcatenated Note : timerange ignored
-	 * 
+	 * @param <T> the pixel type of this source and converter object
 	 * @param affineTransform3D affine transform 3d
 	 * @param sacTR source to transform
 	 * @return transformed source
