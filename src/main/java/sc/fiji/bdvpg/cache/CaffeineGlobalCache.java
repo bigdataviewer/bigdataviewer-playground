@@ -31,7 +31,7 @@ public class CaffeineGlobalCache extends AbstractGlobalCache {
             TimerTask periodicLogger = new TimerTask() {
                 @Override
                 public void run() {
-                    logger.info(this.toString());
+                    logger.info(CaffeineGlobalCache.this.toString());
                 }
             };
 

@@ -12,6 +12,36 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 
+/**
+ * A memory bounded global cache at the JVM level that can be used by
+ * many bigdataviewer sources coming from different origins (spimdata, resampled sources).
+ * To use it, instantiate a {@link GlobalLoaderCache}, and the loaded objects will be
+ * forwarded to the global cache of BigDataViewer-Playground. BigDataViewer-Playground
+ * also attempts to override the cache of any {@link bdv.ViewerImgLoader} in order to use
+ * the bigdataviewer playground global cache.
+ *
+ * Two implementations are provided:
+ * - a Caffeine backed cache {@link CaffeineGlobalCache}
+ * - and a LinkedHashMap cache {@link BoundedLinkedHashMapGlobalCache}
+ *
+ * The {@link AbstractGlobalCache.Builder} object can be serialized to store the cache configuration
+ *
+ * The global caching allows to bound the memory used when many sources
+ * are potentially accessed in a random manner by the program. The reason to use many sources is
+ * if the user wants to work on different spim data objects at the same time,
+ * work with resampled sources, etc
+ *
+ * Global caching allow to bound the memory used at the JVM level, instead of a per source level
+ * or per spimdata level.
+ *
+ * Each value of the value is weighted by its memory footprint, assuming it is a {@link Cell}
+ * object. If the value is not a Cell object, an error is logged. This allows to bound memory correctly
+ * even when sources have very different block size (setting a fixed number of items maintained in cache
+ * would not be precise enough).
+ *
+ * @author Nicolas Chiaruttini
+ *
+ */
 abstract public class AbstractGlobalCache implements Cache<GlobalCacheKey, Object > {
 
     final static private Logger logger = LoggerFactory.getLogger(AbstractGlobalCache.class);
@@ -83,48 +113,7 @@ abstract public class AbstractGlobalCache implements Cache<GlobalCacheKey, Objec
 
     abstract public long getEstimatedSize();
 
-    public static AbstractGlobalCache.GlobalCacheBuilder builder() {
-        return new AbstractGlobalCache.GlobalCacheBuilder();
-    }
-
     public abstract <V> void touch(GlobalCacheKey key, V value);
 
-    final static String LINKED_HASH_MAP = "LinkedHashMap";
-    final static String CAFFEINE = "Caffeine";
 
-    public static class GlobalCacheBuilder{
-        private boolean log = false;
-        private int msBetweenLog = 2000;
-        private long maxCacheSize = Runtime.getRuntime().maxMemory() ==  Long.MAX_VALUE ? 2*1024*1024*1024 : (long) (Runtime.getRuntime().maxMemory() * 0.5);
-        String cacheType = CAFFEINE;
-
-        public GlobalCacheBuilder log() {
-            log = true;
-            return this;
-        }
-
-        public GlobalCacheBuilder maxSize(long size) {
-            maxCacheSize = size;
-            return this;
-        }
-
-        public GlobalCacheBuilder caffeine() {
-            cacheType = CAFFEINE;
-            return this;
-        }
-
-        public GlobalCacheBuilder linkedHashMap() {
-            cacheType = LINKED_HASH_MAP;
-            return this;
-        }
-
-        public AbstractGlobalCache create() {
-            switch (cacheType) {
-                case CAFFEINE: return new CaffeineGlobalCache(maxCacheSize, log, msBetweenLog);
-                case LINKED_HASH_MAP: return new BoundedLinkedHashMapGlobalCache(100, maxCacheSize, log, msBetweenLog);
-                default: throw new UnsupportedOperationException("Cannot create cache of type "+cacheType);
-            }
-        }
-
-    }
 }

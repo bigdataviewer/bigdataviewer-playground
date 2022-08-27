@@ -29,8 +29,7 @@
 
 package bdv.util;
 
-import net.imglib2.cache.ref.BoundedSoftRefLoaderCache;
-import sc.fiji.bdvpg.cache.BdvPGLoaderCache;
+import sc.fiji.bdvpg.cache.GlobalLoaderCache;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.lazy.Caches;
 import net.imglib2.cache.Cache;
@@ -93,7 +92,7 @@ public class RAIHelper {
 		final CachedCellImg<T, ?> img;
 		final Cache<Long, Cell<?>> cache =
 				//new BoundedSoftRefLoaderCache(100)
-				new BdvPGLoaderCache(objectSource, timepoint, level)
+				new GlobalLoaderCache(objectSource, timepoint, level)
 						.withLoader(
 			LoadedCellCacheLoader.get(grid, loader, type, AccessFlags.setOf(
 				VOLATILE)));

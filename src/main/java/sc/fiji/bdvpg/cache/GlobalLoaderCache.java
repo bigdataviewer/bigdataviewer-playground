@@ -42,9 +42,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 
 /**
- * TODO
+ * LoaderCache which uses BigDataViewer-Playground global cache.
+ * See {@link AbstractGlobalCache}
+ *
+ * Can be used to cache multi-timepoint multi-resolution bdv {@link bdv.viewer.Source}s
+ *
+ * @author Nicolas Chiaruttini
  */
-public class BdvPGLoaderCache< K, V > implements LoaderCache< K, V >
+public class GlobalLoaderCache< K, V > implements LoaderCache< K, V >
 {
 	private final LoaderCache< K, V > cache = new WeakRefLoaderCache<>();
 
@@ -54,14 +59,24 @@ public class BdvPGLoaderCache< K, V > implements LoaderCache< K, V >
 
 	private final int timepoint, level;
 
-	public BdvPGLoaderCache(Object source, int timepoint, int level) {
+	/**
+	 * Creates a loader cache object for a 3D rai of a source
+	 * @param source used in the keys of the global cache to know which object it belongs to
+	 * @param timepoint timepoint of the rai cached
+	 * @param level
+	 */
+	public GlobalLoaderCache(Object source, int timepoint, int level) {
 		this.source = source;
 		this.timepoint = timepoint;
 		this.level = level;
 		globalCache = SourceAndConverterServices.getSourceAndConverterService().getCache();
 	}
 
-	public BdvPGLoaderCache(Object source) {
+	/**
+	 * Creates a loader cache object for a specific source object
+	 * @param source used in the keys of the global cache to know which object it belongs to
+	 */
+	public GlobalLoaderCache(Object source) {
 		this.source = source;
 		this.timepoint = -1;
 		this.level = -1;

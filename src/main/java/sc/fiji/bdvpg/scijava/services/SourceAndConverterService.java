@@ -42,6 +42,7 @@ import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.gson.Gson;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.base.Entity;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
@@ -62,9 +63,11 @@ import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;
 import org.scijava.module.ModuleItem;
 import org.scijava.object.ObjectService;
+import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
+import org.scijava.prefs.PrefService;
 import org.scijava.script.ScriptService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.SciJavaService;
@@ -72,9 +75,12 @@ import org.scijava.service.Service;
 import org.scijava.ui.UIService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
+import sc.fiji.bdvpg.bdv.supplier.IBdvSupplier;
+import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
 import sc.fiji.bdvpg.cache.AbstractGlobalCache;
-import sc.fiji.bdvpg.cache.BdvPGLoaderCache;
-import sc.fiji.bdvpg.cache.BoundedLinkedHashMapGlobalCache;
+import sc.fiji.bdvpg.cache.GlobalCacheBuilder;
+import sc.fiji.bdvpg.cache.GlobalLoaderCache;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
@@ -82,8 +88,10 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.spimdata.EntityHandler;
 import sc.fiji.bdvpg.spimdata.IEntityHandlerService;
+import sc.fiji.persist.ScijavaGsonHelper;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -129,6 +137,12 @@ public class SourceAndConverterService extends AbstractService implements
 	 */
 	@Parameter
 	ObjectService objectService;
+
+	/**
+	 * PrefService for cache properties retrieval
+	 */
+	@Parameter
+	PrefService prefService;
 
 	/**
 	 * ScriptService : used for adding Source alias to help for scripting
@@ -284,18 +298,14 @@ public class SourceAndConverterService extends AbstractService implements
 		}
 	}
 
-	final AbstractGlobalCache globalCache = AbstractGlobalCache.builder().log()
-			.caffeine()
-			.create();
-	//		.createCaffeineCache();
-
+	private AbstractGlobalCache globalCache;
 
 	public AbstractGlobalCache getCache() {
 		return globalCache;
 	}
 
 	private boolean replaceSpimDataCacheByGlobalCache(AbstractSpimData<?> asd) {
-		LoaderCache loaderCache = new BdvPGLoaderCache(asd);
+		LoaderCache loaderCache = new GlobalLoaderCache(asd);
 		BasicImgLoader imageLoader = asd.getSequenceDescription().getImgLoader();
 		VolatileGlobalCellCache cache = new VolatileGlobalCellCache(10, Math.max(1,Runtime.getRuntime().availableProcessors()-1));
 		// Now override the backingCache field of the VolatileGlobalCellCache
@@ -692,6 +702,26 @@ public class SourceAndConverterService extends AbstractService implements
 		spimdataToMetadata = CacheBuilder.newBuilder().weakKeys().build();
 
 		registerDefaultActions();
+
+		logger.info(" --- Setting global cache ");
+
+		Gson gson = new Gson();
+		String defaultCacheBuilder = gson.toJson(GlobalCacheBuilder.builder(), GlobalCacheBuilder.class);
+		String cacheBuilderJson = prefService.get(this.getClass(), "cache.builder", defaultCacheBuilder);
+
+		try {
+			globalCache =
+					gson.fromJson(cacheBuilderJson, GlobalCacheBuilder.class)
+					.create();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Restoring default cache builder");
+			String cacheBuilderSerialized = gson.toJson(GlobalCacheBuilder.builder(),GlobalCacheBuilder.class);
+			logger.debug("Cache builder serialized into : " + cacheBuilderSerialized);
+			// Saved in prefs for next session
+			prefService.put(this.getClass(), "cache.builder", cacheBuilderSerialized);
+			globalCache = GlobalCacheBuilder.builder().create();
+		}
 
 		if (!context().getService(UIService.class).isHeadless()) {
 			logger.debug(
