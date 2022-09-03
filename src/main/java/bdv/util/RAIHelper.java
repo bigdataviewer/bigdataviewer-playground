@@ -53,8 +53,6 @@ import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import org.janelia.saalfeldlab.n5.imglib2.RandomAccessibleLoader;
-//import org.janelia.saalfeldlab.n5.imglib2.RandomAccessibleLoader;
 
 import static net.imglib2.img.basictypeaccess.AccessFlags.VOLATILE;
 import static net.imglib2.type.PrimitiveType.BYTE;
@@ -87,14 +85,10 @@ public class RAIHelper {
 
 		final T type = Util.getTypeFromInterval(source);
 
-		final long costPerValue = getBitsPerBlock(blockSize, type);
-
 		final CachedCellImg<T, ?> img;
-		final Cache<Long, Cell<?>> cache =
-			// new BoundedSoftRefLoaderCache(100)
-			new GlobalLoaderCache(objectSource, timepoint, level).withLoader(
-				LoadedCellCacheLoader.get(grid, loader, type, AccessFlags.setOf(
-					VOLATILE)));
+		final Cache<Long, Cell<?>> cache = new GlobalLoaderCache(objectSource,
+			timepoint, level).withLoader(LoadedCellCacheLoader.get(grid, loader, type,
+				AccessFlags.setOf(VOLATILE)));
 
 		if (GenericByteType.class.isInstance(type)) {
 			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(

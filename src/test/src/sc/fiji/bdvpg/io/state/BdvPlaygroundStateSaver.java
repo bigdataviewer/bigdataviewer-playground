@@ -33,7 +33,11 @@ import org.junit.After;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.*;
+import sc.fiji.bdvpg.AffineTransformSourceDemo;
+import sc.fiji.bdvpg.BigWarpDemo;
+import sc.fiji.bdvpg.ResamplingDemo;
+import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.WarpedSourceDemo;
 import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
 
 import java.io.File;

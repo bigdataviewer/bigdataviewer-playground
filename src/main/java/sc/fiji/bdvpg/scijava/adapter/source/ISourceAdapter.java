@@ -31,7 +31,10 @@ package sc.fiji.bdvpg.scijava.adapter.source;
 
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
 import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
 import sc.fiji.persist.IObjectScijavaAdapter;
 

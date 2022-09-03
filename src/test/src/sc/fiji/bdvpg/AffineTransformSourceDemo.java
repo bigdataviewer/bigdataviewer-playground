@@ -29,7 +29,8 @@
 package sc.fiji.bdvpg;
 
 import bdv.util.BdvHandle;
-import bdv.viewer.*;
+import bdv.viewer.SourceAndConverter;
+import bdv.viewer.SourceGroup;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import net.imglib2.realtransform.AffineTransform3D;

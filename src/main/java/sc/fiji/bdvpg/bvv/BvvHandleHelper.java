@@ -33,7 +33,8 @@ import bvv.util.BvvHandle;
 import org.scijava.cache.CacheService;
 import org.scijava.object.ObjectService;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.ref.WeakReference;

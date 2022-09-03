@@ -31,7 +31,11 @@ package sc.fiji.bdvpg.io;
 import bdv.viewer.SourceAndConverter;
 import net.imagej.ImageJ;
 import org.apache.commons.io.FileUtils;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.sourceandconverter.exporter.XmlHDF5SpimdataExporter;
@@ -49,7 +53,8 @@ public class XmlHDF5SpimdataExporterTest {
 
     static ImageJ ij;
 
-    @Test@Ignore
+    @Test
+    @Ignore
     public void run() throws Exception {
         // Need to initialize the services:
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation

@@ -39,10 +39,13 @@ import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.adapter.AbstractSpimdataAdapter;
-import sc.fiji.persist.*;
+import sc.fiji.persist.ScijavaGsonHelper;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class SourceAndConverterAdapter {

@@ -29,10 +29,11 @@
 
 package sc.fiji.bdvpg.scijava.services.ui;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import java.awt.*;
+import java.awt.Component;
 import java.net.URL;
 
 public class SourceAndConverterTreeCellRenderer extends

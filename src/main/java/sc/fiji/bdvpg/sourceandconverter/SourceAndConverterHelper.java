@@ -98,6 +98,7 @@ public class SourceAndConverterHelper {
 	/**
 	 * Core function : makes SourceAndConverter object out of a Source Mainly
 	 * duplicated functions from BdvVisTools
+	 * 
 	 * @param <T> the pixel type of this source and converter
 	 * @param source source
 	 * @return a SourceAndConverter from the source
@@ -158,6 +159,7 @@ public class SourceAndConverterHelper {
 	/**
 	 * Creates default converters for a Source Support Volatile or non-volatile
 	 * Support RealTyped or ARGBTyped
+	 * 
 	 * @param <T> the pixel type of this source and converter
 	 * @param source source
 	 * @return one converter for the source
@@ -482,6 +484,7 @@ public class SourceAndConverterHelper {
 	 * then consider it's not displayed and thus not selected - Convenient way to
 	 * adjust whether a source should be selected or not ? TODO : Time out if too
 	 * long to access the data
+	 * 
 	 * @param <T> the input pixel type of this source and converter object
 	 * @param sac source
 	 * @param pt point

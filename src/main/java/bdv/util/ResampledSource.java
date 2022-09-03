@@ -45,7 +45,6 @@ import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.Views;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import java.util.ArrayList;
@@ -137,7 +136,7 @@ public class ResampledSource<T extends NumericType<T> & NativeType<T>>
 	 * @param originInterpolation specifies whether the origin source should be
 	 *          interpolated of not in the resampling process
 	 * @param defaultMipMapLevel mipmap level chosen to resample the origin source
-	 *                           if reuseMipMaps is false
+	 *          if reuseMipMaps is false
 	 */
 	public ResampledSource(Source<T> source, Source<?> resamplingModel,
 		String name, boolean reuseMipMaps, boolean cache,

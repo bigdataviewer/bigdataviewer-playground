@@ -31,7 +31,6 @@ package sc.fiji.bdvpg.scijava.services.ui.swingdnd;
 
 import bdv.ui.SourcesTransferable;
 import bdv.viewer.SourceAndConverter;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
@@ -40,7 +39,8 @@ import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -263,7 +263,6 @@ public class SourceAndConverterServiceUITransferHandler extends
 			this.sourcesTransferable = new SourcesTransferable(sources);
 		}
 
-		@NotNull
 		@Override
 		public Object getTransferData(DataFlavor flavor)
 			throws UnsupportedFlavorException, IOException

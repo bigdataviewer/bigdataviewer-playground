@@ -41,7 +41,11 @@ import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesShowCommand;
-import sc.fiji.bdvpg.scijava.command.source.*;
+import sc.fiji.bdvpg.scijava.command.source.BasicTransformerCommand;
+import sc.fiji.bdvpg.scijava.command.source.InteractiveBrightnessAdjusterCommand;
+import sc.fiji.bdvpg.scijava.command.source.SourceColorChangerCommand;
+import sc.fiji.bdvpg.scijava.command.source.SourcesInvisibleMakerCommand;
+import sc.fiji.bdvpg.scijava.command.source.SourcesRemoverCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.io.File;

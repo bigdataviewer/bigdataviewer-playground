@@ -39,8 +39,8 @@ import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JSlider;
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

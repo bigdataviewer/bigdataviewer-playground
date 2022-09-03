@@ -36,7 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.imglib2.type.numeric.RealType;
-import org.scijava.listeners.*;
+import org.scijava.listeners.Listeners;
 
 /**
  * {@link ConverterSetup} used to control a {@link RealLUTConverter} Note that

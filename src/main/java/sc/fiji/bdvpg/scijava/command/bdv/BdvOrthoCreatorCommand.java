@@ -29,7 +29,7 @@
 
 package sc.fiji.bdvpg.scijava.command.bdv;
 
-import bdv.util.*;
+import bdv.util.BdvHandle;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -41,8 +41,10 @@ import sc.fiji.bdvpg.viewers.ViewerAdapter;
 import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
 import sc.fiji.bdvpg.viewers.ViewerStateSyncStarter;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava

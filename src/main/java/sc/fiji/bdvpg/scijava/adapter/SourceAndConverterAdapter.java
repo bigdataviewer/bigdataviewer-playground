@@ -31,7 +31,13 @@ package sc.fiji.bdvpg.scijava.adapter;
 
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.InstantiableException;

@@ -31,7 +31,12 @@ package bdv.util;
 
 import bdv.viewer.Source;
 import mpicbg.spim.data.sequence.VoxelDimensions;
-import net.imglib2.*;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
+import net.imglib2.RealInterval;
+import net.imglib2.RealPoint;
+import net.imglib2.RealRandomAccess;
+import net.imglib2.RealRandomAccessible;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import java.util.function.ToIntFunction;

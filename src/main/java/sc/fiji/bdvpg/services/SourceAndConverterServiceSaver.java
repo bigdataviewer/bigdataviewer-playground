@@ -30,7 +30,7 @@
 package sc.fiji.bdvpg.services;
 
 import bdv.viewer.SourceAndConverter;
-import com.google.gson.*;
+import com.google.gson.Gson;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.Context;
 import org.slf4j.Logger;
@@ -41,7 +41,10 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**

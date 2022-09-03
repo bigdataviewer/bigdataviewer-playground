@@ -42,7 +42,7 @@ import org.scijava.ui.swing.widget.SwingInputPanel;
 import org.scijava.widget.InputHarvester;
 import org.scijava.widget.InputPanel;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 import java.util.Collections;
 import java.util.List;
 

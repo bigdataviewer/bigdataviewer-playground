@@ -31,7 +31,11 @@ package sc.fiji.bdvpg.scijava.adapter.source;
 
 import bdv.img.WarpedSource;
 import bdv.viewer.SourceAndConverter;
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
 import org.scijava.plugin.Plugin;

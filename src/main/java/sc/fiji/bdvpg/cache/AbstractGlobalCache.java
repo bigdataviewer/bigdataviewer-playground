@@ -50,18 +50,18 @@ import java.util.function.Predicate;
  * {@link bdv.ViewerImgLoader} in order to use the bigdataviewer playground
  * global cache. Two implementations are provided: - a Caffeine backed cache
  * {@link CaffeineGlobalCache} - and a LinkedHashMap cache
- * {@link BoundedLinkedHashMapGlobalCache} The
- * {@link GlobalCacheBuilder} object can be serialized to store the
- * cache configuration The global caching allows to bound the memory used when
- * many sources are potentially accessed in a random manner by the program. The
- * reason to use many sources is if the user wants to work on different spim
- * data objects at the same time, work with resampled sources, etc Global
- * caching allow to bound the memory used at the JVM level, instead of a per
- * source level or per spimdata level. Each value of the value is weighted by
- * its memory footprint, assuming it is a {@link Cell} object. If the value is
- * not a Cell object, an error is logged. This allows to bound memory correctly
- * even when sources have very different block size (setting a fixed number of
- * items maintained in cache would not be precise enough).
+ * {@link BoundedLinkedHashMapGlobalCache} The {@link GlobalCacheBuilder} object
+ * can be serialized to store the cache configuration The global caching allows
+ * to bound the memory used when many sources are potentially accessed in a
+ * random manner by the program. The reason to use many sources is if the user
+ * wants to work on different spim data objects at the same time, work with
+ * resampled sources, etc Global caching allow to bound the memory used at the
+ * JVM level, instead of a per source level or per spimdata level. Each value of
+ * the value is weighted by its memory footprint, assuming it is a {@link Cell}
+ * object. If the value is not a Cell object, an error is logged. This allows to
+ * bound memory correctly even when sources have very different block size
+ * (setting a fixed number of items maintained in cache would not be precise
+ * enough).
  *
  * @author Nicolas Chiaruttini
  */

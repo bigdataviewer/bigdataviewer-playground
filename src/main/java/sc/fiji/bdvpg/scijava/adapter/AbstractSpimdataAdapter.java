@@ -29,7 +29,13 @@
 
 package sc.fiji.bdvpg.scijava.adapter;
 
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

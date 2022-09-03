@@ -39,7 +39,7 @@ import sc.fiji.bdvpg.WarpedSourceDemo;
 
 @SuppressWarnings("unused")
 @Plugin(type = InteractiveCommand.class, menuPath = "Test>Sorted Sources")
-public class TestWidgetDemoCommand extends InteractiveCommand {
+public class TestWidgetDemoCommand implements Command {
 
     @Parameter
     SourceAndConverter<?>[] non_sorted_sources;
@@ -60,7 +60,6 @@ public class TestWidgetDemoCommand extends InteractiveCommand {
             IJ.log(source.getSpimSource().getName());
         }
     }
-
 
     public static void main(String... args) throws Exception {
         // Initializes static SourceService and Display Service

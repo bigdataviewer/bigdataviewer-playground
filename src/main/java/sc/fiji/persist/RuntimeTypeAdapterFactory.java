@@ -44,7 +44,13 @@ package sc.fiji.persist;
  * limitations under the License.
  */
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
 import com.google.gson.internal.Streams;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
@@ -137,11 +143,10 @@ import java.util.Map;
  * "Rectangle"}) are configurable. Registering Types Create a
  * {@code RuntimeTypeAdapterFactory} by passing the base type and type field
  * name to the {@link #of} factory method. If you don't supply an explicit type
- * field name, {@code "type"} will be used.
- * 
- * Next register all of your subtypes. Every subtype must be explicitly
- * registered. This protects your application from injection attacks. If you
- * don't supply an explicit type label, the type's simple name will be used.
+ * field name, {@code "type"} will be used. Next register all of your subtypes.
+ * Every subtype must be explicitly registered. This protects your application
+ * from injection attacks. If you don't supply an explicit type label, the
+ * type's simple name will be used.
  * 
  * <pre>
  *    {@code
@@ -163,11 +168,9 @@ import java.util.Map;
  * }
  * </pre>
  * 
- * Like {@code GsonBuilder}, this API supports chaining:
- *
- *
- * Serialization and deserialization In order to serialize and deserialize a
- * polymorphic object, you must specify the base type explicitly.
+ * Like {@code GsonBuilder}, this API supports chaining: Serialization and
+ * deserialization In order to serialize and deserialize a polymorphic object,
+ * you must specify the base type explicitly.
  * 
  * <pre>
  * 
