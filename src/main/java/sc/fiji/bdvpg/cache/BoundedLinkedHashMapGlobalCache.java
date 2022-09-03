@@ -60,7 +60,7 @@ public class BoundedLinkedHashMapGlobalCache extends AbstractGlobalCache {
 
 				@Override
 				public void run() {
-					logger.info(this.toString());
+					logger.info(BoundedLinkedHashMapGlobalCache.this.toString());
 				}
 			};
 

@@ -125,7 +125,7 @@
 		<reflections.version>0.9.11</reflections.version>
 
 		<!-- package version below are determined by the parent pom but need to be upgraded or temporarily fixed for bugs -->
-		<!-- nothing yet! -->
+		<scijava-ui-swing.version>0.16.1</scijava-ui-swing.version>
 
 	</properties>
 
@@ -144,11 +144,6 @@
 		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>scijava-ui-swing</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>imagej</artifactId>
 		</dependency>
 
 		<dependency>

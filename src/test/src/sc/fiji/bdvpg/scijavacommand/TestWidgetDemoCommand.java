@@ -32,13 +32,14 @@ import bdv.viewer.SourceAndConverter;
 import ij.IJ;
 import net.imagej.ImageJ;
 import org.scijava.command.Command;
+import org.scijava.command.InteractiveCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.WarpedSourceDemo;
 
 @SuppressWarnings("unused")
-@Plugin(type = Command.class, menuPath = "Test>Sorted Sources")
-public class TestWidgetDemoCommand implements Command {
+@Plugin(type = InteractiveCommand.class, menuPath = "Test>Sorted Sources")
+public class TestWidgetDemoCommand extends InteractiveCommand {
 
     @Parameter
     SourceAndConverter<?>[] non_sorted_sources;
