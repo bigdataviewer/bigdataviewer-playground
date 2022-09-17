@@ -4,7 +4,7 @@
 
 ## BDV playground / toolbox / actions
 
-In this repository, we collect useful additions for the [BigDataViewer](https://imagej.net/BigDataViewer) in [Fiji](https://fiji.sc). These functionalities are accessible by enabling the `BigDataViewer-Playground` Fiji update site, accessible via `Help>Update>Manage Update Sites`.
+In this repository, we collect useful additions for the [BigDataViewer](https://imagej.net/BigDataViewer) in [Fiji](https://fiji.sc). These functionalities are accessible by enabling the `PTBIOP` Fiji update site, accessible via `Help>Update>Manage Update Sites`.
 
 User documentation is located can be found at [https://imagej.github.io/plugins/bdv/playground](https://imagej.github.io/plugins/bdv/playground)
 
