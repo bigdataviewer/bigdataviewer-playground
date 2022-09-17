@@ -55,7 +55,7 @@ public class BigWarpDemo {
     public static void main(String... args) {
         // Initializes static SourceService and Display Service
         ij = new ImageJ();
-        ij.ui().showUI();
+        TestHelper.startFiji(ij);//ij.ui().showUI();
         System.out.println("BigWarp version:"+VersionUtils.getVersion(BigWarp.class));
         demo2d();
     }

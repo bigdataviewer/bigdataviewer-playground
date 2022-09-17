@@ -59,7 +59,7 @@ public class XmlHDF5SpimdataExporterTest {
         // Need to initialize the services:
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ij = new ImageJ();
-        ij.ui().showUI();
+        TestHelper.startFiji(ij);//ij.ui().showUI();
 
         // Arrange
         // creates a Voronoi SourceAndConverter

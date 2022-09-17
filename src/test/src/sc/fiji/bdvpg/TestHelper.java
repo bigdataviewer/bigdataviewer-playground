@@ -34,6 +34,9 @@ import net.imagej.ImageJ;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
+import javax.swing.SwingUtilities;
+import java.lang.reflect.InvocationTargetException;
+
 public class TestHelper {
 
     public static void closeFijiAndBdvs(ImageJ ij) {
@@ -53,6 +56,16 @@ public class TestHelper {
             ij.context().close();
 
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void startFiji(ImageJ ij) {
+        try {
+            SwingUtilities.invokeAndWait(() -> ij.ui().showUI());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
     }

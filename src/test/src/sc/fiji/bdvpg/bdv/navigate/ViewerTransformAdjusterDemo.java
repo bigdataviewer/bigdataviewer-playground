@@ -52,7 +52,7 @@ public class ViewerTransformAdjusterDemo
     {
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ij = new ImageJ();
-        ij.ui().showUI();
+        TestHelper.startFiji(ij);//ij.ui().showUI();
 
         // Gets active BdvHandle instance
         BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();

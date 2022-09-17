@@ -40,7 +40,7 @@ public class SimpleIJLaunch {
     static public void main(String... args) {
         // create the ImageJ application context with all available services
         ij = new ImageJ();
-        ij.ui().showUI();
+        TestHelper.startFiji(ij);//ij.ui().showUI();
         DebugTools.setRootLevel("INFO");
     }
 

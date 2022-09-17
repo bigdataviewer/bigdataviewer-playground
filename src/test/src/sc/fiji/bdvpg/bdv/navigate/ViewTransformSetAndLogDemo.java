@@ -65,7 +65,7 @@ public class ViewTransformSetAndLogDemo {
 
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ij = new ImageJ();
-        ij.ui().showUI();
+        TestHelper.startFiji(ij);//ij.ui().showUI();
 
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");

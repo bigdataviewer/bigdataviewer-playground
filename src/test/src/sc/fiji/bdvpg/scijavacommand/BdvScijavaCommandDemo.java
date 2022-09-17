@@ -34,6 +34,7 @@ import net.imagej.ImageJ;
 import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.BdvScijavaHelper;
 import sc.fiji.bdvpg.scijava.ScijavaSwingUI;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -45,7 +46,7 @@ public class BdvScijavaCommandDemo {
     {
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ij = new ImageJ();
-        ij.ui().showUI();
+        TestHelper.startFiji(ij);//ij.ui().showUI();
 
         // Creates a BDV since none exists yet
         BdvHandle bdvh = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
@@ -62,8 +63,10 @@ public class BdvScijavaCommandDemo {
 
         // Adds a SciJava Interactive Command as a card panel
         bdvh.getSplitPanel().setCollapsed(false);
-        bdvh.getCardPanel().addCard("Zoom",
+        BdvHandleHelper.addCard(bdvh,"Zoom",
                 ScijavaSwingUI.getPanel(ij.context(), BdvZoom.class, "bdvh", bdvh), true);
+        //bdvh.getCardPanel().addCard("Zoom",
+        //        ScijavaSwingUI.getPanel(ij.context(), BdvZoom.class, "bdvh", bdvh), true);
 
         bdvh.getCardPanel().setCardExpanded(BdvDefaultCards.DEFAULT_SOURCEGROUPS_CARD, false);
         bdvh.getCardPanel().setCardExpanded(BdvDefaultCards.DEFAULT_SOURCES_CARD, false);

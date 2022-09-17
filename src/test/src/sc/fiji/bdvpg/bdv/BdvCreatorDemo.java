@@ -42,7 +42,7 @@ public class BdvCreatorDemo
 	{
 		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
 		ij = new ImageJ();
-		ij.ui().showUI();
+		TestHelper.startFiji(ij);//ij.ui().showUI();
 
 		// Creates a BDV since none exists yet
 		SourceAndConverterServices.getBdvDisplayService().getActiveBdv();

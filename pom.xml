@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>32.0.0</version>
+		<version>33.2.0</version>
 		<relativePath />
 	</parent>
 
@@ -125,7 +125,6 @@
 		<reflections.version>0.10.2</reflections.version> <!-- for test only -->
 
 		<!-- package version below are determined by the parent pom but need to be upgraded or temporarily fixed for bugs -->
-		<scijava-ui-swing.version>0.16.1</scijava-ui-swing.version>
 
 	</properties>
 

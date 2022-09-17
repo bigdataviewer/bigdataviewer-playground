@@ -52,7 +52,7 @@ public class BdvPlaygroundStateSaver {
     {
         // Initializes static SourceService and Display Service
         ij = new ImageJ();
-        ij.ui().showUI();
+        TestHelper.startFiji(ij);//ij.ui().showUI();
 
         createSacs();
 

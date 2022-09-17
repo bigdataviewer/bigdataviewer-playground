@@ -62,7 +62,7 @@ public class BrightnessAutoAdjusterDemo
 	public static void main( String[] args ) {
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ij = new ImageJ();
-        ij.ui().showUI();
+		TestHelper.startFiji(ij);//ij.ui().showUI();
 
 		// Creates a BdvHandle
 		bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();

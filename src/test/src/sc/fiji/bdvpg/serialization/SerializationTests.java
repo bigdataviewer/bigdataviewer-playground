@@ -52,7 +52,7 @@ public class SerializationTests {
     public void openFiji() {
         // Initializes static SourceService and Display Service and plugins for serialization
         ij = new ImageJ();
-        ij.ui().showUI();
+        TestHelper.startFiji(ij);//ij.ui().showUI();
         gson = ScijavaGsonHelper.getGson(ij.context());
     }
 

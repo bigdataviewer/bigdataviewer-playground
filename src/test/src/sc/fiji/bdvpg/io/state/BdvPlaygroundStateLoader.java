@@ -41,7 +41,7 @@ public class BdvPlaygroundStateLoader {
     public static void main( String[] args )
     {
         ij = new ImageJ();
-        ij.ui().showUI();
+        TestHelper.startFiji(ij);//ij.ui().showUI();
         new SourceAndConverterServiceLoader("src/test/resources/bdvplaygroundstate.json", "src/test/resources/", ij.context(), false).run();
     }
 

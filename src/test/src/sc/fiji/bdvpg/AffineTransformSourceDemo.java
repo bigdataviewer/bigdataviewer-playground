@@ -42,6 +42,8 @@ import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
+import javax.swing.SwingUtilities;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 public class AffineTransformSourceDemo {
@@ -52,7 +54,7 @@ public class AffineTransformSourceDemo {
         // Initializes static SourceService and Display Service
 
         ij = new ImageJ();
-        ij.ui().showUI();
+        TestHelper.startFiji(ij);
 
         demo(20);
 

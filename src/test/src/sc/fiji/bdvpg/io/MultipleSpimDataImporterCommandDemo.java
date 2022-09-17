@@ -45,7 +45,7 @@ public class MultipleSpimDataImporterCommandDemo
 	{
 		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
 		ij = new ImageJ();
-		ij.ui().showUI();
+		TestHelper.startFiji(ij);//ij.ui().showUI();
 
 		final File[] files = new File[ 2 ];
 		files[0] = new File("src/test/resources/mri-stack.xml");

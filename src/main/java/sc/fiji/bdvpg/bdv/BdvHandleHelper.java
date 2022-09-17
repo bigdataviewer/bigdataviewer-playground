@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.bdv;
 
 import bdv.tools.brightness.ConverterSetup;
+import bdv.ui.CardPanel;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
@@ -54,6 +55,7 @@ import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -536,6 +538,26 @@ public class BdvHandleHelper {
 			.addTo(bdvh));
 		bdvh.getViewerPanel().setTimepoint(nTimepoints);
 		return overlay;
+	}
+
+	/**
+	 * Calls bdvh.addCard in a thread safe manner
+	 * @param bdvh bdv handle
+	 * @param title title of the card
+	 * @param component swing graphical component
+	 * @param expanded whether the card is expanded on creation or not
+	 */
+	public static void addCard(BdvHandle bdvh, String title, JComponent component, boolean expanded) {
+		SwingUtilities.invokeLater(() -> bdvh.getCardPanel().addCard(title, component, expanded));
+	}
+
+	/**
+	 * Calls bdvh.removeCard in a thread safe manner
+	 * @param bdvh bdv handle
+	 * @param key key of the card to remove
+	 */
+	public static void removeCard(BdvHandle bdvh, Object key) {
+		SwingUtilities.invokeLater(() -> bdvh.getCardPanel().removeCard(key));
 	}
 
 }

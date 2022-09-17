@@ -42,7 +42,7 @@ public class ShowVersions {
     static public void main(String... args) {
         // create the ImageJ application context with all available services
         final ImageJ ij = new ImageJ();
-        ij.ui().showUI();
+        TestHelper.startFiji(ij);//ij.ui().showUI();
 
         // Display versions handled by the parent pom
 

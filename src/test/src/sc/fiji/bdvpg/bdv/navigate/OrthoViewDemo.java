@@ -65,7 +65,7 @@ public class OrthoViewDemo {
 
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ij = new ImageJ();
-        ij.ui().showUI();
+        TestHelper.startFiji(ij);//ij.ui().showUI();
 
         // Makes BDV Source
         System.out.println(VersionUtils.getVersion(BigWarp.class));
