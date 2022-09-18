@@ -125,24 +125,4 @@ public class RAIHelper {
 		return img;
 	}
 
-	private static <T extends NativeType<T>> long getBitsPerBlock(int[] blockSize,
-		T type)
-	{
-		long nElements = 1;
-		for (int d : blockSize)
-			nElements *= d;
-		return nElements * getBitsPerElement(type);
-	}
-
-	private static <T extends NativeType<T>> long getBitsPerElement(T type) {
-
-		if (RealType.class.isInstance(type)) {
-			return ((RealType) type).getBitsPerPixel();
-		}
-		else {
-			logger.warn("Unknow number of bits for pixel type " + type.getClass()
-				.getSimpleName() + " assuming 8 bits");
-			return 8;
-		}
-	}
 }
