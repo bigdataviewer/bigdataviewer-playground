@@ -37,7 +37,8 @@ import org.junit.Test;
 import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 import sc.fiji.bdvpg.viewers.ViewerAdapter;
@@ -67,6 +68,9 @@ public class OrthoViewDemo {
         ij = new ImageJ();
         TestHelper.startFiji(ij);//ij.ui().showUI();
 
+        SourceAndConverterBdvDisplayService bdvDisplayService = ij.get(SourceAndConverterBdvDisplayService.class);
+        SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
+
         // Makes BDV Source
         System.out.println(VersionUtils.getVersion(BigWarp.class));
 
@@ -76,16 +80,16 @@ public class OrthoViewDemo {
         //SourceAndConverter sac = SourceAndConverterUtils.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandleX = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
+        BdvHandle bdvHandleX = bdvDisplayService.getNewBdv();
         // Creates a BdvHandle
-        BdvHandle bdvHandleY = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
+        BdvHandle bdvHandleY = bdvDisplayService.getNewBdv();
         // Creates a BdvHandles
-        BdvHandle bdvHandleZ = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
+        BdvHandle bdvHandleZ = bdvDisplayService.getNewBdv();
 
         BdvHandle[] bdvhs = new BdvHandle[]{bdvHandleX,bdvHandleY,bdvHandleZ};
 
         // Get a handle on the sacs
-        final List< SourceAndConverter<?> > sacs = SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters();
+        final List< SourceAndConverter<?> > sacs = sourceService.getSourceAndConverters();
 
         ViewerOrthoSyncStarter syncstart = new ViewerOrthoSyncStarter(
                 new ViewerAdapter(bdvHandleX),
@@ -98,7 +102,7 @@ public class OrthoViewDemo {
         for (BdvHandle bdvHandle:bdvhs) {
 
             sacs.forEach( sac -> {
-                SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
+                bdvDisplayService.show(bdvHandle, sac);
                 new ViewerTransformAdjuster(bdvHandle, sac).run();
                 new BrightnessAutoAdjuster<>(sac, 0).run();
             });

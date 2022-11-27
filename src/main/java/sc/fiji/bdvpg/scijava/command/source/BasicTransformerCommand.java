@@ -37,6 +37,8 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAndTimeRange;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
@@ -80,6 +82,9 @@ public class BasicTransformerCommand implements BdvPlaygroundActionCommand {
 
 	@Parameter(label = "Global transform (relative to the origin of the world)")
 	boolean globalchange;
+
+	@Parameter
+	SourceAndConverterBdvDisplayService bdvDisplayService;
 
 	@Override
 	public void run() {
@@ -161,7 +166,7 @@ public class BasicTransformerCommand implements BdvPlaygroundActionCommand {
 				}
 			}
 		}
-		SourceAndConverterServices.getBdvDisplayService().updateDisplays(sacs);
+		bdvDisplayService.updateDisplays(sacs);
 	}
 
 	private void flip(AffineTransform3D at3D) {

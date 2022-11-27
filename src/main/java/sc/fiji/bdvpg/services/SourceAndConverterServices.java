@@ -34,8 +34,14 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 /**
  * Static methods to access BdvSourceAndConverterService and
  * BdvSourceAndConverterDisplayService
+ *
+ * Should ideally not be used:
+ * - try to fetch a {@link sc.fiji.bdvpg.scijava.services.SourceAndConverterService} or a
+ * - {@link SourceAndConverterBdvDisplayService}
+ * from a scijava {@link org.scijava.Context}
+ * instead
  */
-
+@Deprecated
 public class SourceAndConverterServices {
 
 	private static ISourceAndConverterService sourceAndConverterService;

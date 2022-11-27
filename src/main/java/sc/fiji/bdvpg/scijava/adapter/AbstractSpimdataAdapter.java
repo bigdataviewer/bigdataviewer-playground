@@ -39,8 +39,8 @@ import com.google.gson.JsonSerializer;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.exporter.XmlFromSpimDataExporter;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
@@ -74,8 +74,8 @@ public class AbstractSpimdataAdapter implements
 		JsonSerializationContext jsonSerializationContext)
 	{
 		JsonObject obj = new JsonObject();
-		String dataLocation = (String) SourceAndConverterServices
-			.getSourceAndConverterService().getMetadata(asd, SPIM_DATA_LOCATION);
+		String dataLocation = (String) sacSerializer.getScijavaContext()
+				.getService(SourceAndConverterService.class).getMetadata(asd, SPIM_DATA_LOCATION);
 		if ((dataLocation == null) || (dataLocation.equals(""))) {
 			dataLocation = new File(sacSerializer.getBasePath(), "_bdvdataset_" +
 				spimdataCounter + ".xml").getAbsolutePath();
@@ -105,10 +105,10 @@ public class AbstractSpimdataAdapter implements
 		if (datalocation.endsWith(".qpath")) {
 			logger.error("qpath project unhandled in deserialization!");
 		}
-		List<AbstractSpimData<?>> asds = SourceAndConverterServices
-			.getSourceAndConverterService().getSpimDatasets().stream().filter(
-				asd -> SourceAndConverterServices.getSourceAndConverterService()
-					.getMetadata(asd, SPIM_DATA_LOCATION).equals(datalocation)).collect(
+		SourceAndConverterService sacService = sacSerializer.getScijavaContext()
+				.getService(SourceAndConverterService.class);
+		List<AbstractSpimData<?>> asds = sacService.getSpimDatasets().stream().filter(
+				asd -> sacService.getMetadata(asd, SPIM_DATA_LOCATION).equals(datalocation)).collect(
 						Collectors.toList());
 
 		// SpimData not found

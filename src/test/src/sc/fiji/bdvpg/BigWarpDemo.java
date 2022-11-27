@@ -39,7 +39,8 @@ import org.junit.After;
 import org.junit.Test;
 import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.register.BigWarpLauncher;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
@@ -61,14 +62,16 @@ public class BigWarpDemo {
     }
 
     public static void demo3d() {
+        SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
+        SourceAndConverterBdvDisplayService displayService = ij.get(SourceAndConverterBdvDisplayService.class);
+
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
 
         AbstractSpimData<?> spimData = importer.get();
 
-        SourceAndConverter<?> sacFixed = SourceAndConverterServices
-                .getSourceAndConverterService()
+        SourceAndConverter<?> sacFixed = sourceService
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
 
@@ -76,19 +79,18 @@ public class BigWarpDemo {
 
         spimData = importer.get();
 
-        SourceAndConverter<?> sacMoving = SourceAndConverterServices
-                .getSourceAndConverterService()
+        SourceAndConverter<?> sacMoving = sourceService
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
 
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = displayService.getActiveBdv();
 
         // Show the SourceAndConverter
-        SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacFixed);
+        displayService.show(bdvHandle, sacFixed);
 
-        SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(sacMoving)
+        sourceService.getConverterSetup(sacMoving)
                 .setColor(new ARGBType(ARGBType.rgba(0, 255, 255,0)));
 
         new BrightnessAutoAdjuster<>(sacFixed, 0).run();
@@ -103,8 +105,8 @@ public class BigWarpDemo {
         List<SourceAndConverter<?>> fixedSources = new ArrayList<>();
         fixedSources.add(sacFixed);
 
-        List<ConverterSetup> converterSetups = movingSources.stream().map(src -> SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(src)).collect(Collectors.toList());
-        converterSetups.addAll(fixedSources.stream().map(src -> SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(src)).collect(Collectors.toList()));
+        List<ConverterSetup> converterSetups = movingSources.stream().map(sourceService::getConverterSetup).collect(Collectors.toList());
+        converterSetups.addAll(fixedSources.stream().map(sourceService::getConverterSetup).collect(Collectors.toList()));
 
         BigWarpLauncher bwl = new BigWarpLauncher(movingSources, fixedSources, "BigWarp Demo", converterSetups);
         bwl.run();
@@ -115,13 +117,14 @@ public class BigWarpDemo {
         bwl.getBigWarp().matchActiveViewerPanelToOther();
 
         for (SourceAndConverter<?> sac : bwl.getWarpedSources()) {
-            SourceAndConverterServices.getSourceAndConverterService()
-                    .register(sac);
+            sourceService.register(sac);
         }
     }
 
 
     public static void demo2d() {
+        SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
+        SourceAndConverterBdvDisplayService displayService = ij.get(SourceAndConverterBdvDisplayService.class);
 
         // Makes BDV Source
 
@@ -132,8 +135,7 @@ public class BigWarpDemo {
 
         AbstractSpimData<?> spimData = importer.get();
 
-        SourceAndConverter<?> sacFixed = SourceAndConverterServices
-                .getSourceAndConverterService()
+        SourceAndConverter<?> sacFixed = sourceService
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
 
@@ -142,19 +144,18 @@ public class BigWarpDemo {
 
         spimData = importer.get();
 
-        SourceAndConverter<?> sacMoving = SourceAndConverterServices
-                .getSourceAndConverterService()
+        SourceAndConverter<?> sacMoving = sourceService
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
 
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = displayService.getActiveBdv();
 
         // Show the SourceAndConverter
-        SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sacFixed);
+        displayService.show(bdvHandle, sacFixed);
 
-        SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(sacMoving)
+        sourceService.getConverterSetup(sacMoving)
                 .setColor(new ARGBType(ARGBType.rgba(0, 255, 255,0)));
 
         new BrightnessAutoAdjuster<>(sacFixed, 0).run();
@@ -169,8 +170,8 @@ public class BigWarpDemo {
         List<SourceAndConverter<?>> fixedSources = new ArrayList<>();
         fixedSources.add(sacFixed);
 
-        List<ConverterSetup> converterSetups = movingSources.stream().map(src -> SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(src)).collect(Collectors.toList());
-        converterSetups.addAll(fixedSources.stream().map(src -> SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(src)).collect(Collectors.toList()));
+        List<ConverterSetup> converterSetups = movingSources.stream().map(sourceService::getConverterSetup).collect(Collectors.toList());
+        converterSetups.addAll(fixedSources.stream().map(sourceService::getConverterSetup).collect(Collectors.toList()));
 
         BigWarpLauncher bwl = new BigWarpLauncher(movingSources, fixedSources, "BigWarp Demo", converterSetups);
         bwl.run();
@@ -181,21 +182,14 @@ public class BigWarpDemo {
         bwl.getBigWarp().matchActiveViewerPanelToOther();
 
         for (SourceAndConverter<?> sac : bwl.getWarpedSources()) {
-            SourceAndConverterServices.getSourceAndConverterService()
-                    .register(sac);
+            sourceService.register(sac);
         }
 
-        BdvHandle bdvh = SourceAndConverterServices
-                .getBdvDisplayService()
-                .getNewBdv();
+        BdvHandle bdvh = displayService.getNewBdv();
 
-        SourceAndConverterServices
-                .getBdvDisplayService()
-                .show(bdvh, bwl.getWarpedSources()[0]);
+        displayService.show(bdvh, bwl.getWarpedSources()[0]);
 
-        SourceAndConverterServices
-                .getBdvDisplayService()
-                .show(bdvh, fixedSources.get(0));
+        displayService.show(bdvh, fixedSources.get(0));
 
         bdvh.getViewerPanel().showDebugTileOverlay();
         bdvh.getViewerPanel().getDisplay().repaint();

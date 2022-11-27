@@ -29,6 +29,8 @@
 
 package sc.fiji.bdvpg.scijava.command.bdv;
 
+import org.scijava.Context;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -45,10 +47,13 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 public class BdvSettingsCommand implements BdvPlaygroundActionCommand {
 
+	@Parameter
+	Context context;
+
 	@Override
 	public void run() {
 		String yamlLocation = BdvSettingsGUISetter.defaultBdvPgSettingsRootPath;
-		new BdvSettingsGUISetter(yamlLocation).run();
+		new BdvSettingsGUISetter(yamlLocation, context).run();
 	}
 
 }

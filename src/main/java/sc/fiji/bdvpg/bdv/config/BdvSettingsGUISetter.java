@@ -36,6 +36,7 @@ import bdv.ui.settings.ModificationListener;
 import bdv.ui.settings.SettingsPage;
 import bdv.ui.settings.SettingsPanel;
 import org.apache.commons.io.FileUtils;
+import org.scijava.Context;
 import org.scijava.listeners.Listeners;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.io.InputTriggerConfigHelper;
@@ -92,8 +93,12 @@ public class BdvSettingsGUISetter implements Runnable {
 	public final static String defaultBdvPgSettingsRootPath = "plugins" +
 		File.separator + "bdvpgsettings";
 
-	public BdvSettingsGUISetter(String path) {
+	final Context context;
+
+	public BdvSettingsGUISetter(String path, Context context) {
+
 		this.rootPath = path;
+		this.context = context;
 	}
 
 	@Override
@@ -218,7 +223,7 @@ public class BdvSettingsGUISetter implements Runnable {
 
 		if (treeActionsConfigFile.exists()) {
 			SettingsPage spTreeActions = new BdvPlaygroundContextualMenuSettingsPage(
-				"tree actions", treeActionsConfigFile);
+				"tree actions", treeActionsConfigFile, context);
 			settings.addPage(spTreeActions);
 		}
 
@@ -297,7 +302,7 @@ public class BdvSettingsGUISetter implements Runnable {
 
 		if (editorConfig.exists()) {
 			settings.addPage(new BdvPlaygroundContextualMenuSettingsPage(subPath +
-				"> editor", editorConfig));
+				"> editor", editorConfig, context));
 		}
 
 		// ----------------------- TODO the key bindings...

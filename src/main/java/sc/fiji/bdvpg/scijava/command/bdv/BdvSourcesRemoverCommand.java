@@ -35,6 +35,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
@@ -52,10 +53,13 @@ public class BdvSourcesRemoverCommand implements BdvPlaygroundActionCommand {
 	@Parameter(label = "Select Source(s)")
 	SourceAndConverter<?>[] sacs;
 
+	@Parameter
+	SourceAndConverterBdvDisplayService bdvDisplayService;
+
 	@Override
 	public void run() {
 		for (SourceAndConverter<?> sac : sacs) {
-			SourceAndConverterServices.getBdvDisplayService().remove(bdvh, sac);
+			bdvDisplayService.remove(bdvh, sac);
 		}
 	}
 }

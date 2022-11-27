@@ -33,9 +33,11 @@ import bdv.ui.settings.ModificationListener;
 import bdv.ui.settings.SettingsPage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.scijava.Context;
 import org.scijava.listeners.Listeners;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.DropMode;
@@ -70,9 +72,12 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
 
 	final File jsonActionFile;
 
+	final Context context;
+
 	public BdvPlaygroundContextualMenuSettingsPage(final String treePath,
-		File jsonEditorActions)
+		File jsonEditorActions, Context context)
 	{
+		this.context = context;
 		this.treePath = treePath;
 		jsonActionFile = jsonEditorActions;
 		String[] iniActions = new String[] {};
@@ -92,7 +97,7 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
 				.getAbsolutePath() + " does not exist.");
 		}
 
-		panel = new BdvPgContextMenuEditor(iniActions);
+		panel = new BdvPgContextMenuEditor(iniActions, context);
 		modificationListeners = new Listeners.SynchronizedList<>();
 
 	}
@@ -162,10 +167,10 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
 
 		private final JTextArea contextMenuActions;
 
-		public BdvPgContextMenuEditor(String[] initialState) {
+		public BdvPgContextMenuEditor(String[] initialState, Context context) {
 			this.setLayout(new GridLayout(0, 2));
-			String[] allActionKeys = new ArrayList<>(SourceAndConverterServices
-				.getSourceAndConverterService().getActionsKeys()).toArray(
+			String[] allActionKeys = new ArrayList<>(
+					context.getService(SourceAndConverterService.class).getActionsKeys()).toArray(
 					new String[0]);
 
 			JList<String> allActions = new JList<>(allActionKeys);
