@@ -30,6 +30,7 @@ package sc.fiji.bdvpg;
 
 import bdv.util.BdvHandle;
 import bdv.util.BigWarpHelper;
+import bdv.util.volatiles.VolatileViews;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;

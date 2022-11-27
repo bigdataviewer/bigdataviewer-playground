@@ -53,5 +53,6 @@ public class SourcesRemoverCommand implements BdvPlaygroundActionCommand {
 	@Override
 	public void run() {
 		bss.remove(sacs);
+		sacs = null; // avoid holding a reference to sources, shouldn't be necessary honestly
 	}
 }

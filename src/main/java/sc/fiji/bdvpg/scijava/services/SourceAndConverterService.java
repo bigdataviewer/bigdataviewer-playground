@@ -598,6 +598,7 @@ public class SourceAndConverterService extends AbstractService implements
 									e.printStackTrace();
 								}
 							}
+							spimdataToMetadata.invalidate(asd); // Weakkeys -> this shouldn't be necessary
 						}
 					}
 					// ----------------

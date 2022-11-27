@@ -87,6 +87,7 @@ public class SpimDataExporterCommand implements BdvPlaygroundActionCommand {
 					.getSourceAndConverterService().getMetadata(sac,
 						SourceAndConverterService.SPIM_DATA_INFO)).asd;
 
+			asd.setBasePath(new File(xmlfilepath.getParent()));
 			new XmlFromSpimDataExporter(asd, xmlfilepath.getAbsolutePath(), context)
 				.run();
 		}
