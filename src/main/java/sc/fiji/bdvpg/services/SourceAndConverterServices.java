@@ -41,7 +41,7 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
  * from a scijava {@link org.scijava.Context}
  * instead
  */
-@Deprecated
+
 public class SourceAndConverterServices {
 
 	private static ISourceAndConverterService sourceAndConverterService;

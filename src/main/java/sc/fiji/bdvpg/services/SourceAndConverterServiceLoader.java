@@ -50,7 +50,20 @@ public class SourceAndConverterServiceLoader extends SourceAndConverterAdapter
 	public SourceAndConverterServiceLoader(String filePath, String basePath,
 		Context ctx, boolean erasePreviousState)
 	{
-		super(ctx, new File(basePath));
+		super(ctx, new File(basePath), false);
+		this.filePath = filePath;
+		idToSac = new HashMap<>();
+		sacToId = new HashMap<>();
+		sourceToId = new HashMap<>();
+		idToSource = new HashMap<>();
+		this.erasePreviousState = erasePreviousState;
+		this.ctx = ctx;
+	}
+
+	public SourceAndConverterServiceLoader(String filePath, String basePath,
+										   Context ctx, boolean erasePreviousState, boolean useRelativePaths)
+	{
+		super(ctx, new File(basePath), useRelativePaths);
 		this.filePath = filePath;
 		idToSac = new HashMap<>();
 		sacToId = new HashMap<>();

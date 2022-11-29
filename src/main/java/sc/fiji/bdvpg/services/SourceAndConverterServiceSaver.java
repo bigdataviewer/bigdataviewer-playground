@@ -35,6 +35,7 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterInspector;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
@@ -44,8 +45,11 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_LOCATION;
 
 /**
  * Big Objective : save the state of all open sources By Using Gson and specific
@@ -73,7 +77,19 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter
 	public SourceAndConverterServiceSaver(File f, Context ctx,
 		List<SourceAndConverter<?>> sacs)
 	{
-		super(ctx, f.getParentFile());
+		super(ctx, f.getParentFile(), false);
+		this.sacs = sacs;
+		this.f = f;
+		idToSac = new HashMap<>();
+		sacToId = new HashMap<>();
+		sourceToId = new HashMap<>();
+		idToSource = new HashMap<>();
+	}
+
+	public SourceAndConverterServiceSaver(File f, Context ctx,
+										  List<SourceAndConverter<?>> sacs, boolean useRelativePaths)
+	{
+		super(ctx, f.getParentFile(), useRelativePaths);
 		this.sacs = sacs;
 		this.f = f;
 		idToSac = new HashMap<>();
@@ -126,6 +142,21 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter
 				return sacs_in_asd.stream().anyMatch(sac -> sacs.contains(sac));
 			}).collect(Collectors.toSet());
 
+			Map<AbstractSpimData<?>, String> originalLocations = new HashMap<>();
+			if (useRelativePaths) {
+				// We need to reset where they were saved, and then maybe restore their location
+				asds.forEach(asd -> {
+					String dataLocation = (String) getScijavaContext()
+							.getService(SourceAndConverterService.class).getMetadata(asd, SPIM_DATA_LOCATION);
+
+					originalLocations.put(asd, dataLocation);
+
+					getScijavaContext()
+							.getService(SourceAndConverterService.class).setMetadata(asd, SPIM_DATA_LOCATION, ""); // reset -> enforce serialization to xml
+				});
+
+			}
+
 			asds.forEach(gson::toJson);
 
 			try {
@@ -134,6 +165,19 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter
 				gson.toJson(sacs, writer);
 				writer.flush();
 				writer.close();
+
+				if (useRelativePaths) {
+					// We need to reset where they were saved, and then maybe restore their location
+					asds.forEach(asd -> {
+						//String dataLocation = (String) getScijavaContext()
+						//		.getService(SourceAndConverterService.class).getMetadata(asd, SPIM_DATA_LOCATION);
+						//originalLocations.put(asd, dataLocation);
+
+						getScijavaContext()
+								.getService(SourceAndConverterService.class).setMetadata(asd, SPIM_DATA_LOCATION, originalLocations.get(asd)); // reset -> enforce serialization to xml
+					});
+
+				}
 			}
 			catch (Exception e) {
 				logger.error("Couldn't write state file: " + e.getMessage());

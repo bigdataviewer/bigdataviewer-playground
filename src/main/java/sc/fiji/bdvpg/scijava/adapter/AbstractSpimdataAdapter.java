@@ -90,6 +90,9 @@ public class AbstractSpimdataAdapter implements
 			new XmlFromSpimDataExporter(asd, dataLocation, sacSerializer
 				.getScijavaContext()).run();
 		}
+		if (sacSerializer.useRelativePaths()) {
+			dataLocation = new File(dataLocation).getName();
+		}
 		obj.addProperty("datalocation", dataLocation);
 		return obj;
 	}
@@ -101,6 +104,10 @@ public class AbstractSpimdataAdapter implements
 	{
 		String datalocation = jsonElement.getAsJsonObject().get("datalocation")
 			.getAsString();
+		if (sacSerializer.useRelativePaths()) {
+			datalocation = new File(sacSerializer.getBasePath(), datalocation).getAbsolutePath();
+		}
+		String finalDataLocation = datalocation;
 		// System.out.println("Deserialization of "+datalocation);
 		if (datalocation.endsWith(".qpath")) {
 			logger.error("qpath project unhandled in deserialization!");
@@ -108,7 +115,7 @@ public class AbstractSpimdataAdapter implements
 		SourceAndConverterService sacService = sacSerializer.getScijavaContext()
 				.getService(SourceAndConverterService.class);
 		List<AbstractSpimData<?>> asds = sacService.getSpimDatasets().stream().filter(
-				asd -> sacService.getMetadata(asd, SPIM_DATA_LOCATION).equals(datalocation)).collect(
+				asd -> sacService.getMetadata(asd, SPIM_DATA_LOCATION).equals(finalDataLocation)).collect(
 						Collectors.toList());
 
 		// SpimData not found
