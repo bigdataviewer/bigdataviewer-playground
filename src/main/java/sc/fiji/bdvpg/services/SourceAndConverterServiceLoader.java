@@ -37,6 +37,7 @@ import org.scijava.Context;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 
 public class SourceAndConverterServiceLoader extends SourceAndConverterAdapter
@@ -105,9 +106,9 @@ public class SourceAndConverterServiceLoader extends SourceAndConverterAdapter
 
 			// SourceAndConverter[] sacs_loaded =
 			getGson().fromJson(rawSacsArray, SourceAndConverter[].class);
+			fileReader.close();
 
-		}
-		catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
