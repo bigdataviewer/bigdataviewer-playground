@@ -105,7 +105,7 @@ public class ViewerPanelHandle extends BdvHandle {
 		List<? extends SourceAndConverter<?>> sources, int numTimepoints)
 	{
 		logger.error(
-			"Cannot add sources in ViewerPanel wrapped BdvHandle BdvHandle");
+			"Cannot add sources in ViewerPanel wrapped BdvHandle");
 		return false;
 	}
 

@@ -26,30 +26,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijavacommand;
+
+package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
-import org.scijava.command.Command;
+import ij.IJ;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.bdv.navigate.RayCastPositionerSliderAdder;
+import sc.fiji.bdvpg.bdv.overlay.SourceNameOverlayAdder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
-/**
- * Test command to demo {@link sc.fiji.bdvpg.scijava.BdvScijavaHelper}
- */
-@SuppressWarnings({"unused", "CanBeFinal"})
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu + "Another sub menu>Rename Bdv Window")
-public class RenameBdv implements Command {
+import javax.swing.SwingUtilities;
+import java.awt.Font;
 
-    @Parameter
-    BdvHandle bdvh;
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-    @Parameter(label = "New Title")
-    String title;
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Add Sources Name Overlay",
+	description = "Adds a source name overlay onto BDV windows")
+public class MultiBdvSourceNameOverlayAdderCommand implements BdvPlaygroundActionCommand {
 
-    @Override
-    public void run() {
-        BdvHandleHelper.setWindowTitle(bdvh, title);
-    }
+	@Parameter(label = "Select BDV Windows")
+	BdvHandle[] bdvhs;
+
+	@Parameter(label = "Font Size")
+	int fontSize = 18;
+
+	@Parameter(choices = {"Courier", "TimesRoman"})
+	String fontString;
+
+	@Override
+	public void run() {
+		if (bdvhs.length == 0) IJ.log("Please make sure to select a Bdv window.");
+		Font font = new Font(fontString, Font.PLAIN, fontSize);
+		for (BdvHandle bdvh : bdvhs) {
+			SwingUtilities.invokeLater(() -> new SourceNameOverlayAdder(bdvh, font).run());
+		}
+	}
 }
