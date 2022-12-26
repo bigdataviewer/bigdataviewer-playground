@@ -44,11 +44,11 @@ public class RayCastDemo {
         ij = new ImageJ();
         TestHelper.startFiji(ij);//ij.ui().showUI();
 
-        AffineTransformSourceDemo.demo(3);
-
         BdvHandle bdvh = SourceAndConverterServices
                 .getBdvDisplayService()
                 .getActiveBdv();
+
+        AffineTransformSourceDemo.demo(ij,3);
 
         BdvHandleHelper.addCenterCross(bdvh);
 

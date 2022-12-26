@@ -34,30 +34,25 @@ import ij.IJ;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.navigate.RayCastPositionerSliderAdder;
+import sc.fiji.bdvpg.bdv.navigate.SourceNavigatorSliderAdder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-
-import javax.swing.SwingUtilities;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Add Z Slider",
-	description = "Adds a z slider onto BDV windows")
-public class MultiBdvZSliderAdderCommand implements BdvPlaygroundActionCommand {
-
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Add Source Slider",
+	description = "Adds a source slider onto BDV windows")
+public class MultiBdvSourceNavigatorSliderAdderCommand implements BdvPlaygroundActionCommand {
 	@Parameter(label = "Select BDV Windows")
 	BdvHandle[] bdvhs;
-
 	@Override
 	public void run() {
 		if (bdvhs.length == 0) IJ.log("Please make sure to select a Bdv window.");
-		SwingUtilities.invokeLater(() -> {
-			for (BdvHandle bdvh : bdvhs) {
-				new RayCastPositionerSliderAdder(bdvh).run();
-			}
-		});
+		for (BdvHandle bdvh : bdvhs) {
+			new SourceNavigatorSliderAdder(bdvh).run();
+		}
 	}
 }

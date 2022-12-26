@@ -69,7 +69,7 @@ public class BdvPlaygroundStateSaver {
        // Creates demo Warped Sources
        BigWarpDemo.demo2d();
        BigWarpDemo.demo3d();
-       AffineTransformSourceDemo.demo(2);
+       AffineTransformSourceDemo.demo(ij,2);
        ResamplingDemo.demo();
        try {
            WarpedSourceDemo.demo();

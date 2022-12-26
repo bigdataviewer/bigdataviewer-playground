@@ -534,9 +534,11 @@ public class BdvHandleHelper {
 		};
 
 		int nTimepoints = bdvh.getViewerPanel().state().getNumTimepoints();
+		int iTimePoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
 		BdvFunctions.showOverlay(overlay, "cross_overlay", BdvOptions.options()
 			.addTo(bdvh));
-		bdvh.getViewerPanel().setTimepoint(nTimepoints);
+		bdvh.getViewerPanel().state().setNumTimepoints(nTimepoints);
+		bdvh.getViewerPanel().state().setCurrentTimepoint(iTimePoint);
 		return overlay;
 	}
 

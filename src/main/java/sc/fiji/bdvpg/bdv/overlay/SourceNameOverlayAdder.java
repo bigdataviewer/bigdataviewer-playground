@@ -34,8 +34,14 @@ public class SourceNameOverlayAdder implements Runnable {
     @Override
     public void run() {
         nameOverlay = new SourceNameOverlay(bdvh.getViewerPanel(),font,SourceAndConverterHelper::sortDefault);
+
+        int nTimepointIni = bdvh.getViewerPanel().state().getNumTimepoints();
+        int iTimePoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
         bos = BdvFunctions.showOverlay(nameOverlay, "Sources names", BdvOptions.options().addTo(bdvh));
         bdvh.getViewerPanel().state().changeListeners().add(changeListener);
+        // Bug when an overlay is displayed
+        bdvh.getViewerPanel().state().setNumTimepoints(nTimepointIni);
+        bdvh.getViewerPanel().state().setCurrentTimepoint(iTimePoint);
     }
 
     void updatePositions() {

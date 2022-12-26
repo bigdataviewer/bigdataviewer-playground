@@ -58,7 +58,7 @@ public class AffineTransformSourceDemo {
         ij = new ImageJ();
         TestHelper.startFiji(ij);
 
-        demo(20);
+        demo(ij,20);
 
     }
 
@@ -72,7 +72,7 @@ public class AffineTransformSourceDemo {
         TestHelper.closeFijiAndBdvs(ij);
     }
 
-    public static void demo(int numberOfSourcesInOneAxis) {
+    public static void demo(ImageJ ij, int numberOfSourcesInOneAxis) {
 
         // Creates a BdvHandle
         BdvHandle bdvHandle =
