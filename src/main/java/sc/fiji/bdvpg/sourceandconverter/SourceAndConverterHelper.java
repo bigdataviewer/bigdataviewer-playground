@@ -425,6 +425,28 @@ public class SourceAndConverterHelper {
 	}
 
 	/**
+	 * Returns a more reasonable estimation of the number of timepoint in an array of sources
+	 *
+	 * For that : discard all sources which are present at t = -1. That's a proxy indicating that it's
+	 * a generative source.
+	 *
+	 * @param sacs
+	 * @return
+	 */
+	public static int getNTimepoints(SourceAndConverter<?>[] sacs) {
+		int max = 0;
+		for (SourceAndConverter<?> sac : sacs) {
+			if (!sac.getSpimSource().isPresent(-1)) {
+				int sourceMax = getMaxTimepoint(sac);
+				if (sourceMax > max) {
+					max = sourceMax;
+				}
+			}
+		}
+		return max;
+	}
+
+	/**
 	 * @param sacs sources
 	 * @return the max timepoint found in this source according to the next method
 	 *         ( check limitations )
@@ -664,14 +686,14 @@ public class SourceAndConverterHelper {
 	 * @return the center point of the source (assuming not warped)
 	 */
 	public static RealPoint getSourceAndConverterCenterPoint(
-		SourceAndConverter<?> source)
+		SourceAndConverter<?> source, int timepoint)
 	{
 		AffineTransform3D sourceTransform = new AffineTransform3D();
 		sourceTransform.identity();
 
-		source.getSpimSource().getSourceTransform(0, 0, sourceTransform);
+		source.getSpimSource().getSourceTransform(timepoint, 0, sourceTransform);
 		long[] dims = new long[3];
-		source.getSpimSource().getSource(0, 0).dimensions(dims);
+		source.getSpimSource().getSource(timepoint, 0).dimensions(dims);
 
 		RealPoint ptCenterGlobal = new RealPoint(3);
 		RealPoint ptCenterPixel = new RealPoint((dims[0] - 1.0) / 2.0, (dims[1] -

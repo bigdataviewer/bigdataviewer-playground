@@ -27,54 +27,40 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.bdv.supplier;
+package sc.fiji.bdvpg.scijava.command.bdv;
 
-import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
-import bdv.util.BdvOptions;
-import bdv.util.BdvStackSource;
-import bdv.viewer.Interpolation;
-import net.imglib2.img.array.ArrayImg;
-import net.imglib2.img.array.ArrayImgs;
-import net.imglib2.img.basictypeaccess.array.ByteArray;
-import net.imglib2.realtransform.AffineTransform3D;
-import net.imglib2.type.numeric.integer.ByteType;
+import bdv.viewer.SourceAndConverter;
+import ij.IJ;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.navigate.SourceNavigatorSliderAdder;
 import sc.fiji.bdvpg.bdv.navigate.TimepointAdapterAdder;
+import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
-public class DefaultBdvSupplier implements IBdvSupplier {
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-	public final SerializableBdvOptions sOptions;
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"BDV>BDV - Adapt bdv number of timepoints to sources",
+	description = "Adapts the bdv windows timepoints to the number of timepoints present in their sources.")
+public class MultiBdvTimepointAdapterCommand implements BdvPlaygroundActionCommand {
 
-	public DefaultBdvSupplier(SerializableBdvOptions sOptions) {
-		this.sOptions = sOptions;
-	}
+	@Parameter(label = "Select BDV Windows")
+	BdvHandle[] bdvhs;
+
+	@Parameter
+	SourceAndConverterBdvDisplayService bdvDisplayService;
 
 	@Override
-	public BdvHandle get() {
-		BdvOptions options = sOptions.getBdvOptions();
-
-		// create dummy image to instantiate the BDV
-		ArrayImg<ByteType, ByteArray> dummyImg = ArrayImgs.bytes(2, 2, 2);
-		options = options.sourceTransform(new AffineTransform3D());
-		BdvStackSource<ByteType> bss = BdvFunctions.show(dummyImg, "dummy",
-			options);
-		BdvHandle bdv = bss.getBdvHandle();
-
-		if (sOptions.interpolate) bdv.getViewerPanel().setInterpolation(
-			Interpolation.NLINEAR);
-
-		// remove dummy image
-		bdv.getViewerPanel().state().removeSource(bdv.getViewerPanel().state()
-			.getCurrentSource());
-		bdv.getViewerPanel().setNumTimepoints(sOptions.numTimePoints);
-
-		// Should be helpful
-
-		new TimepointAdapterAdder(bdv).run();
-		new SourceNavigatorSliderAdder(bdv).run();
-
-		return bdv;
+	public void run() {
+		if (bdvhs.length == 0) IJ.log("Please make sure to select a Bdv window.");
+		for (BdvHandle bdvh : bdvhs) {
+			new TimepointAdapterAdder(bdvh).run();
+		}
 	}
-
 }

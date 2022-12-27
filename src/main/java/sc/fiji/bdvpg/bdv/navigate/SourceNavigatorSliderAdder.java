@@ -95,7 +95,7 @@ public class SourceNavigatorSliderAdder implements Runnable {
 		});
 		slider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				int idx = (int) slider.getValue();
+				int idx = slider.getValue();
 				if (sourcesNames.size()>idx) {
 					sourceName.setText(sourcesNames.get(idx));
 				}
@@ -112,8 +112,13 @@ public class SourceNavigatorSliderAdder implements Runnable {
 
 	int currentPosition;
 
-	final ViewerStateChangeListener changeListener = (
-		viewerStateChange) -> updatePositions();
+	final ViewerStateChangeListener changeListener = (viewerStateChange) -> {
+		switch (viewerStateChange) {
+			case NUM_SOURCES_CHANGED:
+			case CURRENT_TIMEPOINT_CHANGED:
+				updatePositions();
+		}
+	};
 	final TimePointListener timePointListener = (timepoint) -> updatePositions();
 
 	@Override
@@ -158,7 +163,7 @@ public class SourceNavigatorSliderAdder implements Runnable {
 		List<RealPoint> centers = new ArrayList<>(sortedSources.size());
 		List<String> srcsNames = new ArrayList<>(sortedSources.size());
 		for (SourceAndConverter<?> source : sortedSources) {
-			centers.add(SourceAndConverterHelper.getSourceAndConverterCenterPoint(source));
+			centers.add(SourceAndConverterHelper.getSourceAndConverterCenterPoint(source, bdvh.getViewerPanel().state().getCurrentTimepoint()));
 			srcsNames.add(source.getSpimSource().getName());
 		}
 		centerLocations = centers;
