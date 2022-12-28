@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.scijava.services.ui;
 
 import bdv.viewer.SourceAndConverter;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -37,8 +38,11 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -220,18 +224,19 @@ public class SourceFilterNode extends DefaultMutableTreeNode implements
 	 * @param event cast event
 	 */
 	public void update(UpdateEvent event) {
+		Function<Collection<SourceAndConverter<?>>, List<SourceAndConverter<?>>> sorter = SourceAndConverterHelper::sortDefaultGeneric;
 		if (event instanceof NodeAddedUpdateEvent) {
 			NodeAddedUpdateEvent nodeEvent = (NodeAddedUpdateEvent) event;
 			assert this.isNodeChild(nodeEvent.getNode());
 			if (nodeEvent.getNode() instanceof SourceFilterNode) {
-				for (SourceAndConverter<?> sac : currentOutputSacs) {
+				for (SourceAndConverter<?> sac : sorter.apply(currentOutputSacs)) {
 					((SourceFilterNode) nodeEvent.getNode()).add(
 						new DefaultMutableTreeNode(new RenamableSourceAndConverter(sac)));
 				}
 			}
 		}
 		else if (event instanceof FilterUpdateEvent) {
-			for (SourceAndConverter<?> sac : currentInputSacs) {
+			for (SourceAndConverter<?> sac : sorter.apply(currentInputSacs)) {
 				if (filter.test(sac)) {
 					if (!currentOutputSacs.contains(sac)) {
 						// a blocked source is now passing
