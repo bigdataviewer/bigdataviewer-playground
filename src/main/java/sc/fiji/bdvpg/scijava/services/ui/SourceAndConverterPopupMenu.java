@@ -157,6 +157,9 @@ public class SourceAndConverterPopupMenu {
 	{
 		this.sacs_supplier = sacs_supplier;
 		this.popupActionWithPaths = actionWithPaths;
+
+		this.popup = new JPopupMenu();
+		this.menuRoot = new DefaultMutableTreeNode(popup);
 		createPopupMenu();
 	}
 
@@ -189,7 +192,7 @@ public class SourceAndConverterPopupMenu {
 		}
 	}
 
-	DefaultMutableTreeNode menuRoot;
+	final DefaultMutableTreeNode menuRoot;
 
 	/**
 	 * Adds a line and an action which consumes all the selected
