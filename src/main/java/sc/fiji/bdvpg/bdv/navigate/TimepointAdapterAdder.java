@@ -28,5 +28,10 @@ public class TimepointAdapterAdder implements Runnable {
                 }
             }
         );
+
+        int nTps = SourceAndConverterHelper.getNTimepoints(handle.state().getSources().toArray(new SourceAndConverter[0]));
+        if ((nTps!=handle.state().getNumTimepoints()) && (nTps>0)) {
+            handle.state().setNumTimepoints(nTps);
+        }
     }
 }

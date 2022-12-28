@@ -37,9 +37,12 @@ import bdv.viewer.ViewerStateChangeListener;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterTreeCellRenderer;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -49,6 +52,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Image;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,6 +82,16 @@ public class SourceNavigatorSliderAdder implements Runnable {
 	final JPanel panel;
 
 	final JLabel sourceName = new JLabel();
+
+	// static ImageIcon sourceIcon;
+	static final ImageIcon expandIcon;
+
+	static {
+		URL iconExpandURL;
+		iconExpandURL = SourceNavigatorSliderAdder.class.getResource(
+				"/images/adjustview.png");
+		expandIcon = new ImageIcon(iconExpandURL);
+	}
 
 	public SourceNavigatorSliderAdder(BdvHandle bdvh) {
 		this.bdvh = bdvh;
@@ -108,6 +123,24 @@ public class SourceNavigatorSliderAdder implements Runnable {
 		panel.add(spinner);
 		panel.add(sourceName);
 
+		int newSize = (int) (panel.getPreferredSize().getHeight() * 0.6);
+
+		Image img = expandIcon.getImage() ;
+		Image newimg = img.getScaledInstance( newSize, newSize,  java.awt.Image.SCALE_SMOOTH ) ;
+		ImageIcon icon = new ImageIcon( newimg );
+		JButton adjustOnSource = new JButton(icon);
+		adjustOnSource.addActionListener(e -> {
+			int idx = slider.getValue();
+			if (this.sourcesNames.size()>idx) {
+				List<SourceAndConverter<?>> sortedSources = SourceAndConverterHelper.sortDefaultGeneric(bdvh.getViewerPanel().state().getVisibleSources());
+				int timePoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
+				sortedSources = sortedSources.stream().filter(source -> source.getSpimSource().isPresent(timePoint)).collect(Collectors.toList());
+				SourceAndConverter<?> src = sortedSources.get(idx);
+				new ViewerTransformAdjuster(bdvh,src).run();
+			}
+		});
+		panel.add(adjustOnSource);
+
 	}
 
 	int currentPosition;
@@ -116,6 +149,7 @@ public class SourceNavigatorSliderAdder implements Runnable {
 		switch (viewerStateChange) {
 			case NUM_SOURCES_CHANGED:
 			case CURRENT_TIMEPOINT_CHANGED:
+			case VISIBILITY_CHANGED:
 				updatePositions();
 		}
 	};
@@ -154,6 +188,7 @@ public class SourceNavigatorSliderAdder implements Runnable {
 			}
 		});
 
+		updatePositions();
 	}
 
 	public void updatePositions() {
