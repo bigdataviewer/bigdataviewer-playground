@@ -24,6 +24,10 @@
   "Viewer>BVV>BVV - Create Orthogonal Views",
   "Viewer>Synchronize States",
   "Viewer>Synchronize Views",
+  "Sources>Display>BDV - Show Sources",
+  "Sources>Display>BDV - Show Sources (new Bdv window)",
+  "Sources>Display>BVV - Show Sources",
+  "Sources>Display>PopupLine",
   "Sources>Display>Set Sources Color",
   "Sources>Display>Set Sources Brightness",
   "Sources>Display>Make Sources Invisible",
@@ -39,7 +43,15 @@
   "Sources>Resample Source Based on Model Source",
   "Sources>Delete Sources",
   "Sources>Inspect Sources",
+  "Dataset>Open>Open XML BDV Datasets",
+  "Dataset>Save>Save BDVDataset",
   "Tree View>Add Metadata To Sources",
   "Tree View>Make Metadata Filter Node",
-  "Tree View>Make Global Source Group"
+  "Tree View>Make Global Source Group",
+  "PopupLine",
+  "BDV Playground>State>Clear Bdv Playground State",
+  "BDV Playground>State>Load Bdv Playground State (experimental)",
+  "BDV Playground>State>Save Bdv Playground State (experimental)",
+  "BDV Playground>Options>Set cache options",
+  "BDV Playground>Options>BDV - Set BDV window (default)"
 ]

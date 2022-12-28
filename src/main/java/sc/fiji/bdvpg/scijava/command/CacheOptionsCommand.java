@@ -41,11 +41,11 @@ import sc.fiji.bdvpg.cache.GlobalCacheBuilder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu +
+@Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu +
 	"Set cache options",
 	description = "Sets Bdv Playground cache options (needs a restart)",
 	initializer = "initialize")
-public class CacheOptionsCommand implements Command {
+public class CacheOptionsCommand implements BdvPlaygroundActionCommand {
 
 	final public static Logger logger = LoggerFactory.getLogger(
 		CacheOptionsCommand.class);
