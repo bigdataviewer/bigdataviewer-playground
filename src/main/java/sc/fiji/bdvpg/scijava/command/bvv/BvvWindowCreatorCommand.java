@@ -54,12 +54,6 @@ public class BvvWindowCreatorCommand implements BdvPlaygroundActionCommand {
 	public String windowtitle = "BVV";
 
 	/**
-	 * Number of timepoints (1 for a single timepoint)
-	 */
-	@Parameter(label = "Number of timepoints (1 for a single timepoint)")
-	public int ntimepoints = 1;
-
-	/**
 	 * TODO This triggers: BvvHandlePostprocessor
 	 */
 	@Parameter(type = ItemIO.OUTPUT)
@@ -70,7 +64,7 @@ public class BvvWindowCreatorCommand implements BdvPlaygroundActionCommand {
 		// ------------ BdvHandleFrame
 		BvvOptions opts = BvvOptions.options().frameTitle(windowtitle);
 
-		BvvCreator creator = new BvvCreator(opts, ntimepoints);
+		BvvCreator creator = new BvvCreator(opts, 1);
 		creator.run();
 		bvvh = creator.get();
 	}

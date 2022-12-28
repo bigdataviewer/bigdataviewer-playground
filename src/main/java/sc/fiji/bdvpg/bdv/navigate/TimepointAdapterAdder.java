@@ -16,6 +16,11 @@ public class TimepointAdapterAdder implements Runnable {
         this.handle = new ViewerAdapter(bdvHandle);
     }
 
+    public TimepointAdapterAdder(ViewerAdapter adapter)
+    {
+        this.handle = adapter;
+    }
+
     @Override
     public void run() {
         handle.state().changeListeners().add( change -> {

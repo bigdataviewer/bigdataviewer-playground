@@ -51,11 +51,15 @@ import sc.fiji.bdvpg.scijava.command.source.TransformedSourceWrapperCommand;
 import sc.fiji.bdvpg.scijava.command.source.XmlHDF5ExporterCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
+import javax.swing.JComponent;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Enumeration;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -86,23 +90,24 @@ public class SourceAndConverterPopupMenu {
 
 	};
 
-	String[] popupActions;
+	String[] popupActionWithPaths;
 
 	public SourceAndConverterPopupMenu(
 		Supplier<SourceAndConverter<?>[]> sacs_supplier, String path,
 		String context)
 	{
+
 		this.sacs_supplier = sacs_supplier;
-		this.popupActions = defaultPopupActions;
+		this.popupActionWithPaths = defaultPopupActions;
 
 		File f = BdvSettingsGUISetter.getActionFile(path, context);
 		if (f.exists()) {
 			try {
 				Gson gson = new Gson();
-				popupActions = gson.fromJson(new FileReader(f.getAbsoluteFile()),
+				popupActionWithPaths = gson.fromJson(new FileReader(f.getAbsoluteFile()),
 					String[].class);
-				if ((popupActions == null) || (popupActions.length == 0)) {
-					popupActions = new String[] { "Warning: Empty " + f
+				if ((popupActionWithPaths == null) || (popupActionWithPaths.length == 0)) {
+					popupActionWithPaths = new String[] { "Warning: Empty " + f
 						.getAbsolutePath() + " config file." };
 				}
 			}
@@ -115,10 +120,10 @@ public class SourceAndConverterPopupMenu {
 			if (fdefault.exists()) {
 				try {
 					Gson gson = new Gson();
-					popupActions = gson.fromJson(new FileReader(fdefault
+					popupActionWithPaths = gson.fromJson(new FileReader(fdefault
 						.getAbsoluteFile()), String[].class);
-					if ((popupActions == null) || (popupActions.length == 0)) {
-						popupActions = new String[] { "Warning: Empty " + fdefault
+					if ((popupActionWithPaths == null) || (popupActionWithPaths.length == 0)) {
+						popupActionWithPaths = new String[] { "Warning: Empty " + fdefault
 							.getAbsolutePath() + " config file." };
 					}
 				}
@@ -135,6 +140,9 @@ public class SourceAndConverterPopupMenu {
 			}
 		}
 
+		this.popup = new JPopupMenu();
+		this.menuRoot = new DefaultMutableTreeNode(popup);
+
 		createPopupMenu();
 	}
 
@@ -145,23 +153,24 @@ public class SourceAndConverterPopupMenu {
 	}
 
 	public SourceAndConverterPopupMenu(
-		Supplier<SourceAndConverter<?>[]> sacs_supplier, String[] actions)
+		Supplier<SourceAndConverter<?>[]> sacs_supplier, String[] actionWithPaths)
 	{
 		this.sacs_supplier = sacs_supplier;
-		this.popupActions = actions;
+		this.popupActionWithPaths = actionWithPaths;
 		createPopupMenu();
 	}
 
 	private void createPopupMenu() {
-		popup = new JPopupMenu();
 
-		for (String actionName : popupActions) {
+		for (String actionNameWithPath : popupActionWithPaths) {
+			String[] path = actionNameWithPath.split(">");
+			String actionName = path[path.length-1];
 			if (actionName.equals("PopupLine")) {
-				this.addPopupLine();
+				this.addPopupLine(path);
 			}
 			else {
-				this.addPopupAction(actionName, SourceAndConverterServices
-					.getSourceAndConverterService().getAction(actionName));
+				this.addPopupAction(actionNameWithPath, SourceAndConverterServices
+					.getSourceAndConverterService().getAction(actionName.trim()));
 			}
 		}
 	}
@@ -169,20 +178,33 @@ public class SourceAndConverterPopupMenu {
 	/**
 	 * Adds a separator in the popup menu
 	 */
-	public void addPopupLine() {
-		popup.addSeparator();
+	public void addPopupLine(String[] path) {
+		JComponent component = this.getNodeFromPath(path);
+		if (component instanceof JPopupMenu) {
+			((JPopupMenu) component).addSeparator();
+		} else if (component instanceof JMenu) {
+			((JMenu) component).addSeparator();
+		} else {
+			System.err.println("Unexpected menu class: "+component.getClass().getSimpleName());
+		}
 	}
+
+	DefaultMutableTreeNode menuRoot;
 
 	/**
 	 * Adds a line and an action which consumes all the selected
 	 * SourceAndConverter objects in the popup Menu
 	 * 
 	 * @param action action method
-	 * @param actionName action name
+	 * @param actionNameWithPath action name
 	 */
-	public void addPopupAction(String actionName,
+	public void addPopupAction(String actionNameWithPath,
 		Consumer<SourceAndConverter<?>[]> action)
 	{
+		String[] pathsAndAction = actionNameWithPath.split(">");
+
+		String actionName = pathsAndAction[pathsAndAction.length-1];
+
 		JMenuItem menuItem = new JMenuItem(actionName);
 		if (action == null) {
 			menuItem.addActionListener(e -> System.err.println(
@@ -191,7 +213,51 @@ public class SourceAndConverterPopupMenu {
 		else {
 			menuItem.addActionListener(e -> action.accept(sacs_supplier.get()));
 		}
-		popup.add(menuItem);
+		getNodeFromPath(pathsAndAction).add(menuItem);
+	}
+
+	private JComponent getNodeFromPath(String[] pathsAndAction) {
+		//JPopupMenu currentItem = this.popup;
+		DefaultMutableTreeNode currentNode = menuRoot;
+		int idx = 0;
+		while (idx< pathsAndAction.length-1) {
+			String currentPath = pathsAndAction[idx];
+			//if (currentNode.children().)
+			Enumeration en = currentNode.depthFirstEnumeration();
+			boolean found = false;
+			while (en.hasMoreElements()) {
+
+				// Unfortunately the enumeration isn't genericised so we need to downcast
+				// when calling nextElement():
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) en.nextElement();
+				if (node.getUserObject() instanceof JMenu) {
+					JMenu menuEntry = (JMenu) node.getUserObject();
+					if (menuEntry.getText().equals(currentPath)) {
+						currentNode = node;
+						found = true;
+						break;
+					}
+				}
+			}
+			if (!found) {
+				JMenu entry = new JMenu(currentPath);
+				if (currentNode.getUserObject() instanceof JMenu) {
+					((JMenu) (currentNode.getUserObject())).add(entry);
+				} else if (currentNode.getUserObject() instanceof JPopupMenu) {
+					((JPopupMenu) (currentNode.getUserObject())).add(entry);
+				} else {
+					System.err.println("Unexpected menu class: "+currentNode.getUserObject().getClass().getSimpleName());
+				}
+				DefaultMutableTreeNode newEntry = new DefaultMutableTreeNode(entry);
+				currentNode.add(newEntry);
+				currentNode = newEntry;
+			}
+			idx++;
+		}
+		//JMenu menu;
+		//JMenuItem menuItem;
+		//JPopupMenu popupMenu;
+		return (JComponent) currentNode.getUserObject();
 	}
 
 	public JPopupMenu getPopup() {

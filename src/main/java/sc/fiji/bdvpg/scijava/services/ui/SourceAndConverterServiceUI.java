@@ -45,8 +45,10 @@ import sc.fiji.bdvpg.scijava.services.ui.swingdnd.SourceAndConverterServiceUITra
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import javax.swing.DropMode;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -378,11 +380,30 @@ public class SourceAndConverterServiceUI {
 			}
 		});
 
-		popup.add(deleteInspectNodesMenuItem);
-		popup.add(copyFilterNodeMenuItem);
-		popup.add(pasteFilterNodeMenuItem);
-		popup.add(addShowAllFilterNodeMenuItem);
-		popup.add(deleteFilterNodesMenuItem);
+		JComponent child = popup;
+
+		boolean found = false;
+		for (int i = 0; i<popup.getComponentCount(); i++) {
+			if (popup.getComponent(i) instanceof JMenu) {
+				if (((JMenu) popup.getComponent(i)).getText().equals("Tree View")) {
+					child = (JMenu) popup.getComponent(i);
+					found = true;
+					break;
+				}
+			}
+		}
+
+		if (!found) {
+			JMenu menu = new JMenu("Tree View");
+			popup.add(menu);
+			child = menu;
+		}
+
+		child.add(deleteInspectNodesMenuItem);
+		child.add(copyFilterNodeMenuItem);
+		child.add(pasteFilterNodeMenuItem);
+		child.add(addShowAllFilterNodeMenuItem);
+		child.add(deleteFilterNodesMenuItem);
 	}
 
 	/**
