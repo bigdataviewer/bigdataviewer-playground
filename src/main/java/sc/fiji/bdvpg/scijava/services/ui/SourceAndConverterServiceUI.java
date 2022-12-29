@@ -37,6 +37,7 @@ import mpicbg.spim.data.generic.base.NamedEntity;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
+import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.PlaygroundPrefs;
@@ -165,7 +166,8 @@ public class SourceAndConverterServiceUI {
 	 * @param sourceAndConverterService the service to which this UI is linked
 	 */
 	public SourceAndConverterServiceUI(
-		SourceAndConverterService sourceAndConverterService)
+		SourceAndConverterService sourceAndConverterService,
+		Context context)
 	{
 		this.sourceAndConverterService = sourceAndConverterService;
 

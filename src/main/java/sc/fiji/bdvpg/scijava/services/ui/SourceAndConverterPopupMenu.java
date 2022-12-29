@@ -172,7 +172,8 @@ public class SourceAndConverterPopupMenu {
 				this.addPopupLine(path);
 			}
 			else {
-				this.addPopupAction(actionNameWithPath, SourceAndConverterServices
+				this.addPopupAction(actionNameWithPath,
+						SourceAndConverterServices
 					.getSourceAndConverterService().getAction(actionName.trim()));
 			}
 		}
@@ -209,12 +210,13 @@ public class SourceAndConverterPopupMenu {
 		String actionName = pathsAndAction[pathsAndAction.length-1];
 
 		JMenuItem menuItem = new JMenuItem(actionName);
-		if (action == null) {
-			menuItem.addActionListener(e -> System.err.println(
-				"No action defined for action named " + actionName));
-		}
-		else {
+		if (action != null) {
 			menuItem.addActionListener(e -> action.accept(sacs_supplier.get()));
+
+		} else {
+			menuItem.addActionListener(e ->
+					System.err.println("No action defined for action named " + actionName)
+			);
 		}
 		getNodeFromPath(pathsAndAction).add(menuItem);
 	}

@@ -738,7 +738,7 @@ public class SourceAndConverterService extends AbstractService implements
 		if (!context().getService(UIService.class).isHeadless()) {
 			logger.debug(
 				"uiService detected : Constructing JPanel for BdvSourceAndConverterService");
-			ui = new SourceAndConverterServiceUI(this);
+			ui = new SourceAndConverterServiceUI(this, context());
 			uiAvailable = true;
 		}
 
