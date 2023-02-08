@@ -1,4 +1,4 @@
-Copyright (c) 2019 - 2022, Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+Copyright (c) 2019 - 2023, Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
