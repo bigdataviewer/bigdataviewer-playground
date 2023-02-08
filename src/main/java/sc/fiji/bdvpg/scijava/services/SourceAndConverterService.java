@@ -239,10 +239,19 @@ public class SourceAndConverterService extends AbstractService implements
 
 	/**
 	 * Register a BDV Source in this Service. Called in the BdvSourcePostProcessor
+	 *
+	 * @param sac source
+	 */
+	public void register(SourceAndConverter<?> sac) {
+		register(sac, uiAvailable);
+	}
+
+	/**
+	 * Register a BDV Source in this Service. Called in the BdvSourcePostProcessor
 	 * 
 	 * @param sac source
 	 */
-	public synchronized void register(SourceAndConverter<?> sac) {
+	private synchronized void register(SourceAndConverter<?> sac, boolean treeView) {
 		if (objectService.getObjects(SourceAndConverter.class).contains(sac)) {
 			logger.debug("Source already registered");
 			return;
@@ -274,7 +283,17 @@ public class SourceAndConverterService extends AbstractService implements
 		 */
 		objectService.addObject(sac);
 
-		if (uiAvailable) ui.update(sac);
+		if (treeView) ui.update(sac);
+	}
+
+	@Override
+	public void register(SourceAndConverter<?> src, String... options) {
+		for (String option: options) {
+			if (option.equals("no tree")) {
+				register(src, false);
+			}
+		}
+		register(src);
 	}
 
 	public static String UNIQUE_ID_KEY = "Unique_ID";
@@ -499,6 +518,11 @@ public class SourceAndConverterService extends AbstractService implements
 				" is using the Bdv Playground global cache.");
 		}
 
+	}
+
+	@Override
+	public void register(AbstractSpimData<?> asd, String... options) {
+		register(asd);
 	}
 
 	private static String createSetupName(final BasicViewSetup setup) {
