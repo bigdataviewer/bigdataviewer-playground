@@ -46,7 +46,7 @@ public class DemoTreeSourcesManipulation {
         ImageJ ij = new ImageJ();
         TestHelper.startFiji(ij);//ij.ui().showUI();
         System.out.println("BigWarp version:"+ VersionUtils.getVersion(BigWarp.class));
-        demo2d();
+        demo2d(ij);
 
         SourceAndConverterServiceUI treeUI = ij.get(SourceAndConverterService.class).getUI();
 

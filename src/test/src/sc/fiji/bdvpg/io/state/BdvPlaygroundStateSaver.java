@@ -67,8 +67,8 @@ public class BdvPlaygroundStateSaver {
 
     public static void createSacs() {
        // Creates demo Warped Sources
-       BigWarpDemo.demo2d();
-       BigWarpDemo.demo3d();
+       BigWarpDemo.demo2d(ij);
+       BigWarpDemo.demo3d(ij);
        AffineTransformSourceDemo.demo(ij,2);
        ResamplingDemo.demo();
        try {

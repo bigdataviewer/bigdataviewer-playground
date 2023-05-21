@@ -58,10 +58,10 @@ public class BigWarpDemo {
         ij = new ImageJ();
         TestHelper.startFiji(ij);//ij.ui().showUI();
         System.out.println("BigWarp version:"+VersionUtils.getVersion(BigWarp.class));
-        demo2d();
+        demo2d(ij);
     }
 
-    public static void demo3d() {
+    public static void demo3d(ImageJ ij) {
         SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
         SourceAndConverterBdvDisplayService displayService = ij.get(SourceAndConverterBdvDisplayService.class);
 
@@ -122,7 +122,7 @@ public class BigWarpDemo {
     }
 
 
-    public static void demo2d() {
+    public static void demo2d(ImageJ ij) {
         SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
         SourceAndConverterBdvDisplayService displayService = ij.get(SourceAndConverterBdvDisplayService.class);
 
