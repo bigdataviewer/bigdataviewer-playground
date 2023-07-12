@@ -31,7 +31,7 @@ package sc.fiji.bdvpg.viewers;
 
 import bdv.viewer.TimePointListener;
 import bdv.viewer.TransformListener;
-import bvv.util.BvvHandle;
+import bvv.vistools.BvvHandle;
 import net.imglib2.realtransform.AffineTransform3D;
 
 import java.util.Map;

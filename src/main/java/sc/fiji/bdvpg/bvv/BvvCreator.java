@@ -29,10 +29,11 @@
 
 package sc.fiji.bdvpg.bvv;
 
-import bvv.util.BvvFunctions;
-import bvv.util.BvvHandle;
-import bvv.util.BvvOptions;
-import bvv.util.BvvStackSource;
+
+import bvv.vistools.BvvFunctions;
+import bvv.vistools.BvvHandle;
+import bvv.vistools.BvvOptions;
+import bvv.vistools.BvvStackSource;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.realtransform.AffineTransform3D;

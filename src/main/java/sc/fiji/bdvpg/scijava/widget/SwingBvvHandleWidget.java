@@ -29,7 +29,7 @@
 
 package sc.fiji.bdvpg.scijava.widget;
 
-import bvv.util.BvvHandle;
+import bvv.vistools.BvvHandle;
 import org.scijava.Priority;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;

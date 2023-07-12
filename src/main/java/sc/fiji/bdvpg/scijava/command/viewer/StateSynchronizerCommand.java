@@ -30,7 +30,7 @@
 package sc.fiji.bdvpg.scijava.command.viewer;
 
 import bdv.util.BdvHandle;
-import bvv.util.BvvHandle;
+import bvv.vistools.BvvHandle;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
@@ -72,10 +72,10 @@ public class StateSynchronizerCommand implements BdvPlaygroundActionCommand {
 	protected static final Logger logger = LoggerFactory.getLogger(
 		StateSynchronizerCommand.class);
 
-	@Parameter(label = "Select Bdv Windows to synchronize", required = false)
+	@Parameter(label = "Select Bdv Windows to synchronize", required = false, persist = false)
 	BdvHandle[] bdvhs;
 
-	@Parameter(label = "Select Bvv Windows to synchronize", required = false)
+	@Parameter(label = "Select Bvv Windows to synchronize", required = false, persist = false)
 	BvvHandle[] bvvhs;
 
 	ViewerStateSyncStarter sync;

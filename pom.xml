@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>35.0.0</version>
+		<version>36.0.0</version>
 		<relativePath />
 	</parent>
 
@@ -120,8 +120,8 @@
 		<!-- <scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory> -->
 
 		<!-- package version below are not present in the parent pom. A version is needed -->
-		<bigdataviewer-selector.version>0.2.2</bigdataviewer-selector.version>
-		<bigvolumeviewer.version>0.2.0</bigvolumeviewer.version>
+		<bigdataviewer-selector.version>0.2.3</bigdataviewer-selector.version>
+		<bigvolumeviewer.version>0.3.1</bigvolumeviewer.version>
 		<reflections.version>0.10.2</reflections.version> <!-- for test only -->
 
 		<!-- package version below are determined by the parent pom but need to be upgraded or temporarily fixed for bugs -->

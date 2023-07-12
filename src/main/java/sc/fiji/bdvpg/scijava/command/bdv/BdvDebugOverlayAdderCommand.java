@@ -45,7 +45,7 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 public class BdvDebugOverlayAdderCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter
+	@Parameter(persist = false)
 	BdvHandle bdvh;
 
 	@Override

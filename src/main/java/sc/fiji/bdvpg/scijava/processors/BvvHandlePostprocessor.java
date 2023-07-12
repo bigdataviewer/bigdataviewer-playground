@@ -29,7 +29,7 @@
 
 package sc.fiji.bdvpg.scijava.processors;
 
-import bvv.util.BvvHandle;
+import bvv.vistools.BvvHandle;
 import org.scijava.module.Module;
 import org.scijava.module.process.AbstractPostprocessorPlugin;
 import org.scijava.module.process.PostprocessorPlugin;

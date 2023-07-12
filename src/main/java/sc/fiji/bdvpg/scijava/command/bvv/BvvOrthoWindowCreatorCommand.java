@@ -29,8 +29,8 @@
 
 package sc.fiji.bdvpg.scijava.command.bvv;
 
-import bvv.util.BvvHandle;
-import bvv.util.BvvOptions;
+import bvv.vistools.BvvHandle;
+import bvv.vistools.BvvOptions;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

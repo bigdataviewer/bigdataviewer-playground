@@ -30,9 +30,9 @@
 package sc.fiji.bdvpg.viewers;
 
 import bdv.util.BdvHandle;
+import bvv.vistools.BvvHandle;
 import bdv.viewer.TimePointListener;
 import bdv.viewer.TransformListener;
-import bvv.util.BvvHandle;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 

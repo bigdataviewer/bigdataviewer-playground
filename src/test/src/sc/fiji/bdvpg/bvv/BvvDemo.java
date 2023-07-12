@@ -29,8 +29,8 @@
 package sc.fiji.bdvpg.bvv;
 
 import bdv.util.BdvFunctions;
-import bvv.util.BvvFunctions;
-import bvv.util.BvvStackSource;
+import bvv.vistools.BvvFunctions;
+import bvv.vistools.BvvStackSource;
 import net.imagej.ImageJ;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;

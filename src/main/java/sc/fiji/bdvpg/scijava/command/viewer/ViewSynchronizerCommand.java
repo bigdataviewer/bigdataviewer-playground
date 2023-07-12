@@ -30,7 +30,9 @@
 package sc.fiji.bdvpg.scijava.command.viewer;
 
 import bdv.util.BdvHandle;
-import bvv.util.BvvHandle;
+import bvv.vistools.BvvHandle;
+import org.scijava.command.CommandModule;
+import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
@@ -73,10 +75,10 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 	protected static final Logger logger = LoggerFactory.getLogger(
 		ViewSynchronizerCommand.class);
 
-	@Parameter(label = "Select Bdv Windows to synchronize", required = false)
+	@Parameter(label = "Select Bdv Windows to synchronize", required = false, persist = false)
 	BdvHandle[] bdvhs;
 
-	@Parameter(label = "Select Bvv Windows to synchronize", required = false)
+	@Parameter(label = "Select Bvv Windows to synchronize", required = false, persist = false)
 	BvvHandle[] bvvhs;
 
 	@Parameter(label = "Synchronize timepoints")
@@ -85,6 +87,8 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 	ViewerTransformSyncStarter sync;
 
 	public void run() {
+		CommandService cm;
+
 		if (bdvhs == null) bdvhs = new BdvHandle[0];
 		if (bvvhs == null) bvvhs = new BvvHandle[0];
 		if (bvvhs.length + bdvhs.length < 2) {
@@ -105,9 +109,9 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 			sync.setHandleInitialReference(new ViewerAdapter(
 				SourceAndConverterServices.getBdvDisplayService().getActiveBdv()));
 		}
-		else {
+		/*else {
 			sync.setHandleInitialReference(new ViewerAdapter(bvvhs[0]));
-		}
+		}*/
 		sync.run();
 
 		// JFrame serving the purpose of stopping synchronization when it is being

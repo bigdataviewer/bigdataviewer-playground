@@ -29,7 +29,7 @@
 
 package sc.fiji.bdvpg.scijava.command.bvv;
 
-import bvv.util.BvvHandle;
+import bvv.vistools.BvvHandle;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -47,7 +47,7 @@ public class BvvSetTimepointsNumberCommand implements
 	BdvPlaygroundActionCommand
 {
 
-	@Parameter(label = "Select BVV Windows")
+	@Parameter(label = "Select BVV Windows", persist = false)
 	BvvHandle[] bvvhs;
 
 	@Parameter(label = "Number of timepoints, min = 1", min = "1")

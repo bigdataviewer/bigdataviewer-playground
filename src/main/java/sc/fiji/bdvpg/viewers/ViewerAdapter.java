@@ -34,7 +34,8 @@ import bdv.viewer.TimePointListener;
 import bdv.viewer.TransformListener;
 import bdv.viewer.ViewerPanel;
 import bdv.viewer.ViewerState;
-import bvv.util.BvvHandle;
+import bvv.core.VolumeViewerPanel;
+import bvv.vistools.BvvHandle;
 import net.imglib2.realtransform.AffineTransform3D;
 
 /**
@@ -43,7 +44,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 
 public class ViewerAdapter {
 
-	final tpietzsch.example2.VolumeViewerPanel bvvPanel;
+	final VolumeViewerPanel bvvPanel;
 	final ViewerPanel bdvPanel;
 
 	public ViewerAdapter(bdv.viewer.ViewerPanel viewerPanel) {
@@ -51,7 +52,7 @@ public class ViewerAdapter {
 		bdvPanel = viewerPanel;
 	}
 
-	public ViewerAdapter(tpietzsch.example2.VolumeViewerPanel viewerPanel) {
+	public ViewerAdapter(VolumeViewerPanel viewerPanel) {
 		bvvPanel = viewerPanel;
 		bdvPanel = null;
 	}
@@ -97,7 +98,7 @@ public class ViewerAdapter {
 			bdvPanel.transformListeners().add(listener);
 		}
 		else {
-			bvvPanel.addTransformListener(listener);
+			bvvPanel.transformListeners().add(listener);
 		}
 	}
 
@@ -126,7 +127,7 @@ public class ViewerAdapter {
 			bdvPanel.transformListeners().remove(listener);
 		}
 		else {
-			bvvPanel.removeTransformListener(listener);
+			bvvPanel.transformListeners().remove(listener);
 		}
 	}
 

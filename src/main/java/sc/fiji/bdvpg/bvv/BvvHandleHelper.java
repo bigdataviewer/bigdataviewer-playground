@@ -29,7 +29,7 @@
 
 package sc.fiji.bdvpg.bvv;
 
-import bvv.util.BvvHandle;
+import bvv.vistools.BvvHandle;
 import org.scijava.cache.CacheService;
 import org.scijava.object.ObjectService;
 

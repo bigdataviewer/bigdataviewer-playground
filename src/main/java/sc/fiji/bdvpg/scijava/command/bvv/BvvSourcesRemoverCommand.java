@@ -30,7 +30,7 @@
 package sc.fiji.bdvpg.scijava.command.bvv;
 
 import bdv.viewer.SourceAndConverter;
-import bvv.util.BvvHandle;
+import bvv.vistools.BvvHandle;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
