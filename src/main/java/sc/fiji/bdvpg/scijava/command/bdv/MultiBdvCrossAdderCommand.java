@@ -46,7 +46,7 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 	description = "Adds a centering cross onto BDV windows")
 public class MultiBdvCrossAdderCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select BDV Windows")
+	@Parameter(label = "Select BDV Windows", persist = false)
 	BdvHandle[] bdvhs;
 
 	@Override

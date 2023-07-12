@@ -47,7 +47,7 @@ public class MultiBdvTimepointsSetterCommand implements
 	BdvPlaygroundActionCommand
 {
 
-	@Parameter(label = "Select BDV Windows")
+	@Parameter(label = "Select BDV Windows", persist = false)
 	BdvHandle[] bdvhs;
 
 	@Parameter(label = "Number of timepoints, min = 1", min = "1")

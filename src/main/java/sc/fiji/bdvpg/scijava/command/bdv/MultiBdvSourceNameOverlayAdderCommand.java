@@ -50,7 +50,7 @@ import java.awt.Font;
 	description = "Adds a source name overlay onto BDV windows")
 public class MultiBdvSourceNameOverlayAdderCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select BDV Windows")
+	@Parameter(label = "Select BDV Windows", persist = false)
 	BdvHandle[] bdvhs;
 
 	@Parameter(label = "Font Size")
