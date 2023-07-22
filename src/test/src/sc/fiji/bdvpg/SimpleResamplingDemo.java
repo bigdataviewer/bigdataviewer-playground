@@ -89,7 +89,7 @@ public class SimpleResamplingDemo {
         BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, sac );
-        new ViewerTransformAdjuster( bdvHandle, sac ).run();
+        new ViewerTransformAdjuster( bdvHandle.getViewerPanel(), sac ).run();
         new BrightnessAutoAdjuster<>( sac, 0 ).run();
 
         final VoxelDimensions voxelDimensions = new FinalVoxelDimensions("micrometer", 0.5, 0.5, 3.0 );

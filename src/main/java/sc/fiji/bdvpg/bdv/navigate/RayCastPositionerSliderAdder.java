@@ -121,7 +121,7 @@ public class RayCastPositionerSliderAdder implements Runnable {
 					// Change the position of the viewer with the new offset
 					bdvh.getViewerPanel().state().getViewerTransform(at3d);
 					double[] currentCenter = BdvHandleHelper
-						.getWindowCentreInCalibratedUnits(bdvh);
+						.getWindowCentreInCalibratedUnits(bdvh.getViewerPanel());
 					double[] newCenter = new double[3];
 					newCenter[0] = currentCenter[0] + lastDirection.getDoublePosition(0) *
 						shiftZ;
@@ -130,7 +130,7 @@ public class RayCastPositionerSliderAdder implements Runnable {
 					newCenter[2] = currentCenter[2] + lastDirection.getDoublePosition(2) *
 						shiftZ;
 					bdvh.getViewerPanel().state().setViewerTransform(BdvHandleHelper
-						.getViewerTransformWithNewCenter(bdvh, newCenter));
+						.getViewerTransformWithNewCenter(bdvh.getViewerPanel(), newCenter));
 
 				} // else: Bdv user movement: no update required
 
@@ -142,7 +142,7 @@ public class RayCastPositionerSliderAdder implements Runnable {
 	public void updatePositions() {
 
 		// Find origin and direction of ray - center of the bdv window
-		double[] c = BdvHandleHelper.getWindowCentreInCalibratedUnits(bdvh);
+		double[] c = BdvHandleHelper.getWindowCentreInCalibratedUnits(bdvh.getViewerPanel());
 		RealPoint origin = new RealPoint(3);
 		origin.setPosition(c[0], 0);
 		origin.setPosition(c[1], 1);

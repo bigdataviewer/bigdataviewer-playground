@@ -60,7 +60,7 @@ public class MultiBdvTimepointAdapterCommand implements BdvPlaygroundActionComma
 	public void run() {
 		if (bdvhs.length == 0) IJ.log("Please make sure to select a Bdv window.");
 		for (BdvHandle bdvh : bdvhs) {
-			new TimepointAdapterAdder(bdvh).run();
+			new TimepointAdapterAdder(bdvh.getViewerPanel()).run();
 		}
 	}
 }

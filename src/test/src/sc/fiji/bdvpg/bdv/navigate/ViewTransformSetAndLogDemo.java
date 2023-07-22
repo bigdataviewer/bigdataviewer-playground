@@ -84,7 +84,7 @@ public class ViewTransformSetAndLogDemo {
         SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
 
         // Adjust view on SourceAndConverter
-        new ViewerTransformAdjuster(bdvHandle, sac).run();
+        new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sac).run();
 
         // add a click behavior for logging transforms
         new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new ViewerTransformLogger( bdvHandle ).run() ).install( "Log view transform", "ctrl D" );
@@ -100,7 +100,7 @@ public class ViewTransformSetAndLogDemo {
         IJ.wait( animationDurationMillis );
 
         // set a new transform
-        AffineTransform3D adaptedCenterTransform = BdvHandleHelper.getViewerTransformWithNewCenter( bdvHandle, new double[]{ 133, 133, 0 } );
+        AffineTransform3D adaptedCenterTransform = BdvHandleHelper.getViewerTransformWithNewCenter( bdvHandle.getViewerPanel(), new double[]{ 133, 133, 0 } );
         new ViewerTransformChanger(bdvHandle, adaptedCenterTransform, false, animationDurationMillis ).run();
 
         // log transform

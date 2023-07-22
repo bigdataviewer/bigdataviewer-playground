@@ -32,14 +32,11 @@ package sc.fiji.bdvpg.bdv.navigate;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.TimePointListener;
-import bdv.viewer.TransformListener;
 import bdv.viewer.ViewerStateChangeListener;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterTreeCellRenderer;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -136,7 +133,7 @@ public class SourceNavigatorSliderAdder implements Runnable {
 				int timePoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
 				sortedSources = sortedSources.stream().filter(source -> source.getSpimSource().isPresent(timePoint)).collect(Collectors.toList());
 				SourceAndConverter<?> src = sortedSources.get(idx);
-				new ViewerTransformAdjuster(bdvh,src).run();
+				new ViewerTransformAdjuster(bdvh.getViewerPanel(),src).run();
 			}
 		});
 		panel.add(adjustOnSource);
@@ -182,7 +179,7 @@ public class SourceNavigatorSliderAdder implements Runnable {
 					double[] newCenter = centerLocations.get(currentPosition).positionAsDoubleArray();
 
 					bdvh.getViewerPanel().state().setViewerTransform(BdvHandleHelper
-						.getViewerTransformWithNewCenter(bdvh, newCenter));
+						.getViewerTransformWithNewCenter(bdvh.getViewerPanel(), newCenter));
 
 				}
 			}

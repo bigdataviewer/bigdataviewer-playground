@@ -93,7 +93,7 @@ public class WarpedSourceDemo {
         BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
         SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
-        new ViewerTransformAdjuster(bdvHandle, sac).run();
+        new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sac).run();
         new BrightnessAutoAdjuster<>(sac, 0).run();
 
         List<RealTransform> transform_tested = new ArrayList<>();

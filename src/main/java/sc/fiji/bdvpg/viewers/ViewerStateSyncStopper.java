@@ -29,16 +29,17 @@
 
 package sc.fiji.bdvpg.viewers;
 
+import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.ViewerStateChangeListener;
 
 import java.util.Map;
 
 public class ViewerStateSyncStopper implements Runnable {
 
-	final Map<ViewerAdapter, ViewerStateChangeListener> listenerMap;
+	final Map<AbstractViewerPanel, ViewerStateChangeListener> listenerMap;
 
 	public ViewerStateSyncStopper(
-		Map<ViewerAdapter, ViewerStateChangeListener> listenerMap)
+		Map<AbstractViewerPanel, ViewerStateChangeListener> listenerMap)
 	{
 		this.listenerMap = listenerMap;
 	}

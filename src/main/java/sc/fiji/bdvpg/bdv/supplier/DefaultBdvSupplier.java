@@ -71,7 +71,7 @@ public class DefaultBdvSupplier implements IBdvSupplier {
 
 		// Should be helpful
 
-		new TimepointAdapterAdder(bdv).run();
+		new TimepointAdapterAdder(bdv.getViewerPanel()).run();
 		//new SourceNavigatorSliderAdder(bdv).run();
 
 		return bdv;

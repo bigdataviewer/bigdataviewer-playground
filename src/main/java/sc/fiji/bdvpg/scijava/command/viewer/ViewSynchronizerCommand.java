@@ -30,8 +30,8 @@
 package sc.fiji.bdvpg.scijava.command.viewer;
 
 import bdv.util.BdvHandle;
+import bdv.viewer.AbstractViewerPanel;
 import bvv.vistools.BvvHandle;
-import org.scijava.command.CommandModule;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -42,10 +42,10 @@ import sc.fiji.bdvpg.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
 import sc.fiji.bdvpg.viewers.ViewerTransformSyncStarter;
 import sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper;
 
+import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -96,18 +96,18 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 			return;
 		}
 
-		ViewerAdapter[] handles = new ViewerAdapter[bdvhs.length + bvvhs.length];
+		AbstractViewerPanel[] handles = new AbstractViewerPanel[bdvhs.length + bvvhs.length];
 		for (int i = 0; i < bdvhs.length; i++) {
-			handles[i] = new ViewerAdapter(bdvhs[i]);
+			handles[i] = bdvhs[i].getViewerPanel();
 		}
 		for (int i = 0; i < bvvhs.length; i++) {
-			handles[i + bdvhs.length] = new ViewerAdapter(bvvhs[i]);
+			handles[i + bdvhs.length] = bvvhs[i].getViewerPanel();
 		}
 		// Starting synchronization of selected bdvhandles
 		sync = new ViewerTransformSyncStarter(handles, synchronizetime);
 		if (bdvhs.length > 0) {
-			sync.setHandleInitialReference(new ViewerAdapter(
-				SourceAndConverterServices.getBdvDisplayService().getActiveBdv()));
+			sync.setHandleInitialReference(
+				SourceAndConverterServices.getBdvDisplayService().getActiveBdv().getViewerPanel());
 		}
 		/*else {
 			sync.setHandleInitialReference(new ViewerAdapter(bvvhs[0]));

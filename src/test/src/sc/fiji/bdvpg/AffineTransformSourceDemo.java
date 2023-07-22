@@ -89,7 +89,7 @@ public class AffineTransformSourceDemo {
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
 
-        new ViewerTransformAdjuster(bdvHandle, sac).run();
+        new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sac).run();
         new BrightnessAutoAdjuster<>(sac, 0).run();
 
         ArrayList<SourceAndConverter<?>> sacs = new ArrayList<>();

@@ -97,7 +97,7 @@ public class BigWarpDemo {
 
         new BrightnessAutoAdjuster<>(sacMoving, 0).run();
 
-        new ViewerTransformAdjuster(bdvHandle, sacFixed).run();
+        new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sacFixed).run();
 
         List<SourceAndConverter<?>> movingSources = new ArrayList<>();
         movingSources.add(sacMoving);
@@ -162,7 +162,7 @@ public class BigWarpDemo {
 
         new BrightnessAutoAdjuster<>(sacMoving, 0).run();
 
-        new ViewerTransformAdjuster(bdvHandle, sacFixed).run();
+        new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sacFixed).run();
 
         List<SourceAndConverter<?>> movingSources = new ArrayList<>();
         movingSources.add(sacMoving);
@@ -194,7 +194,7 @@ public class BigWarpDemo {
         bdvh.getViewerPanel().showDebugTileOverlay();
         bdvh.getViewerPanel().getDisplay().repaint();
 
-        new ViewerTransformAdjuster(bdvh, bwl.getWarpedSources()[0]).run();
+        new ViewerTransformAdjuster(bdvh.getViewerPanel(), bwl.getWarpedSources()[0]).run();
     }
 
     @Test

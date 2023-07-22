@@ -29,8 +29,11 @@
 
 package sc.fiji.bdvpg.viewers;
 
+import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.TimePointListener;
 import bdv.viewer.TransformListener;
+import bdv.viewer.ViewerStateChange;
+import bdv.viewer.ViewerStateChangeListener;
 import bvv.vistools.BvvHandle;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -65,7 +68,7 @@ public class ViewerOrthoSyncStarter implements Runnable {
 	/**
 	 * Array of BdvHandles to synchronize
 	 */
-	final ViewerAdapter[] handles = new ViewerAdapter[3]; // Front Right Bottom
+	final AbstractViewerPanel[] handles = new AbstractViewerPanel[3]; // Front Right Bottom
 
 	/**
 	 * Reference to the BdvHandle which will serve as a reference for the first
@@ -73,14 +76,14 @@ public class ViewerOrthoSyncStarter implements Runnable {
 	 * used by the user. If not set, the first synchronization will look like it's
 	 * a random BdvHandle which is used (one not in focus)
 	 */
-	ViewerAdapter handleInitialReference = null;
+	AbstractViewerPanel handleInitialReference = null;
 
 	/**
 	 * Map which links each BdvHandle to the TransformListener which has been
 	 * added for synchronization purpose. This object contains all what's needed
 	 * to stop the synchronization, required in {@link ViewerTransformSyncStopper}
 	 */
-	final Map<ViewerAdapter, TransformListener<AffineTransform3D>> handleToTransformListener =
+	final Map<AbstractViewerPanel, TransformListener<AffineTransform3D>> handleToTransformListener =
 		new HashMap<>();
 
 	/**
@@ -93,11 +96,11 @@ public class ViewerOrthoSyncStarter implements Runnable {
 	 * added for synchronization purpose. This object contains all what's needed
 	 * to stop the synchronization, required in {@link ViewerTransformSyncStopper}
 	 */
-	final Map<ViewerAdapter, TimePointListener> handleToTimeListener =
+	final Map<AbstractViewerPanel, ViewerStateChangeListener> handleToTimeListener =
 		new HashMap<>();
 
-	public ViewerOrthoSyncStarter(ViewerAdapter handleX, ViewerAdapter handleY,
-		ViewerAdapter handleZ, boolean syncTime)
+	public ViewerOrthoSyncStarter(AbstractViewerPanel handleX, AbstractViewerPanel handleY,
+								  AbstractViewerPanel handleZ, boolean syncTime)
 	{
 		this.handles[0] = handleX;
 		this.handles[1] = handleY;
@@ -105,7 +108,7 @@ public class ViewerOrthoSyncStarter implements Runnable {
 		this.synchronizeTime = syncTime;
 	}
 
-	public void setHandleInitialReference(ViewerAdapter handle) {
+	public void setHandleInitialReference(AbstractViewerPanel handle) {
 		handleInitialReference = handle;
 	}
 
@@ -125,44 +128,58 @@ public class ViewerOrthoSyncStarter implements Runnable {
 		listener = (at3D) -> propagateTransformIfNecessary(at3D, handles[0],
 			handles[1], this::getRotatedView0);
 
-		handles[0].addTransformListener(listener);
+		handles[0].transformListeners().add(listener);
 		handleToTransformListener.put(handles[0], listener);
 
 		listener = (at3D) -> propagateTransformIfNecessary(at3D, handles[1],
 			handles[2], this::getRotatedView1);
 
-		handles[1].addTransformListener(listener);
+		handles[1].transformListeners().add(listener);
 		handleToTransformListener.put(handles[1], listener);
 
 		listener = (at3D) -> propagateTransformIfNecessary(at3D, handles[2],
 			handles[0], this::getRotatedView2);
-		handles[2].addTransformListener(listener);
+		handles[2].transformListeners().add(listener);
 		handleToTransformListener.put(handles[2], listener);
 
 		if (synchronizeTime) {
-			TimePointListener timeListener;
+			/*TimePointListener timeListener;
 			timeListener = (timepoint) -> {
 				if (handles[1].state().getCurrentTimepoint() != timepoint) handles[1]
-					.setTimepoint(timepoint);
+					.state().setCurrentTimepoint(timepoint);
+			};*/
+			ViewerStateChangeListener timeListener;
+			timeListener = (stateChange) -> {
+				if (stateChange.equals(ViewerStateChange.CURRENT_TIMEPOINT_CHANGED)) {
+					int timepoint = handles[0].state().getCurrentTimepoint();
+					if (handles[1].state().getCurrentTimepoint() != timepoint)
+						handles[1].state().setCurrentTimepoint(timepoint);
+				}
 			};
 
-			handles[0].addTimePointListener(timeListener);
+
+			handles[0].state().changeListeners().add(timeListener);
 			handleToTimeListener.put(handles[0], timeListener);
 
-			timeListener = (timepoint) -> {
-				if (handles[2].state().getCurrentTimepoint() != timepoint) handles[2]
-					.setTimepoint(timepoint);
+			timeListener = (stateChange) -> {
+				if (stateChange.equals(ViewerStateChange.CURRENT_TIMEPOINT_CHANGED)) {
+					int timepoint = handles[1].state().getCurrentTimepoint();
+					if (handles[2].state().getCurrentTimepoint() != timepoint)
+						handles[2].state().setCurrentTimepoint(timepoint);
+				}
 			};
 
-			handles[1].addTimePointListener(timeListener);
+			handles[1].state().changeListeners().add(timeListener);
 			handleToTimeListener.put(handles[1], timeListener);
 
-			timeListener = (timepoint) -> {
-				if (handles[0].state().getCurrentTimepoint() != timepoint) handles[0]
-					.setTimepoint(timepoint);
+			timeListener = (stateChange) -> {
+				if (stateChange.equals(ViewerStateChange.CURRENT_TIMEPOINT_CHANGED)) {
+					int timepoint = handles[2].state().getCurrentTimepoint();
+					if (handles[0].state().getCurrentTimepoint() != timepoint)
+						handles[0].state().setCurrentTimepoint(timepoint);
+				}
 			};
-
-			handles[2].addTimePointListener(timeListener);
+			handles[2].state().changeListeners().add(timeListener);
 			handleToTimeListener.put(handles[2], timeListener);
 		}
 
@@ -170,7 +187,7 @@ public class ViewerOrthoSyncStarter implements Runnable {
 		// but only if the two necessary objects are present (the origin BvvHandle
 		// and the transform
 		if ((handleInitialReference != null) && (at3Dorigin != null)) {
-			for (ViewerAdapter handle : handles) {
+			for (AbstractViewerPanel handle : handles) {
 				handle.state().setViewerTransform(at3Dorigin.copy());
 				handle.requestRepaint();
 				if (synchronizeTime) {
@@ -182,7 +199,7 @@ public class ViewerOrthoSyncStarter implements Runnable {
 	}
 
 	void propagateTransformIfNecessary(AffineTransform3D at3D,
-		ViewerAdapter currentHandle, ViewerAdapter nextHandle,
+		AbstractViewerPanel currentHandle, AbstractViewerPanel nextHandle,
 		Function<double[], double[]> rotator)
 	{
 
@@ -287,7 +304,7 @@ public class ViewerOrthoSyncStarter implements Runnable {
 	 */
 	private AffineTransform3D getViewTransformForInitialSynchronization() {
 		AffineTransform3D at3Dorigin = null;
-		for (ViewerAdapter handle : handles) {
+		for (AbstractViewerPanel handle : handles) {
 			// if the BvvHandle is the one that should be used for initial
 			// synchronization
 			if (handle.equals(handleInitialReference)) {
@@ -306,7 +323,7 @@ public class ViewerOrthoSyncStarter implements Runnable {
 	 * @return map of {@link TransformListener} which can be used to stop the
 	 *         synchronization
 	 */
-	public Map<ViewerAdapter, TransformListener<AffineTransform3D>>
+	public Map<AbstractViewerPanel, TransformListener<AffineTransform3D>>
 		getSynchronizers()
 	{
 		return handleToTransformListener;
@@ -323,7 +340,7 @@ public class ViewerOrthoSyncStarter implements Runnable {
 	 * @return map of {@link TimePointListener} which can be used to stop the
 	 *         synchronization
 	 */
-	public Map<ViewerAdapter, TimePointListener> getTimeSynchronizers() {
+	public Map<AbstractViewerPanel, ViewerStateChangeListener> getTimeSynchronizers() {
 		return handleToTimeListener;
 	}
 

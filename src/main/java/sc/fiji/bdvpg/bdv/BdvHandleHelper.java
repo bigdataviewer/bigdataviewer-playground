@@ -35,6 +35,7 @@ import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
 import bdv.util.BdvOverlay;
+import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.Source;
 import net.imglib2.FinalInterval;
 import net.imglib2.FinalRealInterval;
@@ -53,7 +54,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -76,24 +76,8 @@ public class BdvHandleHelper {
 	protected static final Logger logger = LoggerFactory.getLogger(
 		BdvHandleHelper.class);
 
-	/**
-	 * Creates a viewer transform with a new center position. Author: @tischi - 11
-	 * 2020
-	 *
-	 * @param bdvHandle the bdvHandle, used to fetch the current viewerTransform
-	 *          and the current window size
-	 * @param xyz target coordinates for the new center in physical units
-	 * @return viewerTransform that keeps the orientation of the current
-	 *         viewerTransform but with a shifted center
-	 */
 	public static AffineTransform3D getViewerTransformWithNewCenter(
-		BdvHandle bdvHandle, double[] xyz)
-	{
-		return getViewerTransformWithNewCenter(new ViewerAdapter(bdvHandle), xyz);
-	}
-
-	public static AffineTransform3D getViewerTransformWithNewCenter(
-		ViewerAdapter handle, double[] xyz)
+			AbstractViewerPanel handle, double[] xyz)
 	{
 		final AffineTransform3D currentViewerTransform = new AffineTransform3D();
 		handle.state().getViewerTransform(currentViewerTransform);
@@ -121,33 +105,29 @@ public class BdvHandleHelper {
 		return adaptedViewerTransform;
 	}
 
-	public static double[] getWindowCentreInPixelUnits(ViewerAdapter handle) {
+	public static double[] getWindowCentreInPixelUnits(AbstractViewerPanel handle) {
 		final double[] windowCentreInPixelUnits = new double[3];
 		windowCentreInPixelUnits[0] = handle.getWidth() / 2.0;
 		windowCentreInPixelUnits[1] = handle.getHeight() / 2.0;
 		return windowCentreInPixelUnits;
 	}
 
-	public static double[] getWindowCentreInPixelUnits(BdvHandle bdvHandle) {
-		return getWindowCentreInPixelUnits(new ViewerAdapter(bdvHandle));
-	}
-
-	public static double[] getWindowCentreInCalibratedUnits(BdvHandle bdvHandle) {
-		final double[] centreInPixelUnits = getWindowCentreInPixelUnits(bdvHandle);
+	public static double[] getWindowCentreInCalibratedUnits(AbstractViewerPanel viewer) {
+		final double[] centreInPixelUnits = getWindowCentreInPixelUnits(viewer);
 		final AffineTransform3D affineTransform3D = new AffineTransform3D();
-		bdvHandle.getViewerPanel().state().getViewerTransform(affineTransform3D);
+		viewer.state().getViewerTransform(affineTransform3D);
 		final double[] centreInCalibratedUnits = new double[3];
 		affineTransform3D.inverse().apply(centreInPixelUnits,
 			centreInCalibratedUnits);
 		return centreInCalibratedUnits;
 	}
 
-	public static double getViewerVoxelSpacing(BdvHandle bdv) {
-		final int windowWidth = bdv.getViewerPanel().getDisplay().getWidth();
-		final int windowHeight = bdv.getViewerPanel().getDisplay().getHeight();
+	public static double getViewerVoxelSpacing(AbstractViewerPanel viewer) {
+		final int windowWidth = viewer.getWidth();
+		final int windowHeight = viewer.getHeight();
 
 		final AffineTransform3D viewerTransform = new AffineTransform3D();
-		bdv.getViewerPanel().state().getViewerTransform(viewerTransform);
+		viewer.state().getViewerTransform(viewerTransform);
 
 		final double[] physicalA = new double[3];
 		final double[] physicalB = new double[3];

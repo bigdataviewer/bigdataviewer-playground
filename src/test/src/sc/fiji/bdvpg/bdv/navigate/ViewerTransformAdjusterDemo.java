@@ -81,7 +81,7 @@ public class ViewerTransformAdjusterDemo
             SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source)
         );
 
-        new ViewerTransformAdjuster(bdvHandle, SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
+        new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
     }
 
     @Test

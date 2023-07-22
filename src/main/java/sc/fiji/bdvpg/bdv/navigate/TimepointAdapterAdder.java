@@ -28,23 +28,17 @@
  */
 package sc.fiji.bdvpg.bdv.navigate;
 
-import bdv.util.BdvHandle;
+import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.SourceAndConverter;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
 import static bdv.viewer.ViewerStateChange.NUM_SOURCES_CHANGED;
 
 public class TimepointAdapterAdder implements Runnable {
 
-    private final ViewerAdapter handle;
+    private final AbstractViewerPanel handle;
 
-    public TimepointAdapterAdder(BdvHandle bdvHandle)
-    {
-        this.handle = new ViewerAdapter(bdvHandle);
-    }
-
-    public TimepointAdapterAdder(ViewerAdapter adapter)
+    public TimepointAdapterAdder(AbstractViewerPanel adapter)
     {
         this.handle = adapter;
     }

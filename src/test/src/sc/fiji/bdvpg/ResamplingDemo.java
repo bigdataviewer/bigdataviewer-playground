@@ -97,7 +97,7 @@ public class ResamplingDemo {
         BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, sac );
-        new ViewerTransformAdjuster( bdvHandle, sac ).run();
+        new ViewerTransformAdjuster( bdvHandle.getViewerPanel(), sac ).run();
         new BrightnessAutoAdjuster<>( sac, 0 ).run();
 
         // Get generative source (works with warped source as well)
@@ -126,7 +126,7 @@ public class ResamplingDemo {
         bdvHandle = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
 
         //SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, sac );
-        new ViewerTransformAdjuster( bdvHandle, sac ).run();
+        new ViewerTransformAdjuster( bdvHandle.getViewerPanel(), sac ).run();
 
         // DOWNSAMPLING
         EmptySourceAndConverterCreator downSampledModel = new EmptySourceAndConverterCreator("DownSampled",sac,0,4,4,4);//, factory);

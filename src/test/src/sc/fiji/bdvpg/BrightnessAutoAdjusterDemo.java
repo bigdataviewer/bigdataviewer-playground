@@ -86,7 +86,7 @@ public class BrightnessAutoAdjusterDemo
 	public static void addSource(BdvHandle bdvHandle, SourceAndConverter<?> sac )
 	{
 		new SourceAdder( bdvHandle, sac ).run();
-		new ViewerTransformAdjuster( bdvHandle, sac ).run();
+		new ViewerTransformAdjuster( bdvHandle.getViewerPanel(), sac ).run();
 		new BrightnessAutoAdjuster<>( sac,0 ).run();
 	}
 

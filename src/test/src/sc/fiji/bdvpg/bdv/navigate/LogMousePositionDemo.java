@@ -83,7 +83,7 @@ public class LogMousePositionDemo {
         ij.get(SourceAndConverterBdvDisplayService.class).show(bdvHandle, sac);
 
         // Adjust BDV View on the SourceAndConverter
-        new ViewerTransformAdjuster(bdvHandle, sac).run();
+        new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sac).run();
 
         // add a click behavior for logging mouse positions
         new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new PositionLogger( bdvHandle ).run() ).install( "Log mouse position", "ctrl D" );

@@ -57,7 +57,7 @@ public class BdvViewAdjustOnSourcesCommand implements
 	@Override
 	public void run() {
 		if (sacs.length > 0) {
-			new ViewerTransformAdjuster(bdvh, sacs).run();
+			new ViewerTransformAdjuster(bdvh.getViewerPanel(), sacs).run();
 		}
 	}
 }

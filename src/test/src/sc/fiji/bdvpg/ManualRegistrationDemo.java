@@ -116,7 +116,7 @@ public class ManualRegistrationDemo {
             bdvDisplayService.show(bdvHandle, sacToTransform);
 
             // Adjust view on SourceAndConverter
-            new ViewerTransformAdjuster(bdvHandle, sacReference).run();
+            new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sacReference).run();
 
             ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacToTransform);
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
@@ -140,7 +140,7 @@ public class ManualRegistrationDemo {
             bdvDisplayService.show(bdvHandle, sacToTransform);
 
             // Adjust view on SourceAndConverter
-            new ViewerTransformAdjuster(bdvHandle, sacReference).run();
+            new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sacReference).run();
 
             ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacToTransform);
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
@@ -169,7 +169,7 @@ public class ManualRegistrationDemo {
             });
 
             bdvDisplayService.show(bdvHandle, sacReference);
-            new ViewerTransformAdjuster(bdvHandle, sacReference).run();
+            new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sacReference).run();
 
             List<SourceAndConverter<?>> sacList = sourceService
                     .getSourceAndConverterFromSpimdata(asd);
@@ -204,7 +204,7 @@ public class ManualRegistrationDemo {
             });
 
             bdvDisplayService.show(bdvHandle, sacReference);
-            new ViewerTransformAdjuster(bdvHandle, sacReference).run();
+            new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sacReference).run();
 
             List<SourceAndConverter<?>> sacList = sourceService
                     .getSourceAndConverterFromSpimdata(asd);
