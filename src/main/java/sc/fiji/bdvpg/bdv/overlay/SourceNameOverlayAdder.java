@@ -33,6 +33,7 @@ import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
 import bdv.util.BdvOverlaySource;
 import bdv.viewer.ViewerStateChangeListener;
+import bvv.vistools.BvvFunctions;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import javax.swing.SwingUtilities;
@@ -86,6 +87,7 @@ public class SourceNameOverlayAdder implements Runnable {
         SwingUtilities.invokeLater(() -> {
             int nTimepointIni = bdvh.getViewerPanel().state().getNumTimepoints();
             int iTimePoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
+
             bos = BdvFunctions.showOverlay(nameOverlay, "Sources names", BdvOptions.options().addTo(bdvh));
             bdvh.getViewerPanel().state().changeListeners().add(changeListener);
             // Bug when an overlay is displayed

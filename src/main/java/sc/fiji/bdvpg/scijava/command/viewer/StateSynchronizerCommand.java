@@ -40,8 +40,9 @@ import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.viewers.ViewerStateSyncStarter;
-import sc.fiji.bdvpg.viewers.ViewerStateSyncStopper;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
+import sc.fiji.bdvpg.viewer.ViewerStateSyncStarter;
+import sc.fiji.bdvpg.viewer.ViewerStateSyncStopper;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -116,7 +117,7 @@ public class StateSynchronizerCommand implements BdvPlaygroundActionCommand {
 		// Building JFrame with a simple panel and textarea
 		String text = "";
 		for (BdvHandle bdvh : bdvhs) {
-			text += BdvHandleHelper.getWindowTitle(bdvh) + "\n";
+			text += ViewerHelper.getViewerTitle(bdvh.getViewerPanel()) + "\n";
 		}
 		for (BvvHandle bvvh : bvvhs) {
 			text += BvvHandleHelper.getWindowTitle(bvvh) + "\n";

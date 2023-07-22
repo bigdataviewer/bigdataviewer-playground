@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bdv.navigate;
+package sc.fiji.bdvpg.viewer.navigate;
 
 import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.SourceAndConverter;
@@ -36,29 +36,29 @@ import static bdv.viewer.ViewerStateChange.NUM_SOURCES_CHANGED;
 
 public class TimepointAdapterAdder implements Runnable {
 
-    private final AbstractViewerPanel handle;
+    private final AbstractViewerPanel viewer;
 
-    public TimepointAdapterAdder(AbstractViewerPanel adapter)
+    public TimepointAdapterAdder(AbstractViewerPanel viewer)
     {
-        this.handle = adapter;
+        this.viewer = viewer;
     }
 
     @Override
     public void run() {
-        handle.state().changeListeners().add( change -> {
+        viewer.state().changeListeners().add(change -> {
                 if (change.equals(NUM_SOURCES_CHANGED)) {
                     //Number of sources changed
-                    int nTps = SourceAndConverterHelper.getNTimepoints(handle.state().getSources().toArray(new SourceAndConverter[0]));
-                    if ((nTps!=handle.state().getNumTimepoints()) && (nTps>0)) {
-                        handle.state().setNumTimepoints(nTps);
+                    int nTps = SourceAndConverterHelper.getNTimepoints(viewer.state().getSources().toArray(new SourceAndConverter[0]));
+                    if ((nTps!= viewer.state().getNumTimepoints()) && (nTps>0)) {
+                        viewer.state().setNumTimepoints(nTps);
                     }
                 }
             }
         );
 
-        int nTps = SourceAndConverterHelper.getNTimepoints(handle.state().getSources().toArray(new SourceAndConverter[0]));
-        if ((nTps!=handle.state().getNumTimepoints()) && (nTps>0)) {
-            handle.state().setNumTimepoints(nTps);
+        int nTps = SourceAndConverterHelper.getNTimepoints(viewer.state().getSources().toArray(new SourceAndConverter[0]));
+        if ((nTps!= viewer.state().getNumTimepoints()) && (nTps>0)) {
+            viewer.state().setNumTimepoints(nTps);
         }
     }
 }

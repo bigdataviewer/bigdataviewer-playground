@@ -65,6 +65,7 @@ import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -393,7 +394,7 @@ public class SourceAndConverterHelper {
 	{
 		final int numDimensions = 3;
 
-		final AffineTransform3D sourceTransform = BdvHandleHelper
+		final AffineTransform3D sourceTransform = ViewerHelper
 			.getSourceTransform(source, t, level);
 
 		final RealPoint voxelPositionInSource = new RealPoint(numDimensions);

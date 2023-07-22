@@ -33,7 +33,7 @@ import bdv.util.BdvHandle;
 import ij.IJ;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.navigate.RayCastPositionerSliderAdder;
+import sc.fiji.bdvpg.viewer.navigate.RayCastPositionerSliderAdder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
@@ -56,7 +56,7 @@ public class MultiBdvZSliderAdderCommand implements BdvPlaygroundActionCommand {
 		if (bdvhs.length == 0) IJ.log("Please make sure to select a Bdv window.");
 		SwingUtilities.invokeLater(() -> {
 			for (BdvHandle bdvh : bdvhs) {
-				new RayCastPositionerSliderAdder(bdvh).run();
+				new RayCastPositionerSliderAdder(bdvh.getViewerPanel()).run();
 			}
 		});
 	}

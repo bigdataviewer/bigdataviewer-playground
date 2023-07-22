@@ -27,9 +27,10 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.bdv.navigate;
+package sc.fiji.bdvpg.viewer.navigate;
 
 import bdv.util.BdvHandle;
+import bdv.viewer.AbstractViewerPanel;
 import net.imglib2.RealPoint;
 import sc.fiji.bdvpg.log.Logger;
 import sc.fiji.bdvpg.log.Logs;
@@ -47,22 +48,22 @@ import sc.fiji.bdvpg.log.SystemLogger;
  */
 public class PositionLogger implements Runnable {
 
-	private final BdvHandle bdvHandle;
+	private final AbstractViewerPanel viewer;
 	private final Logger logger;
 
-	public PositionLogger(BdvHandle bdvHandle) {
-		this(bdvHandle, new SystemLogger());
+	public PositionLogger(AbstractViewerPanel viewer) {
+		this(viewer, new SystemLogger());
 	}
 
-	public PositionLogger(BdvHandle bdvHandle, Logger logger) {
-		this.bdvHandle = bdvHandle;
+	public PositionLogger(AbstractViewerPanel viewer, Logger logger) {
+		this.viewer = viewer;
 		this.logger = logger;
 	}
 
 	@Override
 	public void run() {
 		final RealPoint realPoint = new RealPoint(3);
-		bdvHandle.getViewerPanel().getGlobalMouseCoordinates(realPoint);
+		viewer.getGlobalMouseCoordinates(realPoint);
 		logger.out(Logs.BDV + ": Position at Mouse: " + realPoint);
 	}
 }

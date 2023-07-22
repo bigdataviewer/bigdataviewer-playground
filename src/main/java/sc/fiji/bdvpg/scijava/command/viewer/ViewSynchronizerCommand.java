@@ -42,10 +42,10 @@ import sc.fiji.bdvpg.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.viewers.ViewerTransformSyncStarter;
-import sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
+import sc.fiji.bdvpg.viewer.ViewerTransformSyncStarter;
+import sc.fiji.bdvpg.viewer.ViewerTransformSyncStopper;
 
-import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -132,7 +132,7 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 		// Building JFrame with a simple panel and textarea
 		String text = "";
 		for (BdvHandle bdvh : bdvhs) {
-			text += BdvHandleHelper.getWindowTitle(bdvh) + "\n";
+			text += ViewerHelper.getViewerTitle(bdvh.getViewerPanel()) + "\n";
 		}
 		for (BvvHandle bvvh : bvvhs) {
 			text += BvvHandleHelper.getWindowTitle(bvvh) + "\n";

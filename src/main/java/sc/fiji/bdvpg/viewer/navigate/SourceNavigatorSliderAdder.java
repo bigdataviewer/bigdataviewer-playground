@@ -27,16 +27,15 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.bdv.navigate;
+package sc.fiji.bdvpg.viewer.navigate;
 
-import bdv.util.BdvHandle;
+import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.SourceAndConverter;
-import bdv.viewer.TimePointListener;
 import bdv.viewer.ViewerStateChangeListener;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -66,7 +65,7 @@ import java.util.stream.Collectors;
  */
 public class SourceNavigatorSliderAdder implements Runnable {
 
-	final BdvHandle bdvh;
+	final AbstractViewerPanel viewer;
 
 	private List<RealPoint> centerLocations = new ArrayList<>();
 	private List<String> sourcesNames = new ArrayList<>();
@@ -90,8 +89,8 @@ public class SourceNavigatorSliderAdder implements Runnable {
 		expandIcon = new ImageIcon(iconExpandURL);
 	}
 
-	public SourceNavigatorSliderAdder(BdvHandle bdvh) {
-		this.bdvh = bdvh;
+	public SourceNavigatorSliderAdder(AbstractViewerPanel viewer) {
+		this.viewer = viewer;
 		slider = new JSlider(JSlider.HORIZONTAL);
 		spinnerModel = new SpinnerNumberModel(0, 0, 1, 1);
 		spinner = new JSpinner(spinnerModel);
@@ -129,11 +128,11 @@ public class SourceNavigatorSliderAdder implements Runnable {
 		adjustOnSource.addActionListener(e -> {
 			int idx = slider.getValue();
 			if (this.sourcesNames.size()>idx) {
-				List<SourceAndConverter<?>> sortedSources = SourceAndConverterHelper.sortDefaultGeneric(bdvh.getViewerPanel().state().getVisibleSources());
-				int timePoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
+				List<SourceAndConverter<?>> sortedSources = SourceAndConverterHelper.sortDefaultGeneric(viewer.state().getVisibleSources());
+				int timePoint = viewer.state().getCurrentTimepoint();
 				sortedSources = sortedSources.stream().filter(source -> source.getSpimSource().isPresent(timePoint)).collect(Collectors.toList());
 				SourceAndConverter<?> src = sortedSources.get(idx);
-				new ViewerTransformAdjuster(bdvh.getViewerPanel(),src).run();
+				new ViewerTransformAdjuster(viewer,src).run();
 			}
 		});
 		panel.add(adjustOnSource);
@@ -150,15 +149,13 @@ public class SourceNavigatorSliderAdder implements Runnable {
 				updatePositions();
 		}
 	};
-	final TimePointListener timePointListener = (timepoint) -> updatePositions();
 
 	@Override
 	public void run() {
 
-		bdvh.getViewerPanel().timePointListeners().add(timePointListener);
-		bdvh.getViewerPanel().state().changeListeners().add(changeListener);
-		bdvh.getViewerPanel().add(panel, BorderLayout.NORTH);
-		bdvh.getViewerPanel().revalidate();
+		viewer.state().changeListeners().add(changeListener);
+		viewer.add(panel, BorderLayout.NORTH);
+		viewer.revalidate();
 
 		slider.addChangeListener((e) -> {
 			if (centerLocations.size() > 0) {
@@ -174,12 +171,12 @@ public class SourceNavigatorSliderAdder implements Runnable {
 					AffineTransform3D at3d = new AffineTransform3D();
 
 					// Change the position of the viewer with the new offset
-					bdvh.getViewerPanel().state().getViewerTransform(at3d);
+					viewer.state().getViewerTransform(at3d);
 
 					double[] newCenter = centerLocations.get(currentPosition).positionAsDoubleArray();
 
-					bdvh.getViewerPanel().state().setViewerTransform(BdvHandleHelper
-						.getViewerTransformWithNewCenter(bdvh.getViewerPanel(), newCenter));
+					viewer.state().setViewerTransform(ViewerHelper
+						.getViewerTransformWithNewCenter(viewer, newCenter));
 
 				}
 			}
@@ -189,13 +186,13 @@ public class SourceNavigatorSliderAdder implements Runnable {
 	}
 
 	public void updatePositions() {
-		List<SourceAndConverter<?>> sortedSources = SourceAndConverterHelper.sortDefaultGeneric(bdvh.getViewerPanel().state().getVisibleSources());
-		int timePoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
+		List<SourceAndConverter<?>> sortedSources = SourceAndConverterHelper.sortDefaultGeneric(viewer.state().getVisibleSources());
+		int timePoint = viewer.state().getCurrentTimepoint();
 		sortedSources = sortedSources.stream().filter(source -> source.getSpimSource().isPresent(timePoint)).collect(Collectors.toList());
 		List<RealPoint> centers = new ArrayList<>(sortedSources.size());
 		List<String> srcsNames = new ArrayList<>(sortedSources.size());
 		for (SourceAndConverter<?> source : sortedSources) {
-			centers.add(SourceAndConverterHelper.getSourceAndConverterCenterPoint(source, bdvh.getViewerPanel().state().getCurrentTimepoint()));
+			centers.add(SourceAndConverterHelper.getSourceAndConverterCenterPoint(source, viewer.state().getCurrentTimepoint()));
 			srcsNames.add(source.getSpimSource().getName());
 		}
 		centerLocations = centers;
@@ -206,14 +203,13 @@ public class SourceNavigatorSliderAdder implements Runnable {
 		}
 	}
 
-	public BdvHandle getBdvh() {
-		return bdvh;
+	public AbstractViewerPanel getViewer() {
+		return viewer;
 	}
 
-	public void removeFromBdv() {
-		bdvh.getViewerPanel().timePointListeners().remove(timePointListener);
-		bdvh.getViewerPanel().state().changeListeners().remove(changeListener);
-		bdvh.getViewerPanel().remove(slider);
-		bdvh.getViewerPanel().revalidate();
+	public void remove() {
+		viewer.state().changeListeners().remove(changeListener);
+		viewer.remove(slider);
+		viewer.revalidate();
 	}
 }

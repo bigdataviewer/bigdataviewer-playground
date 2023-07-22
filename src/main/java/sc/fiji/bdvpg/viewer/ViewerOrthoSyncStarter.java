@@ -27,7 +27,7 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.viewers;
+package sc.fiji.bdvpg.viewer;
 
 import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.TimePointListener;

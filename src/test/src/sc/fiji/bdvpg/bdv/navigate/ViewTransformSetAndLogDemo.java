@@ -44,10 +44,13 @@ import net.imglib2.view.Views;
 import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
+import sc.fiji.bdvpg.viewer.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewer.navigate.ViewerTransformChanger;
+import sc.fiji.bdvpg.viewer.navigate.ViewerTransformLogger;
 
 /**
  * ViewTransformSetAndLogDemo
@@ -87,24 +90,24 @@ public class ViewTransformSetAndLogDemo {
         new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sac).run();
 
         // add a click behavior for logging transforms
-        new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new ViewerTransformLogger( bdvHandle ).run() ).install( "Log view transform", "ctrl D" );
+        new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new ViewerTransformLogger( bdvHandle.getViewerPanel() ).run() ).install( "Log view transform", "ctrl D" );
 
         // log transform
-        new ViewerTransformLogger(bdvHandle).run();
+        new ViewerTransformLogger(bdvHandle.getViewerPanel()).run();
 
         // update transform relative to current
         AffineTransform3D affineTransform3D = new AffineTransform3D();
         affineTransform3D.rotate(2, 45);
         int animationDurationMillis = 2000;
-        new ViewerTransformChanger(bdvHandle, affineTransform3D, true, animationDurationMillis ).run();
+        new ViewerTransformChanger(bdvHandle.getViewerPanel(), affineTransform3D, true, animationDurationMillis ).run();
         IJ.wait( animationDurationMillis );
 
         // set a new transform
-        AffineTransform3D adaptedCenterTransform = BdvHandleHelper.getViewerTransformWithNewCenter( bdvHandle.getViewerPanel(), new double[]{ 133, 133, 0 } );
-        new ViewerTransformChanger(bdvHandle, adaptedCenterTransform, false, animationDurationMillis ).run();
+        AffineTransform3D adaptedCenterTransform = ViewerHelper.getViewerTransformWithNewCenter( bdvHandle.getViewerPanel(), new double[]{ 133, 133, 0 } );
+        new ViewerTransformChanger(bdvHandle.getViewerPanel(), adaptedCenterTransform, false, animationDurationMillis ).run();
 
         // log transform
-        new ViewerTransformLogger(bdvHandle).run();
+        new ViewerTransformLogger(bdvHandle.getViewerPanel()).run();
 
     }
 

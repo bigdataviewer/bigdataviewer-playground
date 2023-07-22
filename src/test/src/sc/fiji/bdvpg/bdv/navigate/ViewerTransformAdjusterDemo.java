@@ -36,6 +36,7 @@ import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.viewer.navigate.ViewerTransformAdjuster;
 
 /**
  * ViewerTransformAdjusterDemo

@@ -46,8 +46,9 @@ import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-import sc.fiji.bdvpg.viewers.ViewerTransformSyncStarter;
-import sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper;
+import sc.fiji.bdvpg.viewer.ViewerTransformSyncStarter;
+import sc.fiji.bdvpg.viewer.ViewerTransformSyncStopper;
+import sc.fiji.bdvpg.viewer.navigate.ViewerTransformAdjuster;
 
 /**
  * ViewTransformSynchronizationDemo

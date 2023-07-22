@@ -27,17 +27,16 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.bdv.navigate;
+package sc.fiji.bdvpg.viewer.navigate;
 
-import bdv.util.BdvHandle;
+import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.SourceAndConverter;
-import bdv.viewer.TimePointListener;
 import bdv.viewer.TransformListener;
 import bdv.viewer.ViewerStateChangeListener;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 import javax.swing.JSlider;
 import java.awt.BorderLayout;
@@ -56,14 +55,14 @@ import java.util.stream.Collectors;
  */
 public class RayCastPositionerSliderAdder implements Runnable {
 
-	final BdvHandle bdvh;
+	final AbstractViewerPanel viewer;
 
 	private List<Double> zLocations = new ArrayList<>();
 
 	final JSlider slider;
 
-	public RayCastPositionerSliderAdder(BdvHandle bdvh) {
-		this.bdvh = bdvh;
+	public RayCastPositionerSliderAdder(AbstractViewerPanel viewer) {
+		this.viewer = viewer;
 		slider = new JSlider(JSlider.VERTICAL);
 	}
 
@@ -91,18 +90,15 @@ public class RayCastPositionerSliderAdder implements Runnable {
 
 	final TransformListener<AffineTransform3D> transformListener = (
 		transform) -> updatePositions();
-	final ViewerStateChangeListener changeListener = (
-		viewerStateChange) -> updatePositions();
-	final TimePointListener timePointListener = (timepoint) -> updatePositions();
+	final ViewerStateChangeListener changeListener = (viewerStateChange) -> updatePositions();
 
 	@Override
 	public void run() {
 
-		bdvh.getViewerPanel().transformListeners().add(transformListener);
-		bdvh.getViewerPanel().timePointListeners().add(timePointListener);
-		bdvh.getViewerPanel().state().changeListeners().add(changeListener);
-		bdvh.getViewerPanel().add(slider, BorderLayout.WEST);
-		bdvh.getViewerPanel().revalidate();
+		viewer.transformListeners().add(transformListener);
+		viewer.state().changeListeners().add(changeListener);
+		viewer.add(slider, BorderLayout.WEST);
+		viewer.revalidate();
 
 		slider.addChangeListener((e) -> {
 			if (zLocations.size() > 0) {
@@ -119,9 +115,9 @@ public class RayCastPositionerSliderAdder implements Runnable {
 					AffineTransform3D at3d = new AffineTransform3D();
 
 					// Change the position of the viewer with the new offset
-					bdvh.getViewerPanel().state().getViewerTransform(at3d);
-					double[] currentCenter = BdvHandleHelper
-						.getWindowCentreInCalibratedUnits(bdvh.getViewerPanel());
+					viewer.state().getViewerTransform(at3d);
+					double[] currentCenter = ViewerHelper
+						.getWindowCentreInCalibratedUnits(viewer);
 					double[] newCenter = new double[3];
 					newCenter[0] = currentCenter[0] + lastDirection.getDoublePosition(0) *
 						shiftZ;
@@ -129,8 +125,8 @@ public class RayCastPositionerSliderAdder implements Runnable {
 						shiftZ;
 					newCenter[2] = currentCenter[2] + lastDirection.getDoublePosition(2) *
 						shiftZ;
-					bdvh.getViewerPanel().state().setViewerTransform(BdvHandleHelper
-						.getViewerTransformWithNewCenter(bdvh.getViewerPanel(), newCenter));
+					viewer.state().setViewerTransform(ViewerHelper
+						.getViewerTransformWithNewCenter(viewer, newCenter));
 
 				} // else: Bdv user movement: no update required
 
@@ -142,7 +138,7 @@ public class RayCastPositionerSliderAdder implements Runnable {
 	public void updatePositions() {
 
 		// Find origin and direction of ray - center of the bdv window
-		double[] c = BdvHandleHelper.getWindowCentreInCalibratedUnits(bdvh.getViewerPanel());
+		double[] c = ViewerHelper.getWindowCentreInCalibratedUnits(viewer);
 		RealPoint origin = new RealPoint(3);
 		origin.setPosition(c[0], 0);
 		origin.setPosition(c[1], 1);
@@ -150,7 +146,7 @@ public class RayCastPositionerSliderAdder implements Runnable {
 
 		RealPoint direction = new RealPoint(0, 0, 1);
 		final AffineTransform3D affineTransform3D = new AffineTransform3D();
-		bdvh.getViewerPanel().state().getViewerTransform(affineTransform3D);
+		viewer.state().getViewerTransform(affineTransform3D);
 		affineTransform3D.setTranslation(0, 0, 0);
 		affineTransform3D.inverse().apply(direction, direction);
 		SourceAndConverterHelper.normalize3(direction);
@@ -159,9 +155,9 @@ public class RayCastPositionerSliderAdder implements Runnable {
 
 		// Initializes zLocations : empty
 		List<Double> zLocations = new ArrayList<>();
-		int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
+		int timepoint = viewer.state().getCurrentTimepoint();
 
-		for (SourceAndConverter<?> source : bdvh.getViewerPanel().state()
+		for (SourceAndConverter<?> source : viewer.state()
 			.getActiveSources())
 		{
 			zLocations.addAll(SourceAndConverterHelper.rayIntersect(source, timepoint,
@@ -180,15 +176,14 @@ public class RayCastPositionerSliderAdder implements Runnable {
 		setPositions(zLocations);
 	}
 
-	public BdvHandle getBdvh() {
-		return bdvh;
+	public AbstractViewerPanel getViewer() {
+		return viewer;
 	}
 
 	public void removeFromBdv() {
-		bdvh.getViewerPanel().transformListeners().remove(transformListener);
-		bdvh.getViewerPanel().timePointListeners().remove(timePointListener);
-		bdvh.getViewerPanel().state().changeListeners().remove(changeListener);
-		bdvh.getViewerPanel().remove(slider);
-		bdvh.getViewerPanel().revalidate();
+		viewer.transformListeners().remove(transformListener);
+		viewer.state().changeListeners().remove(changeListener);
+		viewer.remove(slider);
+		viewer.revalidate();
 	}
 }

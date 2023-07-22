@@ -38,6 +38,7 @@ import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -95,7 +96,7 @@ public class SwingBdvHandleWidget extends SwingInputWidget<BdvHandle> implements
 		}
 
 		public String toString() {
-			return BdvHandleHelper.getWindowTitle(bdvh);
+			return ViewerHelper.getViewerTitle(bdvh.getViewerPanel());
 		}
 
 	}

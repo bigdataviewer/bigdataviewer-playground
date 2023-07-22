@@ -35,6 +35,7 @@ import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 import java.util.Optional;
 
@@ -50,8 +51,8 @@ public class StringToBdvHandle<I extends String, O extends BdvHandle> extends
 	@Override
 	public <T> T convert(Object src, Class<T> dest) {
 		Optional<BdvHandle> ans = os.getObjects(BdvHandle.class).stream().filter(
-			bdvh -> (bdvh.toString().equals(src)) || (BdvHandleHelper.getWindowTitle(
-				bdvh).equals(src))).findFirst();
+			bdvh -> (bdvh.toString().equals(src)) || (ViewerHelper.getViewerTitle(
+				bdvh.getViewerPanel()).equals(src))).findFirst();
 		return (T) ans.orElse(null);
 	}
 

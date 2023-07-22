@@ -27,39 +27,49 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.bdv.navigate;
+package sc.fiji.bdvpg.viewer;
 
-import bdv.util.BdvHandle;
+import bdv.viewer.AbstractViewerPanel;
+import bdv.viewer.TransformListener;
+import bdv.viewer.ViewerStateChangeListener;
+import bvv.vistools.BvvHandle;
 import net.imglib2.realtransform.AffineTransform3D;
-import sc.fiji.bdvpg.log.Logger;
-import sc.fiji.bdvpg.log.Logs;
-import sc.fiji.bdvpg.log.SystemLogger;
+
+import java.util.Map;
 
 /**
- * BigDataViewer Playground Action -- Action which logs the view transform of a
- * {@link BdvHandle} See ViewTransformSetAndLogDemo for a usage example
+ * BigDataViewer Playground Action -- Action which stops the synchronization of
+ * the display location of a {@link BvvHandle} Works in combination with the
+ * action ViewerTransformSyncStarter and {@link ViewerOrthoSyncStarter} See
+ * ViewTransformSynchronizationDemo for a usage example
  *
- * @author Robert Haase, MPI CBG
+ * @author Nicolas Chiaruttini, BIOP EPFL, nicolas.chiaruttini@epfl.ch
  */
 
-public class ViewerTransformLogger implements Runnable {
+public class ViewerTransformSyncStopper implements Runnable {
 
-	private final BdvHandle bdvHandle;
-	private final Logger logger;
+	final Map<AbstractViewerPanel, TransformListener<AffineTransform3D>> handleToTransformListener;
 
-	public ViewerTransformLogger(BdvHandle bdvHandle) {
-		this(bdvHandle, new SystemLogger());
-	}
+	final Map<AbstractViewerPanel, ViewerStateChangeListener> handleToTimePointListener;
 
-	public ViewerTransformLogger(BdvHandle bdvHandle, Logger logger) {
-		this.bdvHandle = bdvHandle;
-		this.logger = logger;
+	public ViewerTransformSyncStopper(
+		Map<AbstractViewerPanel, TransformListener<AffineTransform3D>> handleToTransformListener,
+		Map<AbstractViewerPanel, ViewerStateChangeListener> handleToTimePointListener)
+	{
+		this.handleToTransformListener = handleToTransformListener;
+		this.handleToTimePointListener = handleToTimePointListener;
 	}
 
 	@Override
 	public void run() {
-		final AffineTransform3D view = new AffineTransform3D();
-		bdvHandle.getViewerPanel().state().getViewerTransform(view);
-		logger.out(Logs.BDV + ": Viewer Transform: " + view);
+		handleToTransformListener.forEach((handle, listener) -> {
+			if ((handle != null)) handle.transformListeners().remove(listener);
+		});
+		if (handleToTimePointListener != null) {
+			handleToTimePointListener.forEach((handle, listener) -> {
+				if (handle != null) handle.state().changeListeners().remove(listener);
+			});
+		}
 	}
+
 }

@@ -27,9 +27,8 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.viewers;
+package sc.fiji.bdvpg.viewer;
 
-import bdv.util.BdvHandle;
 import bdv.util.PlaceHolderSource;
 import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.SourceAndConverter;
@@ -37,7 +36,6 @@ import bdv.viewer.ViewerStateChange;
 import bdv.viewer.ViewerStateChangeListener;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
-import java.util.AbstractCollection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

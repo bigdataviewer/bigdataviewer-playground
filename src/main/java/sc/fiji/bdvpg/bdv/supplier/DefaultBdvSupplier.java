@@ -39,8 +39,7 @@ import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.ByteType;
-import sc.fiji.bdvpg.bdv.navigate.SourceNavigatorSliderAdder;
-import sc.fiji.bdvpg.bdv.navigate.TimepointAdapterAdder;
+import sc.fiji.bdvpg.viewer.navigate.TimepointAdapterAdder;
 
 public class DefaultBdvSupplier implements IBdvSupplier {
 

@@ -31,8 +31,7 @@ package sc.fiji.bdvpg;
 import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.bdv.navigate.RayCastPositionerSliderAdder;
-import sc.fiji.bdvpg.bdv.navigate.TimepointAdapterAdder;
+import sc.fiji.bdvpg.viewer.navigate.RayCastPositionerSliderAdder;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 public class RayCastDemo {
@@ -53,7 +52,7 @@ public class RayCastDemo {
 
         BdvHandleHelper.addCenterCross(bdvh);
 
-        new RayCastPositionerSliderAdder(bdvh).run();
+        new RayCastPositionerSliderAdder(bdvh.getViewerPanel()).run();
         //new TimepointAdapterAdder(bdvh).run();
     }
 }

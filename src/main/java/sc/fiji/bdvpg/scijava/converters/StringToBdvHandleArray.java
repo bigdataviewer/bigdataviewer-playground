@@ -35,6 +35,7 @@ import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,8 +63,8 @@ public class StringToBdvHandleArray<I extends String> extends
 		List<BdvHandle> bdvhs = new ArrayList<>();
 		for (String bdvName : bdvNames) {
 			Optional<BdvHandle> ans = os.getObjects(BdvHandle.class).stream().filter(
-				bdvh -> (bdvh.toString().equals(bdvName)) || (BdvHandleHelper
-					.getWindowTitle(bdvh).equals(bdvName))).findFirst();
+				bdvh -> (bdvh.toString().equals(bdvName)) || (ViewerHelper
+					.getViewerTitle(bdvh.getViewerPanel()).equals(bdvName))).findFirst();
 			ans.ifPresent(bdvhs::add);
 		}
 		if (bdvhs.size() == 0) {

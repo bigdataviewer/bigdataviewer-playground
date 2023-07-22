@@ -37,8 +37,9 @@ import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
-import sc.fiji.bdvpg.viewers.ViewerStateSyncStarter;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
+import sc.fiji.bdvpg.viewer.ViewerOrthoSyncStarter;
+import sc.fiji.bdvpg.viewer.ViewerStateSyncStarter;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -131,12 +132,12 @@ public class BdvOrthoCreatorCommand implements BdvPlaygroundActionCommand {
 	BdvHandle createBdv(String suffix, double locX, double locY) {
 
 		BdvHandle bdvh = sacDisplayService.getNewBdv();
-		BdvHandleHelper.setWindowTitle(bdvh, BdvHandleHelper.getWindowTitle(bdvh) +
+		ViewerHelper.setViewerTitle(bdvh.getViewerPanel(), ViewerHelper.getViewerTitle(bdvh.getViewerPanel()) +
 			suffix);
 
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gd = ge.getScreenDevices();
-		JFrame frame = BdvHandleHelper.getJFrame(bdvh);
+		JFrame frame = ViewerHelper.getJFrame(bdvh.getViewerPanel());
 		SwingUtilities.invokeLater(() -> {
 			if (screen > -1 && screen < gd.length) {
 				frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x +

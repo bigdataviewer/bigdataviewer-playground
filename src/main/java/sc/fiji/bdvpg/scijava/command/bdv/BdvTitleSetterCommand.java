@@ -35,6 +35,7 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
@@ -53,7 +54,7 @@ public class BdvTitleSetterCommand implements BdvPlaygroundActionCommand {
 	String title;
 
 	public void run() {
-		BdvHandleHelper.setWindowTitle(bdvh, title);
+		ViewerHelper.setViewerTitle(bdvh.getViewerPanel(), title);
 	}
 
 }

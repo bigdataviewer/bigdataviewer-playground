@@ -30,12 +30,10 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
-import bdv.viewer.SourceAndConverter;
 import ij.IJ;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.navigate.SourceNavigatorSliderAdder;
-import sc.fiji.bdvpg.bdv.navigate.TimepointAdapterAdder;
+import sc.fiji.bdvpg.viewer.navigate.TimepointAdapterAdder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;

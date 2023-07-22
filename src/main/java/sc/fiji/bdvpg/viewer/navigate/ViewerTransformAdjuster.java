@@ -27,7 +27,7 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.bdv.navigate;
+package sc.fiji.bdvpg.viewer.navigate;
 
 import bdv.util.Affine3DHelpers;
 import bdv.util.BdvHandle;
@@ -41,7 +41,7 @@ import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Intervals;
 import net.imglib2.util.LinAlgHelpers;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,19 +60,19 @@ import java.util.stream.Collectors;
 
 public class ViewerTransformAdjuster implements Runnable {
 
-	private final AbstractViewerPanel handle;
+	private final AbstractViewerPanel viewer;
 	private final SourceAndConverter<?>[] sources;
 
-	public ViewerTransformAdjuster(AbstractViewerPanel bdvHandle,
+	public ViewerTransformAdjuster(AbstractViewerPanel viewer,
 		SourceAndConverter<?> source)
 	{
-		this(bdvHandle, new SourceAndConverter[] { source });
+		this(viewer, new SourceAndConverter[] { source });
 	}
 
-	public ViewerTransformAdjuster(AbstractViewerPanel handle,
+	public ViewerTransformAdjuster(AbstractViewerPanel viewer,
 		SourceAndConverter<?>[] sources)
 	{
-		this.handle = handle;
+		this.viewer = viewer;
 		this.sources = sources;
 	}
 
@@ -85,7 +85,7 @@ public class ViewerTransformAdjuster implements Runnable {
 			else {
 				transform = getTransformMultiSources();
 			}
-			handle.state().setViewerTransform(transform);
+			viewer.state().setViewerTransform(transform);
 		}
 	}
 
@@ -102,10 +102,10 @@ public class ViewerTransformAdjuster implements Runnable {
 	 * @return the view which is equivalent to the transform of the bdv window
 	 */
 	public AffineTransform3D getTransform() {
-		final ViewerState state = handle.state();
+		final ViewerState state = viewer.state();
 
-		final int viewerWidth = (int) handle.getWidth();
-		final int viewerHeight = (int) handle.getHeight();
+		final int viewerWidth = (int) viewer.getWidth();
+		final int viewerHeight = (int) viewer.getHeight();
 
 		final double cX = viewerWidth / 2.0;
 		final double cY = viewerHeight / 2.0;
@@ -179,7 +179,7 @@ public class ViewerTransformAdjuster implements Runnable {
 	}
 
 	public AffineTransform3D getTransformMultiSources() {
-		final ViewerState state = handle.state();
+		final ViewerState state = viewer.state();
 
 		final int timepoint = state.getCurrentTimepoint();
 
@@ -220,14 +220,14 @@ public class ViewerTransformAdjuster implements Runnable {
 		final double[] centerGlobal = { center.getDoublePosition(0), center
 			.getDoublePosition(1), center.getDoublePosition(2) };
 
-		final int viewerWidth = (int) handle.getWidth();
-		final int viewerHeight = (int) handle.getHeight();
+		final int viewerWidth = (int) viewer.getWidth();
+		final int viewerHeight = (int) viewer.getHeight();
 
 		AffineTransform3D viewerTransform = new AffineTransform3D();
 
-		handle.state().getViewerTransform(viewerTransform);
+		viewer.state().getViewerTransform(viewerTransform);
 
-		viewerTransform = BdvHandleHelper.getViewerTransformWithNewCenter(handle,
+		viewerTransform = ViewerHelper.getViewerTransformWithNewCenter(viewer,
 			centerGlobal);
 
 		// Let's scale: we need to find the coordinates on the screen of the big
@@ -253,9 +253,9 @@ public class ViewerTransformAdjuster implements Runnable {
 		}
 
 		viewerTransform.scale(currentMinScale);
-		handle.state().setViewerTransform(viewerTransform);
+		viewer.state().setViewerTransform(viewerTransform);
 
-		viewerTransform = BdvHandleHelper.getViewerTransformWithNewCenter(handle,
+		viewerTransform = ViewerHelper.getViewerTransformWithNewCenter(viewer,
 			centerGlobal);
 
 		return viewerTransform;

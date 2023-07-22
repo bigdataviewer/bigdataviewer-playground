@@ -36,16 +36,13 @@ import net.imagej.ImageJ;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.junit.After;
 import org.junit.Test;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewer.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
-import javax.swing.SwingUtilities;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 public class AffineTransformSourceDemo {

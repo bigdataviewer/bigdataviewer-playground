@@ -45,8 +45,9 @@ import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
+import sc.fiji.bdvpg.viewer.navigate.PositionLogger;
+import sc.fiji.bdvpg.viewer.navigate.ViewerTransformAdjuster;
 
 /**
  * ViewTransformSetAndLogDemo
@@ -86,10 +87,10 @@ public class LogMousePositionDemo {
         new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sac).run();
 
         // add a click behavior for logging mouse positions
-        new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new PositionLogger( bdvHandle ).run() ).install( "Log mouse position", "ctrl D" );
+        new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new PositionLogger( bdvHandle.getViewerPanel() ).run() ).install( "Log mouse position", "ctrl D" );
 
         // log the current position
-        new PositionLogger( bdvHandle ).run();
+        new PositionLogger( bdvHandle.getViewerPanel() ).run();
     }
 
     @Test

@@ -33,7 +33,7 @@ import bdv.util.BdvHandle;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformChanger;
+import sc.fiji.bdvpg.viewer.navigate.ViewerTransformChanger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
@@ -79,6 +79,6 @@ public class BdvViewTransformatorCommand implements BdvPlaygroundActionCommand {
 		affineTransform3D.rotate(1, rotatearoundy);
 		affineTransform3D.rotate(2, rotatearoundz);
 
-		new ViewerTransformChanger(bdvh, affineTransform3D, true, 0).run();
+		new ViewerTransformChanger(bdvh.getViewerPanel(), affineTransform3D, true, 0).run();
 	}
 }

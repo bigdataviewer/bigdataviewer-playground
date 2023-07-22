@@ -67,6 +67,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
 import sc.fiji.persist.ScijavaGsonHelper;
 
 import javax.swing.tree.DefaultTreeModel;
@@ -505,9 +506,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 			os.addObject(bdvh);
 
 			// ------------ Renames window to ensure unicity
-			String windowTitle = BdvHandleHelper.getWindowTitle(bdvh);
+			String windowTitle = ViewerHelper.getViewerTitle(bdvh.getViewerPanel());
 			windowTitle = BdvHandleHelper.getUniqueWindowTitle(os, windowTitle);
-			BdvHandleHelper.setWindowTitle(bdvh, windowTitle);
+			ViewerHelper.setViewerTitle(bdvh.getViewerPanel(), windowTitle);
 
 			// ------------ Event handling in bdv sourceandconverterserviceui
 			final SourceAndConverterService sacService =

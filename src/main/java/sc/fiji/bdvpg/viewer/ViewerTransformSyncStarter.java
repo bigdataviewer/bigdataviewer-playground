@@ -27,7 +27,7 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.viewers;
+package sc.fiji.bdvpg.viewer;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.AbstractViewerPanel;
@@ -41,7 +41,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import java.util.HashMap;
 import java.util.Map;
 
-import static sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter.MatrixApproxEquals;
+import static sc.fiji.bdvpg.viewer.ViewerOrthoSyncStarter.MatrixApproxEquals;
 
 /**
  * BigDataViewer Playground Action -- Action which synchronizes the display

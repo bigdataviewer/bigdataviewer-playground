@@ -33,7 +33,7 @@ import bdv.util.BdvHandle;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformLogger;
+import sc.fiji.bdvpg.viewer.navigate.ViewerTransformLogger;
 import sc.fiji.bdvpg.log.Logger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
@@ -60,7 +60,7 @@ public class BdvViewLoggerCommand implements BdvPlaygroundActionCommand {
 
 	@Override
 	public void run() {
-		new ViewerTransformLogger(bdvh, new Logger() {
+		new ViewerTransformLogger(bdvh.getViewerPanel(), new Logger() {
 
 			@Override
 			public void out(String msg) {

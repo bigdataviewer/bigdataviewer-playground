@@ -38,7 +38,7 @@ import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
-import sc.fiji.bdvpg.bdv.navigate.TimepointAdapterAdder;
+import sc.fiji.bdvpg.viewer.navigate.TimepointAdapterAdder;
 import java.util.function.Supplier;
 
 /**
