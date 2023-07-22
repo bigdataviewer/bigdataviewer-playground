@@ -1,5 +1,6 @@
 package sc.fiji.bdvpg.viewer;
 
+import bdv.ui.CardPanel;
 import bdv.util.BdvHandle;
 import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.Source;
@@ -13,6 +14,7 @@ import net.imglib2.util.LinAlgHelpers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import java.awt.Window;
@@ -214,5 +216,26 @@ public class ViewerHelper {
                 viewerPhysicalVoxelSpacingY);
 
         return viewerPhysicalVoxelSpacingX;
+    }
+
+
+    /**
+     * Calls bdvh.addCard in a thread safe manner
+     * @param cards cardpanel (from bdv or bvv)
+     * @param title title of the card
+     * @param component swing graphical component
+     * @param expanded whether the card is expanded on creation or not
+     */
+    public static void addCard(CardPanel cards, String title, JComponent component, boolean expanded) {
+        SwingUtilities.invokeLater(() -> cards.addCard(title, component, expanded));
+    }
+
+    /**
+     * Calls bdvh.removeCard in a thread safe manner
+     * @param cards cardpanel (from bdv or bvv)
+     * @param key key of the card to remove
+     */
+    public static void removeCard(CardPanel cards, Object key) {
+        SwingUtilities.invokeLater(() -> cards.removeCard(key));
     }
 }

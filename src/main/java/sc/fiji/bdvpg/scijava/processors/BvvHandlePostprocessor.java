@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 /**
  * Ensures BdvHandle is stored into ObjectService and all containing Sources as
@@ -73,9 +74,9 @@ public class BvvHandlePostprocessor extends AbstractPostprocessorPlugin {
 				BvvHandleHelper.setBvvHandleCloseOperation(bvvh, cacheService, os,
 					true);
 				// ------------ Renames window to ensure uniqueness
-				String windowTitle = BvvHandleHelper.getWindowTitle(bvvh);
+				String windowTitle = ViewerHelper.getViewerTitle(bvvh.getViewerPanel());
 				windowTitle = BvvHandleHelper.getUniqueWindowTitle(os, windowTitle);
-				BvvHandleHelper.setWindowTitle(bvvh, windowTitle);
+				ViewerHelper.setViewerTitle(bvvh.getViewerPanel(), windowTitle);
 				module.resolveOutput(name);
 			}
 		});

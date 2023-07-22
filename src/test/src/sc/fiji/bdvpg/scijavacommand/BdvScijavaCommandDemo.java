@@ -40,6 +40,7 @@ import sc.fiji.bdvpg.scijava.ScijavaSwingUI;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 public class BdvScijavaCommandDemo {
     static ImageJ ij;
@@ -65,7 +66,7 @@ public class BdvScijavaCommandDemo {
 
         // Adds a SciJava Interactive Command as a card panel
         bdvh.getSplitPanel().setCollapsed(false);
-        BdvHandleHelper.addCard(bdvh,"Zoom",
+        ViewerHelper.addCard(bdvh.getCardPanel(),"Zoom",
                 ScijavaSwingUI.getPanel(ij.context(), BdvZoom.class, "bdvh", bdvh), true);
         //bdvh.getCardPanel().addCard("Zoom",
         //        ScijavaSwingUI.getPanel(ij.context(), BdvZoom.class, "bdvh", bdvh), true);

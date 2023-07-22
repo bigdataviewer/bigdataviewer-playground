@@ -32,6 +32,7 @@ package sc.fiji.bdvpg.bvv;
 import bvv.vistools.BvvHandle;
 import org.scijava.cache.CacheService;
 import org.scijava.object.ObjectService;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -41,14 +42,6 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class BvvHandleHelper {
-
-	/**
-	 * @param bvvh the BigVolumeViewer window handle
-	 * @return the JFrame object associated to the bvv handle
-	 */
-	public static JFrame getJFrame(BvvHandle bvvh) {
-		return (JFrame) SwingUtilities.getWindowAncestor(bvvh.getViewerPanel());
-	}
 
 	/**
 	 * @param bvvh the BigVolumeViewer window handle
@@ -94,46 +87,6 @@ public class BvvHandleHelper {
 	}
 
 	/**
-	 * @param bvvh the BigVolumeViewer window handle
-	 */
-	public static void activateWindow(BvvHandle bvvh) {
-		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bvvh
-			.getViewerPanel());
-		topFrame.toFront();
-		topFrame.requestFocus();
-	}
-
-	/**
-	 * @param bvvh the BigVolumeViewer window handle
-	 */
-	public static void closeWindow(BvvHandle bvvh) {
-		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bvvh
-			.getViewerPanel());
-		topFrame.dispatchEvent(new WindowEvent(topFrame,
-			WindowEvent.WINDOW_CLOSING));
-	}
-
-	/**
-	 * @param bvvh the BigVolumeViewer window handle
-	 * @param title window title to set
-	 */
-	public static void setWindowTitle(BvvHandle bvvh, String title) {
-		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bvvh
-			.getViewerPanel());
-		topFrame.setTitle(title);
-	}
-
-	/**
-	 * @param bvvh the BigVolumeViewer window handle
-	 * @return the BigVolumeViewer window title
-	 */
-	public static String getWindowTitle(BvvHandle bvvh) {
-		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bvvh
-			.getViewerPanel());
-		return topFrame.getTitle();
-	}
-
-	/**
 	 * @param os SciJava object service
 	 * @param iniTitle initial Title to set
 	 * @return a potentially modified title which is unique in the current scijava
@@ -144,7 +97,7 @@ public class BvvHandleHelper {
 		boolean duplicateExist;
 		String uniqueTitle = iniTitle;
 		duplicateExist = bvvs.stream().anyMatch(bvv -> (bvv.toString().equals(
-			iniTitle)) || (getWindowTitle(bvv).equals(iniTitle)));
+			iniTitle)) || (ViewerHelper.getViewerTitle(bvv.getViewerPanel()).equals(iniTitle)));
 		while (duplicateExist) {
 			if (uniqueTitle.matches(".+(_)\\d+")) {
 				int idx = Integer.parseInt(uniqueTitle.substring(uniqueTitle
@@ -164,7 +117,7 @@ public class BvvHandleHelper {
 			}
 			String uTTest = uniqueTitle;
 			duplicateExist = bvvs.stream().anyMatch(bvv -> (bvv.toString().equals(
-				uTTest)) || (getWindowTitle(bvv).equals(uTTest)));
+				uTTest)) || (ViewerHelper.getViewerTitle(bvv.getViewerPanel()).equals(uTTest)));
 		}
 		return uniqueTitle;
 	}

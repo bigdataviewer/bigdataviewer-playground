@@ -135,7 +135,7 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 			text += ViewerHelper.getViewerTitle(bdvh.getViewerPanel()) + "\n";
 		}
 		for (BvvHandle bvvh : bvvhs) {
-			text += BvvHandleHelper.getWindowTitle(bvvh) + "\n";
+			text += ViewerHelper.getViewerTitle(bvvh.getViewerPanel()) + "\n";
 		}
 
 		JPanel pane = new JPanel();

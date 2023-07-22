@@ -38,6 +38,7 @@ import sc.fiji.bdvpg.bvv.BvvCreator;
 import sc.fiji.bdvpg.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
 import sc.fiji.bdvpg.viewer.ViewerOrthoSyncStarter;
 import sc.fiji.bdvpg.viewer.ViewerStateSyncStarter;
 
@@ -122,12 +123,12 @@ public class BvvOrthoWindowCreatorCommand implements
 	BvvHandle createBvv(String suffix, double locX, double locY) {
 		BvvOptions opts = BvvOptions.options();// .frameTitle("BVV-"+suffix);
 		BvvHandle bvvh = new BvvCreator(opts, ntimepoints).get();// sacDisplayService.getNewBdv();
-		BvvHandleHelper.setWindowTitle(bvvh, BvvHandleHelper.getWindowTitle(bvvh) +
+		ViewerHelper.setViewerTitle(bvvh.getViewerPanel(), ViewerHelper.getViewerTitle(bvvh.getViewerPanel()) +
 			suffix);
 
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gd = ge.getScreenDevices();
-		JFrame frame = BvvHandleHelper.getJFrame(bvvh);
+		JFrame frame = ViewerHelper.getJFrame(bvvh.getViewerPanel());
 		if (screen > -1 && screen < gd.length) {
 			frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x +
 				(int) locX, (int) locY);
