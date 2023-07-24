@@ -43,6 +43,9 @@ import java.util.List;
 
 public class BvvHandleHelper {
 
+
+	final public static String LAST_ACTIVE_BVVH_KEY = "LAST_ACTIVE_BVVH";
+
 	/**
 	 * @param bvvh the BigVolumeViewer window handle
 	 * @param cs SciJava cache service
@@ -66,7 +69,7 @@ public class BvvHandleHelper {
 			@Override
 			public void windowActivated(WindowEvent e) {
 				super.windowActivated(e);
-				cs.put("LAST_ACTIVE_BVVH", new WeakReference<>(bvvh));
+				cs.put(LAST_ACTIVE_BVVH_KEY, new WeakReference<>(bvvh));
 				// Very old school
 				/*if (Recorder.record) {
 				    // run("Select Bvv Window", "bdvh=bdv.util.BdvHandleFrame@e6c7718");
@@ -77,7 +80,7 @@ public class BvvHandleHelper {
 		});
 
 		if (putWindowOnTop) {
-			cs.put("LAST_ACTIVE_BVVH", new WeakReference<>(bvvh));// why a weak
+			cs.put(LAST_ACTIVE_BVVH_KEY, new WeakReference<>(bvvh));// why a weak
 																														// reference ?
 																														// because we want
 																														// to dispose the

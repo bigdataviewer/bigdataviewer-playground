@@ -72,6 +72,8 @@ import sc.fiji.persist.ScijavaGsonHelper;
 
 import javax.swing.tree.DefaultTreeModel;
 
+import static sc.fiji.bdvpg.bdv.BdvHandleHelper.LAST_ACTIVE_BDVH_KEY;
+
 /**
  * SciJava Service which handles the Display of BDV SourceAndConverters in one
  * or multiple BDV Windows Pairs with BdvSourceAndConverterService, but this
@@ -186,9 +188,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 				return bdvh.get();
 			}
 			else {
-				if (cacheService.get("LAST_ACTIVE_BDVH") != null) {
+				if (cacheService.get(LAST_ACTIVE_BDVH_KEY) != null) {
 					WeakReference<BdvHandle> wr_bdv_h =
-						(WeakReference<BdvHandle>) cacheService.get("LAST_ACTIVE_BDVH");
+						(WeakReference<BdvHandle>) cacheService.get(LAST_ACTIVE_BDVH_KEY);
 					return wr_bdv_h.get();
 				}
 				else {

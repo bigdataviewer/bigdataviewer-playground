@@ -67,6 +67,8 @@ public class BdvHandleHelper {
 	protected static final Logger logger = LoggerFactory.getLogger(
 			BdvHandleHelper.class);
 
+	final public static String LAST_ACTIVE_BDVH_KEY = "LAST_ACTIVE_BDVH";
+
 	public static void setBdvHandleCloseOperation(BdvHandle bdvh, CacheService cs,
 		SourceAndConverterBdvDisplayService bdvsds, boolean putWindowOnTop,
 		Runnable runnable)
@@ -91,7 +93,7 @@ public class BdvHandleHelper {
 			@Override
 			public void windowActivated(WindowEvent e) {
 				super.windowActivated(e);
-				cs.put("LAST_ACTIVE_BDVH", new WeakReference<>(bdvh));
+				cs.put(LAST_ACTIVE_BDVH_KEY, new WeakReference<>(bdvh));
 				// Very old school
 				/*if (Recorder.record) {
 				    // run("Select Bdv Window", "bdvh=bdv.util.BdvHandleFrame@e6c7718");
@@ -103,7 +105,7 @@ public class BdvHandleHelper {
 		topFrame.addWindowListener(wa);
 
 		if (putWindowOnTop) {
-			cs.put("LAST_ACTIVE_BDVH", new WeakReference<>(bdvh));// why a weak
+			cs.put(LAST_ACTIVE_BDVH_KEY, new WeakReference<>(bdvh));// why a weak
 																														// reference ?
 																														// because we want
 																														// to dispose the
