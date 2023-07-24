@@ -131,7 +131,7 @@ public class BdvOrthoCreatorCommand implements BdvPlaygroundActionCommand {
 
 	BdvHandle createBdv(String suffix, double locX, double locY) {
 
-		BdvHandle bdvh = sacDisplayService.getNewBdv();
+		BdvHandle bdvh = sacDisplayService.getNewViewer();
 		ViewerHelper.setViewerTitle(bdvh.getViewerPanel(), ViewerHelper.getViewerTitle(bdvh.getViewerPanel()) +
 			suffix);
 

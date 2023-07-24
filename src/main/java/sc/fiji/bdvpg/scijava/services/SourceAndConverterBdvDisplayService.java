@@ -33,7 +33,6 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.Gson;
 import ij.Prefs;
-import net.imglib2.converter.Converter;
 import net.imglib2.util.Pair;
 import org.scijava.Context;
 import org.scijava.object.ObjectService;
@@ -67,6 +66,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import sc.fiji.bdvpg.services.ISourceAndConverterViewerService;
 import sc.fiji.bdvpg.viewer.ViewerHelper;
 import sc.fiji.persist.ScijavaGsonHelper;
 
@@ -86,7 +86,7 @@ import static sc.fiji.bdvpg.bdv.BdvHandleHelper.LAST_ACTIVE_BDVH_KEY;
 														// reflection
 @Plugin(type = Service.class)
 public class SourceAndConverterBdvDisplayService extends AbstractService
-	implements SciJavaService
+	implements SciJavaService, ISourceAndConverterViewerService<BdvHandle>
 {
 
 	protected static final Logger logger = LoggerFactory.getLogger(
@@ -122,12 +122,20 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	Supplier<BdvHandle> bdvSupplier; // = new DefaultBdvSupplier(new
 																		// SerializableBdvOptions());
 
+	@Override
+	public void setDefaultViewerSupplier(Supplier<BdvHandle> bdvSupplier) {
+		if (bdvSupplier instanceof IBdvSupplier) {
+			setDefaultViewerSupplier((IBdvSupplier) bdvSupplier);
+		} else {
+			throw new UnsupportedOperationException(bdvSupplier+" is not a "+IBdvSupplier.class.getSimpleName()+" object");
+		}
+	}
 	/**
 	 * Can be used to change how Bdv Windows are created
 	 * 
 	 * @param bdvSupplier supplier of bdv window
 	 */
-	public void setDefaultBdvSupplier(IBdvSupplier bdvSupplier) {
+	public void setDefaultViewerSupplier(IBdvSupplier bdvSupplier) {
 		this.bdvSupplier = bdvSupplier;
 
 		logger.info(" --- Serializing to save default bdv window of class " +
@@ -139,7 +147,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 		Prefs.set("bigdataviewer.playground.supplier", bdvSupplierSerialized);
 	}
 
-	public BdvHandle getNewBdv() {
+	@Override
+	public BdvHandle getNewViewer() {
 
 		if (bdvSupplier == null) {
 			logger.debug(" --- Fetching or generating default bdv window");
@@ -164,17 +173,18 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 		}
 
 		BdvHandle bdvh = bdvSupplier.get();
-		this.registerBdvHandle(bdvh); // We always want it to be registered
+		this.registerViewer(bdvh); // We always want it to be registered
 		return bdvh;
 	}
 
 	/**
 	 * @return the last active BDV or create a new one
 	 */
-	public BdvHandle getActiveBdv() {
+	@Override
+	public BdvHandle getActiveViewer() {
 		List<BdvHandle> bdvhs = os.getObjects(BdvHandle.class);
 		if ((bdvhs == null) || (bdvhs.size() == 0)) {
-			return getNewBdv();
+			return getNewViewer();
 		}
 
 		if (bdvhs.size() == 1) {
@@ -206,8 +216,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * 
 	 * @param sacs sources to display
 	 */
+	@Override
 	public void show(SourceAndConverter<?>... sacs) {
-		show(getActiveBdv(), sacs);
+		show(getActiveViewer(), sacs);
 	}
 
 	/**
@@ -217,8 +228,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * @param sac source
 	 * @param visible whether to set it visible
 	 */
+	@Override
 	public void setVisible(SourceAndConverter<?> sac, boolean visible) {
-		getDisplaysOf(sac).forEach(bdvhr -> bdvhr.getViewerPanel().state()
+		getViewersOf(sac).forEach(bdvhr -> bdvhr.getViewerPanel().state()
 			.setSourceActive(sac, visible));
 	}
 
@@ -227,6 +239,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * @param bdvh bdv window where to check this property
 	 * @return true if the source is visible
 	 */
+	@Override
 	public boolean isVisible(SourceAndConverter<?> sac, BdvHandle bdvh) {
 		return bdvh.getViewerPanel().state().isSourceActive(sac);
 	}
@@ -240,6 +253,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * @param sacs sources to display
 	 * @param bdvh bdvhandle to append the sources
 	 */
+	@Override
 	public void show(BdvHandle bdvh, SourceAndConverter<?>... sacs) {
 		show(bdvh, true, sacs);
 	}
@@ -254,6 +268,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * @param visible whether to make the source active (=visible)
 	 * @param bdvh bdvhandle to append the sources
 	 */
+	@Override
 	public void show(BdvHandle bdvh, boolean visible,
 		SourceAndConverter<?>... sacs)
 	{
@@ -295,8 +310,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * 
 	 * @param sacs sources to remove
 	 */
-	public void removeFromAllBdvs(SourceAndConverter<?>... sacs) {
-		getDisplaysOf(sacs).forEach(bdv -> bdv.getViewerPanel().state()
+	@Override
+	public void removeFromAllViewers(SourceAndConverter<?>... sacs) {
+		getViewersOf(sacs).forEach(bdv -> bdv.getViewerPanel().state()
 			.removeSources(Arrays.asList(sacs)));
 	}
 
@@ -306,10 +322,11 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * 
 	 * @param sacs sources to remove from active bdv
 	 */
-	public void removeFromActiveBdv(SourceAndConverter<?>... sacs) {
+	@Override
+	public void removeFromActiveViewer(SourceAndConverter<?>... sacs) {
 		// This condition avoids creating a window for nothing
 		if (os.getObjects(BdvHandle.class).size() > 0) {
-			remove(getActiveBdv(), sacs);
+			remove(getActiveViewer(), sacs);
 		}
 	}
 
@@ -320,26 +337,10 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * @param bdvh bdvhandle
 	 * @param sacs Array of SourceAndConverter
 	 */
+	@Override
 	public void remove(BdvHandle bdvh, SourceAndConverter<?>... sacs) {
 		bdvh.getViewerPanel().state().removeSources(Arrays.asList(sacs));
 		bdvh.getViewerPanel().requestRepaint();
-	}
-
-	/**
-	 * Updates converter and ConverterSetup of a Source, + updates display TODO:
-	 * This method currently modifies the order of the sources shown in the bdvh
-	 * window While this is not important for most bdvhandle, this could affect
-	 * the functionality of BigWarp LIMITATION : Cannot use LUT for ARGBType -
-	 * TODO check type and send an error
-	 * 
-	 * @param source source
-	 * @param cvt converter
-	 */
-	public void updateConverter(SourceAndConverter<?> source,
-		Converter<?, ?> cvt)
-	{
-		logger.error(
-			"Unsupported operation : a new SourceAndConverterObject should be built. (TODO) ");
 	}
 
 	/**
@@ -362,7 +363,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * 
 	 * @param bdvh bdvhandle to close
 	 */
-	public void closeBdv(BdvHandle bdvh) {
+	@Override
+	public void closeViewer(BdvHandle bdvh) {
 		os.removeObject(bdvh);
 		displayToMetadata.invalidate(bdvh); // enables memory release on GC - even
 																				// if it bdv was weekly referenced
@@ -375,10 +377,10 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 				.getA() == bdvh) || (p.getB() == bdvh)).findFirst().get();
 			pairedBdvs.remove(pair);
 			if (pair.getA() == bdvh) {
-				closeBdv(pair.getB());
+				closeViewer(pair.getB());
 			}
 			else {
-				closeBdv(pair.getA());
+				closeViewer(pair.getA());
 			}
 		}
 	}
@@ -388,7 +390,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 */
 	final List<Pair<BdvHandle, BdvHandle>> pairedBdvs = new ArrayList<>();
 
-	public void pairClosing(BdvHandle bdv1, BdvHandle bdv2) {
+	@Override
+	public void bindClosing(BdvHandle bdv1, BdvHandle bdv2) {
 		pairedBdvs.add(new Pair<BdvHandle, BdvHandle>() {
 
 			@Override
@@ -410,7 +413,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * 
 	 * @param bdvh_in bdvhandle fetched for registration
 	 */
-	public void registerBdvSource(BdvHandle bdvh_in) {
+	@Override
+	public void registerSourcesFromViewer(BdvHandle bdvh_in) {
 		bdvh_in.getViewerPanel().state().getSources().forEach(sac -> {
 			if (!bdvSourceAndConverterService.isRegistered(sac)) {
 				bdvSourceAndConverterService.register(sac);
@@ -424,8 +428,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * 
 	 * @param sacs sources to update
 	 */
-	public void updateDisplays(SourceAndConverter<?>... sacs) {
-		getDisplaysOf(sacs).forEach(bdvHandle -> bdvHandle.getViewerPanel()
+	public void updateViewersOf(SourceAndConverter<?>... sacs) {
+		getViewersOf(sacs).forEach(bdvHandle -> bdvHandle.getViewerPanel()
 			.requestRepaint());
 	}
 
@@ -450,7 +454,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * @param sacs the sources queried
 	 * @return all bdvhandle which contain the source
 	 */
-	public Set<BdvHandle> getDisplaysOf(SourceAndConverter<?>... sacs) {
+	@Override
+	public Set<BdvHandle> getViewersOf(SourceAndConverter<?>... sacs) {
 		if (sacs == null) {
 			return new HashSet<>();
 		}
@@ -466,7 +471,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 
 	}
 
-	public List<BdvHandle> getDisplays() {
+	@Override
+	public List<BdvHandle> getViewers() {
 		return os.getObjects(BdvHandle.class);
 	}
 
@@ -477,8 +483,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 */
 	Cache<BdvHandle, Map<String, Object>> displayToMetadata;
 
+	@Override
 	@SuppressWarnings("ConstantConditions")
-	public void setDisplayMetadata(BdvHandle bdvh, String key, Object data) {
+	public void setViewerMetadata(BdvHandle bdvh, String key, Object data) {
 		if (bdvh == null) {
 			logger.error("Error : bdvh is null in setMetadata function! ");
 			return;
@@ -490,8 +497,9 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 		displayToMetadata.getIfPresent(bdvh).put(key, data);
 	}
 
+	@Override
 	@SuppressWarnings("ConstantConditions")
-	public Object getDisplayMetadata(BdvHandle bdvh, String key) {
+	public Object getViewerMetadata(BdvHandle bdvh, String key) {
 		if (displayToMetadata.getIfPresent(bdvh) != null) {
 			return displayToMetadata.getIfPresent(bdvh).get(key);
 		}
@@ -500,7 +508,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 		}
 	}
 
-	public void registerBdvHandle(BdvHandle bdvh) {
+	@Override
+	public void registerViewer(BdvHandle bdvh) {
 		// ------------ Register BdvHandle in ObjectService
 		if (!os.getObjects(BdvHandle.class).contains(bdvh)) { // adds it only if not
 																													// already present in

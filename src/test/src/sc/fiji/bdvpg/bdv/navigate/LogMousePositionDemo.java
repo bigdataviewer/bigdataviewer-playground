@@ -78,7 +78,7 @@ public class LogMousePositionDemo {
         SourceAndConverter<?> sac = SourceAndConverterHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle = ij.get(SourceAndConverterBdvDisplayService.class).getActiveBdv();
+        BdvHandle bdvHandle = ij.get(SourceAndConverterBdvDisplayService.class).getActiveViewer();
 
         // Show the SourceAndConverter
         ij.get(SourceAndConverterBdvDisplayService.class).show(bdvHandle, sac);

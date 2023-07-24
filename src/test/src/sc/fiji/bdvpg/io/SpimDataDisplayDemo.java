@@ -54,7 +54,7 @@ public class SpimDataDisplayDemo
 		TestHelper.startFiji(ij);//ij.ui().showUI();
 
 		// Gets active BdvHandle instance
-		BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
+		BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveViewer();
 
 		// Import SpimData
 		new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").run();

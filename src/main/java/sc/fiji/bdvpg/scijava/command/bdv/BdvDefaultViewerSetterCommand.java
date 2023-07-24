@@ -94,7 +94,7 @@ public class BdvDefaultViewerSetterCommand implements
 		if (resetToDefault) {
 			IBdvSupplier bdvSupplier = new DefaultBdvSupplier(
 				new SerializableBdvOptions());
-			sacDisplayService.setDefaultBdvSupplier(bdvSupplier);
+			sacDisplayService.setDefaultViewerSupplier(bdvSupplier);
 		}
 		else {
 			SerializableBdvOptions options = new SerializableBdvOptions();
@@ -109,7 +109,7 @@ public class BdvDefaultViewerSetterCommand implements
 			options.numTimePoints = numtimepoints;
 			options.interpolate = interpolate;
 			IBdvSupplier bdvSupplier = new DefaultBdvSupplier(options);
-			sacDisplayService.setDefaultBdvSupplier(bdvSupplier);
+			sacDisplayService.setDefaultViewerSupplier(bdvSupplier);
 		}
 
 	}

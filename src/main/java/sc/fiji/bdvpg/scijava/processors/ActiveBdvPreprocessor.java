@@ -59,7 +59,7 @@ public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle> {
 	@Override
 	public BdvHandle getValue() {
 
-		return sacDisplayService.getActiveBdv();
+		return sacDisplayService.getActiveViewer();
 
 	}
 

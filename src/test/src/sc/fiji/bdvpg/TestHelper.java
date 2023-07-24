@@ -45,7 +45,7 @@ public class TestHelper {
             // Closes bdv windows
             SourceAndConverterBdvDisplayService sac_display_service =
                     ij.context().getService(SourceAndConverterBdvDisplayService.class);
-            sac_display_service.getDisplays().forEach(BdvHandle::close);
+            sac_display_service.getViewers().forEach(BdvHandle::close);
 
             // Clears all sources
             SourceAndConverterService sac_service =

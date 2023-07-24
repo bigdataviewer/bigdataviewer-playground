@@ -94,7 +94,7 @@ public class ResamplingDemo {
                 .show(sac);
 
         // Gets active BdvHandle instance
-        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveViewer();
 
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, sac );
         new ViewerTransformAdjuster( bdvHandle.getViewerPanel(), sac ).run();
@@ -123,7 +123,7 @@ public class ResamplingDemo {
         // ---- Downsample a source
         // ---- Upsample a source
 
-        bdvHandle = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
+        bdvHandle = SourceAndConverterServices.getBdvDisplayService().getNewViewer();
 
         //SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, sac );
         new ViewerTransformAdjuster( bdvHandle.getViewerPanel(), sac ).run();

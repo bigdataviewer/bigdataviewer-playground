@@ -89,7 +89,7 @@ public class WarpedSourceDemo {
                 .show(sac);
 
         // Gets active BdvHandle instance
-        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveViewer();
 
         SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
         new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sac).run();

@@ -170,7 +170,7 @@ public class EditorBehaviourInstaller implements Runnable {
 
 		// Provides a way to retrieve this installer -> can be used to uninstalling
 		// it {@link EditorBehaviourUninstaller}
-		SourceAndConverterServices.getBdvDisplayService().setDisplayMetadata(bdvh,
+		SourceAndConverterServices.getBdvDisplayService().setViewerMetadata(bdvh,
 			EditorBehaviourInstaller.class.getSimpleName(), this);
 
 	}

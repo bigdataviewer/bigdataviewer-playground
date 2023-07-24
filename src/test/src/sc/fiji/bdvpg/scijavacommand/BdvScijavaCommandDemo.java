@@ -34,12 +34,9 @@ import net.imagej.ImageJ;
 import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.BdvScijavaHelper;
 import sc.fiji.bdvpg.scijava.ScijavaSwingUI;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 public class BdvScijavaCommandDemo {
@@ -52,7 +49,7 @@ public class BdvScijavaCommandDemo {
         TestHelper.startFiji(ij);//ij.ui().showUI();
 
         // Creates a BDV since none exists yet
-        BdvHandle bdvh = ij.get(SourceAndConverterBdvDisplayService.class).getActiveBdv();
+        BdvHandle bdvh = ij.get(SourceAndConverterBdvDisplayService.class).getActiveViewer();
 
         // Adds a SciJava Command in the menu bar
         BdvScijavaHelper

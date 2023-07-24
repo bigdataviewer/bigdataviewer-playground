@@ -58,7 +58,7 @@ public class BdvCreatorCommand implements BdvPlaygroundActionCommand {
 
 	@Override
 	public void run() {
-		bdvh = sacDisplayService.getNewBdv();
+		bdvh = sacDisplayService.getNewViewer();
 	}
 
 }

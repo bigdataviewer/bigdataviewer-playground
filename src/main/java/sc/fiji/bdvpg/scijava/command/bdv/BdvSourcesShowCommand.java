@@ -73,7 +73,7 @@ public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
 
 	@Override
 	public void run() {
-		bdvh = bdvDisplayService.getNewBdv();
+		bdvh = bdvDisplayService.getNewViewer();
 
 		bdvDisplayService.show(bdvh, sacs);
 		if (autocontrast) {

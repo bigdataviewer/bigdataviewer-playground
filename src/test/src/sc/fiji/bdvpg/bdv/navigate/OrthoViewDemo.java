@@ -80,11 +80,11 @@ public class OrthoViewDemo {
         //SourceAndConverter sac = SourceAndConverterUtils.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandleX = bdvDisplayService.getNewBdv();
+        BdvHandle bdvHandleX = bdvDisplayService.getNewViewer();
         // Creates a BdvHandle
-        BdvHandle bdvHandleY = bdvDisplayService.getNewBdv();
+        BdvHandle bdvHandleY = bdvDisplayService.getNewViewer();
         // Creates a BdvHandles
-        BdvHandle bdvHandleZ = bdvDisplayService.getNewBdv();
+        BdvHandle bdvHandleZ = bdvDisplayService.getNewViewer();
 
         BdvHandle[] bdvhs = new BdvHandle[]{bdvHandleX,bdvHandleY,bdvHandleZ};
 

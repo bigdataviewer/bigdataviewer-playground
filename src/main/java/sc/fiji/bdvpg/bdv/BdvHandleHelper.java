@@ -29,7 +29,6 @@
 
 package sc.fiji.bdvpg.bdv;
 
-import bdv.ui.CardPanel;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
 import bdv.util.BdvOptions;
@@ -46,7 +45,6 @@ import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.viewer.ViewerHelper;
 
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -84,7 +82,7 @@ public class BdvHandleHelper {
 					runnable.run();
 				}
 				super.windowClosing(e);
-				bdvsds.closeBdv(bdvh);
+				bdvsds.closeViewer(bdvh);
 				topFrame.removeWindowListener(this); // Avoid memory leak
 				e.getWindow().dispose();
 				bdvh.close();

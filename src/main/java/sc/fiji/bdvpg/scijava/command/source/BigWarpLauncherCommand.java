@@ -109,7 +109,7 @@ public class BigWarpLauncherCommand implements BdvPlaygroundActionCommand {
 		bdvhq = bwl.getBdvHandleQ();
 		bdvhp = bwl.getBdvHandleP();
 
-		bsds.pairClosing(bdvhq, bdvhp);
+		bsds.bindClosing(bdvhq, bdvhp);
 
 		gridsource = bwl.getGridSource();
 		warpmagnitudesource = bwl.getWarpMagnitudeSource();

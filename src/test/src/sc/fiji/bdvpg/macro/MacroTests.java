@@ -59,7 +59,7 @@ public class MacroTests
 			Assert.assertEquals(
 			SourceAndConverterServices
 					.getBdvDisplayService()
-					.getDisplays().size(),1);
+					.getViewers().size(),1);
 		} catch (InterruptedException e) {
 			System.out.println("INterrupt");
 			throw new RuntimeException(e);

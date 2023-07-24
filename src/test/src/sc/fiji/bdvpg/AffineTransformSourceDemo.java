@@ -73,7 +73,7 @@ public class AffineTransformSourceDemo {
 
         // Creates a BdvHandle
         BdvHandle bdvHandle =
-                ij.get(SourceAndConverterBdvDisplayService.class).getActiveBdv();
+                ij.get(SourceAndConverterBdvDisplayService.class).getActiveViewer();
 
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData

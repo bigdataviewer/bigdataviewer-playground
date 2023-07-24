@@ -66,7 +66,7 @@ public class BrightnessAutoAdjusterDemo
 		TestHelper.startFiji(ij);//ij.ui().showUI();
 
 		// Creates a BdvHandle
-		bdvHandle = ij.get(SourceAndConverterBdvDisplayService.class).getActiveBdv();
+		bdvHandle = ij.get(SourceAndConverterBdvDisplayService.class).getActiveViewer();
 
         AbstractSpimData<?> asd = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
 

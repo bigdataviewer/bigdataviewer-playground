@@ -109,7 +109,7 @@ public class ManualRegistrationStarter implements Runnable {
 		for (SourceAndConverter<?> sourceAndConverter : sacs) {
 
 			// Wraps into a Transformed Source, if the source was displayed originally
-			if (SourceAndConverterServices.getBdvDisplayService().getDisplaysOf(
+			if (SourceAndConverterServices.getBdvDisplayService().getViewersOf(
 				sourceAndConverter).contains(bdvHandle))
 			{
 				if (SourceAndConverterServices.getBdvDisplayService().isVisible(

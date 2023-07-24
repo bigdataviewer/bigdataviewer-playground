@@ -46,7 +46,7 @@ public class RayCastDemo {
 
         BdvHandle bdvh = SourceAndConverterServices
                 .getBdvDisplayService()
-                .getActiveBdv();
+                .getActiveViewer();
 
         AffineTransformSourceDemo.demo(ij,3);
 

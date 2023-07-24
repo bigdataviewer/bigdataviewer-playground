@@ -101,7 +101,7 @@ public class ManualRegistrationDemo {
         Source<T> source = new RandomAccessibleIntervalSource<>(rai, Util.getTypeFromInterval(rai), "blobs");
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle = bdvDisplayService.getNewBdv();
+        BdvHandle bdvHandle = bdvDisplayService.getNewViewer();
 
         // Creates SourceAndConverter Reference
         SourceAndConverter<T> sacReference = SourceAndConverterHelper.createSourceAndConverter(source);

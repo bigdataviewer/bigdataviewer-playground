@@ -60,7 +60,7 @@ public class SourceColorChangerCommand implements BdvPlaygroundActionCommand {
 		for (SourceAndConverter<?> sac : sacs) {
 			new ColorChanger(sac, imglib2color).run();
 		}
-		SourceAndConverterServices.getBdvDisplayService().updateDisplays(sacs);
+		SourceAndConverterServices.getBdvDisplayService().updateViewersOf(sacs);
 	}
 
 }

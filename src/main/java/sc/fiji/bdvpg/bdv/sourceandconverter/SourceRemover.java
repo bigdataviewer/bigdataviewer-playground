@@ -75,7 +75,7 @@ public class SourceRemover implements Runnable,
 	public void accept(SourceAndConverter... sacs) {
 		if (bdvh == null) {
 			// Remove from all displays
-			SourceAndConverterServices.getBdvDisplayService().removeFromAllBdvs(sacs);
+			SourceAndConverterServices.getBdvDisplayService().removeFromAllViewers(sacs);
 		}
 		else {
 			// Remove from a specific bdvHandle
