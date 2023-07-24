@@ -39,7 +39,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.viewer.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.BDVService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.register.BigWarpLauncher;
@@ -63,7 +63,7 @@ public class BigWarpDemo {
 
     public static void demo3d(ImageJ ij) {
         SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
-        SourceAndConverterBdvDisplayService displayService = ij.get(SourceAndConverterBdvDisplayService.class);
+        BDVService displayService = ij.get(BDVService.class);
 
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData
@@ -124,7 +124,7 @@ public class BigWarpDemo {
 
     public static void demo2d(ImageJ ij) {
         SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
-        SourceAndConverterBdvDisplayService displayService = ij.get(SourceAndConverterBdvDisplayService.class);
+        BDVService displayService = ij.get(BDVService.class);
 
         // Makes BDV Source
 

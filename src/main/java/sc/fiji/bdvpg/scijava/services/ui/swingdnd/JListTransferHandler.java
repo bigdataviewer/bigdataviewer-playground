@@ -90,7 +90,7 @@ public class JListTransferHandler extends TransferHandler {
 	public Optional<BdvHandle> getBdvHandleFromViewerPanel(
 		ViewerPanel viewerPanel)
 	{
-		return SourceAndConverterServices.getBdvDisplayService().getViewers()
+		return SourceAndConverterServices.getBDVService().getViewers()
 			.stream().filter(bdvh -> bdvh.getViewerPanel().equals(viewerPanel))
 			.findFirst();
 	}

@@ -68,6 +68,6 @@ public class SourceAdder implements Runnable,
 
 	@Override
 	public void accept(SourceAndConverter<?>... sacs) {
-		SourceAndConverterServices.getBdvDisplayService().show(bdvh, sacs);
+		SourceAndConverterServices.getBDVService().show(bdvh, sacs);
 	}
 }

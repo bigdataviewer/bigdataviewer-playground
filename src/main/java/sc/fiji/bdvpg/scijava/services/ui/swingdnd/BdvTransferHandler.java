@@ -90,14 +90,14 @@ public class BdvTransferHandler extends TransferHandler {
 		Optional<BdvHandle> bdvh = getBdvHandleFromViewerPanel(
 			((bdv.viewer.ViewerPanel) support.getComponent()));
 		bdvh.ifPresent(bdvHandle -> SourceAndConverterServices
-			.getBdvDisplayService().show(bdvHandle, sacs.toArray(
+			.getBDVService().show(bdvHandle, sacs.toArray(
 				new SourceAndConverter[0])));
 	}
 
 	public Optional<BdvHandle> getBdvHandleFromViewerPanel(
 		ViewerPanel viewerPanel)
 	{
-		return SourceAndConverterServices.getBdvDisplayService().getViewers()
+		return SourceAndConverterServices.getBDVService().getViewers()
 			.stream().filter(bdvh -> bdvh.getViewerPanel().equals(viewerPanel))
 			.findFirst();
 	}

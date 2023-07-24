@@ -66,7 +66,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import sc.fiji.bdvpg.services.ISourceAndConverterViewerService;
+import sc.fiji.bdvpg.services.IViewerService;
 import sc.fiji.bdvpg.viewer.ViewerHelper;
 import sc.fiji.persist.ScijavaGsonHelper;
 
@@ -85,12 +85,12 @@ import static sc.fiji.bdvpg.bdv.BdvHandleHelper.LAST_ACTIVE_BDVH_KEY;
 @SuppressWarnings("unused") // Because SciJava parameters are filled through
 														// reflection
 @Plugin(type = Service.class)
-public class SourceAndConverterBdvDisplayService extends AbstractService
-	implements SciJavaService, ISourceAndConverterViewerService<BdvHandle>
+public class BDVService extends AbstractService
+	implements SciJavaService, IViewerService<BdvHandle>
 {
 
 	protected static final Logger logger = LoggerFactory.getLogger(
-		SourceAndConverterBdvDisplayService.class);
+		BDVService.class);
 
 	public static final String CONVERTER_SETUP = "ConverterSetup";
 
@@ -352,7 +352,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 		displayToMetadata = CacheBuilder.newBuilder().weakKeys().build();// new
 																																			// HashMap<>();
 		bdvSourceAndConverterService.setDisplayService(this);
-		SourceAndConverterServices.setBdvDisplayService(this);
+		SourceAndConverterServices.setBDVService(this);
 		// Catching bdv supplier from Prefs
 		logger.debug("Bdv Playground Display Service initialized.");
 	}

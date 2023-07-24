@@ -37,7 +37,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.BDVService;
 
 import java.util.function.Consumer;
 
@@ -54,7 +54,7 @@ public class BdvHandlePostprocessor extends AbstractPostprocessorPlugin {
 		BdvHandlePostprocessor.class);
 
 	@Parameter
-	SourceAndConverterBdvDisplayService bsds;
+	BDVService bsds;
 
 	public static Consumer<String> log = logger::debug;
 

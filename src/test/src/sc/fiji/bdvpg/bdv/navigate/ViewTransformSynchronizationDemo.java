@@ -81,11 +81,11 @@ public class ViewTransformSynchronizationDemo {
         SourceAndConverter<UnsignedByteType> sac = SourceAndConverterHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle1 = SourceAndConverterServices.getBdvDisplayService().getNewViewer();
+        BdvHandle bdvHandle1 = SourceAndConverterServices.getBDVService().getNewViewer();
         // Creates a BdvHandle
-        BdvHandle bdvHandle2 = SourceAndConverterServices.getBdvDisplayService().getNewViewer();
+        BdvHandle bdvHandle2 = SourceAndConverterServices.getBDVService().getNewViewer();
         // Creates a BdvHandles
-        BdvHandle bdvHandle3 = SourceAndConverterServices.getBdvDisplayService().getNewViewer();
+        BdvHandle bdvHandle3 = SourceAndConverterServices.getBDVService().getNewViewer();
 
         BdvHandle[] bdvhs = new BdvHandle[]{bdvHandle1,bdvHandle2,bdvHandle3};
 
@@ -97,7 +97,7 @@ public class ViewTransformSynchronizationDemo {
 
         for (BdvHandle bdvHandle:bdvhs) {
             // Show the SourceAndConverter
-            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
+            SourceAndConverterServices.getBDVService().show(bdvHandle, sac);
 
             // Adjust view on SourceAndConverter
             new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sac).run();

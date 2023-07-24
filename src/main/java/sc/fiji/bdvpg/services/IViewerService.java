@@ -50,7 +50,7 @@ import java.util.function.Supplier;
  */
 
 
-public interface ISourceAndConverterViewerService<T>
+public interface IViewerService<T>
 {
 
 	void setDefaultViewerSupplier(Supplier<T> viewerSupplier);

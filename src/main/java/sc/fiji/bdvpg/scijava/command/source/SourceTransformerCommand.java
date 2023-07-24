@@ -93,7 +93,7 @@ public class SourceTransformerCommand implements BdvPlaygroundActionCommand {
 			}
 		}
 
-		SourceAndConverterServices.getBdvDisplayService().updateViewersOf(sacs);
+		SourceAndConverterServices.getBDVService().updateViewersOf(sacs);
 	}
 
 	public void parseInput() {

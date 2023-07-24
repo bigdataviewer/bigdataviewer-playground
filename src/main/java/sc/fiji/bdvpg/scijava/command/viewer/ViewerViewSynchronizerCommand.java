@@ -92,7 +92,7 @@ public class ViewerViewSynchronizerCommand implements BdvPlaygroundActionCommand
 		sync = new ViewerTransformSyncStarter(viewers, synchronizetime);
 		if (viewers.length > 0) {
 			sync.setHandleInitialReference(
-				SourceAndConverterServices.getBdvDisplayService().getActiveViewer().getViewerPanel());
+				SourceAndConverterServices.getBDVService().getActiveViewer().getViewerPanel());
 		}
 		sync.run();
 

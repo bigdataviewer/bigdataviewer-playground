@@ -90,13 +90,13 @@ public class ResamplingDemo {
                 .get(0);
 
         SourceAndConverterServices
-                .getBdvDisplayService()
+                .getBDVService()
                 .show(sac);
 
         // Gets active BdvHandle instance
-        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveViewer();
+        BdvHandle bdvHandle = SourceAndConverterServices.getBDVService().getActiveViewer();
 
-        SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, sac );
+        SourceAndConverterServices.getBDVService().show( bdvHandle, sac );
         new ViewerTransformAdjuster( bdvHandle.getViewerPanel(), sac ).run();
         new BrightnessAutoAdjuster<>( sac, 0 ).run();
 
@@ -115,7 +115,7 @@ public class ResamplingDemo {
         SourceResampler<UnsignedShortType> sr = new SourceResampler<>(bigMandelbrot, sac, "resampled", false,cache, false,0);
         SourceAndConverter<?> resampledMandelbrot = sr.get();
 
-        SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, resampledMandelbrot );
+        SourceAndConverterServices.getBDVService().show( bdvHandle, resampledMandelbrot );
 
         new ColorChanger(resampledMandelbrot, new ARGBType(ARGBType.rgba(255, 0,0,255))).run();
 
@@ -123,7 +123,7 @@ public class ResamplingDemo {
         // ---- Downsample a source
         // ---- Upsample a source
 
-        bdvHandle = SourceAndConverterServices.getBdvDisplayService().getNewViewer();
+        bdvHandle = SourceAndConverterServices.getBDVService().getNewViewer();
 
         //SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, sac );
         new ViewerTransformAdjuster( bdvHandle.getViewerPanel(), sac ).run();
@@ -151,7 +151,7 @@ public class ResamplingDemo {
         sr = new SourceResampler<>(sac, upSampledModel.get(), "upsampled", false,cache, true,0);
         SourceAndConverter<UnsignedShortType> upsampledSource = sr.get();
 
-        SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, upsampledSource );
+        SourceAndConverterServices.getBDVService().show( bdvHandle, upsampledSource );
 
         new ColorChanger( upsampledSource, new ARGBType(ARGBType.rgba(0, 0,255,255))).run();
     }

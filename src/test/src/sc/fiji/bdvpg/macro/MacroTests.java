@@ -58,7 +58,7 @@ public class MacroTests
 					"run(\"BDV - Create empty BDV window\");", true).get();
 			Assert.assertEquals(
 			SourceAndConverterServices
-					.getBdvDisplayService()
+					.getBDVService()
 					.getViewers().size(),1);
 		} catch (InterruptedException e) {
 			System.out.println("INterrupt");

@@ -62,7 +62,6 @@ import net.imglib2.util.Intervals;
 import org.scijava.vecmath.Point3d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.viewer.ViewerHelper;
@@ -980,10 +979,10 @@ public class SourceAndConverterHelper {
 		int timePoint = bdvHandle.getViewerPanel().state().getCurrentTimepoint();
 
 		final List<SourceAndConverter<?>> sourceAndConverters =
-			SourceAndConverterServices.getBdvDisplayService().getSourceAndConverterOf(
+			SourceAndConverterServices.getBDVService().getSourceAndConverterOf(
 				bdvHandle).stream().filter(sac -> isSourcePresentAt(sac, timePoint,
 					mousePosInBdv)).filter(sac -> SourceAndConverterServices
-						.getBdvDisplayService().isVisible(sac, bdvHandle)).collect(
+						.getBDVService().isVisible(sac, bdvHandle)).collect(
 							Collectors.toList());
 
 		return sourceAndConverters;

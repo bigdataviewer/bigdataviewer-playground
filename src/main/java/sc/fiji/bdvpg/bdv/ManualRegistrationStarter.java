@@ -109,10 +109,10 @@ public class ManualRegistrationStarter implements Runnable {
 		for (SourceAndConverter<?> sourceAndConverter : sacs) {
 
 			// Wraps into a Transformed Source, if the source was displayed originally
-			if (SourceAndConverterServices.getBdvDisplayService().getViewersOf(
+			if (SourceAndConverterServices.getBDVService().getViewersOf(
 				sourceAndConverter).contains(bdvHandle))
 			{
-				if (SourceAndConverterServices.getBdvDisplayService().isVisible(
+				if (SourceAndConverterServices.getBDVService().isVisible(
 					sourceAndConverter, bdvHandle))
 				{
 					displayedSacsWrapped.add(new SourceAffineTransformer<>(
@@ -123,11 +123,11 @@ public class ManualRegistrationStarter implements Runnable {
 		}
 
 		// Remove from display the originally displayed sources
-		SourceAndConverterServices.getBdvDisplayService().remove(bdvHandle,
+		SourceAndConverterServices.getBDVService().remove(bdvHandle,
 			originallyDisplayedSacs.toArray(new SourceAndConverter[0]));
 
 		// Shows the displayed wrapped Source
-		SourceAndConverterServices.getBdvDisplayService().show(bdvHandle,
+		SourceAndConverterServices.getBDVService().show(bdvHandle,
 			displayedSacsWrapped.toArray(new SourceAndConverter[0]));
 
 		// View of the BdvHandle before starting the registration

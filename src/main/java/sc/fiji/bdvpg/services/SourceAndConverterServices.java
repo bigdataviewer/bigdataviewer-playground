@@ -29,7 +29,7 @@
 
 package sc.fiji.bdvpg.services;
 
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.BDVService;
 
 /**
  * Static methods to access BdvSourceAndConverterService and
@@ -37,7 +37,7 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
  *
  * Should ideally not be used:
  * - try to fetch a {@link sc.fiji.bdvpg.scijava.services.SourceAndConverterService} or a
- * - {@link SourceAndConverterBdvDisplayService}
+ * - {@link BDVService}
  * from a scijava {@link org.scijava.Context}
  * instead
  */
@@ -46,7 +46,7 @@ public class SourceAndConverterServices {
 
 	private static ISourceAndConverterService sourceAndConverterService;
 
-	private static SourceAndConverterBdvDisplayService sourceAndConverterBdvDisplayService;
+	private static BDVService BDVService;
 
 	public static ISourceAndConverterService getSourceAndConverterService() {
 		return sourceAndConverterService;
@@ -59,14 +59,14 @@ public class SourceAndConverterServices {
 			sourceAndConverterService;
 	}
 
-	public static SourceAndConverterBdvDisplayService getBdvDisplayService() {
-		return sourceAndConverterBdvDisplayService;
+	public static BDVService getBDVService() {
+		return BDVService;
 	}
 
-	public static void setBdvDisplayService(
-		SourceAndConverterBdvDisplayService sourceAndConverterBdvDisplayService)
+	public static void setBDVService(
+		BDVService BDVService)
 	{
-		SourceAndConverterServices.sourceAndConverterBdvDisplayService =
-			sourceAndConverterBdvDisplayService;
+		SourceAndConverterServices.BDVService =
+				BDVService;
 	}
 }

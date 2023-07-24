@@ -100,7 +100,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService.CONVERTER_SETUP;
+import static sc.fiji.bdvpg.scijava.services.BDVService.CONVERTER_SETUP;
 
 /**
  * SciJava Service which centralizes BDV Sources, independently of their display
@@ -154,7 +154,7 @@ public class SourceAndConverterService extends AbstractService implements
 	 * Display service : cannot be set through Parameter annotation due to
 	 * 'circular dependency'
 	 */
-	SourceAndConverterBdvDisplayService bsds = null;
+	BDVService bsds = null;
 
 	/**
 	 * Map containing objects that are 1 to 1 linked to a Source Keys are Weakly
@@ -172,7 +172,7 @@ public class SourceAndConverterService extends AbstractService implements
 		return sacToMetadata.getIfPresent(src) != null;
 	}
 
-	public void setDisplayService(SourceAndConverterBdvDisplayService bsds) {
+	public void setDisplayService(BDVService bsds) {
 		this.bsds = bsds;
 	}
 

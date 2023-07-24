@@ -107,7 +107,7 @@ public class ViewerStateSyncStarter implements Runnable {
 					} else*/
 					{
 						// TODO : improve!
-						SourceAndConverterServices.getBdvDisplayService().getViewers()
+						SourceAndConverterServices.getBDVService().getViewers()
 							.forEach(bdvh -> {
 								for (SourceAndConverter<?> source : stateToCopy) {
 									bdvh.getConverterSetups().put(source,

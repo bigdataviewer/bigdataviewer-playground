@@ -31,7 +31,7 @@ package sc.fiji.bdvpg;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import net.imagej.ImageJ;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.BDVService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import javax.swing.SwingUtilities;
@@ -43,8 +43,8 @@ public class TestHelper {
         try {
 
             // Closes bdv windows
-            SourceAndConverterBdvDisplayService sac_display_service =
-                    ij.context().getService(SourceAndConverterBdvDisplayService.class);
+            BDVService sac_display_service =
+                    ij.context().getService(BDVService.class);
             sac_display_service.getViewers().forEach(BdvHandle::close);
 
             // Clears all sources

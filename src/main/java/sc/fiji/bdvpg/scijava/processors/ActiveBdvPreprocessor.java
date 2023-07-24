@@ -35,7 +35,7 @@ import org.scijava.Priority;
 import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.BDVService;
 
 /**
  * Fills single, unresolved module inputs with the active {@link BdvHandle},
@@ -48,7 +48,7 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle> {
 
 	@Parameter
-	SourceAndConverterBdvDisplayService sacDisplayService;
+	BDVService sacDisplayService;
 
 	public ActiveBdvPreprocessor() {
 		super(BdvHandle.class);

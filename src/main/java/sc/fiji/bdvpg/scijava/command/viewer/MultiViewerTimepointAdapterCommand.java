@@ -29,7 +29,6 @@
 
 package sc.fiji.bdvpg.scijava.command.viewer;
 
-import bdv.util.BdvHandle;
 import bdv.viewer.AbstractViewerPanel;
 import ij.IJ;
 import org.scijava.plugin.Parameter;
@@ -37,7 +36,6 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewer.navigate.TimepointAdapterAdder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava

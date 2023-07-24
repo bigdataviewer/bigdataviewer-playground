@@ -56,7 +56,7 @@ public class ViewerTransformAdjusterDemo
         TestHelper.startFiji(ij);//ij.ui().showUI();
 
         // Gets active BdvHandle instance
-        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveViewer();
+        BdvHandle bdvHandle = SourceAndConverterServices.getBDVService().getActiveViewer();
 
         // Import SpimData object
         SpimDataFromXmlImporter sdix = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml");
@@ -67,7 +67,7 @@ public class ViewerTransformAdjusterDemo
         SourceAndConverterServices.getSourceAndConverterService().register(asd);
 
         SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source ->
-            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source)
+            SourceAndConverterServices.getBDVService().show(bdvHandle, source)
         );
 
         // Import SpimData object
@@ -79,7 +79,7 @@ public class ViewerTransformAdjusterDemo
         SourceAndConverterServices.getSourceAndConverterService().register(asd);
 
         SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source ->
-            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source)
+            SourceAndConverterServices.getBDVService().show(bdvHandle, source)
         );
 
         new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).get(0)).run();

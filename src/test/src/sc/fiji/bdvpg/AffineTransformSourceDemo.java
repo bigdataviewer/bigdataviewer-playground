@@ -37,7 +37,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.viewer.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.BDVService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
@@ -73,7 +73,7 @@ public class AffineTransformSourceDemo {
 
         // Creates a BdvHandle
         BdvHandle bdvHandle =
-                ij.get(SourceAndConverterBdvDisplayService.class).getActiveViewer();
+                ij.get(BDVService.class).getActiveViewer();
 
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData
@@ -110,7 +110,7 @@ public class AffineTransformSourceDemo {
             }
         }
 
-        ij.get(SourceAndConverterBdvDisplayService.class)
+        ij.get(BDVService.class)
                 .show(bdvHandle, sacs.toArray(new SourceAndConverter[0]));
 
         SourceGroup sg = bdvHandle.getViewerPanel().state().getGroups().get(1);

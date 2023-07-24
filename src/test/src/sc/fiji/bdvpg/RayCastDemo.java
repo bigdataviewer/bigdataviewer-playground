@@ -45,7 +45,7 @@ public class RayCastDemo {
         TestHelper.startFiji(ij);//ij.ui().showUI();
 
         BdvHandle bdvh = SourceAndConverterServices
-                .getBdvDisplayService()
+                .getBDVService()
                 .getActiveViewer();
 
         AffineTransformSourceDemo.demo(ij,3);

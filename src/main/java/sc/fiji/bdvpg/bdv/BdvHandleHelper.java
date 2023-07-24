@@ -42,7 +42,7 @@ import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.BDVService;
 import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 import javax.swing.JFrame;
@@ -68,8 +68,8 @@ public class BdvHandleHelper {
 	final public static String LAST_ACTIVE_BDVH_KEY = "LAST_ACTIVE_BDVH";
 
 	public static void setBdvHandleCloseOperation(BdvHandle bdvh, CacheService cs,
-		SourceAndConverterBdvDisplayService bdvsds, boolean putWindowOnTop,
-		Runnable runnable)
+												  BDVService bdvsds, boolean putWindowOnTop,
+												  Runnable runnable)
 	{
 		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bdvh
 			.getViewerPanel());

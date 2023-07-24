@@ -110,7 +110,7 @@ public class ManualRegistrationStopper implements Runnable {
 		List<SourceAndConverter<?>> tempSacs = starter
 			.getTransformedSourceAndConverterDisplayed();
 
-		SourceAndConverterServices.getBdvDisplayService().remove(starter.bdvHandle,
+		SourceAndConverterServices.getBDVService().remove(starter.bdvHandle,
 			tempSacs.toArray(new SourceAndConverter[0]));
 
 		for (SourceAndConverter<?> sac : tempSacs) {
@@ -134,7 +134,7 @@ public class ManualRegistrationStopper implements Runnable {
 		}
 
 		// Calls display ( array for better performance )
-		SourceAndConverterServices.getBdvDisplayService().show(starter
+		SourceAndConverterServices.getBDVService().show(starter
 			.getBdvHandle(), transformedSacsToDisplay.toArray(
 				new SourceAndConverter<?>[0]));
 
