@@ -29,16 +29,12 @@
 
 package sc.fiji.bdvpg.scijava.command.viewer;
 
-import bdv.util.BdvHandle;
 import bdv.viewer.AbstractViewerPanel;
-import bvv.vistools.BvvHandle;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -75,11 +71,8 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 	protected static final Logger logger = LoggerFactory.getLogger(
 		ViewSynchronizerCommand.class);
 
-	@Parameter(label = "Select Bdv Windows to synchronize", required = false, persist = false)
-	BdvHandle[] bdvhs;
-
-	@Parameter(label = "Select Bvv Windows to synchronize", required = false, persist = false)
-	BvvHandle[] bvvhs;
+	@Parameter(label = "Select Viewers to Synchronize", required = false, persist = false)
+	AbstractViewerPanel[] viewers;
 
 	@Parameter(label = "Synchronize timepoints")
 	boolean synchronizetime = true;
@@ -89,29 +82,18 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 	public void run() {
 		CommandService cm;
 
-		if (bdvhs == null) bdvhs = new BdvHandle[0];
-		if (bvvhs == null) bvvhs = new BvvHandle[0];
-		if (bvvhs.length + bdvhs.length < 2) {
-			logger.error("You should select at least 2 windows!");
+		if (viewers == null) viewers = new AbstractViewerPanel[0];
+		if (viewers.length < 2) {
+			logger.error("You should select at least 2 viewers!");
 			return;
 		}
 
-		AbstractViewerPanel[] handles = new AbstractViewerPanel[bdvhs.length + bvvhs.length];
-		for (int i = 0; i < bdvhs.length; i++) {
-			handles[i] = bdvhs[i].getViewerPanel();
-		}
-		for (int i = 0; i < bvvhs.length; i++) {
-			handles[i + bdvhs.length] = bvvhs[i].getViewerPanel();
-		}
 		// Starting synchronization of selected bdvhandles
-		sync = new ViewerTransformSyncStarter(handles, synchronizetime);
-		if (bdvhs.length > 0) {
+		sync = new ViewerTransformSyncStarter(viewers, synchronizetime);
+		if (viewers.length > 0) {
 			sync.setHandleInitialReference(
 				SourceAndConverterServices.getBdvDisplayService().getActiveBdv().getViewerPanel());
 		}
-		/*else {
-			sync.setHandleInitialReference(new ViewerAdapter(bvvhs[0]));
-		}*/
 		sync.run();
 
 		// JFrame serving the purpose of stopping synchronization when it is being
@@ -131,11 +113,8 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 
 		// Building JFrame with a simple panel and textarea
 		String text = "";
-		for (BdvHandle bdvh : bdvhs) {
-			text += ViewerHelper.getViewerTitle(bdvh.getViewerPanel()) + "\n";
-		}
-		for (BvvHandle bvvh : bvvhs) {
-			text += ViewerHelper.getViewerTitle(bvvh.getViewerPanel()) + "\n";
+		for (AbstractViewerPanel viewer : viewers) {
+			text += ViewerHelper.getViewerTitle(viewer) + "\n";
 		}
 
 		JPanel pane = new JPanel();

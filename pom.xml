@@ -192,6 +192,12 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-legacy</artifactId>
+			<scope>test</scope>
+		</dependency>
+
     </dependencies>
 
 </project>
