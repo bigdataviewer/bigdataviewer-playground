@@ -27,50 +27,32 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.scijava.command.bdv;
+package sc.fiji.bdvpg.scijava.command.viewer;
 
 import bdv.util.BdvHandle;
-import org.scijava.log.LogService;
+import bdv.viewer.AbstractViewerPanel;
+import ij.IJ;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.viewer.navigate.ViewerTransformLogger;
-import sc.fiji.bdvpg.log.Logger;
+import sc.fiji.bdvpg.viewer.navigate.SourceNavigatorSliderAdder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-
-/**
- * ViewTransformLoggerCommand Author: @haesleinhuepf 12 2019
- */
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Log view transform",
-	description = "Outputs the current view transform of a BDV window into the standard IJ logger")
-
-public class BdvViewLoggerCommand implements BdvPlaygroundActionCommand {
-
-	@Parameter
-	BdvHandle bdvh;
-
-	@Parameter
-	LogService ls;
-
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewer>BxV - Add Source Slider",
+	description = "Adds a source slider onto BDV windows")
+public class MultiViewerSourceNavigatorSliderAdderCommand implements BdvPlaygroundActionCommand {
+	@Parameter(label = "Select BDV or BVV Windows", persist = false)
+	AbstractViewerPanel[] viewers;
 	@Override
 	public void run() {
-		new ViewerTransformLogger(bdvh.getViewerPanel(), new Logger() {
-
-			@Override
-			public void out(String msg) {
-				ls.info(msg);
-			}
-
-			@Override
-			public void err(String msg) {
-				ls.error(msg);
-			}
-		}).run();
+		if (viewers.length == 0) IJ.log("Please make sure to select a Bdv window.");
+		for (AbstractViewerPanel viewer : viewers) {
+			new SourceNavigatorSliderAdder(viewer).run();
+		}
 	}
 }

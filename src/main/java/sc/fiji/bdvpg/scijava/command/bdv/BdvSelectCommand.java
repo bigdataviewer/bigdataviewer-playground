@@ -41,7 +41,7 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Select Window",
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewer>BDV - Select Window",
 	description = "Select a BDV Windows")
 
 public class BdvSelectCommand implements BdvPlaygroundActionCommand {

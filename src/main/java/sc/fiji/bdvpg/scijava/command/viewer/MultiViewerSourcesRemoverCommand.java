@@ -27,58 +27,42 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.scijava.command.bdv;
+package sc.fiji.bdvpg.scijava.command.viewer;
 
 import bdv.util.BdvHandle;
-import net.imglib2.realtransform.AffineTransform3D;
+import bdv.viewer.AbstractViewerPanel;
+import bdv.viewer.SourceAndConverter;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.viewer.navigate.ViewerTransformChanger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
-/**
- * ViewTransformLoggerCommand Author: @haesleinhuepf 12 2019
- */
+import java.util.Arrays;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Change view transform",
-	description = "Applies a simple view transform (translation / rotation) to a BDV window")
-public class BdvViewTransformatorCommand implements BdvPlaygroundActionCommand {
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"Viewer>BxV - Remove Sources In Multiple BxV Windows",
+	description = "Removes one or several sources from several existing BDV or BVV windows")
+public class MultiViewerSourcesRemoverCommand implements
+	BdvPlaygroundActionCommand
+{
 
-	@Parameter(label = "Select BDV Windows")
-	BdvHandle bdvh;
+	@Parameter(label = "Select BDV or BVV Windows", persist = false)
+	AbstractViewerPanel[] viewers;
 
-	@Parameter(label = "Translate in X")
-	public Double translatex = 0.0;
-
-	@Parameter(label = "Translate in Y")
-	public Double translatey = 0.0;
-
-	@Parameter(label = "Translate in Z")
-	public Double translatez = 0.0;
-
-	@Parameter(label = "Rotate around X")
-	public Double rotatearoundx = 0.0;
-
-	@Parameter(label = "Rotate around Y")
-	public Double rotatearoundy = 0.0;
-
-	@Parameter(label = "Rotate around Z")
-	public Double rotatearoundz = 0.0;
+	@Parameter(label = "Select Source(s)")
+	SourceAndConverter<?>[] sacs;
 
 	@Override
 	public void run() {
-		AffineTransform3D affineTransform3D = new AffineTransform3D();
-		affineTransform3D.translate(translatex, translatey, translatez);
-		affineTransform3D.rotate(0, rotatearoundx);
-		affineTransform3D.rotate(1, rotatearoundy);
-		affineTransform3D.rotate(2, rotatearoundz);
-
-		new ViewerTransformChanger(bdvh.getViewerPanel(), affineTransform3D, true, 0).run();
+		for (AbstractViewerPanel viewer : viewers) {
+			viewer.state().removeSources(Arrays.asList(sacs));
+			viewer.requestRepaint();
+		}
 	}
 }

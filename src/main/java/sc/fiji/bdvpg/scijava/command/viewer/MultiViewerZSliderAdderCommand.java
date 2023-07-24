@@ -27,39 +27,37 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.scijava.command.bdv;
+package sc.fiji.bdvpg.scijava.command.viewer;
 
-import bdv.util.BdvHandle;
-import bdv.viewer.SourceAndConverter;
+import bdv.viewer.AbstractViewerPanel;
+import ij.IJ;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.viewer.navigate.RayCastPositionerSliderAdder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+
+import javax.swing.SwingUtilities;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Remove Sources From BDV",
-	description = "Removes one or several sources from an existing BDV window")
-public class BdvSourcesRemoverCommand implements BdvPlaygroundActionCommand {
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewer>BxV - Add Z Slider",
+	description = "Adds a Z slider onto a set of BDV or BVV windows")
+public class MultiViewerZSliderAdderCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter
-	BdvHandle bdvh;
-
-	@Parameter(label = "Select Source(s)")
-	SourceAndConverter<?>[] sacs;
-
-	@Parameter
-	SourceAndConverterBdvDisplayService bdvDisplayService;
+	@Parameter(label = "Select BDV Windows", persist = false)
+	AbstractViewerPanel[] viewers;
 
 	@Override
 	public void run() {
-		for (SourceAndConverter<?> sac : sacs) {
-			bdvDisplayService.remove(bdvh, sac);
-		}
+		if (viewers.length == 0) IJ.log("Please make sure to select a viewer window.");
+		SwingUtilities.invokeLater(() -> {
+			for (AbstractViewerPanel viewer : viewers) {
+				new RayCastPositionerSliderAdder(viewer).run();
+			}
+		});
 	}
 }

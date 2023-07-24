@@ -33,7 +33,6 @@ import bdv.viewer.SourceAndConverter;
 import com.google.gson.Gson;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesShowCommand;
 import sc.fiji.bdvpg.scijava.command.source.BasicTransformerCommand;
 import sc.fiji.bdvpg.scijava.command.source.ColorSourceCreatorCommand;
@@ -49,6 +48,7 @@ import sc.fiji.bdvpg.scijava.command.source.SourcesResamplerCommand;
 import sc.fiji.bdvpg.scijava.command.source.SourcesVisibleMakerCommand;
 import sc.fiji.bdvpg.scijava.command.source.TransformedSourceWrapperCommand;
 import sc.fiji.bdvpg.scijava.command.source.XmlHDF5ExporterCommand;
+import sc.fiji.bdvpg.scijava.command.viewer.MultiViewerSourcesRemoverCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.JComponent;
@@ -72,7 +72,7 @@ public class SourceAndConverterPopupMenu {
 
 	final public static String[] defaultPopupActions = { getCommandName(
 		BdvSourcesAdderCommand.class), getCommandName(BdvSourcesShowCommand.class),
-		getCommandName(BdvSourcesRemoverCommand.class), "Inspect Sources",
+		getCommandName(MultiViewerSourcesRemoverCommand.class), "Inspect Sources",
 		"PopupLine", getCommandName(SourcesInvisibleMakerCommand.class),
 		getCommandName(SourcesVisibleMakerCommand.class), getCommandName(
 			InteractiveBrightnessAdjusterCommand.class), getCommandName(

@@ -42,7 +42,7 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-		"BDV>BDV - Preferences - Set (Key) Bindings",
+		"Viewer>BDV - Preferences - Set (Key) Bindings",
 	description = "Sets actions linked to key / mouse event in BDV")
 
 public class BdvSettingsCommand implements BdvPlaygroundActionCommand {

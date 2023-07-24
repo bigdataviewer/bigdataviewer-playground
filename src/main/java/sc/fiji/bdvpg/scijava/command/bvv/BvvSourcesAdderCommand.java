@@ -49,7 +49,7 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BVV>BVV - Show Sources",
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewer>BVV - Show Sources",
 	description = "Show sources in a BigVolumeViewer window - limited to 16 bit images")
 public class BvvSourcesAdderCommand implements BdvPlaygroundActionCommand {
 

@@ -27,42 +27,34 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.scijava.command.bdv;
+package sc.fiji.bdvpg.scijava.command.viewer;
 
 import bdv.util.BdvHandle;
-import bdv.viewer.SourceAndConverter;
+import bdv.viewer.AbstractViewerPanel;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"BDV>BDV - Remove Sources In Multiple BDV Windows",
-	description = "Removes one or several sources from several existing BDV windows")
-public class MultiBdvSourcesRemoverCommand implements
-	BdvPlaygroundActionCommand
-{
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewer>BxV - Set Title",
+	description = "Sets the title of a BDV or BVV Windows")
 
-	@Parameter(label = "Select BDV Windows", persist = false)
-	BdvHandle[] bdvhs;
+public class ViewerTitleSetterCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select Source(s)")
-	SourceAndConverter<?>[] sacs;
+	@Parameter(label = "Select BDV or BVV Window")
+	AbstractViewerPanel viewer;
 
-	@Parameter
-	SourceAndConverterBdvDisplayService bdvDisplayService;
+	@Parameter(label = "title")
+	String title;
 
-	@Override
 	public void run() {
-		for (BdvHandle bdvh : bdvhs) {
-			bdvDisplayService.remove(bdvh, sacs);
-		}
+		ViewerHelper.setViewerTitle(viewer, title);
 	}
+
 }

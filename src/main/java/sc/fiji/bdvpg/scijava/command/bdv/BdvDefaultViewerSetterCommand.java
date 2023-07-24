@@ -45,7 +45,7 @@ import java.util.Arrays;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Set BDV window (default)",
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewer>BDV - Set BDV window (default)",
 	description = "Set preferences of Bdv Window")
 public class BdvDefaultViewerSetterCommand implements
 	BdvPlaygroundActionCommand

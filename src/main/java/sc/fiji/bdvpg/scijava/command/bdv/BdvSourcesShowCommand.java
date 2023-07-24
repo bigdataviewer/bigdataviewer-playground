@@ -46,7 +46,7 @@ import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-		"BDV>BDV - Show Sources (new Bdv window)",
+		"Viewer>BDV - Show Sources (new Bdv window)",
 	description = "Displays one or several sources into a new BDV window")
 public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
 

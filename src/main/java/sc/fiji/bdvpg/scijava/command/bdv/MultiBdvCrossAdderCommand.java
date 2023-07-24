@@ -42,7 +42,7 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Add center cross",
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewer>BDV - Add center cross",
 	description = "Adds a centering cross onto BDV windows")
 public class MultiBdvCrossAdderCommand implements BdvPlaygroundActionCommand {
 

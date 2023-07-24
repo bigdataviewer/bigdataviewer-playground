@@ -27,34 +27,36 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.scijava.command.bdv;
+package sc.fiji.bdvpg.scijava.command.viewer;
 
-import bdv.util.BdvHandle;
+import bdv.viewer.AbstractViewerPanel;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Set Title",
-	description = "Sets the title of a BDV Windows")
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewer>BxV - Set Number Of Timepoints",
+	description = "Sets the number of timepoints in one or several BDV or BVV Windows")
 
-public class BdvTitleSetterCommand implements BdvPlaygroundActionCommand {
+public class MultiViewerTimepointsSetterCommand implements
+	BdvPlaygroundActionCommand
+{
 
-	@Parameter(label = "Select BDV Window")
-	BdvHandle bdvh;
+	@Parameter(label = "Select BDV or BVV Windows", persist = false)
+	AbstractViewerPanel[] viewers;
 
-	@Parameter(label = "title")
-	String title;
+	@Parameter(label = "Number of timepoints, min = 1", min = "1")
+	int numberoftimepoints;
 
 	public void run() {
-		ViewerHelper.setViewerTitle(bdvh.getViewerPanel(), title);
+		for (AbstractViewerPanel viewer : viewers) {
+			viewer.state().setNumTimepoints(numberoftimepoints);
+		}
 	}
 
 }

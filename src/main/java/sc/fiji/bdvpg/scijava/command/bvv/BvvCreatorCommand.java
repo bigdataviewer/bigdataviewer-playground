@@ -43,9 +43,9 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BVV>BVV - Create Empty BVV Frame",
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewer>BVV - Create Empty BVV Frame",
 	description = "Creates an empty Bvv window")
-public class BvvWindowCreatorCommand implements BdvPlaygroundActionCommand {
+public class BvvCreatorCommand implements BdvPlaygroundActionCommand {
 
 	/**
 	 * Title of the new BVV window

@@ -27,37 +27,40 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.scijava.command.bdv;
+package sc.fiji.bdvpg.scijava.command.viewer;
 
 import bdv.util.BdvHandle;
-import ij.IJ;
+import bdv.viewer.AbstractViewerPanel;
+import bdv.viewer.SourceAndConverter;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.viewer.navigate.RayCastPositionerSliderAdder;
+import sc.fiji.bdvpg.viewer.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-
-import javax.swing.SwingUtilities;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Add Z Slider",
-	description = "Adds a z slider onto BDV windows")
-public class MultiBdvZSliderAdderCommand implements BdvPlaygroundActionCommand {
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewer>BxV - Adjust view on sources",
+	description = "Adjust current Bdv view on the selected sources")
+public class MultiViewerAdjustViewOnSourcesCommand implements
+	BdvPlaygroundActionCommand
+{
 
-	@Parameter(label = "Select BDV Windows", persist = false)
-	BdvHandle[] bdvhs;
+	@Parameter(label = "Select Source(s)")
+	SourceAndConverter<?>[] sacs;
+
+	@Parameter(label = "Select BDV or BVV Window")
+	AbstractViewerPanel[] viewers;
 
 	@Override
 	public void run() {
-		if (bdvhs.length == 0) IJ.log("Please make sure to select a Bdv window.");
-		SwingUtilities.invokeLater(() -> {
-			for (BdvHandle bdvh : bdvhs) {
-				new RayCastPositionerSliderAdder(bdvh.getViewerPanel()).run();
+		if (sacs.length > 0) {
+			for (AbstractViewerPanel viewer: viewers) {
+				new ViewerTransformAdjuster(viewer, sacs).run();
 			}
-		});
+		}
 	}
 }

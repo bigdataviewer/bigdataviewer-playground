@@ -45,7 +45,7 @@ import java.awt.Font;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Add Sources Name Overlay",
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewer>BDV - Add Sources Name Overlay",
 	description = "Adds a source name overlay onto BDV windows")
 public class MultiBdvSourceNameOverlayAdderCommand implements BdvPlaygroundActionCommand {
 

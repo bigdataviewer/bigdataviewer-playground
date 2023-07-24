@@ -29,20 +29,18 @@
 
 package sc.fiji.bdvpg.scijava.command.viewer;
 
-import bdv.util.BdvHandle;
 import bdv.viewer.AbstractViewerPanel;
-import bvv.vistools.BvvHandle;
+import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.viewer.ViewerHelper;
-import sc.fiji.bdvpg.viewer.ViewerStateSyncStarter;
-import sc.fiji.bdvpg.viewer.ViewerStateSyncStopper;
+import sc.fiji.bdvpg.viewer.ViewerTransformSyncStarter;
+import sc.fiji.bdvpg.viewer.ViewerTransformSyncStopper;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -65,39 +63,37 @@ import java.awt.event.WindowEvent;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "Synchronize States",
-	description = "Synchronizes the state of a set of BDV or BVV windows. A window popup should be closed" +
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewer>BxV - Synchronize Views",
+	description = "Synchronizes the view of a set of BDV or BVV windows. A window popup should be closed" +
 		" to stop the synchronization")
-public class StateSynchronizerCommand implements BdvPlaygroundActionCommand {
+public class ViewerViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 
 	protected static final Logger logger = LoggerFactory.getLogger(
-		StateSynchronizerCommand.class);
+		ViewerViewSynchronizerCommand.class);
 
-	@Parameter(label = "Select Bdv Windows to synchronize", required = false, persist = false)
-	BdvHandle[] bdvhs;
+	@Parameter(label = "Select Viewers to Synchronize", required = false, persist = false)
+	AbstractViewerPanel[] viewers;
 
-	@Parameter(label = "Select Bvv Windows to synchronize", required = false, persist = false)
-	BvvHandle[] bvvhs;
+	@Parameter(label = "Synchronize timepoints")
+	boolean synchronizetime = true;
 
-	ViewerStateSyncStarter sync;
+	ViewerTransformSyncStarter sync;
 
 	public void run() {
-		if (bdvhs == null) bdvhs = new BdvHandle[0];
-		if (bvvhs == null) bvvhs = new BvvHandle[0];
-		if (bvvhs.length + bdvhs.length < 2) {
-			logger.error("You should select at least 2 windows!");
+		CommandService cm;
+
+		if (viewers == null) viewers = new AbstractViewerPanel[0];
+		if (viewers.length < 2) {
+			logger.error("You should select at least 2 viewers!");
 			return;
 		}
 
-		AbstractViewerPanel[] handles = new AbstractViewerPanel[bdvhs.length + bvvhs.length];
-		for (int i = 0; i < bdvhs.length; i++) {
-			handles[i] = bdvhs[i].getViewerPanel();
-		}
-		for (int i = 0; i < bvvhs.length; i++) {
-			handles[i + bdvhs.length] = bvvhs[i].getViewerPanel();
-		}
 		// Starting synchronization of selected bdvhandles
-		sync = new ViewerStateSyncStarter(handles);
+		sync = new ViewerTransformSyncStarter(viewers, synchronizetime);
+		if (viewers.length > 0) {
+			sync.setHandleInitialReference(
+				SourceAndConverterServices.getBdvDisplayService().getActiveBdv().getViewerPanel());
+		}
 		sync.run();
 
 		// JFrame serving the purpose of stopping synchronization when it is being
@@ -108,19 +104,17 @@ public class StateSynchronizerCommand implements BdvPlaygroundActionCommand {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				super.windowClosing(e);
-				new ViewerStateSyncStopper(sync.getSynchronizers()).run();
+				new ViewerTransformSyncStopper(sync.getSynchronizers(), sync
+					.getTimeSynchronizers()).run();
 				e.getWindow().dispose();
 			}
 		});
-		frameStopSync.setTitle("Close window to stop state synchronization");
+		frameStopSync.setTitle("Close window to stop synchronization");
 
 		// Building JFrame with a simple panel and textarea
 		String text = "";
-		for (BdvHandle bdvh : bdvhs) {
-			text += ViewerHelper.getViewerTitle(bdvh.getViewerPanel()) + "\n";
-		}
-		for (BvvHandle bvvh : bvvhs) {
-			text += ViewerHelper.getViewerTitle(bvvh.getViewerPanel()) + "\n";
+		for (AbstractViewerPanel viewer : viewers) {
+			text += ViewerHelper.getViewerTitle(viewer) + "\n";
 		}
 
 		JPanel pane = new JPanel();

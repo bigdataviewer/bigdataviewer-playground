@@ -39,13 +39,13 @@ import org.scijava.ui.behaviour.util.Behaviours;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
 import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesShowCommand;
 import sc.fiji.bdvpg.scijava.command.source.BasicTransformerCommand;
 import sc.fiji.bdvpg.scijava.command.source.InteractiveBrightnessAdjusterCommand;
 import sc.fiji.bdvpg.scijava.command.source.SourceColorChangerCommand;
 import sc.fiji.bdvpg.scijava.command.source.SourcesInvisibleMakerCommand;
 import sc.fiji.bdvpg.scijava.command.source.SourcesRemoverCommand;
+import sc.fiji.bdvpg.scijava.command.viewer.MultiViewerSourcesRemoverCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.io.File;
@@ -78,7 +78,7 @@ public class EditorBehaviourInstaller implements Runnable {
 																																							// File("bdvpgsettings"+File.separator+"DefaultEditorActions.json");
 		String[] popupActions = { getCommandName(BdvSourcesShowCommand.class),
 			getCommandName(BasicTransformerCommand.class), getCommandName(
-				BdvSourcesRemoverCommand.class), "Inspect Sources", "PopupLine",
+				MultiViewerSourcesRemoverCommand.class), "Inspect Sources", "PopupLine",
 			getCommandName(SourcesInvisibleMakerCommand.class), getCommandName(
 				InteractiveBrightnessAdjusterCommand.class), getCommandName(
 					SourceColorChangerCommand.class), "PopupLine", getCommandName(

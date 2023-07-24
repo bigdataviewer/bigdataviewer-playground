@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
+import bdv.viewer.AbstractViewerPanel;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -40,7 +41,7 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Add debug overlay",
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewer>BDV - Add debug overlay",
 	description = "Adds the overlay of the bdv tiled renderer")
 
 public class BdvDebugOverlayAdderCommand implements BdvPlaygroundActionCommand {

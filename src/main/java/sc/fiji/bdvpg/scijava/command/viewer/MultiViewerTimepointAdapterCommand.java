@@ -27,34 +27,36 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.scijava.command.bvv;
+package sc.fiji.bdvpg.scijava.command.viewer;
 
-import bdv.viewer.SourceAndConverter;
-import bvv.vistools.BvvHandle;
+import bdv.util.BdvHandle;
+import bdv.viewer.AbstractViewerPanel;
+import ij.IJ;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.viewer.navigate.TimepointAdapterAdder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BVV>BVV - Remove Sources From BVV",
-	description = "Removes one or several sources from an existing BVV window")
-public class BvvSourcesRemoverCommand implements BdvPlaygroundActionCommand {
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"Viewer>BxV - Adapt bdv number of timepoints to sources",
+	description = "Adapts the BDV or BVV windows timepoints to the number of timepoints present in their sources.")
+public class MultiViewerTimepointAdapterCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter
-	BvvHandle bvvh;
-
-	@Parameter(label = "Select Source(s)")
-	SourceAndConverter<?>[] sacs;
+	@Parameter(label = "Select BDV Windows", persist = false)
+	AbstractViewerPanel[] viewers;
 
 	@Override
 	public void run() {
-		for (SourceAndConverter<?> sac : sacs) {
-			bvvh.getViewerPanel().state().removeSource(sac);
+		if (viewers.length == 0) IJ.log("Please make sure to select one viewer.");
+		for (AbstractViewerPanel viewer : viewers) {
+			new TimepointAdapterAdder(viewer).run();
 		}
 	}
 }

@@ -27,38 +27,51 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.scijava.command.bdv;
+package sc.fiji.bdvpg.scijava.command.viewer;
 
 import bdv.util.BdvHandle;
-import ij.IJ;
+import bdv.viewer.AbstractViewerPanel;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.viewer.navigate.TimepointAdapterAdder;
+import sc.fiji.bdvpg.viewer.navigate.ViewerTransformLogger;
+import sc.fiji.bdvpg.log.Logger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+
+/**
+ * ViewTransformLoggerCommand Author: @haesleinhuepf 12 2019
+ */
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"BDV>BDV - Adapt bdv number of timepoints to sources",
-	description = "Adapts the bdv windows timepoints to the number of timepoints present in their sources.")
-public class MultiBdvTimepointAdapterCommand implements BdvPlaygroundActionCommand {
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewer>BxV - Log view transform",
+	description = "Outputs the current view transform of a BDV or BVV window into Fiji's Log Service")
 
-	@Parameter(label = "Select BDV Windows", persist = false)
-	BdvHandle[] bdvhs;
+public class ViewerViewLoggerCommand implements BdvPlaygroundActionCommand {
+
+	@Parameter(label = "Select Viewer")
+	AbstractViewerPanel viewer;
 
 	@Parameter
-	SourceAndConverterBdvDisplayService bdvDisplayService;
+	LogService ls;
 
 	@Override
 	public void run() {
-		if (bdvhs.length == 0) IJ.log("Please make sure to select a Bdv window.");
-		for (BdvHandle bdvh : bdvhs) {
-			new TimepointAdapterAdder(bdvh.getViewerPanel()).run();
-		}
+		new ViewerTransformLogger(viewer, new Logger() {
+
+			@Override
+			public void out(String msg) {
+				ls.info(msg);
+			}
+
+			@Override
+			public void err(String msg) {
+				ls.error(msg);
+			}
+		}).run();
 	}
 }
