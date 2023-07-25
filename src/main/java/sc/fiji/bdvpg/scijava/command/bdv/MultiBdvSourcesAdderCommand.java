@@ -36,6 +36,7 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.BdvService;
+import sc.fiji.bdvpg.scijava.services.BvvService;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
@@ -47,7 +48,7 @@ import sc.fiji.bdvpg.scijava.services.BdvService;
 	description = "Adds one or several sources into several existing BDV windows")
 public class MultiBdvSourcesAdderCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select BDV Windows", persist = false)
+	@Parameter(label = "Select BxV Windows", persist = false)
 	BdvHandle[] bdvhs;
 
 	@Parameter(label = "Select Source(s)")
@@ -55,6 +56,9 @@ public class MultiBdvSourcesAdderCommand implements BdvPlaygroundActionCommand {
 
 	@Parameter
 	BdvService bdvDisplayService;
+
+	@Parameter
+	BvvService bvvDisplayService;
 
 	@Override
 	public void run() {
