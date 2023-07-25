@@ -37,7 +37,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.BDVService;
+import sc.fiji.bdvpg.scijava.services.BdvService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.register.BigWarpLauncher;
 
@@ -84,7 +84,7 @@ public class BigWarpLauncherCommand implements BdvPlaygroundActionCommand {
 	SourceAndConverter<?> warpmagnitudesource;
 
 	@Parameter
-	BDVService bsds;
+	BdvService bsds;
 
 	@Parameter
 	SourceAndConverterService sac_service;

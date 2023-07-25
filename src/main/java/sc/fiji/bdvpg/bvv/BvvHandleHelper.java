@@ -32,6 +32,7 @@ package sc.fiji.bdvpg.bvv;
 import bvv.vistools.BvvHandle;
 import org.scijava.cache.CacheService;
 import org.scijava.object.ObjectService;
+import sc.fiji.bdvpg.scijava.services.BvvService;
 import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 import javax.swing.JFrame;
@@ -43,27 +44,27 @@ import java.util.List;
 
 public class BvvHandleHelper {
 
-
 	final public static String LAST_ACTIVE_BVVH_KEY = "LAST_ACTIVE_BVVH";
 
-	/**
-	 * @param bvvh the BigVolumeViewer window handle
-	 * @param cs SciJava cache service
-	 * @param os SciJava objet service
-	 * @param putWindowOnTop if this window has to be put on top
-	 */
 	public static void setBvvHandleCloseOperation(BvvHandle bvvh, CacheService cs,
-		ObjectService os, boolean putWindowOnTop)
+												  BvvService bdvsds, boolean putWindowOnTop,
+												  Runnable runnable)
 	{
 		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bvvh
-			.getViewerPanel());
-
-		topFrame.addWindowListener(new WindowAdapter() {
+				.getViewerPanel());
+		WindowAdapter wa;
+		wa = new WindowAdapter() {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
+				if (runnable != null) {
+					runnable.run();
+				}
 				super.windowClosing(e);
-				os.removeObject(bvvh);
+				bdvsds.closeViewer(bvvh);
+				topFrame.removeWindowListener(this); // Avoid memory leak
+				e.getWindow().dispose();
+				bvvh.close();
 			}
 
 			@Override
@@ -72,20 +73,21 @@ public class BvvHandleHelper {
 				cs.put(LAST_ACTIVE_BVVH_KEY, new WeakReference<>(bvvh));
 				// Very old school
 				/*if (Recorder.record) {
-				    // run("Select Bvv Window", "bdvh=bdv.util.BdvHandleFrame@e6c7718");
+				    // run("Select Bdv Window", "bdvh=bdv.util.BdvHandleFrame@e6c7718");
 				    String cmdrecord = "run(\"Select Bdv Window\", \"bdvh=" + getWindowTitle(bdvh) + "\");\n";
 				    Recorder.recordString(cmdrecord);
 				}*/
 			}
-		});
+		};
+		topFrame.addWindowListener(wa);
 
 		if (putWindowOnTop) {
 			cs.put(LAST_ACTIVE_BVVH_KEY, new WeakReference<>(bvvh));// why a weak
-																														// reference ?
-																														// because we want
-																														// to dispose the
-																														// bdvhandle if it
-																														// is closed
+			// reference ?
+			// because we want
+			// to dispose the
+			// bdvhandle if it
+			// is closed
 		}
 	}
 

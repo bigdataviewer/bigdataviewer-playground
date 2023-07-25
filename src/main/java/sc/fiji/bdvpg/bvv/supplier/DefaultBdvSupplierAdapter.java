@@ -27,34 +27,33 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.scijava.command.source;
+package sc.fiji.bdvpg.bvv.supplier;
 
-import bdv.viewer.SourceAndConverter;
-import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.BdvService;
+import sc.fiji.persist.IClassRuntimeAdapter;
 
-@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
-																							// are set by SciJava
-																							// pre-processors
+/**
+ * For serialization of {@link DefaultBvvSupplier} objects
+ */
 
-@Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Sources>Display>Make Sources Visible")
-public class SourcesVisibleMakerCommand implements BdvPlaygroundActionCommand {
-
-	@Parameter(label = "Select Source(s)")
-	SourceAndConverter<?>[] sacs;
-
-	@Parameter
-	BdvService bsds;
+@Plugin(type = IClassRuntimeAdapter.class)
+public class DefaultBdvSupplierAdapter implements
+	IClassRuntimeAdapter<IBvvSupplier, DefaultBvvSupplier>
+{
 
 	@Override
-	public void run() {
-		for (SourceAndConverter<?> sac : sacs) {
-			bsds.setVisible(sac, true);
-		}
+	public Class<? extends IBvvSupplier> getBaseClass() {
+		return IBvvSupplier.class;
 	}
+
+	@Override
+	public Class<? extends DefaultBvvSupplier> getRunTimeClass() {
+		return DefaultBvvSupplier.class;
+	}
+
+	@Override
+	public boolean useCustomAdapter() {
+		return false;
+	}
+
 }

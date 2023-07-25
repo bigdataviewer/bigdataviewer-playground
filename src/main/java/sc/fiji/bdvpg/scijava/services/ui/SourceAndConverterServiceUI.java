@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.scijava.services.ui;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import bvv.vistools.BvvHandle;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.base.Entity;
 import mpicbg.spim.data.generic.base.NamedEntity;
@@ -443,6 +444,18 @@ public class SourceAndConverterServiceUI {
 				BdvHandleFilterNode bfn = (BdvHandleFilterNode) node;
 
 				if (bfn.bdvh.equals(bdvh)) {
+					bfn.removeFromParent();
+					bfn.clear();
+				}
+			}
+		});
+	}
+
+	public void removeBvvHandleNodes(BvvHandle bvvh) {
+		visitAllNodesAndProcess(top, (node) -> {
+			if (node instanceof BvvHandleFilterNode) {
+				BvvHandleFilterNode bfn = (BvvHandleFilterNode) node;
+				if (bfn.bvvh.equals(bvvh)) {
 					bfn.removeFromParent();
 					bfn.clear();
 				}

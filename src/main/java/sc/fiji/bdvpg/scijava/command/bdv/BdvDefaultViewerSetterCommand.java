@@ -36,7 +36,7 @@ import sc.fiji.bdvpg.bdv.supplier.IBdvSupplier;
 import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.BDVService;
+import sc.fiji.bdvpg.scijava.services.BdvService;
 
 import java.util.Arrays;
 
@@ -87,7 +87,7 @@ public class BdvDefaultViewerSetterCommand implements
 	int numtimepoints = 1;
 
 	@Parameter
-	BDVService sacDisplayService;
+	BdvService sacDisplayService;
 
 	@Override
 	public void run() {

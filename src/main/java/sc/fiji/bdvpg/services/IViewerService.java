@@ -55,6 +55,8 @@ public interface IViewerService<T>
 
 	void setDefaultViewerSupplier(Supplier<T> viewerSupplier);
 
+	Class<T> getViewerType();
+
 	T getNewViewer();
 
 	/**

@@ -33,14 +33,13 @@ import bvv.vistools.BvvHandle;
 import org.scijava.module.Module;
 import org.scijava.module.process.AbstractPostprocessorPlugin;
 import org.scijava.module.process.PostprocessorPlugin;
-import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.bvv.BvvHandleHelper;
-import sc.fiji.bdvpg.scijava.services.GuavaWeakCacheService;
-import sc.fiji.bdvpg.viewer.ViewerHelper;
+import sc.fiji.bdvpg.scijava.services.BvvService;
+
+import java.util.function.Consumer;
 
 /**
  * Ensures BdvHandle is stored into ObjectService and all containing Sources as
@@ -52,31 +51,19 @@ import sc.fiji.bdvpg.viewer.ViewerHelper;
 public class BvvHandlePostprocessor extends AbstractPostprocessorPlugin {
 
 	protected static final Logger logger = LoggerFactory.getLogger(
-		BvvHandlePostprocessor.class);
+			BvvHandlePostprocessor.class);
 
 	@Parameter
-	ObjectService os;
+	BvvService bsds;
 
-	@Parameter
-	GuavaWeakCacheService cacheService;
+	public static Consumer<String> log = logger::debug;
 
 	@Override
 	public void process(Module module) {
 
 		module.getOutputs().forEach((name, object) -> {
 			if (object instanceof BvvHandle) {
-				BvvHandle bvvh = (BvvHandle) object;
-				logger.debug("BvvHandle " + name + " found.");
-				// ------------ Register BdvHandle in ObjectService
-				os.addObject(bvvh);
-				// ------------ Allows to remove the BdvHandle from the objectService
-				// when closed by the user
-				BvvHandleHelper.setBvvHandleCloseOperation(bvvh, cacheService, os,
-					true);
-				// ------------ Renames window to ensure uniqueness
-				String windowTitle = ViewerHelper.getViewerTitle(bvvh.getViewerPanel());
-				windowTitle = BvvHandleHelper.getUniqueWindowTitle(os, windowTitle);
-				ViewerHelper.setViewerTitle(bvvh.getViewerPanel(), windowTitle);
+				bsds.registerViewer((BvvHandle) object);
 				module.resolveOutput(name);
 			}
 		});

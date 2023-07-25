@@ -27,40 +27,54 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.scijava.processors;
+package sc.fiji.bdvpg.bvv.supplier;
 
+import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
-import net.imagej.display.process.SingleInputPreprocessor;
-import org.scijava.Priority;
-import org.scijava.module.process.PreprocessorPlugin;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.services.BdvService;
+import bdv.util.BdvOptions;
+import bdv.util.BdvStackSource;
+import bdv.viewer.Interpolation;
+import bvv.vistools.BvvFunctions;
+import bvv.vistools.BvvHandle;
+import bvv.vistools.BvvOptions;
+import bvv.vistools.BvvStackSource;
+import net.imglib2.img.array.ArrayImg;
+import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.img.basictypeaccess.array.ByteArray;
+import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.type.numeric.integer.ByteType;
+import sc.fiji.bdvpg.viewer.navigate.TimepointAdapterAdder;
 
-/**
- * Fills single, unresolved module inputs with the active {@link BdvHandle},
- * <em>or a newly created one if none</em>.
- *
- * @author Nicolas Chiaruttini
- */
-@SuppressWarnings("unused")
-@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_HIGH)
-public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle> {
+public class DefaultBvvSupplier implements IBvvSupplier {
 
-	@Parameter
-	BdvService sacDisplayService;
+	public final SerializableBvvOptions sOptions;
 
-	public ActiveBdvPreprocessor() {
-		super(BdvHandle.class);
+	public DefaultBvvSupplier(SerializableBvvOptions sOptions) {
+		this.sOptions = sOptions;
 	}
 
-	// -- SingleInputProcessor methods --
-
 	@Override
-	public BdvHandle getValue() {
+	public BvvHandle get() {
+		BvvOptions options = sOptions.getBvvOptions();
 
-		return sacDisplayService.getActiveViewer();
+		// create dummy image to instantiate the BDV
+		ArrayImg<ByteType, ByteArray> dummyImg = ArrayImgs.bytes(2, 2, 2);
+		options = options.sourceTransform(new AffineTransform3D());
+		BvvStackSource<ByteType> bss = BvvFunctions.show(dummyImg, "dummy",
+			options);
+		BvvHandle bvv = bss.getBvvHandle();
 
+		// remove dummy image
+		bvv.getViewerPanel().state().removeSource(bvv.getViewerPanel().state()
+			.getCurrentSource());
+		bvv.getViewerPanel().setNumTimepoints(sOptions.numTimePoints);
+
+		// Should be helpful
+
+		new TimepointAdapterAdder(bvv.getViewerPanel()).run();
+		//new SourceNavigatorSliderAdder(bdv).run();
+
+		return bvv;
 	}
 
 }

@@ -36,7 +36,7 @@ import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.viewer.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.sourceandconverter.SourceAdder;
-import sc.fiji.bdvpg.scijava.services.BDVService;
+import sc.fiji.bdvpg.scijava.services.BdvService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
@@ -66,7 +66,7 @@ public class BrightnessAutoAdjusterDemo
 		TestHelper.startFiji(ij);//ij.ui().showUI();
 
 		// Creates a BdvHandle
-		bdvHandle = ij.get(BDVService.class).getActiveViewer();
+		bdvHandle = ij.get(BdvService.class).getActiveViewer();
 
         AbstractSpimData<?> asd = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
 

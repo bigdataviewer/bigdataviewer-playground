@@ -49,7 +49,7 @@ import sc.fiji.bdvpg.bdv.ManualRegistrationStarter;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStopper;
 import sc.fiji.bdvpg.viewer.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.scijava.services.BDVService;
+import sc.fiji.bdvpg.scijava.services.BdvService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
@@ -89,7 +89,7 @@ public class ManualRegistrationDemo {
         ij = new ImageJ();
         TestHelper.startFiji(ij);//ij.ui().showUI();
         SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
-        BDVService bdvDisplayService = ij.get(BDVService.class);
+        BdvService bdvDisplayService = ij.get(BdvService.class);
 
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");

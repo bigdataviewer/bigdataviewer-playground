@@ -85,12 +85,12 @@ import static sc.fiji.bdvpg.bdv.BdvHandleHelper.LAST_ACTIVE_BDVH_KEY;
 @SuppressWarnings("unused") // Because SciJava parameters are filled through
 														// reflection
 @Plugin(type = Service.class)
-public class BDVService extends AbstractService
+public class BdvService extends AbstractService
 	implements SciJavaService, IViewerService<BdvHandle>
 {
 
 	protected static final Logger logger = LoggerFactory.getLogger(
-		BDVService.class);
+		BdvService.class);
 
 	public static final String CONVERTER_SETUP = "ConverterSetup";
 
@@ -130,6 +130,12 @@ public class BDVService extends AbstractService
 			throw new UnsupportedOperationException(bdvSupplier+" is not a "+IBdvSupplier.class.getSimpleName()+" object");
 		}
 	}
+
+	@Override
+	public Class<BdvHandle> getViewerType() {
+		return BdvHandle.class;
+	}
+
 	/**
 	 * Can be used to change how Bdv Windows are created
 	 * 
@@ -231,7 +237,7 @@ public class BDVService extends AbstractService
 	@Override
 	public void setVisible(SourceAndConverter<?> sac, boolean visible) {
 		getViewersOf(sac).forEach(bdvhr -> bdvhr.getViewerPanel().state()
-			.setSourceActive(sac, visible));
+				.setSourceActive(sac, visible));
 	}
 
 	/**
@@ -351,7 +357,7 @@ public class BDVService extends AbstractService
 		scriptService.addAlias(BdvHandle.class);
 		displayToMetadata = CacheBuilder.newBuilder().weakKeys().build();// new
 																																			// HashMap<>();
-		bdvSourceAndConverterService.setDisplayService(this);
+		bdvSourceAndConverterService.addViewerService(this);
 		SourceAndConverterServices.setBDVService(this);
 		// Catching bdv supplier from Prefs
 		logger.debug("Bdv Playground Display Service initialized.");

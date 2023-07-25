@@ -36,7 +36,7 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.BDVService;
+import sc.fiji.bdvpg.scijava.services.BdvService;
 import sc.fiji.bdvpg.viewer.ViewerHelper;
 import sc.fiji.bdvpg.viewer.ViewerOrthoSyncStarter;
 import sc.fiji.bdvpg.viewer.ViewerStateSyncStarter;
@@ -96,7 +96,7 @@ public class BdvOrthoCreatorCommand implements BdvPlaygroundActionCommand {
 	public BdvHandle bdvhz;
 
 	@Parameter
-	BDVService sacDisplayService;
+	BdvService sacDisplayService;
 
 	@Parameter
 	boolean synchronize_sources = true;

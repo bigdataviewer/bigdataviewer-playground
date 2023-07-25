@@ -32,7 +32,7 @@ import net.imagej.ImageJ;
 import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
-import sc.fiji.bdvpg.scijava.services.BDVService;
+import sc.fiji.bdvpg.scijava.services.BdvService;
 
 public class BdvCreatorDemo
 {
@@ -45,7 +45,7 @@ public class BdvCreatorDemo
 		TestHelper.startFiji(ij);//ij.ui().showUI();
 
 		// Creates a BDV since none exists yet
-		ij.get(BDVService.class).getActiveViewer();
+		ij.get(BdvService.class).getActiveViewer();
 	}
 
 	@Test

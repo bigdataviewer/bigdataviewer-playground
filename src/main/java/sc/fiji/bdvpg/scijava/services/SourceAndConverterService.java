@@ -80,6 +80,7 @@ import sc.fiji.bdvpg.cache.GlobalLoaderCache;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
+import sc.fiji.bdvpg.services.IViewerService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.spimdata.EntityHandler;
@@ -100,7 +101,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static sc.fiji.bdvpg.scijava.services.BDVService.CONVERTER_SETUP;
+import static sc.fiji.bdvpg.scijava.services.BdvService.CONVERTER_SETUP;
 
 /**
  * SciJava Service which centralizes BDV Sources, independently of their display
@@ -154,7 +155,14 @@ public class SourceAndConverterService extends AbstractService implements
 	 * Display service : cannot be set through Parameter annotation due to
 	 * 'circular dependency'
 	 */
-	BDVService bsds = null;
+	//BDVService bdvService = null;
+	List<IViewerService<?>> viewerServices = new ArrayList<>();
+
+	/**
+	 * Display service : cannot be set through Parameter annotation due to
+	 * 'circular dependency'
+	 */
+	//BVVService bvvService = null;
 
 	/**
 	 * Map containing objects that are 1 to 1 linked to a Source Keys are Weakly
@@ -172,9 +180,10 @@ public class SourceAndConverterService extends AbstractService implements
 		return sacToMetadata.getIfPresent(src) != null;
 	}
 
-	public void setDisplayService(BDVService bsds) {
-		this.bsds = bsds;
-	}
+	/*public void setBDVService(BDVService bsds) {
+		this.bdvService = bsds;
+	}*/
+	public void addViewerService(IViewerService<?> service) {viewerServices.add(service);}
 
 	@Override
 	public void setMetadata(SourceAndConverter<?> sac, String key, Object data) {
@@ -574,9 +583,12 @@ public class SourceAndConverterService extends AbstractService implements
 	public synchronized void remove(SourceAndConverter<?>... sacs) {
 		// Remove displays
 		if (sacs != null) {
-			if (bsds != null) {
-				bsds.removeFromAllViewers(sacs);
+			for (IViewerService<?> service: viewerServices) {
+				service.removeFromAllViewers(sacs);
 			}
+			/*if (bdvService != null) {
+				bdvService.removeFromAllViewers(sacs);
+			}*/
 			for (SourceAndConverter sac : sacs) {
 				// Checks if it's the last of a spimdataset -> should shutdown cache
 				// ----------------------------

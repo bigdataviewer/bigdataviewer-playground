@@ -44,7 +44,7 @@ import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.scijava.services.BDVService;
+import sc.fiji.bdvpg.scijava.services.BdvService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.viewer.navigate.PositionLogger;
 import sc.fiji.bdvpg.viewer.navigate.ViewerTransformAdjuster;
@@ -78,10 +78,10 @@ public class LogMousePositionDemo {
         SourceAndConverter<?> sac = SourceAndConverterHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle = ij.get(BDVService.class).getActiveViewer();
+        BdvHandle bdvHandle = ij.get(BdvService.class).getActiveViewer();
 
         // Show the SourceAndConverter
-        ij.get(BDVService.class).show(bdvHandle, sac);
+        ij.get(BdvService.class).show(bdvHandle, sac);
 
         // Adjust BDV View on the SourceAndConverter
         new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sac).run();

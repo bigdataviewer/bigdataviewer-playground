@@ -27,34 +27,21 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.scijava.command.source;
+package sc.fiji.bdvpg.bvv.supplier;
 
-import bdv.viewer.SourceAndConverter;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.BdvService;
+import bdv.util.BdvHandle;
+import bdv.viewer.render.AccumulateProjectorARGB;
+import bdv.viewer.render.AccumulateProjectorFactory;
+import bvv.vistools.BvvHandle;
+import net.imglib2.type.numeric.ARGBType;
+import org.scijava.plugin.SciJavaPlugin;
 
-@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
-																							// are set by SciJava
-																							// pre-processors
+import java.util.function.Supplier;
 
-@Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Sources>Display>Make Sources Visible")
-public class SourcesVisibleMakerCommand implements BdvPlaygroundActionCommand {
-
-	@Parameter(label = "Select Source(s)")
-	SourceAndConverter<?>[] sacs;
-
-	@Parameter
-	BdvService bsds;
-
-	@Override
-	public void run() {
-		for (SourceAndConverter<?> sac : sacs) {
-			bsds.setVisible(sac, true);
-		}
-	}
+/**
+ * Top level interface that should be implemented by BdvSuppliers See
+ * {@link DefaultBvvSupplier} for an example and
+ * {@link DefaultBdvSupplierAdapter} for a way to serialize these objects
+ */
+public interface IBvvSupplier extends Supplier<BvvHandle>, SciJavaPlugin {
 }
