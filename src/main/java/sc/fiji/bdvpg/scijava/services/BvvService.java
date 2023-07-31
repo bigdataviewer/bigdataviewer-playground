@@ -84,7 +84,7 @@ import static sc.fiji.bdvpg.bvv.BvvHandleHelper.LAST_ACTIVE_BVVH_KEY;
 
 @SuppressWarnings("unused") // Because SciJava parameters are filled through
 														// reflection
-@Plugin(type = Service.class)
+@Plugin(type = Service.class, headless = false)
 public class BvvService extends AbstractService
 	implements SciJavaService, IViewerService<BvvHandle>
 {
