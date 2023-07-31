@@ -75,8 +75,8 @@ import javax.swing.tree.DefaultTreeModel;
 import static sc.fiji.bdvpg.bdv.BdvHandleHelper.LAST_ACTIVE_BDVH_KEY;
 
 /**
- * SciJava Service which handles the Display of BDV SourceAndConverters in one
- * or multiple BDV Windows Pairs with BdvSourceAndConverterService, but this
+ * SciJava Service which handles the Display of SourceAndConverters in one
+ * or multiple BDV Windows Pairs with SourceAndConverterService, but this
  * service is optional Handling multiple Sources displayed in potentially
  * multiple BDV Windows Make its best to keep in synchronizations all of this,
  * without creating errors nor memory leaks
@@ -104,7 +104,7 @@ public class BdvService extends AbstractService
 	 * Service containing all registered BDV Sources
 	 **/
 	@Parameter
-	SourceAndConverterService bdvSourceAndConverterService;
+	SourceAndConverterService sourceAndConverterService;
 
 	/**
 	 * Used to retrieve the last active BDV Windows (if the activated callback has
@@ -282,8 +282,8 @@ public class BdvService extends AbstractService
 		List<SourceAndConverter<?>> sacsToDisplay = new ArrayList<>();
 
 		for (SourceAndConverter<?> sac : sacs) {
-			if (!bdvSourceAndConverterService.isRegistered(sac)) {
-				bdvSourceAndConverterService.register(sac);
+			if (!sourceAndConverterService.isRegistered(sac)) {
+				sourceAndConverterService.register(sac);
 			}
 
 			boolean escape = false;
@@ -299,7 +299,7 @@ public class BdvService extends AbstractService
 
 			if (!escape) {
 				sacsToDisplay.add(sac);
-				bdvh.getConverterSetups().put(sac, bdvSourceAndConverterService
+				bdvh.getConverterSetups().put(sac, sourceAndConverterService
 					.getConverterSetup(sac));
 			}
 		}
@@ -357,7 +357,7 @@ public class BdvService extends AbstractService
 		scriptService.addAlias(BdvHandle.class);
 		displayToMetadata = CacheBuilder.newBuilder().weakKeys().build();// new
 																																			// HashMap<>();
-		bdvSourceAndConverterService.addViewerService(this);
+		sourceAndConverterService.addViewerService(this);
 		SourceAndConverterServices.setBDVService(this);
 		// Catching bdv supplier from Prefs
 		logger.debug("Bdv Playground Display Service initialized.");
@@ -422,8 +422,8 @@ public class BdvService extends AbstractService
 	@Override
 	public void registerSourcesFromViewer(BdvHandle bdvh_in) {
 		bdvh_in.getViewerPanel().state().getSources().forEach(sac -> {
-			if (!bdvSourceAndConverterService.isRegistered(sac)) {
-				bdvSourceAndConverterService.register(sac);
+			if (!sourceAndConverterService.isRegistered(sac)) {
+				sourceAndConverterService.register(sac);
 			}
 		});
 	}
