@@ -70,7 +70,9 @@ public interface IViewerService<T>
 	 * 
 	 * @param sacs sources to display
 	 */
-	void show(SourceAndConverter<?>... sacs);
+	default void show(SourceAndConverter<?>... sacs) {
+		show(getActiveViewer(), sacs);
+	}
 
 	/**
 	 * Makes visible or invisible a source, applies this to all bdvs according to
@@ -96,7 +98,9 @@ public interface IViewerService<T>
 	 * @param sacs sources to display
 	 * @param viewer bdvhandle to append the sources
 	 */
-	 void show(T viewer, SourceAndConverter<?>... sacs);
+	 default void show(T viewer, SourceAndConverter<?>... sacs) {
+		 show(viewer, true, sacs);
+	 }
 
 	/**
 	 * Displays a BDV SourceAndConverter into the specified BdvHandle This

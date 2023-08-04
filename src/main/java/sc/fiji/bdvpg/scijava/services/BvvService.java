@@ -31,18 +31,10 @@ package sc.fiji.bdvpg.scijava.services;
 
 import bdv.viewer.SourceAndConverter;
 import bvv.vistools.BvvHandle;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import ij.Prefs;
 import net.imglib2.util.Pair;
-import org.scijava.Context;
-import org.scijava.object.ObjectService;
-import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.script.ScriptService;
-import org.scijava.service.AbstractService;
-import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +44,6 @@ import sc.fiji.bdvpg.bvv.supplier.IBvvSupplier;
 import sc.fiji.bdvpg.bvv.supplier.SerializableBvvOptions;
 import sc.fiji.bdvpg.scijava.services.ui.BvvHandleFilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
-import sc.fiji.bdvpg.services.IViewerService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.viewer.ViewerHelper;
 import sc.fiji.persist.ScijavaGsonHelper;
@@ -61,10 +52,8 @@ import javax.swing.tree.DefaultTreeModel;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -83,42 +72,13 @@ import static sc.fiji.bdvpg.bvv.BvvHandleHelper.LAST_ACTIVE_BVVH_KEY;
 @SuppressWarnings("unused") // Because SciJava parameters are filled through
 														// reflection
 @Plugin(type = Service.class, headless = false)
-public class BvvService extends AbstractService
-	implements SciJavaService, IViewerService<BvvHandle>
+public class BvvService extends ViewerService<BvvHandle>
 {
 
 	protected static final Logger logger = LoggerFactory.getLogger(
 		BvvService.class);
 
-	public static final String CONVERTER_SETUP = "ConverterSetup";
-
-	/**
-	 * Used to add Aliases for BvvHandle objects
-	 **/
-	@Parameter
-	ScriptService scriptService;
-
-	/**
-	 * Service containing all registered BDV Sources
-	 **/
-	@Parameter
-	SourceAndConverterService sourceAndConverterService;
-
-	/**
-	 * Used to retrieve the last active BDV Windows (if the activated callback has
-	 * been set right)
-	 **/
-	@Parameter
-	GuavaWeakCacheService cacheService;
-
-	@Parameter
-	ObjectService os;
-
-	@Parameter
-	Context ctx;
-
-	Supplier<BvvHandle> bvvSupplier; // = new DefaultBdvSupplier(new
-																		// SerializableBdvOptions());
+	Supplier<BvvHandle> bvvSupplier;
 
 	@Override
 	public void setDefaultViewerSupplier(Supplier<BvvHandle> bvvSupplier) {
@@ -186,7 +146,7 @@ public class BvvService extends AbstractService
 	 */
 	@Override
 	public BvvHandle getActiveViewer() {
-		List<BvvHandle> bvvhs = os.getObjects(BvvHandle.class);
+		List<BvvHandle> bvvhs = os.getObjects(getViewerType());
 		if ((bvvhs == null) || (bvvhs.size() == 0)) {
 			return getNewViewer();
 		}
@@ -215,17 +175,6 @@ public class BvvService extends AbstractService
 	}
 
 	/**
-	 * Displays a Source, the last active bvvh is chosen since none is specified
-	 * in this method
-	 * 
-	 * @param sacs sources to display
-	 */
-	@Override
-	public void show(SourceAndConverter<?>... sacs) {
-		show(getActiveViewer(), sacs);
-	}
-
-	/**
 	 * Makes visible or invisible a source, applies this to all bdvs according to
 	 * BvvhReferences
 	 * 
@@ -246,20 +195,6 @@ public class BvvService extends AbstractService
 	@Override
 	public boolean isVisible(SourceAndConverter<?> sac, BvvHandle bvvh) {
 		return bvvh.getViewerPanel().state().isSourceActive(sac);
-	}
-
-	/**
-	 * Displays a BDV SourceAndConverter into the specified BvvHandle This
-	 * function really is the core of this service It mimicks or copies the
-	 * functions of BdvVisTools because it is responsible to create converter,
-	 * volatiles, convertersetups and so on
-	 * 
-	 * @param sacs sources to display
-	 * @param bvvh bvvhandle to append the sources
-	 */
-	@Override
-	public void show(BvvHandle bvvh, SourceAndConverter<?>... sacs) {
-		show(bvvh, true, sacs);
 	}
 
 	/**
@@ -329,7 +264,7 @@ public class BvvService extends AbstractService
 	@Override
 	public void removeFromActiveViewer(SourceAndConverter<?>... sacs) {
 		// This condition avoids creating a window for nothing
-		if (os.getObjects(BvvHandle.class).size() > 0) {
+		if (os.getObjects(getViewerType()).size() > 0) {
 			remove(getActiveViewer(), sacs);
 		}
 	}
@@ -348,19 +283,6 @@ public class BvvService extends AbstractService
 	}
 
 	/**
-	 * Service initialization
-	 */
-	@Override
-	public void initialize() {
-		scriptService.addAlias(BvvHandle.class);
-		displayToMetadata = CacheBuilder.newBuilder().weakKeys().build();// new
-																																			// HashMap<>();
-		sourceAndConverterService.addViewerService(this);
-		// Catching bdv supplier from Prefs
-		logger.debug("Bdv Playground BVV Service initialized.");
-	}
-
-	/**
 	 * Closes appropriately a BvvHandle which means that it updates the callbacks
 	 * for ConverterSetups and updates the ObjectService
 	 * 
@@ -373,12 +295,12 @@ public class BvvService extends AbstractService
 																				// if it bdv was weekly referenced
 
 		// Fix BigWarp closing issue
-		boolean isPaired = pairedBvvs.stream().anyMatch(p -> (p.getA() == bvvh) ||
+		boolean isPaired = pairedViewers.stream().anyMatch(p -> (p.getA() == bvvh) ||
 			(p.getB() == bvvh));
 		if (isPaired) {
-			Pair<BvvHandle, BvvHandle> pair = pairedBvvs.stream().filter(p -> (p
+			Pair<BvvHandle, BvvHandle> pair = pairedViewers.stream().filter(p -> (p
 				.getA() == bvvh) || (p.getB() == bvvh)).findFirst().get();
-			pairedBvvs.remove(pair);
+			pairedViewers.remove(pair);
 			if (pair.getA() == bvvh) {
 				closeViewer(pair.getB());
 			}
@@ -386,27 +308,6 @@ public class BvvService extends AbstractService
 				closeViewer(pair.getA());
 			}
 		}
-	}
-
-	/**
-	 * Enables proper closing of Big Warp paired BvvHandles
-	 */
-	final List<Pair<BvvHandle, BvvHandle>> pairedBvvs = new ArrayList<>();
-
-	@Override
-	public void bindClosing(BvvHandle bvv1, BvvHandle bvv2) {
-		pairedBvvs.add(new Pair<BvvHandle, BvvHandle>() {
-
-			@Override
-			public BvvHandle getA() {
-				return bvv1;
-			}
-
-			@Override
-			public BvvHandle getB() {
-				return bvv2;
-			}
-		});
 	}
 
 	/**
@@ -465,7 +366,7 @@ public class BvvService extends AbstractService
 
 		List<SourceAndConverter<?>> sacList = Arrays.asList(sacs);
 
-		return os.getObjects(BvvHandle.class).stream().filter(bvv -> {
+		return os.getObjects(getViewerType()).stream().filter(bvv -> {
 			synchronized (bvv.getViewerPanel().state()) {
 				return bvv.getViewerPanel().state().getSources().stream().anyMatch(
 					sacList::contains);
@@ -475,48 +376,11 @@ public class BvvService extends AbstractService
 	}
 
 	@Override
-	public List<BvvHandle> getViewers() {
-		return os.getObjects(BvvHandle.class);
-	}
-
-	/**
-	 * Map containing objects that are 1 to 1 linked to a Display ( a BvvHandle
-	 * object ) Keys are Weakly referenced -> Metadata should be GCed if
-	 * referenced only here
-	 */
-	Cache<BvvHandle, Map<String, Object>> displayToMetadata;
-
-	@Override
-	@SuppressWarnings("ConstantConditions")
-	public void setViewerMetadata(BvvHandle bvvh, String key, Object data) {
-		if (bvvh == null) {
-			logger.error("Error : bvvh is null in setMetadata function! ");
-			return;
-		}
-		if (displayToMetadata.getIfPresent(bvvh) == null) {
-			// Create Metadata
-			displayToMetadata.put(bvvh, new HashMap<>());
-		}
-		displayToMetadata.getIfPresent(bvvh).put(key, data);
-	}
-
-	@Override
-	@SuppressWarnings("ConstantConditions")
-	public Object getViewerMetadata(BvvHandle bvvh, String key) {
-		if (displayToMetadata.getIfPresent(bvvh) != null) {
-			return displayToMetadata.getIfPresent(bvvh).get(key);
-		}
-		else {
-			return null;
-		}
-	}
-
-	@Override
 	public void registerViewer(BvvHandle bvvh) {
 		// ------------ Register BvvHandle in ObjectService
-		if (!os.getObjects(BvvHandle.class).contains(bvvh)) { // adds it only if not
+		if (!os.getObjects(getViewerType()).contains(bvvh)) { // adds it only if not
 																													// already present in
-																													// ObjectService
+			// ObjectService
 			os.addObject(bvvh);
 
 			// ------------ Renames window to ensure unicity

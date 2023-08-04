@@ -34,13 +34,7 @@ import bdv.viewer.SourceAndConverter;
 import com.google.gson.Gson;
 import ij.Prefs;
 import net.imglib2.util.Pair;
-import org.scijava.Context;
-import org.scijava.object.ObjectService;
-import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.script.ScriptService;
-import org.scijava.service.AbstractService;
-import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,18 +49,13 @@ import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import sc.fiji.bdvpg.services.IViewerService;
 import sc.fiji.bdvpg.viewer.ViewerHelper;
 import sc.fiji.persist.ScijavaGsonHelper;
 
@@ -85,8 +74,7 @@ import static sc.fiji.bdvpg.bdv.BdvHandleHelper.LAST_ACTIVE_BDVH_KEY;
 @SuppressWarnings("unused") // Because SciJava parameters are filled through
 														// reflection
 @Plugin(type = Service.class, headless = false)
-public class BdvService extends AbstractService
-	implements SciJavaService, IViewerService<BdvHandle>
+public class BdvService extends ViewerService<BdvHandle>
 {
 
 	protected static final Logger logger = LoggerFactory.getLogger(
@@ -94,33 +82,7 @@ public class BdvService extends AbstractService
 
 	public static final String CONVERTER_SETUP = "ConverterSetup";
 
-	/**
-	 * Used to add Aliases for BdvHandle objects
-	 **/
-	@Parameter
-	ScriptService scriptService;
-
-	/**
-	 * Service containing all registered BDV Sources
-	 **/
-	@Parameter
-	SourceAndConverterService sourceAndConverterService;
-
-	/**
-	 * Used to retrieve the last active BDV Windows (if the activated callback has
-	 * been set right)
-	 **/
-	@Parameter
-	GuavaWeakCacheService cacheService;
-
-	@Parameter
-	ObjectService os;
-
-	@Parameter
-	Context ctx;
-
-	Supplier<BdvHandle> bdvSupplier; // = new DefaultBdvSupplier(new
-																		// SerializableBdvOptions());
+	Supplier<BdvHandle> bdvSupplier;
 
 	@Override
 	public void setDefaultViewerSupplier(Supplier<BdvHandle> bdvSupplier) {
@@ -188,7 +150,7 @@ public class BdvService extends AbstractService
 	 */
 	@Override
 	public BdvHandle getActiveViewer() {
-		List<BdvHandle> bdvhs = os.getObjects(BdvHandle.class);
+		List<BdvHandle> bdvhs = os.getObjects(getViewerType());
 		if ((bdvhs == null) || (bdvhs.size() == 0)) {
 			return getNewViewer();
 		}
@@ -217,17 +179,6 @@ public class BdvService extends AbstractService
 	}
 
 	/**
-	 * Displays a Source, the last active bdvh is chosen since none is specified
-	 * in this method
-	 * 
-	 * @param sacs sources to display
-	 */
-	@Override
-	public void show(SourceAndConverter<?>... sacs) {
-		show(getActiveViewer(), sacs);
-	}
-
-	/**
 	 * Makes visible or invisible a source, applies this to all bdvs according to
 	 * BdvhReferences
 	 * 
@@ -248,20 +199,6 @@ public class BdvService extends AbstractService
 	@Override
 	public boolean isVisible(SourceAndConverter<?> sac, BdvHandle bdvh) {
 		return bdvh.getViewerPanel().state().isSourceActive(sac);
-	}
-
-	/**
-	 * Displays a BDV SourceAndConverter into the specified BdvHandle This
-	 * function really is the core of this service It mimicks or copies the
-	 * functions of BdvVisTools because it is responsible to create converter,
-	 * volatiles, convertersetups and so on
-	 * 
-	 * @param sacs sources to display
-	 * @param bdvh bdvhandle to append the sources
-	 */
-	@Override
-	public void show(BdvHandle bdvh, SourceAndConverter<?>... sacs) {
-		show(bdvh, true, sacs);
 	}
 
 	/**
@@ -331,7 +268,7 @@ public class BdvService extends AbstractService
 	@Override
 	public void removeFromActiveViewer(SourceAndConverter<?>... sacs) {
 		// This condition avoids creating a window for nothing
-		if (os.getObjects(BdvHandle.class).size() > 0) {
+		if (os.getObjects(getViewerType()).size() > 0) {
 			remove(getActiveViewer(), sacs);
 		}
 	}
@@ -347,20 +284,6 @@ public class BdvService extends AbstractService
 	public void remove(BdvHandle bdvh, SourceAndConverter<?>... sacs) {
 		bdvh.getViewerPanel().state().removeSources(Arrays.asList(sacs));
 		bdvh.getViewerPanel().requestRepaint();
-	}
-
-	/**
-	 * Service initialization
-	 */
-	@Override
-	public void initialize() {
-		scriptService.addAlias(BdvHandle.class);
-		displayToMetadata = CacheBuilder.newBuilder().weakKeys().build();// new
-																																			// HashMap<>();
-		sourceAndConverterService.addViewerService(this);
-		SourceAndConverterServices.setBDVService(this);
-		// Catching bdv supplier from Prefs
-		logger.debug("Bdv Playground Display Service initialized.");
 	}
 
 	/**
@@ -389,27 +312,6 @@ public class BdvService extends AbstractService
 				closeViewer(pair.getA());
 			}
 		}
-	}
-
-	/**
-	 * Enables proper closing of Big Warp paired BdvHandles
-	 */
-	final List<Pair<BdvHandle, BdvHandle>> pairedBdvs = new ArrayList<>();
-
-	@Override
-	public void bindClosing(BdvHandle bdv1, BdvHandle bdv2) {
-		pairedBdvs.add(new Pair<BdvHandle, BdvHandle>() {
-
-			@Override
-			public BdvHandle getA() {
-				return bdv1;
-			}
-
-			@Override
-			public BdvHandle getB() {
-				return bdv2;
-			}
-		});
 	}
 
 	/**
@@ -468,7 +370,7 @@ public class BdvService extends AbstractService
 
 		List<SourceAndConverter<?>> sacList = Arrays.asList(sacs);
 
-		return os.getObjects(BdvHandle.class).stream().filter(bdv -> {
+		return os.getObjects(getViewerType()).stream().filter(bdv -> {
 			synchronized (bdv.getViewerPanel().state()) {
 				return bdv.getViewerPanel().state().getSources().stream().anyMatch(
 					sacList::contains);
@@ -478,51 +380,12 @@ public class BdvService extends AbstractService
 	}
 
 	@Override
-	public List<BdvHandle> getViewers() {
-		return os.getObjects(BdvHandle.class);
-	}
-
-	/**
-	 * Map containing objects that are 1 to 1 linked to a Display ( a BdvHandle
-	 * object ) Keys are Weakly referenced -> Metadata should be GCed if
-	 * referenced only here
-	 */
-	Cache<BdvHandle, Map<String, Object>> displayToMetadata;
-
-	@Override
-	@SuppressWarnings("ConstantConditions")
-	public void setViewerMetadata(BdvHandle bdvh, String key, Object data) {
-		if (bdvh == null) {
-			logger.error("Error : bdvh is null in setMetadata function! ");
-			return;
-		}
-		if (displayToMetadata.getIfPresent(bdvh) == null) {
-			// Create Metadata
-			displayToMetadata.put(bdvh, new HashMap<>());
-		}
-		displayToMetadata.getIfPresent(bdvh).put(key, data);
-	}
-
-	@Override
-	@SuppressWarnings("ConstantConditions")
-	public Object getViewerMetadata(BdvHandle bdvh, String key) {
-		if (displayToMetadata.getIfPresent(bdvh) != null) {
-			return displayToMetadata.getIfPresent(bdvh).get(key);
-		}
-		else {
-			return null;
-		}
-	}
-
-	@Override
 	public void registerViewer(BdvHandle bdvh) {
 		// ------------ Register BdvHandle in ObjectService
-		if (!os.getObjects(BdvHandle.class).contains(bdvh)) { // adds it only if not
-																													// already present in
-																													// ObjectService
+		if (!os.getObjects(getViewerType()).contains(bdvh)) { // adds it only if not already present in ObjectService
 			os.addObject(bdvh);
 
-			// ------------ Renames window to ensure unicity
+			// ------------ Renames window to ensure uniqueness
 			String windowTitle = ViewerHelper.getViewerTitle(bdvh.getViewerPanel());
 			windowTitle = BdvHandleHelper.getUniqueWindowTitle(os, windowTitle);
 			ViewerHelper.setViewerTitle(bdvh.getViewerPanel(), windowTitle);
