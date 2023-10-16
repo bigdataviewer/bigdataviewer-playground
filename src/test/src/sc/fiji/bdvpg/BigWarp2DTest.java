@@ -31,7 +31,6 @@ package sc.fiji.bdvpg;
 import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;
 import bigwarp.BigWarp;
-import bigwarp.BigWarp.BigWarpData;
 import bigwarp.BigWarpInit;
 import ij.IJ;
 import ij.ImagePlus;
@@ -43,6 +42,7 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
+import bigwarp.BigWarpData;
 
 /*
  * See

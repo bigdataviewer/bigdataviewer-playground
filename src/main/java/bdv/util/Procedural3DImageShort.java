@@ -65,11 +65,6 @@ public class Procedural3DImageShort extends RealPoint implements
 	}
 
 	@Override
-	public RealRandomAccess<UnsignedShortType> copyRealRandomAccess() {
-		return copy();
-	}
-
-	@Override
 	public UnsignedShortType get() {
 		t.set(evalFunction.applyAsInt(position));
 		return t;

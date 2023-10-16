@@ -191,8 +191,8 @@ public class BigWarpDemo {
 
         displayService.show(bdvh, fixedSources.get(0));
 
-        bdvh.getViewerPanel().showDebugTileOverlay();
-        bdvh.getViewerPanel().getDisplay().repaint();
+        //bdvh.getViewerPanel().showDebugTileOverlay();
+        //bdvh.getViewerPanel().getDisplay().repaint();
 
         new ViewerTransformAdjuster(bdvh.getViewerPanel(), bwl.getWarpedSources()[0]).run();
     }

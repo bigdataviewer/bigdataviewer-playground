@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>36.0.0</version>
+		<version>37.0.0</version>
 		<relativePath />
 	</parent>
 
@@ -122,6 +122,7 @@
 		<!-- package version below are not present in the parent pom. A version is needed -->
 		<bigdataviewer-selector.version>0.2.3</bigdataviewer-selector.version>
 		<bigvolumeviewer.version>0.3.1</bigvolumeviewer.version>
+		<bigwarp_fiji.version>9.0.1-SNAPSHOT</bigwarp_fiji.version>
 		<reflections.version>0.10.2</reflections.version> <!-- for test only -->
 
 		<!-- package version below are determined by the parent pom but need to be upgraded or temporarily fixed for bugs -->
@@ -170,6 +171,12 @@
 		<dependency>
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>bigwarp_fiji</artifactId>
+			<version>${bigwarp_fiji.version}</version>
 		</dependency>
 
 		<!-- Test dependencies -->
