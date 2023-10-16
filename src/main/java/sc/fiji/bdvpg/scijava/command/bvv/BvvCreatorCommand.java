@@ -37,35 +37,30 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bvv.BvvCreator;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.services.BdvService;
+import sc.fiji.bdvpg.scijava.services.BvvService;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "Viewer>BVV - Create Empty BVV Frame",
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewer>BVV - Create empty BVV window",
 	description = "Creates an empty Bvv window")
 public class BvvCreatorCommand implements BdvPlaygroundActionCommand {
 
 	/**
-	 * Title of the new BVV window
-	 */
-	@Parameter(label = "Title of the new BVV window")
-	public String windowtitle = "BVV";
-
-	/**
-	 * TODO This triggers: BvvHandlePostprocessor
+	 * This triggers:
+	 * {@link sc.fiji.bdvpg.scijava.processors.BvvHandlePostprocessor}
 	 */
 	@Parameter(type = ItemIO.OUTPUT)
 	public BvvHandle bvvh;
 
+	@Parameter
+	BvvService bvvService;
+
 	@Override
 	public void run() {
-		// ------------ BdvHandleFrame
-		BvvOptions opts = BvvOptions.options().frameTitle(windowtitle);
-
-		BvvCreator creator = new BvvCreator(opts, 1);
-		creator.run();
-		bvvh = creator.get();
+		bvvh = bvvService.getNewViewer();
 	}
 }

@@ -30,20 +30,27 @@
 package sc.fiji.bdvpg.behaviour;
 
 import bdv.util.BdvHandle;
+import bvv.vistools.BvvHandle;
 import org.scijava.ui.behaviour.Behaviour;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
+import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 public class ClickBehaviourInstaller {
-
-	private final BdvHandle bdvHandle;
+	private final TriggerBehaviourBindings triggers;
 	private final Behaviour behaviour;
 
 	public ClickBehaviourInstaller(BdvHandle bdvHandle,
 		ClickBehaviour behaviour)
 	{
-		this.bdvHandle = bdvHandle;
+		this.triggers = bdvHandle.getTriggerbindings();
+		this.behaviour = behaviour;
+	}
+	public ClickBehaviourInstaller(BvvHandle bvvHandle,
+								   ClickBehaviour behaviour)
+	{
+		this.triggers = bvvHandle.getTriggerbindings();
 		this.behaviour = behaviour;
 	}
 
@@ -56,7 +63,7 @@ public class ClickBehaviourInstaller {
 	 */
 	public void install(String name, String trigger) {
 		Behaviours behaviours = new Behaviours(new InputTriggerConfig());
-		behaviours.install(bdvHandle.getTriggerbindings(), name);
+		behaviours.install(triggers, name);
 		behaviours.behaviour(behaviour, name, trigger);
 	}
 }

@@ -26,15 +26,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bdv;
+package sc.fiji.bdvpg.viewer;
 
 import net.imagej.ImageJ;
 import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.scijava.services.BdvService;
+import sc.fiji.bdvpg.scijava.services.BvvService;
 
-public class BdvCreatorDemo
+public class ViewersCreatorDemo
 {
 
 	static ImageJ ij;
@@ -46,6 +47,8 @@ public class BdvCreatorDemo
 
 		// Creates a BDV since none exists yet
 		ij.get(BdvService.class).getActiveViewer();
+		// Creates a BVV since none exists yet
+		ij.get(BvvService.class).getActiveViewer();
 	}
 
 	@Test

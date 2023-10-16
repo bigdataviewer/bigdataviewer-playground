@@ -42,6 +42,17 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
+/**
+ * The main problem with this cache is that, when the cache is full,
+ * each time a new entry is added, at maximum one entry is removed...
+ * This means that is a big entry is added and a small entry is removed,
+ * the maximum cost may be overshot, by quite a large amount. (worst case scenario:
+ * a lot of small entries are added, followed by a lot of big entries).
+ *
+ * To repair, as many entries as necessary should be removed when a big entry is added,
+ * that this is a fix that can't be done easily by overriding LinkedHashMap methods
+ * because many methods that need to be accessed are 'heavily' protected.
+ */
 public class BoundedLinkedHashMapGlobalCache extends AbstractGlobalCache {
 
 	final static Logger logger = LoggerFactory.getLogger(

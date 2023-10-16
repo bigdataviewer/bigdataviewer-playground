@@ -26,45 +26,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bdv.navigate;
+package sc.fiji.bdvpg.viewer.navigate;
 
 import bdv.util.BdvHandle;
 import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import ij.IJ;
-import ij.ImagePlus;
 import net.imagej.ImageJ;
+import ij.ImagePlus;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.numeric.integer.UnsignedByteType;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.scijava.services.BdvService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-import sc.fiji.bdvpg.viewer.ViewerTransformSyncStarter;
-import sc.fiji.bdvpg.viewer.ViewerTransformSyncStopper;
+import sc.fiji.bdvpg.viewer.navigate.PositionLogger;
 import sc.fiji.bdvpg.viewer.navigate.ViewerTransformAdjuster;
 
 /**
- * ViewTransformSynchronizationDemo
+ * ViewTransformSetAndLogDemo
  * <p>
  * <p>
  * <p>
- * Author: Nicolas Chiaruttini
- * 01 2020
+ * Author: @haesleinhuepf
+ * 12 2019
  */
-public class ViewTransformSynchronizationDemo {
-
-    static boolean isSynchronizing;
+public class LogMousePositionDemo {
 
     static ImageJ ij;
 
-    public static void main(String[] args) {
+    public static <T extends RealType<T>> void main(String... args) {
 
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ij = new ImageJ();
@@ -72,52 +69,33 @@ public class ViewTransformSynchronizationDemo {
 
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
-        RandomAccessibleInterval<UnsignedByteType> rai = ImageJFunctions.wrapReal(imp);
+        RandomAccessibleInterval<T> rai = ImageJFunctions.wrapReal(imp);
         // Adds a third dimension because BDV needs 3D
         rai = Views.addDimension( rai, 0, 0 );
 
         // Makes BDV Source
-        Source<UnsignedByteType> source = new RandomAccessibleIntervalSource<>(rai, Util.getTypeFromInterval(rai), "blobs");
-        SourceAndConverter<UnsignedByteType> sac = SourceAndConverterHelper.createSourceAndConverter(source);
+        Source<T> source = new RandomAccessibleIntervalSource<>(rai, Util.getTypeFromInterval(rai), "blobs");
+        SourceAndConverter<?> sac = SourceAndConverterHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle1 = SourceAndConverterServices.getBDVService().getNewViewer();
-        // Creates a BdvHandle
-        BdvHandle bdvHandle2 = SourceAndConverterServices.getBDVService().getNewViewer();
-        // Creates a BdvHandles
-        BdvHandle bdvHandle3 = SourceAndConverterServices.getBDVService().getNewViewer();
+        BdvHandle bdvHandle = ij.get(BdvService.class).getActiveViewer();
 
-        BdvHandle[] bdvhs = new BdvHandle[]{bdvHandle1,bdvHandle2,bdvHandle3};
+        // Show the SourceAndConverter
+        ij.get(BdvService.class).show(bdvHandle, sac);
 
-        ViewerTransformSyncStarter syncstart = new ViewerTransformSyncStarter(bdvhs, false);
-        ViewerTransformSyncStopper syncstop = new ViewerTransformSyncStopper(syncstart.getSynchronizers(), null);
+        // Adjust BDV View on the SourceAndConverter
+        new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sac).run();
 
-        syncstart.run();
-        isSynchronizing = true;
+        // add a click behavior for logging mouse positions
+        new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new PositionLogger( bdvHandle.getViewerPanel() ).run() ).install( "Log mouse position", "ctrl D" );
 
-        for (BdvHandle bdvHandle:bdvhs) {
-            // Show the SourceAndConverter
-            SourceAndConverterServices.getBDVService().show(bdvHandle, sac);
-
-            // Adjust view on SourceAndConverter
-            new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sac).run();
-
-            new ClickBehaviourInstaller(bdvHandle, (x,y) -> {
-                if (isSynchronizing) {
-                    syncstop.run();
-                } else {
-                    syncstart.setHandleInitialReference(bdvHandle.getViewerPanel());
-                    syncstart.run();
-                }
-                isSynchronizing = !isSynchronizing;
-            }).install("Toggle Synchronization", "ctrl S");
-        }
-
+        // log the current position
+        new PositionLogger( bdvHandle.getViewerPanel() ).run();
     }
 
     @Test
     public void demoRunOk() {
-        main(new String[]{""});
+        main("");
     }
 
     @After

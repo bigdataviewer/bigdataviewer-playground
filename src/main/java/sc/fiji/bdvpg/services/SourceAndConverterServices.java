@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.services;
 
 import sc.fiji.bdvpg.scijava.services.BdvService;
+import sc.fiji.bdvpg.scijava.services.BvvService;
 
 /**
  * Static methods to access BdvSourceAndConverterService and
@@ -47,6 +48,9 @@ public class SourceAndConverterServices {
 	private static ISourceAndConverterService sourceAndConverterService;
 
 	private static BdvService BdvService;
+
+	private static BvvService BvvService;
+
 
 	public static ISourceAndConverterService getSourceAndConverterService() {
 		return sourceAndConverterService;
@@ -69,4 +73,16 @@ public class SourceAndConverterServices {
 		SourceAndConverterServices.BdvService =
 				BdvService;
 	}
+
+	public static BvvService getBVVService() {
+		return BvvService;
+	}
+
+	public static void setBVVService(
+			BvvService BvvService)
+	{
+		SourceAndConverterServices.BvvService =
+				BvvService;
+	}
+
 }

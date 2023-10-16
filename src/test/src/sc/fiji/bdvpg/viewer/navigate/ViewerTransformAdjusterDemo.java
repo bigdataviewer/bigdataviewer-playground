@@ -26,81 +26,72 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bdv.navigate;
+package sc.fiji.bdvpg.viewer.navigate;
 
 import bdv.util.BdvHandle;
-import bdv.util.RandomAccessibleIntervalSource;
-import bdv.viewer.Source;
-import bdv.viewer.SourceAndConverter;
-import ij.IJ;
+import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
-import ij.ImagePlus;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.numeric.RealType;
-import net.imglib2.util.Util;
-import net.imglib2.view.Views;
 import org.junit.After;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
-import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.scijava.services.BdvService;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-import sc.fiji.bdvpg.viewer.navigate.PositionLogger;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 import sc.fiji.bdvpg.viewer.navigate.ViewerTransformAdjuster;
 
 /**
- * ViewTransformSetAndLogDemo
+ * ViewerTransformAdjusterDemo
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf
+ * Author: @tischi
  * 12 2019
  */
-public class LogMousePositionDemo {
-
+public class ViewerTransformAdjusterDemo
+{
     static ImageJ ij;
-
-    public static <T extends RealType<T>> void main(String... args) {
-
+    public static void main(String[] args)
+    {
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ij = new ImageJ();
         TestHelper.startFiji(ij);//ij.ui().showUI();
 
-        // load and convert an image
-        ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
-        RandomAccessibleInterval<T> rai = ImageJFunctions.wrapReal(imp);
-        // Adds a third dimension because BDV needs 3D
-        rai = Views.addDimension( rai, 0, 0 );
+        // Gets active BdvHandle instance
+        BdvHandle bdvHandle = SourceAndConverterServices.getBDVService().getActiveViewer();
 
-        // Makes BDV Source
-        Source<T> source = new RandomAccessibleIntervalSource<>(rai, Util.getTypeFromInterval(rai), "blobs");
-        SourceAndConverter<?> sac = SourceAndConverterHelper.createSourceAndConverter(source);
+        // Import SpimData object
+        SpimDataFromXmlImporter sdix = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml");
 
-        // Creates a BdvHandle
-        BdvHandle bdvHandle = ij.get(BdvService.class).getActiveViewer();
+        AbstractSpimData<?> asd = sdix.get();
 
-        // Show the SourceAndConverter
-        ij.get(BdvService.class).show(bdvHandle, sac);
+        // Register to the SourceAndConverter service
+        SourceAndConverterServices.getSourceAndConverterService().register(asd);
 
-        // Adjust BDV View on the SourceAndConverter
-        new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sac).run();
+        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source ->
+            SourceAndConverterServices.getBDVService().show(bdvHandle, source)
+        );
 
-        // add a click behavior for logging mouse positions
-        new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new PositionLogger( bdvHandle.getViewerPanel() ).run() ).install( "Log mouse position", "ctrl D" );
+        // Import SpimData object
+        sdix = new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml");
 
-        // log the current position
-        new PositionLogger( bdvHandle.getViewerPanel() ).run();
+        asd = sdix.get();
+
+        // Register to the SourceAndConverter service
+        SourceAndConverterServices.getSourceAndConverterService().register(asd);
+
+        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source ->
+            SourceAndConverterServices.getBDVService().show(bdvHandle, source)
+        );
+
+        new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
     }
 
     @Test
     public void demoRunOk() {
-        main("");
+        main(new String[]{""});
     }
 
     @After
     public void closeFiji() {
         TestHelper.closeFijiAndBdvs(ij);
     }
-
 }

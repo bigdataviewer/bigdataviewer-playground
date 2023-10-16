@@ -28,13 +28,18 @@
  */
 package sc.fiji.bdvpg.macro;
 
+import bdv.util.BdvHandle;
+import bvv.vistools.BvvHandle;
 import net.imagej.ImageJ;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.viewer.ViewerHelper;
 
 import java.util.concurrent.ExecutionException;
 
@@ -48,26 +53,81 @@ public class MacroTests
 	{
 		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
 		ij = new ImageJ();
-		TestHelper.startFiji(ij);//ij.ui().showUI();
+		TestHelper.startFiji(ij);
 	}
 
+	/**
+	 * Testing {@link sc.fiji.bdvpg.scijava.command.bdv.BdvCreatorCommand}
+	 */
 	@Test
 	public void createBdv() {
 		try {
+			// Closes all viewers
+			SourceAndConverterServices.getBDVService()
+					.getViewers().forEach(
+							BdvHandle::close
+					);
+			Assert.assertEquals(0,
+					SourceAndConverterServices
+							.getBDVService()
+							.getViewers().size());
+
 			ij.script().run("dummy.ijm",
 					"run(\"BDV - Create empty BDV window\");", true).get();
-			Assert.assertEquals(
-			SourceAndConverterServices
+
+			// Testing creation
+			Assert.assertEquals(1,
+					SourceAndConverterServices
+							.getBDVService()
+							.getViewers().size());
+			// Testing name
+			/*BdvHandle bdvh = SourceAndConverterServices
 					.getBDVService()
-					.getViewers().size(),1);
-		} catch (InterruptedException e) {
-			System.out.println("INterrupt");
-			throw new RuntimeException(e);
-		} catch (ExecutionException e) {
-			System.out.println("ExeExcep");
+					.getViewers().get(0);
+			Assert.assertEquals("BDV",
+					ViewerHelper.getViewerTitle(bdvh.getViewerPanel())); // TODO: fix
+			*/
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
 			throw new RuntimeException(e);
 		}
 	}
+
+	/**
+	 * Testing {@link sc.fiji.bdvpg.scijava.command.bvv.BvvCreatorCommand}
+	 */
+	@Test
+	public void createBvv() {
+		try {
+			// Closes all viewers
+			SourceAndConverterServices.getBVVService()
+							.getViewers().forEach(
+									BvvHandle::close
+					);
+			Assert.assertEquals(0,
+					SourceAndConverterServices
+							.getBVVService()
+							.getViewers().size());
+			ij.script().run("dummy.ijm",
+					"run(\"BVV - Create empty BVV window\");", true).get();
+
+			// Testing creation
+			Assert.assertEquals(1,
+					SourceAndConverterServices
+							.getBVVService()
+							.getViewers().size());
+			// Testing name
+			/*BvvHandle bvvh = SourceAndConverterServices
+					.getBVVService()
+					.getViewers().get(0);
+			Assert.assertEquals("BVV",
+					ViewerHelper.getViewerTitle(bvvh.getViewerPanel())); */
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			throw new RuntimeException(e);
+		}
+	}
+
 	@After
 	public void closeFiji() {
 		TestHelper.closeFijiAndBdvs(ij);

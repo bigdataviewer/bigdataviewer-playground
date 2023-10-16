@@ -409,4 +409,10 @@ public class BdvService extends ViewerService<BdvHandle>
 		}
 	}
 
+	@Override
+	public void initialize() {
+		super.initialize();
+		SourceAndConverterServices.setBDVService(this);
+	}
+
 }

@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bdv.navigate;
+package sc.fiji.bdvpg.viewer.navigate;
 
 import bdv.util.BdvHandle;
 import bdv.util.RandomAccessibleIntervalSource;
@@ -37,7 +37,6 @@ import ij.ImagePlus;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
@@ -47,20 +46,21 @@ import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-import sc.fiji.bdvpg.viewer.ViewerHelper;
+import sc.fiji.bdvpg.viewer.ViewerTransformSyncStarter;
+import sc.fiji.bdvpg.viewer.ViewerTransformSyncStopper;
 import sc.fiji.bdvpg.viewer.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.viewer.navigate.ViewerTransformChanger;
-import sc.fiji.bdvpg.viewer.navigate.ViewerTransformLogger;
 
 /**
- * ViewTransformSetAndLogDemo
+ * ViewTransformSynchronizationDemo
  * <p>
  * <p>
  * <p>
- * Author: @haesleinhuepf, @tischi
- * 12 2019
+ * Author: Nicolas Chiaruttini
+ * 01 2020
  */
-public class ViewTransformSetAndLogDemo {
+public class ViewTransformSynchronizationDemo {
+
+    static boolean isSynchronizing;
 
     static ImageJ ij;
 
@@ -81,33 +81,37 @@ public class ViewTransformSetAndLogDemo {
         SourceAndConverter<UnsignedByteType> sac = SourceAndConverterHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle = SourceAndConverterServices.getBDVService().getActiveViewer();
+        BdvHandle bdvHandle1 = SourceAndConverterServices.getBDVService().getNewViewer();
+        // Creates a BdvHandle
+        BdvHandle bdvHandle2 = SourceAndConverterServices.getBDVService().getNewViewer();
+        // Creates a BdvHandles
+        BdvHandle bdvHandle3 = SourceAndConverterServices.getBDVService().getNewViewer();
 
-        // Show the SourceAndConverter
-        SourceAndConverterServices.getBDVService().show(bdvHandle, sac);
+        BdvHandle[] bdvhs = new BdvHandle[]{bdvHandle1,bdvHandle2,bdvHandle3};
 
-        // Adjust view on SourceAndConverter
-        new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sac).run();
+        ViewerTransformSyncStarter syncstart = new ViewerTransformSyncStarter(bdvhs, false);
+        ViewerTransformSyncStopper syncstop = new ViewerTransformSyncStopper(syncstart.getSynchronizers(), null);
 
-        // add a click behavior for logging transforms
-        new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new ViewerTransformLogger( bdvHandle.getViewerPanel() ).run() ).install( "Log view transform", "ctrl D" );
+        syncstart.run();
+        isSynchronizing = true;
 
-        // log transform
-        new ViewerTransformLogger(bdvHandle.getViewerPanel()).run();
+        for (BdvHandle bdvHandle:bdvhs) {
+            // Show the SourceAndConverter
+            SourceAndConverterServices.getBDVService().show(bdvHandle, sac);
 
-        // update transform relative to current
-        AffineTransform3D affineTransform3D = new AffineTransform3D();
-        affineTransform3D.rotate(2, 45);
-        int animationDurationMillis = 2000;
-        new ViewerTransformChanger(bdvHandle.getViewerPanel(), affineTransform3D, true, animationDurationMillis ).run();
-        IJ.wait( animationDurationMillis );
+            // Adjust view on SourceAndConverter
+            new ViewerTransformAdjuster(bdvHandle.getViewerPanel(), sac).run();
 
-        // set a new transform
-        AffineTransform3D adaptedCenterTransform = ViewerHelper.getViewerTransformWithNewCenter( bdvHandle.getViewerPanel(), new double[]{ 133, 133, 0 } );
-        new ViewerTransformChanger(bdvHandle.getViewerPanel(), adaptedCenterTransform, false, animationDurationMillis ).run();
-
-        // log transform
-        new ViewerTransformLogger(bdvHandle.getViewerPanel()).run();
+            new ClickBehaviourInstaller(bdvHandle, (x,y) -> {
+                if (isSynchronizing) {
+                    syncstop.run();
+                } else {
+                    syncstart.setHandleInitialReference(bdvHandle.getViewerPanel());
+                    syncstart.run();
+                }
+                isSynchronizing = !isSynchronizing;
+            }).install("Toggle Synchronization", "ctrl S");
+        }
 
     }
 
@@ -120,4 +124,5 @@ public class ViewTransformSetAndLogDemo {
     public void closeFiji() {
         TestHelper.closeFijiAndBdvs(ij);
     }
+
 }

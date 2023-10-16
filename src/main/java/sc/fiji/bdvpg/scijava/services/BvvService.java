@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.scijava.services;
 
 import bdv.viewer.SourceAndConverter;
 import bvv.vistools.BvvHandle;
+import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import ij.Prefs;
 import net.imglib2.util.Pair;
@@ -405,6 +406,12 @@ public class BvvService extends ViewerService<BvvHandle>
 			((SourceFilterNode) sacService.getUI().getTreeModel().getRoot()).insert(
 				node, 0);
 		}
+	}
+
+	@Override
+	public void initialize() {
+		super.initialize();
+		SourceAndConverterServices.setBVVService(this);
 	}
 
 }

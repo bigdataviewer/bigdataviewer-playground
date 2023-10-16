@@ -26,11 +26,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bdv.navigate;
+package sc.fiji.bdvpg.viewer.navigate;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import bigwarp.BigWarp;
+import bvv.vistools.BvvHandle;
 import net.imagej.ImageJ;
 import org.junit.After;
 import org.junit.Test;
@@ -38,6 +39,7 @@ import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.scijava.services.BdvService;
+import sc.fiji.bdvpg.scijava.services.BvvService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
@@ -66,38 +68,47 @@ public class OrthoViewDemo {
 
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
+        TestHelper.startFiji(ij);
 
-        BdvService bdvDisplayService = ij.get(BdvService.class);
         SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
-
-        // Makes BDV Source
-        System.out.println(VersionUtils.getVersion(BigWarp.class));
-
         new SpimDataFromXmlImporter( "src/test/resources/mri-stack.xml" ).run();
-
-        //Source source = new RandomAccessibleIntervalSource(rai, Util.getTypeFromInterval(rai), "blobs");
-        //SourceAndConverter sac = SourceAndConverterUtils.createSourceAndConverter(source);
-
-        // Creates a BdvHandle
-        BdvHandle bdvHandleX = bdvDisplayService.getNewViewer();
-        // Creates a BdvHandle
-        BdvHandle bdvHandleY = bdvDisplayService.getNewViewer();
-        // Creates a BdvHandles
-        BdvHandle bdvHandleZ = bdvDisplayService.getNewViewer();
-
-        BdvHandle[] bdvhs = new BdvHandle[]{bdvHandleX,bdvHandleY,bdvHandleZ};
 
         // Get a handle on the sacs
         final List< SourceAndConverter<?> > sacs = sourceService.getSourceAndConverters();
 
-        ViewerOrthoSyncStarter syncstart = new ViewerOrthoSyncStarter(
+        BdvService bdvDisplayService = ij.get(BdvService.class);
+        BvvService bvvDisplayService = ij.get(BvvService.class);
+
+        // Creates a BdvHandle
+        BdvHandle bdvHandleX = bdvDisplayService.getNewViewer();
+        BvvHandle bvvHandleX = bvvDisplayService.getNewViewer();
+        // Creates a BdvHandle
+        BdvHandle bdvHandleY = bdvDisplayService.getNewViewer();
+        BvvHandle bvvHandleY = bvvDisplayService.getNewViewer();
+        // Creates a BdvHandles
+        BdvHandle bdvHandleZ = bdvDisplayService.getNewViewer();
+        BvvHandle bvvHandleZ = bvvDisplayService.getNewViewer();
+
+        BdvHandle[] bdvhs = new BdvHandle[]{bdvHandleX,bdvHandleY,bdvHandleZ};
+        BvvHandle[] bvvhs = new BvvHandle[]{bvvHandleX,bvvHandleY,bvvHandleZ};
+
+
+        ViewerOrthoSyncStarter syncstartBdv = new ViewerOrthoSyncStarter(
                 bdvHandleX.getViewerPanel(),
                 bdvHandleY.getViewerPanel(),
                 bdvHandleZ.getViewerPanel(), false);
-        ViewerTransformSyncStopper syncstop = new ViewerTransformSyncStopper(syncstart.getSynchronizers(), null);
 
-        syncstart.run();
+        ViewerOrthoSyncStarter syncstartBvv = new ViewerOrthoSyncStarter(
+                bvvHandleX.getViewerPanel(),
+                bvvHandleY.getViewerPanel(),
+                bvvHandleZ.getViewerPanel(), false);
+
+        ViewerTransformSyncStopper syncstopBdv = new ViewerTransformSyncStopper(syncstartBdv.getSynchronizers(), null);
+        ViewerTransformSyncStopper syncstopBvv = new ViewerTransformSyncStopper(syncstartBvv.getSynchronizers(), null);
+
+
+        syncstartBdv.run();
+        syncstartBvv.run();
         isSynchronizing = true;
 
         for (BdvHandle bdvHandle:bdvhs) {
@@ -110,10 +121,29 @@ public class OrthoViewDemo {
 
             new ClickBehaviourInstaller(bdvHandle, (x,y) -> {
                 if (isSynchronizing) {
-                    syncstop.run();
+                    syncstopBdv.run();
                 } else {
-                    syncstart.setHandleInitialReference(bdvHandle.getViewerPanel());
-                    syncstart.run();
+                    syncstartBdv.setHandleInitialReference(bdvHandle.getViewerPanel());
+                    syncstartBdv.run();
+                }
+                isSynchronizing = !isSynchronizing;
+            }).install("Toggle Synchronization", "ctrl S");
+        }
+
+        for (BvvHandle bvvHandle:bvvhs) {
+
+            sacs.forEach( sac -> {
+                bvvDisplayService.show(bvvHandle, sac);
+                new ViewerTransformAdjuster(bvvHandle.getViewerPanel(), sac).run();
+                new BrightnessAutoAdjuster<>(sac, 0).run();
+            });
+
+            new ClickBehaviourInstaller(bvvHandle, (x,y) -> {
+                if (isSynchronizing) {
+                    syncstopBvv.run();
+                } else {
+                    syncstartBvv.setHandleInitialReference(bvvHandle.getViewerPanel());
+                    syncstartBvv.run();
                 }
                 isSynchronizing = !isSynchronizing;
             }).install("Toggle Synchronization", "ctrl S");
