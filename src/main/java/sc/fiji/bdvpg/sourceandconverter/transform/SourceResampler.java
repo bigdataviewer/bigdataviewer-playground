@@ -30,7 +30,7 @@
 package sc.fiji.bdvpg.sourceandconverter.transform;
 
 import bdv.util.ResampledSource;
-import bdv.util.VolatileSource;
+import bdv.util.WrapVolatileSource;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.Volatile;
@@ -91,7 +91,7 @@ public class SourceResampler<T extends NumericType<T> & NativeType<T>>
 			SourceAndConverter<? extends Volatile<T>> vsac;
 			Source<? extends Volatile<T>> vsrcResampled;
 			if (cache) {
-				vsrcResampled = new VolatileSource<>(srcRsampled);
+				vsrcResampled = new WrapVolatileSource<>(srcRsampled);
 			}
 			else {
 				vsrcResampled = new ResampledSource(src.asVolatile().getSpimSource(),

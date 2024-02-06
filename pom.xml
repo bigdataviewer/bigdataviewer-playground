@@ -11,7 +11,7 @@
 
 	<groupId>sc.fiji</groupId>
 	<artifactId>bigdataviewer-playground</artifactId>
-	<version>0.8.2-SNAPSHOT</version>
+	<version>0.9.0-SNAPSHOT</version>
 
 	<name>bigdataviewer-playground</name>
 	<description>BigDataViewer Actions and GUI</description>
@@ -125,6 +125,7 @@
 		<reflections.version>0.10.2</reflections.version> <!-- for test only -->
 
 		<!-- package version below are determined by the parent pom but need to be upgraded or temporarily fixed for bugs -->
+		<bigdataviewer-vistools.version>1.0.0-beta-34</bigdataviewer-vistools.version>
 
 	</properties>
 
