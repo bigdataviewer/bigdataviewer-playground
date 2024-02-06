@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,16 +29,18 @@
 
 package sc.fiji.bdvpg.sourceandconverter.transform;
 
+import java.util.function.Function;
+
+import bdv.cache.SharedQueue;
 import bdv.util.ResampledSource;
-import bdv.util.WrapVolatileSource;
+import bdv.util.VolatileSource;
+import bdv.util.volatiles.VolatileTypeMatcher;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.Volatile;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.NumericType;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-
-import java.util.function.Function;
 
 public class SourceResampler<T extends NumericType<T> & NativeType<T>>
 	implements Runnable, Function<SourceAndConverter<T>, SourceAndConverter<T>>
@@ -58,9 +60,9 @@ public class SourceResampler<T extends NumericType<T> & NativeType<T>>
 
 	private final String name;
 
-	public SourceResampler(SourceAndConverter<T> sac_in,
-		SourceAndConverter<?> model, String name, boolean reuseMipmaps,
-		boolean cache, boolean interpolate, int defaultMipMapLevel)
+	public SourceResampler(final SourceAndConverter<T> sac_in,
+		final SourceAndConverter<?> model, final String name, final boolean reuseMipmaps,
+		final boolean cache, final boolean interpolate, final int defaultMipMapLevel)
 	{
 		this.name = name;
 		this.reuseMipMaps = reuseMipmaps;
@@ -81,8 +83,8 @@ public class SourceResampler<T extends NumericType<T> & NativeType<T>>
 	}
 
 	@Override
-	public SourceAndConverter<T> apply(SourceAndConverter<T> src) {
-		Source<T> srcRsampled = new ResampledSource<>(src.getSpimSource(), model
+	public SourceAndConverter<T> apply(final SourceAndConverter<T> src) {
+		final Source<T> srcRsampled = new ResampledSource<>(src.getSpimSource(), model
 			.getSpimSource(), name, reuseMipMaps, cache, interpolate,
 			defaultMipMapLevel);
 
@@ -91,7 +93,10 @@ public class SourceResampler<T extends NumericType<T> & NativeType<T>>
 			SourceAndConverter<? extends Volatile<T>> vsac;
 			Source<? extends Volatile<T>> vsrcResampled;
 			if (cache) {
-				vsrcResampled = new WrapVolatileSource<>(srcRsampled);
+				vsrcResampled = new VolatileSource(
+						srcRsampled,
+						() -> VolatileTypeMatcher.getVolatileTypeForType((NativeType)srcRsampled.getType()),
+						new SharedQueue(2));
 			}
 			else {
 				vsrcResampled = new ResampledSource(src.asVolatile().getSpimSource(),
