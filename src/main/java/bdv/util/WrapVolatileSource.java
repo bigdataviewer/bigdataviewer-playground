@@ -55,7 +55,7 @@ import net.imglib2.view.Views;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A {@link VolatileSource} simply wraps and cache volatileviews of a
+ * A {@link WrapVolatileSource} simply wraps and cache volatileviews of a
  * {@link Source} which can be made Volatile thanks to
  * {@link VolatileViews#wrapAsVolatile} That's not always possible! A
  * {@link SharedQueue} can be passed as an argument in the constructor to
@@ -66,7 +66,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <V> {@link Volatile} type
  */
 
-public class VolatileSource<T extends NumericType<T>, V extends Volatile<T> & NumericType<V>>
+public class WrapVolatileSource<T extends NumericType<T>, V extends Volatile<T> & NumericType<V>>
 	implements Source<V>
 {
 
@@ -80,12 +80,12 @@ public class VolatileSource<T extends NumericType<T>, V extends Volatile<T> & Nu
 	final ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, RandomAccessibleInterval<V>>> cachedRAIs =
 		new ConcurrentHashMap<>();
 
-	public VolatileSource(final Source<T> source) {
+	public WrapVolatileSource(final Source<T> source) {
 		this.originSource = source;
 		queue = new SharedQueue(2);
 	}
 
-	public VolatileSource(final Source<T> originSource, final SharedQueue queue) {
+	public WrapVolatileSource(final Source<T> originSource, final SharedQueue queue) {
 		this.originSource = originSource;
 		this.queue = queue;
 	}
