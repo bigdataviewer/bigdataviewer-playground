@@ -747,6 +747,7 @@ public class SourceAndConverterService extends AbstractService implements
 		try {
 			globalCache = gson.fromJson(cacheBuilderJson, GlobalCacheBuilder.class)
 				.create();
+
 		}
 		catch (Exception e) {
 			e.printStackTrace();
