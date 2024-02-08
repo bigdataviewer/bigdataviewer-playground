@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>37.1.0-SNAPSHOT</version>
+		<version>37.0.0</version>
 		<relativePath />
 	</parent>
 
@@ -126,6 +126,17 @@
 
 		<!-- package version below are determined by the parent pom but need to be upgraded or temporarily fixed for bugs -->
 
+		<n5.version>3.1.1</n5.version>
+		<n5-hdf5.version>2.1.0</n5-hdf5.version>
+		<n5-zarr.version>1.2.0</n5-zarr.version>
+		<n5-ij.version>4.0.1</n5-ij.version>
+		<n5-universe.version>1.3.1</n5-universe.version>
+		<n5-zstandard.version>1.0.2</n5-zstandard.version>
+		<org.janelia.n5-zstandard.version>${n5-zstandard.version}</org.janelia.n5-zstandard.version>
+
+		<bigwarp.version>9.1.0</bigwarp.version>
+		<bigdataviewer-core.version>10.4.13</bigdataviewer-core.version>
+		<bigdataviewer-vistools.version>1.0.0-beta-34</bigdataviewer-vistools.version>
 	</properties>
 
 	<dependencies>
