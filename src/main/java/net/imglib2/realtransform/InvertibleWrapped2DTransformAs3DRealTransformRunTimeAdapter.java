@@ -29,59 +29,29 @@
 
 package net.imglib2.realtransform;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
 import org.scijava.plugin.Plugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import sc.fiji.persist.IClassAdapter;
-
-import java.lang.reflect.Type;
+import sc.fiji.persist.IClassRuntimeAdapter;
 
 /**
  * Adapter of an 2D transformed wrapped as 3D
  */
 
-@Plugin(type = IClassAdapter.class)
-public class Wrapped2DTransformAs3DRealTransformAdapter implements
-	IClassAdapter<Wrapped2DTransformAs3D>
+@Plugin(type = IClassRuntimeAdapter.class)
+public class InvertibleWrapped2DTransformAs3DRealTransformRunTimeAdapter implements
+		IClassRuntimeAdapter<RealTransform, InvertibleWrapped2DTransformAs3D>
 {
-
-	protected static final Logger logger = LoggerFactory.getLogger(
-		Wrapped2DTransformAs3DRealTransformAdapter.class);
-
 	@Override
-	public Wrapped2DTransformAs3D deserialize(JsonElement jsonElement, Type type,
-		JsonDeserializationContext jsonDeserializationContext)
-		throws JsonParseException
-	{
-		JsonObject obj = jsonElement.getAsJsonObject();
-		RealTransform rt = jsonDeserializationContext.deserialize(obj.get(
-			"wrappedTransform"), RealTransform.class);
-
-		if (!(rt instanceof InvertibleRealTransform)) {
-
-			return new Wrapped2DTransformAs3D(rt);
-		}
-
-		return new InvertibleWrapped2DTransformAs3D((InvertibleRealTransform) rt);
+	public Class<? extends RealTransform> getBaseClass() {
+		return RealTransform.class;
 	}
 
 	@Override
-	public JsonElement serialize(Wrapped2DTransformAs3D wrapped2DTransformAs3D,
-		Type type, JsonSerializationContext jsonSerializationContext)
-	{
-		JsonObject obj = new JsonObject();
-		obj.add("wrappedTransform", jsonSerializationContext.serialize(
-			wrapped2DTransformAs3D.getTransform(), RealTransform.class));
-		return obj;
+	public Class<? extends InvertibleWrapped2DTransformAs3D> getRunTimeClass() {
+		return InvertibleWrapped2DTransformAs3D.class;
 	}
 
 	@Override
-	public Class<? extends Wrapped2DTransformAs3D> getAdapterClass() {
-		return Wrapped2DTransformAs3D.class;
+	public boolean useCustomAdapter() {
+		return false;
 	}
 }

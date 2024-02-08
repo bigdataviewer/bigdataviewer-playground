@@ -35,6 +35,7 @@ import bdv.util.BdvHandle;
 import bdv.util.ViewerPanelHandle;
 import bdv.viewer.SourceAndConverter;
 import bigwarp.BigWarp;
+import bigwarp.BigWarpData;
 import mpicbg.spim.data.SpimDataException;
 
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ import java.util.Map;
 
 public class BigWarpLauncher implements Runnable {
 
-	final BigWarp.BigWarpData<?> bwData;
+	final BigWarpData<?> bwData;
 
 	BigWarp<?> bigWarp;
 
@@ -116,7 +117,7 @@ public class BigWarpLauncher implements Runnable {
 		allConverterSetups.forEach(setup -> displaysettings.put(setup,
 			new double[] { setup.getDisplayRangeMin(), setup.getDisplayRangeMax() }));
 
-		bwData = new BigWarp.BigWarpData(allSources, allConverterSetups, null,
+		bwData = new BigWarpData(allSources, allConverterSetups, null,
 			mvSrcIndices, fxSrcIndices);
 
 	}

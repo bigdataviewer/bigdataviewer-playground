@@ -96,7 +96,7 @@ public class SourceResampler<T extends NumericType<T> & NativeType<T>>
 				vsrcResampled = new VolatileSource(
 						srcRsampled,
 						() -> VolatileTypeMatcher.getVolatileTypeForType((NativeType)srcRsampled.getType()),
-						new SharedQueue(2));
+						new SharedQueue(2);
 			}
 			else {
 				vsrcResampled = new ResampledSource(src.asVolatile().getSpimSource(),
