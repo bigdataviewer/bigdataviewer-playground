@@ -11,7 +11,7 @@
 
 	<groupId>sc.fiji</groupId>
 	<artifactId>bigdataviewer-playground</artifactId>
-	<version>0.8.2-SNAPSHOT</version>
+	<version>0.8.2-SNAPSHOT-TEST</version>
 
 	<name>bigdataviewer-playground</name>
 	<description>BigDataViewer Actions and GUI</description>
@@ -165,6 +165,7 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigwarp_fiji</artifactId>
+			<version>8.0.0</version>
 		</dependency>
 
 		<dependency>

@@ -38,7 +38,7 @@ import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-import static sc.fiji.bdvpg.BigWarpDemo.demo2d;
+import static sc.fiji.bdvpg.transform.BigWarpDemo.demo2d;
 
 public class DemoTreeSourcesManipulation {
     public static void main(String... args) {

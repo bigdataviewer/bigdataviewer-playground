@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg;
+package sc.fiji.bdvpg.transform;
 
 import bdv.util.BdvHandle;
 import bdv.util.RandomAccessibleIntervalSource;
@@ -45,6 +45,7 @@ import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import org.junit.After;
 import org.junit.Test;
+import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStarter;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStopper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;

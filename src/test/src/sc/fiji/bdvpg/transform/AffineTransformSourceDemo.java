@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg;
+package sc.fiji.bdvpg.transform;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
@@ -36,6 +36,7 @@ import net.imagej.ImageJ;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.junit.After;
 import org.junit.Test;
+import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;

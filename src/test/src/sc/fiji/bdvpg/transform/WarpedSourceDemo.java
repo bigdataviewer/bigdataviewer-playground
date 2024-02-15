@@ -26,11 +26,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg;
+package sc.fiji.bdvpg.transform;
 
 import bdv.util.BdvHandle;
 import bdv.util.BigWarpHelper;
-import bdv.util.volatiles.VolatileViews;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
@@ -41,6 +40,7 @@ import net.imglib2.realtransform.RealTransform;
 import net.imglib2.realtransform.RealTransformSequence;
 import org.junit.After;
 import org.junit.Test;
+import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;

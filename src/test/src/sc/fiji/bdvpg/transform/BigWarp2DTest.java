@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg;
+package sc.fiji.bdvpg.transform;
 
 import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;
