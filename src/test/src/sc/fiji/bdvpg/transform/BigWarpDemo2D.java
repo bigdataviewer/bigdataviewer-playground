@@ -43,9 +43,11 @@ import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAndTimeRange;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.register.BigWarpLauncher;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
+import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.util.ArrayList;
@@ -79,16 +81,35 @@ public class BigWarpDemo2D {
 
         // --------------------------- START BIGWARP - ROTATE 90 DEGREES
 
-        AffineTransform3D at3d = new AffineTransform3D();
+        AffineTransform3D rot90 = new AffineTransform3D();
 
-        at3d.rotate(2, Math.PI/2.0);
+        rot90.rotate(2, Math.PI/2.0);
 
-        SourceAndConverter<?> rotatedMovingSource = new SourceAffineTransformer<>(takeFirstSource(filePath), at3d).get();
+        SourceAndConverter<?> rotatedMovingSource = new SourceAffineTransformer<>(takeFirstSource(filePath), rot90).get();
         // Chqnge moving source color
         sourceService.getConverterSetup(rotatedMovingSource)
                 .setColor(new ARGBType(ARGBType.rgba(0, 255, 255,0)));
 
         startBigWarp("Rotate PI/2", fixedSource, rotatedMovingSource, "src/test/resources/landmarks2d-demoSlice.csv");
+
+        // --------------------------- START BIGWARP - ROTATE 90 DEGREES then translate to the right
+
+        rot90 = new AffineTransform3D();
+        rot90.rotate(2, Math.PI/2.0);
+
+        rotatedMovingSource = new SourceAffineTransformer<>(takeFirstSource(filePath), rot90).get();
+        // Chqnge moving source color
+        sourceService.getConverterSetup(rotatedMovingSource)
+                .setColor(new ARGBType(ARGBType.rgba(0, 255, 255,0)));
+
+        AffineTransform3D translateRight = new AffineTransform3D();
+        translateRight.translate(3,0,0);
+
+        SourceAndConverter<?> rotatedTranslatedMovingSource = SourceTransformHelper.mutate(translateRight, new SourceAndConverterAndTimeRange<>(rotatedMovingSource,0,1));
+
+        startBigWarp("Rotate PI/2 + translate", fixedSource, rotatedTranslatedMovingSource, "src/test/resources/landmarks2d-demoSlice.csv");
+
+
 
 
     }
