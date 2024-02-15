@@ -31,7 +31,8 @@ package sc.fiji.bdvpg.transform;
 import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;
 import bigwarp.BigWarp;
-import bigwarp.BigWarp.BigWarpData;
+
+import bigwarp.BigWarpData;
 import bigwarp.BigWarpInit;
 import ij.IJ;
 import ij.ImagePlus;
