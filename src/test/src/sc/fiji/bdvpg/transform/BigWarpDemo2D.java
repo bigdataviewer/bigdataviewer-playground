@@ -58,15 +58,27 @@ public class BigWarpDemo2D {
 
     static ImageJ ij;
 
+    static SourceAndConverterService sourceService;
+
+    static final String filePath = "src/test/resources/demoSlice.xml";
+
     public static void main(String... args) {
         // Initializes static SourceService and Display Service
         ij = new ImageJ();
         TestHelper.startFiji(ij);//ij.ui().showUI();
         System.out.println("BigWarp version:"+VersionUtils.getVersion(BigWarp.class));
-        SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
+        sourceService = ij.get(SourceAndConverterService.class);
 
         // Makes BDV Source
-        final String filePath = "src/test/resources/demoSlice.xml";
+        // --------------------------- START BIGWARP
+        bigwarp();
+        bigwarpRot();
+        bigwarpRotTranslate();
+        bigwarpRotPostTranslate();
+
+    }
+
+    public static void bigwarp() {
 
         // --------------------------- MAKE SOURCES
         SourceAndConverter<?> fixedSource = takeFirstSource(filePath);
@@ -76,43 +88,78 @@ public class BigWarpDemo2D {
         sourceService.getConverterSetup(movingSource)
                 .setColor(new ARGBType(ARGBType.rgba(0, 255, 255,0)));
 
-        // --------------------------- START BIGWARP
-        startBigWarp("Default", fixedSource, movingSource, "src/test/resources/landmarks2d-demoSlice.csv");
 
-        // --------------------------- START BIGWARP - ROTATE 90 DEGREES
+        startBigWarp("Rotate PI/2", fixedSource, movingSource, "src/test/resources/landmarks2d-demoSlice.csv");
+    }
+
+    public static void bigwarpRot() {
+
+        // --------------------------- MAKE SOURCES
+        SourceAndConverter<?> fixedSource = takeFirstSource(filePath);
 
         AffineTransform3D rot90 = new AffineTransform3D();
 
         rot90.rotate(2, Math.PI/2.0);
 
         SourceAndConverter<?> rotatedMovingSource = new SourceAffineTransformer<>(takeFirstSource(filePath), rot90).get();
+
         // Chqnge moving source color
         sourceService.getConverterSetup(rotatedMovingSource)
                 .setColor(new ARGBType(ARGBType.rgba(0, 255, 255,0)));
 
         startBigWarp("Rotate PI/2", fixedSource, rotatedMovingSource, "src/test/resources/landmarks2d-demoSlice.csv");
+    }
 
-        // --------------------------- START BIGWARP - ROTATE 90 DEGREES then translate to the right
+    public static void bigwarpRotTranslate() {
 
-        rot90 = new AffineTransform3D();
+        // --------------------------- MAKE SOURCES
+        SourceAndConverter<?> fixedSource = takeFirstSource(filePath);
+
+        AffineTransform3D rot90 = new AffineTransform3D();
+
         rot90.rotate(2, Math.PI/2.0);
 
-        rotatedMovingSource = new SourceAffineTransformer<>(takeFirstSource(filePath), rot90).get();
-        // Chqnge moving source color
-        sourceService.getConverterSetup(rotatedMovingSource)
-                .setColor(new ARGBType(ARGBType.rgba(0, 255, 255,0)));
+        SourceAndConverter<?> rotatedMovingSource = new SourceAffineTransformer<>(takeFirstSource(filePath), rot90).get();
+
 
         AffineTransform3D translateRight = new AffineTransform3D();
         translateRight.translate(3,0,0);
 
         SourceAndConverter<?> rotatedTranslatedMovingSource = SourceTransformHelper.mutate(translateRight, new SourceAndConverterAndTimeRange<>(rotatedMovingSource,0,1));
 
-        startBigWarp("Rotate PI/2 + translate", fixedSource, rotatedTranslatedMovingSource, "src/test/resources/landmarks2d-demoSlice.csv");
+        // Chqnge moving source color
+        sourceService.getConverterSetup(rotatedMovingSource)
+                .setColor(new ARGBType(ARGBType.rgba(0, 255, 255,0)));
+
+        startBigWarp("Rotate PI/2", fixedSource, rotatedTranslatedMovingSource, "src/test/resources/landmarks2d-demoSlice.csv");
+    }
+
+    public static void bigwarpRotPostTranslate() {
+
+        // --------------------------- MAKE SOURCES
+        SourceAndConverter<?> fixedSource = takeFirstSource(filePath);
+
+        AffineTransform3D rot90 = new AffineTransform3D();
+
+        rot90.rotate(2, Math.PI/2.0);
+
+        SourceAndConverter<?> rotatedMovingSource = new SourceAffineTransformer<>(takeFirstSource(filePath), rot90).get();
+
+        // Change moving source color
+        sourceService.getConverterSetup(rotatedMovingSource)
+                .setColor(new ARGBType(ARGBType.rgba(0, 255, 255,0)));
+
+        startBigWarp("Rotate PI/2", fixedSource, rotatedMovingSource, "src/test/resources/landmarks2d-demoSlice.csv");
 
 
+        AffineTransform3D translateRight = new AffineTransform3D();
+        translateRight.translate(5,0,0);
 
+        SourceTransformHelper.mutate(translateRight, new SourceAndConverterAndTimeRange<>(rotatedMovingSource,0,1));
 
     }
+
+
 
     public static SourceAndConverter<?> takeFirstSource(String xmlPath) {
         SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
