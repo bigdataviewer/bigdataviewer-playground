@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>38.0.0-SNAPSHOT</version>
+		<version>37.0.0</version>
 		<relativePath />
 	</parent>
 
@@ -125,6 +125,18 @@
 		<reflections.version>0.10.2</reflections.version> <!-- for test only -->
 
 		<!-- package version below are determined by the parent pom but need to be upgraded or temporarily fixed for bugs -->
+		<bigwarp_fiji.version>9.1.2</bigwarp_fiji.version>
+		<imglib-realtransform.version>4.0.2</imglib-realtransform.version>
+
+		<n5.version>3.2.0</n5.version>
+		<n5-aws-s3.version>4.1.1</n5-aws-s3.version>
+		<n5-blosc.version>1.1.1</n5-blosc.version>
+		<n5-hdf5.version>2.2.0</n5-hdf5.version>
+		<n5-google-cloud.version>4.1.0</n5-google-cloud.version>
+		<n5-zarr.version>1.3.1</n5-zarr.version>
+		<n5-universe.version>1.4.1</n5-universe.version>
+		<n5-ij.version>4.1.0</n5-ij.version>
+		<n5-viewer_fiji.version>6.1.0</n5-viewer_fiji.version>
 
 	</properties>
 
@@ -165,12 +177,18 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigwarp_fiji</artifactId>
-			<version>9.1.0</version>
+			<version>${bigwarp_fiji.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-realtransform</artifactId>
+			<version>${imglib2-realtransform.version}</version>
 		</dependency>
 
 		<!-- Test dependencies -->
