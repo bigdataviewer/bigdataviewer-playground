@@ -308,7 +308,7 @@ public class ResampledSource<T extends NumericType<T> & NativeType<T>>
 		AffineTransform3D atOrigin = new AffineTransform3D();
 		origin.getSourceTransform(t, getModelToOriginMipMapLevel(level), atOrigin);
 		at.concatenate(atOrigin);
-		RandomAccessible<T> ra = RealViews.affine(ipimg, at); // Gets the view
+		RandomAccessible<T> ra = RealViews.simplify(RealViews.affine(ipimg, at)); // Gets the view
 
 		// ... interval
 		RandomAccessibleInterval<T> view = Views.interval(ra, new long[] { 0, 0,
