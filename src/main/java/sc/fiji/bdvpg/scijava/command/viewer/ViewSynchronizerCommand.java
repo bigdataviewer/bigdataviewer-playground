@@ -31,7 +31,6 @@ package sc.fiji.bdvpg.scijava.command.viewer;
 
 import bdv.util.BdvHandle;
 import bvv.vistools.BvvHandle;
-import org.scijava.command.CommandModule;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -56,7 +55,7 @@ import java.awt.event.WindowEvent;
 /**
  * I wanted to do this as an Interactive Command but there's no callback when an
  * interactive command is closed (bug
- * https://github.com/scijava/scijava-common/issues/379) so we cannot stop the
+ * <a href="https://github.com/scijava/scijava-common/issues/379">bug</a>) so we cannot stop the
  * synchronization appropriately. Hence the dirty JFrame the user has to close
  * to stop synchronization ... TODO fix potential memory leaks which could be a
  * consequence of this extra JFrame author Nicolas Chiaruttini, BIOP, EPFL, 2020

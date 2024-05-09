@@ -72,6 +72,8 @@ public class WrapVolatileSource<T extends NumericType<T>, V extends Volatile<T> 
 
 	final Source<T> originSource;
 
+	Source<V> volatileSource = null;
+
 	protected final DefaultInterpolators<V> interpolators =
 		new DefaultInterpolators<>();
 
@@ -87,7 +89,16 @@ public class WrapVolatileSource<T extends NumericType<T>, V extends Volatile<T> 
 
 	public WrapVolatileSource(final Source<T> originSource, final SharedQueue queue) {
 		this.originSource = originSource;
+		this.volatileSource = null;
 		this.queue = queue;
+	}
+
+	/** For lazy downscaling, we want to keep the original highest resolution level
+	 * a bit hacky...
+	 * @param volatileSource a volatile source already computed
+	 */
+	public void setVolatileSourceForHighestResolution(final Source<V> volatileSource) {
+		this.volatileSource = volatileSource;
 	}
 
 	@Override
@@ -96,6 +107,9 @@ public class WrapVolatileSource<T extends NumericType<T>, V extends Volatile<T> 
 	}
 
 	public RandomAccessibleInterval<V> buildSource(int t, int level) {
+		if ((level==0)&&(volatileSource!=null)) {
+			return volatileSource.getSource(t,0);
+		}
 		return VolatileViews.wrapAsVolatile(originSource.getSource(t, level),
 			queue);
 	}
@@ -138,7 +152,7 @@ public class WrapVolatileSource<T extends NumericType<T>, V extends Volatile<T> 
 
 	@Override
 	public V getType() {
-		return (V) getVolatileOf(originSource.getType());
+		return getVolatileOf(originSource.getType());
 	}
 
 	@Override
@@ -162,19 +176,19 @@ public class WrapVolatileSource<T extends NumericType<T>, V extends Volatile<T> 
 	 * @param t a NumericType instance
 	 * @return the volatile equivalent class of this NumericType instance
 	 */
-
-	static public Volatile<? extends NumericType> getVolatileOf(
-		NumericType<?> t)
+	static public<T extends NumericType<T>, V extends Volatile<T> > V getVolatileOf(
+			NumericType<T> t)
 	{
-		if (t instanceof UnsignedShortType) return new VolatileUnsignedShortType();
+		if (t instanceof UnsignedShortType) return (V) new VolatileUnsignedShortType();
 
-		if (t instanceof UnsignedIntType) return new VolatileUnsignedIntType();
+		if (t instanceof UnsignedIntType) return (V) new VolatileUnsignedIntType();
 
-		if (t instanceof UnsignedByteType) return new VolatileUnsignedByteType();
+		if (t instanceof UnsignedByteType) return (V) new VolatileUnsignedByteType();
 
-		if (t instanceof FloatType) return new VolatileFloatType();
+		if (t instanceof FloatType) return (V) new VolatileFloatType();
 
-		if (t instanceof ARGBType) return new VolatileARGBType();
-		return null;
+		if (t instanceof ARGBType) return (V) new VolatileARGBType();
+
+		throw new RuntimeException("Unknown volatile type matching pixel type "+t.getClass().getName());
 	}
 }
