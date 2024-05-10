@@ -26,34 +26,32 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bvv;
+package sc.fiji.bdvpg.demos.bdv;
 
-import bdv.util.BdvFunctions;
-import bvv.vistools.BvvFunctions;
-import bvv.vistools.BvvStackSource;
-import net.imagej.ImageJ;
-import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImgs;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
+import org.scijava.Context;
+import org.scijava.ui.UIService;
+import org.scijava.ui.swing.SwingUI;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
-import java.util.Random;
+/**
+ * Demos a way to create a Bdv window which will be registered by the {@link SourceAndConverterBdvDisplayService}
+ * It is thus discoverable by all the other components of BigDataViewer-playground, in particular
+ * as scijava parameters typed {@link bdv.util.BdvHandle} or {@link bdv.util.BdvHandle[]} in
+ * {@link org.scijava.command.Command}.
+ */
+public class BdvCreatorDemo {
+	public static void main( String[] args ) {
+		// Create the application context with all available services a runtime
+		final Context ctx = new Context();
 
-public class BvvDemo {
-    static ImageJ ij;
-    public static void main(String... args) {
-        // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-        ij = new ImageJ();
-        ij.ui().showUI();
+		// Show UI
+		ctx.service(UIService.class).showUI(SwingUI.NAME);
 
-        Random random = new Random();
-        Img<UnsignedShortType> img = ArrayImgs.unsignedShorts(10, 10, 10);
-        img.forEach(t -> t.set(random.nextInt()));
+		// Creates a new BDV
+		ctx.getService(SourceAndConverterBdvDisplayService.class).getNewBdv();
 
-        BdvFunctions.show(img, "Random box");
+		// Returns the previous BDV or the one "on top", meaning the one clicked by the user
+		ctx.getService(SourceAndConverterBdvDisplayService.class).getActiveBdv();
+	}
 
-        BvvStackSource<?> bss = BvvFunctions.show( img, "Random Box");//, bvvOptions );
-
-        bss.getConverterSetups().get(0).setDisplayRange(0,65535);
-
-    }
 }

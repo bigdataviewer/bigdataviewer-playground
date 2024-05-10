@@ -26,14 +26,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bdv.navigate;
+package sc.fiji.bdvpg.demos.bdv.navigate;
 
 import bdv.util.BdvHandle;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
-import org.junit.After;
-import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
@@ -47,12 +46,11 @@ import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
  */
 public class ViewerTransformAdjusterDemo
 {
-    static ImageJ ij;
     public static void main(String[] args)
     {
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-        ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
+        ImageJ ij = new ImageJ();
+        TestHelper.startFiji(ij);
 
         // Gets active BdvHandle instance
         BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
@@ -84,13 +82,4 @@ public class ViewerTransformAdjusterDemo
         new ViewerTransformAdjuster(bdvHandle, SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
     }
 
-    @Test
-    public void demoRunOk() {
-        main(new String[]{""});
-    }
-
-    @After
-    public void closeFiji() {
-        TestHelper.closeFijiAndBdvs(ij);
-    }
 }

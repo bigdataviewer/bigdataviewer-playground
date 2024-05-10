@@ -26,81 +26,74 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bdv.navigate;
+package sc.fiji.bdvpg.demos.bdv.navigate;
 
 import bdv.util.BdvHandle;
-import bdv.util.RandomAccessibleIntervalSource;
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import ij.IJ;
-import ij.ImagePlus;
 import net.imagej.ImageJ;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.numeric.integer.UnsignedByteType;
-import net.imglib2.util.Util;
-import net.imglib2.view.Views;
-import org.junit.After;
-import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 import sc.fiji.bdvpg.viewers.ViewerAdapter;
-import sc.fiji.bdvpg.viewers.ViewerTransformSyncStarter;
+import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
 import sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper;
 
+import java.util.List;
+
 /**
- * ViewTransformSynchronizationDemo
- * <p>
- * <p>
- * <p>
- * Author: Nicolas Chiaruttini
- * 01 2020
+ * Example of an orthoviewer for BigDataViewer
+ * Press Ctrl+S to toggle ON and OFF the view synchronisation between the three windows.
+ * (they are stacked on top of each others when starting the demo)
+ *
+ * @author Nicolas Chiaruttini
+ * Date: 01/2020
  */
-public class ViewTransformSynchronizationDemo {
+public class OrthoViewDemo {
 
     static boolean isSynchronizing;
-
-    static ImageJ ij;
 
     public static void main(String[] args) {
 
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-        ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
+        ImageJ ij = new ImageJ();
+        TestHelper.startFiji(ij);
 
-        // load and convert an image
-        ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
-        RandomAccessibleInterval<UnsignedByteType> rai = ImageJFunctions.wrapReal(imp);
-        // Adds a third dimension because BDV needs 3D
-        rai = Views.addDimension( rai, 0, 0 );
+        // Gets both services
+        SourceAndConverterBdvDisplayService bdvDisplayService = ij.get(SourceAndConverterBdvDisplayService.class);
+        SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
 
-        // Makes BDV Source
-        Source<UnsignedByteType> source = new RandomAccessibleIntervalSource<>(rai, Util.getTypeFromInterval(rai), "blobs");
-        SourceAndConverter<UnsignedByteType> sac = SourceAndConverterHelper.createSourceAndConverter(source);
+        new SpimDataFromXmlImporter( "src/test/resources/mri-stack.xml" ).run();
 
-        // Creates a BdvHandle
-        BdvHandle bdvHandle1 = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
-        // Creates a BdvHandle
-        BdvHandle bdvHandle2 = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
-        // Creates a BdvHandles
-        BdvHandle bdvHandle3 = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
+        // Creates three Bdv windows
+        BdvHandle bdvHandleX = bdvDisplayService.getNewBdv();
+        BdvHandle bdvHandleY = bdvDisplayService.getNewBdv();
+        BdvHandle bdvHandleZ = bdvDisplayService.getNewBdv();
 
-        BdvHandle[] bdvhs = new BdvHandle[]{bdvHandle1,bdvHandle2,bdvHandle3};
+        BdvHandle[] bdvhs = new BdvHandle[]{bdvHandleX,bdvHandleY,bdvHandleZ};
 
-        ViewerTransformSyncStarter syncstart = new ViewerTransformSyncStarter(bdvhs, false);
-        ViewerTransformSyncStopper syncstop = new ViewerTransformSyncStopper(syncstart.getSynchronizers(), null);
+        // Get a handle on the sacs
+        final List< SourceAndConverter<?> > sacs = sourceService.getSourceAndConverters();
+
+        ViewerOrthoSyncStarter syncstart = new ViewerOrthoSyncStarter(
+                new ViewerAdapter(bdvHandleX),
+                new ViewerAdapter(bdvHandleY),
+                new ViewerAdapter(bdvHandleZ), true);
+        ViewerTransformSyncStopper syncstop = new ViewerTransformSyncStopper(syncstart.getSynchronizers(), syncstart.getTimeSynchronizers());
 
         syncstart.run();
         isSynchronizing = true;
 
         for (BdvHandle bdvHandle:bdvhs) {
-            // Show the SourceAndConverter
-            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
 
-            // Adjust view on SourceAndConverter
-            new ViewerTransformAdjuster(bdvHandle, sac).run();
+            sacs.forEach( sac -> {
+                bdvDisplayService.show(bdvHandle, sac);
+                new ViewerTransformAdjuster(bdvHandle, sac).run();
+                new BrightnessAutoAdjuster<>(sac, 0).run();
+            });
 
             new ClickBehaviourInstaller(bdvHandle, (x,y) -> {
                 if (isSynchronizing) {
@@ -113,16 +106,6 @@ public class ViewTransformSynchronizationDemo {
             }).install("Toggle Synchronization", "ctrl S");
         }
 
-    }
-
-    @Test
-    public void demoRunOk() {
-        main(new String[]{""});
-    }
-
-    @After
-    public void closeFiji() {
-        TestHelper.closeFijiAndBdvs(ij);
     }
 
 }

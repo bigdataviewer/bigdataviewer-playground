@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 
 import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_LOCATION;
 
@@ -74,24 +74,8 @@ public class SpimDataFromXmlImporter implements Runnable,
 		try {
 			sd = new XmlIoSpimData().load(dataLocation);
 			SourceAndConverterServices.getSourceAndConverterService().register(sd);
-			String pattern = Pattern.quote(System.getProperty("file.separator"));
-			String[] parts = dataLocation.split(pattern);
-			if (parts.length > 0) {
-				if (parts[parts.length - 1] != null) {
-					SourceAndConverterServices.getSourceAndConverterService()
-						.setSpimDataName(sd, parts[parts.length - 1]);
-				}
-				else {
-					logger.error("Wrong parsing of spimdata name (not enough parts) : " +
-						dataLocation);
-				}
-			}
-			else {
-				logger.error("Wrong parsing of spimdata name (can't be split): " +
-					dataLocation);
-			}
-			SourceAndConverterServices.getSourceAndConverterService().setMetadata(sd,
-				SPIM_DATA_LOCATION, dataLocation);
+			SourceAndConverterServices.getSourceAndConverterService().setSpimDataName(sd, Paths.get(dataLocation).getFileName().toString());
+			SourceAndConverterServices.getSourceAndConverterService().setMetadata(sd, SPIM_DATA_LOCATION, dataLocation);
 		}
 		catch (SpimDataException e) {
 			e.printStackTrace();

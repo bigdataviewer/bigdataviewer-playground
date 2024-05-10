@@ -229,6 +229,13 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- to test ij1 macro scripting -->
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-legacy</artifactId>
+			<scope>test</scope>
+		</dependency>
+
     </dependencies>
 
 </project>

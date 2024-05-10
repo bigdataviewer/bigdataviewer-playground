@@ -26,49 +26,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijavacommand;
+package sc.fiji.bdvpg.scijava.command;
 
-import bdv.viewer.SourceAndConverter;
-import ij.IJ;
 import net.imagej.ImageJ;
 import org.scijava.command.Command;
 import org.scijava.command.InteractiveCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.WarpedSourceDemo;
 
-@SuppressWarnings("unused")
-@Plugin(type = InteractiveCommand.class, menuPath = "Test>Sorted Sources")
-public class TestWidgetDemoCommand implements Command {
+@Plugin(type = Command.class, menuPath = "Test>Test Interactive Command")
+public class TestInteractiveCommand extends InteractiveCommand {
 
     @Parameter
-    SourceAndConverter<?>[] non_sorted_sources;
-
-
-    @Parameter(style = "sorted")
-    SourceAndConverter<?>[] sorted_sources;
+    String a_string;
 
     @Override
     public void run() {
-        IJ.log("--- Non Sorted");
-        for(SourceAndConverter<?> source: non_sorted_sources) {
-            IJ.log(source.getSpimSource().getName());
-        }
-
-        IJ.log("--- Sorted");
-        for(SourceAndConverter<?> source: sorted_sources) {
-            IJ.log(source.getSpimSource().getName());
-        }
+        // nothing
     }
 
     public static void main(String... args) throws Exception {
-        // Initializes static SourceService and Display Service
 
         ImageJ ij = new ImageJ();
         ij.ui().showUI();
 
-        WarpedSourceDemo.demo();
-        ij.command().run(TestWidgetDemoCommand.class, true);
+        ij.command().run(TestInteractiveCommand .class, true);
 
     }
 }

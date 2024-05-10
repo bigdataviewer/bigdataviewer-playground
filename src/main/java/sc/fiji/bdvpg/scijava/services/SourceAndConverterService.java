@@ -63,7 +63,6 @@ import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;
 import org.scijava.module.ModuleItem;
 import org.scijava.object.ObjectService;
-import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
@@ -75,9 +74,6 @@ import org.scijava.service.Service;
 import org.scijava.ui.UIService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
-import sc.fiji.bdvpg.bdv.supplier.IBdvSupplier;
-import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
 import sc.fiji.bdvpg.cache.AbstractGlobalCache;
 import sc.fiji.bdvpg.cache.GlobalCacheBuilder;
 import sc.fiji.bdvpg.cache.GlobalLoaderCache;
@@ -88,10 +84,8 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.spimdata.EntityHandler;
 import sc.fiji.bdvpg.spimdata.IEntityHandlerService;
-import sc.fiji.persist.ScijavaGsonHelper;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -308,7 +302,7 @@ public class SourceAndConverterService extends AbstractService implements
 	}
 
 	public void setUniqueId(SourceAndConverter<?> sac, Integer id) {
-		setMetadata(sac, UNIQUE_ID_KEY, new Integer(id));
+		setMetadata(sac, UNIQUE_ID_KEY, id);
 	}
 
 	public synchronized void register(Collection<SourceAndConverter<?>> sources) {
@@ -760,11 +754,13 @@ public class SourceAndConverterService extends AbstractService implements
 			globalCache = GlobalCacheBuilder.builder().create();
 		}
 
-		if (!context().getService(UIService.class).isHeadless()) {
-			logger.debug(
-				"uiService detected : Constructing JPanel for BdvSourceAndConverterService");
-			ui = new SourceAndConverterServiceUI(this, context());
-			uiAvailable = true;
+		if (context().getService(UIService.class)!=null) {
+			if (!context().getService(UIService.class).isHeadless()) {
+				logger.debug(
+						"uiService detected : Constructing JPanel for BdvSourceAndConverterService");
+				ui = new SourceAndConverterServiceUI(this, context());
+				uiAvailable = true;
+			}
 		}
 
 		SourceAndConverterServices.setSourceAndConverterService(this);
@@ -810,7 +806,7 @@ public class SourceAndConverterService extends AbstractService implements
 	}
 
 	/**
-	 * @return a list of action name / keys / identifiers
+	 * @return a set of action name / keys / identifiers
 	 */
 	public Set<String> getActionsKeys() {
 		return actionMap.keySet();

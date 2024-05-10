@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijavacommand;
+package sc.fiji.bdvpg.scijava.command;
 
 import bdv.util.BdvHandle;
 import org.scijava.command.Command;

@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bdv.navigate;
+package sc.fiji.bdvpg.demos.bdv.navigate;
 
 import bdv.util.BdvHandle;
 import bdv.util.RandomAccessibleIntervalSource;
@@ -40,35 +40,32 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
-import org.junit.After;
-import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.bdv.navigate.PositionLogger;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 /**
  * ViewTransformSetAndLogDemo
- * <p>
- * <p>
- * <p>
+ * Demos how to log the current mouse position and how to install this behaviour on a Bdv window.
+ * Press Ctrl+D in Bdv and see the current mouse position being logged.
  * Author: @haesleinhuepf
  * 12 2019
  */
 public class LogMousePositionDemo {
 
-    static ImageJ ij;
-
     public static <T extends RealType<T>> void main(String... args) {
 
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-        ij = new ImageJ();
+        ImageJ ij = new ImageJ();
         TestHelper.startFiji(ij);//ij.ui().showUI();
 
-        // load and convert an image
+        // Load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
         RandomAccessibleInterval<T> rai = ImageJFunctions.wrapReal(imp);
+
         // Adds a third dimension because BDV needs 3D
         rai = Views.addDimension( rai, 0, 0 );
 
@@ -85,21 +82,11 @@ public class LogMousePositionDemo {
         // Adjust BDV View on the SourceAndConverter
         new ViewerTransformAdjuster(bdvHandle, sac).run();
 
-        // add a click behavior for logging mouse positions
-        new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new PositionLogger( bdvHandle ).run() ).install( "Log mouse position", "ctrl D" );
+        // Add a click behavior for logging mouse positions
+        new ClickBehaviourInstaller( bdvHandle, (x, y) -> new PositionLogger( bdvHandle ).run() ).install( "Log mouse position", "ctrl D" );
 
-        // log the current position
+        // Log the current position
         new PositionLogger( bdvHandle ).run();
-    }
-
-    @Test
-    public void demoRunOk() {
-        main("");
-    }
-
-    @After
-    public void closeFiji() {
-        TestHelper.closeFijiAndBdvs(ij);
     }
 
 }

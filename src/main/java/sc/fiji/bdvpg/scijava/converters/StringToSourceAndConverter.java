@@ -26,31 +26,56 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijavacommand;
 
-import net.imagej.ImageJ;
-import org.scijava.command.Command;
-import org.scijava.command.InteractiveCommand;
+package sc.fiji.bdvpg.scijava.converters;
+
+import bdv.viewer.SourceAndConverter;
+import org.scijava.convert.AbstractConverter;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
-@Plugin(type = Command.class, menuPath = "Test>Test Interactive Command")
-public class TestInteractiveCommand extends InteractiveCommand {
+import javax.swing.tree.TreePath;
+import java.util.List;
 
-    @Parameter
-    String a_string;
+/**
+ * @param <I> String class
+ */
 
-    @Override
-    public void run() {
-        // nothing
-    }
+@SuppressWarnings("unused")
+@Plugin(type = org.scijava.convert.Converter.class)
+public class StringToSourceAndConverter<I extends String> extends
+	AbstractConverter<I, SourceAndConverter<?>>
+{
 
-    public static void main(String... args) throws Exception {
+	@Parameter
+	SourceAndConverterService sacsService;
 
-        ImageJ ij = new ImageJ();
-        ij.ui().showUI();
+	@Override
+	public <T> T convert(Object src, Class<T> dest) {
+		String str = (String) src;
+		TreePath tp = sacsService.getUI().getTreePathFromString(str);
+		if (tp != null) {
+			List<SourceAndConverter<?>> potentialSources = sacsService.getUI().getSourceAndConvertersFromTreePath(tp);
+			if (potentialSources.size()!=1) {
+				log().warn("The specified parameters refers no either no source or too many sources");
+				return null;
+			} else {
+				return (T) potentialSources.get(0);
+			}
+		}
+		else {
+			return null;
+		}
+	}
 
-        ij.command().run(TestInteractiveCommand .class, true);
+	@Override
+	public Class getOutputType() {
+		return SourceAndConverter.class;
+	}
 
-    }
+	@Override
+	public Class<I> getInputType() {
+		return (Class<I>) String.class;
+	}
 }

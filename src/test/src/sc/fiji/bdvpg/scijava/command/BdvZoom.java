@@ -26,36 +26,43 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.bdv;
+package sc.fiji.bdvpg.scijava.command;
 
-import net.imagej.ImageJ;
-import org.junit.After;
-import org.junit.Test;
-import sc.fiji.bdvpg.TestHelper;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import bdv.util.BdvHandle;
+import org.scijava.command.Command;
+import org.scijava.command.InteractiveCommand;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.widget.Button;
 
-public class BdvCreatorDemo
-{
+/**
+ * Test command to demo {@link sc.fiji.bdvpg.scijava.BdvScijavaHelper}
+ */
+@SuppressWarnings({"unused", "CanBeFinal"})
+@Plugin(type = Command.class, menuPath = "Plugins>BigDataViewer>Playground>Zoom Controls")
+public class BdvZoom extends InteractiveCommand {
 
-	static ImageJ ij;
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		TestHelper.startFiji(ij);//ij.ui().showUI();
+    @Parameter(style = "slider", min = "1.1", max = "4", stepSize = "0.1")
+    double zoom_factor;
 
-		// Creates a BDV since none exists yet
-		ij.get(SourceAndConverterBdvDisplayService.class).getActiveBdv();
-	}
+    @Parameter(callback = "in")
+    Button button_in;
 
-	@Test
-	public void demoRunOk() {
-		main(new String[]{""});
-	}
+    @Parameter(callback = "out")
+    Button button_out;
 
-	@After
-	public void closeFiji() {
-		TestHelper.closeFijiAndBdvs(ij);
-	}
+    @Parameter
+    BdvHandle bdvh;
+
+    public void run() {
+        bdvh.getViewerPanel().showMessage("Zoom factor: "+zoom_factor);
+    }
+
+    public void out() {
+        bdvh.getViewerPanel().showMessage("Zoom Out");
+    }
+
+    public void in() {
+        bdvh.getViewerPanel().showMessage("Zoom In");
+    }
 }

@@ -26,43 +26,49 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijavacommand;
+package sc.fiji.bdvpg.scijava.command;
 
-import bdv.util.BdvHandle;
+import bdv.viewer.SourceAndConverter;
+import ij.IJ;
+import net.imagej.ImageJ;
 import org.scijava.command.Command;
 import org.scijava.command.InteractiveCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.widget.Button;
+import sc.fiji.bdvpg.WarpedSourceDemo;
 
-/**
- * Test command to demo {@link sc.fiji.bdvpg.scijava.BdvScijavaHelper}
- */
-@SuppressWarnings({"unused", "CanBeFinal"})
-@Plugin(type = Command.class, menuPath = "Plugins>BigDataViewer>Playground>Zoom Controls")
-public class BdvZoom extends InteractiveCommand {
-
-    @Parameter(style = "slider", min = "1.1", max = "4", stepSize = "0.1")
-    double zoom_factor;
-
-    @Parameter(callback = "in")
-    Button button_in;
-
-    @Parameter(callback = "out")
-    Button button_out;
+@SuppressWarnings("unused")
+@Plugin(type = InteractiveCommand.class, menuPath = "Test>Sorted Sources")
+public class TestWidgetDemoCommand implements Command {
 
     @Parameter
-    BdvHandle bdvh;
+    SourceAndConverter<?>[] non_sorted_sources;
 
+
+    @Parameter(style = "sorted")
+    SourceAndConverter<?>[] sorted_sources;
+
+    @Override
     public void run() {
-        bdvh.getViewerPanel().showMessage("Zoom factor: "+zoom_factor);
+        IJ.log("--- Non Sorted");
+        for(SourceAndConverter<?> source: non_sorted_sources) {
+            IJ.log(source.getSpimSource().getName());
+        }
+
+        IJ.log("--- Sorted");
+        for(SourceAndConverter<?> source: sorted_sources) {
+            IJ.log(source.getSpimSource().getName());
+        }
     }
 
-    public void out() {
-        bdvh.getViewerPanel().showMessage("Zoom Out");
-    }
+    public static void main(String... args) throws Exception {
+        // Initializes static SourceService and Display Service
 
-    public void in() {
-        bdvh.getViewerPanel().showMessage("Zoom In");
+        ImageJ ij = new ImageJ();
+        ij.ui().showUI();
+
+        WarpedSourceDemo.demo();
+        ij.command().run(TestWidgetDemoCommand.class, true);
+
     }
 }
