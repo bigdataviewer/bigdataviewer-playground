@@ -65,6 +65,15 @@ public class RayCastPositionerSliderAdder implements Runnable {
 	public RayCastPositionerSliderAdder(BdvHandle bdvh) {
 		this.bdvh = bdvh;
 		slider = new JSlider(JSlider.VERTICAL);
+		slider.addMouseWheelListener(e -> {
+			int notches = e.getWheelRotation();
+			System.out.println(notches);
+			if (notches < 0) {
+				slider.setValue(slider.getValue() + 1);
+			} else if (notches > 0) {
+				slider.setValue(slider.getValue() - 1);
+			}
+		});
 	}
 
 	int nPositions;
