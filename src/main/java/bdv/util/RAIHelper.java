@@ -41,7 +41,6 @@ import net.imglib2.img.cell.Cell;
 import net.imglib2.img.cell.CellGrid;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.GenericByteType;
 import net.imglib2.type.numeric.integer.GenericIntType;
 import net.imglib2.type.numeric.integer.GenericLongType;
@@ -49,10 +48,7 @@ import net.imglib2.type.numeric.integer.GenericShortType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Intervals;
-import net.imglib2.util.Util;
 import net.imglib2.view.Views;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static net.imglib2.img.basictypeaccess.AccessFlags.VOLATILE;
 import static net.imglib2.type.PrimitiveType.BYTE;
@@ -69,57 +65,52 @@ import static net.imglib2.type.PrimitiveType.DOUBLE;
 
 public class RAIHelper {
 
-	private static Logger logger = LoggerFactory.getLogger(RAIHelper.class);
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <T extends NativeType<T>> RandomAccessibleInterval<T>
-		wrapAsVolatileCachedCellImg(final RandomAccessibleInterval<T> source,
-			final int[] blockSize, Object objectSource, int timepoint, int level)
+	wrapAsVolatileCachedCellImg(final RandomAccessibleInterval<T> source,
+								final int[] blockSize, Object objectSource, int timepoint, int level, T type)
 	{
 
 		final long[] dimensions = Intervals.dimensionsAsLongArray(source);
 		final CellGrid grid = new CellGrid(dimensions, blockSize);
 
 		final Caches.RandomAccessibleLoader<T> loader =
-			new Caches.RandomAccessibleLoader<>(Views.zeroMin(source));
-
-		final T type = Util.getTypeFromInterval(source);
+				new Caches.RandomAccessibleLoader<>(Views.zeroMin(source));
 
 		final CachedCellImg<T, ?> img;
 		final Cache<Long, Cell<?>> cache = new GlobalLoaderCache(objectSource,
-			timepoint, level).withLoader(LoadedCellCacheLoader.get(grid, loader, type,
+				timepoint, level).withLoader(LoadedCellCacheLoader.get(grid, loader, type,
 				AccessFlags.setOf(VOLATILE)));
 
 		if (GenericByteType.class.isInstance(type)) {
 			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
-				BYTE, AccessFlags.setOf(VOLATILE)));
+					BYTE, AccessFlags.setOf(VOLATILE)));
 		}
 		else if (GenericShortType.class.isInstance(type)) {
 			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
-				SHORT, AccessFlags.setOf(VOLATILE)));
+					SHORT, AccessFlags.setOf(VOLATILE)));
 		}
 		else if (GenericIntType.class.isInstance(type)) {
 			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(INT,
-				AccessFlags.setOf(VOLATILE)));
+					AccessFlags.setOf(VOLATILE)));
 		}
 		else if (GenericLongType.class.isInstance(type)) {
 			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
-				LONG, AccessFlags.setOf(VOLATILE)));
+					LONG, AccessFlags.setOf(VOLATILE)));
 		}
 		else if (FloatType.class.isInstance(type)) {
 			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
-				FLOAT, AccessFlags.setOf(VOLATILE)));
+					FLOAT, AccessFlags.setOf(VOLATILE)));
 		}
 		else if (DoubleType.class.isInstance(type)) {
 			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
-				DOUBLE, AccessFlags.setOf(VOLATILE)));
+					DOUBLE, AccessFlags.setOf(VOLATILE)));
 		}
 		else if (ARGBType.class.isInstance(type)) {
 			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(INT,
-				AccessFlags.setOf(VOLATILE)));
+					AccessFlags.setOf(VOLATILE)));
 		}
 		else {
-			img = null;
+			throw new UnsupportedOperationException("Cannot resample RAI (wrapAsVolatileCachedCellImg) of pixel type "+type.getClass().getName());
 		}
 
 		return img;

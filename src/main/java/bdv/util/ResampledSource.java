@@ -256,7 +256,7 @@ public class ResampledSource<T extends NumericType<T> & NativeType<T>>
 	}
 
 	@Override
-	public RandomAccessibleInterval<T> getSource(int t, int level) {
+	public RandomAccessibleInterval<T> getSource(int t, int level) { // TODO: shouldn't this be synchronized ?
 		if (cache) {
 			if (!cachedRAIs.containsKey(t)) {
 				cachedRAIs.put(t, new ConcurrentHashMap<>());
@@ -275,7 +275,7 @@ public class ResampledSource<T extends NumericType<T> & NativeType<T>>
 					.dimension(2);
 
 				cachedRAIs.get(t).put(level, RAIHelper.wrapAsVolatileCachedCellImg(
-					nonCached, blockSize, this, t, level));
+					nonCached, blockSize, this, t, level, this.getType()));
 			}
 			return cachedRAIs.get(t).get(level);
 		}

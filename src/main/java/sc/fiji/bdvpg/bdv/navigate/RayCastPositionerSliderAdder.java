@@ -114,41 +114,43 @@ public class RayCastPositionerSliderAdder implements Runnable {
 		bdvh.getViewerPanel().revalidate();
 
 		slider.addChangeListener((e) -> {
-			if (zLocations.size() > 0) {
-				JSlider slider = (JSlider) e.getSource();
-				int newValue = slider.getValue();
-				// Plane : slider.getValue() / slider.getMaximum()
-				if ((currentPosition != newValue) && (newValue != -1)) {
-					// User slider action: needs update of viewer from currentPosition to
-					// newValue
-					currentPosition = newValue;
-					double shiftZ = zLocations.get(currentPosition);
-					// Need to shift z by shiftZ
+			synchronized (RayCastPositionerSliderAdder.this) {
+				if (zLocations.size() > 0) {
+					JSlider slider = (JSlider) e.getSource();
+					int newValue = slider.getValue();
+					// Plane : slider.getValue() / slider.getMaximum()
+					if ((currentPosition != newValue) && (newValue != -1)) {
+						// User slider action: needs update of viewer from currentPosition to
+						// newValue
+						currentPosition = newValue;
+						double shiftZ = zLocations.get(currentPosition);
+						// Need to shift z by shiftZ
 
-					AffineTransform3D at3d = new AffineTransform3D();
+						AffineTransform3D at3d = new AffineTransform3D();
 
-					// Change the position of the viewer with the new offset
-					bdvh.getViewerPanel().state().getViewerTransform(at3d);
-					double[] currentCenter = BdvHandleHelper
-						.getWindowCentreInCalibratedUnits(bdvh);
-					double[] newCenter = new double[3];
-					newCenter[0] = currentCenter[0] + lastDirection.getDoublePosition(0) *
-						shiftZ;
-					newCenter[1] = currentCenter[1] + lastDirection.getDoublePosition(1) *
-						shiftZ;
-					newCenter[2] = currentCenter[2] + lastDirection.getDoublePosition(2) *
-						shiftZ;
-					bdvh.getViewerPanel().state().setViewerTransform(BdvHandleHelper
-						.getViewerTransformWithNewCenter(bdvh, newCenter));
+						// Change the position of the viewer with the new offset
+						bdvh.getViewerPanel().state().getViewerTransform(at3d);
+						double[] currentCenter = BdvHandleHelper
+								.getWindowCentreInCalibratedUnits(bdvh);
+						double[] newCenter = new double[3];
+						newCenter[0] = currentCenter[0] + lastDirection.getDoublePosition(0) *
+								shiftZ;
+						newCenter[1] = currentCenter[1] + lastDirection.getDoublePosition(1) *
+								shiftZ;
+						newCenter[2] = currentCenter[2] + lastDirection.getDoublePosition(2) *
+								shiftZ;
+						bdvh.getViewerPanel().state().setViewerTransform(BdvHandleHelper
+								.getViewerTransformWithNewCenter(bdvh, newCenter));
 
-				} // else: Bdv user movement: no update required
+					} // else: Bdv user movement: no update required
 
+				}
 			}
 		});
 
 	}
 
-	public void updatePositions() {
+	public synchronized void updatePositions() {
 
 		// Find origin and direction of ray - center of the bdv window
 		double[] c = BdvHandleHelper.getWindowCentreInCalibratedUnits(bdvh);
