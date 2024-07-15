@@ -72,7 +72,9 @@ public class SwingSourceAndConverterListWidget extends
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		if (model.getItem().getWidgetStyle().contains("sorted")) return false;
+		if (model.getItem().getWidgetStyle()!=null) {
+			if (model.getItem().getWidgetStyle().contains("sorted")) return false;
+		}
 		return super.supports(model) && model.isType(SourceAndConverter[].class);
 	}
 
