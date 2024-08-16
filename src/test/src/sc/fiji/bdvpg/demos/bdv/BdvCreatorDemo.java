@@ -28,9 +28,11 @@
  */
 package sc.fiji.bdvpg.demos.bdv;
 
+import bdv.util.BdvHandle;
 import org.scijava.Context;
 import org.scijava.ui.UIService;
 import org.scijava.ui.swing.SwingUI;
+import sc.fiji.bdvpg.scijava.BdvScijavaHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 /**
@@ -51,7 +53,15 @@ public class BdvCreatorDemo {
 		ctx.getService(SourceAndConverterBdvDisplayService.class).getNewBdv();
 
 		// Returns the previous BDV or the one "on top", meaning the one clicked by the user
-		ctx.getService(SourceAndConverterBdvDisplayService.class).getActiveBdv();
+		BdvHandle bdvh = ctx.getService(SourceAndConverterBdvDisplayService.class).getActiveBdv();
+
+		BdvScijavaHelper.addActionToBdvHandleMenu(bdvh,"File>SubMenu1>SubMenu2>Say Hello 1!",0, () -> bdvh.getViewerPanel().showMessage("Hello!"));
+		BdvScijavaHelper.addSeparator(bdvh,"File>SubMenu1");
+
+		BdvScijavaHelper.addActionToBdvHandleMenu(bdvh,"File>SubMenu1>SubMenu3>Say Hello 2!",0, () -> bdvh.getViewerPanel().showMessage("Hello!"));
+		BdvScijavaHelper.addActionToBdvHandleMenu(bdvh,"Greetings>Menu1>Menu2>Say Hello 3!",0, () -> bdvh.getViewerPanel().showMessage("Hello!"));
+		BdvScijavaHelper.addActionToBdvHandleMenu(bdvh,"Greetings>Menu1>Menu2>Say Hello 4!",0, () -> bdvh.getViewerPanel().showMessage("Hello!"));
+
 	}
 
 }

@@ -41,6 +41,8 @@ import org.slf4j.LoggerFactory;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JSeparator;
+import java.awt.Component;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,7 +77,37 @@ public class BdvScijavaHelper {
 		Plugin plugin = commandClass.getDeclaredAnnotation(Plugin.class);
 		addActionToBdvHandleMenu(bdvh, plugin.menuPath(), skipTopLevels, () -> ctx
 			.getService(CommandService.class).run(commandClass, true, args));
+	}
 
+	static public void addSeparator(BdvHandle bdvh,	String pathHierarchy) {
+		if (bdvh instanceof BdvHandleFrame) {
+			final JMenuBar bdvMenuBar = ((BdvHandleFrame) bdvh).getBigDataViewer()
+					.getViewerFrame().getJMenuBar();
+			List<String> path = Arrays.stream(pathHierarchy.split(">")).map(
+					String::trim).collect(Collectors.toList());
+			path.add("Separator"); // Simplify my life : direct reuse of the method below
+			JMenuItem jMenuItemRoot = findOrCreateJMenu(bdvMenuBar, path);
+			if (jMenuItemRoot != null) {
+				final JSeparator jSeparator = new JSeparator();
+				jMenuItemRoot.add(jSeparator);
+				bdvMenuBar.updateUI();
+			}
+			else {
+				logger.error("Could not find or create jmenu (" + bdvMenuBar + ", " +
+						path + ")");
+			}
+		}
+		else {
+			logger.error(
+					"Cannot put command on menu : the bdvhandle is not a frame.");
+		}
+	}
+
+	static public void addCommandToBdvHandleMenu(BdvHandle bdvh, Context ctx, String path,
+												 Class<? extends Command> commandClass, Object... args)
+	{
+		addActionToBdvHandleMenu(bdvh, path, 0, () -> ctx
+				.getService(CommandService.class).run(commandClass, true, args));
 	}
 
 	static public void addActionToBdvHandleMenu(BdvHandle bdvh,
@@ -112,7 +144,7 @@ public class BdvScijavaHelper {
 	private static JMenu findOrCreateJMenu(JMenuBar bdvMenuBar,
 		List<String> path)
 	{
-		if (path.size() == 0) {
+		if (path.isEmpty()) {
 			logger.error("No Path specified in find or create JMenu!");
 		}
 		if (path.size() == 1) {
@@ -136,39 +168,35 @@ public class BdvScijavaHelper {
 		}
 		else {
 			jmenu = new JMenu(path.get(0));
+			bdvMenuBar.add(jmenu);
 		}
-		bdvMenuBar.add(jmenu);
 		path.remove(0);
 		return findOrCreateJMenu(jmenu, path);
 	}
 
 	private static JMenu findOrCreateJMenu(JMenu jMenu, List<String> path) {
-		if (path.size() == 0) {
+		if (path.isEmpty()) {
 			logger.error(" Reached unreachable statement !");
 		}
 		if (path.size() == 1) {
 			return jMenu;
 		}
-		boolean found = false;
 		int idx = 0;
-		while ((idx < jMenu.getMenuComponentCount()) && (!found)) {
-			JMenu jmenuTest = (JMenu) jMenu.getMenuComponent(idx);
-			if (jmenuTest.getText().equals(path.get(0))) {
-				found = true;
+		while (idx < jMenu.getMenuComponentCount()) {
+			Component component = jMenu.getMenuComponent(idx);
+			if (component instanceof JMenu) {
+				JMenu jmi = (JMenu) component;
+				if (path.get(0).equals(jmi.getText())) {
+					path.remove(0);
+					return findOrCreateJMenu(jmi, path);
+				}
 			}
-			else {
-				idx++;
-			}
+			idx++;
 		}
-		JMenu jmenuFound;
-		if (found) {
-			jmenuFound = (JMenu) jMenu.getMenuComponent(idx);
-		}
-		else {
-			jmenuFound = new JMenu(path.get(0));
-		}
-		jMenu.add(jmenuFound);
+
+		JMenu jm = new JMenu(path.get(0));
+		jMenu.add(jm);
 		path.remove(0);
-		return findOrCreateJMenu(jmenuFound, path);
+		return findOrCreateJMenu(jm, path);
 	}
 }
