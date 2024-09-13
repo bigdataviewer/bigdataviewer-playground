@@ -115,7 +115,10 @@ public class AbstractSpimdataAdapter implements
 		SourceAndConverterService sacService = sacSerializer.getScijavaContext()
 				.getService(SourceAndConverterService.class);
 		List<AbstractSpimData<?>> asds = sacService.getSpimDatasets().stream().filter(
-				asd -> sacService.getMetadata(asd, SPIM_DATA_LOCATION).equals(finalDataLocation)).collect(
+				asd -> {
+					Object location = sacService.getMetadata(asd, SPIM_DATA_LOCATION);
+					return location != null && location.equals(finalDataLocation);
+				}).collect(
 						Collectors.toList());
 
 		// SpimData not found
