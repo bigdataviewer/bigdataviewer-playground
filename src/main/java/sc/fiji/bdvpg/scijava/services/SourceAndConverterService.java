@@ -237,7 +237,7 @@ public class SourceAndConverterService extends AbstractService implements
 	 * @param sac source
 	 */
 	public void register(SourceAndConverter<?> sac) {
-		register(sac, uiAvailable);
+		register(sac, true);
 	}
 
 	/**
@@ -496,7 +496,7 @@ public class SourceAndConverterService extends AbstractService implements
 		setupIdToSourceAndConverter.keySet().forEach(id -> {
 			register(setupIdToSourceAndConverter.get(id));
 			linkToSpimData(setupIdToSourceAndConverter.get(id), asd, id);
-			if (uiAvailable) ui.update(setupIdToSourceAndConverter.get(id));
+			ui.update(setupIdToSourceAndConverter.get(id));
 		});
 
 		WrapBasicImgLoader.removeWrapperIfPresent(asd);
@@ -659,10 +659,7 @@ public class SourceAndConverterService extends AbstractService implements
 				while (!flagPerformed.get()) {
 				    // busy waiting
 				}*/
-
-				if (uiAvailable) {
-					ui.remove(sac);
-				}
+				ui.remove(sac);
 			}
 		}
 	}
@@ -703,11 +700,6 @@ public class SourceAndConverterService extends AbstractService implements
 	 * execution context
 	 */
 	SourceAndConverterServiceUI ui;
-
-	/**
-	 * Flags if the Inner UI exists
-	 */
-	boolean uiAvailable = false;
 
 	public SourceAndConverterServiceUI getUI() {
 		return ui;
@@ -757,9 +749,10 @@ public class SourceAndConverterService extends AbstractService implements
 		if (context().getService(UIService.class)!=null) {
 			if (!context().getService(UIService.class).isHeadless()) {
 				logger.debug(
-						"uiService detected : Constructing JPanel for BdvSourceAndConverterService");
-				ui = new SourceAndConverterServiceUI(this, context());
-				uiAvailable = true;
+						"GUI detected : Constructing JFrame for BdvSourceAndConverterService");
+				ui = new SourceAndConverterServiceUI(this, context(), true);
+			} else {
+				ui = new SourceAndConverterServiceUI(this, context(), false);
 			}
 		}
 
@@ -930,7 +923,7 @@ public class SourceAndConverterService extends AbstractService implements
 
 	public synchronized void setSpimDataName(AbstractSpimData asd, String name) {
 		spimdataToMetadata.getIfPresent(asd).put("NAME", name);
-		if (uiAvailable) ui.updateSpimDataName(asd, name);
+		ui.updateSpimDataName(asd, name);
 	}
 
 	@Override

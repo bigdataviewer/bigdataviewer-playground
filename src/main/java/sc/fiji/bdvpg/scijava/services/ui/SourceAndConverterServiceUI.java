@@ -126,14 +126,11 @@ public class SourceAndConverterServiceUI {
 	final SourceAndConverterService sourceAndConverterService;
 
 	/**
-	 * JFrame container
+	 * JFrame container, could be null, see guiAvailable
 	 */
 	final JFrame frame;
 
-	/**
-	 * JPanel container
-	 */
-	final JPanel panel;
+	final boolean guiAvailable;
 
 	/**
 	 * Swing JTree used for displaying Sources object
@@ -144,11 +141,6 @@ public class SourceAndConverterServiceUI {
 	 * Tree root note
 	 */
 	final SourceFilterNode top;
-
-	/**
-	 * Scrollpane to display the JTree, if too big
-	 */
-	final JScrollPane treeView;
 
 	/**
 	 * Tree model
@@ -167,121 +159,121 @@ public class SourceAndConverterServiceUI {
 	 */
 	public SourceAndConverterServiceUI(
 		SourceAndConverterService sourceAndConverterService,
-		Context context)
+		Context context, boolean makeGUI)
 	{
 		this.sourceAndConverterService = sourceAndConverterService;
-
-		frame = new JFrame("BDV Sources");
-		panel = new JPanel(new BorderLayout());
 
 		// Tree view of Spimdata
 		top = new SourceFilterNode(null, "Sources", (sac) -> true, false);
 		model = new DefaultTreeModel(top);
 		top.model = model;
 
+		// Registers the action which would inspect selected sources
+		this.sourceAndConverterService.registerAction("Inspect Sources",
+				this::inspectSources);
+
 		tree = new JTree(model);
-		tree.setCellRenderer(new SourceAndConverterTreeCellRenderer());
+
 
 		SourceFilterNode outsideSpimDataSources = new SourceFilterNode(model,
 			"Other Sources", (sac) -> !sourceAndConverterService.containsMetadata(sac,
 				SPIM_DATA_INFO), true);
 		top.add(outsideSpimDataSources);
 
-		treeView = new JScrollPane(tree);
+		if (makeGUI) {
+			tree.setCellRenderer(new SourceAndConverterTreeCellRenderer());
+			frame = new JFrame("BDV Sources");
+			JPanel panel = new JPanel(new BorderLayout());
+			JScrollPane treeView = new JScrollPane(tree);
+			panel.add(treeView, BorderLayout.CENTER);
+			// Shows Popup on right click
+			tree.addMouseListener(new MouseAdapter() {
 
-		panel.add(treeView, BorderLayout.CENTER);
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					super.mouseClicked(e);
+					// Right Click -> popup
+					if (SwingUtilities.isRightMouseButton(e)) {
 
-		// Shows Popup on right click
-		tree.addMouseListener(new MouseAdapter() {
+						JPopupMenu popup = new SourceAndConverterPopupMenu(
+								() -> getSelectedSourceAndConverters(tree)).getPopup();
 
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				super.mouseClicked(e);
-				// Right Click -> popup
-				if (SwingUtilities.isRightMouseButton(e)) {
+						addUISpecificActions(popup);
 
-					JPopupMenu popup = new SourceAndConverterPopupMenu(
-						() -> getSelectedSourceAndConverters(tree)).getPopup();
+						popup.show(e.getComponent(), e.getX(), e.getY());
 
-					addUISpecificActions(popup);
-
-					popup.show(e.getComponent(), e.getX(), e.getY());
-
-					// });
+						// });
+					}
 				}
-			}
-		});
+			});
+			// We can drag the nodes
+			tree.setDragEnabled(true);
+			tree.setDropMode(DropMode.ON_OR_INSERT);
+			// Enables:
+			// - drag -> SourceAndConverters
+			// - drop -> automatically import xml BDV datasets
+			tree.setTransferHandler(new SourceAndConverterServiceUITransferHandler());
 
-		// Registers the action which would
-		this.sourceAndConverterService.registerAction("Inspect Sources",
-			this::inspectSources);
+			// get the screen size as a java dimension
+			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-		// We can drag the nodes
-		tree.setDragEnabled(true);
-		tree.setDropMode(DropMode.ON_OR_INSERT);
-		// Enables:
-		// - drag -> SourceAndConverters
-		// - drop -> automatically import xml BDV datasets
-		tree.setTransferHandler(new SourceAndConverterServiceUITransferHandler());
+			// get a fixed proportion of the height and of the width
+			int height = screenSize.height * 4 / 5;
+			int width = screenSize.width / 6;
 
-		// get the screen size as a java dimension
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+			// set the jFrame height and width
+			frame.setPreferredSize(new Dimension(width, height));
 
-		// get a fixed proportion of the height and of the width
-		int height = screenSize.height * 4 / 5;
-		int width = screenSize.width / 6;
+			JLabel cacheLabel = new JLabel("Cache");
 
-		// set the jFrame height and width
-		frame.setPreferredSize(new Dimension(width, height));
+			panel.add(cacheLabel, BorderLayout.SOUTH);
+			TimerTask periodicLogger = new TimerTask() {
 
-		JLabel cacheLabel = new JLabel("Cache");
-
-		panel.add(cacheLabel, BorderLayout.SOUTH);
-
-		TimerTask periodicLogger = new TimerTask() {
-
-			@Override
-			public void run() {
-				SwingUtilities.invokeLater(() -> {
-					cacheLabel.setText(sourceAndConverterService.getCache().toString());
-				});
-			}
-		};
-
-		Timer time = new Timer(); // Instantiate Timer Object
-		time.schedule(periodicLogger, 0, 2000);
-
-		cacheLabel.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
-					sourceAndConverterService.getCache().invalidateAll();
+				@Override
+				public void run() {
 					SwingUtilities.invokeLater(() -> {
-						cacheLabel.setText("Cache cleared.");
+						cacheLabel.setText(sourceAndConverterService.getCache().toString());
 					});
 				}
-			}
-		});
+			};
 
-		frame.add(panel);
-		frame.pack();
-		frame.setVisible(false);
-		// frame.setVisible(true);
+			Timer time = new Timer(); // Instantiate Timer Object
+			time.schedule(periodicLogger, 0, 2000);
 
-		// TODO : read playground prefs from ij
-		// PrefsPlaygroundPrefs.setSourceAndConverterUIVisibility();
+			cacheLabel.addMouseListener(new MouseAdapter() {
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() == 2) {
+						sourceAndConverterService.getCache().invalidateAll();
+						SwingUtilities.invokeLater(() -> {
+							cacheLabel.setText("Cache cleared.");
+						});
+					}
+				}
+			});
+
+			frame.add(panel);
+			frame.pack();
+			frame.setVisible(false);
+			guiAvailable = true;
+		} else {
+			guiAvailable = false;
+			frame = null;
+		}
 
 	}
 
 	public void show() {
-		if (PlaygroundPrefs.getSourceAndConverterUIVisibility()) {
+		if ((guiAvailable)&&(PlaygroundPrefs.getSourceAndConverterUIVisibility())) {
 			frame.setVisible(true);
 		}
 	}
 
 	public void hide() {
-		frame.setVisible(false);
+		if (guiAvailable) {
+			frame.setVisible(false);
+		}
 	}
 
 	SourceFilterNode copiedNode = null;
@@ -427,7 +419,7 @@ public class SourceAndConverterServiceUI {
 	 * @param sac source to inspect
 	 */
 	public void inspectSource(SourceAndConverter sac) {
-		if (!frame.isVisible()) {
+		if ((guiAvailable)&&(!frame.isVisible())) {
 			show();
 		}
 		DefaultMutableTreeNode parentNodeInspect = new DefaultMutableTreeNode(
@@ -457,7 +449,7 @@ public class SourceAndConverterServiceUI {
 	 * @param sac source which UI needs to be updated
 	 */
 	public void update(SourceAndConverter sac) {
-		if (!frame.isVisible()) {
+		if ((guiAvailable)&&(!frame.isVisible())) {
 			show();
 		}
 		synchronized (tree) {
@@ -631,7 +623,7 @@ public class SourceAndConverterServiceUI {
 	 * @param sac source to remove
 	 */
 	public void remove(SourceAndConverter sac) {
-		if (!frame.isVisible()) {
+		if ((guiAvailable)&&(!frame.isVisible())) {
 			show();
 		}
 		synchronized (tree) {
