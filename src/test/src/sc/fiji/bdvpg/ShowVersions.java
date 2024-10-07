@@ -29,12 +29,12 @@
 package sc.fiji.bdvpg;
 
 import bdv.BigDataViewer;
-import bdv.img.WarpedSource;
 import bdv.util.BdvHandle;
 import bigwarp.BigWarp;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.cache.img.CachedCellImg;
+import net.imglib2.realtransform.RealTransform;
 import org.scijava.util.VersionUtils;
 
 public class ShowVersions {
@@ -51,7 +51,7 @@ public class ShowVersions {
         System.out.println("bdv vistools version = "+VersionUtils.getVersion(BdvHandle.class)); // bigwarp
         System.out.println("bdv version = "+VersionUtils.getVersion(BigDataViewer.class)); // bdv
         System.out.println("imglib2-cache version = "+VersionUtils.getVersion(CachedCellImg.class)); // bdv
-        System.out.println("imglib2-realtransform version = "+VersionUtils.getVersion(WarpedSource.class)); // imglib2
+        System.out.println("imglib2-realtransform version = "+VersionUtils.getVersion(RealTransform.class)); // imglib2
 
     }
 

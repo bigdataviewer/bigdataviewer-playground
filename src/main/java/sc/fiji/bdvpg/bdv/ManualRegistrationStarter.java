@@ -34,7 +34,6 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import bdv.viewer.TransformListener;
-import org.scijava.vecmath.Point3d;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
@@ -221,58 +220,65 @@ public class ManualRegistrationStarter implements Runnable {
 		correctedAffineTransform.set(at3D);
 
 		// Gets three vectors
-		Point3d v1 = new Point3d(at3D.get(0, 0), at3D.get(0, 1), at3D.get(0, 2));
-		Point3d v2 = new Point3d(at3D.get(1, 0), at3D.get(1, 1), at3D.get(1, 2));
+		double v1x = at3D.get(0, 0);
+		double v1y = at3D.get(0, 1);
+		double v1z = at3D.get(0, 2);
+
+		double v2x = at3D.get(1, 0);
+		double v2y = at3D.get(1, 1);
+		double v2z = at3D.get(1,2);
 
 		// 0 - Ensure v1 and v2 have the same norm
-		double normv1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z);
-		double normv2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y + v2.z * v2.z);
+		double normv1 = Math.sqrt(v1x * v1x + v1y * v1y + v1z * v1z);
+		double normv2 = Math.sqrt(v2x * v2x + v2y * v2y + v2z * v2z);
 
 		// If v1 and v2 do not have the same norm
 		if (Math.abs(normv1 - normv2) / normv1 > 1e-10) {
 			// We make v2 having the norm of v1
-			v2.x = v2.x / normv2 * normv1;
-			v2.y = v2.y / normv2 * normv1;
-			v2.z = v2.z / normv2 * normv1;
+			v2x = v2x / normv2 * normv1;
+			v2y = v2y / normv2 * normv1;
+			v2z = v2z / normv2 * normv1;
 
-			correctedAffineTransform.set(v2.x, 1, 0);
-			correctedAffineTransform.set(v2.y, 1, 1);
-			correctedAffineTransform.set(v2.z, 1, 2);
+			correctedAffineTransform.set(v2x, 1, 0);
+			correctedAffineTransform.set(v2y, 1, 1);
+			correctedAffineTransform.set(v2z, 1, 2);
 		}
 
 		// 1 - Ensure v1 and v2 are perpendicular
 
-		if (Math.abs(v1.x * v2.x + v1.y * v2.y + v1.z * v2.z) / (normv1 *
+		if (Math.abs(v1x * v2x + v1y * v2y + v1z * v2z) / (normv1 *
 			normv2) > (1e-10))
 		{
 			// v1 and v2 not perpendicular enough
 			// Compute the projection of v1 onto v2
-			Point3d u1 = new Point3d(v1.x / normv1, v1.y / normv1, v1.z / normv1);
-			double dotProductNormalized = (u1.x * v2.x + u1.y * v2.y + u1.z * v2.z);
-			v2.x = v2.x - dotProductNormalized * u1.x;
-			v2.y = v2.y - dotProductNormalized * u1.y;
-			v2.z = v2.z - dotProductNormalized * u1.z;
+			double u1x = v1x / normv1;
+			double u1y = v1y / normv1;
+			double u1z = v1z / normv1;
+			double dotProductNormalized = (u1x * v2x + u1y * v2y + u1z * v2z);
+			v2x = v2x - dotProductNormalized * u1x;
+			v2y = v2y - dotProductNormalized * u1y;
+			v2z = v2z - dotProductNormalized * u1z;
 
-			normv2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y + v2.z * v2.z);
-			v2.x = v2.x / normv2 * normv1;
-			v2.y = v2.y / normv2 * normv1;
-			v2.z = v2.z / normv2 * normv1;
+			normv2 = Math.sqrt(v2x * v2x + v2y * v2y + v2z * v2z);
+			v2x = v2x / normv2 * normv1;
+			v2y = v2y / normv2 * normv1;
+			v2z = v2z / normv2 * normv1;
 
-			correctedAffineTransform.set(v2.x, 1, 0);
-			correctedAffineTransform.set(v2.y, 1, 1);
-			correctedAffineTransform.set(v2.z, 1, 2);
+			correctedAffineTransform.set(v2x, 1, 0);
+			correctedAffineTransform.set(v2y, 1, 1);
+			correctedAffineTransform.set(v2z, 1, 2);
 		}
 
 		// 2 - We now set v3 as the cross product of v1 and v2, no matter what
-		double xr = (v1.y * v2.z - v1.z * v2.y) / normv1;
-		double yr = (v1.z * v2.x - v1.x * v2.z) / normv1;
-		double zr = (v1.x * v2.y - v1.y * v2.x) / normv1;
+		double xr = (v1y * v2z - v1z * v2y) / normv1;
+		double yr = (v1z * v2x - v1x * v2z) / normv1;
+		double zr = (v1x * v2y - v1y * v2x) / normv1;
 
-		Point3d v3orthonormal = new Point3d(xr, yr, zr);
+		//double v3orthonormal = new Point3d(xr, yr, zr);
 
-		correctedAffineTransform.set(v3orthonormal.x, 2, 0);
-		correctedAffineTransform.set(v3orthonormal.y, 2, 1);
-		correctedAffineTransform.set(v3orthonormal.z, 2, 2);
+		correctedAffineTransform.set(xr, 2, 0);
+		correctedAffineTransform.set(yr, 2, 1);
+		correctedAffineTransform.set(zr, 2, 2);
 
 		return correctedAffineTransform;
 
