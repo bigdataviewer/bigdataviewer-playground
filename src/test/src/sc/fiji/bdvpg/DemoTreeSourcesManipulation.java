@@ -63,6 +63,6 @@ public class DemoTreeSourcesManipulation {
         IJ.log("The node "+r+" has "+r.children().size()+" children");
         IJ.log("Their names are:");
         r.children().forEach(n -> IJ.log("- "+n.name()+" | path = "+n.path()));
-        IJ.log("nSources = "+r.child("src/test/resources/demoSlice.xml").sources().length);
+        IJ.log("nSources = "+r.child("demoSlice.xml").sources().length);
     }
 }

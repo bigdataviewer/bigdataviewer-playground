@@ -3,7 +3,7 @@
   <BasePath type="relative">.</BasePath>
   <SequenceDescription>
     <ImageLoader format="bdv.hdf5">
-      <hdf5 type="relative">C:/Users/Nicolas/Dropbox/BIOP/bigdataviewer-playground/src/test/resources/mri-stack.h5</hdf5>
+      <hdf5 type="relative">mri-stack.h5</hdf5>
     </ImageLoader>
     <ViewSetups>
       <ViewSetup>
