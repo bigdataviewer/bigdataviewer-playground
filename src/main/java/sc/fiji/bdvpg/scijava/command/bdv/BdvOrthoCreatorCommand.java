@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.scijava.command.bdv;
 
 import bdv.util.BdvHandle;
+import bdv.util.BdvHandleFrame;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -138,21 +139,21 @@ public class BdvOrthoCreatorCommand implements BdvPlaygroundActionCommand {
 
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gd = ge.getScreenDevices();
-		JFrame frame = BdvHandleHelper.getJFrame(bdvh);
-		SwingUtilities.invokeLater(() -> {
-			if (screen > -1 && screen < gd.length) {
-				frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x +
-					(int) locX, (int) locY);
-			}
-			else if (gd.length > 0) {
-				frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x +
-					(int) locX, (int) locY);
-			}
-			else {
-				throw new RuntimeException("No Screens Found");
-			}
-			frame.setSize(sizex, sizey);
-		});
+		if (bdvh instanceof BdvHandleFrame) {
+			JFrame frame = BdvHandleHelper.getJFrame(bdvh);
+			SwingUtilities.invokeLater(() -> {
+				if (screen > -1 && screen < gd.length) {
+					frame.setLocation(gd[screen].getDefaultConfiguration().getBounds().x +
+							(int) locX, (int) locY);
+				} else if (gd.length > 0) {
+					frame.setLocation(gd[0].getDefaultConfiguration().getBounds().x +
+							(int) locX, (int) locY);
+				} else {
+					throw new RuntimeException("No Screens Found");
+				}
+				frame.setSize(sizex, sizey);
+			});
+		}
 
 		return bdvh;
 	}

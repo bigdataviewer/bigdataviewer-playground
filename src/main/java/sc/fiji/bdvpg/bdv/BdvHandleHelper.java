@@ -30,9 +30,10 @@
 package sc.fiji.bdvpg.bdv;
 
 import bdv.tools.brightness.ConverterSetup;
-import bdv.ui.CardPanel;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandle;
+import bdv.util.BdvHandleFrame;
+import bdv.util.BdvHandlePanel;
 import bdv.util.BdvOptions;
 import bdv.util.BdvOverlay;
 import bdv.viewer.Source;
@@ -336,6 +337,9 @@ public class BdvHandleHelper {
 	}
 
 	public static JFrame getJFrame(BdvHandle bdvh) {
+		if (!(bdvh instanceof BdvHandleFrame)) {
+			throw new RuntimeException("The BdvHandle is a Panel, not a Frame");
+		}
 		return (JFrame) SwingUtilities.getWindowAncestor(bdvh.getViewerPanel());
 	}
 
@@ -343,6 +347,9 @@ public class BdvHandleHelper {
 		SourceAndConverterBdvDisplayService bdvsds, boolean putWindowOnTop,
 		Runnable runnable)
 	{
+		if (bdvh instanceof BdvHandlePanel) {
+			throw new RuntimeException("The BdvHandle is a Panel, not a Frame");
+		}
 		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bdvh
 			.getViewerPanel());
 		WindowAdapter wa;
@@ -375,38 +382,50 @@ public class BdvHandleHelper {
 		topFrame.addWindowListener(wa);
 
 		if (putWindowOnTop) {
-			cs.put("LAST_ACTIVE_BDVH", new WeakReference<>(bdvh));// why a weak
-																														// reference ?
-																														// because we want
-																														// to dispose the
-																														// bdvhandle if it
-																														// is closed
+			cs.put("LAST_ACTIVE_BDVH", new WeakReference<>(bdvh));// why a wea kreference ?
+			// because we want to dispose the bdvhandle if it is closed
 		}
 	}
 
 	public static void activateWindow(BdvHandle bdvh) {
 		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bdvh
 			.getViewerPanel());
-		topFrame.toFront();
-		topFrame.requestFocus();
+		if (topFrame != null) {
+			topFrame.toFront();
+			topFrame.requestFocus();
+		} else {
+			bdvh.getViewerPanel().requestFocus();
+		}
 	}
 
 	public static void closeWindow(BdvHandle bdvh) {
 		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bdvh
 			.getViewerPanel());
-		topFrame.dispatchEvent(new WindowEvent(topFrame,
-			WindowEvent.WINDOW_CLOSING));
+		if (topFrame!=null) {
+			topFrame.dispatchEvent(new WindowEvent(topFrame,
+					WindowEvent.WINDOW_CLOSING));
+		} else {
+			System.err.println("Can't close the bdv handle because it is of class "+bdvh.getClass().getName());
+		}
 	}
 
 	public static void setWindowTitle(BdvHandle bdvh, String title) {
 		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bdvh
 			.getViewerPanel());
-		topFrame.setTitle(title);
+		if (topFrame!=null) {
+			topFrame.setTitle(title);
+		} else {
+			System.err.println("Can't set the bdv handle window title because it is of class "+bdvh.getClass().getName());
+		}
 	}
 
 	public static String getWindowTitle(BdvHandle bdvh) {
 		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(bdvh
-			.getViewerPanel());
+				.getViewerPanel());
+		if (topFrame == null) {
+			System.err.println("Can't set the window title since the bdv handle because it is of class "+bdvh.getClass().getName());
+			return bdvh.toString();
+		}
 		return topFrame.getTitle();
 	}
 
