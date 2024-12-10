@@ -2,7 +2,7 @@
   {
     "source_name": "upsampled",
     "source_class": "bdv.util.ResampledSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 0,
     "color": -16776961,
     "converter_setup_min": 0.014078041315990818,
@@ -14,7 +14,7 @@
       "name": "upsampled",
       "mipmaps_reused": false,
       "defaultMipmapLevel": 0,
-      "origin_source_id": 36,
+      "origin_source_id": 32,
       "model_source_id": 15
     },
     "string_metadata": {}
@@ -22,7 +22,7 @@
   {
     "source_name": "resampled",
     "source_class": "bdv.util.ResampledSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 1,
     "color": -65536,
     "converter_setup_min": 0.0,
@@ -34,15 +34,15 @@
       "name": "resampled",
       "mipmaps_reused": false,
       "defaultMipmapLevel": 0,
-      "origin_source_id": 18,
-      "model_source_id": 36
+      "origin_source_id": 19,
+      "model_source_id": 32
     },
     "string_metadata": {}
   },
   {
     "source_name": "mri-stack_Transformed_mri-stack",
     "source_class": "bdv.img.WarpedSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 2,
     "color": -1,
     "converter_setup_min": 0.014078041315990818,
@@ -125,7 +125,7 @@
   {
     "source_name": "mri-stack_Transformed_mri-stack",
     "source_class": "bdv.img.WarpedSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 3,
     "color": -1,
     "converter_setup_min": 0.014078041315990818,
@@ -182,7 +182,7 @@
   {
     "source_name": "mri-stack_Transformed_mri-stack",
     "source_class": "bdv.img.WarpedSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 4,
     "color": -1,
     "converter_setup_min": 0.014078041315990818,
@@ -212,7 +212,7 @@
   {
     "source_name": "mri-stack_Transformed_mri-stack",
     "source_class": "bdv.img.WarpedSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 5,
     "color": -1,
     "converter_setup_min": 0.014078041315990818,
@@ -319,7 +319,7 @@
   {
     "source_name": "mri-stack_Transformed_mri-stack",
     "source_class": "bdv.img.WarpedSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 6,
     "color": -1,
     "converter_setup_min": 0.014078041315990818,
@@ -440,7 +440,7 @@
   {
     "source_name": "mri-stack",
     "source_class": "bdv.img.WarpedSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 7,
     "color": 65535,
     "converter_setup_min": 0.033052792654934965,
@@ -516,14 +516,14 @@
           ]
         }
       },
-      "wrapped_source_id": 30
+      "wrapped_source_id": 39
     },
     "string_metadata": {}
   },
   {
     "source_name": "mri-stack",
     "source_class": "bdv.tools.transformation.TransformedSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 8,
     "color": -1,
     "converter_setup_min": 0.033052792654934965,
@@ -532,12 +532,12 @@
       "affinetransform_fixed": {
         "type": "AffineTransform3D",
         "affinetransform3d": [
-          0.3505728598285033,
-          -0.4865942421848546,
+          0.6817303507617852,
+          -0.3018553384077339,
           0.0,
           0.0,
-          0.5021026129195959,
-          0.36174605796448434,
+          0.2436685998389845,
+          0.5503175160463152,
           0.0,
           0.0,
           0.0,
@@ -546,14 +546,14 @@
           0.0
         ]
       },
-      "wrapped_source_id": 43
+      "wrapped_source_id": 37
     },
     "string_metadata": {}
   },
   {
     "source_name": "mri-stack",
     "source_class": "bdv.tools.transformation.TransformedSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 9,
     "color": -1,
     "converter_setup_min": 0.033052792654934965,
@@ -562,12 +562,12 @@
       "affinetransform_fixed": {
         "type": "AffineTransform3D",
         "affinetransform3d": [
-          0.694047485268684,
-          -0.004587480076548475,
+          0.39303204521535867,
+          -0.4004492504431017,
           0.0,
           0.0,
-          0.004791788119389458,
-          0.724957588634329,
+          0.5109924422317108,
+          0.5015277327593759,
           0.0,
           200.0,
           0.0,
@@ -576,14 +576,14 @@
           0.0
         ]
       },
-      "wrapped_source_id": 43
+      "wrapped_source_id": 37
     },
     "string_metadata": {}
   },
   {
     "source_name": "mri-stack",
     "source_class": "bdv.tools.transformation.TransformedSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 10,
     "color": -1,
     "converter_setup_min": 0.033052792654934965,
@@ -592,12 +592,12 @@
       "affinetransform_fixed": {
         "type": "AffineTransform3D",
         "affinetransform3d": [
-          0.5000051981948349,
-          -0.14192620368343922,
+          0.6580091399434238,
+          -0.2921313639846496,
           0.0,
           200.0,
-          0.149001119995806,
-          0.5249300876174188,
+          0.20470127972479887,
+          0.46107789037027475,
           0.0,
           0.0,
           0.0,
@@ -606,14 +606,14 @@
           0.0
         ]
       },
-      "wrapped_source_id": 43
+      "wrapped_source_id": 37
     },
     "string_metadata": {}
   },
   {
     "source_name": "mri-stack",
     "source_class": "bdv.tools.transformation.TransformedSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 11,
     "color": -1,
     "converter_setup_min": 0.033052792654934965,
@@ -622,12 +622,12 @@
       "affinetransform_fixed": {
         "type": "AffineTransform3D",
         "affinetransform3d": [
-          0.6107891760276127,
-          -0.06319659341103782,
+          0.3579578307226322,
+          -0.4397967781153451,
           0.0,
           200.0,
-          0.061396391276365585,
-          0.5933903904416865,
+          0.4285287313933708,
+          0.3487865821783299,
           0.0,
           200.0,
           0.0,
@@ -636,14 +636,14 @@
           0.0
         ]
       },
-      "wrapped_source_id": 43
+      "wrapped_source_id": 37
     },
     "string_metadata": {}
   },
   {
     "source_name": "downsampled-with-mipmap",
     "source_class": "bdv.util.ResampledSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 12,
     "color": -8882176,
     "converter_setup_min": 0.014078041315990818,
@@ -655,7 +655,7 @@
       "name": "downsampled-with-mipmap",
       "mipmaps_reused": true,
       "defaultMipmapLevel": 0,
-      "origin_source_id": 36,
+      "origin_source_id": 32,
       "model_source_id": 20
     },
     "string_metadata": {}
@@ -663,7 +663,7 @@
   {
     "source_name": "downsampled",
     "source_class": "bdv.util.ResampledSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 13,
     "color": -34816,
     "converter_setup_min": 0.014078041315990818,
@@ -675,7 +675,7 @@
       "name": "downsampled",
       "mipmaps_reused": false,
       "defaultMipmapLevel": 0,
-      "origin_source_id": 36,
+      "origin_source_id": 32,
       "model_source_id": 21
     },
     "string_metadata": {}
@@ -683,7 +683,7 @@
   {
     "source_name": "demoSlice.tif channel 1",
     "source_class": "bdv.img.WarpedSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 14,
     "color": 65535,
     "converter_setup_min": 0.03902065799540933,
@@ -730,14 +730,14 @@
           }
         }
       },
-      "wrapped_source_id": 38
+      "wrapped_source_id": 42
     },
     "string_metadata": {}
   },
   {
     "source_name": "UpSampled",
     "source_class": "bdv.util.EmptySource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 15,
     "color": -1,
     "converter_setup_min": 0.0,
@@ -772,11 +772,12 @@
     },
     "string_metadata": {}
   },
+  null,
   {
     "source_name": "Mandelbrot Set",
     "source_class": "bdv.tools.transformation.TransformedSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 18,
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 19,
     "color": -1,
     "converter_setup_min": 0.0,
     "converter_setup_max": 800.0,
@@ -798,7 +799,7 @@
           0.0
         ]
       },
-      "wrapped_source_id": 19
+      "wrapped_source_id": 18
     },
     "string_metadata": {}
   },
@@ -806,8 +807,8 @@
   {
     "source_name": "Mandelbrot Set",
     "source_class": "bdv.tools.transformation.TransformedSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 18,
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 19,
     "color": -1,
     "converter_setup_min": 0.0,
     "converter_setup_max": 800.0,
@@ -829,15 +830,14 @@
           0.0
         ]
       },
-      "wrapped_source_id": 19
+      "wrapped_source_id": 18
     },
     "string_metadata": {}
   },
-  null,
   {
     "source_name": "DownSampled",
     "source_class": "bdv.util.EmptySource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 20,
     "color": -1,
     "converter_setup_min": 0.0,
@@ -875,7 +875,7 @@
   {
     "source_name": "DownSampled",
     "source_class": "bdv.util.EmptySource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 21,
     "color": -1,
     "converter_setup_min": 0.0,
@@ -913,7 +913,7 @@
   {
     "source_name": "mri-stack",
     "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 27,
     "color": -1,
     "converter_setup_min": 0.014078041315990818,
@@ -929,7 +929,7 @@
   {
     "source_name": "mri-stack",
     "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 27,
     "color": -1,
     "converter_setup_min": 0.014078041315990818,
@@ -945,7 +945,7 @@
   {
     "source_name": "mri-stack",
     "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 27,
     "color": -1,
     "converter_setup_min": 0.014078041315990818,
@@ -961,7 +961,7 @@
   {
     "source_name": "mri-stack",
     "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 27,
     "color": -1,
     "converter_setup_min": 0.014078041315990818,
@@ -977,7 +977,7 @@
   {
     "source_name": "mri-stack",
     "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 27,
     "color": -1,
     "converter_setup_min": 0.014078041315990818,
@@ -993,7 +993,7 @@
   {
     "source_name": "mri-stack",
     "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 27,
     "color": -1,
     "converter_setup_min": 0.014078041315990818,
@@ -1009,8 +1009,88 @@
   {
     "source_name": "mri-stack",
     "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 28,
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 32,
+    "color": -1,
+    "converter_setup_min": 0.014078041315990818,
+    "converter_setup_max": 80.01958684009182,
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack-multilevel.xml"
+      },
+      "viewsetup": 0
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.SpimSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 32,
+    "color": -1,
+    "converter_setup_min": 0.014078041315990818,
+    "converter_setup_max": 80.01958684009182,
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack-multilevel.xml"
+      },
+      "viewsetup": 0
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.SpimSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 32,
+    "color": -1,
+    "converter_setup_min": 0.014078041315990818,
+    "converter_setup_max": 80.01958684009182,
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack-multilevel.xml"
+      },
+      "viewsetup": 0
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.SpimSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 32,
+    "color": -1,
+    "converter_setup_min": 0.014078041315990818,
+    "converter_setup_max": 80.01958684009182,
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack-multilevel.xml"
+      },
+      "viewsetup": 0
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.SpimSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 32,
+    "color": -1,
+    "converter_setup_min": 0.014078041315990818,
+    "converter_setup_max": 80.01958684009182,
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack-multilevel.xml"
+      },
+      "viewsetup": 0
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.SpimSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 37,
     "color": -1,
     "converter_setup_min": 0.033052792654934965,
     "converter_setup_max": 147.05187452180567,
@@ -1025,8 +1105,72 @@
   {
     "source_name": "mri-stack",
     "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 30,
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 37,
+    "color": -1,
+    "converter_setup_min": 0.033052792654934965,
+    "converter_setup_max": 147.05187452180567,
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack.xml"
+      },
+      "viewsetup": 0
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.SpimSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 37,
+    "color": -1,
+    "converter_setup_min": 0.033052792654934965,
+    "converter_setup_max": 147.05187452180567,
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack.xml"
+      },
+      "viewsetup": 0
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.SpimSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 37,
+    "color": -1,
+    "converter_setup_min": 0.033052792654934965,
+    "converter_setup_max": 147.05187452180567,
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack.xml"
+      },
+      "viewsetup": 0
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.SpimSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 37,
+    "color": -1,
+    "converter_setup_min": 0.033052792654934965,
+    "converter_setup_max": 147.05187452180567,
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack.xml"
+      },
+      "viewsetup": 0
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.SpimSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 39,
     "color": 65535,
     "converter_setup_min": 0.033052792654934965,
     "converter_setup_max": 147.05187452180567,
@@ -1041,9 +1185,25 @@
   {
     "source_name": "mri-stack",
     "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 30,
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 39,
     "color": 65535,
+    "converter_setup_min": 0.033052792654934965,
+    "converter_setup_max": 147.05187452180567,
+    "sac": {
+      "spimdata": {
+        "datalocation": "src/test/resources/mri-stack.xml"
+      },
+      "viewsetup": 0
+    },
+    "string_metadata": {}
+  },
+  {
+    "source_name": "mri-stack",
+    "source_class": "bdv.SpimSource",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 40,
+    "color": -1,
     "converter_setup_min": 0.033052792654934965,
     "converter_setup_max": 147.05187452180567,
     "sac": {
@@ -1057,104 +1217,8 @@
   {
     "source_name": "demoSlice.tif channel 1",
     "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 31,
-    "color": -1,
-    "converter_setup_min": 0.03902065799540933,
-    "converter_setup_max": 131.07039020657996,
-    "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/demoSlice.xml"
-      },
-      "viewsetup": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 36,
-    "color": -1,
-    "converter_setup_min": 0.014078041315990818,
-    "converter_setup_max": 80.01958684009182,
-    "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack-multilevel.xml"
-      },
-      "viewsetup": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 36,
-    "color": -1,
-    "converter_setup_min": 0.014078041315990818,
-    "converter_setup_max": 80.01958684009182,
-    "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack-multilevel.xml"
-      },
-      "viewsetup": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 36,
-    "color": -1,
-    "converter_setup_min": 0.014078041315990818,
-    "converter_setup_max": 80.01958684009182,
-    "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack-multilevel.xml"
-      },
-      "viewsetup": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 36,
-    "color": -1,
-    "converter_setup_min": 0.014078041315990818,
-    "converter_setup_max": 80.01958684009182,
-    "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack-multilevel.xml"
-      },
-      "viewsetup": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 36,
-    "color": -1,
-    "converter_setup_min": 0.014078041315990818,
-    "converter_setup_max": 80.01958684009182,
-    "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack-multilevel.xml"
-      },
-      "viewsetup": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "demoSlice.tif channel 1",
-    "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 38,
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 42,
     "color": 65535,
     "converter_setup_min": 0.03902065799540933,
     "converter_setup_max": 131.07039020657996,
@@ -1169,8 +1233,8 @@
   {
     "source_name": "demoSlice.tif channel 1",
     "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 38,
+    "converter_class": "class net.imglib2.display.Instances$Imp",
+    "source_id": 42,
     "color": 65535,
     "converter_setup_min": 0.03902065799540933,
     "converter_setup_max": 131.07039020657996,
@@ -1183,80 +1247,16 @@
     "string_metadata": {}
   },
   {
-    "source_name": "mri-stack",
+    "source_name": "demoSlice.tif channel 1",
     "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
+    "converter_class": "class net.imglib2.display.Instances$Imp",
     "source_id": 43,
     "color": -1,
-    "converter_setup_min": 0.033052792654934965,
-    "converter_setup_max": 147.05187452180567,
+    "converter_setup_min": 0.03902065799540933,
+    "converter_setup_max": 131.07039020657996,
     "sac": {
       "spimdata": {
-        "datalocation": "src/test/resources/mri-stack.xml"
-      },
-      "viewsetup": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 43,
-    "color": -1,
-    "converter_setup_min": 0.033052792654934965,
-    "converter_setup_max": 147.05187452180567,
-    "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack.xml"
-      },
-      "viewsetup": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 43,
-    "color": -1,
-    "converter_setup_min": 0.033052792654934965,
-    "converter_setup_max": 147.05187452180567,
-    "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack.xml"
-      },
-      "viewsetup": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 43,
-    "color": -1,
-    "converter_setup_min": 0.033052792654934965,
-    "converter_setup_max": 147.05187452180567,
-    "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack.xml"
-      },
-      "viewsetup": 0
-    },
-    "string_metadata": {}
-  },
-  {
-    "source_name": "mri-stack",
-    "source_class": "bdv.SpimSource",
-    "converter_class": "class net.imglib2.display.RealARGBColorConverterFactory$Imp",
-    "source_id": 43,
-    "color": -1,
-    "converter_setup_min": 0.033052792654934965,
-    "converter_setup_max": 147.05187452180567,
-    "sac": {
-      "spimdata": {
-        "datalocation": "src/test/resources/mri-stack.xml"
+        "datalocation": "src/test/resources/demoSlice.xml"
       },
       "viewsetup": 0
     },

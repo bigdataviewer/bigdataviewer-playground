@@ -70,7 +70,7 @@ public class LogMousePositionDemo {
         rai = Views.addDimension( rai, 0, 0 );
 
         // Makes BDV Source
-        Source<T> source = new RandomAccessibleIntervalSource<>(rai, rai.getType(), "blobs");
+        Source<T> source = new RandomAccessibleIntervalSource<>(rai, /*rai.getType()*/ Util.getTypeFromInterval(rai), "blobs");
         SourceAndConverter<?> sac = SourceAndConverterHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle

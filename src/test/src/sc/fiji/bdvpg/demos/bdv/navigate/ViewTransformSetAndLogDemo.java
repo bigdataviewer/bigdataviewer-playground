@@ -74,7 +74,7 @@ public class ViewTransformSetAndLogDemo {
         rai = Views.addDimension( rai, 0, 0 );
 
         // Makes BDV Source
-        Source<UnsignedByteType> source = new RandomAccessibleIntervalSource<>(rai, rai.getType(), "blobs");
+        Source<UnsignedByteType> source = new RandomAccessibleIntervalSource<>(rai, /*rai.getType()*/ Util.getTypeFromInterval(rai), "blobs");
         SourceAndConverter<UnsignedByteType> sac = SourceAndConverterHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
