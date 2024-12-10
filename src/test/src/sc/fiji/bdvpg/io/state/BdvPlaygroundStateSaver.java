@@ -62,7 +62,7 @@ public class BdvPlaygroundStateSaver {
         ).run();
 
         logger.info("Bdv Playground state saved!");
-
+        System.out.println("Bdv Playground state saved!");
     }
 
     public static void createSacs() {

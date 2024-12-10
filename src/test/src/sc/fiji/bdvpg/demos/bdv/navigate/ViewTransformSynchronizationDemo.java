@@ -74,7 +74,7 @@ public class ViewTransformSynchronizationDemo {
         rai = Views.addDimension( rai, 0, 0 );
 
         // Makes BDV Source
-        Source<UnsignedByteType> source = new RandomAccessibleIntervalSource<>(rai, Util.getTypeFromInterval(rai), "blobs");
+        Source<UnsignedByteType> source = new RandomAccessibleIntervalSource<>(rai, rai.getType(), "blobs");
         SourceAndConverter<UnsignedByteType> sac = SourceAndConverterHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle

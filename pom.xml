@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>38.0.1</version>
+		<version>39.0.0</version>
 		<relativePath />
 	</parent>
 
 	<groupId>sc.fiji</groupId>
 	<artifactId>bigdataviewer-playground</artifactId>
-	<version>0.10.7-SNAPSHOT</version>
+	<version>0.10.8-SNAPSHOT</version>
 
 	<name>bigdataviewer-playground</name>
 	<description>BigDataViewer Actions and GUI</description>
@@ -121,8 +121,9 @@
 
 		<!-- package version below are not present in the parent pom. A version is needed -->
 		<bigdataviewer-selector.version>0.2.7</bigdataviewer-selector.version>
-		<bigvolumeviewer.version>0.3.3</bigvolumeviewer.version>
+		<bigvolumeviewer.version>0.3.4</bigvolumeviewer.version>
 		<reflections.version>0.10.2</reflections.version> <!-- for test only -->
+		<!--<spim_data.version>2.3.4</spim_data.version>-->
 
 		<!-- package version below are determined by the parent pom but need to be upgraded or temporarily fixed for bugs -->
 
@@ -172,6 +173,12 @@
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2-realtransform</artifactId>
 			<version>${imglib2-realtransform.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>spim_data</artifactId>
+			<version>${spim_data.version}</version>
 		</dependency>
 
 		<dependency>

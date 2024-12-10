@@ -32,7 +32,6 @@ import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.bdv.navigate.RayCastPositionerSliderAdder;
-import sc.fiji.bdvpg.bdv.navigate.TimepointAdapterAdder;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 public class RayCastDemo {

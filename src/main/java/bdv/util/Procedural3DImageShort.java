@@ -87,6 +87,11 @@ public class Procedural3DImageShort extends RealPoint implements
 		return new RealRandomAccessible<UnsignedShortType>() {
 
 			@Override
+			public UnsignedShortType getType() {
+				return new UnsignedShortType();
+			}
+
+			@Override
 			public RealRandomAccess<UnsignedShortType> realRandomAccess() {
 				return copy();
 			}

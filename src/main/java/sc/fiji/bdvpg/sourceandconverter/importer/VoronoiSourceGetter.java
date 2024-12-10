@@ -122,8 +122,7 @@ public class VoronoiSourceGetter implements Runnable,
 			randomAccessible, interval);
 
 		if (copyImg) {
-			final ArrayImg<FloatType, ?> labelImageCopy = new ArrayImgFactory(Util
-				.getTypeFromInterval(labelImage)).create(labelImage);
+			final ArrayImg<FloatType, ?> labelImageCopy = new ArrayImgFactory(labelImage.getType()).create(labelImage);
 
 			// Image copied to avoid computing it on the fly
 			// https://github.com/imglib/imglib2-algorithm/blob/47cd6ed5c97cca4b316c92d4d3260086a335544d/src/main/java/net/imglib2/algorithm/util/Grids.java#L221

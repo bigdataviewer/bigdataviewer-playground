@@ -56,8 +56,8 @@ public class BigWarp2DTest {
 
     public static <T extends NativeType<T> & RealType<T>> void run() throws SpimDataException
     {
-        Source<T> mvg = loadSource("https://imagej.nih.gov/ij/images/boats.gif",  20);
-        Source<T> tgt = loadSource("https://imagej.nih.gov/ij/images/boats.gif", -20);
+        Source<T> mvg = loadSource("https://imagej.net/ij/images/boats.gif",  20);
+        Source<T> tgt = loadSource("https://imagej.net/ij/images/boats.gif", -20);
 
         BigWarpData<T> bwdata = BigWarpInit.initData();
         BigWarpInit.add(bwdata, mvg, 0, 0, true);
