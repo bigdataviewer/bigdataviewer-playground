@@ -38,11 +38,14 @@ import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import java.awt.Component;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,8 +78,9 @@ public class BdvScijavaHelper {
 		Class<? extends Command> commandClass, int skipTopLevels, Object... args)
 	{
 		Plugin plugin = commandClass.getDeclaredAnnotation(Plugin.class);
+
 		addActionToBdvHandleMenu(bdvh, plugin.menuPath(), skipTopLevels, () -> ctx
-			.getService(CommandService.class).run(commandClass, true, args));
+			.getService(CommandService.class).run(commandClass, true, args), plugin.iconPath(), plugin.description());
 	}
 
 	static public void addSeparator(BdvHandle bdvh,	String pathHierarchy) {
@@ -106,12 +110,20 @@ public class BdvScijavaHelper {
 	static public void addCommandToBdvHandleMenu(BdvHandle bdvh, Context ctx, String path,
 												 Class<? extends Command> commandClass, Object... args)
 	{
+
+		Plugin plugin = commandClass.getDeclaredAnnotation(Plugin.class);
+
 		addActionToBdvHandleMenu(bdvh, path, 0, () -> ctx
-				.getService(CommandService.class).run(commandClass, true, args));
+				.getService(CommandService.class).run(commandClass, true, args), plugin.iconPath(), plugin.description());
 	}
 
 	static public void addActionToBdvHandleMenu(BdvHandle bdvh,
-		String pathHierarchy, int skipTopLevels, Runnable runnable)
+												String pathHierarchy, int skipTopLevels, Runnable runnable) {
+		addActionToBdvHandleMenu(bdvh, pathHierarchy, skipTopLevels, runnable, null, null);
+	}
+
+	static public void addActionToBdvHandleMenu(BdvHandle bdvh,
+		String pathHierarchy, int skipTopLevels, Runnable runnable, String iconPath, String description)
 	{
 		if (bdvh instanceof BdvHandleFrame) {
 			final JMenuBar bdvMenuBar = ((BdvHandleFrame) bdvh).getBigDataViewer()
@@ -126,6 +138,18 @@ public class BdvScijavaHelper {
 			JMenuItem jMenuItemRoot = findOrCreateJMenu(bdvMenuBar, path);
 			if (jMenuItemRoot != null) {
 				final JMenuItem jMenuItem = new JMenuItem(path.get(path.size() - 1));
+
+				if ((iconPath!=null) && (!iconPath.isEmpty())) {
+					URL iconURL = BdvScijavaHelper.class.getResource(iconPath);
+					ImageIcon iconRotX = new ImageIcon(iconURL);
+					Icon icon = new ImageIcon( iconRotX.getImage().getScaledInstance( 32, 32,  java.awt.Image.SCALE_SMOOTH ) );
+					jMenuItem.setIcon(icon);
+				}
+
+				if ((description!=null) && (!description.isEmpty())) {
+					jMenuItem.setToolTipText(description);
+				}
+
 				jMenuItem.addActionListener(e -> runnable.run());
 				jMenuItemRoot.add(jMenuItem);
 				bdvMenuBar.updateUI();
