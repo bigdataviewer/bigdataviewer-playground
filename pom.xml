@@ -167,7 +167,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>net.imglib2</groupId>do overlay helper!!!y
+			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2-realtransform</artifactId>
 		</dependency>
 
