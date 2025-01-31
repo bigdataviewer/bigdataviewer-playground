@@ -36,6 +36,7 @@ import bdv.util.BdvHandleFrame;
 import bdv.util.BdvHandlePanel;
 import bdv.util.BdvOptions;
 import bdv.util.BdvOverlay;
+import bdv.util.BdvOverlaySource;
 import bdv.viewer.Source;
 import net.imglib2.FinalInterval;
 import net.imglib2.FinalRealInterval;
@@ -579,6 +580,39 @@ public class BdvHandleHelper {
 	 */
 	public static void removeCard(BdvHandle bdvh, Object key) {
 		SwingUtilities.invokeLater(() -> bdvh.getCardPanel().removeCard(key));
+	}
+
+	/**
+	 * Helper function that maintains the number of timepoints of a bdv when addinf an overlay
+	 * see
+	 * @param bdvh
+	 * @param overlay
+	 * @param name
+	 * @return
+	 * @param <T>
+	 */
+	public static <T extends BdvOverlay> BdvOverlaySource<T> addOverlay(BdvHandle bdvh, T overlay, String name) {
+		// Store
+		int nTimepoints = bdvh.getViewerPanel().state().getNumTimepoints();
+		int currentTimePoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
+		BdvOverlaySource<T> bos = BdvFunctions.showOverlay(overlay, name, BdvOptions.options().addTo(bdvh));
+		bdvh.getViewerPanel().state().setNumTimepoints(nTimepoints);
+		bdvh.getViewerPanel().state().setCurrentTimepoint(currentTimePoint);
+		return bos;
+	}
+
+	/**
+	 * Helper function that maintains the number of timepoints of a bdv when removing an overlay
+	 * @param overlay
+	 */
+	public static void removeOverlay(BdvOverlaySource<?> overlay) {
+		// Store
+		BdvHandle bdvh = overlay.getBdvHandle();
+		int nTimepoints = bdvh.getViewerPanel().state().getNumTimepoints();
+		int currentTimePoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
+		overlay.removeFromBdv();
+		bdvh.getViewerPanel().state().setNumTimepoints(nTimepoints);
+		bdvh.getViewerPanel().state().setCurrentTimepoint(currentTimePoint);
 	}
 
 }
