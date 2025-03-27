@@ -424,6 +424,22 @@ public class SourceAndConverterHelper {
 	}
 
 	/**
+	 * @param sacs sources
+	 * @return the max timepoint found in this source according to the next method
+	 *         ( check limitations )
+	 */
+	public static int getMinTimepoint(SourceAndConverter<?>[] sacs) {
+		int min = 0;
+		for (SourceAndConverter<?> sac : sacs) {
+			int sourceMax = getMinTimepoint(sac.getSpimSource());
+			if (sourceMax > min) {
+				min = sourceMax;
+			}
+		}
+		return min;
+	}
+
+	/**
 	 * Returns a more reasonable estimation of the number of timepoint in an array of sources
 	 *
 	 * For that : discard all sources which are present at t = -1. That's a proxy indicating that it's
@@ -472,11 +488,9 @@ public class SourceAndConverterHelper {
 	 * @return the maximal timepoint where the source is still present
 	 */
 	public static int getMaxTimepoint(Source<?> source) {
-		if (!source.isPresent(0)) {
-			return 0;
-		}
 		int nFrames = 1;
-		int iFrame = 1;
+		int iFrame = getMinTimepoint(source);
+		if (iFrame == 0) iFrame = 1;
 		int previous = iFrame;
 		while ((iFrame < Integer.MAX_VALUE / 2) && (source.isPresent(iFrame))) {
 			previous = iFrame;
@@ -490,6 +504,49 @@ public class SourceAndConverterHelper {
 				}
 			}
 		}
+		return nFrames;
+	}
+
+	/**
+	 * Looks for the max number of timepoint present in this source and converter
+	 * To do this multiply the 2 the max timepoint until no source is present TODO
+	 * : use the spimdata object if present to fetch this TODO : Limitation : if
+	 * the timepoint 0 is not present, this fails! Limitation : if the source is
+	 * present at all timepoint, this fails
+	 *
+	 * @param source source
+	 * @return the maximal timepoint where the source is still present
+	 */
+	public static int getMinTimepoint(Source<?> source) {
+		if (source.isPresent(0)) {
+			return 0;
+		}
+
+		int nFrames = 0;
+		//int iFrame = 1;
+		//int previous = iFrame;
+		int maxSearch = 100_000;
+
+		while (!(source.isPresent(nFrames))&&(nFrames<maxSearch)) {
+			nFrames++;
+		}
+		if (nFrames == maxSearch) {
+			logger.warn("Couldn't find data before t = "+maxSearch+" for source "+source.getName());
+			return 0;
+		}
+
+		/*while ((iFrame < Integer.MAX_VALUE / 2) && (source.isPresent(iFrame))) {
+			previous = iFrame;
+			iFrame *= 2;
+		}
+		if (iFrame > 1) {
+			for (int tp = previous; tp < iFrame + 1; tp++) {
+				if (!source.isPresent(tp)) {
+					nFrames = tp;
+					break;
+				}
+			}
+		}*/
 		return nFrames;
 	}
 

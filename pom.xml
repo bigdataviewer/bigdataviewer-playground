@@ -117,7 +117,7 @@
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
 		<scijava.deleteOtherVersions>true</scijava.deleteOtherVersions>
-		<!-- <scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory> -->
+		<!--scijava.app.directory>C:/Fiji.app/</scijava.app.directory-->
 
 		<!-- package version below are not present in the parent pom. A version is needed -->
 		<bigdataviewer-selector.version>0.2.8</bigdataviewer-selector.version>
