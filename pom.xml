@@ -11,7 +11,7 @@
 
 	<groupId>sc.fiji</groupId>
 	<artifactId>bigdataviewer-playground</artifactId>
-	<version>0.11.1-SNAPSHOT</version>
+	<version>0.11.2-SNAPSHOT</version>
 
 	<name>bigdataviewer-playground</name>
 	<description>BigDataViewer Actions and GUI</description>
@@ -120,7 +120,7 @@
 		<!-- <scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory> -->
 
 		<!-- package version below are not present in the parent pom. A version is needed -->
-		<bigdataviewer-selector.version>0.2.7</bigdataviewer-selector.version>
+		<bigdataviewer-selector.version>0.2.8</bigdataviewer-selector.version>
 		<reflections.version>0.10.2</reflections.version> <!-- for test only -->
 
 		<!-- package version below are determined by the parent pom but need to be upgraded or temporarily fixed for bugs -->
@@ -132,6 +132,7 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-core</artifactId>
+			<version>${bigdataviewer-core.version}</version>
 		</dependency>
 
 		<dependency>
@@ -168,11 +169,6 @@
 		<dependency>
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2-realtransform</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>spim_data</artifactId>
 		</dependency>
 
 		<dependency>
