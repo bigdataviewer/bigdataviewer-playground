@@ -412,31 +412,11 @@ public class SourceAndConverterHelper {
 	 * @return the max timepoint found in this source according to the next method
 	 *         ( check limitations )
 	 */
-	public static int getMaxTimepoint(SourceAndConverter<?>[] sacs) {
+	public static int getMaxTimepoint(SourceAndConverter... sacs) {
 		int max = 0;
 		for (SourceAndConverter<?> sac : sacs) {
-			int sourceMax = getMaxTimepoint(sac);
-			if (sourceMax > max) {
-				max = sourceMax;
-			}
-		}
-		return max;
-	}
-
-	/**
-	 * Returns a more reasonable estimation of the number of timepoint in an array of sources
-	 *
-	 * For that : discard all sources which are present at t = -1. That's a proxy indicating that it's
-	 * a generative source.
-	 *
-	 * @param sacs
-	 * @return
-	 */
-	public static int getNTimepoints(SourceAndConverter<?>[] sacs) {
-		int max = 0;
-		for (SourceAndConverter<?> sac : sacs) {
-			if (!sac.getSpimSource().isPresent(-1)) {
-				int sourceMax = getMaxTimepoint(sac);
+			if (hasAValidTimepoint(sac.getSpimSource()) && isNotGenerative(sac.getSpimSource())) {
+				int sourceMax = getMaxTimepointSingle(sac.getSpimSource());
 				if (sourceMax > max) {
 					max = sourceMax;
 				}
@@ -450,15 +430,47 @@ public class SourceAndConverterHelper {
 	 * @return the max timepoint found in this source according to the next method
 	 *         ( check limitations )
 	 */
-	public static int getMaxTimepoint(Source<?>[] sacs) {
+	public static int getMaxTimepoint(Source... sacs) {
 		int max = 0;
 		for (Source<?> source : sacs) {
-			int sourceMax = getMaxTimepoint(source);
-			if (sourceMax > max) {
-				max = sourceMax;
+			if (hasAValidTimepoint(source) && isNotGenerative(source)) {
+				int sourceMax = getMaxTimepointSingle(source);
+				if (sourceMax > max) {
+					max = sourceMax;
+				}
 			}
 		}
 		return max;
+	}
+
+	public static int getMinTimepoint(Source... sacs) {
+		int min = Integer.MAX_VALUE;
+		for (Source<?> source : sacs) {
+			if (hasAValidTimepoint(source) && isNotGenerative(source)) {
+				int sourceMin = getMinTimepointSingle(source);
+				if (sourceMin < min) {
+					min = sourceMin;
+				}
+			}
+		}
+
+		if (min == Integer.MAX_VALUE) return 0; // No source
+		return min;
+	}
+
+	public static int getMinTimepoint(SourceAndConverter... sacs) {
+		int min = Integer.MAX_VALUE;
+		for (SourceAndConverter<?> source : sacs) {
+			if (hasAValidTimepoint(source.getSpimSource()) && isNotGenerative(source.getSpimSource())) {
+				int sourceMin = getMinTimepointSingle(source.getSpimSource());
+				if (sourceMin < min) {
+					min = sourceMin;
+				}
+			}
+		}
+
+		if (min == Integer.MAX_VALUE) return 0; // No source
+		return min;
 	}
 
 	/**
@@ -471,30 +483,113 @@ public class SourceAndConverterHelper {
 	 * @param source source
 	 * @return the maximal timepoint where the source is still present
 	 */
-	public static int getMaxTimepoint(Source<?> source) {
-		if (!source.isPresent(0)) {
-			return 0;
+	private static int getMaxTimepointSingle(Source<?> source) {
+		if (!hasAValidTimepoint(source)) return -1; // Error, no timepoint where the source is present
+
+		int iFrame = getAValidTimepoint(source); // Starts at a valid location
+
+		while ((iFrame<1024) && (source.isPresent(iFrame))) {
+			iFrame++;
 		}
-		int nFrames = 1;
-		int iFrame = 1;
-		int previous = iFrame;
-		while ((iFrame < Integer.MAX_VALUE / 2) && (source.isPresent(iFrame))) {
-			previous = iFrame;
-			iFrame *= 2;
-		}
-		if (iFrame > 1) {
-			for (int tp = previous; tp < iFrame + 1; tp++) {
+
+		if (!source.isPresent(iFrame)) {
+			return iFrame-1;
+		} else {
+			// Exponential search
+			int previousTp = iFrame;
+			while ((iFrame < Integer.MAX_VALUE / 2) && (source.isPresent(iFrame))) {
+				previousTp = iFrame;
+				iFrame *= 2;
+			}
+			for (int tp = previousTp; tp < iFrame; tp++) {
 				if (!source.isPresent(tp)) {
-					nFrames = tp;
-					break;
+					return tp-1;
 				}
 			}
+			throw new RuntimeException("This branch in SourceAndConverterHelper#getMaxTimepoint should never occur.");
 		}
-		return nFrames;
 	}
 
-	public static int getMaxTimepoint(SourceAndConverter<?> sac) {
-		return getMaxTimepoint(sac.getSpimSource());
+	/**
+	 * Looks for the min number of timepoint present in this source (not below 0) and converter
+	 * To do this multiply the 2 the max timepoint until no source is present TODO
+	 * : use the spimdata object if present to fetch this TODO : Limitation : if
+	 * the timepoint 0 is not present, this fails! Limitation : if the source is
+	 * present at all timepoint, this fails
+	 *
+	 * @param source source
+	 * @return the maximal timepoint where the source is still present
+	 */
+	private static int getMinTimepointSingle(Source<?> source) {
+		if (!hasAValidTimepoint(source)) return -1; // Error, no timepoint where the source is present
+
+		int iFrame = getAValidTimepoint(source); // Starts at a valid location
+
+		while ((iFrame>0) && (source.isPresent(iFrame))) {
+			iFrame--;
+		}
+
+		return iFrame;
+	}
+
+	/**
+	 * Looks whether a source has a timepoint where some data are present:
+	 * linear search for true in source#isPresent in the first 1024 frames and
+	 * then exponential search. To get the value of the valid timepoint use
+	 * SourceAndConverter#getAValidTimepoint
+	 *
+	 * @param source source
+	 * @return true if a valid timepoint has been found
+	 */
+	public static boolean hasAValidTimepoint(Source<?> source) {
+		if (source.isPresent(0)) return true;
+		int iFrame = 1;
+
+		// Linear search for the first timepoints
+		while ((iFrame < 1024) && (!source.isPresent(iFrame))) {
+			iFrame += 1;
+		}
+
+		// Sparse exponential search - is it really a good idea ?
+		while ((iFrame < Integer.MAX_VALUE / 2) && (!source.isPresent(iFrame))) {
+			iFrame *= 2;
+		}
+		return source.isPresent(iFrame);
+	}
+
+	/**
+	 * Attempts to guess whether a source is generative or not - these sorts of sources should
+	 * be ignored when one wants to find the min or max of the source
+	 * @param source
+	 * @return
+	 */
+	public static boolean isNotGenerative(Source<?> source) {
+		return ! (source.isPresent(-1)); // Proxy
+	}
+
+	/**
+	 * Looks whether a source has a timepoint where some data are present:
+	 * linear search for true in source#isPresent in the first 1024 frames and
+	 * then exponential search. To get the value of the valid timepoint use
+	 * SourceAndConverter#getAValidTimepoint
+	 *
+	 * @param source source
+	 * @return a timepoint where the source is present
+	 */
+	public static int getAValidTimepoint(Source<?> source) {
+		if (source.isPresent(0)) return 0;
+		int iFrame = 1;
+
+		// Linear search for the first timepoints
+		while ((iFrame < 1024) && (!source.isPresent(iFrame))) {
+			iFrame += 2;
+		}
+
+		// Sparse exponential search - is it really a good idea ?
+		while ((iFrame < Integer.MAX_VALUE / 2) && (!source.isPresent(iFrame))) {
+			iFrame *= 2;
+		}
+		return iFrame;
 	}
 
 	/**
