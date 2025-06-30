@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.bdv.navigate;
 
 import bdv.util.Affine3DHelpers;
 import bdv.util.BdvHandle;
+import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerState;
 import net.imglib2.FinalRealInterval;
@@ -41,7 +42,6 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Intervals;
 import net.imglib2.util.LinAlgHelpers;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,24 +60,11 @@ import java.util.stream.Collectors;
 
 public class ViewerTransformAdjuster implements Runnable {
 
-	private final ViewerAdapter handle;
+	private final AbstractViewerPanel handle;
 	private final SourceAndConverter<?>[] sources;
 
-	public ViewerTransformAdjuster(BdvHandle bdvHandle,
-		SourceAndConverter<?> source)
-	{
-		this(bdvHandle, new SourceAndConverter[] { source });
-	}
-
-	public ViewerTransformAdjuster(BdvHandle bdvHandle,
-		SourceAndConverter<?>[] sources)
-	{
-		this.handle = new ViewerAdapter(bdvHandle);
-		this.sources = sources;
-	}
-
-	public ViewerTransformAdjuster(ViewerAdapter handle,
-		SourceAndConverter<?>[] sources)
+	public ViewerTransformAdjuster(AbstractViewerPanel handle,
+								   SourceAndConverter<?>[] sources)
 	{
 		this.handle = handle;
 		this.sources = sources;

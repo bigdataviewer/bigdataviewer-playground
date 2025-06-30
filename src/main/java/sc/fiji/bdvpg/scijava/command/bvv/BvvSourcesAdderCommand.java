@@ -39,7 +39,6 @@ import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
 /**
  * Show sources in a BigVolumeViewer window - limited to 16 bit images
@@ -54,7 +53,7 @@ import sc.fiji.bdvpg.viewers.ViewerAdapter;
 	description = "Show sources in a BigVolumeViewer window - limited to 16 bit images")
 public class BvvSourcesAdderCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select BVV Window(s)")
+	@Parameter(label = "Select BigViewer Window(s)")
 	BvvHandle bvvh;
 
 	@Parameter(label = "Adjust View on Source")
@@ -82,7 +81,7 @@ public class BvvSourcesAdderCommand implements BdvPlaygroundActionCommand {
 		}
 
 		if ((adjustviewonsource) && (sacs.length > 0)) {
-			new ViewerTransformAdjuster(new ViewerAdapter(bvvh), sacs).run();
+			new ViewerTransformAdjuster(bvvh.getViewerPanel(), sacs).run();
 		}
 
 	}

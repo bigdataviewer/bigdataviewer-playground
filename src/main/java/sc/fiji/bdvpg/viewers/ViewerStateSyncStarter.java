@@ -31,9 +31,13 @@ package sc.fiji.bdvpg.viewers;
 
 import bdv.util.BdvHandle;
 import bdv.util.PlaceHolderSource;
+import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.SourceAndConverter;
+import bdv.viewer.ViewerPanel;
 import bdv.viewer.ViewerStateChange;
 import bdv.viewer.ViewerStateChangeListener;
+import bvv.core.VolumeViewerPanel;
+import bvv.vistools.BvvHandle;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.HashMap;
@@ -46,9 +50,9 @@ public class ViewerStateSyncStarter implements Runnable {
 	/**
 	 * Array of BdvHandles to synchronize
 	 */
-	final ViewerAdapter[] handles;
+	final AbstractViewerPanel[] handles;
 
-	public ViewerStateSyncStarter(ViewerAdapter... handles) {
+	public ViewerStateSyncStarter(AbstractViewerPanel... handles) {
 		this.handles = handles;
 	}
 
@@ -57,7 +61,7 @@ public class ViewerStateSyncStarter implements Runnable {
 	 * added for synchronization purpose. This object contains all what's needed
 	 * to stop the synchronization
 	 */
-	final Map<ViewerAdapter, ViewerStateChangeListener> handleToStateListener =
+	final Map<AbstractViewerPanel, ViewerStateChangeListener> handleToStateListener =
 		new HashMap<>();
 
 	final AtomicBoolean isPropagating = new AtomicBoolean();
@@ -65,7 +69,7 @@ public class ViewerStateSyncStarter implements Runnable {
 	@Override
 	public void run() {
 		isPropagating.set(false);
-		for (ViewerAdapter handle : handles) {
+		for (AbstractViewerPanel handle : handles) {
 			ViewerStateChangeListener stateListener = new BasicStateListener(handle,
 				isPropagating);
 			handle.state().changeListeners().add(stateListener);
@@ -73,16 +77,16 @@ public class ViewerStateSyncStarter implements Runnable {
 		}
 	}
 
-	public Map<ViewerAdapter, ViewerStateChangeListener> getSynchronizers() {
+	public Map<AbstractViewerPanel, ViewerStateChangeListener> getSynchronizers() {
 		return handleToStateListener;
 	}
 
-	ViewerAdapter currentPropagating = null;
+	AbstractViewerPanel currentPropagating = null;
 
-	void updateState(ViewerAdapter adapter) {
+	void updateState(AbstractViewerPanel adapter) {
 		isPropagating.set(true); // to ignore subsequent changes
 		currentPropagating = adapter;
-		for (ViewerAdapter adapterTest : handles) {
+		for (AbstractViewerPanel adapterTest : handles) {
 			if (!adapter.equals(adapterTest)) {
 				HashSet<SourceAndConverter<?>> stateToCopy = new HashSet<>(adapter
 					.state().getSources());
@@ -95,26 +99,31 @@ public class ViewerStateSyncStarter implements Runnable {
 				// Is there any missing source in state to adapt ?
 				stateToCopy.removeAll(stateToAdapt);
 				if (stateToCopy.size() != 0) {
-					// System.out.println("adding "+stateToCopy.size()+" source to
-					// "+adapterTest);
-					if (adapterTest.bvvPanel != null) {
-						for (SourceAndConverter<?> source : stateToCopy) {
-							adapterTest.bvvPanel.getConverterSetups().put(source,
-								SourceAndConverterServices.getSourceAndConverterService()
-									.getConverterSetup(source));
-						}
-					}
-					else {
-						// TODO : improve!
+
 						SourceAndConverterServices.getBdvDisplayService().getDisplays()
-							.forEach(bdvh -> {
+							.forEach(viewer -> {
 								for (SourceAndConverter<?> source : stateToCopy) {
-									bdvh.getConverterSetups().put(source,
-										SourceAndConverterServices.getSourceAndConverterService()
-											.getConverterSetup(source));
+									if (viewer instanceof VolumeViewerPanel) {
+										((VolumeViewerPanel) viewer).getConverterSetups().put(source,
+												SourceAndConverterServices.getSourceAndConverterService()
+														.getConverterSetup(source));
+									} else {
+										// can't work, see https://github.com/bigdataviewer/bigvolumeviewer-core/issues/27
+										BdvHandle bdvh;
+										bdvh.getConverterSetups();
+										bdvh.getViewerPanel()
+										((ViewerPanel) viewer)..put(source,
+												SourceAndConverterServices.getSourceAndConverterService()
+														.getConverterSetup(source));
+
+										BvvHandle bvvh;
+
+										bvvh.getViewerPanel().getConverterSetups()
+									}
+
+
 								}
 							});
-					}
 					adapterTest.state().addSources(stateToCopy);
 					for (SourceAndConverter<?> source : stateToCopy) {
 						// if (adapter.state().isSourceActive(source)) {

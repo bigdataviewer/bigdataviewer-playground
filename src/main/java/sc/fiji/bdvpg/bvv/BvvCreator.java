@@ -39,7 +39,6 @@ import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import sc.fiji.bdvpg.bdv.navigate.TimepointAdapterAdder;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
 import java.util.function.Supplier;
 
@@ -89,7 +88,7 @@ public class BvvCreator implements Runnable, Supplier<BvvHandle> {
 
 		bvv.getViewerPanel().setNumTimepoints(numTimePoints);
 
-		new TimepointAdapterAdder(new ViewerAdapter(bvv)).run();
+		new TimepointAdapterAdder(bvv).run();
 
 		return bvv;
 	}

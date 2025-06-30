@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.scijava.services;
 
 import bdv.util.BdvHandle;
+import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.Gson;
 import ij.Prefs;
@@ -463,8 +464,8 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 
 	}
 
-	public List<BdvHandle> getDisplays() {
-		return os.getObjects(BdvHandle.class);
+	public List<AbstractViewerPanel> getDisplays() {
+		return os.getObjects(AbstractViewerPanel.class);
 	}
 
 	/**
