@@ -54,7 +54,7 @@ public class TimepointAdapterAdder implements Runnable {
         handle.state().changeListeners().add( change -> {
                 if (change.equals(NUM_SOURCES_CHANGED)) {
                     //Number of sources changed
-                    int nTps = SourceAndConverterHelper.getNTimepoints(handle.state().getSources().toArray(new SourceAndConverter[0]));
+                    int nTps = SourceAndConverterHelper.getMaxTimepoint(handle.state().getSources().toArray(new SourceAndConverter[0]))+1;
                     if ((nTps!=handle.state().getNumTimepoints()) && (nTps>0)) {
                         handle.state().setNumTimepoints(nTps);
                     }
@@ -62,7 +62,7 @@ public class TimepointAdapterAdder implements Runnable {
             }
         );
 
-        int nTps = SourceAndConverterHelper.getNTimepoints(handle.state().getSources().toArray(new SourceAndConverter[0]));
+        int nTps = SourceAndConverterHelper.getMaxTimepoint(handle.state().getSources().toArray(new SourceAndConverter[0]))+1;
         if ((nTps!=handle.state().getNumTimepoints()) && (nTps>0)) {
             handle.state().setNumTimepoints(nTps);
         }
