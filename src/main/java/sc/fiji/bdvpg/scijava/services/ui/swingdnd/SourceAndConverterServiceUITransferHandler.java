@@ -51,7 +51,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Class which allows Drag and Drop in the tree UI of source and converter. XML
@@ -180,6 +186,18 @@ public class SourceAndConverterServiceUITransferHandler extends
 			.isDataFlavorSupported(nodesFlavor)));
 	}
 
+	static Map<Integer, Function<File, Boolean>> priorityToFileSupport = new HashMap<>();
+	static Map<Integer, Consumer<File>> priorityToFileOpen = new HashMap<>();
+
+	public static void addFileHandler(int priority, Function<File, Boolean> support, Consumer<File> accept) {
+		if (priorityToFileSupport.containsKey(priority)) {
+			System.err.println("Conflicting priorities in BDV-Playground transfer handler!");
+		} else {
+			priorityToFileSupport.put(priority, support);
+			priorityToFileOpen.put(priority, accept);
+		}
+	}
+
 	@Override
 	public boolean importData(TransferSupport supp) {
 		if (!canImport(supp)) {
@@ -197,8 +215,17 @@ public class SourceAndConverterServiceUITransferHandler extends
 						new SpimDataFromXmlImporter(f).run();
 					}
 					else {
-						logger.info("Unsupported drop operation with file " + f
-							.getAbsolutePath());
+						Optional<Integer> priorityOpt = priorityToFileSupport.keySet()
+								.stream().sorted(Collections.reverseOrder())
+								.filter(priority -> priorityToFileSupport.get(priority).apply(f))
+										.findFirst();
+
+						if (priorityOpt.isPresent()) {
+							priorityToFileOpen.get(priorityOpt.get()).accept(f);
+						} else {
+							logger.info("Unsupported drop operation with file " + f
+									.getAbsolutePath());
+						}
 					}
 				}
 			}
