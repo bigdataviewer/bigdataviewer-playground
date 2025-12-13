@@ -26,30 +26,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijava.command;
+package sc.fiji.bdvpg.demos;
 
 import bdv.util.BdvHandle;
-import org.scijava.command.Command;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
+import net.imagej.ImageJ;
+import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.bdv.navigate.RayCastPositionerSliderAdder;
+import sc.fiji.bdvpg.demos.transform.AffineTransformSourceDemo;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
-/**
- * Test command to demo {@link sc.fiji.bdvpg.scijava.BdvScijavaHelper}
- */
-@SuppressWarnings({"unused", "CanBeFinal"})
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu + "Another sub menu>Rename Bdv Window")
-public class RenameBdv implements Command {
+public class RayCastDemo {
 
-    @Parameter
-    BdvHandle bdvh;
+    static ImageJ ij;
 
-    @Parameter(label = "New Title")
-    String title;
+    public static void main(String... args) {
+        // Initializes static SourceService and Display Service
 
-    @Override
-    public void run() {
-        BdvHandleHelper.setWindowTitle(bdvh, title);
+        ij = new ImageJ();
+        TestHelper.startFiji(ij);//ij.ui().showUI();
+
+        BdvHandle bdvh = SourceAndConverterServices
+                .getBdvDisplayService()
+                .getActiveBdv();
+
+        AffineTransformSourceDemo.demo(ij,3);
+
+        BdvHandleHelper.addCenterCross(bdvh);
+
+        new RayCastPositionerSliderAdder(bdvh).run();
+        //new TimepointAdapterAdder(bdvh).run();
     }
 }

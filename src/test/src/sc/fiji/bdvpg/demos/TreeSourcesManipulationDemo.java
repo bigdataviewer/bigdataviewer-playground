@@ -26,65 +26,44 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.io.state;
+package sc.fiji.bdvpg.demos;
 
+import bigwarp.BigWarp;
+import ij.IJ;
 import net.imagej.ImageJ;
-import org.junit.After;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.AffineTransformSourceDemo;
-import sc.fiji.bdvpg.BigWarpDemo;
-import sc.fiji.bdvpg.ResamplingDemo;
+import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.TestHelper;
-import sc.fiji.bdvpg.WarpedSourceDemo;
-import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 
-import java.io.File;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
-public class BdvPlaygroundStateSaver {
+import static sc.fiji.bdvpg.demos.transform.BigWarpDemo.demo2d;
 
-    protected static final Logger logger = LoggerFactory.getLogger(BdvPlaygroundStateSaver.class);
-
-    static ImageJ ij;
-
-    public static void main( String[] args )
-    {
+public class TreeSourcesManipulationDemo {
+    public static void main(String... args) {
         // Initializes static SourceService and Display Service
-        ij = new ImageJ();
+        ImageJ ij = new ImageJ();
         TestHelper.startFiji(ij);//ij.ui().showUI();
+        System.out.println("BigWarp version:"+ VersionUtils.getVersion(BigWarp.class));
+        demo2d(ij);
 
-        createSacs();
+        SourceAndConverterServiceUI treeUI = ij.get(SourceAndConverterService.class).getUI();
 
-        new SourceAndConverterServiceSaver(
-                new File("src/test/resources/bdvplaygroundstate.json"),
-                ij.context()
-        ).run();
+        DefaultTreeModel model = treeUI.getTreeModel();
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeUI.getTreeModel().getRoot();
 
-        logger.info("Bdv Playground state saved!");
-        System.out.println("Bdv Playground state saved!");
-    }
+        int nChildren = model.getChildCount(root);
+        IJ.log("There are "+nChildren+" children in the root node");
 
-    public static void createSacs() {
-       // Creates demo Warped Sources
-       BigWarpDemo.demo2d(ij);
-       BigWarpDemo.demo3d(ij);
-       AffineTransformSourceDemo.demo(ij,2);
-       ResamplingDemo.demo();
-       try {
-           WarpedSourceDemo.demo();
-       } catch (Exception e) {
-           e.printStackTrace();
-       }
-    }
+        // Easier interface:
+        SourceAndConverterServiceUI.Node r = treeUI.getRoot();
 
-    @Test
-    public void demoRunOk() {
-        main(new String[]{""});
-    }
-
-    @After
-    public void closeFiji() {
-        TestHelper.closeFijiAndBdvs(ij);
+        IJ.log("There are "+r.sources().length+" sources in the whole tree.");
+        IJ.log("The node "+r+" has "+r.children().size()+" children");
+        IJ.log("Their names are:");
+        r.children().forEach(n -> IJ.log("- "+n.name()+" | path = "+n.path()));
+        IJ.log("nSources = "+r.child("demoSlice.xml").sources().length);
     }
 }

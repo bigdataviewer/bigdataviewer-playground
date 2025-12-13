@@ -26,32 +26,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.io.state;
+package sc.fiji.bdvpg.demos.io;
 
 import net.imagej.ImageJ;
-import org.junit.After;
-import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
-import sc.fiji.bdvpg.services.SourceAndConverterServiceLoader;
+import sc.fiji.bdvpg.scijava.command.spimdata.MultipleSpimDataImporterCommand;
 
-public class BdvPlaygroundStateLoader {
+import java.io.File;
 
-    static ImageJ ij;
+public class MultipleSpimDataImporterCommandDemo
+{
 
-    public static void main( String[] args )
-    {
-        ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
-        new SourceAndConverterServiceLoader("src/test/resources/bdvplaygroundstate.json", "src/test/resources/", ij.context(), false).run();
-    }
+	static ImageJ ij;
 
-    @Test
-    public void demoRunOk() {
-        main(new String[]{""});
-    }
+	public static void main( String[] args )
+	{
+		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
+		ij = new ImageJ();
+		TestHelper.startFiji(ij);//ij.ui().showUI();
 
-    @After
-    public void closeFiji() {
-        TestHelper.closeFijiAndBdvs(ij);
-    }
+		final File[] files = new File[ 2 ];
+		files[0] = new File("src/test/resources/mri-stack.xml");
+		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
+		ij.command().run( MultipleSpimDataImporterCommand.class, true, "files", files);
+	}
+
 }

@@ -26,31 +26,54 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijava.command;
+package sc.fiji.bdvpg.demos.io.state;
 
 import net.imagej.ImageJ;
-import org.scijava.command.Command;
-import org.scijava.command.InteractiveCommand;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.demos.transform.AffineTransformSourceDemo;
+import sc.fiji.bdvpg.demos.transform.BigWarpDemo;
+import sc.fiji.bdvpg.demos.ResamplingDemo;
+import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.demos.transform.WarpedSourceDemo;
+import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
 
-@Plugin(type = Command.class, menuPath = "Test>Test Interactive Command")
-public class TestInteractiveCommand extends InteractiveCommand {
+import java.io.File;
 
-    @Parameter
-    String a_string;
+public class BdvPlaygroundStateSaver {
 
-    @Override
-    public void run() {
-        // nothing
+    protected static final Logger logger = LoggerFactory.getLogger(BdvPlaygroundStateSaver.class);
+
+    static ImageJ ij;
+
+    public static void main( String[] args )
+    {
+        // Initializes static SourceService and Display Service
+        ij = new ImageJ();
+        TestHelper.startFiji(ij);//ij.ui().showUI();
+
+        createSacs();
+
+        new SourceAndConverterServiceSaver(
+                new File("src/test/resources/bdvplaygroundstate.json"),
+                ij.context()
+        ).run();
+
+        logger.info("Bdv Playground state saved!");
+        System.out.println("Bdv Playground state saved!");
     }
 
-    public static void main(String... args) throws Exception {
-
-        ImageJ ij = new ImageJ();
-        ij.ui().showUI();
-
-        ij.command().run(TestInteractiveCommand .class, true);
-
+    public static void createSacs() {
+       // Creates demo Warped Sources
+       BigWarpDemo.demo2d(ij);
+       BigWarpDemo.demo3d(ij);
+       AffineTransformSourceDemo.demo(ij,2);
+       ResamplingDemo.demo();
+       try {
+           WarpedSourceDemo.demo();
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
     }
+
 }

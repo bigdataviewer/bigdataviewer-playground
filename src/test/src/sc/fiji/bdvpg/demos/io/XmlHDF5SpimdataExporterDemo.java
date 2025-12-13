@@ -26,16 +26,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.io;
+package sc.fiji.bdvpg.demos.io;
 
 import bdv.viewer.SourceAndConverter;
 import net.imagej.ImageJ;
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.sourceandconverter.exporter.XmlHDF5SpimdataExporter;
@@ -47,14 +43,12 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XmlHDF5SpimdataExporterTest {
-    @Rule
+public class XmlHDF5SpimdataExporterDemo {
+
     public final TemporaryFolder folder = new TemporaryFolder();
 
     static ImageJ ij;
 
-    @Test
-    @Ignore
     public void run() throws Exception {
         // Need to initialize the services:
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
@@ -101,10 +95,5 @@ public class XmlHDF5SpimdataExporterTest {
         //Assert.assertTrue(fileH5Gen.length() == fileH5Control.length()); //Fails and I don't know why
     }
 
-
-    @After
-    public void closeFiji() {
-        TestHelper.closeFijiAndBdvs(ij);
-    }
 
 }

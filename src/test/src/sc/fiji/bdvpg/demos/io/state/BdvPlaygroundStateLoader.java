@@ -26,55 +26,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.io;
+package sc.fiji.bdvpg.demos.io.state;
 
-import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
-import org.junit.After;
-import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.services.SourceAndConverterServiceLoader;
 
-/**
- * Demonstrates visualisation of two spimData sources.
- *
- */
-public class SpimDataDisplayDemo
-{
+public class BdvPlaygroundStateLoader {
 
-	static ImageJ ij;
+    static ImageJ ij;
 
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		TestHelper.startFiji(ij);//ij.ui().showUI();
+    public static void main( String[] args )
+    {
+        ij = new ImageJ();
+        TestHelper.startFiji(ij);//ij.ui().showUI();
+        new SourceAndConverterServiceLoader("src/test/resources/bdvplaygroundstate.json", "src/test/resources/", ij.context(), false).run();
+    }
 
-		// Gets active BdvHandle instance
-		BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
-
-		// Import SpimData
-		new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").run();
-		new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
-
-		// Show all SourceAndConverter associated with above SpimData
-		SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
-			SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
-			new ViewerTransformAdjuster(bdvHandle, sac).run();
-			new BrightnessAutoAdjuster<>(sac, 0).run();
-		});
-	}
-
-	@Test
-	public void demoRunOk() {
-		main(new String[]{""});
-	}
-
-	@After
-	public void closeFiji() {
-		TestHelper.closeFijiAndBdvs(ij);
-	}
 }

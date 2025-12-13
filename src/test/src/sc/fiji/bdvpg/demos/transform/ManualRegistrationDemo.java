@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg;
+package sc.fiji.bdvpg.demos.transform;
 
 import bdv.util.BdvHandle;
 import bdv.util.RandomAccessibleIntervalSource;
@@ -43,12 +43,11 @@ import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
-import org.junit.After;
-import org.junit.Test;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStarter;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStopper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
+import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
@@ -230,16 +229,6 @@ public class ManualRegistrationDemo {
 
         }
 
-    }
-
-    @Test
-    public void demoRunOk() {
-        main(new String[]{""});
-    }
-
-    @After
-    public void closeFiji() {
-        TestHelper.closeFijiAndBdvs(ij);
     }
 
 }

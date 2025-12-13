@@ -38,7 +38,6 @@ import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
-import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;

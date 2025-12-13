@@ -26,33 +26,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg;
+package sc.fiji.bdvpg.demos.command;
 
-import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.bdv.navigate.RayCastPositionerSliderAdder;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import org.scijava.command.Command;
+import org.scijava.command.InteractiveCommand;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
-public class RayCastDemo {
+@Plugin(type = Command.class, menuPath = "Demo>Demo Interactive Command")
+public class InteractiveCommandDemo extends InteractiveCommand {
 
-    static ImageJ ij;
+    @Parameter
+    String a_string;
 
-    public static void main(String... args) {
-        // Initializes static SourceService and Display Service
+    @Override
+    public void run() {
+        // nothing
+    }
 
-        ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
+    public static void main(String... args) throws Exception {
 
-        BdvHandle bdvh = SourceAndConverterServices
-                .getBdvDisplayService()
-                .getActiveBdv();
+        ImageJ ij = new ImageJ();
+        ij.ui().showUI();
 
-        AffineTransformSourceDemo.demo(ij,3);
+        ij.command().run(InteractiveCommandDemo.class, true);
 
-        BdvHandleHelper.addCenterCross(bdvh);
-
-        new RayCastPositionerSliderAdder(bdvh).run();
-        //new TimepointAdapterAdder(bdvh).run();
     }
 }

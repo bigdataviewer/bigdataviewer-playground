@@ -26,43 +26,49 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg;
+package sc.fiji.bdvpg.demos.command;
 
-import bigwarp.BigWarp;
+import bdv.viewer.SourceAndConverter;
 import ij.IJ;
 import net.imagej.ImageJ;
-import org.scijava.util.VersionUtils;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
+import org.scijava.command.Command;
+import org.scijava.command.InteractiveCommand;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.demos.transform.WarpedSourceDemo;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
+@SuppressWarnings("unused")
+@Plugin(type = InteractiveCommand.class, menuPath = "Test>Sorted Sources")
+public class TestWidgetCommandDemo implements Command {
 
-import static sc.fiji.bdvpg.BigWarpDemo.demo2d;
+    @Parameter
+    SourceAndConverter<?>[] non_sorted_sources;
 
-public class DemoTreeSourcesManipulation {
-    public static void main(String... args) {
+
+    @Parameter(style = "sorted")
+    SourceAndConverter<?>[] sorted_sources;
+
+    @Override
+    public void run() {
+        IJ.log("--- Non Sorted");
+        for(SourceAndConverter<?> source: non_sorted_sources) {
+            IJ.log(source.getSpimSource().getName());
+        }
+
+        IJ.log("--- Sorted");
+        for(SourceAndConverter<?> source: sorted_sources) {
+            IJ.log(source.getSpimSource().getName());
+        }
+    }
+
+    public static void main(String... args) throws Exception {
         // Initializes static SourceService and Display Service
+
         ImageJ ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
-        System.out.println("BigWarp version:"+ VersionUtils.getVersion(BigWarp.class));
-        demo2d(ij);
+        ij.ui().showUI();
 
-        SourceAndConverterServiceUI treeUI = ij.get(SourceAndConverterService.class).getUI();
+        WarpedSourceDemo.demo();
+        ij.command().run(TestWidgetCommandDemo.class, true);
 
-        DefaultTreeModel model = treeUI.getTreeModel();
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeUI.getTreeModel().getRoot();
-
-        int nChildren = model.getChildCount(root);
-        IJ.log("There are "+nChildren+" children in the root node");
-
-        // Easier interface:
-        SourceAndConverterServiceUI.Node r = treeUI.getRoot();
-
-        IJ.log("There are "+r.sources().length+" sources in the whole tree.");
-        IJ.log("The node "+r+" has "+r.children().size()+" children");
-        IJ.log("Their names are:");
-        r.children().forEach(n -> IJ.log("- "+n.name()+" | path = "+n.path()));
-        IJ.log("nSources = "+r.child("demoSlice.xml").sources().length);
     }
 }

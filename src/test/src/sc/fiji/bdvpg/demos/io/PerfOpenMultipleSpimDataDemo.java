@@ -26,12 +26,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.io;
+package sc.fiji.bdvpg.demos.io;
 
 import net.imagej.ImageJ;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
@@ -52,7 +49,7 @@ import java.time.Instant;
  *
  */
 
-public class PerfOpenMultipleSpimDataTest
+public class PerfOpenMultipleSpimDataDemo
 {
 	static ImageJ ij;
 
@@ -89,17 +86,6 @@ public class PerfOpenMultipleSpimDataTest
 		timeElapsedInS = Duration.between(start, finish).toMillis()/1000;
 
 		System.out.println("It took "+timeElapsedInS+" s to open 300 datasets");
-	}
-
-	@Test // Takes too much memory when all tests run at the same time
-	public void demoRunOk() {
-		main(new String[]{""});
-		Assert.assertTrue(timeElapsedInS<10);
-	}
-
-	@After
-	public void closeFiji() {
-		TestHelper.closeFijiAndBdvs(ij);
 	}
 
 }

@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg;
+package sc.fiji.bdvpg.demos.transform;
 
 import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
@@ -35,10 +35,9 @@ import bigwarp.BigWarp;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import net.imglib2.type.numeric.ARGBType;
-import org.junit.After;
-import org.junit.Test;
 import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
@@ -197,13 +196,4 @@ public class BigWarpDemo {
         new ViewerTransformAdjuster(bdvh, bwl.getWarpedSources()[0]).run();
     }
 
-    @Test
-    public void demoRunOk() {
-        main("");
-    }
-
-    @After
-    public void closeFiji() {
-        TestHelper.closeFijiAndBdvs(ij);
-    }
 }

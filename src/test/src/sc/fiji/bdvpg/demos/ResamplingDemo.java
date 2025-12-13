@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg;
+package sc.fiji.bdvpg.demos;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
@@ -35,8 +35,7 @@ import net.imagej.ImageJ;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
-import org.junit.After;
-import org.junit.Test;
+import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
@@ -61,16 +60,6 @@ public class ResamplingDemo {
         TestHelper.startFiji(ij);//ij.ui().showUI();
 
         demo();
-    }
-
-    @Test
-    public void demoRunOk() {
-        main("");
-    }
-
-    @After
-    public void closeFiji() {
-        TestHelper.closeFijiAndBdvs(ij);
     }
 
     public static void demo() {

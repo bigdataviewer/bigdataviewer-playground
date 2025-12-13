@@ -26,11 +26,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg;
+package sc.fiji.bdvpg.demos.transform;
 
 import bdv.util.BdvHandle;
 import bdv.util.BigWarpHelper;
-import bdv.util.volatiles.VolatileViews;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
@@ -39,9 +38,8 @@ import net.imglib2.realtransform.InvertibleRealTransform;
 import net.imglib2.realtransform.InvertibleRealTransformSequence;
 import net.imglib2.realtransform.RealTransform;
 import net.imglib2.realtransform.RealTransformSequence;
-import org.junit.After;
-import org.junit.Test;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceRealTransformer;
@@ -62,16 +60,6 @@ public class WarpedSourceDemo {
         TestHelper.startFiji(ij);//ij.ui().showUI();
 
         demo();
-    }
-
-    @Test
-    public void demoRunOk() throws Exception {
-        main("");
-    }
-
-    @After
-    public void closeFiji() {
-        TestHelper.closeFijiAndBdvs(ij);
     }
 
     public static void demo() throws Exception {

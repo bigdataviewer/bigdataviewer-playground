@@ -26,13 +26,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijava.command;
+package sc.fiji.bdvpg.demos.command;
 
 import bdv.ui.BdvDefaultCards;
 import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
-import org.junit.After;
-import org.junit.Test;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.BdvScijavaHelper;
@@ -56,7 +54,7 @@ public class BdvScijavaCommandDemo {
                 .addCommandToBdvHandleMenu(
                         bdvh,
                         ij.context(),
-                        RenameBdv.class,
+                        RenameBdvCommandDemo.class,
                         2, // Skips Plugins > BigDataViewer (two levels of menu hierarchy)
                         "bdvh", bdvh // Fill in SciJava parameters : key1, v1, key2, v2
                         );
@@ -64,7 +62,7 @@ public class BdvScijavaCommandDemo {
         // Adds a SciJava Interactive Command as a card panel
         bdvh.getSplitPanel().setCollapsed(false);
         BdvHandleHelper.addCard(bdvh,"Zoom",
-                ScijavaSwingUI.getPanel(ij.context(), BdvZoom.class, "bdvh", bdvh), true);
+                ScijavaSwingUI.getPanel(ij.context(), BdvZoomCommandDemo.class, "bdvh", bdvh), true);
         //bdvh.getCardPanel().addCard("Zoom",
         //        ScijavaSwingUI.getPanel(ij.context(), BdvZoom.class, "bdvh", bdvh), true);
 
@@ -74,13 +72,4 @@ public class BdvScijavaCommandDemo {
 
     }
 
-    @Test
-    public void demoRunOk() {
-        main(new String[]{""});
-    }
-
-    @After
-    public void closeFiji() {
-        TestHelper.closeFijiAndBdvs(ij);
-    }
 }

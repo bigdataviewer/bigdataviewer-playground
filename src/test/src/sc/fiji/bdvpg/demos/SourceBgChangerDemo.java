@@ -26,29 +26,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg;
+package sc.fiji.bdvpg.demos;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import bdv.viewer.SourceGroup;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
-import net.imglib2.realtransform.AffineTransform3D;
-import org.junit.After;
-import org.junit.Test;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
+import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
+import sc.fiji.bdvpg.sourceandconverter.transform.SourceOutOfBoundsColorChanger;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
-import javax.swing.SwingUtilities;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-
-public class AffineTransformSourceDemo {
+public class SourceBgChangerDemo {
 
     static ImageJ ij;
 
@@ -57,22 +49,6 @@ public class AffineTransformSourceDemo {
 
         ij = new ImageJ();
         TestHelper.startFiji(ij);
-
-        demo(ij,20);
-
-    }
-
-    @Test
-    public void demoRunOk() {
-        main("");
-    }
-
-    @After
-    public void closeFiji() {
-        TestHelper.closeFijiAndBdvs(ij);
-    }
-
-    public static void demo(ImageJ ij, int numberOfSourcesInOneAxis) {
 
         // Creates a BdvHandle
         BdvHandle bdvHandle =
@@ -85,39 +61,14 @@ public class AffineTransformSourceDemo {
 
         final AbstractSpimData<?> spimData = importer.get();
 
-        SourceAndConverter<?> sac = ij.get(SourceAndConverterService.class)
+        SourceAndConverter<UnsignedShortType> sac = (SourceAndConverter<UnsignedShortType>) ij.get(SourceAndConverterService.class)
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
 
-        new ViewerTransformAdjuster(bdvHandle, sac).run();
-        new BrightnessAutoAdjuster<>(sac, 0).run();
+        SourceAndConverter<UnsignedShortType> sourceBgModified = new SourceOutOfBoundsColorChanger<>(sac, new UnsignedShortType(2000)).get();
 
-        ArrayList<SourceAndConverter<?>> sacs = new ArrayList<>();
-        for (int x = 0; x < numberOfSourcesInOneAxis;x++) {
-            for (int y = 0; y < numberOfSourcesInOneAxis; y++) {
+        SourceAndConverterServices.getBdvDisplayService().show(bdvHandle,sourceBgModified);
 
-                if (Math.random()>0.0) {
-                    AffineTransform3D at3d = new AffineTransform3D();
-
-                    at3d.rotate(2, Math.random());
-                    at3d.scale(0.5 + Math.random() / 4, 0.5 + Math.random() / 4, 1);
-                    at3d.translate(200 * x, 200 * y, 0);
-
-                    SourceAffineTransformer<?> sat = new SourceAffineTransformer<>(sac, at3d);
-                    sat.run();
-
-                    SourceAndConverter<?> transformedSac = sat.get();
-
-                    sacs.add(transformedSac);
-                }
-            }
-        }
-
-        ij.get(SourceAndConverterBdvDisplayService.class)
-                .show(bdvHandle, sacs.toArray(new SourceAndConverter[0]));
-
-        SourceGroup sg = bdvHandle.getViewerPanel().state().getGroups().get(1);
-
-        bdvHandle.getViewerPanel().state().addSourcesToGroup(sacs, sg);
+        //new TimepointAdapterAdder(bdvh).run();
     }
 }

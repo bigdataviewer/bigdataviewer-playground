@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg;
+package sc.fiji.bdvpg.demos.transform;
 
 import bdv.util.RandomAccessibleIntervalSource;
 import bdv.viewer.Source;
@@ -48,7 +48,7 @@ import net.imglib2.view.Views;
  * See
  * https://github.com/bigdataviewer/bigdataviewer-playground/issues/249
  */
-public class BigWarp2DTest {
+public class BigWarp2DTransformDemo {
 
     public static void main(String[] args) throws SpimDataException {
         run();

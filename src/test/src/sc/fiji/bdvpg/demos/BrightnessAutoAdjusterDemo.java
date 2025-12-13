@@ -26,19 +26,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg;
+package sc.fiji.bdvpg.demos;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
-import org.junit.After;
-import org.junit.Test;
+import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.sourceandconverter.SourceAdder;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
@@ -88,16 +86,6 @@ public class BrightnessAutoAdjusterDemo
 		new SourceAdder( bdvHandle, sac ).run();
 		new ViewerTransformAdjuster( bdvHandle, sac ).run();
 		new BrightnessAutoAdjuster<>( sac,0 ).run();
-	}
-
-	@Test
-    public void demoRunOk() {
-	    main(new String[]{""});
-    }
-
-	@After
-	public void closeFiji() {
-		TestHelper.closeFijiAndBdvs(ij);
 	}
 
 }

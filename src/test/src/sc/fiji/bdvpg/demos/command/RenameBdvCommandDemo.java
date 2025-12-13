@@ -26,40 +26,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.io;
+package sc.fiji.bdvpg.demos.command;
 
-import net.imagej.ImageJ;
-import org.junit.After;
-import org.junit.Test;
-import sc.fiji.bdvpg.TestHelper;
-import sc.fiji.bdvpg.scijava.command.spimdata.MultipleSpimDataImporterCommand;
+import bdv.util.BdvHandle;
+import org.scijava.command.Command;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 
-import java.io.File;
+/**
+ * Test command to demo {@link sc.fiji.bdvpg.scijava.BdvScijavaHelper}
+ */
+@SuppressWarnings({"unused", "CanBeFinal"})
+@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu + "Another sub menu>Rename Bdv Window")
+public class RenameBdvCommandDemo implements Command {
 
-public class MultipleSpimDataImporterCommandDemo
-{
+    @Parameter
+    BdvHandle bdvh;
 
-	static ImageJ ij;
+    @Parameter(label = "New Title")
+    String title;
 
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		TestHelper.startFiji(ij);//ij.ui().showUI();
-
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( MultipleSpimDataImporterCommand.class, true, "files", files);
-	}
-
-	@Test
-	public void demoRunOk() {
-		main(new String[]{""});
-	}
-
-	@After
-	public void closeFiji() {
-		TestHelper.closeFijiAndBdvs(ij);
-	}
+    @Override
+    public void run() {
+        BdvHandleHelper.setWindowTitle(bdvh, title);
+    }
 }

@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.transform;
+package sc.fiji.bdvpg.demos.transform;
 
 import bdv.tools.brightness.ConverterSetup;
 import bdv.viewer.SourceAndConverter;
@@ -49,7 +49,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BigWarpDemo2D {
+public class BigWarp2DDemo {
 
     static ImageJ ij;
 

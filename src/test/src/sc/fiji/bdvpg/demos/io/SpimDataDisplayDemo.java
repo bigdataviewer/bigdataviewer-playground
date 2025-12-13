@@ -26,43 +26,44 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.scijava.command;
+package sc.fiji.bdvpg.demos.io;
 
 import bdv.util.BdvHandle;
-import org.scijava.command.Command;
-import org.scijava.command.InteractiveCommand;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import org.scijava.widget.Button;
+import net.imagej.ImageJ;
+import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 /**
- * Test command to demo {@link sc.fiji.bdvpg.scijava.BdvScijavaHelper}
+ * Demonstrates visualisation of two spimData sources.
+ *
  */
-@SuppressWarnings({"unused", "CanBeFinal"})
-@Plugin(type = Command.class, menuPath = "Plugins>BigDataViewer>Playground>Zoom Controls")
-public class BdvZoom extends InteractiveCommand {
+public class SpimDataDisplayDemo
+{
 
-    @Parameter(style = "slider", min = "1.1", max = "4", stepSize = "0.1")
-    double zoom_factor;
+	static ImageJ ij;
 
-    @Parameter(callback = "in")
-    Button button_in;
+	public static void main( String[] args )
+	{
+		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
+		ij = new ImageJ();
+		TestHelper.startFiji(ij);//ij.ui().showUI();
 
-    @Parameter(callback = "out")
-    Button button_out;
+		// Gets active BdvHandle instance
+		BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
-    @Parameter
-    BdvHandle bdvh;
+		// Import SpimData
+		new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").run();
+		new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
 
-    public void run() {
-        bdvh.getViewerPanel().showMessage("Zoom factor: "+zoom_factor);
-    }
+		// Show all SourceAndConverter associated with above SpimData
+		SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
+			SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
+			new ViewerTransformAdjuster(bdvHandle, sac).run();
+			new BrightnessAutoAdjuster<>(sac, 0).run();
+		});
+	}
 
-    public void out() {
-        bdvh.getViewerPanel().showMessage("Zoom Out");
-    }
-
-    public void in() {
-        bdvh.getViewerPanel().showMessage("Zoom In");
-    }
 }

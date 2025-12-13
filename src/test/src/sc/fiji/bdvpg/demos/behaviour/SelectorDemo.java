@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.behaviour;
+package sc.fiji.bdvpg.demos.behaviour;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
@@ -35,12 +35,12 @@ import org.scijava.Context;
 import org.scijava.ui.UIService;
 import org.scijava.ui.swing.SwingUI;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.behaviour.EditorBehaviourInstaller;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
-
 
 /**
  * Demo of bigdataviewer-selector. Press E to enter into the selector mode.
