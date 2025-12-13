@@ -205,4 +205,8 @@
 
     </dependencies>
 
+	<build>
+		<testSourceDirectory>src/test/src</testSourceDirectory>
+	</build>
+
 </project>
