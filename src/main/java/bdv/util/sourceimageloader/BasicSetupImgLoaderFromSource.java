@@ -43,7 +43,7 @@ import net.imglib2.type.Type;
  * Associated SetupLoader {@link BasicSetupImgLoaderFromSource}
  *
  * @param <T> : Type of the pixel used, should be
- *          {@link net.imglib2.type.numeric.integer.UnsignedShortType} for xml /
+ *          {@link net.imglib2.type.numeric.integer.UnsignedShortType} for XML /
  *          hdf5 export
  */
 

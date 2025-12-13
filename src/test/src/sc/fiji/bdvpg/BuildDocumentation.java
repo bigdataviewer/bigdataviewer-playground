@@ -62,9 +62,9 @@ public class BuildDocumentation {
             if (plugin!=null) {
                 String url = linkGitHubRepoPrefix+c.getName().replaceAll("\\.","\\/")+".java";
                 doc = "### [" + c.getSimpleName() + "]("+url+") [" + (plugin.menuPath() == null ? "null" : plugin.menuPath()) + "]\n";
-                if (!plugin.label().equals(""))
+                if (!plugin.label().isEmpty())
                     doc+=plugin.label()+"\n";
-                if (!plugin.description().equals(""))
+                if (!plugin.description().isEmpty())
                     doc+=plugin.description()+"\n";
 
                 Field[] fields = c.getDeclaredFields();
@@ -74,11 +74,11 @@ public class BuildDocumentation {
                             Parameter p = f.getAnnotation(Parameter.class);
                             return (p.type() == ItemIO.INPUT) || (p.type() == ItemIO.BOTH);
                         }).sorted(Comparator.comparing(Field::getName)).collect(Collectors.toList());
-                if (inputFields.size()>0) {
+                if (!inputFields.isEmpty()) {
                     doc += "#### Input\n";
                     inputFields.forEach(f -> {
                         doc += "* ["+f.getType().getSimpleName()+"] **" + f.getName() + "**:" + f.getAnnotation(Parameter.class).label() + "\n";
-                        if (!f.getAnnotation(Parameter.class).description().equals(""))
+                        if (!f.getAnnotation(Parameter.class).description().isEmpty())
                             doc += f.getAnnotation(Parameter.class).description() + "\n";
                     });
                 }
@@ -89,11 +89,11 @@ public class BuildDocumentation {
                             Parameter p = f.getAnnotation(Parameter.class);
                             return (p.type() == ItemIO.OUTPUT) || (p.type() == ItemIO.BOTH);
                         }).sorted(Comparator.comparing(Field::getName)).collect(Collectors.toList());
-                if (outputFields.size()>0) {
+                if (!outputFields.isEmpty()) {
                     doc += "#### Output\n";
                     outputFields.forEach(f -> {
                         doc += "* ["+f.getType().getSimpleName()+"] **" + f.getName() + "**:" + f.getAnnotation(Parameter.class).label() + "\n";
-                        if (!f.getAnnotation(Parameter.class).description().equals(""))
+                        if (!f.getAnnotation(Parameter.class).description().isEmpty())
                             doc += f.getAnnotation(Parameter.class).description() + "\n";
                     });
                 }

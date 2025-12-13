@@ -76,7 +76,7 @@ public class AbstractSpimdataAdapter implements
 		JsonObject obj = new JsonObject();
 		String dataLocation = (String) sacSerializer.getScijavaContext()
 				.getService(SourceAndConverterService.class).getMetadata(asd, SPIM_DATA_LOCATION);
-		if ((dataLocation == null) || (dataLocation.equals(""))) {
+		if ((dataLocation == null) || (dataLocation.isEmpty())) {
 			dataLocation = new File(sacSerializer.getBasePath(), "_bdvdataset_" +
 				spimdataCounter + ".xml").getAbsolutePath();
 			while (new File(dataLocation).exists()) {
@@ -122,7 +122,7 @@ public class AbstractSpimdataAdapter implements
 						Collectors.toList());
 
 		// SpimData not found
-		if (asds.size() == 0) {
+		if (asds.isEmpty()) {
 			return new SpimDataFromXmlImporter(datalocation).get();
 		}
 		else if (asds.size() == 1) {

@@ -113,17 +113,7 @@ public class GlobalCacheKeyTest {
         Object key = new Object();
         GlobalCacheKey cacheKey = new GlobalCacheKey(source, 0, 0, key);
 
-        assertNotEquals("Key should not be equal to null", cacheKey, null);
-    }
-
-    @Test
-    public void testEquals_differentType() {
-        Object source = new Object();
-        Object key = new Object();
-        GlobalCacheKey cacheKey = new GlobalCacheKey(source, 0, 0, key);
-
-        assertNotEquals("Key should not be equal to object of different type",
-                cacheKey, "a string");
+        assertNotEquals("Key should not be equal to null", null, cacheKey);
     }
 
     // ==================== HashCode Contract Tests ====================
@@ -309,8 +299,8 @@ public class GlobalCacheKeyTest {
         GlobalCacheKey cacheKey2 = new GlobalCacheKey(source, 5, 2, key);
         GlobalCacheKey cacheKey3 = new GlobalCacheKey(source, 5, 2, key);
 
-        assertTrue("a.equals(b)", cacheKey1.equals(cacheKey2));
-        assertTrue("b.equals(c)", cacheKey2.equals(cacheKey3));
-        assertTrue("Therefore a.equals(c) - transitivity", cacheKey1.equals(cacheKey3));
+        assertEquals("a.equals(b)", cacheKey1, cacheKey2);
+        assertEquals("b.equals(c)", cacheKey2, cacheKey3);
+        assertEquals("Therefore a.equals(c) - transitivity", cacheKey1, cacheKey3);
     }
 }

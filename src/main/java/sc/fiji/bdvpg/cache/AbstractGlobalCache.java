@@ -121,16 +121,16 @@ abstract public class AbstractGlobalCache implements
 			Cell cell = ((Cell) object);
 			Object data = cell.getData();
 
-			if (ShortAccess.class.isInstance(data)) {
+			if (data instanceof ShortAccess) {
 				return 2 * cell.size();
 			}
-			else if (ByteAccess.class.isInstance(data)) {
+			else if (data instanceof ByteAccess) {
 				return cell.size();
 			}
-			else if (FloatAccess.class.isInstance(data)) {
+			else if (data instanceof FloatAccess) {
 				return 4 * cell.size();
 			}
-			else if (IntAccess.class.isInstance(data)) {
+			else if (data instanceof IntAccess) {
 				return 4 * cell.size();
 			}
 			else {

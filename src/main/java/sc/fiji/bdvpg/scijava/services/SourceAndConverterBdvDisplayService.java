@@ -170,7 +170,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 */
 	public BdvHandle getActiveBdv() {
 		List<BdvHandle> bdvhs = os.getObjects(BdvHandle.class);
-		if ((bdvhs == null) || (bdvhs.size() == 0)) {
+		if ((bdvhs == null) || (bdvhs.isEmpty())) {
 			return getNewBdv();
 		}
 
@@ -305,7 +305,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 */
 	public void removeFromActiveBdv(SourceAndConverter<?>... sacs) {
 		// This condition avoids creating a window for nothing
-		if (os.getObjects(BdvHandle.class).size() > 0) {
+		if (!os.getObjects(BdvHandle.class).isEmpty()) {
 			remove(getActiveBdv(), sacs);
 		}
 	}

@@ -521,7 +521,7 @@ public class SourceAndConverterService extends AbstractService implements
 
 	private static String createSetupName(final BasicViewSetup setup) {
 		if (setup.hasName()) {
-			if (!setup.getName().trim().equals("")) {
+			if (!setup.getName().trim().isEmpty()) {
 				return setup.getName();
 			}
 		}

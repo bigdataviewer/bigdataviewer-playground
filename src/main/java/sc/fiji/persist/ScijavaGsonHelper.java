@@ -45,7 +45,7 @@ import java.util.function.Consumer;
 /**
  * Get serializers that registers all SciJava registered adapters and runtime
  * adapters Note : some "simple" objects do not require specific adapters with
- * json. See {@link RuntimeTypeAdapterFactory}
+ * JSON. See {@link RuntimeTypeAdapterFactory}
  */
 
 public class ScijavaGsonHelper {

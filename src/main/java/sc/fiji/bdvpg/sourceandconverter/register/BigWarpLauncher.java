@@ -132,11 +132,11 @@ public class BigWarpLauncher implements Runnable {
 	public void run() {
 		try {
 			if (force2d) {
-				bigWarp = new BigWarp<>(bwData, bigWarpName, BigWarpViewerOptions
+				bigWarp = new BigWarp<>(bwData, BigWarpViewerOptions
 					.options().is2D(true), null);
 			}
 			else {
-				bigWarp = new BigWarp<>(bwData, bigWarpName, null);
+				bigWarp = new BigWarp<>(bwData, null);
 			}
 			// What does P and Q stand for ? Not sure about the moving and the fixed
 			// one

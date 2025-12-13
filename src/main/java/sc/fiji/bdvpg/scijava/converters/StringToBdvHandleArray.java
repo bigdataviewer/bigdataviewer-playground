@@ -66,7 +66,7 @@ public class StringToBdvHandleArray<I extends String> extends
 					.getWindowTitle(bdvh).equals(bdvName))).findFirst();
 			ans.ifPresent(bdvhs::add);
 		}
-		if (bdvhs.size() == 0) {
+		if (bdvhs.isEmpty()) {
 			return null;
 		}
 		else {

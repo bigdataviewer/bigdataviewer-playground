@@ -152,7 +152,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter
 					originalLocations.put(asd, dataLocation);
 
 					getScijavaContext()
-							.getService(SourceAndConverterService.class).setMetadata(asd, SPIM_DATA_LOCATION, ""); // reset -> enforce serialization to xml
+							.getService(SourceAndConverterService.class).setMetadata(asd, SPIM_DATA_LOCATION, ""); // reset -> enforce serialization to XML
 				});
 
 			}
@@ -174,7 +174,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter
 						//originalLocations.put(asd, dataLocation);
 
 						getScijavaContext()
-								.getService(SourceAndConverterService.class).setMetadata(asd, SPIM_DATA_LOCATION, originalLocations.get(asd)); // reset -> enforce serialization to xml
+								.getService(SourceAndConverterService.class).setMetadata(asd, SPIM_DATA_LOCATION, originalLocations.get(asd)); // reset -> enforce serialization to XML
 					});
 
 				}

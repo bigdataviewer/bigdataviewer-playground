@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.scijava.services.ui.swingdnd;
 
 import bdv.ui.SourcesTransferable;
 import bdv.viewer.SourceAndConverter;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
@@ -291,7 +292,7 @@ public class SourceAndConverterServiceUITransferHandler extends
 		}
 
 		@Override
-		public Object getTransferData(DataFlavor flavor)
+		public @NonNull Object getTransferData(DataFlavor flavor)
 			throws UnsupportedFlavorException, IOException
 		{
 			if (flavor.equals(nodesFlavor)) {

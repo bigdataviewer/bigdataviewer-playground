@@ -53,7 +53,7 @@ public class BigWarpHelper {
 		List<String[]> rows;
 		rows = reader.readAll();
 		reader.close();
-		if (rows == null || rows.size() < 1) {
+		if (rows == null || rows.isEmpty()) {
 			throw new IOException("Wrong number of rows in file " + f
 				.getAbsolutePath());
 		}

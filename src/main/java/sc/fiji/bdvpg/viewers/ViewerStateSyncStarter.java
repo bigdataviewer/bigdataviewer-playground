@@ -29,7 +29,6 @@
 
 package sc.fiji.bdvpg.viewers;
 
-import bdv.util.BdvHandle;
 import bdv.util.PlaceHolderSource;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerStateChange;
@@ -94,7 +93,7 @@ public class ViewerStateSyncStarter implements Runnable {
 					.getSpimSource() instanceof PlaceHolderSource); // Get rid of overlays
 				// Is there any missing source in state to adapt ?
 				stateToCopy.removeAll(stateToAdapt);
-				if (stateToCopy.size() != 0) {
+				if (!stateToCopy.isEmpty()) {
 					// System.out.println("adding "+stateToCopy.size()+" source to
 					// "+adapterTest);
 					if (adapterTest.bvvPanel != null) {
@@ -127,7 +126,7 @@ public class ViewerStateSyncStarter implements Runnable {
 
 				// Is there any source in extra in the one to adapt ?
 				stateToAdapt.removeAll(new HashSet<>(adapter.state().getSources()));
-				if (stateToAdapt.size() != 0) {
+				if (!stateToAdapt.isEmpty()) {
 					// System.out.println("removing "+stateToAdapt.size()+" source to
 					// "+adapterTest);
 					adapterTest.state().removeSources(stateToAdapt);

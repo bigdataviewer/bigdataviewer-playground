@@ -104,8 +104,8 @@ public class SourceAndConverterInspector {
 			parent.add(nodeTransformedSource);
 			TransformedSource<?> source = (TransformedSource<?>) sac.getSpimSource();
 
-			if (sourceAndConverterService.getSourceAndConvertersFromSource(source
-				.getWrappedSource()).size() > 0)
+			if (!sourceAndConverterService.getSourceAndConvertersFromSource(source
+                    .getWrappedSource()).isEmpty())
 			{
 				// at least a SourceAndConverter already exists for this source
 				sourceAndConverterService.getSourceAndConvertersFromSource(source
@@ -156,8 +156,8 @@ public class SourceAndConverterInspector {
 			parent.add(nodeWarpedSource);
 			WarpedSource<?> source = (WarpedSource<?>) sac.getSpimSource();
 
-			if (sourceAndConverterService.getSourceAndConvertersFromSource(source
-				.getWrappedSource()).size() > 0)
+			if (!sourceAndConverterService.getSourceAndConvertersFromSource(source
+                    .getWrappedSource()).isEmpty())
 			{
 				// at least a SourceAndConverter already exists for this source
 				sourceAndConverterService.getSourceAndConvertersFromSource(source
@@ -207,8 +207,8 @@ public class SourceAndConverterInspector {
 			DefaultMutableTreeNode nodeOrigin = new DefaultMutableTreeNode("Origin");
 			nodeResampledSource.add(nodeOrigin);
 
-			if (sourceAndConverterService.getSourceAndConvertersFromSource(source
-				.getOriginalSource()).size() > 0)
+			if (!sourceAndConverterService.getSourceAndConvertersFromSource(source
+                    .getOriginalSource()).isEmpty())
 			{
 				// at least a SourceAndConverter already exists for this source
 				sourceAndConverterService.getSourceAndConvertersFromSource(source
@@ -238,8 +238,8 @@ public class SourceAndConverterInspector {
 				"Sampler Model");
 			nodeResampledSource.add(nodeResampler);
 
-			if (sourceAndConverterService.getSourceAndConvertersFromSource(source
-				.getModelResamplerSource()).size() > 0)
+			if (!sourceAndConverterService.getSourceAndConvertersFromSource(source
+                    .getModelResamplerSource()).isEmpty())
 			{
 				// at least a SourceAndConverter already exists for this source
 				sourceAndConverterService.getSourceAndConvertersFromSource(source
@@ -322,7 +322,7 @@ public class SourceAndConverterInspector {
 		SourceAndConverter<?> sac;
 		List<SourceAndConverter<?>> sacs = SourceAndConverterServices
 			.getSourceAndConverterService().getSourceAndConvertersFromSource(source);
-		if (sacs.size() == 0) {
+		if (sacs.isEmpty()) {
 			sac = SourceAndConverterHelper.createSourceAndConverter(source);
 		}
 		else {

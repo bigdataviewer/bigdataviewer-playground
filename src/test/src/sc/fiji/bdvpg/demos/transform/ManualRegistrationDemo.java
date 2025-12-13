@@ -61,9 +61,9 @@ import java.util.List;
 
 /**
  * Manual Registration Demo
- *
+ * <p>
  * Press Ctrl+M to enable / disable the movement of a source
- *
+ * <p>
  * Author: Nicolas Chiaruttini
  * 01 2020
  */
@@ -97,7 +97,7 @@ public class ManualRegistrationDemo {
         rai = Views.addDimension( rai, 0, 0 );
 
         // Makes BDV Source
-        Source<T> source = new RandomAccessibleIntervalSource<>(rai, Util.getTypeFromInterval(rai), "blobs");
+        Source<T> source = new RandomAccessibleIntervalSource<>(rai, rai.getType(), "blobs");
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = bdvDisplayService.getNewBdv();

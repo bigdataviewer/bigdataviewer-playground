@@ -43,7 +43,7 @@ import java.util.List;
  * Associated SetupLoader {@link BasicSetupImgLoaderFromSource}
  *
  * @param <T> : Type of the pixel used, should be
- *          {@link net.imglib2.type.numeric.integer.UnsignedShortType} for xml /
+ *          {@link net.imglib2.type.numeric.integer.UnsignedShortType} for XML /
  *          hdf5 export
  */
 public class ImgLoaderFromSources<T extends Type<T>> implements

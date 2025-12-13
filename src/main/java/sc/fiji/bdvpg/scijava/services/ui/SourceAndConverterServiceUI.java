@@ -231,9 +231,7 @@ public class SourceAndConverterServiceUI {
 
 				@Override
 				public void run() {
-					SwingUtilities.invokeLater(() -> {
-						cacheLabel.setText(sourceAndConverterService.getCache().toString());
-					});
+					SwingUtilities.invokeLater(() -> cacheLabel.setText(sourceAndConverterService.getCache().toString()));
 				}
 			};
 
@@ -246,9 +244,7 @@ public class SourceAndConverterServiceUI {
 				public void mouseClicked(MouseEvent e) {
 					if (e.getClickCount() == 2) {
 						sourceAndConverterService.getCache().invalidateAll();
-						SwingUtilities.invokeLater(() -> {
-							cacheLabel.setText("Cache cleared.");
-						});
+						SwingUtilities.invokeLater(() -> cacheLabel.setText("Cache cleared."));
 					}
 				}
 			});
@@ -493,7 +489,7 @@ public class SourceAndConverterServiceUI {
 
 			// Check for new spimdata
 			currentSpimdatas.forEach(asd -> {
-				if ((spimdataFilterNodes.size() == 0) || (spimdataFilterNodes.stream()
+				if ((spimdataFilterNodes.isEmpty()) || (spimdataFilterNodes.stream()
 					.noneMatch(fnode -> fnode.asd.equals(asd))))
 				{
 					SpimDataFilterNode newNode = new SpimDataFilterNode(model,
@@ -598,7 +594,7 @@ public class SourceAndConverterServiceUI {
 				if (entity instanceof NamedEntity) {
 					entityName = ((NamedEntity) entity).getName();
 				}
-				if ((entityName == null) || (entityName.equals(""))) {
+				if ((entityName == null) || (entityName.isEmpty())) {
 					entityName = c.getSimpleName() + " " + entity.getId();
 				}
 				entitiesAlreadyRegistered.add(entity);
@@ -650,10 +646,10 @@ public class SourceAndConverterServiceUI {
 			if (((DefaultMutableTreeNode) tp.getLastPathComponent())
 				.getUserObject() instanceof RenamableSourceAndConverter)
 			{
-				Object userObj =
+				SourceAndConverter<?> userObj =
 					((RenamableSourceAndConverter) ((DefaultMutableTreeNode) tp
 						.getLastPathComponent()).getUserObject()).sac;
-				sacList.add((SourceAndConverter<?>) userObj);
+				sacList.add(userObj);
 			}
 			else {
 				sacList.addAll(getSourceAndConvertersFromChildrenOf(
@@ -666,7 +662,7 @@ public class SourceAndConverterServiceUI {
 
 	/**
 	 * @param node root node to get sources from
-	 * @return an array containing the list of all {@link SourceAndConverter}
+	 * @return a set containing the list of all {@link SourceAndConverter}
 	 *         below the @param node: - the list does not contain duplicates - the
 	 *         list order can be considered random
 	 */

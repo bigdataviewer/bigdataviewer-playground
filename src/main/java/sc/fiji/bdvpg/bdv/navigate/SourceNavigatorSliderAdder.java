@@ -32,14 +32,11 @@ package sc.fiji.bdvpg.bdv.navigate;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.TimePointListener;
-import bdv.viewer.TransformListener;
 import bdv.viewer.ViewerStateChangeListener;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterTreeCellRenderer;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -62,7 +59,7 @@ import java.util.stream.Collectors;
  * Adds a slider to navigate BigDataViewer sources. Sliding it will get you to get the
  * center of the sources. The slider number of positions is updated each time a
  * sources is added, removed, or made visible / hidden. Or when a timepoint is changed.
- *
+ * <p>
  * Potentially : we could add smooth transitions...
  *
  * @author Nicolas Chiaruttini, EPFL, 2022
@@ -99,24 +96,20 @@ public class SourceNavigatorSliderAdder implements Runnable {
 		spinnerModel = new SpinnerNumberModel(0, 0, 1, 1);
 		spinner = new JSpinner(spinnerModel);
 		// Link the JSlider and JSpinner
-		spinner.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				int idx = (int) spinner.getValue();
-				if (sourcesNames.size()>idx) {
-					sourceName.setText(sourcesNames.get(idx));
-				}
-				slider.setValue(idx);
-			}
-		});
-		slider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				int idx = slider.getValue();
-				if (sourcesNames.size()>idx) {
-					sourceName.setText(sourcesNames.get(idx));
-				}
-				spinner.setValue(idx);
-			}
-		});
+		spinner.addChangeListener(e -> {
+            int idx = (int) spinner.getValue();
+            if (sourcesNames.size()>idx) {
+                sourceName.setText(sourcesNames.get(idx));
+            }
+            slider.setValue(idx);
+        });
+		slider.addChangeListener(e -> {
+            int idx = slider.getValue();
+            if (sourcesNames.size()>idx) {
+                sourceName.setText(sourcesNames.get(idx));
+            }
+            spinner.setValue(idx);
+        });
 		// Add the JSlider and JSpinner to a panel
 		panel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // To avoid problems when the name is changing
 		panel.add(slider);
@@ -164,7 +157,7 @@ public class SourceNavigatorSliderAdder implements Runnable {
 		bdvh.getViewerPanel().revalidate();
 
 		slider.addChangeListener((e) -> {
-			if (centerLocations.size() > 0) {
+			if (!centerLocations.isEmpty()) {
 				JSlider slider = (JSlider) e.getSource();
 				int newValue = slider.getValue();
 				// Plane : slider.getValue() / slider.getMaximum()
@@ -203,7 +196,7 @@ public class SourceNavigatorSliderAdder implements Runnable {
 		}
 		centerLocations = centers;
 		sourcesNames = srcsNames;
-		if (centers.size()>0) {
+		if (!centers.isEmpty()) {
 			slider.setMaximum(centers.size() - 1);
 			spinnerModel.setMaximum(centers.size() - 1);
 		}

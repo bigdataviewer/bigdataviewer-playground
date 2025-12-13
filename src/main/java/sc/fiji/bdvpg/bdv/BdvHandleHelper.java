@@ -509,7 +509,7 @@ public class BdvHandleHelper {
 	 * {@link BdvSettingsGUISetter} Key bindings can not be overridden yet
 	 * 
 	 * @param bdv bdvhandle
-	 * @param pathToBindings string path to the folder containing the yaml file
+	 * @param pathToBindings string path to the folder containing the YAML file
 	 */
 	static void install(BdvHandle bdv, String pathToBindings) {
 		String yamlDataLocation = pathToBindings + File.separator +

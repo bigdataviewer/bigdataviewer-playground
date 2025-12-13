@@ -47,7 +47,7 @@ import java.util.List;
 /**
  *
  * Demo of opening two sources, adjusting the location of the Bdv Window + adjusting brightness and contrast
- *
+ * <p>
  * TODO : solves the brightness adjuster which does not work with the voronoi source, see {@link BrightnessAutoAdjuster}
  *
  */

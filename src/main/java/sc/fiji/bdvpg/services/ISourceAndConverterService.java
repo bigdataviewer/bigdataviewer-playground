@@ -31,7 +31,6 @@ package sc.fiji.bdvpg.services;
 
 import bdv.tools.brightness.ConverterSetup;
 import sc.fiji.bdvpg.cache.AbstractGlobalCache;
-import sc.fiji.bdvpg.cache.BoundedLinkedHashMapGlobalCache;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
@@ -196,7 +195,7 @@ public interface ISourceAndConverterService {
 	void removeAction(String actionName);
 
 	/**
-	 * @return a list of action name / keys / identifiers
+	 * @return a set of action name / keys / identifiers
 	 */
 	Set<String> getActionsKeys();
 

@@ -35,9 +35,7 @@ import com.google.gson.JsonArray;
 import org.scijava.Context;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashMap;
 
 public class SourceAndConverterServiceLoader extends SourceAndConverterAdapter

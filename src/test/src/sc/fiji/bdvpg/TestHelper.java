@@ -63,9 +63,7 @@ public class TestHelper {
     public static void startFiji(ImageJ ij) {
         try {
             SwingUtilities.invokeAndWait(() -> ij.ui().showUI());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
+        } catch (InterruptedException | InvocationTargetException e) {
             e.printStackTrace();
         }
     }

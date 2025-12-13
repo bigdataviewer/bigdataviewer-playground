@@ -77,8 +77,7 @@ public class BrightnessAutoAdjuster<T extends RealType<T>> implements Runnable {
 				.getNumMipmapLevels() - 1);
 		final long zMiddle = (img.min(2) + img.max(2) + 1) / 2;
 
-		final Iterable<T> sampledPixels = Views.iterable(Views.hyperSlice(img, 2,
-			zMiddle));
+		final Iterable<T> sampledPixels = Views.hyperSlice(img, 2, zMiddle);
 		double minValue = Double.MAX_VALUE;
 		double maxValue = -Double.MAX_VALUE;
 

@@ -30,7 +30,6 @@
 package sc.fiji.bdvpg.scijava.command;
 
 import com.google.gson.Gson;
-import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.prefs.PrefService;

@@ -117,7 +117,7 @@ public class ViewerOrthoSyncStarter implements Runnable {
 
 		// Building circularly linked listeners with stop condition when all
 		// transforms are equal,
-		// cf javadoc
+		// cf Javadoc
 		// Building the TransformListener of currentBdvHandle
 		TransformListener<AffineTransform3D> listener;
 

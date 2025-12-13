@@ -115,7 +115,7 @@ public class RayCastPositionerSliderAdder implements Runnable {
 
 		slider.addChangeListener((e) -> {
 			synchronized (RayCastPositionerSliderAdder.this) {
-				if (zLocations.size() > 0) {
+				if (!zLocations.isEmpty()) {
 					JSlider slider = (JSlider) e.getSource();
 					int newValue = slider.getValue();
 					// Plane : slider.getValue() / slider.getMaximum()

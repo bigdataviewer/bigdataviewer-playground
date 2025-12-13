@@ -37,14 +37,14 @@ import java.time.Instant;
 
 /**
  * Test of opening multiple datasets
- *
+ * <p>
  * The limiting performance factor is the construction of the tree UI which scales
  * very badly. For now, its speed it user-ok for a number of sources below ~600
- *
+ * <p>
  * 300 datasets ~ 3 secs
- *
+ * <p>
  * 3000 sources takes ~ 120 secs
- *
+ * <p>
  * TODO : fix performance issue if several thousands of sources are necessary (could be coming sooner than expected)
  *
  */

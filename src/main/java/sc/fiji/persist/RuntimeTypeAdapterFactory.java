@@ -244,8 +244,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
 	}
 
 	/*
-	 * Registers {@code type} identified by {@code label}. Labels are case
-	 * sensitive.
+	 * Registers {@code type} identified by {@code label}. Labels are case-sensitive.
 	 * @throws IllegalArgumentException if either {@code type} or {@code label}
 	 *     have already been registered on this type adapter.
 	 */

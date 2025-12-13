@@ -1060,7 +1060,7 @@ public class SourceAndConverterHelper {
 
 	/**
 	 * Determines all visible sources at the current mouse position in the Bdv
-	 * window. Note: this method can be slow as it needs a random access on the
+	 * window. Note: this method can be slow as it needs random access on the
 	 * source data.
 	 * 
 	 * @param bdvHandle the bdv window to probe
@@ -1305,7 +1305,7 @@ public class SourceAndConverterHelper {
 			double coordV = prodScal3(v, ptCrossingInPlane) / norm2(v);
 
 			return ((coordU > -0.5) && (coordU < maxCoordU - 0.5)) &&
-				((coordV > -0.5) && (coordV < maxCoordV - 0.5)); // Account for 'pixel
+				((coordV > -0.5) && (coordV < maxCoordV - 0.5)); // Account for pixel
 																													// thickness' of 1
 		}
 	}

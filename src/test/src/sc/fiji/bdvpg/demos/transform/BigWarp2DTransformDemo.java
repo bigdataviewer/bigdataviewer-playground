@@ -60,11 +60,10 @@ public class BigWarp2DTransformDemo {
         Source<T> tgt = loadSource("https://imagej.net/ij/images/boats.gif", -20);
 
         BigWarpData<T> bwdata = BigWarpInit.initData();
-        BigWarpInit.add(bwdata, mvg, 0, 0, true);
-        BigWarpInit.add(bwdata, tgt, 1, 0, false);
-        bwdata.wrapUp();
+        BigWarpInit.add(bwdata, BigWarpInit.createSources(bwdata, mvg, 0,  true));
+        BigWarpInit.add(bwdata, BigWarpInit.createSources(bwdata, tgt, 1,  false));
 
-        new BigWarp<>(bwdata, "bw test", null);
+        new BigWarp<>(bwdata, null);
     }
 
     public static <T extends NativeType<T> & RealType<T>> Source<T> loadSource( String path, double zOffset )
@@ -77,7 +76,7 @@ public class BigWarp2DTransformDemo {
         AffineTransform3D xfm = new AffineTransform3D();
         xfm.translate(0, 0, zOffset);
 
-        return new RandomAccessibleIntervalSource<>(img, Util.getTypeFromInterval(img), xfm, imp.getTitle());
+        return new RandomAccessibleIntervalSource<>(img, img.getType(), xfm, imp.getTitle());
     }
 
 }

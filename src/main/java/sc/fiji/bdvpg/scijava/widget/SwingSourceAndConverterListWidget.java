@@ -95,10 +95,10 @@ public class SwingSourceAndConverterListWidget extends
 			if (((DefaultMutableTreeNode) tp.getLastPathComponent())
 				.getUserObject() instanceof RenamableSourceAndConverter)
 			{
-				Object userObj =
+				SourceAndConverter<?> userObj =
 					((RenamableSourceAndConverter) ((DefaultMutableTreeNode) tp
 						.getLastPathComponent()).getUserObject()).sac;
-				sacList.add((SourceAndConverter<?>) userObj);
+				sacList.add(userObj);
 			}
 			else {
 				sacList.addAll(getSourceAndConvertersFromChildrenOf(
@@ -116,9 +116,9 @@ public class SwingSourceAndConverterListWidget extends
 			DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(
 				i);
 			if (child.getUserObject() instanceof RenamableSourceAndConverter) {
-				Object userObj = ((RenamableSourceAndConverter) (child
+				SourceAndConverter<?> userObj = ((RenamableSourceAndConverter) (child
 					.getUserObject())).sac;
-				sacs.add((SourceAndConverter<?>) userObj);
+				sacs.add(userObj);
 			}
 			else {
 				sacs.addAll(getSourceAndConvertersFromChildrenOf(child));

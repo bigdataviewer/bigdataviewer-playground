@@ -102,9 +102,9 @@ public class SourceNameOverlay extends BdvOverlay {
 	public void update() {
 		List<SourceBoxOverlay> newSourcesBoxOverlay = new ArrayList<>();
 		Set<SourceAndConverter<?>> sources = viewer.state().getVisibleSources();
-		if (sources!=null && sources.size()>0 && sorter!=null) {
+		if (sources!=null && !sources.isEmpty() && sorter!=null) {
 			SourceAndConverter<?>[] sorted = sorter.apply(sources.toArray(new SourceAndConverter<?>[0]));
-			if ((sorted != null) && (sorted.length>0)) {
+			if (sorted != null) {
 				for (SourceAndConverter<?> sac : sorted) {
 					if (sac.getSpimSource().getSource(viewer.state().getCurrentTimepoint(),
 							0) != null) { // TODO : fix hack to avoid dirty overlay filter
@@ -139,7 +139,7 @@ public class SourceNameOverlay extends BdvOverlay {
 
 		while (occupiedY.contains(binY)) {
 			binY++;
-			shiftY += binSizeY;
+			shiftY += (int) binSizeY;
 		}
 		occupiedY.add(binY);
 		String str = sac.getSpimSource().getName();

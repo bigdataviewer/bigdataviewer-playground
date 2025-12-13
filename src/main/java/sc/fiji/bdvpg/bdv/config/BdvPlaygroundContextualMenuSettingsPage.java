@@ -38,7 +38,6 @@ import org.scijava.listeners.Listeners;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.DropMode;
 import javax.swing.JList;
@@ -139,7 +138,7 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
 		for (int i = 0; i < actions.length; i++) {
 			actions[i] = actions[i].trim();
 			if (actions[i] != null) {
-				if (actions[i].equals("")) {
+				if (actions[i].isEmpty()) {
 					filteredActions.add("PopupLine");
 				}
 				else {

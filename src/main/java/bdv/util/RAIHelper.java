@@ -81,31 +81,31 @@ public class RAIHelper {
 				timepoint, level).withLoader(LoadedCellCacheLoader.get(grid, loader, type,
 				AccessFlags.setOf(VOLATILE)));
 
-		if (GenericByteType.class.isInstance(type)) {
+		if (type instanceof GenericByteType) {
 			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
 					BYTE, AccessFlags.setOf(VOLATILE)));
 		}
-		else if (GenericShortType.class.isInstance(type)) {
+		else if (type instanceof GenericShortType) {
 			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
 					SHORT, AccessFlags.setOf(VOLATILE)));
 		}
-		else if (GenericIntType.class.isInstance(type)) {
+		else if (type instanceof GenericIntType) {
 			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(INT,
 					AccessFlags.setOf(VOLATILE)));
 		}
-		else if (GenericLongType.class.isInstance(type)) {
+		else if (type instanceof GenericLongType) {
 			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
 					LONG, AccessFlags.setOf(VOLATILE)));
 		}
-		else if (FloatType.class.isInstance(type)) {
+		else if (type instanceof FloatType) {
 			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
 					FLOAT, AccessFlags.setOf(VOLATILE)));
 		}
-		else if (DoubleType.class.isInstance(type)) {
+		else if (type instanceof DoubleType) {
 			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(
 					DOUBLE, AccessFlags.setOf(VOLATILE)));
 		}
-		else if (ARGBType.class.isInstance(type)) {
+		else if (type instanceof ARGBType) {
 			img = new CachedCellImg(grid, type, cache, ArrayDataAccessFactory.get(INT,
 					AccessFlags.setOf(VOLATILE)));
 		}

@@ -67,7 +67,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getComman
 
 public class SourceAndConverterPopupMenu {
 
-	private JPopupMenu popup;
+	private final JPopupMenu popup;
 	private final Supplier<SourceAndConverter<?>[]> sacs_supplier;
 
 	final public static String[] defaultPopupActions = { getCommandName(
