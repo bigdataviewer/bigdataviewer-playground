@@ -26,11 +26,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.sourceandconverter;
+package sc.fiji.bdvpg.tests.helpers;
 
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.junit.Test;
+import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import static org.junit.Assert.*;
 

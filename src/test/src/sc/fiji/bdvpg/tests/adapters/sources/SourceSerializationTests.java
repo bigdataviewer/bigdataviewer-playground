@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.serialization;
+package sc.fiji.bdvpg.tests.adapters.sources;
 
 import bdv.SpimSource;
 import bdv.img.WarpedSource;

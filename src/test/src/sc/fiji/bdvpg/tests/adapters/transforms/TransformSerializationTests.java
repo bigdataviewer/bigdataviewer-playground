@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.serialization;
+package sc.fiji.bdvpg.tests.adapters.transforms;
 
 import com.google.gson.Gson;
 import net.imagej.ImageJ;
@@ -46,7 +46,7 @@ import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
 import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
 import sc.fiji.persist.ScijavaGsonHelper;
 
-public class SerializationTests {
+public class TransformSerializationTests {
 
     static ImageJ ij;
     static Gson gson;

@@ -26,9 +26,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.cache;
+package sc.fiji.bdvpg.tests.cache;
 
 import org.junit.Test;
+import sc.fiji.bdvpg.cache.GlobalCacheKey;
 
 import static org.junit.Assert.*;
 
