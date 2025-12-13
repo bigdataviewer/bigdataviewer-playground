@@ -30,8 +30,11 @@ package sc.fiji.bdvpg.serialization;
 
 import com.google.gson.Gson;
 import net.imagej.ImageJ;
+import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
+import net.imglib2.realtransform.RealTransformSequence;
+import net.imglib2.realtransform.ThinplateSplineTransform;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -83,7 +86,145 @@ public class SerializationTests {
         testSerialization(gson, at3D, RealTransform.class); // This needs to work
     }
 
-    // TODO : more unit serialization tests!
+    /**
+     * Test: {@link net.imglib2.realtransform.RealTransformSequenceAdapter}
+     */
+    @Test
+    public void testRealTransformSequenceSerialization() {
+        AffineTransform3D t1 = new AffineTransform3D();
+        t1.translate(10, 20, 30);
+
+        AffineTransform3D t2 = new AffineTransform3D();
+        t2.scale(2.0);
+
+        RealTransformSequence sequence = new RealTransformSequence();
+        sequence.add(t1);
+        sequence.add(t2);
+
+        testSerialization(gson, sequence, RealTransformSequence.class);
+        testSerialization(gson, sequence, RealTransform.class);
+    }
+
+    /**
+     * Test: {@link net.imglib2.realtransform.ThinPlateSplineTransformAdapter}
+     */
+    @Test
+    public void testThinPlateSplineTransformSerialization() {
+        // Create a simple TPS with 4 landmarks in 2D
+        double[][] srcPts = new double[][] {
+            {0, 10, 0, 10},  // X coordinates
+            {0, 0, 10, 10}   // Y coordinates
+        };
+        double[][] tgtPts = new double[][] {
+            {1, 11, 1, 11},  // Shifted X coordinates
+            {1, 1, 11, 11}   // Shifted Y coordinates
+        };
+
+        ThinplateSplineTransform tps = new ThinplateSplineTransform(srcPts, tgtPts);
+        testSerialization(gson, tps, ThinplateSplineTransform.class);
+        testSerialization(gson, tps, RealTransform.class);
+    }
+
+    /**
+     * Test that an AffineTransform3D actually works correctly after deserialization
+     * (not just that the JSON is equal)
+     */
+    @Test
+    public void testAffineTransformFunctionality() {
+        AffineTransform3D original = new AffineTransform3D();
+        original.translate(5, 10, 15);
+        original.scale(2.0);
+        original.rotate(2, Math.PI / 4); // Rotate around Z axis
+
+        String json = gson.toJson(original, AffineTransform3D.class);
+        AffineTransform3D restored = gson.fromJson(json, AffineTransform3D.class);
+
+        // Test that the transform produces the same results
+        double[] testPoint = {1.0, 2.0, 3.0};
+        double[] originalResult = new double[3];
+        double[] restoredResult = new double[3];
+
+        original.apply(testPoint, originalResult);
+        restored.apply(testPoint, restoredResult);
+
+        Assert.assertArrayEquals("Transformed points should match",
+            originalResult, restoredResult, 1e-10);
+    }
+
+    /**
+     * Test that a ThinPlateSplineTransform actually works correctly after deserialization
+     */
+    @Test
+    public void testThinPlateSplineTransformFunctionality() {
+        double[][] srcPts = new double[][] {
+            {0, 100, 0, 100},
+            {0, 0, 100, 100}
+        };
+        double[][] tgtPts = new double[][] {
+            {10, 110, 10, 110},
+            {10, 10, 110, 110}
+        };
+
+        ThinplateSplineTransform original = new ThinplateSplineTransform(srcPts, tgtPts);
+
+        String json = gson.toJson(original, RealTransform.class);
+        RealTransform restored = gson.fromJson(json, RealTransform.class);
+
+        // Test that the transform produces similar results at a test point
+        RealPoint testPoint = new RealPoint(50.0, 50.0);
+        RealPoint originalResult = new RealPoint(2);
+        RealPoint restoredResult = new RealPoint(2);
+
+        original.apply(testPoint, originalResult);
+        restored.apply(testPoint, restoredResult);
+
+        Assert.assertEquals("X coordinate should match",
+            originalResult.getDoublePosition(0), restoredResult.getDoublePosition(0), 1e-6);
+        Assert.assertEquals("Y coordinate should match",
+            originalResult.getDoublePosition(1), restoredResult.getDoublePosition(1), 1e-6);
+    }
+
+    /**
+     * Test serialization of a complex transform sequence
+     */
+    @Test
+    public void testComplexTransformSequenceFunctionality() {
+        AffineTransform3D translate = new AffineTransform3D();
+        translate.translate(100, 200, 0);
+
+        AffineTransform3D scale = new AffineTransform3D();
+        scale.scale(0.5);
+
+        AffineTransform3D rotate = new AffineTransform3D();
+        rotate.rotate(2, Math.PI / 2); // 90 degrees around Z
+
+        RealTransformSequence sequence = new RealTransformSequence();
+        sequence.add(translate);
+        sequence.add(scale);
+        sequence.add(rotate);
+
+        String json = gson.toJson(sequence, RealTransform.class);
+        RealTransform restored = gson.fromJson(json, RealTransform.class);
+
+        // Test at multiple points
+        double[][] testPoints = {
+            {0, 0, 0},
+            {10, 20, 30},
+            {-5, 15, -25}
+        };
+
+        for (double[] testPoint : testPoints) {
+            double[] originalResult = new double[3];
+            double[] restoredResult = new double[3];
+
+            sequence.apply(testPoint, originalResult);
+            restored.apply(testPoint, restoredResult);
+
+            Assert.assertArrayEquals("Transform results should match for point " +
+                java.util.Arrays.toString(testPoint),
+                originalResult, restoredResult, 1e-10);
+        }
+    }
 
     /**
      * Just makes a loop serialize / deserialize / re-serialize and checks
