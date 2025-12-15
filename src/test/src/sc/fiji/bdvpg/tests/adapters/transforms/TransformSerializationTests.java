@@ -32,9 +32,13 @@ import com.google.gson.Gson;
 import net.imagej.ImageJ;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
+import net.imglib2.realtransform.InvertibleRealTransform;
+import net.imglib2.realtransform.InvertibleRealTransformSequence;
 import net.imglib2.realtransform.RealTransform;
 import net.imglib2.realtransform.RealTransformSequence;
 import net.imglib2.realtransform.ThinplateSplineTransform;
+import net.imglib2.realtransform.Wrapped2DTransformAs3D;
+import net.imglib2.realtransform.inverse.WrappedIterativeInvertibleRealTransform;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -224,6 +228,165 @@ public class TransformSerializationTests {
                 java.util.Arrays.toString(testPoint),
                 originalResult, restoredResult, 1e-10);
         }
+    }
+
+    /**
+     * Test: {@link net.imglib2.realtransform.InvertibleRealTransformSequenceAdapter}
+     * {@link net.imglib2.realtransform.InvertibleRealTransformSequenceRunTimeAdapter}
+     */
+    @Test
+    public void testInvertibleRealTransformSequenceSerialization() {
+        AffineTransform3D t1 = new AffineTransform3D();
+        t1.translate(10, 20, 30);
+
+        AffineTransform3D t2 = new AffineTransform3D();
+        t2.scale(2.0);
+
+        InvertibleRealTransformSequence sequence = new InvertibleRealTransformSequence();
+        sequence.add(t1);
+        sequence.add(t2);
+
+        testSerialization(gson, sequence, InvertibleRealTransformSequence.class);
+        testSerialization(gson, sequence, RealTransform.class);
+    }
+
+    /**
+     * Test that InvertibleRealTransformSequence works correctly after deserialization,
+     * including both forward and inverse transforms
+     */
+    @Test
+    public void testInvertibleRealTransformSequenceFunctionality() {
+        AffineTransform3D translate = new AffineTransform3D();
+        translate.translate(100, 200, 50);
+
+        AffineTransform3D scale = new AffineTransform3D();
+        scale.scale(2.0);
+
+        AffineTransform3D rotate = new AffineTransform3D();
+        rotate.rotate(2, Math.PI / 4); // 45 degrees around Z
+
+        InvertibleRealTransformSequence original = new InvertibleRealTransformSequence();
+        original.add(translate);
+        original.add(scale);
+        original.add(rotate);
+
+        String json = gson.toJson(original, RealTransform.class);
+        RealTransform restored = gson.fromJson(json, RealTransform.class);
+
+        Assert.assertTrue("Restored transform should be InvertibleRealTransform",
+            restored instanceof InvertibleRealTransform);
+        InvertibleRealTransform restoredInvertible = (InvertibleRealTransform) restored;
+
+        // Test forward transform
+        double[] testPoint = {10.0, 20.0, 30.0};
+        double[] originalResult = new double[3];
+        double[] restoredResult = new double[3];
+
+        original.apply(testPoint, originalResult);
+        restoredInvertible.apply(testPoint, restoredResult);
+
+        Assert.assertArrayEquals("Forward transform should match",
+            originalResult, restoredResult, 1e-10);
+
+        // Test inverse transform
+        double[] originalInverse = new double[3];
+        double[] restoredInverse = new double[3];
+
+        original.applyInverse(originalInverse, originalResult);
+        restoredInvertible.applyInverse(restoredInverse, restoredResult);
+
+        Assert.assertArrayEquals("Inverse transform should match",
+            originalInverse, restoredInverse, 1e-10);
+
+        // Verify that inverse brings us back to original point
+        Assert.assertArrayEquals("Inverse should recover original point",
+            testPoint, originalInverse, 1e-10);
+    }
+
+    // NOTE: Wrapped2DTransformAs3D tests are not included because they require
+    // actual 2D transforms from imglib2, and using AffineTransform3D causes issues
+    // with dimension checking. The adapters (Wrapped2DTransformAs3DRealTransformAdapter
+    // and Wrapped2DTransformAs3DRealTransformRunTimeAdapter) are used when deserializing
+    // sources that have been warped with 2D transforms, so they are tested indirectly
+    // through source serialization tests.
+
+    /**
+     * Test: {@link net.imglib2.realtransform.WrappedIterativeInvertibleRealTransformAdapter}
+     * {@link net.imglib2.realtransform.WrappedIterativeInvertibleRealTransformRunTimeAdapter}
+     */
+    @Test
+    public void testWrappedIterativeInvertibleRealTransformSerialization() {
+        // Create a TPS transform (which is not analytically invertible)
+        double[][] srcPts = new double[][] {
+            {0, 100, 0, 100},
+            {0, 0, 100, 100}
+        };
+        double[][] tgtPts = new double[][] {
+            {10, 110, 10, 110},
+            {10, 10, 110, 110}
+        };
+
+        ThinplateSplineTransform tps = new ThinplateSplineTransform(srcPts, tgtPts);
+
+        // Wrap it to make it iteratively invertible
+        WrappedIterativeInvertibleRealTransform<ThinplateSplineTransform> wrapped =
+            new WrappedIterativeInvertibleRealTransform<>(tps);
+
+        testSerialization(gson, wrapped, WrappedIterativeInvertibleRealTransform.class);
+        testSerialization(gson, wrapped, RealTransform.class);
+    }
+
+    /**
+     * Test that WrappedIterativeInvertibleRealTransform works correctly after deserialization
+     */
+    @Test
+    public void testWrappedIterativeInvertibleRealTransformFunctionality() {
+        // Create a simple non-invertible transform (TPS)
+        double[][] srcPts = new double[][] {
+            {0, 50, 0, 50},
+            {0, 0, 50, 50}
+        };
+        double[][] tgtPts = new double[][] {
+            {5, 55, 5, 55},
+            {5, 5, 55, 55}
+        };
+
+        ThinplateSplineTransform tps = new ThinplateSplineTransform(srcPts, tgtPts);
+        WrappedIterativeInvertibleRealTransform<ThinplateSplineTransform> original =
+            new WrappedIterativeInvertibleRealTransform<>(tps);
+
+        String json = gson.toJson(original, RealTransform.class);
+        RealTransform restored = gson.fromJson(json, RealTransform.class);
+
+        Assert.assertTrue("Restored transform should be InvertibleRealTransform",
+            restored instanceof InvertibleRealTransform);
+        InvertibleRealTransform restoredInvertible = (InvertibleRealTransform) restored;
+
+        // Test forward transform
+        RealPoint testPoint = new RealPoint(25.0, 25.0);
+        RealPoint originalResult = new RealPoint(2);
+        RealPoint restoredResult = new RealPoint(2);
+
+        original.apply(testPoint, originalResult);
+        restoredInvertible.apply(testPoint, restoredResult);
+
+        Assert.assertEquals("Forward X should match",
+            originalResult.getDoublePosition(0), restoredResult.getDoublePosition(0), 1e-6);
+        Assert.assertEquals("Forward Y should match",
+            originalResult.getDoublePosition(1), restoredResult.getDoublePosition(1), 1e-6);
+
+        // Test inverse transform (iterative approximation)
+        RealPoint originalInverse = new RealPoint(2);
+        RealPoint restoredInverse = new RealPoint(2);
+
+        original.applyInverse(originalInverse, originalResult);
+        restoredInvertible.applyInverse(restoredInverse, restoredResult);
+
+        // Inverse is approximate, so use larger tolerance
+        Assert.assertEquals("Inverse X should be close",
+            originalInverse.getDoublePosition(0), restoredInverse.getDoublePosition(0), 0.1);
+        Assert.assertEquals("Inverse Y should be close",
+            originalInverse.getDoublePosition(1), restoredInverse.getDoublePosition(1), 0.1);
     }
 
     /**

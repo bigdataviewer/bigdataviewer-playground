@@ -79,6 +79,8 @@ The project uses Gson with custom adapters for serializing:
 - SpimData references
 - BDV window options
 
+Adapters are automatically registered via SciJava plugins and obtained via `ScijavaGsonHelper.getGson(context)`. See [ADAPTER_TESTING_STATUS.md](ADAPTER_TESTING_STATUS.md) for a complete list of all serialization adapters and their test coverage.
+
 ## Testing
 
 Test files are in `src/test/src/sc/fiji/bdvpg/` (non-standard path from pom-scijava).
@@ -90,15 +92,18 @@ mvn test
 # Run a specific test class
 mvn test -Dtest=sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelperTest
 
-# Run serialization tests
-mvn test -Dtest=sc.fiji.bdvpg.serialization.SerializationTests
+# Run adapter serialization tests
+mvn test -Dtest="sc.fiji.bdvpg.tests.adapters.*"
 ```
+
+See [ADAPTER_TESTING_STATUS.md](ADAPTER_TESTING_STATUS.md) for the complete list of serialization adapters and their test coverage.
 
 ### Test Categories
 
 1. **Unit tests** (no GUI required):
    - `SourceAndConverterHelperTest` - Tests for math utilities (vectors, voxel sizes, ray intersection)
-   - `SerializationTests` - Tests for transform serialization/deserialization
+   - `TransformSerializationTests` - Tests for transform adapter serialization/deserialization
+   - `SourceSerializationTests` - Tests for source adapter serialization/deserialization
 
 2. **Integration tests** (require ImageJ context but no GUI):
    - Tests using `TestHelper.startFiji(ij)` without showing UI
