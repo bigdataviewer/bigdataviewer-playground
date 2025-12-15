@@ -1,8 +1,7 @@
-[![](https://github.com/bigdataviewer/bigdataviewer-playground/actions/workflows/build-main.yml/badge.svg)](https://github.com/bigdataviewer/bigdataviewer-playground/actions/workflows/build-main.yml)
-[![Gitter](https://badges.gitter.im/bigdataviewer-playground/community.svg)](https://gitter.im/bigdataviewer-playground/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-
-
 ## BDV playground / toolbox / actions
+
+[![](https://github.com/bigdataviewer/bigdataviewer-playground/actions/workflows/build-main.yml/badge.svg)](https://github.com/bigdataviewer/bigdataviewer-playground/actions/workflows/build-main.yml)
+[![Maven Scijava Version](https://img.shields.io/github/v/tag/bigdataviewer/bigdataviewer-playground?label=Version-[Maven%20Scijava])](https://maven.scijava.org/#browse/browse:releases:sc%2Ffiji%2Fbigdataviewer-playground)
 
 In this repository, we collect useful additions for the [BigDataViewer](https://imagej.net/BigDataViewer) in [Fiji](https://fiji.sc). These functionalities are accessible by enabling the `PTBIOP` Fiji update site, accessible via `Help>Update>Manage Update Sites`.
 
