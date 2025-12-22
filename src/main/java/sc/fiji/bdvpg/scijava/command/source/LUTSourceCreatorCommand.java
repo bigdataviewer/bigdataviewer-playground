@@ -66,10 +66,14 @@ public class LUTSourceCreatorCommand extends DynamicCommand implements
 	@Parameter
 	LUTService lutservice;
 
-	@Parameter(label = "LUT name", persist = false, callback = "nameChanged")
+	@Parameter(label = "LUT name",
+			description = "Name of the Look Up Table to apply",
+			persist = false, callback = "nameChanged")
 	String choice = "Gray";
 
-	@Parameter(required = false, label = "LUT", persist = false)
+	@Parameter(required = false, label = "LUT",
+			description = "Preview of the selected Look Up Table",
+			persist = false)
 	ColorTable table = ColorTables.GRAYS;
 
 	@Parameter
@@ -78,10 +82,13 @@ public class LUTSourceCreatorCommand extends DynamicCommand implements
 	// -- other fields --
 	private Map<String, URL> luts = null;
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to duplicate with the new LUT")
 	SourceAndConverter<?>[] sacs;
 
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Sources with LUT",
+			description = "The duplicated sources with the LUT applied")
 	SourceAndConverter<?>[] sacs_out;
 
 	@Override

@@ -61,22 +61,29 @@ public class NewSourceCommand implements BdvPlaygroundActionCommand {
 		description = "Defines the portion of space covered by the new source")
 	SourceAndConverter<?> model;
 
-	@Parameter(label = "Source name")
+	@Parameter(label = "Source name",
+			description = "Name for the new source")
 	String name;
 
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Created Source",
+			description = "The newly created empty source")
 	SourceAndConverter<?> sac;
 
-	@Parameter(label = "Voxel Size X")
+	@Parameter(label = "Voxel Size X",
+			description = "Voxel size in X dimension (in world coordinates units)")
 	double voxsizex;
 
-	@Parameter(label = "Voxel Size Y")
+	@Parameter(label = "Voxel Size Y",
+			description = "Voxel size in Y dimension (in world coordinates units)")
 	double voxsizey;
 
-	@Parameter(label = "Voxel Size Z")
+	@Parameter(label = "Voxel Size Z",
+			description = "Voxel size in Z dimension (in world coordinates units)")
 	double voxsizez;
 
-	@Parameter(label = "Timepoint (0 based index)")
+	@Parameter(label = "Timepoint",
+			description = "Timepoint to use from the model source (0-based)")
 	int timepoint;
 
 	@Override

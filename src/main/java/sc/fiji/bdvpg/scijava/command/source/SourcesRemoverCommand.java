@@ -41,10 +41,12 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "Sources>Delete Sources")
+	menuPath = ScijavaBdvDefaults.RootMenu + "Sources>Delete Sources",
+	description = "Removes sources from the source and converter service")
 public class SourcesRemoverCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to remove from the service")
 	SourceAndConverter<?>[] sacs;
 
 	@Parameter

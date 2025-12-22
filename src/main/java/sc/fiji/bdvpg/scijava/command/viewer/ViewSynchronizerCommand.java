@@ -74,13 +74,18 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 	protected static final Logger logger = LoggerFactory.getLogger(
 		ViewSynchronizerCommand.class);
 
-	@Parameter(label = "Select Bdv Windows to synchronize", required = false, persist = false)
+	@Parameter(label = "Select BDV Windows to synchronize",
+			description = "The BigDataViewer windows to synchronize",
+			required = false, persist = false)
 	BdvHandle[] bdvhs;
 
-	@Parameter(label = "Select Bvv Windows to synchronize", required = false, persist = false)
+	@Parameter(label = "Select BVV Windows to synchronize",
+			description = "The BigVolumeViewer windows to synchronize",
+			required = false, persist = false)
 	BvvHandle[] bvvhs;
 
-	@Parameter(label = "Synchronize timepoints")
+	@Parameter(label = "Synchronize timepoints",
+			description = "If checked, also synchronizes the current timepoint across windows")
 	boolean synchronizetime = true;
 
 	ViewerTransformSyncStarter sync;

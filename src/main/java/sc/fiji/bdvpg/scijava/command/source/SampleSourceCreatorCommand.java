@@ -49,14 +49,18 @@ import sc.fiji.bdvpg.sourceandconverter.importer.Wave3DSourceGetter;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "Sources>Create Sample Source")
+	menuPath = ScijavaBdvDefaults.RootMenu + "Sources>Create Sample Source",
+	description = "Creates a sample source for testing and demonstration purposes")
 public class SampleSourceCreatorCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Sample name", choices = { "Mandelbrot", "Wave3D",
-		"Voronoi", "Big Voronoi" })
+	@Parameter(label = "Sample name",
+			description = "Type of sample source to create: Mandelbrot (2D fractal), Wave3D (3D procedural), Voronoi (cell-like pattern), Big Voronoi (large 3D volume)",
+			choices = { "Mandelbrot", "Wave3D", "Voronoi", "Big Voronoi" })
 	String samplename;
 
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Sample Source",
+			description = "The created sample source")
 	SourceAndConverter<?> sac;
 
 	@Override

@@ -48,7 +48,9 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 	description = "Adapts the bdv windows timepoints to the number of timepoints present in their sources.")
 public class MultiBdvTimepointAdapterCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select BDV Windows", persist = false)
+	@Parameter(label = "Select BDV Windows",
+			description = "The BigDataViewer windows whose timepoint range will be adapted to their sources",
+			persist = false)
 	BdvHandle[] bdvhs;
 
 	@Parameter

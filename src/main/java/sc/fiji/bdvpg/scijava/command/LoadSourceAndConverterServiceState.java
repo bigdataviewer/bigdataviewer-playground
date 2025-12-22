@@ -40,18 +40,22 @@ import java.io.File;
 @SuppressWarnings({ "unused", "CanBeFinal" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Load Bdv Playground State (experimental)")
+		"Load Bdv Playground State (experimental)",
+	description = "Loads a previously saved Bdv Playground state from a JSON file")
 public class LoadSourceAndConverterServiceState implements
 	BdvPlaygroundActionCommand
 {
 
-	@Parameter(label = "Open state file (json)", style = "open")
+	@Parameter(label = "State file (JSON)",
+			description = "The JSON file containing the saved state",
+			style = "open")
 	File file;
 
 	@Parameter
 	Context ctx;
 
-	@Parameter(label = "Erase current state")
+	@Parameter(label = "Erase current state",
+			description = "If checked, removes all current sources before loading the saved state")
 	Boolean erasepreviousstate;
 
 	@Override

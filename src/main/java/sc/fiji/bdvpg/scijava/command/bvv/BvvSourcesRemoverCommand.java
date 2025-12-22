@@ -45,10 +45,12 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 	description = "Removes one or several sources from an existing BVV window")
 public class BvvSourcesRemoverCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter
+	@Parameter(label = "Select BVV Window",
+			description = "The BigVolumeViewer window from which sources will be removed")
 	BvvHandle bvvh;
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to remove from the BVV window")
 	SourceAndConverter<?>[] sacs;
 
 	@Override

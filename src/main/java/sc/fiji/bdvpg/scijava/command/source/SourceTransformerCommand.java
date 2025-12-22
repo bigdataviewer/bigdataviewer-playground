@@ -56,21 +56,28 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
 
 public class SourceTransformerCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select source(s)")
+	@Parameter(label = "Select source(s)",
+			description = "The source(s) to transform")
 	SourceAndConverter<?>[] sacs;
 
 	@Parameter(label = "Matrix as comma separated numbers", required = false,
-		callback = "parseInput")
+		callback = "parseInput",
+		description = "Optional: paste a 3x4 affine matrix as 12 comma-separated values (row-major order)")
 	String matrixCsv;
 
-	@Parameter(style = "format:0.#####E0")
+	@Parameter(label = "Affine matrix coefficients",
+			description = "3x4 affine transformation matrix coefficients",
+			style = "format:0.#####E0")
 	double m00 = 1, m01 = 0, m02 = 0, tx = 0, m10 = 0, m11 = 1, m12 = 0, ty = 0,
 			m20 = 0, m21 = 0, m22 = 1, tz = 0;
 
-	@Parameter(label = "Initial timepoint (0 based)")
+	@Parameter(label = "Initial timepoint",
+			description = "First timepoint to apply the transformation (0-based)")
 	int initimepoint;
 
-	@Parameter(label = "Number of timepoints (min 1)", min = "1")
+	@Parameter(label = "Number of timepoints",
+			description = "Number of timepoints to apply the transformation to",
+			min = "1")
 	int ntimepoints;
 
 	@Override

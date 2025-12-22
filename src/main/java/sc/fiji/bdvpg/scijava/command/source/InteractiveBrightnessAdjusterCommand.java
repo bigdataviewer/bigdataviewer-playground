@@ -52,34 +52,42 @@ import static org.scijava.ItemVisibility.MESSAGE;
 
 @Plugin(type = BdvPlaygroundActionCommand.class, initializer = "init",
 	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Sources>Display>Set Sources Brightness (Interactive)")
+		"Sources>Display>Set Sources Brightness (Interactive)",
+	description = "Interactively adjusts the display range (min and max) of sources with live preview")
 public class InteractiveBrightnessAdjusterCommand extends InteractiveCommand
 	implements BdvPlaygroundActionCommand
 {
 
 	@Parameter(label = "Sources :", required = false,
-		description = "Label the sources controlled by this window",
+		description = "Custom label to identify the sources controlled by this window",
 		persist = false)
 	String customsourcelabel = "Label your sources here";
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) whose display range will be adjusted")
 	SourceAndConverter<?>[] sacs;
 
 	@Parameter(visibility = MESSAGE, required = false, style = "text field")
 	String message = "Display Range [ NaN - NaN ]";
 
-	@Parameter(callback = "updateMessage")
+	@Parameter(label = "Range Min",
+			description = "Minimum value of the adjustable range",
+			callback = "updateMessage")
 	double min;
 
-	@Parameter(callback = "updateMessage")
+	@Parameter(label = "Range Max",
+			description = "Maximum value of the adjustable range",
+			callback = "updateMessage")
 	double max;
 
-	@Parameter(label = "relative Minimum", style = "slider", min = "0",
-		max = "1000", callback = "updateMessage")
+	@Parameter(label = "Relative Minimum", style = "slider", min = "0",
+		max = "1000", callback = "updateMessage",
+		description = "Slider to adjust the minimum display value within the range")
 	double minslider;
 
-	@Parameter(label = "relative Maximum", style = "slider", min = "0",
-		max = "1000", callback = "updateMessage")
+	@Parameter(label = "Relative Maximum", style = "slider", min = "0",
+		max = "1000", callback = "updateMessage",
+		description = "Slider to adjust the maximum display value within the range")
 	double maxslider;
 
 	boolean firstTimeCalled = true;

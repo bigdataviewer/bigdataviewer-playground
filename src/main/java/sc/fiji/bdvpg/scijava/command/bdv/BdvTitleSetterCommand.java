@@ -42,14 +42,16 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Set Title",
-	description = "Sets the title of a BDV Windows")
+	description = "Sets the title of a BDV window")
 
 public class BdvTitleSetterCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select BDV Window")
+	@Parameter(label = "Select BDV Window",
+			description = "The BigDataViewer window whose title will be changed")
 	BdvHandle bdvh;
 
-	@Parameter(label = "title")
+	@Parameter(label = "New title",
+			description = "The new title for the BDV window")
 	String title;
 
 	public void run() {

@@ -52,27 +52,35 @@ public class CacheOptionsCommand implements BdvPlaygroundActionCommand {
 	@Parameter
 	PrefService prefs;
 
-	@Parameter(label = "Cache type", choices = { "Caffeine", "LinkedHashMap" },
+	@Parameter(label = "Cache type",
+			description = "Type of cache implementation to use",
+			choices = { "Caffeine", "LinkedHashMap" },
 		persist = false)
 	String cache_type;
 
-	@Parameter(label = "Log cache (ms between log), negative to avoid logging",
+	@Parameter(label = "Log interval (ms)",
+			description = "Milliseconds between cache log messages (negative to disable logging)",
 		persist = false)
 	int log_ms;
 
-	@Parameter(label = "Rule: use a ratio of all memory available (%)",
+	@Parameter(label = "Memory ratio (%)",
+			description = "Percentage of available memory to use for cache",
 		callback = "useRatio", persist = false)
 	int mem_ratio_pc;
 
-	@Parameter(label = "Rule: set a size for cache (Mb)",
+	@Parameter(label = "Cache size (MB)",
+			description = "Fixed size in megabytes for the cache",
 		callback = "useMbForCache", persist = false)
 	int mem_for_cache_mb;
 
-	@Parameter(label = "Rule: set a size for the rest of the application (Mb)",
+	@Parameter(label = "Reserved memory (MB)",
+			description = "Memory in megabytes to reserve for the rest of the application",
 		callback = "useMbForElse", persist = false)
 	int mem_for_everything_else_mb;
 
-	@Parameter(label = "Reset to default", callback = "reset")
+	@Parameter(label = "Reset to default",
+			description = "Resets all cache options to their default values",
+			callback = "reset")
 	Button button;
 
 	@Override

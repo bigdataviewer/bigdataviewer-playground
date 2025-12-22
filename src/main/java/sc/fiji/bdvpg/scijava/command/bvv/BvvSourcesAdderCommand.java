@@ -51,16 +51,19 @@ import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu + "BVV>BVV - Show Sources",
-	description = "Show sources in a BigVolumeViewer window - limited to 16 bit images")
+	description = "Show sources in a BigVolumeViewer window")
 public class BvvSourcesAdderCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select BVV Window(s)")
+	@Parameter(label = "Select BVV Window",
+			description = "The BigVolumeViewer window where sources will be displayed")
 	BvvHandle bvvh;
 
-	@Parameter(label = "Adjust View on Source")
+	@Parameter(label = "Adjust View on Source",
+			description = "Centers and zooms the view to fit the added sources")
 	boolean adjustviewonsource;
 
-	@Parameter(label = "Select source(s)")
+	@Parameter(label = "Select source(s)",
+			description = "The source(s) to add")
 	SourceAndConverter<?>[] sacs;
 
 	@Override

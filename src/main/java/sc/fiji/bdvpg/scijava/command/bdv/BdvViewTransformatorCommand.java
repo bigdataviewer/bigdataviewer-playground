@@ -50,25 +50,32 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 	description = "Applies a simple view transform (translation / rotation) to a BDV window")
 public class BdvViewTransformatorCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select BDV Windows")
+	@Parameter(label = "Select BDV Window",
+			description = "The BigDataViewer window to transform")
 	BdvHandle bdvh;
 
-	@Parameter(label = "Translate in X")
+	@Parameter(label = "Translate in X",
+			description = "Translation along the X axis in pixels")
 	public Double translatex = 0.0;
 
-	@Parameter(label = "Translate in Y")
+	@Parameter(label = "Translate in Y",
+			description = "Translation along the Y axis in pixels")
 	public Double translatey = 0.0;
 
-	@Parameter(label = "Translate in Z")
+	@Parameter(label = "Translate in Z",
+			description = "Translation along the Z axis in pixels")
 	public Double translatez = 0.0;
 
-	@Parameter(label = "Rotate around X")
+	@Parameter(label = "Rotate around X",
+			description = "Rotation angle around the X axis in radians")
 	public Double rotatearoundx = 0.0;
 
-	@Parameter(label = "Rotate around Y")
+	@Parameter(label = "Rotate around Y",
+			description = "Rotation angle around the Y axis in radians")
 	public Double rotatearoundy = 0.0;
 
-	@Parameter(label = "Rotate around Z")
+	@Parameter(label = "Rotate around Z",
+			description = "Rotation angle around the Z axis in radians")
 	public Double rotatearoundz = 0.0;
 
 	@Override

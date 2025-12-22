@@ -42,12 +42,14 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Sources>Display>Make Sources Invisible")
+		"Sources>Display>Make Sources Invisible",
+	description = "Makes sources invisible in all BDV windows where they are displayed")
 public class SourcesInvisibleMakerCommand implements
 	BdvPlaygroundActionCommand
 {
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to make invisible")
 	SourceAndConverter<?>[] sacs;
 
 	@Parameter

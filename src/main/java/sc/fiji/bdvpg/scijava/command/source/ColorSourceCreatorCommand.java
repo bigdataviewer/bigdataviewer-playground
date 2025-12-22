@@ -53,10 +53,12 @@ import sc.fiji.bdvpg.sourceandconverter.display.ConverterChanger;
 
 public class ColorSourceCreatorCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter
+	@Parameter(label = "Color",
+			description = "The color to apply to the duplicated sources")
 	ColorRGB color = new ColorRGB(255, 255, 255);
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to duplicate with the new color")
 	SourceAndConverter<?>[] sacs;
 
 	@Override

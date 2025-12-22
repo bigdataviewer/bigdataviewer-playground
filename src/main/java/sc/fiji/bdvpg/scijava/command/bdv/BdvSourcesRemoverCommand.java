@@ -46,10 +46,12 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 	description = "Removes one or several sources from an existing BDV window")
 public class BdvSourcesRemoverCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter
+	@Parameter(label = "Select BDV Window",
+			description = "The BigDataViewer window from which sources will be removed")
 	BdvHandle bdvh;
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to remove from the BDV window")
 	SourceAndConverter<?>[] sacs;
 
 	@Parameter

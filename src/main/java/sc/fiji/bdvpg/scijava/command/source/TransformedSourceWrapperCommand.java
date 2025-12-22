@@ -44,15 +44,19 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Sources>Transform>Wrap as Transformed Source")
+		"Sources>Transform>Wrap as Transformed Source",
+	description = "Wraps sources in a TransformedSource, allowing subsequent transformations to be applied")
 public class TransformedSourceWrapperCommand implements
 	BdvPlaygroundActionCommand
 {
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to wrap as TransformedSource")
 	SourceAndConverter<?>[] sacs;
 
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Wrapped Sources",
+			description = "The newly created TransformedSource wrappers")
 	SourceAndConverter<?>[] sacs_out;
 
 	@Override

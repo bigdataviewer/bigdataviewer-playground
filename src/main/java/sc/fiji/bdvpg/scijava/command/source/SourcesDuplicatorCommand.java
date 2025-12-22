@@ -41,10 +41,12 @@ import sc.fiji.bdvpg.sourceandconverter.importer.SourceAndConverterDuplicator;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "Sources>Duplicate Sources")
+	menuPath = ScijavaBdvDefaults.RootMenu + "Sources>Duplicate Sources",
+	description = "Creates a copy of the selected sources")
 public class SourcesDuplicatorCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to duplicate")
 	SourceAndConverter<?>[] sacs;
 
 	@Override

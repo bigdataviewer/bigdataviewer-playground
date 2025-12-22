@@ -48,14 +48,16 @@ public class MakeMetadataFilterNodeCommand implements
 	BdvPlaygroundActionCommand
 {
 
-	@Parameter(label = "Name of the node")
+	@Parameter(label = "Name of the node",
+			description = "Display name for the filter node in the tree view")
 	String groupname;
 
-	@Parameter(label = "Select Metadata Key")
+	@Parameter(label = "Metadata Key",
+			description = "The metadata key to filter sources by")
 	String key;
 
-	@Parameter(
-		label = "Regular expression for Metadata Value (\".*\" matches everything)")
+	@Parameter(label = "Value regex",
+		description = "Regular expression to match metadata values (\".*\" matches everything)")
 	String valueregex = ".*";
 
 	@Parameter

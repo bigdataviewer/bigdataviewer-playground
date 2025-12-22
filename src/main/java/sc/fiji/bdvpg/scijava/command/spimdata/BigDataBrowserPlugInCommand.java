@@ -70,14 +70,17 @@ import java.util.Map;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-		"BDVDataset>List BigDataServer Datasets")
+		"BDVDataset>List BigDataServer Datasets",
+	description = "Opens a browser to list and select datasets from a BigDataServer")
 public class BigDataBrowserPlugInCommand implements BdvPlaygroundActionCommand {
 
 	private final Map<String, ImageIcon> imageMap = new HashMap<>();
 
 	private final Map<String, String> datasetUrlMap = new HashMap<>();
 
-	@Parameter(required = false)
+	@Parameter(label = "Server URL",
+			description = "URL of the BigDataServer instance",
+			required = false)
 	String serverurl = "http://tomancak-srv1.mpi-cbg.de:8081";
 
 	@Parameter

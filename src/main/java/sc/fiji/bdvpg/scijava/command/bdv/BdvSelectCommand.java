@@ -42,11 +42,12 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Select Window",
-	description = "Select a BDV Windows")
+	description = "Selects and brings a BDV window to the front")
 
 public class BdvSelectCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select BDV Window")
+	@Parameter(label = "Select BDV Window",
+			description = "The BigDataViewer window to activate and bring to front")
 	BdvHandle bdvh;
 
 	public void run() {

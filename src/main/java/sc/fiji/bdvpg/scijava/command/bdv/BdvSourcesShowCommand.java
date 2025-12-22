@@ -50,22 +50,28 @@ import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 	description = "Displays one or several sources into a new BDV window")
 public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to display in the new BDV window")
 	SourceAndConverter<?>[] sacs;
 
-	@Parameter(label = "Auto Contrast")
+	@Parameter(label = "Auto Contrast",
+			description = "Automatically adjusts brightness and contrast based on the current timepoint")
 	boolean autocontrast;
 
-	@Parameter(label = "Adjust View on Source")
+	@Parameter(label = "Adjust View on Source",
+			description = "Centers and zooms the view to fit the displayed sources")
 	boolean adjustviewonsource;
 
-	@Parameter(label = "Interpolate")
+	@Parameter(label = "Interpolate",
+			description = "Enables interpolation for smoother rendering")
 	public boolean interpolate = false;
 
 	/**
 	 * This triggers: BdvHandlePostprocessor
 	 */
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Created BDV Window",
+			description = "The newly created BigDataViewer window containing the sources")
 	public BdvHandle bdvh;
 
 	@Parameter

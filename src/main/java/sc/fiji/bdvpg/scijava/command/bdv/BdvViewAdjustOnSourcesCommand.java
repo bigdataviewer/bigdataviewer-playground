@@ -48,10 +48,12 @@ public class BdvViewAdjustOnSourcesCommand implements
 	BdvPlaygroundActionCommand
 {
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) that the view will be adjusted to span")
 	SourceAndConverter<?>[] sacs;
 
-	@Parameter(label = "Select BDV Window")
+	@Parameter(label = "Select BDV Window",
+			description = "The BigDataViewer window whose view will be adjusted to fit all selected sources")
 	BdvHandle bdvh;
 
 	@Override

@@ -63,22 +63,31 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
 
 public class BasicTransformerCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select source(s)")
+	@Parameter(label = "Select source(s)",
+			description = "The source(s) to transform")
 	SourceAndConverter<?>[] sacs;
 
-	@Parameter(choices = { "Flip", "Rot90", "Rot180", "Rot270" })
+	@Parameter(label = "Transformation type",
+			description = "Type of transformation: Flip mirrors the source, Rot rotates by 90/180/270 degrees",
+			choices = { "Flip", "Rot90", "Rot180", "Rot270" })
 	String type;
 
-	@Parameter(choices = { "X", "Y", "Z" })
+	@Parameter(label = "Axis",
+			description = "Axis along which to perform the transformation",
+			choices = { "X", "Y", "Z" })
 	String axis;
 
-	@Parameter(label = "Initial timepoint (0 based)")
+	@Parameter(label = "Initial timepoint",
+			description = "First timepoint to apply the transformation (0-based)")
 	int initimepoint;
 
-	@Parameter(label = "Number of timepoints (min 1)", min = "1")
+	@Parameter(label = "Number of timepoints",
+			description = "Number of timepoints to apply the transformation to",
+			min = "1")
 	int ntimepoints;
 
-	@Parameter(label = "Global transform (relative to the origin of the world)")
+	@Parameter(label = "Global transform",
+			description = "If checked, transforms relative to world origin (0,0,0). Otherwise, keeps each source center unchanged")
 	boolean globalchange;
 
 	@Parameter

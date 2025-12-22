@@ -49,10 +49,13 @@ public class MultiBdvSourcesRemoverCommand implements
 	BdvPlaygroundActionCommand
 {
 
-	@Parameter(label = "Select BDV Windows", persist = false)
+	@Parameter(label = "Select BDV Windows",
+			description = "The BigDataViewer windows from which sources will be removed",
+			persist = false)
 	BdvHandle[] bdvhs;
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to remove from all selected BDV windows")
 	SourceAndConverter<?>[] sacs;
 
 	@Parameter

@@ -47,7 +47,9 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 	description = "Closes one or several bdv windows.")
 public class MultiBdvCloseCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select BDV Windows", persist = false)
+	@Parameter(label = "Select BDV Windows",
+			description = "The BigDataViewer windows to close",
+			persist = false)
 	BdvHandle[] bdvhs;
 
 	@Parameter

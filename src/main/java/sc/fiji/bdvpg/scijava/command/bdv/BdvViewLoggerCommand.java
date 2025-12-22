@@ -52,7 +52,8 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 public class BdvViewLoggerCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter
+	@Parameter(label = "Select BDV Window",
+			description = "The BigDataViewer window whose view transform will be logged")
 	BdvHandle bdvh;
 
 	@Parameter

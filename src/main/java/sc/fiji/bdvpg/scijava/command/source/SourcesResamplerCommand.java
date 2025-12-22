@@ -43,31 +43,41 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
 																							// pre-processors
 
 @Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu +
-	"Sources>Resample Source Based on Model Source")
+	"Sources>Resample Source Based on Model Source",
+	description = "Resamples sources to match the voxel grid of a model source")
 public class SourcesResamplerCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to resample")
 	SourceAndConverter<?>[] sacs;
 
-	@Parameter
+	@Parameter(label = "Model Source",
+			description = "The source whose voxel grid will be used as reference")
 	SourceAndConverter<?> model;
 
-	@Parameter(label = "Re-use MipMaps")
+	@Parameter(label = "Re-use MipMaps",
+			description = "If checked, reuses the MipMap levels of the original source")
 	boolean reusemipmaps;
 
-	@Parameter(label = "MipMap level if not re-used (0 = max resolution)")
+	@Parameter(label = "MipMap level if not re-used",
+			description = "Resolution level to use when not reusing MipMaps (0 = highest resolution)")
 	int defaultmipmaplevel;
 
-	@Parameter
+	@Parameter(label = "Interpolate",
+			description = "If checked, uses interpolation when resampling")
 	boolean interpolate;
 
-	@Parameter
+	@Parameter(label = "Cache",
+			description = "If checked, caches the resampled data in memory")
 	boolean cache;
 
-	@Parameter(label = "Name(s) of the resampled source(s)")
+	@Parameter(label = "Name(s) of the resampled source(s)",
+			description = "Name(s) for the resampled source(s), comma-separated for multiple sources")
 	String name; // CSV separate for multiple sources
 
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Resampled Sources",
+			description = "The newly created resampled sources")
 	SourceAndConverter<?>[] sacs_out;
 
 	@Override

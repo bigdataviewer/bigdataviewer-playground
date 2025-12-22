@@ -46,44 +46,55 @@ import java.util.Arrays;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Set BDV window (default)",
-	description = "Set preferences of Bdv Window")
+	description = "Sets the default preferences for newly created BDV windows")
 public class BdvDefaultViewerSetterCommand implements
 	BdvPlaygroundActionCommand
 {
 
 	@Parameter(
-		label = "Click this checkbox to ignore all parameters and reset the default viewer",
+		label = "Reset to default",
+		description = "If checked, ignores all other parameters and resets to default settings",
 		persist = false)
 	boolean resetToDefault = false;
 
-	@Parameter
+	@Parameter(label = "Window width",
+			description = "Default width in pixels for new BDV windows")
 	int width = 640;
 
-	@Parameter
+	@Parameter(label = "Window height",
+			description = "Default height in pixels for new BDV windows")
 	int height = 480;
 
-	@Parameter
+	@Parameter(label = "Screen scales",
+			description = "Comma-separated list of scale factors for multi-resolution rendering (e.g., 1, 0.5, 0.25)")
 	String screenscales = "1, 0.75, 0.5, 0.25, 0.125";
 
-	@Parameter
+	@Parameter(label = "Target render time (ms)",
+			description = "Target time in milliseconds for rendering a single frame")
 	long targetrenderms = 30;// * 1000000l;
 
-	@Parameter
+	@Parameter(label = "Number of rendering threads",
+			description = "Number of threads used for rendering")
 	int numrenderingthreads = 3;
 
-	@Parameter
+	@Parameter(label = "Number of source groups",
+			description = "Number of source groups available in the BDV window")
 	int numsourcegroups = 10;
 
-	@Parameter
+	@Parameter(label = "Window title",
+			description = "Default title for new BDV windows")
 	String frametitle = "BigDataViewer";
 
-	@Parameter
+	@Parameter(label = "2D mode",
+			description = "If enabled, restricts navigation to 2D (only Z-rotations)")
 	boolean is2d = false;
 
-	@Parameter
+	@Parameter(label = "Interpolate",
+			description = "Enables interpolation for smoother rendering")
 	boolean interpolate = false;
 
-	@Parameter
+	@Parameter(label = "Number of timepoints",
+			description = "Default number of timepoints for new BDV windows")
 	int numtimepoints = 1;
 
 	@Parameter

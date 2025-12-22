@@ -47,10 +47,14 @@ public class BvvSetTimepointsNumberCommand implements
 	BdvPlaygroundActionCommand
 {
 
-	@Parameter(label = "Select BVV Windows", persist = false)
+	@Parameter(label = "Select BVV Windows",
+			description = "The BigVolumeViewer windows whose timepoint range will be set",
+			persist = false)
 	BvvHandle[] bvvhs;
 
-	@Parameter(label = "Number of timepoints, min = 1", min = "1")
+	@Parameter(label = "Number of timepoints",
+			description = "Total number of timepoints available in the BVV windows",
+			min = "1")
 	int numberoftimepoints;
 
 	public void run() {
