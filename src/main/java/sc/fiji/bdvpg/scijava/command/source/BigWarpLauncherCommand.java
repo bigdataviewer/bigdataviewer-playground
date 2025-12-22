@@ -59,28 +59,41 @@ import java.util.stream.Collectors;
 
 public class BigWarpLauncherCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Window title for BigWarp")
+	@Parameter(label = "Window title for BigWarp",
+			description = "Title for the BigWarp windows")
 	String bigwarpname;
 
-	@Parameter(label = "Moving Source(s)")
+	@Parameter(label = "Moving Source(s)",
+			description = "The source(s) that will be warped to match the fixed sources")
 	SourceAndConverter<?>[] movingsources;
 
-	@Parameter(label = "Fixed Source(s)")
+	@Parameter(label = "Fixed Source(s)",
+			description = "The reference source(s) that stay fixed during registration")
 	SourceAndConverter<?>[] fixedsources;
 
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "BigWarp Q Window",
+			description = "The BigWarp Q (moving) window handle")
 	BdvHandle bdvhq;
 
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "BigWarp P Window",
+			description = "The BigWarp P (fixed) window handle")
 	BdvHandle bdvhp;
 
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Warped Sources",
+			description = "The warped versions of the moving sources")
 	SourceAndConverter<?>[] warpedsources;
 
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Grid Source",
+			description = "A grid source showing the deformation field")
 	SourceAndConverter<?> gridsource;
 
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Warp Magnitude Source",
+			description = "A source showing the magnitude of the deformation")
 	SourceAndConverter<?> warpmagnitudesource;
 
 	@Parameter

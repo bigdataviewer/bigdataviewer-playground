@@ -47,14 +47,18 @@ import java.io.File;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDVDataset>Save BDVDataset")
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDVDataset>Save BDVDataset",
+	description = "Saves the SpimData associated with sources to an XML file")
 public class SpimDataExporterCommand implements BdvPlaygroundActionCommand {
 
 	// To get associated spimdata
-	@Parameter(label = "Select source(s)")
+	@Parameter(label = "Select source(s)",
+			description = "Select a source to find its associated SpimData (only the first source is used)")
 	SourceAndConverter<?>[] sacs;
 
-	@Parameter(label = "Output File (XML)", style = "save")
+	@Parameter(label = "Output File (XML)",
+			description = "Path to save the XML file",
+			style = "save")
 	public File xmlfilepath;
 
 	@Parameter

@@ -36,7 +36,8 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 @SuppressWarnings({ "unused", "CanBeFinal" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "Show Bdv Playground Window")
+	menuPath = ScijavaBdvDefaults.RootMenu + "Show Bdv Playground Window",
+	description = "Opens the Bdv Playground source management window")
 public class ShowSourceAndConverterServiceWindow implements
 	BdvPlaygroundActionCommand
 {

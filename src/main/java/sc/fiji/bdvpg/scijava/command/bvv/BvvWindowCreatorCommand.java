@@ -47,16 +47,16 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 	description = "Creates an empty Bvv window")
 public class BvvWindowCreatorCommand implements BdvPlaygroundActionCommand {
 
-	/**
-	 * Title of the new BVV window
-	 */
-	@Parameter(label = "Title of the new BVV window")
+	@Parameter(label = "Title of the new BVV window",
+			description = "Title for the new BigVolumeViewer window")
 	public String windowtitle = "BVV";
 
 	/**
 	 * TODO This triggers: BvvHandlePostprocessor
 	 */
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Created BVV Window",
+			description = "The newly created BigVolumeViewer window")
 	public BvvHandle bvvh;
 
 	@Override

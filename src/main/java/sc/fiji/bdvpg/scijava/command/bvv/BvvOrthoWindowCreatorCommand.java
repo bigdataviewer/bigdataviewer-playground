@@ -57,44 +57,58 @@ public class BvvOrthoWindowCreatorCommand implements
 	BdvPlaygroundActionCommand
 {
 
-	@Parameter(label = "Interpolate")
+	@Parameter(label = "Interpolate",
+			description = "Enables interpolation for smoother rendering")
 	public boolean interpolate = false;
 
-	@Parameter(label = "Number of timepoints (1 for a single timepoint)")
+	@Parameter(label = "Number of timepoints",
+			description = "Total number of timepoints (use 1 for a single timepoint)")
 	public int ntimepoints = 1;
 
-	@Parameter(label = "Display (0 if you have one screen)")
+	@Parameter(label = "Display",
+			description = "Screen index for window placement (use 0 if you have one screen)")
 	int screen = 0;
 
-	@Parameter(label = "X Front Window location")
+	@Parameter(label = "X Front Window location",
+			description = "Horizontal position in pixels for the front (XY) window")
 	int locationx = 150;
 
-	@Parameter(label = "Y Front Window location")
+	@Parameter(label = "Y Front Window location",
+			description = "Vertical position in pixels for the front (XY) window")
 	int locationy = 150;
 
-	@Parameter(label = "Window Width")
+	@Parameter(label = "Window Width",
+			description = "Width in pixels for each BVV window")
 	int sizex = 500;
 
-	@Parameter(label = "Window Height")
+	@Parameter(label = "Window Height",
+			description = "Height in pixels for each BVV window")
 	int sizey = 500;
 
 	// @Parameter(label = "Synchronize time") // honestly no reason not to
 	// synchronize the time
 	public boolean synctime = true;
 
-	@Parameter
+	@Parameter(label = "Synchronize sources",
+			description = "When enabled, sources added to one window will appear in all three windows")
 	boolean synchronize_sources = true;
 
 	/**
 	 * This triggers: BdvHandlePostprocessor
 	 */
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Front (XY) Window",
+			description = "The BigVolumeViewer window showing the XY (front) view")
 	public BvvHandle bvvhx;
 
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Right (ZY) Window",
+			description = "The BigVolumeViewer window showing the ZY (right) view")
 	public BvvHandle bvvhy;
 
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Bottom (XZ) Window",
+			description = "The BigVolumeViewer window showing the XZ (bottom) view")
 	public BvvHandle bvvhz;
 
 	@Override

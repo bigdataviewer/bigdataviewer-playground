@@ -51,13 +51,16 @@ import java.util.Set;
 
 public class MakeGroupCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Name of the group")
+	@Parameter(label = "Name of the group",
+			description = "Display name for the group node in the tree view")
 	String groupname;
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to include in this group")
 	SourceAndConverter<?>[] sacs;
 
-	@Parameter(label = "Display Sources")
+	@Parameter(label = "Display Sources",
+			description = "If checked, shows the individual sources under the group node")
 	boolean displaysources;
 
 	@Parameter

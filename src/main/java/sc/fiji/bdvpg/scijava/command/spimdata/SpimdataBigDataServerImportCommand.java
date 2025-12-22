@@ -51,15 +51,17 @@ import java.util.Map;
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
 		"BDVDataset>BDVDataset [BigDataServer]",
-	label = "Command that opens a BDV dataset from a BigDataServer. Click on Show to display it.")
+	description = "Opens a BDV dataset from a BigDataServer")
 public class SpimdataBigDataServerImportCommand implements
 	BdvPlaygroundActionCommand
 {
 
-	@Parameter(label = "Big Data Server URL")
+	@Parameter(label = "Big Data Server URL",
+			description = "URL of the BigDataServer instance")
 	String urlserver = "http://tomancak-srv1.mpi-cbg.de:8081";
 
-	@Parameter(label = "Dataset Name")
+	@Parameter(label = "Dataset Name",
+			description = "Name of the dataset to open from the server")
 	String datasetname = "Drosophila";
 
 	@Override

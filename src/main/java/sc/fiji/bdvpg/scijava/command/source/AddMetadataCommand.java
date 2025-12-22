@@ -46,13 +46,16 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 public class AddMetadataCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to add metadata to")
 	SourceAndConverter<?>[] sacs;
 
-	@Parameter(label = "Key")
+	@Parameter(label = "Key",
+			description = "The metadata key (identifier)")
 	String key;
 
-	@Parameter(label = "Value")
+	@Parameter(label = "Value",
+			description = "The metadata value to associate with the key")
 	String value;
 
 	@Parameter

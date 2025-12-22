@@ -45,43 +45,56 @@ import java.util.Arrays;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Sources>Export Sources to XML/HDF5 Spimdataset")
+		"Sources>Export Sources to XML/HDF5 Spimdataset",
+	description = "Exports sources to an XML/HDF5 BigDataViewer dataset")
 public class XmlHDF5ExporterCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to export")
 	SourceAndConverter<?>[] sacs;
 
-	@Parameter(label = "Each source is an independent", choices = { "Channel",
-		"Tile" })
+	@Parameter(label = "Each source is an independent",
+			description = "How to treat each source in the exported dataset",
+			choices = { "Channel", "Tile" })
 	String entitytype;
 
-	@Parameter(label = "# of Threads")
+	@Parameter(label = "Number of Threads",
+			description = "Number of parallel threads for export")
 	int nthreads = 4;
 
-	@Parameter(label = "Timepoint start (0 = first timepoint)")
+	@Parameter(label = "Timepoint start",
+			description = "First timepoint to export (0-based)")
 	int timepointbegin = 0;
 
-	@Parameter(label = "Number of timepoint to export (minimum 1)", min = "1")
+	@Parameter(label = "Number of timepoints",
+			description = "Number of timepoints to export",
+			min = "1")
 	int numberoftimepointtoexport = 1;
 	int timepointend = -1;
 
-	@Parameter(label = "Scale factor between pyramid levels")
+	@Parameter(label = "Scale factor",
+			description = "Downsampling factor between pyramid levels")
 	int scalefactor = 4;
 
-	@Parameter
+	@Parameter(label = "Block size X",
+			description = "HDF5 block size in X dimension")
 	int blocksizex = 64;
 
-	@Parameter
+	@Parameter(label = "Block size Y",
+			description = "HDF5 block size in Y dimension")
 	int blocksizey = 64;
 
-	@Parameter
+	@Parameter(label = "Block size Z",
+			description = "HDF5 block size in Z dimension")
 	int blocksizez = 64;
 
-	@Parameter(
-		label = "Dimensions in pixel above which a new resolution level should be created")
+	@Parameter(label = "MipMap threshold",
+		description = "Minimum dimension size (in pixels) above which a new resolution level is created")
 	int thresholdformipmap = 512;
 
-	@Parameter(label = "Output file (XML)", style = "save")
+	@Parameter(label = "Output file (XML)",
+			description = "Path to the output XML file",
+			style = "save")
 	File xmlfile;
 
 	@Override

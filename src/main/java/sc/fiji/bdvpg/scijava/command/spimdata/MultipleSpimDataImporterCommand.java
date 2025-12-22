@@ -43,7 +43,8 @@ import java.io.File;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "BDVDataset>Open XML BDV Datasets")
+	menuPath = ScijavaBdvDefaults.RootMenu + "BDVDataset>Open XML BDV Datasets",
+	description = "Opens one or more BDV XML datasets")
 public class MultipleSpimDataImporterCommand implements
 	BdvPlaygroundActionCommand
 {
@@ -56,7 +57,9 @@ public class MultipleSpimDataImporterCommand implements
 	@Parameter(visibility = ItemVisibility.MESSAGE)
 	public String message = "Please choose XML files:";
 
-	@Parameter(style = "extensions:xml")
+	@Parameter(label = "XML Files",
+			description = "Select one or more BDV XML files to open",
+			style = "extensions:xml")
 	public File[] files;
 
 	public void run() {
