@@ -150,6 +150,8 @@ public class SourceAndConverterService extends AbstractService implements
 	@Parameter
 	IEntityHandlerService entityHandlerService;
 
+	@Parameter
+	UIService uiService;
 	/**
 	 * Display service : cannot be set through Parameter annotation due to
 	 * 'circular dependency'
@@ -746,14 +748,12 @@ public class SourceAndConverterService extends AbstractService implements
 			globalCache = GlobalCacheBuilder.builder().create();
 		}
 
-		if (context().getService(UIService.class)!=null) {
-			if (!context().getService(UIService.class).isHeadless()) {
-				logger.debug(
-						"GUI detected : Constructing JFrame for BdvSourceAndConverterService");
-				ui = new SourceAndConverterServiceUI(this, context(), true);
-			} else {
-				ui = new SourceAndConverterServiceUI(this, context(), false);
-			}
+		if (!uiService.isHeadless()) {
+			logger.debug(
+					"GUI detected : Constructing JFrame for BdvSourceAndConverterService");
+			ui = new SourceAndConverterServiceUI(this, context(), true);
+		} else {
+			ui = new SourceAndConverterServiceUI(this, context(), false);
 		}
 
 		SourceAndConverterServices.setSourceAndConverterService(this);

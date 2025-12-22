@@ -30,6 +30,7 @@ package sc.fiji.bdvpg.tests;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import net.imagej.legacy.LegacyService;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -44,6 +45,7 @@ import sc.fiji.bdvpg.scijava.command.source.SourcesRemoverCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.persist.IObjectScijavaAdapterService;
 
 import java.util.concurrent.ExecutionException;
 
@@ -56,9 +58,11 @@ public class TestSourcesCommands {
     @Before
     public void startFiji() {
         // Initializes static SourceService
-        ctx = new Context();
-        // Show UI
-        ctx.service(UIService.class).showUI(SwingUI.NAME);
+        ctx = new Context(UIService.class,
+                SourceAndConverterService.class,
+                SourceAndConverterBdvDisplayService.class,
+                IObjectScijavaAdapterService.class,
+                LegacyService.class); // for ij1 macro testing
 
         sourceDisplayService = ctx.getService(SourceAndConverterBdvDisplayService.class);
         sourceService = ctx.getService(SourceAndConverterService.class);

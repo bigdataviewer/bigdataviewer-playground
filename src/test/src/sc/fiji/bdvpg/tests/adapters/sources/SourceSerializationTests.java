@@ -33,6 +33,7 @@ import bdv.img.WarpedSource;
 import bdv.util.EmptySource;
 import bdv.util.ResampledSource;
 import bdv.viewer.SourceAndConverter;
+import com.google.gson.Gson;
 import net.imagej.ImageJ;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
@@ -41,8 +42,11 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.scijava.Context;
+import org.scijava.ui.UIService;
 import sc.fiji.bdvpg.TestHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.SourceAndConverterServiceLoader;
 import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -51,6 +55,8 @@ import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceRealTransformer;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.persist.IObjectScijavaAdapterService;
+import sc.fiji.persist.ScijavaGsonHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,20 +70,21 @@ import java.util.List;
  */
 public class SourceSerializationTests {
 
-    static ImageJ ij;
     File tempFile;
+
+    static Context ctx;
 
     @Before
     public void setUp() throws IOException {
-        ij = new ImageJ();
-        TestHelper.startFiji(ij);
+        ctx = new Context(SourceAndConverterService.class, IObjectScijavaAdapterService.class);
+        // ctx.getService(UIService.class).setHeadless(true); too late
         tempFile = File.createTempFile("bdvpg_test_", ".json");
         tempFile.deleteOnExit();
     }
 
     @After
     public void tearDown() {
-        TestHelper.closeFijiAndBdvs(ij);
+        ctx.close();
         if (tempFile != null && tempFile.exists()) {
             tempFile.delete();
         }
@@ -381,21 +388,21 @@ public class SourceSerializationTests {
     private void saveSources(List<SourceAndConverter<?>> sacs) {
         new SourceAndConverterServiceSaver(
                 tempFile,
-                ij.context(),
+                ctx,
                 sacs
         ).run();
     }
 
     private void clearAndReload() {
         // Clear existing sources
-        SourceAndConverterService sacService = ij.context().getService(SourceAndConverterService.class);
+        SourceAndConverterService sacService = ctx.getService(SourceAndConverterService.class);
         sacService.remove(sacService.getSourceAndConverters().toArray(new SourceAndConverter[0]));
 
         // Reload from file
         new SourceAndConverterServiceLoader(
                 tempFile.getAbsolutePath(),
                 tempFile.getParent(),
-                ij.context(),
+                ctx,
                 false
         ).run();
     }
