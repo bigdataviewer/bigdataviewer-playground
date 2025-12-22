@@ -44,13 +44,16 @@ import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "Sources>Display>Set Sources Color")
+	menuPath = ScijavaBdvDefaults.RootMenu + "Sources>Display>Set Sources Color",
+	description = "Changes the display color of one or more sources")
 public class SourceColorChangerCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter
+	@Parameter(label = "Color",
+			description = "The new display color for the selected sources")
 	ColorRGB color = new ColorRGB(255, 255, 255);
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) whose color will be changed")
 	SourceAndConverter<?>[] sacs;
 
 	@Override

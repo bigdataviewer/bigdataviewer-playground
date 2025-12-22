@@ -46,7 +46,9 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 	menuPath = ScijavaBdvDefaults.RootMenu + "BDV>BDV - Add Source Slider",
 	description = "Adds a source slider onto BDV windows")
 public class MultiBdvSourceNavigatorSliderAdderCommand implements BdvPlaygroundActionCommand {
-	@Parameter(label = "Select BDV Windows", persist = false)
+	@Parameter(label = "Select BDV Windows",
+			description = "The BigDataViewer windows where source sliders will be added",
+			persist = false)
 	BdvHandle[] bdvhs;
 	@Override
 	public void run() {

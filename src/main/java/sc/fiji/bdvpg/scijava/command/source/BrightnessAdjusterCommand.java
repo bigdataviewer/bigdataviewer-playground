@@ -46,16 +46,20 @@ import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Sources>Display>Set Sources Brightness")
+		"Sources>Display>Set Sources Brightness",
+	description = "Sets the display range (min and max) of one or more sources")
 public class BrightnessAdjusterCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) whose display range will be set")
 	SourceAndConverter<?>[] sacs;
 
-	@Parameter()
+	@Parameter(label = "Min",
+			description = "Minimum value of the display range")
 	double min;
 
-	@Parameter()
+	@Parameter(label = "Max",
+			description = "Maximum value of the display range")
 	double max;
 
 	public void run() {

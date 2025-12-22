@@ -63,14 +63,18 @@ import java.awt.event.WindowEvent;
 
 public class ManualTransformCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(choices = { "Mutate", "Append", "Append (all timepoints)",
+	@Parameter(label = "Mode",
+			description = "How to apply the transformation: Mutate modifies existing transform, Append adds a new transform layer, Wrap creates a new TransformedSource, Log outputs the transformation matrix",
+			choices = { "Mutate", "Append", "Append (all timepoints)",
 		"Append (timepoints before)", "Append (timepoints after)", "Wrap", "Log" })
 	String mode = "Mutate";
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to manually transform")
 	SourceAndConverter<?>[] sacs;
 
-	@Parameter
+	@Parameter(label = "Select BDV Window",
+			description = "The BigDataViewer window used for manual registration")
 	BdvHandle bdvh;
 
 	public void run() {

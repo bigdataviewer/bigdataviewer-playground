@@ -48,7 +48,9 @@ import javax.swing.SwingUtilities;
 	description = "Adds a z slider onto BDV windows")
 public class MultiBdvZSliderAdderCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select BDV Windows", persist = false)
+	@Parameter(label = "Select BDV Windows",
+			description = "The BigDataViewer windows where Z sliders will be added",
+			persist = false)
 	BdvHandle[] bdvhs;
 
 	@Override

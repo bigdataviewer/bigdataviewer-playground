@@ -45,7 +45,9 @@ import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 
 public class BdvDebugOverlayAdderCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(persist = false)
+	@Parameter(label = "Select BDV Window",
+			description = "The BigDataViewer window where the debug tile overlay will be shown",
+			persist = false)
 	BdvHandle bdvh;
 
 	@Override

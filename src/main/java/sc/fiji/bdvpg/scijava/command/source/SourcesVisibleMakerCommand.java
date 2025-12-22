@@ -42,10 +42,12 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Sources>Display>Make Sources Visible")
+		"Sources>Display>Make Sources Visible",
+	description = "Makes sources visible in all BDV windows where they are displayed")
 public class SourcesVisibleMakerCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to make visible")
 	SourceAndConverter<?>[] sacs;
 
 	@Parameter

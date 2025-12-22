@@ -50,13 +50,18 @@ import java.awt.Font;
 	description = "Adds a source name overlay onto BDV windows")
 public class MultiBdvSourceNameOverlayAdderCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select BDV Windows", persist = false)
+	@Parameter(label = "Select BDV Windows",
+			description = "The BigDataViewer windows where source name overlays will be added",
+			persist = false)
 	BdvHandle[] bdvhs;
 
-	@Parameter(label = "Font Size")
+	@Parameter(label = "Font Size",
+			description = "Size of the font used to display source names")
 	int fontSize = 18;
 
-	@Parameter(choices = {"Courier", "TimesRoman"})
+	@Parameter(label = "Font",
+			description = "Font family used to display source names",
+			choices = {"Courier", "TimesRoman"})
 	String fontString;
 
 	@Override

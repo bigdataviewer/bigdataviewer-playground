@@ -48,10 +48,13 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 	description = "Adds one or several sources into several existing BDV windows")
 public class MultiBdvSourcesAdderCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select BDV Windows", persist = false)
+	@Parameter(label = "Select BDV Windows",
+			description = "The BigDataViewer windows where sources will be displayed",
+			persist = false)
 	BdvHandle[] bdvhs;
 
-	@Parameter(label = "Select Source(s)")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to add to all selected BDV windows")
 	SourceAndConverter<?>[] sacs;
 
 	@Parameter

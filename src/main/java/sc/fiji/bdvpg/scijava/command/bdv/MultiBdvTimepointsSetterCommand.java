@@ -47,10 +47,14 @@ public class MultiBdvTimepointsSetterCommand implements
 	BdvPlaygroundActionCommand
 {
 
-	@Parameter(label = "Select BDV Windows", persist = false)
+	@Parameter(label = "Select BDV Windows",
+			description = "The BigDataViewer windows whose timepoint range will be set",
+			persist = false)
 	BdvHandle[] bdvhs;
 
-	@Parameter(label = "Number of timepoints, min = 1", min = "1")
+	@Parameter(label = "Number of timepoints",
+			description = "Total number of timepoints available in the BDV windows",
+			min = "1")
 	int numberoftimepoints;
 
 	public void run() {

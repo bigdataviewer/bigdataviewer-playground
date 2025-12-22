@@ -50,7 +50,9 @@ public class BdvCreatorCommand implements BdvPlaygroundActionCommand {
 	 * This triggers:
 	 * {@link sc.fiji.bdvpg.scijava.processors.BdvHandlePostprocessor}
 	 */
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Created BDV Window",
+			description = "The newly created BigDataViewer window")
 	public BdvHandle bdvh;
 
 	@Parameter
