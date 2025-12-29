@@ -1112,13 +1112,9 @@ public class SourceAndConverterHelper {
 		RealPoint origin, RealPoint direction)
 	{
 		if (source.isPresent(timepoint)) {
-			if ((source instanceof AbstractSpimSource) ||
-				(source instanceof TransformedSource) ||
-				(source instanceof ResampledSource))
-			{
-				return rayIntersectRaiSource(source, timepoint, origin, direction);
-			}
-			else return new ArrayList<>();
+			// rayIntersectRaiSource only uses Source interface methods (getSource, getSourceTransform)
+			// so it works with any Source implementation, not just specific types
+			return rayIntersectRaiSource(source, timepoint, origin, direction);
 		}
 		else return new ArrayList<>();
 	}
