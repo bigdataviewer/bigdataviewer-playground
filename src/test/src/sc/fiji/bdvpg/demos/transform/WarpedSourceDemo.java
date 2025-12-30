@@ -39,7 +39,7 @@ import net.imglib2.realtransform.InvertibleRealTransformSequence;
 import net.imglib2.realtransform.RealTransform;
 import net.imglib2.realtransform.RealTransformSequence;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceRealTransformer;
@@ -57,7 +57,7 @@ public class WarpedSourceDemo {
         // Arrange
         // create the ImageJ application context with all available services
         ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
+        DemoHelper.startFiji(ij);//ij.ui().showUI();
 
         demo();
     }

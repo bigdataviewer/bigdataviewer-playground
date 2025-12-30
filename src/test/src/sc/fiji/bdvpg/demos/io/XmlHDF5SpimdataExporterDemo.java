@@ -33,7 +33,7 @@ import net.imagej.ImageJ;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.sourceandconverter.exporter.XmlHDF5SpimdataExporter;
 import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
 
@@ -53,7 +53,7 @@ public class XmlHDF5SpimdataExporterDemo {
         // Need to initialize the services:
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
+        DemoHelper.startFiji(ij);//ij.ui().showUI();
 
         // Arrange
         // creates a Voronoi SourceAndConverter

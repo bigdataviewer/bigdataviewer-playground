@@ -896,4 +896,73 @@ public class SourceAndConverterServiceUI {
 		}
 	}
 
+	/**
+	 * Returns the JTree used by this UI.
+	 * @return the JTree component
+	 */
+	public JTree getTree() {
+		return tree;
+	}
+
+	/**
+	 * Expands all nodes in the tree.
+	 */
+	public void expandAll() {
+		SwingUtilities.invokeLater(() -> {
+			for (int i = 0; i < tree.getRowCount(); i++) {
+				tree.expandRow(i);
+			}
+		});
+	}
+
+	/**
+	 * Expands nodes up to a specified depth.
+	 * @param depth the maximum depth to expand (0 = root only, 1 = root + first level, etc.)
+	 */
+	public void expandToDepth(int depth) {
+		SwingUtilities.invokeLater(() -> expandNode(top, 0, depth));
+	}
+
+	private void expandNode(TreeNode node, int currentDepth, int maxDepth) {
+		if (currentDepth >= maxDepth) return;
+
+		TreePath path = getTreePath(node);
+		if (path != null) {
+			tree.expandPath(path);
+		}
+
+		for (int i = 0; i < node.getChildCount(); i++) {
+			expandNode(node.getChildAt(i), currentDepth + 1, maxDepth);
+		}
+	}
+
+	/**
+	 * Gets the TreePath for a given TreeNode.
+	 * @param node the node to get the path for
+	 * @return the TreePath to the node
+	 */
+	private TreePath getTreePath(TreeNode node) {
+		List<TreeNode> path = new ArrayList<>();
+		TreeNode current = node;
+		while (current != null) {
+			path.add(0, current);
+			current = current.getParent();
+		}
+		return new TreePath(path.toArray());
+	}
+
+	/**
+	 * Expands a path specified as a string (nodes separated by ">").
+	 * Example: "Sources>mri-stack.xml"
+	 * @param pathString the path to expand
+	 */
+	public void expandPath(String pathString) {
+		SwingUtilities.invokeLater(() -> {
+			TreePath tp = getTreePathFromString(pathString);
+			if (tp != null) {
+				tree.expandPath(tp);
+			}
+		});
+	}
+
 }

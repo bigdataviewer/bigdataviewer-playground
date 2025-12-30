@@ -35,7 +35,7 @@ import net.imagej.ImageJ;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
@@ -57,9 +57,11 @@ public class ResamplingDemo {
         // Arrange
         // create the ImageJ application context with all available services
         ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
+        DemoHelper.startFiji(ij);//ij.ui().showUI();
 
         demo();
+
+        DemoHelper.shot("ResamplingDemo");
     }
 
     public static void demo() {
@@ -143,5 +145,6 @@ public class ResamplingDemo {
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, upsampledSource );
 
         new ColorChanger( upsampledSource, new ARGBType(ARGBType.rgba(0, 0,255,255))).run();
+
     }
 }

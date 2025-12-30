@@ -29,7 +29,7 @@
 package sc.fiji.bdvpg.demos.io;
 
 import net.imagej.ImageJ;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.time.Duration;
@@ -57,7 +57,7 @@ public class PerfOpenMultipleSpimDataDemo
 	{
 		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
 		ij = new ImageJ();
-		TestHelper.startFiji(ij);//ij.ui().showUI();
+		DemoHelper.startFiji(ij);//ij.ui().showUI();
 
 		// Gets an active BdvHandle instance
 		// SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();

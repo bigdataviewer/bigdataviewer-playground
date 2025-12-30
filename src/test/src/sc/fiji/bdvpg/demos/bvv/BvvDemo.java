@@ -35,6 +35,7 @@ import net.imagej.ImageJ;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
+import sc.fiji.bdvpg.DemoHelper;
 
 import java.util.Random;
 
@@ -54,5 +55,6 @@ public class BvvDemo {
 
         bss.getConverterSetups().get(0).setDisplayRange(0,65535);
 
+        DemoHelper.shot("BvvDemo");
     }
 }

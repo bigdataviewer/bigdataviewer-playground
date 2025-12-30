@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.demos.transform.AffineTransformSourceDemo;
 import sc.fiji.bdvpg.demos.transform.BigWarpDemo;
 import sc.fiji.bdvpg.demos.ResamplingDemo;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.demos.transform.WarpedSourceDemo;
 import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
 
@@ -50,7 +50,7 @@ public class BdvPlaygroundStateSaver {
     {
         // Initializes static SourceService and Display Service
         ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
+        DemoHelper.startFiji(ij);//ij.ui().showUI();
 
         createSacs();
 

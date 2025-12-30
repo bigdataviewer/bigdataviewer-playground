@@ -40,7 +40,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.view.Views;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformChanger;
@@ -64,7 +64,7 @@ public class ViewTransformSetAndLogDemo {
 
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ImageJ ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
+        DemoHelper.startFiji(ij);//ij.ui().showUI();
 
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
@@ -105,6 +105,7 @@ public class ViewTransformSetAndLogDemo {
         // log transform
         new ViewerTransformLogger(bdvHandle).run();
 
+        DemoHelper.shot("ViewTransformSetAndLogDemo");
     }
 
 }

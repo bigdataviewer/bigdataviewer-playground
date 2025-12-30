@@ -30,11 +30,15 @@ package sc.fiji.bdvpg.demos.io;
 
 import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Demonstrates visualisation of two spimData sources.
@@ -49,7 +53,7 @@ public class SpimDataDisplayDemo
 	{
 		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
 		ij = new ImageJ();
-		TestHelper.startFiji(ij);//ij.ui().showUI();
+		DemoHelper.startFiji(ij);
 
 		// Gets active BdvHandle instance
 		BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
@@ -64,6 +68,14 @@ public class SpimDataDisplayDemo
 			new ViewerTransformAdjuster(bdvHandle, sac).run();
 			new BrightnessAutoAdjuster<>(sac, 0).run();
 		});
+
+		// Expand all nodes in the tree view (up to depth 3)
+		ij.get(SourceAndConverterService.class).getUI().expandToDepth(3);
+
+		DemoHelper.shot("SpimDataDisplayDemo");
+
+		//TestHelper.closeFijiAndBdvs(ij);
 	}
+
 
 }

@@ -31,7 +31,7 @@ package sc.fiji.bdvpg.demos.bdv.navigate;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import net.imagej.ImageJ;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
@@ -60,7 +60,7 @@ public class OrthoViewDemo {
 
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ImageJ ij = new ImageJ();
-        TestHelper.startFiji(ij);
+        DemoHelper.startFiji(ij);
 
         // Gets both services
         SourceAndConverterBdvDisplayService bdvDisplayService = ij.get(SourceAndConverterBdvDisplayService.class);
@@ -106,6 +106,7 @@ public class OrthoViewDemo {
             }).install("Toggle Synchronization", "ctrl S");
         }
 
+        DemoHelper.shot("OrthoViewDemo");
     }
 
 }

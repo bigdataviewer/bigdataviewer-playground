@@ -32,6 +32,7 @@ import bdv.util.BdvHandle;
 import org.scijava.Context;
 import org.scijava.ui.UIService;
 import org.scijava.ui.swing.SwingUI;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.scijava.BdvScijavaHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
@@ -62,6 +63,8 @@ public class BdvCreatorDemo {
 		BdvScijavaHelper.addActionToBdvHandleMenu(bdvh,"Greetings>Menu1>Menu2>Say Hello 3!",0, () -> bdvh.getViewerPanel().showMessage("Hello!"));
 		BdvScijavaHelper.addActionToBdvHandleMenu(bdvh,"Greetings>Menu1>Menu2>Say Hello 4!",0, () -> bdvh.getViewerPanel().showMessage("Hello!"));
 
+		// Capture screenshots of all visible windows for documentation
+		DemoHelper.shot("BdvCreatorDemo");
 	}
 
 }

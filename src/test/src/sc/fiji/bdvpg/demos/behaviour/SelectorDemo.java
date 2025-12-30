@@ -34,6 +34,7 @@ import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
 import org.scijava.Context;
 import org.scijava.ui.UIService;
 import org.scijava.ui.swing.SwingUI;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.EditorBehaviourInstaller;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
@@ -75,5 +76,6 @@ public class SelectorDemo {
 
         new EditorBehaviourInstaller(ssb, "").run();
 
+        DemoHelper.shot("SelectorDemo");
     }
 }

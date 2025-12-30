@@ -31,7 +31,7 @@ package sc.fiji.bdvpg.demos.bdv.navigate;
 import bdv.util.BdvHandle;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
@@ -50,7 +50,7 @@ public class ViewerTransformAdjusterDemo
     {
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ImageJ ij = new ImageJ();
-        TestHelper.startFiji(ij);
+        DemoHelper.startFiji(ij);
 
         // Gets active BdvHandle instance
         BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
@@ -80,6 +80,8 @@ public class ViewerTransformAdjusterDemo
         );
 
         new ViewerTransformAdjuster(bdvHandle, SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
+
+        DemoHelper.shot("ViewerTransformAdjusterDemo");
     }
 
 }

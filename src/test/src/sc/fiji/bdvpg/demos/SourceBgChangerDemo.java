@@ -33,7 +33,7 @@ import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -48,7 +48,7 @@ public class SourceBgChangerDemo {
         // Initializes static SourceService and Display Service
 
         ij = new ImageJ();
-        TestHelper.startFiji(ij);
+        DemoHelper.startFiji(ij);
 
         // Creates a BdvHandle
         BdvHandle bdvHandle =
@@ -69,6 +69,6 @@ public class SourceBgChangerDemo {
 
         SourceAndConverterServices.getBdvDisplayService().show(bdvHandle,sourceBgModified);
 
-        //new TimepointAdapterAdder(bdvh).run();
+        DemoHelper.shot("SourceBgChangerDemo");
     }
 }

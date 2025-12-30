@@ -31,16 +31,16 @@ package sc.fiji.bdvpg.scijava.services.ui;
 
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
+import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import java.awt.Color;
 import java.awt.Component;
 import java.net.URL;
 
 public class SourceAndConverterTreeCellRenderer extends
 	DefaultTreeCellRenderer
 {
-
-	private static final String SPAN_FORMAT = "<span style='color:%s'>%s</span>";
 
 	// static ImageIcon sourceIcon;
 	static final ImageIcon source2d;
@@ -73,21 +73,60 @@ public class SourceAndConverterTreeCellRenderer extends
 
 		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row,
 			hasFocus);
+
 		if (isSourceAndConverterNode(value)) {
 			setIcon(source3d);
-			String text = String.format(SPAN_FORMAT, "rgb(80,80,80)", getText());
-			setText("<html>" + text + "</html>");
+			// Use a slightly dimmed foreground for source nodes
+			if (!sel) {
+				setForeground(getSecondaryForeground());
+			}
 			setToolTipText("Source node");
 		}
 		else if (value instanceof SourceFilterNode) {
 			setIcon(sourceFilterNode);
-			String text = String.format(SPAN_FORMAT, "rgb(0,0,0)", getText() + " [" +
-				((SourceFilterNode) value).currentOutputSacs.size() + "]");
-			setText("<html>" + text + "</html>");
+			// Append the source count to the filter node text
+			String originalText = value.toString();
+			int sourceCount = ((SourceFilterNode) value).currentOutputSacs.size();
+			setText(originalText + " [" + sourceCount + "]");
 			setToolTipText("Filter node");
 		}
 
 		return this;
+	}
+
+	/**
+	 * Returns a secondary (dimmed) foreground color that works with the current L&F.
+	 * Falls back to a slightly transparent version of the default foreground.
+	 */
+	private Color getSecondaryForeground() {
+		// Try to get the L&F's secondary/disabled text color
+		Color secondary = UIManager.getColor("Label.disabledForeground");
+		if (secondary != null) {
+			// Make it a bit brighter than disabled for better readability
+			return brighter(secondary, 0.3f);
+		}
+		// Fallback: use a dimmed version of the tree's foreground
+		Color fg = UIManager.getColor("Tree.foreground");
+		if (fg == null) {
+			fg = getForeground();
+		}
+		return new Color(fg.getRed(), fg.getGreen(), fg.getBlue(), 180);
+	}
+
+	/**
+	 * Makes a color brighter by the given factor (0.0 to 1.0).
+	 */
+	private Color brighter(Color color, float factor) {
+		int r = color.getRed();
+		int g = color.getGreen();
+		int b = color.getBlue();
+		int alpha = color.getAlpha();
+
+		r = Math.min(255, r + (int) ((255 - r) * factor));
+		g = Math.min(255, g + (int) ((255 - g) * factor));
+		b = Math.min(255, b + (int) ((255 - b) * factor));
+
+		return new Color(r, g, b, alpha);
 	}
 
 	protected boolean isSourceAndConverterNode(Object value) {

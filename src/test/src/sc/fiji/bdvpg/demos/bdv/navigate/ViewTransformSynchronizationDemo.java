@@ -39,7 +39,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.view.Views;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -64,7 +64,7 @@ public class ViewTransformSynchronizationDemo {
 
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ImageJ ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
+        DemoHelper.startFiji(ij);//ij.ui().showUI();
 
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
@@ -109,6 +109,7 @@ public class ViewTransformSynchronizationDemo {
             }).install("Toggle Synchronization", "ctrl S");
         }
 
+        DemoHelper.shot("ViewTransformSynchronizationDemo");
     }
 
 }

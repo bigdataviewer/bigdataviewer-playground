@@ -37,7 +37,7 @@ import net.imagej.ImageJ;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
@@ -55,7 +55,7 @@ public class BigWarpDemo {
     public static void main(String... args) {
         // Initializes static SourceService and Display Service
         ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
+        DemoHelper.startFiji(ij);//ij.ui().showUI();
         System.out.println("BigWarp version:"+VersionUtils.getVersion(BigWarp.class));
         demo2d(ij);
     }

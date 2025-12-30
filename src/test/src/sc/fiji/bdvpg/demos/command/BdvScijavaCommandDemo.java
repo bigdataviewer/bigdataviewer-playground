@@ -31,7 +31,7 @@ package sc.fiji.bdvpg.demos.command;
 import bdv.ui.BdvDefaultCards;
 import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.BdvScijavaHelper;
 import sc.fiji.bdvpg.scijava.ScijavaSwingUI;
@@ -44,7 +44,7 @@ public class BdvScijavaCommandDemo {
     {
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
+        DemoHelper.startFiji(ij);//ij.ui().showUI();
 
         // Creates a BDV since none exists yet
         BdvHandle bdvh = ij.get(SourceAndConverterBdvDisplayService.class).getActiveBdv();

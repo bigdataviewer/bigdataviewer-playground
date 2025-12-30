@@ -203,6 +203,14 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- FlatLaf for modern look and feel in demos -->
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf</artifactId>
+			<version>3.2.5</version>
+			<scope>test</scope>
+		</dependency>
+
     </dependencies>
 
 	<build>

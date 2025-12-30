@@ -37,7 +37,7 @@ import net.imagej.ImageJ;
 import net.imglib2.FinalRealInterval;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
@@ -54,9 +54,11 @@ public class SimpleResamplingDemo {
         // Arrange
         // create the ImageJ application context with all available services
         ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
+        DemoHelper.startFiji(ij);//ij.ui().showUI();
 
         demo();
+
+        DemoHelper.shot("SimpleResamplingDemo");
     }
 
     public static void demo() {

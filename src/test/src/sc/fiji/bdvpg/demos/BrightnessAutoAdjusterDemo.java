@@ -32,7 +32,7 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.sourceandconverter.SourceAdder;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
@@ -62,7 +62,7 @@ public class BrightnessAutoAdjusterDemo
 	public static void main( String[] args ) {
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ij = new ImageJ();
-		TestHelper.startFiji(ij);//ij.ui().showUI();
+		DemoHelper.startFiji(ij);//ij.ui().showUI();
 
 		// Creates a BdvHandle
 		bdvHandle = ij.get(SourceAndConverterBdvDisplayService.class).getActiveBdv();
@@ -79,6 +79,7 @@ public class BrightnessAutoAdjusterDemo
 		final SourceAndConverter<?> voronoiSource = new VoronoiSourceGetter( new long[]{ 512, 512, 1 }, 256, true ).get();
 		addSource( bdvHandle, voronoiSource );
 
+		DemoHelper.shot("BrightnessAutoAdjusterDemo");
 	}
 
 	public static void addSource(BdvHandle bdvHandle, SourceAndConverter<?> sac )

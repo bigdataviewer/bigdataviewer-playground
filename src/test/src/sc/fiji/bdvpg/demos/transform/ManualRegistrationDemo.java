@@ -41,13 +41,12 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStarter;
 import sc.fiji.bdvpg.bdv.ManualRegistrationStopper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
@@ -86,7 +85,7 @@ public class ManualRegistrationDemo {
 
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
+        DemoHelper.startFiji(ij);//ij.ui().showUI();
         SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
         SourceAndConverterBdvDisplayService bdvDisplayService = ij.get(SourceAndConverterBdvDisplayService.class);
 

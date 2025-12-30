@@ -30,7 +30,7 @@ package sc.fiji.bdvpg.demos;
 
 import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.bdv.navigate.RayCastPositionerSliderAdder;
 import sc.fiji.bdvpg.demos.transform.AffineTransformSourceDemo;
@@ -44,7 +44,7 @@ public class RayCastDemo {
         // Initializes static SourceService and Display Service
 
         ij = new ImageJ();
-        TestHelper.startFiji(ij);//ij.ui().showUI();
+        DemoHelper.startFiji(ij);//ij.ui().showUI();
 
         BdvHandle bdvh = SourceAndConverterServices
                 .getBdvDisplayService()
@@ -56,5 +56,7 @@ public class RayCastDemo {
 
         new RayCastPositionerSliderAdder(bdvh).run();
         //new TimepointAdapterAdder(bdvh).run();
+
+        DemoHelper.shot("RayCastDemo");
     }
 }

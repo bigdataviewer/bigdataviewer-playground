@@ -35,7 +35,7 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.TestHelper;
+import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
@@ -52,7 +52,7 @@ public class AffineTransformSourceDemo {
         // Initializes static SourceService and Display Service
 
         ij = new ImageJ();
-        TestHelper.startFiji(ij);
+        DemoHelper.startFiji(ij);
 
         demo(ij,20);
 
