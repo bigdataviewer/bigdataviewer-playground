@@ -70,6 +70,8 @@ public class BdvScijavaCommandDemo {
         bdvh.getCardPanel().setCardExpanded(BdvDefaultCards.DEFAULT_SOURCES_CARD, false);
 
 
+        DemoHelper.shot("BdvScijavaCommandDemo");
+
     }
 
 }

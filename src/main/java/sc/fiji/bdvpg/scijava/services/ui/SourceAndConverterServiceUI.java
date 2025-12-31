@@ -41,6 +41,8 @@ import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.PlaygroundPrefs;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.swingdnd.SourceAndConverterServiceUITransferHandler;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
@@ -126,6 +128,11 @@ public class SourceAndConverterServiceUI {
 	final SourceAndConverterService sourceAndConverterService;
 
 	/**
+	 * SciJava context for accessing other services
+	 */
+	final Context context;
+
+	/**
 	 * JFrame container, could be null, see guiAvailable
 	 */
 	final JFrame frame;
@@ -162,6 +169,7 @@ public class SourceAndConverterServiceUI {
 		Context context, boolean makeGUI)
 	{
 		this.sourceAndConverterService = sourceAndConverterService;
+		this.context = context;
 
 		// Tree view of Spimdata
 		top = new SourceFilterNode(null, "Sources", (sac) -> true, false);
@@ -186,7 +194,7 @@ public class SourceAndConverterServiceUI {
 			JPanel panel = new JPanel(new BorderLayout());
 			JScrollPane treeView = new JScrollPane(tree);
 			panel.add(treeView, BorderLayout.CENTER);
-			// Shows Popup on right click
+			// Shows Popup on right click, and handles double-click to adjust view
 			tree.addMouseListener(new MouseAdapter() {
 
 				@Override
@@ -202,7 +210,10 @@ public class SourceAndConverterServiceUI {
 
 						popup.show(e.getComponent(), e.getX(), e.getY());
 
-						// });
+					}
+					// Double-click -> adjust view on selected sources
+					else if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
+						adjustViewOnSelectedSources();
 					}
 				}
 			});
@@ -963,6 +974,34 @@ public class SourceAndConverterServiceUI {
 				tree.expandPath(tp);
 			}
 		});
+	}
+
+	/**
+	 * Adjusts the view of the active BDV window to show the currently selected sources.
+	 * Does nothing if no BDV window is active or no sources are selected.
+	 */
+	private void adjustViewOnSelectedSources() {
+		// Get the selected sources
+		SourceAndConverter<?>[] selectedSources = getSelectedSourceAndConverters(tree);
+		if (selectedSources == null || selectedSources.length == 0) {
+			return;
+		}
+
+		// Try to get the BDV display service
+		SourceAndConverterBdvDisplayService bdvDisplayService =
+			context.getService(SourceAndConverterBdvDisplayService.class);
+		if (bdvDisplayService == null) {
+			return;
+		}
+
+		// Get the active BDV handle
+		BdvHandle activeBdv = bdvDisplayService.getActiveBdv();
+		if (activeBdv == null) {
+			return;
+		}
+
+		// Adjust the view on the selected sources
+		new ViewerTransformAdjuster(activeBdv, selectedSources).run();
 	}
 
 }
