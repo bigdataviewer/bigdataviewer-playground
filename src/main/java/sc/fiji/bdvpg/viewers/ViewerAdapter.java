@@ -34,6 +34,7 @@ import bdv.viewer.TimePointListener;
 import bdv.viewer.TransformListener;
 import bdv.viewer.ViewerPanel;
 import bdv.viewer.ViewerState;
+import bdv.viewer.animate.AbstractTransformAnimator;
 import bvv.core.VolumeViewerPanel;
 import bvv.vistools.BvvHandle;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -138,6 +139,32 @@ public class ViewerAdapter {
 		else {
 			bvvPanel.removeTimePointListener(listener);
 		}
+	}
+
+	/**
+	 * Sets the transform animator for smooth view transitions.
+	 * Note: Animation is only supported for BDV panels. For BVV panels,
+	 * this method will set the final transform directly without animation.
+	 * @param animator the transform animator to use
+	 */
+	public void setTransformAnimator(AbstractTransformAnimator animator) {
+		if (bdvPanel != null) {
+			bdvPanel.setTransformAnimator(animator);
+		}
+		else {
+			// BVV does not support transform animation in the same way,
+			// so we just set the final transform directly
+			AffineTransform3D transform = animator.get(1.0);
+			bvvPanel.state().setViewerTransform(transform);
+		}
+	}
+
+	/**
+	 * @return true if this adapter wraps a BDV panel (which supports animation),
+	 *         false if it wraps a BVV panel
+	 */
+	public boolean supportsAnimation() {
+		return bdvPanel != null;
 	}
 
 	// Override this so that two vieweradapter with the same object will be equals

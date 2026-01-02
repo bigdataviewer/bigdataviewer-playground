@@ -38,6 +38,7 @@ import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import org.scijava.Context;
+import org.scijava.object.ObjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.PlaygroundPrefs;
@@ -994,14 +995,19 @@ public class SourceAndConverterServiceUI {
 			return;
 		}
 
+		List<BdvHandle> bdvhs = context.getService(ObjectService.class).getObjects(BdvHandle.class);
+		if ((bdvhs == null) || (bdvhs.isEmpty())) {
+			return;
+		}
+
 		// Get the active BDV handle
 		BdvHandle activeBdv = bdvDisplayService.getActiveBdv();
 		if (activeBdv == null) {
 			return;
 		}
 
-		// Adjust the view on the selected sources
-		new ViewerTransformAdjuster(activeBdv, selectedSources).run();
+		// Adjust the view on the selected sources with animation
+		new ViewerTransformAdjuster(activeBdv, selectedSources, 300).run();
 	}
 
 }

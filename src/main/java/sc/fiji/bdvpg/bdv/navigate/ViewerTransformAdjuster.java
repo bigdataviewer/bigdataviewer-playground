@@ -33,6 +33,7 @@ import bdv.util.Affine3DHelpers;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerState;
+import bdv.viewer.animate.SimilarityTransformAnimator;
 import net.imglib2.FinalRealInterval;
 import net.imglib2.Interval;
 import net.imglib2.RealInterval;
@@ -62,25 +63,62 @@ public class ViewerTransformAdjuster implements Runnable {
 
 	private final ViewerAdapter handle;
 	private final SourceAndConverter<?>[] sources;
+	private final long animationDurationMs;
 
 	public ViewerTransformAdjuster(BdvHandle bdvHandle,
 		SourceAndConverter<?> source)
 	{
-		this(bdvHandle, new SourceAndConverter[] { source });
+		this(bdvHandle, new SourceAndConverter[] { source }, 0);
 	}
 
 	public ViewerTransformAdjuster(BdvHandle bdvHandle,
 		SourceAndConverter<?>[] sources)
 	{
-		this.handle = new ViewerAdapter(bdvHandle);
-		this.sources = sources;
+		this(new ViewerAdapter(bdvHandle), sources, 0);
 	}
 
 	public ViewerTransformAdjuster(ViewerAdapter handle,
 		SourceAndConverter<?>[] sources)
 	{
+		this(handle, sources, 0);
+	}
+
+	/**
+	 * Constructor with animation support.
+	 * @param bdvHandle the BDV handle
+	 * @param source the source to center on
+	 * @param animationDurationMs animation duration in milliseconds (0 for no animation)
+	 */
+	public ViewerTransformAdjuster(BdvHandle bdvHandle,
+		SourceAndConverter<?> source, long animationDurationMs)
+	{
+		this(bdvHandle, new SourceAndConverter[] { source }, animationDurationMs);
+	}
+
+	/**
+	 * Constructor with animation support.
+	 * @param bdvHandle the BDV handle
+	 * @param sources the sources to center on
+	 * @param animationDurationMs animation duration in milliseconds (0 for no animation)
+	 */
+	public ViewerTransformAdjuster(BdvHandle bdvHandle,
+		SourceAndConverter<?>[] sources, long animationDurationMs)
+	{
+		this(new ViewerAdapter(bdvHandle), sources, animationDurationMs);
+	}
+
+	/**
+	 * Constructor with animation support.
+	 * @param handle the viewer adapter
+	 * @param sources the sources to center on
+	 * @param animationDurationMs animation duration in milliseconds (0 for no animation)
+	 */
+	public ViewerTransformAdjuster(ViewerAdapter handle,
+		SourceAndConverter<?>[] sources, long animationDurationMs)
+	{
 		this.handle = handle;
 		this.sources = sources;
+		this.animationDurationMs = animationDurationMs;
 	}
 
 	public void run() {
@@ -92,7 +130,27 @@ public class ViewerTransformAdjuster implements Runnable {
 			else {
 				transform = getTransformMultiSources();
 			}
+			applyTransform(transform);
+		}
+	}
+
+	/**
+	 * Applies the transform to the viewer, with optional animation.
+	 * @param transform the target transform
+	 */
+	private void applyTransform(AffineTransform3D transform) {
+		if (animationDurationMs <= 0) {
 			handle.state().setViewerTransform(transform);
+		}
+		else {
+			final AffineTransform3D currentTransform = new AffineTransform3D();
+			handle.state().getViewerTransform(currentTransform);
+
+			final SimilarityTransformAnimator animator =
+				new SimilarityTransformAnimator(currentTransform, transform, 0, 0,
+					animationDurationMs);
+
+			handle.setTransformAnimator(animator);
 		}
 	}
 
@@ -260,10 +318,14 @@ public class ViewerTransformAdjuster implements Runnable {
 		}
 
 		viewerTransform.scale(currentMinScale);
-		handle.state().setViewerTransform(viewerTransform);
 
-		viewerTransform = BdvHandleHelper.getViewerTransformWithNewCenter(handle,
-			centerGlobal);
+		// Re-center on centerGlobal after scaling (without side effects)
+		// This is equivalent to getViewerTransformWithNewCenter but uses the
+		// transform we already have instead of reading from state
+		final double[] targetPositionInViewer = new double[3];
+		viewerTransform.apply(centerGlobal, targetPositionInViewer);
+		viewerTransform.translate(-targetPositionInViewer[0], -targetPositionInViewer[1], -targetPositionInViewer[2]);
+		viewerTransform.translate(cX, cY, 0);
 
 		return viewerTransform;
 	}
