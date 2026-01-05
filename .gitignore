@@ -4,3 +4,4 @@
 *.iml
 *.releaseBackup
 release.properties
+/documentation/resources/
