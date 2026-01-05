@@ -583,13 +583,12 @@ public class BdvHandleHelper {
 	}
 
 	/**
-	 * Helper function that maintains the number of timepoints of a bdv when addinf an overlay
-	 * see
-	 * @param bdvh
-	 * @param overlay
-	 * @param name
-	 * @return
-	 * @param <T>
+	 * Helper function that maintains the number of timepoints of a bdv when adding an overlay
+	 * @param bdvh the BdvHandle to add the overlay to
+	 * @param overlay the overlay to add
+	 * @param name the name of the overlay
+	 * @param <T> the overlay type
+	 * @return the BdvOverlaySource wrapping the added overlay
 	 */
 	public static <T extends BdvOverlay> BdvOverlaySource<T> addOverlay(BdvHandle bdvh, T overlay, String name) {
 		// Store
@@ -603,7 +602,7 @@ public class BdvHandleHelper {
 
 	/**
 	 * Helper function that maintains the number of timepoints of a bdv when removing an overlay
-	 * @param overlay
+	 * @param overlay the overlay source to remove
 	 */
 	public static void removeOverlay(BdvOverlaySource<?> overlay) {
 		// Store

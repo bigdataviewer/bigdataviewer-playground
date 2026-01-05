@@ -83,6 +83,7 @@ public interface ISourceAndConverterService {
 	 * Register a BDV Source in this Service with options
 	 * for instance "no tree" will not put the source in the ui (= tree view)
 	 * @param src source
+	 * @param options registration options (e.g., "no tree")
 	 */
 	void register(SourceAndConverter<?> src, String... options);
 
@@ -98,6 +99,7 @@ public interface ISourceAndConverterService {
 	 * Registers all sources contained with a SpimData Object in this Service.
 	 * for instance "no tree" will not put the source in the ui (= tree view)
 	 * @param asd spimdata to register
+	 * @param options registration options (e.g., "no tree")
 	 */
 	void register(AbstractSpimData<?> asd, String... options);
 

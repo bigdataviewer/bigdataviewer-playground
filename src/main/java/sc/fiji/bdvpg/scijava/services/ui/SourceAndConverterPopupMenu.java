@@ -181,6 +181,7 @@ public class SourceAndConverterPopupMenu {
 
 	/**
 	 * Adds a separator in the popup menu
+	 * @param path the menu path where the separator should be added
 	 */
 	public void addPopupLine(String[] path) {
 		JComponent component = this.getNodeFromPath(path);

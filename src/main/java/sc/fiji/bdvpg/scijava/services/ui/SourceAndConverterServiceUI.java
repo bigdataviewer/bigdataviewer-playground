@@ -164,6 +164,8 @@ public class SourceAndConverterServiceUI {
 	 * Constructor : Initialize fields + standard actions
 	 *
 	 * @param sourceAndConverterService the service to which this UI is linked
+	 * @param context the SciJava context
+	 * @param makeGUI whether to create and display the GUI
 	 */
 	public SourceAndConverterServiceUI(
 		SourceAndConverterService sourceAndConverterService,
@@ -964,8 +966,8 @@ public class SourceAndConverterServiceUI {
 	}
 
 	/**
-	 * Expands a path specified as a string (nodes separated by ">").
-	 * Example: "Sources>mri-stack.xml"
+	 * Expands a path specified as a string (nodes separated by superior sign).
+	 * Example: "Sources (superior) mri-stack.xml"
 	 * @param pathString the path to expand
 	 */
 	public void expandPath(String pathString) {

@@ -172,7 +172,9 @@ public class WrapVolatileSource<T extends NumericType<T>, V extends Volatile<T> 
 
 	/**
 	 * TODO : this helper class should be already somewhere else!
-	 * 
+	 *
+	 * @param <T> the NumericType
+	 * @param <V> the Volatile type corresponding to T
 	 * @param t a NumericType instance
 	 * @return the volatile equivalent class of this NumericType instance
 	 */

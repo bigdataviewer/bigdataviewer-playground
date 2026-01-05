@@ -560,8 +560,8 @@ public class SourceAndConverterHelper {
 	/**
 	 * Attempts to guess whether a source is generative or not - these sorts of sources should
 	 * be ignored when one wants to find the min or max of the source
-	 * @param source
-	 * @return
+	 * @param source the source to check
+	 * @return true if the source is not generative, false otherwise
 	 */
 	public static boolean isNotGenerative(Source<?> source) {
 		return ! (source.isPresent(-1)); // Proxy
@@ -775,8 +775,9 @@ public class SourceAndConverterHelper {
 	/**
 	 * Return the center point in global coordinates of the source Do not expect
 	 * this to work with WarpedSource
-	 * 
+	 *
 	 * @param source source
+	 * @param timepoint the timepoint at which to compute the center point
 	 * @return the center point of the source (assuming not warped)
 	 */
 	public static RealPoint getSourceAndConverterCenterPoint(
