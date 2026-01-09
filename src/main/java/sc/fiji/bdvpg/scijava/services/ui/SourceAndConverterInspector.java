@@ -435,7 +435,7 @@ public class SourceAndConverterInspector {
 		appendAttributesInfo(parent, asd, setupId);
 
 		// Add View Registrations information (transforms)
-		appendViewRegistrationsInfo(parent, asd, setupId);
+		appendViewRegistrationsInfo(parent, asd, setupId, sac);
 	}
 
 	/**
@@ -566,12 +566,6 @@ public class SourceAndConverterInspector {
 					}
 				}
 
-				// Add size information if available
-				if (setup.getSize() != null) {
-					attributesNode.add(new DefaultMutableTreeNode("Size: " + setup
-						.getSize().dimension(0) + " x " + setup.getSize().dimension(1) +
-						" x " + setup.getSize().dimension(2)));
-				}
 
 				// Add voxel size if available
 				if (setup.getVoxelSize() != null) {
@@ -587,20 +581,21 @@ public class SourceAndConverterInspector {
 	}
 
 	/**
-	 * Appends view registration information (transforms) for the view setup.
+	 * Appends view registration information (transforms) and dimensions for the view setup.
 	 */
-	private static void appendViewRegistrationsInfo(DefaultMutableTreeNode parent, AbstractSpimData<?> asd, int setupId) {
+	private static void appendViewRegistrationsInfo(DefaultMutableTreeNode parent, AbstractSpimData<?> asd, int setupId, SourceAndConverter<?> sac) {
 
         ViewRegistrations vrs = asd.getViewRegistrations();
         DefaultMutableTreeNode registrationsNode = new DefaultMutableTreeNode("View Transforms");
         parent.add(registrationsNode);
 
+        // Get the source to query dimensions
+        Source<?> source = sac.getSpimSource();
+
         // Get timepoints
         List<TimePoint> timePoints = asd.getSequenceDescription()
             .getTimePoints().getTimePointsOrdered();
 
-        // Limit to first few timepoints for display
-        //int maxTimePointsToShow = Math.min(3, timePoints.size());
         for (int i = 0; i < timePoints.size(); i++) {
             TimePoint tp = timePoints.get(i);
             ViewRegistration vr = vrs.getViewRegistration(tp.getId(), setupId);
@@ -628,6 +623,53 @@ public class SourceAndConverterInspector {
                         );
                     }
                 }));
+
+                // Add dimensions for all resolution levels
+                try {
+                    int numMipmapLevels = source.getNumMipmapLevels();
+                    if (numMipmapLevels > 1) {
+                        DefaultMutableTreeNode dimensionsNode = new DefaultMutableTreeNode(
+                            "Dimensions (" + numMipmapLevels + " resolution levels)");
+                        tpNode.add(dimensionsNode);
+
+                        for (int level = 0; level < numMipmapLevels; level++) {
+                            long[] dims = new long[source.getSource(tp.getId(), level).numDimensions()];
+                            source.getSource(tp.getId(), level).dimensions(dims);
+
+                            String dimStr = "Level " + level + ": ";
+                            if (dims.length == 3) {
+                                dimStr += dims[0] + " x " + dims[1] + " x " + dims[2];
+                            } else if (dims.length == 2) {
+                                dimStr += dims[0] + " x " + dims[1];
+                            } else {
+                                for (int d = 0; d < dims.length; d++) {
+                                    dimStr += dims[d];
+                                    if (d < dims.length - 1) dimStr += " x ";
+                                }
+                            }
+                            dimensionsNode.add(new DefaultMutableTreeNode(dimStr));
+                        }
+                    } else {
+                        // Single resolution
+                        long[] dims = new long[source.getSource(tp.getId(), 0).numDimensions()];
+                        source.getSource(tp.getId(), 0).dimensions(dims);
+
+                        String dimStr = "Dimensions: ";
+                        if (dims.length == 3) {
+                            dimStr += dims[0] + " x " + dims[1] + " x " + dims[2];
+                        } else if (dims.length == 2) {
+                            dimStr += dims[0] + " x " + dims[1];
+                        } else {
+                            for (int d = 0; d < dims.length; d++) {
+                                dimStr += dims[d];
+                                if (d < dims.length - 1) dimStr += " x ";
+                            }
+                        }
+                        tpNode.add(new DefaultMutableTreeNode(dimStr));
+                    }
+                } catch (Exception e) {
+                    logger.debug("Could not get dimension info for timepoint " + tp.getId() + ": " + e.getMessage());
+                }
             }
         }
 	}
