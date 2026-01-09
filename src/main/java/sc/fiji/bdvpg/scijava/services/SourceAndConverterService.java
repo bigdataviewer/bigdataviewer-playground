@@ -907,7 +907,49 @@ public class SourceAndConverterService extends AbstractService implements
 		}
 
 		public String toString() {
-			return asd.toString() + ": setupId = " + setupId;
+			StringBuilder sb = new StringBuilder();
+			sb.append("SpimData [setupId=").append(setupId);
+
+			// Add ImageLoader class name if available
+			try {
+				BasicImgLoader imgLoader = asd.getSequenceDescription().getImgLoader();
+				if (imgLoader != null) {
+					sb.append(", loader=").append(imgLoader.getClass().getSimpleName());
+				}
+			} catch (Exception e) {
+				// Silently ignore if we can't get the image loader
+			}
+
+			// Add number of timepoints
+			try {
+				AbstractSequenceDescription<?, ?, ?> seq = asd.getSequenceDescription();
+				if (seq.getTimePoints() != null) {
+					sb.append(", timepoints=").append(seq.getTimePoints().size());
+				}
+			} catch (Exception e) {
+				// Silently ignore
+			}
+
+			// Add base path if available (for SpimData, not just AbstractSpimData)
+			try {
+				if (asd.getClass().getSimpleName().contains("SpimData")) {
+					java.lang.reflect.Method getBasePath = asd.getClass().getMethod("getBasePath");
+					Object basePath = getBasePath.invoke(asd);
+					if (basePath != null) {
+						String pathStr = basePath.toString();
+						// Show only filename if it's a file path
+						if (pathStr.contains("/") || pathStr.contains("\\")) {
+							pathStr = pathStr.substring(pathStr.lastIndexOf(pathStr.contains("/") ? "/" : "\\") + 1);
+						}
+						sb.append(", file=").append(pathStr);
+					}
+				}
+			} catch (Exception e) {
+				// Silently ignore if getBasePath is not available
+			}
+
+			sb.append("]");
+			return sb.toString();
 		}
 	}
 

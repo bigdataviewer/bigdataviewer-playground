@@ -31,10 +31,20 @@ package sc.fiji.bdvpg.scijava.services.ui;
 
 import bdv.AbstractSpimSource;
 import bdv.img.WarpedSource;
+import bdv.img.cache.VolatileGlobalCellCache;
 import bdv.tools.transformation.TransformedSource;
 import bdv.util.ResampledSource;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
+import mpicbg.spim.data.generic.AbstractSpimData;
+import mpicbg.spim.data.generic.base.Entity;
+import mpicbg.spim.data.generic.base.NamedEntity;
+import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
+import mpicbg.spim.data.generic.sequence.BasicImgLoader;
+import mpicbg.spim.data.generic.sequence.BasicViewSetup;
+import mpicbg.spim.data.registration.ViewRegistrations;
+import mpicbg.spim.data.registration.ViewRegistration;
+import mpicbg.spim.data.sequence.TimePoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
 import org.slf4j.Logger;
@@ -45,6 +55,8 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.io.File;
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -271,6 +283,11 @@ public class SourceAndConverterInspector {
 			DefaultMutableTreeNode nodeSpimSource = new DefaultMutableTreeNode(
 				"Spim Source");
 			parent.add(nodeSpimSource);
+
+			// Add detailed SpimData information if available
+			appendSpimDataInfo(nodeSpimSource, sac, sourceAndConverterService);
+
+			// Add general metadata
 			appendMetadata(nodeSpimSource, sac);
 		}
 
@@ -374,5 +391,244 @@ public class SourceAndConverterInspector {
 
 		return chain;
 
+	}
+
+	/**
+	 * Appends detailed SpimData information to a tree node.
+	 * This includes ImageLoader info, cache info, attributes, and view registrations.
+	 *
+	 * @param parent parent node to add information to
+	 * @param sac source and converter
+	 * @param sourceAndConverterService service to get metadata
+	 */
+	private static void appendSpimDataInfo(DefaultMutableTreeNode parent,
+		SourceAndConverter<?> sac,
+		ISourceAndConverterService sourceAndConverterService)
+	{
+		if (!sourceAndConverterService.containsMetadata(sac,
+			ISourceAndConverterService.SPIM_DATA_INFO))
+		{
+			return;
+		}
+
+		Object metadata = sourceAndConverterService.getMetadata(sac,
+			ISourceAndConverterService.SPIM_DATA_INFO);
+		if (!(metadata instanceof SourceAndConverterService.SpimDataInfo)) {
+			return;
+		}
+
+		SourceAndConverterService.SpimDataInfo spimDataInfo =
+			(SourceAndConverterService.SpimDataInfo) metadata;
+		AbstractSpimData<?> asd = spimDataInfo.asd;
+		int setupId = spimDataInfo.setupId;
+
+		// Add ImageLoader information
+		appendImageLoaderInfo(parent, asd);
+
+		// Add Cache information
+		appendCacheInfo(parent, asd);
+
+		// Add Base Path information
+		appendBasePathInfo(parent, asd);
+
+		// Add Attributes information
+		appendAttributesInfo(parent, asd, setupId);
+
+		// Add View Registrations information (transforms)
+		appendViewRegistrationsInfo(parent, asd, setupId);
+	}
+
+	/**
+	 * Appends ImageLoader class information.
+	 */
+	private static void appendImageLoaderInfo(DefaultMutableTreeNode parent,
+		AbstractSpimData<?> asd)
+	{
+		try {
+			BasicImgLoader imgLoader = asd.getSequenceDescription().getImgLoader();
+			if (imgLoader != null) {
+				DefaultMutableTreeNode loaderNode = new DefaultMutableTreeNode(
+					"ImageLoader: " + imgLoader.getClass().getSimpleName());
+				parent.add(loaderNode);
+
+				// Add loader type details if available
+				String loaderType = imgLoader.getClass().getName();
+				if (loaderType.contains("Hdf5")) {
+					loaderNode.add(new DefaultMutableTreeNode("Type: HDF5"));
+				}
+				else if (loaderType.contains("N5")) {
+					loaderNode.add(new DefaultMutableTreeNode("Type: N5"));
+				}
+				else if (loaderType.contains("Zarr")) {
+					loaderNode.add(new DefaultMutableTreeNode("Type: Zarr"));
+				}
+			}
+		}
+		catch (Exception e) {
+			logger.debug("Could not get ImageLoader info: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Appends cache information extracted via reflection.
+	 */
+	private static void appendCacheInfo(DefaultMutableTreeNode parent,
+		AbstractSpimData<?> asd)
+	{
+		try {
+			BasicImgLoader imgLoader = asd.getSequenceDescription().getImgLoader();
+			if (imgLoader != null) {
+				// Try to get cache field via reflection
+				Field cacheField = null;
+				try {
+					cacheField = imgLoader.getClass().getDeclaredField("cache");
+				}
+				catch (NoSuchFieldException e) {
+					// Try parent class
+					try {
+						cacheField = imgLoader.getClass().getSuperclass()
+							.getDeclaredField("cache");
+					}
+					catch (NoSuchFieldException ex) {
+						// No cache field found
+					}
+				}
+
+				if (cacheField != null) {
+					cacheField.setAccessible(true);
+					Object cache = cacheField.get(imgLoader);
+					if (cache != null) {
+						DefaultMutableTreeNode cacheNode = new DefaultMutableTreeNode(
+							"Cache: " + cache.getClass().getSimpleName());
+						parent.add(cacheNode);
+
+						// Try to get cache stats if it's a VolatileGlobalCellCache
+						if (cache instanceof VolatileGlobalCellCache) {
+							try {
+								VolatileGlobalCellCache vgcc = (VolatileGlobalCellCache) cache;
+								cacheNode.add(new DefaultMutableTreeNode(
+									"Cache Type: VolatileGlobalCellCache"));
+							}
+							catch (Exception ex) {
+								// Silently ignore
+							}
+						}
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			logger.debug("Could not get cache info: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Appends base path information.
+	 */
+	private static void appendBasePathInfo(DefaultMutableTreeNode parent,
+		AbstractSpimData<?> asd)
+	{
+        File basePath = asd.getBasePath();
+        if (basePath != null) {
+            DefaultMutableTreeNode pathNode = new DefaultMutableTreeNode(
+                "Base Path: " + basePath.toString());
+            parent.add(pathNode);
+        }
+	}
+
+	/**
+	 * Appends attributes information for the view setup.
+	 */
+	private static void appendAttributesInfo(DefaultMutableTreeNode parent,
+		AbstractSpimData<?> asd, int setupId)
+	{
+		try {
+			AbstractSequenceDescription<?, ?, ?> seq = asd.getSequenceDescription();
+			BasicViewSetup setup = seq.getViewSetupsOrdered().stream()
+				.filter(s -> s.getId() == setupId).findFirst().orElse(null);
+
+			if (setup != null) {
+				DefaultMutableTreeNode attributesNode = new DefaultMutableTreeNode(
+					"Attributes");
+				parent.add(attributesNode);
+
+				// Add each attribute
+				for (Entity entity : setup.getAttributes().values()) {
+					if (entity != null) {
+						String entityName = entity.getClass().getSimpleName() + ": ";
+						if (entity instanceof NamedEntity) {
+							entityName += ((NamedEntity) entity).getName();
+						}
+						else {
+							entityName += "ID " + entity.getId();
+						}
+						attributesNode.add(new DefaultMutableTreeNode(entityName));
+					}
+				}
+
+				// Add size information if available
+				if (setup.getSize() != null) {
+					attributesNode.add(new DefaultMutableTreeNode("Size: " + setup
+						.getSize().dimension(0) + " x " + setup.getSize().dimension(1) +
+						" x " + setup.getSize().dimension(2)));
+				}
+
+				// Add voxel size if available
+				if (setup.getVoxelSize() != null) {
+					attributesNode.add(new DefaultMutableTreeNode("Voxel Size: " + setup
+						.getVoxelSize().dimension(0) + " x " + setup.getVoxelSize()
+							.dimension(1) + " x " + setup.getVoxelSize().dimension(2)));
+				}
+			}
+		}
+		catch (Exception e) {
+			logger.debug("Could not get attributes info: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Appends view registration information (transforms) for the view setup.
+	 */
+	private static void appendViewRegistrationsInfo(DefaultMutableTreeNode parent, AbstractSpimData<?> asd, int setupId) {
+
+        ViewRegistrations vrs = asd.getViewRegistrations();
+        DefaultMutableTreeNode registrationsNode = new DefaultMutableTreeNode("View Transforms");
+        parent.add(registrationsNode);
+
+        // Get timepoints
+        List<TimePoint> timePoints = asd.getSequenceDescription()
+            .getTimePoints().getTimePointsOrdered();
+
+        // Limit to first few timepoints for display
+        //int maxTimePointsToShow = Math.min(3, timePoints.size());
+        for (int i = 0; i < timePoints.size(); i++) {
+            TimePoint tp = timePoints.get(i);
+            ViewRegistration vr = vrs.getViewRegistration(tp.getId(), setupId);
+            if (vr != null) {
+                DefaultMutableTreeNode tpNode = new DefaultMutableTreeNode(
+                    "Timepoint " + tp.getId());
+                registrationsNode.add(tpNode);
+
+                // Add transform information as a supplier
+                tpNode.add(new DefaultMutableTreeNode(new Supplier<AffineTransform3D>()
+                {
+
+                    public AffineTransform3D get() {
+                        return vr.getModel();
+                    }
+
+                    public String toString() {
+                        AffineTransform3D transform = vr.getModel();
+                        // Display all 12 values of the 3D transform in scientific notation with 3 significant digits
+                        return String.format(
+                                "Transform: [%.3e, %.3e, %.3e, %.3e; %.3e, %.3e, %.3e, %.3e; %.3e, %.3e, %.3e, %.3e]",
+                                transform.get(0, 0), transform.get(0, 1), transform.get(0, 2), transform.get(0, 3),
+                                transform.get(1, 0), transform.get(1, 1), transform.get(1, 2), transform.get(1, 3),
+                                transform.get(2, 0), transform.get(2, 1), transform.get(2, 2), transform.get(2, 3)
+                        );
+                    }
+                }));
+            }
+        }
 	}
 }
