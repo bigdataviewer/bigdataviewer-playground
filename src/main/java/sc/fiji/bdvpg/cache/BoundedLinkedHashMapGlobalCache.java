@@ -29,10 +29,12 @@
 
 package sc.fiji.bdvpg.cache;
 
+import bdv.img.cache.VolatileGlobalCellCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.ref.SoftReference;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -191,6 +193,58 @@ public class BoundedLinkedHashMapGlobalCache extends AbstractGlobalCache {
 		return "Cache size : " + (cache.getCost() / (1024 * 1024)) + " Mb (" +
 			(int) (100.0 * (double) cache.getCost() / (double) cache.getMaxCost()) +
 			" %)";
+	}
+
+	@Override
+	public CacheStats getCacheStats(Object source, int setupid, int timepoint) {
+		long totalSize = 0;
+		long cellCount = 0;
+        try {
+
+            Field tpField = VolatileGlobalCellCache.Key.class.getDeclaredField("timepoint");
+            tpField.setAccessible(true);
+            Field setupField = VolatileGlobalCellCache.Key.class.getDeclaredField("setup");
+            setupField.setAccessible(true);
+
+            synchronized (cache) {
+                for (Map.Entry<GlobalCacheKey, SoftReference<Object>> entry : cache.entrySet()) {
+                    GlobalCacheKey key = entry.getKey();
+                    VolatileGlobalCellCache.Key innerKey = null;
+                    if (key.key.get() instanceof VolatileGlobalCellCache.Key) {
+                        innerKey = (VolatileGlobalCellCache.Key) key.key.get();
+                    }
+                    if (innerKey == null) continue;
+                    int tp = (int) tpField.get(innerKey);
+                    int setupId = (int) setupField.get(innerKey);
+
+                    if (timepoint == -1) {
+                        // Match source for any timepoint
+                        if ((key.getSource() == source) && (setupid == setupId)) {
+                            Long cost = cache.cost.get(key);
+                            if (cost != null) {
+                                totalSize += cost;
+                                cellCount++;
+                            }
+                        }
+                    } else {
+                        // Match source and specific timepoint (any level)
+                        if ((key.getSource() == source) && (tp == timepoint) && (setupid == setupId)) {
+                            Long cost = cache.cost.get(key);
+                            if (cost != null) {
+                                totalSize += cost;
+                                cellCount++;
+                            }
+                        }
+                    }
+
+                }
+                return new CacheStats(cellCount, totalSize);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CacheStats(0,0);
+        }
 	}
 
 }

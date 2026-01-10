@@ -129,4 +129,33 @@ public class CaffeineGlobalCache extends AbstractGlobalCache {
 			(int) (100.0 * (double) totalBytes / (double) maxCacheSize) + " %)";
 	}
 
+	@Override
+	public CacheStats getCacheStats(Object source, int setupid, int timepoint) {
+		long totalSize = 0;
+		long cellCount = 0;
+
+		for (GlobalCacheKey key : cache.asMap().keySet()) {
+			if (timepoint == -1) {
+				// Match source for any timepoint
+				if (key.source.get() == source) {
+					Object value = cache.getIfPresent(key);
+					if (value != null) {
+						totalSize += getWeight(value);
+						cellCount++;
+					}
+				}
+			} else {				// Match source and specific timepoint (any level)
+                if (key.getSource() == source && key.getTimepoint() == timepoint) {
+                    Object value = cache.getIfPresent(key);
+                    if (value != null) {
+                        totalSize += getWeight(value);
+                        cellCount++;
+                    }
+                }
+            }
+		}
+
+		return new CacheStats(cellCount, totalSize);
+	}
+
 }

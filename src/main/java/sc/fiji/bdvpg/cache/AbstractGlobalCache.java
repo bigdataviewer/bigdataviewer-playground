@@ -149,4 +149,34 @@ abstract public class AbstractGlobalCache implements
 
 	public abstract <V> void touch(GlobalCacheKey key, V value);
 
+	/**
+	 * Statistics for cached data for a specific source and timepoint.
+	 */
+	public static class CacheStats {
+		public final long numberOfCells;
+		public final long sizeInBytes;
+
+		public CacheStats(long numberOfCells, long sizeInBytes) {
+			this.numberOfCells = numberOfCells;
+			this.sizeInBytes = sizeInBytes;
+		}
+
+		public String getSizeInMB() {
+			return String.format("%.2f", sizeInBytes / (1024.0 * 1024.0));
+		}
+
+		public String getSizeInKB() {
+			return String.format("%.2f", sizeInBytes / 1024.0);
+		}
+	}
+
+	/**
+	 * Get cache statistics for a specific source and timepoint.
+	 *
+	 * @param source the source object
+	 * @param timepoint the timepoint (-1 for all timepoints)
+	 * @return cache statistics
+	 */
+	abstract public CacheStats getCacheStats(Object source, int setupId, int timepoint);
+
 }

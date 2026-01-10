@@ -49,6 +49,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.cache.AbstractGlobalCache;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -586,7 +587,7 @@ public class SourceAndConverterInspector {
 	private static void appendViewRegistrationsInfo(DefaultMutableTreeNode parent, AbstractSpimData<?> asd, int setupId, SourceAndConverter<?> sac) {
 
         ViewRegistrations vrs = asd.getViewRegistrations();
-        DefaultMutableTreeNode registrationsNode = new DefaultMutableTreeNode("View Transforms");
+        DefaultMutableTreeNode registrationsNode = new DefaultMutableTreeNode("Data");
         parent.add(registrationsNode);
 
         // Get the source to query dimensions
@@ -669,6 +670,24 @@ public class SourceAndConverterInspector {
                     }
                 } catch (Exception e) {
                     logger.debug("Could not get dimension info for timepoint " + tp.getId() + ": " + e.getMessage());
+                }
+
+                // Add cache statistics for this timepoint
+                try {
+                    AbstractGlobalCache globalCache = SourceAndConverterServices
+                        .getSourceAndConverterService().getCache();
+                    if (globalCache != null) {
+                        // Get the root source object for cache lookup
+                        //Source<?> rootSource = SourceAndConverterHelper.getRootSource(sac.getSpimSource());
+                        AbstractGlobalCache.CacheStats stats = globalCache.getCacheStats(asd, setupId, tp.getId());
+                        //if (stats.numberOfCells > 0) {
+                            String cacheInfo = "Cache: " + stats.numberOfCells + " cells, " +
+                                stats.getSizeInMB() + " MB";
+                            tpNode.add(new DefaultMutableTreeNode(cacheInfo));
+                        //}
+                    }
+                } catch (Exception e) {
+                    logger.debug("Could not get cache stats for timepoint " + tp.getId() + ": " + e.getMessage());
                 }
             }
         }

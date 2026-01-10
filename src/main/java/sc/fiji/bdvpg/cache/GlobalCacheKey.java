@@ -33,13 +33,13 @@ import java.lang.ref.WeakReference;
 
 public class GlobalCacheKey {
 
-	private final WeakReference<Object> source;
+	protected final WeakReference<Object> source;
 
 	private final int timepoint;
 
 	private final int level;
 
-	public final WeakReference<Object> key;
+	protected final WeakReference<Object> key;
 
 	public GlobalCacheKey(final Object source, final int timepoint,
 		final int level, final Object key)
@@ -85,5 +85,17 @@ public class GlobalCacheKey {
 	@Override
 	public int hashCode() {
 		return hashcode;
+	}
+
+	public int getTimepoint() {
+		return timepoint;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public Object getSource() {
+		return source.get();
 	}
 }
