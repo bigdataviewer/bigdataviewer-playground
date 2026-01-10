@@ -134,28 +134,54 @@ public class CaffeineGlobalCache extends AbstractGlobalCache {
 		long totalSize = 0;
 		long cellCount = 0;
 
-		for (GlobalCacheKey key : cache.asMap().keySet()) {
-			if (timepoint == -1) {
-				// Match source for any timepoint
-				if (key.source.get() == source) {
-					Object value = cache.getIfPresent(key);
-					if (value != null) {
-						totalSize += getWeight(value);
-						cellCount++;
+		try {
+			java.lang.reflect.Field tpField = bdv.img.cache.VolatileGlobalCellCache.Key.class
+				.getDeclaredField("timepoint");
+			tpField.setAccessible(true);
+			java.lang.reflect.Field setupField = bdv.img.cache.VolatileGlobalCellCache.Key.class
+				.getDeclaredField("setup");
+			setupField.setAccessible(true);
+
+			for (GlobalCacheKey key : cache.asMap().keySet()) {
+				bdv.img.cache.VolatileGlobalCellCache.Key innerKey = null;
+				if (key.key.get() instanceof bdv.img.cache.VolatileGlobalCellCache.Key) {
+					innerKey = (bdv.img.cache.VolatileGlobalCellCache.Key) key.key.get();
+				}
+				if (innerKey == null) continue;
+
+				int tp = (int) tpField.get(innerKey);
+				int setupId = (int) setupField.get(innerKey);
+
+				if (timepoint == -1) {
+					// Match source for any timepoint
+					if ((key.getSource() == source) && (setupid == setupId)) {
+						Object value = cache.getIfPresent(key);
+						if (value != null) {
+							totalSize += getWeight(value);
+							cellCount++;
+						}
 					}
 				}
-			} else {				// Match source and specific timepoint (any level)
-                if (key.getSource() == source && key.getTimepoint() == timepoint) {
-                    Object value = cache.getIfPresent(key);
-                    if (value != null) {
-                        totalSize += getWeight(value);
-                        cellCount++;
-                    }
-                }
-            }
-		}
+				else {
+					// Match source and specific timepoint (any level)
+					if ((key.getSource() == source) && (tp == timepoint) && (setupid ==
+						setupId))
+					{
+						Object value = cache.getIfPresent(key);
+						if (value != null) {
+							totalSize += getWeight(value);
+							cellCount++;
+						}
+					}
+				}
+			}
 
-		return new CacheStats(cellCount, totalSize);
+			return new CacheStats(cellCount, totalSize);
+		}
+		catch (Exception e) {
+			logger.debug("Could not get cache stats: " + e.getMessage());
+			return new CacheStats(0, 0);
+		}
 	}
 
 }
