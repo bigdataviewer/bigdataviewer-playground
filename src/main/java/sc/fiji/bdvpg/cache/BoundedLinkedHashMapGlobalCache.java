@@ -247,4 +247,40 @@ public class BoundedLinkedHashMapGlobalCache extends AbstractGlobalCache {
         }
 	}
 
+	@Override
+	public CacheStats getCacheStats(Object source, int timepoint) {
+		long totalSize = 0;
+		long cellCount = 0;
+
+		synchronized (cache) {
+			for (Map.Entry<GlobalCacheKey, SoftReference<Object>> entry : cache
+				.entrySet())
+			{
+				GlobalCacheKey key = entry.getKey();
+				if (timepoint == -1) {
+					// Match source for any timepoint
+					if (key.getSource() == source) {
+						Long cost = cache.cost.get(key);
+						if (cost != null) {
+							totalSize += cost;
+							cellCount++;
+						}
+					}
+				}
+				else {
+					// Match source and specific timepoint (any level)
+					if (key.getSource() == source && key.getTimepoint() == timepoint) {
+						Long cost = cache.cost.get(key);
+						if (cost != null) {
+							totalSize += cost;
+							cellCount++;
+						}
+					}
+				}
+			}
+		}
+
+		return new CacheStats(cellCount, totalSize);
+	}
+
 }

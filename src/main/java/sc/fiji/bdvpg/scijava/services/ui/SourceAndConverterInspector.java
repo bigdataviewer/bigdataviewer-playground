@@ -277,6 +277,46 @@ public class SourceAndConverterInspector {
 				subSources.addAll(appendInspectorResult(wrappedSourceNode, src,
 					sourceAndConverterService, registerIntermediateSources));
 			}
+
+		// Add cache statistics for ResampledSource
+		try {
+			AbstractGlobalCache globalCache = SourceAndConverterServices
+				.getSourceAndConverterService().getCache();
+			if (globalCache != null) {
+				DefaultMutableTreeNode cacheNode = new DefaultMutableTreeNode(
+					"Cache Statistics");
+				nodeResampledSource.add(cacheNode);
+
+				// Get cache stats for all timepoints
+				AbstractGlobalCache.CacheStats allStats = globalCache.getCacheStats(
+					source, -1);
+				if (allStats.numberOfCells > 0) {
+					cacheNode.add(new DefaultMutableTreeNode("All timepoints: " +
+						allStats.numberOfCells + " cells, " + allStats.getSizeInMB() +
+						" MB"));
+
+					// Also show per-timepoint breakdown if there are not too many
+					// timepoints
+					int numTimepoints = SourceAndConverterHelper.getMaxTimepoint(source)+1;
+                    for (int t = 0; t < numTimepoints; t++) {
+                        AbstractGlobalCache.CacheStats tpStats = globalCache
+                            .getCacheStats(source, t);
+                        if (tpStats.numberOfCells > 0) {
+                            cacheNode.add(new DefaultMutableTreeNode("Timepoint " + t +
+                                ": " + tpStats.numberOfCells + " cells, " + tpStats
+                                    .getSizeInMB() + " MB"));
+                        }
+                    }
+				}
+				else {
+					cacheNode.add(new DefaultMutableTreeNode("No data in cache"));
+				}
+			}
+		}
+		catch (Exception e) {
+			logger.debug("Could not get cache stats for ResampledSource: " + e
+				.getMessage());
+		}
 			appendMetadata(nodeResampledSource, sac);
 		}
 

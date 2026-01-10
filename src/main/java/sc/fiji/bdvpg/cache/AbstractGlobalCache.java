@@ -171,12 +171,23 @@ abstract public class AbstractGlobalCache implements
 	}
 
 	/**
-	 * Get cache statistics for a specific source and timepoint.
+	 * Get cache statistics for a specific source and timepoint (for SpimData sources).
+	 *
+	 * @param source the source object
+	 * @param setupId the setup ID
+	 * @param timepoint the timepoint (-1 for all timepoints)
+	 * @return cache statistics
+	 */
+	abstract public CacheStats getCacheStats(Object source, int setupId, int timepoint);
+
+	/**
+	 * Get cache statistics for a specific source and timepoint (for non-SpimData sources).
+	 * This version doesn't filter by setupId.
 	 *
 	 * @param source the source object
 	 * @param timepoint the timepoint (-1 for all timepoints)
 	 * @return cache statistics
 	 */
-	abstract public CacheStats getCacheStats(Object source, int setupId, int timepoint);
+	abstract public CacheStats getCacheStats(Object source, int timepoint);
 
 }
