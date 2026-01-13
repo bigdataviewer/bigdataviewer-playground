@@ -51,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.cache.AbstractGlobalCache;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.ui.inspect.ISourceInspector;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
@@ -163,7 +164,7 @@ public class SourceAndConverterInspector {
 			appendMetadata(nodeTransformedSource, sac);
 		}
 
-		if (sac.getSpimSource() instanceof WarpedSource) {
+		else if (sac.getSpimSource() instanceof WarpedSource) {
 			DefaultMutableTreeNode nodeWarpedSource = new DefaultMutableTreeNode(
 				"Warped Source");
 			parent.add(nodeWarpedSource);
@@ -211,7 +212,7 @@ public class SourceAndConverterInspector {
 			appendMetadata(nodeWarpedSource, sac);
 		}
 
-		if (sac.getSpimSource() instanceof ResampledSource) {
+		else if (sac.getSpimSource() instanceof ResampledSource) {
 			DefaultMutableTreeNode nodeResampledSource = new DefaultMutableTreeNode(
 				"Resampled Source");
 			parent.add(nodeResampledSource);
@@ -286,6 +287,7 @@ public class SourceAndConverterInspector {
 				DefaultMutableTreeNode cacheNode = new DefaultMutableTreeNode(
 					"Cache Statistics");
 				nodeResampledSource.add(cacheNode);
+				nodeResampledSource.add(cacheNode);
 
 				// Get cache stats for all timepoints
 				AbstractGlobalCache.CacheStats allStats = globalCache.getCacheStats(
@@ -320,7 +322,7 @@ public class SourceAndConverterInspector {
 			appendMetadata(nodeResampledSource, sac);
 		}
 
-		if (sac.getSpimSource() instanceof AbstractSpimSource) {
+		else if (sac.getSpimSource() instanceof AbstractSpimSource) {
 			DefaultMutableTreeNode nodeSpimSource = new DefaultMutableTreeNode(
 				"Spim Source");
 			parent.add(nodeSpimSource);
@@ -330,6 +332,17 @@ public class SourceAndConverterInspector {
 
 			// Add general metadata
 			appendMetadata(nodeSpimSource, sac);
+		}
+
+		else if (sac.getSpimSource() instanceof ISourceInspector) {
+			ISourceInspector inspector = (ISourceInspector) (sac.getSpimSource());
+
+			DefaultMutableTreeNode nodeSource = new DefaultMutableTreeNode(
+					sac.getSpimSource().getClass().getSimpleName());
+
+			subSources.addAll(inspector.inspect(nodeSource, sac, sourceAndConverterService, registerIntermediateSources));
+
+			parent.add(nodeSource);
 		}
 
 		return subSources;
@@ -569,12 +582,18 @@ public class SourceAndConverterInspector {
 	private static void appendBasePathInfo(DefaultMutableTreeNode parent,
 		AbstractSpimData<?> asd)
 	{
-        File basePath = asd.getBasePath();
-        if (basePath != null) {
-            DefaultMutableTreeNode pathNode = new DefaultMutableTreeNode(
-                "Base Path: " + basePath.toString());
-            parent.add(pathNode);
-        }
+		try {
+			File basePath = asd.getBasePath();
+			if (basePath != null) {
+				DefaultMutableTreeNode pathNode = new DefaultMutableTreeNode(
+						"Base Path: " + basePath.toString());
+				parent.add(pathNode);
+			}
+		} catch (Exception e) {
+			DefaultMutableTreeNode pathNode = new DefaultMutableTreeNode(
+					"No Base Path Available");
+			parent.add(pathNode);
+		}
 	}
 
 	/**

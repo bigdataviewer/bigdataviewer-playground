@@ -42,11 +42,7 @@ import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_LOCATION;
@@ -98,8 +94,8 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter
 		idToSource = new HashMap<>();
 	}
 
-	final List<SourceAndConverter<?>> setOfSourcesNeedingSerialization =
-		new ArrayList<>();
+	final Set<SourceAndConverter<?>> setOfSourcesNeedingSerialization =
+		new HashSet<>();
 
 	@Override
 	public void run() {
