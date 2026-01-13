@@ -70,18 +70,11 @@ public class BvvSourcesAdderCommand implements BdvPlaygroundActionCommand {
 	public void run() {
 
 		for (SourceAndConverter<?> sac : sacs) {
-			if (sac.getSpimSource().getType() instanceof UnsignedShortType) {
+            bvvh.getConverterSetups().put(sac, SourceAndConverterServices
+                .getSourceAndConverterService().getConverterSetup(sac));
+            bvvh.getViewerPanel().state().addSource(sac);
 
-				bvvh.getConverterSetups().put(sac, SourceAndConverterServices
-					.getSourceAndConverterService().getConverterSetup(sac));
-				bvvh.getViewerPanel().state().addSource(sac);
-
-				bvvh.getViewerPanel().state().setSourceActive(sac, true);
-			}
-			else {
-				IJ.log("Source " + sac.getSpimSource().getName() +
-					" is not an unsigned 16 bit image. Bvv does not support this kind of images (yet).");
-			}
+            bvvh.getViewerPanel().state().setSourceActive(sac, true);
 		}
 
 		if ((adjustviewonsource) && (sacs.length > 0)) {
