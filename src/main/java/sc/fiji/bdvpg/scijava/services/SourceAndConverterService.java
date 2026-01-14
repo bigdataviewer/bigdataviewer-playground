@@ -363,7 +363,15 @@ public class SourceAndConverterService extends AbstractService implements
 	 * 
 	 * @param asd spimdata object to register
 	 */
-	public synchronized void register(AbstractSpimData<?> asd) {
+	public synchronized void register(AbstractSpimData<?> asd, String... options) {
+
+        boolean noTree = false;
+
+        for (String option: options) {
+            if (option.equals("no tree")) {
+                noTree = true;
+            }
+        }
 
 		if (spimdataToMetadata.getIfPresent(asd) == null) {
 			Map<String, Object> sourceData = new HashMap<>();
@@ -495,10 +503,14 @@ public class SourceAndConverterService extends AbstractService implements
 			});
 		}
 
+        boolean showUI = !noTree;
+
 		setupIdToSourceAndConverter.keySet().forEach(id -> {
-			register(setupIdToSourceAndConverter.get(id));
+			register(setupIdToSourceAndConverter.get(id), options);
 			linkToSpimData(setupIdToSourceAndConverter.get(id), asd, id);
-			ui.update(setupIdToSourceAndConverter.get(id));
+			if (showUI) {
+                ui.update(setupIdToSourceAndConverter.get(id));
+            }
 		});
 
 		WrapBasicImgLoader.removeWrapperIfPresent(asd);
@@ -517,8 +529,8 @@ public class SourceAndConverterService extends AbstractService implements
 	}
 
 	@Override
-	public void register(AbstractSpimData<?> asd, String... options) {
-		register(asd);
+	public void register(AbstractSpimData<?> asd) {
+		register(asd, "");
 	}
 
 	private static String createSetupName(final BasicViewSetup setup) {

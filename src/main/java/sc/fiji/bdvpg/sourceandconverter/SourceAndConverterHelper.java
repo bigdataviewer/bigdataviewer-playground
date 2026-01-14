@@ -68,8 +68,9 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -664,50 +665,88 @@ public class SourceAndConverterHelper {
 		List<SourceAndConverter<?>> sortedList = new ArrayList<>(sacs.size());
 		sortedList.addAll(sacs);
 
-		Comparator<SourceAndConverter<?>> sacComparator = (s1, s2) -> {
-			// Those who do not belong to spimdata are last:
-			SourceAndConverterService.SpimDataInfo sdi1 = null, sdi2 = null;
-			if (SourceAndConverterServices.getSourceAndConverterService().getMetadata(
-				s1, SourceAndConverterService.SPIM_DATA_INFO) != null)
-			{
-				sdi1 =
-					((SourceAndConverterService.SpimDataInfo) (SourceAndConverterServices
-						.getSourceAndConverterService().getMetadata(s1,
-							SourceAndConverterService.SPIM_DATA_INFO)));
-			}
+		// Build a map of asd objects to unique IDs for stable ordering
+		final Map<Object, Integer> asdIdMap = new HashMap<>();
+		final Map<SourceAndConverter<?>, ComparableKey> keyMap = new HashMap<>();
 
-			if (SourceAndConverterServices.getSourceAndConverterService().getMetadata(
-				s2, SourceAndConverterService.SPIM_DATA_INFO) != null)
-			{
-				sdi2 =
-					((SourceAndConverterService.SpimDataInfo) (SourceAndConverterServices
-						.getSourceAndConverterService().getMetadata(s2,
-							SourceAndConverterService.SPIM_DATA_INFO)));
-			}
+		int index = 0;
+		int nextAsdId = 0;
 
-			if ((sdi1 == null) && (sdi2 != null)) {
-				return -1;
-			}
+		for (SourceAndConverter<?> sac : sortedList) {
+			Object metadata = SourceAndConverterServices.getSourceAndConverterService()
+				.getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO);
 
-			if ((sdi1 != null) && (sdi2 == null)) {
-				return 1;
-			}
+			ComparableKey key;
+			if (metadata != null) {
+				SourceAndConverterService.SpimDataInfo sdi =
+					(SourceAndConverterService.SpimDataInfo) metadata;
 
-			if (sdi1 != null) {
-				if (sdi1.asd == sdi2.asd) {
-					return sdi1.setupId - sdi2.setupId;
+				// Assign a stable ID to each unique asd object
+				if (!asdIdMap.containsKey(sdi.asd)) {
+					asdIdMap.put(sdi.asd, nextAsdId++);
 				}
-				else {
-					return sdi2.toString().compareTo(sdi1.toString());
-				}
+				int asdId = asdIdMap.get(sdi.asd);
+
+				// Create key: has SpimData (0), asd ID, setupId, then index as tiebreaker
+				key = new ComparableKey(0, asdId, sdi.setupId, "", index);
+			} else {
+				// No SpimData: use (1) to sort after SpimData sources, then by name
+				String name = sac.getSpimSource().getName();
+				if (name == null) name = "";
+				key = new ComparableKey(1, 0, 0, name, index);
 			}
 
-			return s2.getSpimSource().getName().compareTo(s1.getSpimSource()
-				.getName());
-		};
+			keyMap.put(sac, key);
+			index++;
+		}
 
-		sortedList.sort(sacComparator);
+		// Sort using the comparable keys
+		sortedList.sort((s1, s2) -> {
+			ComparableKey key1 = keyMap.get(s1);
+			ComparableKey key2 = keyMap.get(s2);
+			if (key1 == null || key2 == null) {
+				if (key1 == null && key2 == null) return 0;
+				return (key1 == null) ? 1 : -1;
+			}
+			return key1.compareTo(key2);
+		});
+
 		return sortedList;
+	}
+
+	// Comparable key for guaranteed transitive sorting
+	private static class ComparableKey implements Comparable<ComparableKey> {
+		final int group;      // 0 = has SpimData, 1 = no SpimData
+		final int asdId;      // Stable ID for asd object (0 if no SpimData)
+		final int setupId;    // Setup ID within same asd (0 if no SpimData)
+		final String name;    // Name for sources without SpimData
+		final int index;      // Original index as final tiebreaker
+
+		ComparableKey(int group, int asdId, int setupId, String name, int index) {
+			this.group = group;
+			this.asdId = asdId;
+			this.setupId = setupId;
+			this.name = name;
+			this.index = index;
+		}
+
+		@Override
+		public int compareTo(ComparableKey other) {
+			// Compare level by level to ensure transitivity
+			int cmp = Integer.compare(this.group, other.group);
+			if (cmp != 0) return cmp;
+
+			cmp = Integer.compare(this.asdId, other.asdId);
+			if (cmp != 0) return cmp;
+
+			cmp = Integer.compare(this.setupId, other.setupId);
+			if (cmp != 0) return cmp;
+
+			cmp = this.name.compareTo(other.name);
+			if (cmp != 0) return cmp;
+
+			return Integer.compare(this.index, other.index);
+		}
 	}
 
 	/**
@@ -726,49 +765,52 @@ public class SourceAndConverterHelper {
 		List<SourceAndConverter> sortedList = new ArrayList<>(sacs.size());
 		sortedList.addAll(sacs);
 
-		Comparator<SourceAndConverter> sacComparator = (s1, s2) -> {
-			// Those who do not belong to spimdata are last:
-			SourceAndConverterService.SpimDataInfo sdi1 = null, sdi2 = null;
-			if (SourceAndConverterServices.getSourceAndConverterService().getMetadata(
-				s1, SourceAndConverterService.SPIM_DATA_INFO) != null)
-			{
-				sdi1 =
-					((SourceAndConverterService.SpimDataInfo) (SourceAndConverterServices
-						.getSourceAndConverterService().getMetadata(s1,
-							SourceAndConverterService.SPIM_DATA_INFO)));
-			}
+		// Build a map of asd objects to unique IDs for stable ordering
+		final Map<Object, Integer> asdIdMap = new HashMap<>();
+		final Map<SourceAndConverter, ComparableKey> keyMap = new HashMap<>();
 
-			if (SourceAndConverterServices.getSourceAndConverterService().getMetadata(
-				s2, SourceAndConverterService.SPIM_DATA_INFO) != null)
-			{
-				sdi2 =
-					((SourceAndConverterService.SpimDataInfo) (SourceAndConverterServices
-						.getSourceAndConverterService().getMetadata(s2,
-							SourceAndConverterService.SPIM_DATA_INFO)));
-			}
+		int index = 0;
+		int nextAsdId = 0;
 
-			if ((sdi1 == null) && (sdi2 != null)) {
-				return -1;
-			}
+		for (SourceAndConverter sac : sortedList) {
+			Object metadata = SourceAndConverterServices.getSourceAndConverterService()
+				.getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO);
 
-			if ((sdi1 != null) && (sdi2 == null)) {
-				return 1;
-			}
+			ComparableKey key;
+			if (metadata != null) {
+				SourceAndConverterService.SpimDataInfo sdi =
+					(SourceAndConverterService.SpimDataInfo) metadata;
 
-			if (sdi1 != null) {
-				if (sdi1.asd == sdi2.asd) {
-					return sdi1.setupId - sdi2.setupId;
+				// Assign a stable ID to each unique asd object
+				if (!asdIdMap.containsKey(sdi.asd)) {
+					asdIdMap.put(sdi.asd, nextAsdId++);
 				}
-				else {
-					return sdi2.toString().compareTo(sdi1.toString());
-				}
+				int asdId = asdIdMap.get(sdi.asd);
+
+				// Create key: has SpimData (0), asd ID, setupId, then index as tiebreaker
+				key = new ComparableKey(0, asdId, sdi.setupId, "", index);
+			} else {
+				// No SpimData: use (1) to sort after SpimData sources, then by name
+				String name = sac.getSpimSource().getName();
+				if (name == null) name = "";
+				key = new ComparableKey(1, 0, 0, name, index);
 			}
 
-			return s2.getSpimSource().getName().compareTo(s1.getSpimSource()
-				.getName());
-		};
+			keyMap.put(sac, key);
+			index++;
+		}
 
-		sortedList.sort(sacComparator);
+		// Sort using the comparable keys
+		sortedList.sort((s1, s2) -> {
+			ComparableKey key1 = keyMap.get(s1);
+			ComparableKey key2 = keyMap.get(s2);
+			if (key1 == null || key2 == null) {
+				if (key1 == null && key2 == null) return 0;
+				return (key1 == null) ? 1 : -1;
+			}
+			return key1.compareTo(key2);
+		});
+
 		return sortedList;
 	}
 
