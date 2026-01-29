@@ -53,6 +53,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.scijava.command.CommandService;
@@ -511,11 +512,22 @@ public class SpimDataTransformViewer extends JFrame {
 			return;
 		}
 
-		// Run command with pre-filled values
-		commandService.run(SetSpimDataTransformsCommand.class, true,
+		// Run command with pre-filled values, then refresh when done
+		Future<?> future = commandService.run(SetSpimDataTransformsCommand.class, true,
 			"sacs", selectedSacs,
 			"timepoint_range", tpRange,
 			"transform_index_range", trRange);
+
+		// Wait in background thread, then refresh on EDT when done
+		new Thread(() -> {
+			try {
+				future.get();
+				SwingUtilities.invokeLater(this::refreshData);
+			}
+			catch (Exception e) {
+				logger.warn("Command cancelled or failed: {}", e.getMessage());
+			}
+		}).start();
 	}
 
 	/**
@@ -576,10 +588,21 @@ public class SpimDataTransformViewer extends JFrame {
 			return;
 		}
 
-		// Run command with pre-filled values
-		commandService.run(AddSpimDataTransformCommand.class, true,
+		// Run command with pre-filled values, then refresh when done
+		Future<?> future = commandService.run(AddSpimDataTransformCommand.class, true,
 			"sacs", selectedSacs,
 			"timepoint_range", tpRange);
+
+		// Wait in background thread, then refresh on EDT when done
+		new Thread(() -> {
+			try {
+				future.get();
+				SwingUtilities.invokeLater(this::refreshData);
+			}
+			catch (Exception e) {
+				logger.warn("Command cancelled or failed: {}", e.getMessage());
+			}
+		}).start();
 	}
 
 	/**
@@ -643,11 +666,22 @@ public class SpimDataTransformViewer extends JFrame {
 			return;
 		}
 
-		// Run command with pre-filled values
-		commandService.run(RemoveSpimDataTransformsCommand.class, true,
+		// Run command with pre-filled values, then refresh when done
+		Future<?> future = commandService.run(RemoveSpimDataTransformsCommand.class, true,
 			"sacs", selectedSacs,
 			"timepoint_range", tpRange,
 			"transform_index_range", trRange);
+
+		// Wait in background thread, then refresh on EDT when done
+		new Thread(() -> {
+			try {
+				future.get();
+				SwingUtilities.invokeLater(this::refreshData);
+			}
+			catch (Exception e) {
+				logger.warn("Command cancelled or failed: {}", e.getMessage());
+			}
+		}).start();
 	}
 
 	/**
