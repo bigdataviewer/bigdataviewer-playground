@@ -233,31 +233,22 @@ public class SourceAndConverterServiceUITransferHandler extends
 			else if (t.isDataFlavorSupported(nodesFlavor)) {
 				DefaultMutableTreeNode[] nodes = (DefaultMutableTreeNode[]) t
 					.getTransferData(nodesFlavor);
-				if (nodes.length != 1) {
-					logger.info("Only one node should be dragged");
-					return false;
-				}
-				if ((nodes[0]) instanceof SourceFilterNode) {
 
-					JTree.DropLocation dl = (JTree.DropLocation) supp.getDropLocation();
-					TreePath dest = dl.getPath();
+				JTree.DropLocation dl = (JTree.DropLocation) supp.getDropLocation();
+				TreePath dest = dl.getPath();
+				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) dest
+					.getLastPathComponent();
 
-					DefaultMutableTreeNode parent = (DefaultMutableTreeNode) dest
-						.getLastPathComponent();
-
-					SourceFilterNode sfn = (SourceFilterNode) (nodes[0]);
-					parent.add(sfn);
-
-					return true;
-
-				}
-				else {
-					logger.debug("A source filter node should be selected");
-					logger.debug("You have selected a node of class " + nodes[0]
-						.getClass().getName());
-					return false;
+				for (DefaultMutableTreeNode node : nodes) {
+					if (node instanceof SourceFilterNode) {
+						parent.add((SourceFilterNode) node);
+					}
+					else {
+						logger.debug("Skipping non-SourceFilterNode: " + node.getClass().getName());
+					}
 				}
 
+				return true;
 			}
 		}
 		catch (UnsupportedFlavorException | IOException e) {
