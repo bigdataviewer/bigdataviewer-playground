@@ -523,8 +523,10 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 			BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService, this, true,
 				() -> sacService.getUI().removeBdvHandleNodes(bdvh));
 
-			((SourceFilterNode) sacService.getUI().getTreeModel().getRoot()).insert(
-				node, 0);
+			sacService.getUI().getTreeModel().
+
+			//((SourceFilterNode) sacService.getUI().getTreeModel().getRoot()).insert(
+			//	node, 0);
 		}
 	}
 
