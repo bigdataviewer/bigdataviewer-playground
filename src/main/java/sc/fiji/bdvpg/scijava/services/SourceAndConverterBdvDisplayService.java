@@ -46,9 +46,6 @@ import org.scijava.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.services.ui.BdvHandleFilterNode;
-import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
-import sc.fiji.bdvpg.scijava.services.ui.tree.FilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.tree.SourceTreeModel;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
@@ -516,9 +513,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 				(SourceAndConverterService) SourceAndConverterServices
 					.getSourceAndConverterService();
 			SourceTreeModel model = sacService.getUI().getSourceTreeModel();
-			BdvHandleFilterNode node = new BdvHandleFilterNode(windowTitle,bdvh);
-			model.addNode(model.getRoot(), node);
-			//node.add(new SourceFilterNode(model, "All Sources", (sac) -> true, true));
+			model.addBdvHandle(bdvh, windowTitle, model.getRoot());
 
 			// ------------ Allows to remove the BdvHandle from the objectService when
 			// closed by the user
