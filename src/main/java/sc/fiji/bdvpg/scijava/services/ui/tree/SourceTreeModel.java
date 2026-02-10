@@ -241,11 +241,49 @@ public class SourceTreeModel {
                 sourceIndex.remove(sac);
             }
 
+            // Fire source removal event first, so the view can update
+            // source nodes before the structural change removes parent nodes
             SourcesChangedEvent event = new SourcesChangedEvent(
                     SourcesChangedEvent.Type.REMOVED, sources, affectedNodes);
             fireSourcesChanged(event);
+
+            // Auto-remove SpimData nodes that have become empty
+            removeEmptySpimDataNodes();
         } finally {
             lock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Checks all SpimData filter nodes and removes any that have no remaining output sources.
+     * This is called after source removal to clean up empty SpimData nodes.
+     */
+    private void removeEmptySpimDataNodes() {
+        List<AbstractSpimData<?>> toRemove = new ArrayList<>();
+        for (Map.Entry<AbstractSpimData<?>, SpimDataFilterNode> entry : spimDataIndex.entrySet()) {
+            if (!entry.getValue().hasOutputSources()) {
+                toRemove.add(entry.getKey());
+            }
+        }
+        for (AbstractSpimData<?> spimData : toRemove) {
+            SpimDataFilterNode spimDataNode = spimDataIndex.remove(spimData);
+            int removeIndex = root.getChildren().indexOf(spimDataNode);
+            root.removeChild(spimDataNode);
+
+            // Clean up source index (should be empty, but be safe)
+            for (SourceAndConverter<?> sac : spimDataNode.getOutputSources()) {
+                Set<FilterNode> nodes = sourceIndex.get(sac);
+                if (nodes != null) {
+                    removeNodesRecursively(spimDataNode, nodes);
+                }
+            }
+
+            StructureChangedEvent structEvent = new StructureChangedEvent(
+                    StructureChangedEvent.Type.NODES_REMOVED,
+                    Collections.singletonList(spimDataNode),
+                    root,
+                    Collections.singletonList(removeIndex));
+            fireStructureChanged(structEvent);
         }
     }
 

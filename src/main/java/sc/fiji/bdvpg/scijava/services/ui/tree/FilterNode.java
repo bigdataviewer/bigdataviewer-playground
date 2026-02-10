@@ -160,6 +160,13 @@ public class FilterNode {
     }
 
     /**
+     * @return true if this node has any output sources
+     */
+    public synchronized boolean hasOutputSources() {
+        return !outputSources.isEmpty();
+    }
+
+    /**
      * Tests if this node has already processed the given source.
      * @param sac the source to test
      * @return true if the source has passed through this node's filter and is in outputSources

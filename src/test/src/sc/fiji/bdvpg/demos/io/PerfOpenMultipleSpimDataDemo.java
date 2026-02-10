@@ -63,7 +63,7 @@ public class PerfOpenMultipleSpimDataDemo
 		// SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
 
 		tic();
-		for (int i=0;i<1000;i++) {
+		for (int i=0;i<300;i++) {
 			// Import SpimData
 			new SpimDataFromXmlImporter( "src/test/resources/mri-stack.xml" ).run();
 			new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
@@ -85,7 +85,7 @@ public class PerfOpenMultipleSpimDataDemo
 		Instant finish = Instant.now();
 		timeElapsedInS = Duration.between(start, finish).toMillis()/1000;
 
-		System.out.println("It took "+timeElapsedInS+" s to open 300 datasets");
+		System.out.println("It took "+timeElapsedInS+" s to open 900 datasets");
 	}
 
 }
