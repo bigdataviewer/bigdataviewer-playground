@@ -32,6 +32,9 @@ package sc.fiji.bdvpg.scijava.services.ui;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerStateChangeListener;
+import sc.fiji.bdvpg.scijava.services.ui.tree.FilterNode;
+import sc.fiji.bdvpg.scijava.services.ui.tree.SourceTreeModel;
+
 import javax.swing.tree.DefaultTreeModel;
 
 /**
@@ -45,7 +48,7 @@ import javax.swing.tree.DefaultTreeModel;
  * @author Nicolas Chiaruttini, BIOP, EPFL, 2020
  */
 
-public class BdvHandleFilterNode extends SourceFilterNode {
+public class BdvHandleFilterNode extends FilterNode {
 
 	public final BdvHandle bdvh;
 	final String name;
@@ -56,17 +59,17 @@ public class BdvHandleFilterNode extends SourceFilterNode {
 		return bdvh.getViewerPanel().state().getSources().contains(sac);
 	}
 
-	public BdvHandleFilterNode(DefaultTreeModel model, String name,
+	public BdvHandleFilterNode(String name,
 		BdvHandle bdvh)
 	{
-		super(model, name, null, false);
+		super( name, null, false);
 		this.name = name;
-		this.filter = this::filter;
+		this.setFilter(this::filter);
 		this.bdvh = bdvh;
 
 		vscl = (change) -> {
 			if (change.toString().equals("NUM_SOURCES_CHANGED")) {
-				update(new SourceFilterNode.FilterUpdateEvent());
+				//update(new SourceFilterNode.FilterUpdateEvent());
 			}
 		};
 
@@ -83,7 +86,7 @@ public class BdvHandleFilterNode extends SourceFilterNode {
 
 	@Override
 	public Object clone() {
-		return new BdvHandleFilterNode(model, name, bdvh);
+		return new BdvHandleFilterNode( name, bdvh);
 	}
 
 }

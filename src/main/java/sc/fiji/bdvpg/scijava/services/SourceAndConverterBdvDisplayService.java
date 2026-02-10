@@ -48,6 +48,8 @@ import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.services.ui.BdvHandleFilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
+import sc.fiji.bdvpg.scijava.services.ui.tree.FilterNode;
+import sc.fiji.bdvpg.scijava.services.ui.tree.SourceTreeModel;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
 import sc.fiji.bdvpg.bdv.supplier.IBdvSupplier;
@@ -513,20 +515,21 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 			final SourceAndConverterService sacService =
 				(SourceAndConverterService) SourceAndConverterServices
 					.getSourceAndConverterService();
-			DefaultTreeModel model = sacService.getUI().getTreeModel();
-			BdvHandleFilterNode node = new BdvHandleFilterNode(model, windowTitle,
-				bdvh);
-			node.add(new SourceFilterNode(model, "All Sources", (sac) -> true, true));
+			SourceTreeModel model = sacService.getUI().getSourceTreeModel();
+			BdvHandleFilterNode node = new BdvHandleFilterNode(windowTitle,bdvh);
+			model.addNode(model.getRoot(), node);
+			//node.add(new SourceFilterNode(model, "All Sources", (sac) -> true, true));
 
 			// ------------ Allows to remove the BdvHandle from the objectService when
 			// closed by the user
 			BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService, this, true,
 				() -> sacService.getUI().removeBdvHandleNodes(bdvh));
 
-			sacService.getUI().getTreeModel().
+			//sacService.getUI().getTreeModel().
 
 			//((SourceFilterNode) sacService.getUI().getTreeModel().getRoot()).insert(
 			//	node, 0);
+
 		}
 	}
 

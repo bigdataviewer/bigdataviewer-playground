@@ -121,9 +121,10 @@ public class SourceTreeView implements SourceTreeModelListener {
 
     /**
      * Recursively builds tree nodes from the model.
+     * FilterNode methods return thread-safe copies, so no additional copying needed here.
      */
     private void buildTreeNode(FilterNode filterNode, DefaultMutableTreeNode treeNode) {
-        // Add child filter nodes
+        // Add child filter nodes - getChildren() returns a thread-safe copy
         for (FilterNode child : filterNode.getChildren()) {
             DefaultMutableTreeNode childTreeNode = new DefaultMutableTreeNode(child.getName());
             filterToTreeNode.put(child, childTreeNode);
@@ -133,6 +134,7 @@ public class SourceTreeView implements SourceTreeModelListener {
 
         // Add source nodes if this node displays sources
         if (filterNode.isDisplaySources()) {
+            // getOutputSources() returns a thread-safe copy
             List<SourceAndConverter<?>> sortedSources = SourceAndConverterHelper.sortDefaultGeneric(
                     filterNode.getOutputSources());
             for (SourceAndConverter<?> sac : sortedSources) {
@@ -400,6 +402,7 @@ public class SourceTreeView implements SourceTreeModelListener {
 
     /**
      * Recursively cleans up mappings for a removed node and its children.
+     * FilterNode.getChildren() returns thread-safe copies.
      */
     private void cleanupMappings(FilterNode filterNode, DefaultMutableTreeNode treeNode) {
         // Remove filter node mapping
@@ -421,7 +424,7 @@ public class SourceTreeView implements SourceTreeModelListener {
             }
         }
 
-        // Recursively clean up children
+        // Recursively clean up children - getChildren() returns a thread-safe copy
         for (FilterNode child : filterNode.getChildren()) {
             DefaultMutableTreeNode childTreeNode = filterToTreeNode.get(child);
             if (childTreeNode != null) {
