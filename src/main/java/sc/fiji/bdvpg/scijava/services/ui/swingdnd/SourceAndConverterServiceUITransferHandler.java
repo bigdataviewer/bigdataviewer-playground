@@ -228,17 +228,6 @@ public class SourceAndConverterServiceUITransferHandler extends
 			else if (t.isDataFlavorSupported(nodesFlavor)) {
 				DefaultMutableTreeNode[] nodes = (DefaultMutableTreeNode[]) t
 					.getTransferData(nodesFlavor);
-				if (nodes.length != 1) {
-					logger.info("Only one node should be dragged");
-					return false;
-				}
-
-				// Resolve the dragged tree node to a FilterNode
-				FilterNode originalFilterNode = sourceTreeView.getFilterNode(nodes[0]);
-				if (originalFilterNode == null) {
-					logger.debug("A filter node should be selected for drag");
-					return false;
-				}
 
 				// Resolve the drop target to a FilterNode
 				JTree.DropLocation dl = (JTree.DropLocation) supp.getDropLocation();
@@ -252,14 +241,23 @@ public class SourceAndConverterServiceUITransferHandler extends
 					return false;
 				}
 
-				// Create a copy — the original stays in its old location (COPY mode)
-				FilterNode copy = new FilterNode(originalFilterNode.getName(),
-					originalFilterNode.getFilter(),
-					originalFilterNode.isDisplaySources());
+				boolean anyAdded = false;
+				for (DefaultMutableTreeNode node : nodes) {
+					FilterNode originalFilterNode = sourceTreeView.getFilterNode(node);
+					if (originalFilterNode == null) {
+						logger.debug("Skipping non-filter node: " + node);
+						continue;
+					}
 
-				// Use the model API — thread-safe, fires events, view updates
-				sourceTreeModel.addNode(parentFilterNode, copy);
-				return true;
+					// Create a copy — the original stays in its old location (COPY mode)
+					FilterNode copy = new FilterNode(originalFilterNode.getName(),
+						originalFilterNode.getFilter(),
+						originalFilterNode.isDisplaySources());
+
+					sourceTreeModel.addNode(parentFilterNode, copy);
+					anyAdded = true;
+				}
+				return anyAdded;
 			}
 		}
 		catch (UnsupportedFlavorException | IOException e) {
