@@ -38,7 +38,6 @@ import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
-import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterTreeCellRenderer;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -138,7 +137,6 @@ public class SwingSourceAndConverterWidget extends
 	public void set(final WidgetModel model) {
 		super.set(model);
 		tree = new JTreeLeavesOnlySelectable(bss.getUI().getTreeModel());
-		tree.setCellRenderer(new SourceAndConverterTreeCellRenderer());
 		// Only one node selected (needs to be a leaf
 		tree.getSelectionModel().setSelectionMode(
 			TreeSelectionModel.SINGLE_TREE_SELECTION);

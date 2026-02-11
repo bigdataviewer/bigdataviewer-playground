@@ -37,7 +37,6 @@ import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
-import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterTreeCellRenderer;
 import sc.fiji.bdvpg.scijava.services.ui.swingdnd.JListTransferHandler;
 import sc.fiji.bdvpg.scijava.services.ui.swingdnd.SourceAndConverterServiceUITransferHandler;
 
@@ -109,7 +108,6 @@ public class SwingSourceAndConverterSortedListWidget extends
 		innerPanel.setLayout(new GridLayout(0, 2));
 		getComponent().add(innerPanel, BorderLayout.CENTER);
 		tree = new JTree(bss.getUI().getTreeModel());
-		tree.setCellRenderer(new SourceAndConverterTreeCellRenderer());
 		tree.setDragEnabled(true);
 		tree.setTransferHandler(new SourceAndConverterServiceUITransferHandler(
 			bss.getUI().getSourceTreeModel(), bss.getUI().getSourceTreeView()));

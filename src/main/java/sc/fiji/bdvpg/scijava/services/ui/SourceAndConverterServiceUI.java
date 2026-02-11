@@ -158,7 +158,6 @@ public class SourceAndConverterServiceUI {
 		tree = new JTree(sourceTreeView.getTreeModel());
 
 		if (makeGUI) {
-			tree.setCellRenderer(new SourceAndConverterTreeCellRenderer());
 			frame = new JFrame("BDV Sources");
 			JPanel panel = new JPanel(new BorderLayout());
 			JScrollPane treeView = new JScrollPane(tree);
