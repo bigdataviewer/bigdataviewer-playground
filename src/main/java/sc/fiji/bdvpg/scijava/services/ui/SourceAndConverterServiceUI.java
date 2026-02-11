@@ -192,7 +192,8 @@ public class SourceAndConverterServiceUI {
 			// Enables:
 			// - drag -> SourceAndConverters
 			// - drop -> automatically import xml BDV datasets
-			tree.setTransferHandler(new SourceAndConverterServiceUITransferHandler());
+			tree.setTransferHandler(new SourceAndConverterServiceUITransferHandler(
+				sourceTreeModel, sourceTreeView));
 
 			// get the screen size as a java dimension
 			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

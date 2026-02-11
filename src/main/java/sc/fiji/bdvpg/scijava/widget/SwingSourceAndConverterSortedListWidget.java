@@ -111,7 +111,7 @@ public class SwingSourceAndConverterSortedListWidget extends
 		tree = new JTree(bss.getUI().getTreeModel());
 		tree.setCellRenderer(new SourceAndConverterTreeCellRenderer());
 		tree.setDragEnabled(true);
-		tree.setTransferHandler(new SourceAndConverterServiceUITransferHandler());
+		//tree.setTransferHandler(new SourceAndConverterServiceUITransferHandler());
 		JScrollPane scrollPaneTree = new JScrollPane(tree);
 		scrollPaneTree.setPreferredSize(new Dimension(350, 200));
 		innerPanel.add(scrollPaneTree);

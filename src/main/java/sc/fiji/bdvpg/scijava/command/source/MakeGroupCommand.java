@@ -35,7 +35,8 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
+import sc.fiji.bdvpg.scijava.services.ui.tree.FilterNode;
+import sc.fiji.bdvpg.scijava.services.ui.tree.SourceTreeModel;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -70,8 +71,9 @@ public class MakeGroupCommand implements BdvPlaygroundActionCommand {
 	public void run() {
 		final Set<SourceAndConverter<?>> sacs_set = new HashSet<>(Arrays.asList(
 			sacs));
-		SourceFilterNode sfn = new SourceFilterNode(sac_service.getUI()
-			.getTreeModel(), groupname, sacs_set::contains, displaysources);
-		sac_service.getUI().addNode(sfn);
+		FilterNode filterNode = new FilterNode(groupname, sacs_set::contains,
+			displaysources);
+		SourceTreeModel model = sac_service.getUI().getSourceTreeModel();
+		model.addNode(model.getRoot(), filterNode);
 	}
 }

@@ -464,6 +464,29 @@ public class SourceTreeModel {
     }
 
     /**
+     * Clears all sources from a node and its descendants, and removes them
+     * from the source index. Used before repopulating a node from a new parent
+     * (e.g. during drag-and-drop reparenting).
+     *
+     * @param node the node to clear
+     */
+    private void clearNodeSources(FilterNode node) {
+        // Clean source index for this node and all descendants
+        for (SourceAndConverter<?> sac : node.getOutputSources()) {
+            Set<FilterNode> nodes = sourceIndex.get(sac);
+            if (nodes != null) {
+                removeNodesRecursively(node, nodes);
+            }
+        }
+        // Clear the node's own sources
+        node.clearSources();
+        // Recursively clear children
+        for (FilterNode child : node.getChildren()) {
+            clearNodeSources(child);
+        }
+    }
+
+    /**
      * Gets the SpimDataFilterNode for a SpimData.
      *
      * @param spimData the SpimData to look up
@@ -699,6 +722,11 @@ public class SourceTreeModel {
     public void addNode(FilterNode parent, FilterNode child) {
         lock.writeLock().lock();
         try {
+            // Clear old sources from the child (and its descendants) so that
+            // the node is repopulated purely from its new parent's outputs.
+            // This is essential when reparenting a node via drag-and-drop.
+            clearNodeSources(child);
+
             // Populate with sources from parent BEFORE firing NODES_ADDED
             // This prevents the view from seeing an empty node and then receiving
             // a separate SOURCES_ADDED event that would double the source tree nodes
