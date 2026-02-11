@@ -57,6 +57,7 @@ public class BdvHandleFilterNode extends FilterNode {
         super(name, null, false);
         this.bdvHandle = bdvHandle;
         setFilter(this::filter);
+        setDynamicFilter(true);
 
         // Listen for source changes in the BdvHandle
         stateListener = change -> {

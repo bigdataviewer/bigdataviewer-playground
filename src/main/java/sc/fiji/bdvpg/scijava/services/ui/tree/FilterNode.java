@@ -57,6 +57,7 @@ public class FilterNode {
     private String name;
     private Predicate<SourceAndConverter<?>> filter;
     private final boolean displaySources;
+    private boolean dynamicFilter;
     private FilterNode parent;
     private final List<FilterNode> children = new ArrayList<>();
 
@@ -105,6 +106,24 @@ public class FilterNode {
      */
     public void setFilter(Predicate<SourceAndConverter<?>> filter) {
         this.filter = filter;
+    }
+
+    /**
+     * @return true if this node's filter can change its result for the same source over time
+     */
+    public boolean isDynamicFilter() {
+        return dynamicFilter;
+    }
+
+    /**
+     * Marks this node's filter as dynamic, meaning the same source may pass or fail
+     * at different times. When true, {@link #addSource} always re-evaluates the filter
+     * instead of skipping sources already in {@code inputSources}.
+     *
+     * @param dynamicFilter true if the filter result can change over time
+     */
+    public void setDynamicFilter(boolean dynamicFilter) {
+        this.dynamicFilter = dynamicFilter;
     }
 
     /**
@@ -237,7 +256,14 @@ public class FilterNode {
      */
     synchronized boolean addSource(SourceAndConverter<?> sac) {
         if (inputSources.contains(sac)) {
-            return false; // Already processed
+            if (!dynamicFilter) {
+                return false; // Static filter: already processed, result won't change
+            }
+            // Dynamic filter: re-evaluate, but only report as added if newly passing
+            if (filter.test(sac)) {
+                return outputSources.add(sac); // returns false if already present
+            }
+            return false;
         }
         inputSources.add(sac);
         if (filter.test(sac)) {

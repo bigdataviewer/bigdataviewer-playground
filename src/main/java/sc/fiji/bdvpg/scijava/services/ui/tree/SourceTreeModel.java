@@ -519,10 +519,9 @@ public class SourceTreeModel {
             BdvHandleFilterNode bdvNode = new BdvHandleFilterNode(name, bdvHandle);
             bdvHandleIndex.put(bdvHandle, bdvNode);
 
-            // Set up callback for filter updates
+            // Set up callback for filter updates when sources are added/removed from BDV
             bdvNode.setFilterUpdateCallback(() -> {
-                // Re-evaluate all sources in this node
-                updateSources(bdvNode.getInputSources());
+                refreshBdvHandleNode(bdvHandle);
             });
 
             // Add "All Sources" child
@@ -538,6 +537,19 @@ public class SourceTreeModel {
                     parentNode,
                     Collections.singletonList(insertIndex));
             fireStructureChanged(event);
+
+            // Populate with sources already in the parent
+            Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
+            for (SourceAndConverter<?> sac : parentNode.getOutputSources()) {
+                addSourceToNode(sac, bdvNode, affectedNodes);
+            }
+            if (!affectedNodes.isEmpty()) {
+                SourcesChangedEvent sourcesEvent = new SourcesChangedEvent(
+                        SourcesChangedEvent.Type.ADDED,
+                        parentNode.getOutputSources(),
+                        affectedNodes);
+                fireSourcesChanged(sourcesEvent);
+            }
         } finally {
             lock.writeLock().unlock();
         }
@@ -617,6 +629,70 @@ public class SourceTreeModel {
         }
         for (FilterNode child : node.getChildren()) {
             collectBdvHandleNodes(child, bdvHandle, result);
+        }
+    }
+
+    /**
+     * Refreshes a BdvHandle node by comparing the BDV viewer's current sources
+     * against the node's output, then adding/removing the difference.
+     *
+     * <p>Called by the BdvHandleFilterNode's state listener when sources
+     * are added/removed from the BDV viewer.</p>
+     *
+     * @param bdvHandle the BdvHandle whose node to refresh
+     */
+    private void refreshBdvHandleNode(BdvHandle bdvHandle) {
+        lock.writeLock().lock();
+        try {
+            BdvHandleFilterNode bdvNode = bdvHandleIndex.get(bdvHandle);
+            if (bdvNode == null) return;
+
+            // Sources currently in the BDV viewer
+            Set<SourceAndConverter<?>> bdvSources = new HashSet<>(
+                    bdvHandle.getViewerPanel().state().getSources());
+
+            // Sources currently accepted by this node
+            Set<SourceAndConverter<?>> currentOutput = bdvNode.getOutputSources();
+
+            // Add sources that are in BDV but not yet in this node's output
+            List<SourceAndConverter<?>> toAdd = new ArrayList<>();
+            for (SourceAndConverter<?> sac : bdvSources) {
+                if (!currentOutput.contains(sac)) {
+                    toAdd.add(sac);
+                }
+            }
+            if (!toAdd.isEmpty()) {
+                Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
+                for (SourceAndConverter<?> sac : toAdd) {
+                    addSourceToNode(sac, bdvNode, affectedNodes);
+                }
+                if (!affectedNodes.isEmpty()) {
+                    SourcesChangedEvent event = new SourcesChangedEvent(
+                            SourcesChangedEvent.Type.ADDED, toAdd, affectedNodes);
+                    fireSourcesChanged(event);
+                }
+            }
+
+            // Remove sources that are in this node's output but no longer in BDV
+            List<SourceAndConverter<?>> toRemove = new ArrayList<>();
+            for (SourceAndConverter<?> sac : currentOutput) {
+                if (!bdvSources.contains(sac)) {
+                    toRemove.add(sac);
+                }
+            }
+            if (!toRemove.isEmpty()) {
+                Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
+                for (SourceAndConverter<?> sac : toRemove) {
+                    removeSourceFromNode(sac, bdvNode, affectedNodes);
+                }
+                if (!affectedNodes.isEmpty()) {
+                    SourcesChangedEvent event = new SourcesChangedEvent(
+                            SourcesChangedEvent.Type.REMOVED, toRemove, affectedNodes);
+                    fireSourcesChanged(event);
+                }
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
