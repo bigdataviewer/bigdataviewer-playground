@@ -267,8 +267,7 @@ public class FilterNode {
         }
         inputSources.add(sac);
         if (filter.test(sac)) {
-            outputSources.add(sac);
-            return true;
+            return outputSources.add(sac);
         }
         return false;
     }
