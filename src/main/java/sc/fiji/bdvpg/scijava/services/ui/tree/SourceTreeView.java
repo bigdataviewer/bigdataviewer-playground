@@ -128,6 +128,7 @@ public class SourceTreeView implements SourceTreeModelListener {
         for (FilterNode child : filterNode.getChildren()) {
             DefaultMutableTreeNode childTreeNode = new DefaultMutableTreeNode(child.getName());
             filterToTreeNode.put(child, childTreeNode);
+
             treeNode.add(childTreeNode);
             buildTreeNode(child, childTreeNode);
         }
@@ -193,22 +194,35 @@ public class SourceTreeView implements SourceTreeModelListener {
             }
 
             // Get all sources currently in the tree node (both filter children and source children)
-            List<SourceAndConverter<?>> allSources = new ArrayList<>();
+            Set<SourceAndConverter<?>> existingSources = new HashSet<>();
             for (int i = 0; i < treeNode.getChildCount(); i++) {
                 DefaultMutableTreeNode child = (DefaultMutableTreeNode) treeNode.getChildAt(i);
                 Object userObject = child.getUserObject();
                 if (userObject instanceof RenamableSourceAndConverter) {
-                    allSources.add(((RenamableSourceAndConverter) userObject).sac);
+                    existingSources.add(((RenamableSourceAndConverter) userObject).sac);
                 }
             }
 
-            // Add new sources and sort
-            allSources.addAll(sources);
+            // Filter out sources already present in the tree (prevents duplicates from race conditions
+            // between NODES_ADDED/buildTreeNode and SOURCES_ADDED/applySourcesAdded)
+            List<SourceAndConverter<?>> newSources = new ArrayList<>();
+            for (SourceAndConverter<?> sac : sources) {
+                if (!existingSources.contains(sac)) {
+                    newSources.add(sac);
+                }
+            }
+            if (newSources.isEmpty()) {
+                continue;
+            }
+
+            // Combine existing and new sources, then sort
+            List<SourceAndConverter<?>> allSources = new ArrayList<>(existingSources);
+            allSources.addAll(newSources);
             List<SourceAndConverter<?>> sortedSources = SourceAndConverterHelper.sortDefaultGeneric(allSources);
 
             // Find insertion points for each new source
             List<int[]> insertions = new ArrayList<>();
-            for (SourceAndConverter<?> sac : sources) {
+            for (SourceAndConverter<?> sac : newSources) {
                 int sortedIndex = sortedSources.indexOf(sac);
                 // Account for filter node children (non-source children)
                 int filterChildCount = countFilterChildren(treeNode);
@@ -216,6 +230,7 @@ public class SourceTreeView implements SourceTreeModelListener {
 
                 DefaultMutableTreeNode sourceNode = new DefaultMutableTreeNode(
                         new RenamableSourceAndConverter(sac));
+
                 treeNode.insert(sourceNode, treeIndex);
                 sourceToTreeNodes.computeIfAbsent(sac, k -> new HashSet<>()).add(sourceNode);
                 insertions.add(new int[]{treeIndex});

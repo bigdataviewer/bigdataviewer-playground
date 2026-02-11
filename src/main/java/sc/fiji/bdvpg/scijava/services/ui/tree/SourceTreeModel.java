@@ -386,19 +386,10 @@ public class SourceTreeModel {
             SpimDataFilterNode spimDataNode = spimDataFilterFactory.createHierarchy(spimData, name);
             spimDataIndex.put(spimData, spimDataNode);
 
-            // Add to root
-            int insertIndex = root.getChildCount();
-            root.addChild(spimDataNode);
-
-            // Fire structure changed event
-            StructureChangedEvent event = new StructureChangedEvent(
-                    StructureChangedEvent.Type.NODES_ADDED,
-                    Collections.singletonList(spimDataNode),
-                    root,
-                    Collections.singletonList(insertIndex));
-            fireStructureChanged(event);
-
-            // Now populate the new node with any sources already registered for this SpimData
+            // Populate the new node with any sources already registered for this SpimData
+            // This must happen BEFORE firing NODES_ADDED, because the view's buildTreeNode
+            // (called via invokeLater) will see the populated state and build source nodes.
+            // Firing a separate SOURCES_ADDED after NODES_ADDED would cause duplicates.
             List<SourceAndConverter<?>> existingSources = sourceAndConverterService
                     .getSourceAndConverterFromSpimdata(spimData);
             if (!existingSources.isEmpty()) {
@@ -406,12 +397,18 @@ public class SourceTreeModel {
                 for (SourceAndConverter<?> sac : existingSources) {
                     addSourceToNode(sac, spimDataNode, affectedNodes);
                 }
-                if (!affectedNodes.isEmpty()) {
-                    SourcesChangedEvent sourcesEvent = new SourcesChangedEvent(
-                            SourcesChangedEvent.Type.ADDED, existingSources, affectedNodes);
-                    fireSourcesChanged(sourcesEvent);
-                }
             }
+
+            // Add to root and fire structure changed event
+            int insertIndex = root.getChildCount();
+            root.addChild(spimDataNode);
+
+            StructureChangedEvent event = new StructureChangedEvent(
+                    StructureChangedEvent.Type.NODES_ADDED,
+                    Collections.singletonList(spimDataNode),
+                    root,
+                    Collections.singletonList(insertIndex));
+            fireStructureChanged(event);
         } finally {
             lock.writeLock().unlock();
         }
@@ -528,6 +525,14 @@ public class SourceTreeModel {
             FilterNode allSourcesNode = new FilterNode("All Sources", sac -> true, true);
             bdvNode.addChild(allSourcesNode);
 
+            // Populate with sources already in the parent BEFORE firing NODES_ADDED
+            // This prevents the view from seeing an empty node and then receiving
+            // a separate SOURCES_ADDED event that would double the source tree nodes
+            for (SourceAndConverter<?> sac : parentNode.getOutputSources()) {
+                Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
+                addSourceToNode(sac, bdvNode, affectedNodes);
+            }
+
             int insertIndex = parentNode.getChildCount();
             parentNode.addChild(bdvNode);
 
@@ -537,19 +542,6 @@ public class SourceTreeModel {
                     parentNode,
                     Collections.singletonList(insertIndex));
             fireStructureChanged(event);
-
-            // Populate with sources already in the parent
-            Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
-            for (SourceAndConverter<?> sac : parentNode.getOutputSources()) {
-                addSourceToNode(sac, bdvNode, affectedNodes);
-            }
-            if (!affectedNodes.isEmpty()) {
-                SourcesChangedEvent sourcesEvent = new SourcesChangedEvent(
-                        SourcesChangedEvent.Type.ADDED,
-                        parentNode.getOutputSources(),
-                        affectedNodes);
-                fireSourcesChanged(sourcesEvent);
-            }
         } finally {
             lock.writeLock().unlock();
         }
@@ -707,31 +699,24 @@ public class SourceTreeModel {
     public void addNode(FilterNode parent, FilterNode child) {
         lock.writeLock().lock();
         try {
-            int insertIndex = parent.getChildCount();
-            parent.addChild(child);
-
-            // Populate with sources from parent
-            Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
+            // Populate with sources from parent BEFORE firing NODES_ADDED
+            // This prevents the view from seeing an empty node and then receiving
+            // a separate SOURCES_ADDED event that would double the source tree nodes
             for (SourceAndConverter<?> sac : parent.getOutputSources()) {
+                Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
                 addSourceToNode(sac, child, affectedNodes);
             }
 
-            // Fire structure event
+            int insertIndex = parent.getChildCount();
+            parent.addChild(child);
+
+            // Fire structure event only - no separate SOURCES_ADDED needed
             StructureChangedEvent structEvent = new StructureChangedEvent(
                     StructureChangedEvent.Type.NODES_ADDED,
                     Collections.singletonList(child),
                     parent,
                     Collections.singletonList(insertIndex));
             fireStructureChanged(structEvent);
-
-            // Fire sources event if any sources were added
-            if (!affectedNodes.isEmpty()) {
-                SourcesChangedEvent sourcesEvent = new SourcesChangedEvent(
-                        SourcesChangedEvent.Type.ADDED,
-                        parent.getOutputSources(),
-                        affectedNodes);
-                fireSourcesChanged(sourcesEvent);
-            }
         } finally {
             lock.writeLock().unlock();
         }
