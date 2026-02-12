@@ -313,6 +313,32 @@ public class SourceAndConverterService extends AbstractService implements
 		}
 	}
 
+	/**
+	 * Registers multiple sources in a single batch operation with a single UI update.
+	 * This is more efficient than calling {@link #register(SourceAndConverter)} multiple times
+	 * when registering many sources at once.
+	 *
+	 * @param sources the sources to register
+	 */
+	public synchronized void registerBatch(Collection<SourceAndConverter<?>> sources) {
+		List<SourceAndConverter<?>> newSources = new ArrayList<>();
+		for (SourceAndConverter<?> sac : sources) {
+			if (!isRegistered(sac)) {
+				if (sacToMetadata.getIfPresent(sac) == null) {
+					Map<String, Object> sourceData = new HashMap<>();
+					sourceData.put(UNIQUE_ID_KEY, getNewUniqueId());
+					sacToMetadata.put(sac, sourceData);
+				}
+				objectService.addObject(sac);
+				newSources.add(sac);
+			}
+		}
+		// Single UI update for all sources
+		if (!newSources.isEmpty()) {
+			ui.addSources(newSources);
+		}
+	}
+
 	private AbstractGlobalCache globalCache;
 
 	public AbstractGlobalCache getCache() {
@@ -505,13 +531,20 @@ public class SourceAndConverterService extends AbstractService implements
 
         boolean showUI = !noTree;
 
+		// Collect all sources for batch registration
+		List<SourceAndConverter<?>> allSources = new ArrayList<>();
 		setupIdToSourceAndConverter.keySet().forEach(id -> {
-			register(setupIdToSourceAndConverter.get(id), options);
-			linkToSpimData(setupIdToSourceAndConverter.get(id), asd, id);
-			if (showUI) {
-                ui.update(setupIdToSourceAndConverter.get(id));
-            }
+			SourceAndConverter<?> sac = setupIdToSourceAndConverter.get(id);
+			// Register without tree update (we'll batch update later)
+			register(sac, "no tree");
+			linkToSpimData(sac, asd, id);
+			allSources.add(sac);
 		});
+
+		// Single batch UI update for all sources
+		if (showUI && !allSources.isEmpty()) {
+			ui.addSources(allSources);
+		}
 
 		WrapBasicImgLoader.removeWrapperIfPresent(asd);
 

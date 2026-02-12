@@ -37,7 +37,6 @@ import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
-import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterTreeCellRenderer;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import javax.swing.JPanel;
@@ -133,7 +132,6 @@ public class SwingSourceAndConverterListWidget extends
 	public void set(final WidgetModel model) {
 		super.set(model);
 		tree = new JTree(bss.getUI().getTreeModel());
-		tree.setCellRenderer(new SourceAndConverterTreeCellRenderer());
 
 		JScrollPane scrollPane = new JScrollPane(tree);
 		scrollPane.setPreferredSize(new Dimension(350, 200));

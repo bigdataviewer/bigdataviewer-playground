@@ -70,24 +70,28 @@ public class SourceAndConverterPopupMenu {
 	private final JPopupMenu popup;
 	private final Supplier<SourceAndConverter<?>[]> sacs_supplier;
 
-	final public static String[] defaultPopupActions = { getCommandName(
-		BdvSourcesAdderCommand.class), getCommandName(BdvSourcesShowCommand.class),
-		getCommandName(BdvSourcesRemoverCommand.class), "Inspect Sources",
-		"PopupLine", getCommandName(SourcesInvisibleMakerCommand.class),
-		getCommandName(SourcesVisibleMakerCommand.class), getCommandName(
-			InteractiveBrightnessAdjusterCommand.class), getCommandName(
-				SourceColorChangerCommand.class), "PopupLine", getCommandName(
-					BasicTransformerCommand.class), getCommandName(
-						SourcesDuplicatorCommand.class), getCommandName(
-							ManualTransformCommand.class), getCommandName(
-								TransformedSourceWrapperCommand.class), getCommandName(
-									SourcesResamplerCommand.class), getCommandName(
-										ColorSourceCreatorCommand.class), getCommandName(
-											LUTSourceCreatorCommand.class), "PopupLine",
-		getCommandName(SourcesRemoverCommand.class), getCommandName(
-			XmlHDF5ExporterCommand.class), "PopupLine", getCommandName(
-				MakeMetadataFilterNodeCommand.class)
-
+	final public static String[] defaultPopupActions = {
+			getCommandName(BdvSourcesAdderCommand.class),
+			getCommandName(BdvSourcesShowCommand.class),
+			getCommandName(BdvSourcesRemoverCommand.class),
+			"Inspect Sources", "PopupLine",
+			getCommandName(SourcesInvisibleMakerCommand.class),
+			getCommandName(SourcesVisibleMakerCommand.class),
+			getCommandName(InteractiveBrightnessAdjusterCommand.class),
+			getCommandName(SourceColorChangerCommand.class),
+			"PopupLine",
+			getCommandName(BasicTransformerCommand.class),
+			getCommandName(SourcesDuplicatorCommand.class),
+			getCommandName(ManualTransformCommand.class),
+			getCommandName(TransformedSourceWrapperCommand.class),
+			getCommandName(SourcesResamplerCommand.class),
+			getCommandName(ColorSourceCreatorCommand.class),
+			getCommandName(LUTSourceCreatorCommand.class),
+			"PopupLine",
+			getCommandName(SourcesRemoverCommand.class),
+			getCommandName(XmlHDF5ExporterCommand.class),
+			"PopupLine",
+			getCommandName(MakeMetadataFilterNodeCommand.class)
 	};
 
 	String[] popupActionWithPaths;

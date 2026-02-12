@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,54 +27,37 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.scijava.services.ui;
-
-import bdv.viewer.SourceAndConverter;
-import mpicbg.spim.data.generic.AbstractSpimData;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-
-import javax.swing.tree.DefaultTreeModel;
-
-import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
+package sc.fiji.bdvpg.scijava.services.ui.tree;
 
 /**
- * SourceAndConverter filter node : Selects SpimData and allow for duplicate
+ * Listener interface for receiving updates from {@link SourceTreeModel}.
+ * Implementations should handle updates on the appropriate thread (e.g., EDT for Swing).
+ *
+ * <p>The model guarantees that events are fired with all necessary information
+ * to perform incremental updates rather than full tree reloads.</p>
+ *
+ * @author Nicolas Chiaruttini, BIOP, EPFL
  */
-public class SpimDataFilterNode extends SourceFilterNode {
+public interface SourceTreeModelListener {
 
-	final AbstractSpimData<?> asd;
-	final SourceAndConverterService sourceAndConverterService;
+    /**
+     * Called when sources are added, removed, or updated in the model.
+     *
+     * <p>For efficient UI updates, implementations should use the
+     * {@link SourcesChangedEvent#getAffectedNodes()} map to determine which
+     * specific nodes need updating, rather than refreshing the entire tree.</p>
+     *
+     * @param event the event describing the changes
+     */
+    void sourcesChanged(SourcesChangedEvent event);
 
-	public boolean filter(SourceAndConverter<?> sac) {
-		return (sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO)) &&
-			((SourceAndConverterService.SpimDataInfo) sourceAndConverterService
-				.getMetadata(sac, SPIM_DATA_INFO)).asd.equals(asd);
-	}
-
-	public SpimDataFilterNode(DefaultTreeModel model, String defaultName,
-		AbstractSpimData<?> spimdata,
-		SourceAndConverterService sourceAndConverterService)
-	{
-		super(model, defaultName, null, false);
-		this.sourceAndConverterService = sourceAndConverterService;
-		this.filter = this::filter;
-		asd = spimdata;
-	}
-
-	String getName(AbstractSpimData<?> spimdata, String defaultName) {
-		return defaultName;
-	}
-
-	public String toString() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	@Override
-	public Object clone() {
-		return new SpimDataFilterNode(model, name, asd, sourceAndConverterService);
-	}
+    /**
+     * Called when the structure of the tree changes (nodes added/removed).
+     *
+     * <p>This is called when SpimData is registered/unregistered, creating or
+     * removing entire subtrees, or when filter nodes are manually added/removed.</p>
+     *
+     * @param event the event describing the structural changes
+     */
+    void structureChanged(StructureChangedEvent event);
 }

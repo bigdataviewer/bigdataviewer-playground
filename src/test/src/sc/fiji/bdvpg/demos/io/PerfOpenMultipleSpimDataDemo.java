@@ -28,8 +28,12 @@
  */
 package sc.fiji.bdvpg.demos.io;
 
+import bdv.util.BdvHandle;
+import bdv.viewer.SourceAndConverter;
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import java.time.Duration;
@@ -71,6 +75,11 @@ public class PerfOpenMultipleSpimDataDemo
 			System.out.println(i);
 		}
 		toc();
+
+        /*SourceAndConverterBdvDisplayService displayService = ij.get(SourceAndConverterBdvDisplayService.class);
+        BdvHandle bdvh = displayService.getNewBdv();
+        System.out.println("---------------------------------");
+        displayService.show(bdvh, ij.get(SourceAndConverterService.class).getSourceAndConverters().toArray(new SourceAndConverter[0]));*/
 	}
 
 	static Instant start;

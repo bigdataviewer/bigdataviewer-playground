@@ -36,14 +36,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
-import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
+import sc.fiji.bdvpg.scijava.services.ui.tree.FilterNode;
+import sc.fiji.bdvpg.scijava.services.ui.tree.SourceTreeModel;
+import sc.fiji.bdvpg.scijava.services.ui.tree.SourceTreeView;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 
 import javax.swing.JComponent;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -73,6 +74,16 @@ public class SourceAndConverterServiceUITransferHandler extends
 	protected static final Logger logger = LoggerFactory.getLogger(
 		SourceAndConverterServiceUITransferHandler.class);
 
+	private final SourceTreeModel sourceTreeModel;
+	private final SourceTreeView sourceTreeView;
+
+	public SourceAndConverterServiceUITransferHandler(
+		SourceTreeModel sourceTreeModel, SourceTreeView sourceTreeView)
+	{
+		this.sourceTreeModel = sourceTreeModel;
+		this.sourceTreeView = sourceTreeView;
+	}
+
 	static DataFlavor nodesFlavor;
 	static final DataFlavor[] flavors = new DataFlavor[2];
 
@@ -99,46 +110,30 @@ public class SourceAndConverterServiceUITransferHandler extends
 		// Nothing to do
 	}
 
-	// @Override
-	/** Defensive copy used in createTransferable. */
-	private DefaultMutableTreeNode copy(TreeNode node) {
-		if (node instanceof SourceFilterNode) {
-			return (SourceFilterNode) ((SourceFilterNode) node).clone();
-		}
-		else {
-			return new DefaultMutableTreeNode(node);
-		}
-	}
-
 	// TransferHandler
 	protected Transferable createTransferableNodes(JComponent c) {
 		JTree tree = (JTree) c;
 		TreePath[] paths = tree.getSelectionPaths();
 		if (paths != null) {
-			List<DefaultMutableTreeNode> copies = new ArrayList<>();
-			// List<DefaultMutableTreeNode> toRemove = new ArrayList<>();
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) paths[0]
+			List<DefaultMutableTreeNode> selected = new ArrayList<>();
+			DefaultMutableTreeNode first = (DefaultMutableTreeNode) paths[0]
 				.getLastPathComponent();
-			DefaultMutableTreeNode copy = copy(node);
-			copies.add(copy);
-			// toRemove.add(node);
+			selected.add(first);
 			for (int i = 1; i < paths.length; i++) {
 				DefaultMutableTreeNode next = (DefaultMutableTreeNode) paths[i]
 					.getLastPathComponent();
 				// Do not allow higher level nodes to be added to list.
-				if (next.getLevel() < node.getLevel()) {
+				if (next.getLevel() < first.getLevel()) {
 					break;
 				}
-				else if (next.getLevel() > node.getLevel()) { // child node
-					copy.add(copy(next));
-					// node already contains child
+				else if (next.getLevel() > first.getLevel()) {
+					// child node — skip, already included via parent
 				}
 				else { // sibling
-					copies.add(copy(next));
-					// toRemove.add(next);
+					selected.add(next);
 				}
 			}
-			DefaultMutableTreeNode[] nodes = copies.toArray(
+			DefaultMutableTreeNode[] nodes = selected.toArray(
 				new DefaultMutableTreeNode[0]);
 
 			return new NodesTransferable(nodes);
@@ -234,21 +229,35 @@ public class SourceAndConverterServiceUITransferHandler extends
 				DefaultMutableTreeNode[] nodes = (DefaultMutableTreeNode[]) t
 					.getTransferData(nodesFlavor);
 
+				// Resolve the drop target to a FilterNode
 				JTree.DropLocation dl = (JTree.DropLocation) supp.getDropLocation();
 				TreePath dest = dl.getPath();
-				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) dest
+				DefaultMutableTreeNode parentTreeNode = (DefaultMutableTreeNode) dest
 					.getLastPathComponent();
-
-				for (DefaultMutableTreeNode node : nodes) {
-					if (node instanceof SourceFilterNode) {
-						parent.add((SourceFilterNode) node);
-					}
-					else {
-						logger.debug("Skipping non-SourceFilterNode: " + node.getClass().getName());
-					}
+				FilterNode parentFilterNode = sourceTreeView.getFilterNode(
+					parentTreeNode);
+				if (parentFilterNode == null) {
+					logger.debug("Drop target is not a filter node");
+					return false;
 				}
 
-				return true;
+				boolean anyAdded = false;
+				for (DefaultMutableTreeNode node : nodes) {
+					FilterNode originalFilterNode = sourceTreeView.getFilterNode(node);
+					if (originalFilterNode == null) {
+						logger.debug("Skipping non-filter node: " + node);
+						continue;
+					}
+
+					// Create a copy — the original stays in its old location (COPY mode)
+					FilterNode copy = new FilterNode(originalFilterNode.getName(),
+						originalFilterNode.getFilter(),
+						originalFilterNode.isDisplaySources());
+
+					sourceTreeModel.addNode(parentFilterNode, copy);
+					anyAdded = true;
+				}
+				return anyAdded;
 			}
 		}
 		catch (UnsupportedFlavorException | IOException e) {

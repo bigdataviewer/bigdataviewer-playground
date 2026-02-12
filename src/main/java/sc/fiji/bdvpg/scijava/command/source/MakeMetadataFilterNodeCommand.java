@@ -34,7 +34,8 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.SourceFilterNode;
+import sc.fiji.bdvpg.scijava.services.ui.tree.FilterNode;
+import sc.fiji.bdvpg.scijava.services.ui.tree.SourceTreeModel;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
@@ -65,18 +66,19 @@ public class MakeMetadataFilterNodeCommand implements
 
 	@Override
 	public void run() {
-		SourceFilterNode sfn = new SourceFilterNode(sac_service.getUI()
-			.getTreeModel(), groupname, (sac) -> {
-				if (sac_service.containsMetadata(sac, key)) {
-					Object o = sac_service.getMetadata(sac, key);
-					if (o instanceof String) {
-						String str = (String) o;
-						return str.matches(valueregex);
-					}
-					else return false;
+		FilterNode filterNode = new FilterNode(groupname, (sac) -> {
+			if (sac_service.containsMetadata(sac, key)) {
+				Object o = sac_service.getMetadata(sac, key);
+				if (o instanceof String) {
+					String str = (String) o;
+					return str.matches(valueregex);
 				}
 				else return false;
-			}, false);
-		sac_service.getUI().addNode(sfn);
+			}
+			else return false;
+		}, false);
+		SourceTreeModel model = sac_service.getUI().getSourceTreeModel();
+		model.addNode(model.getRoot(), filterNode);
 	}
 }
+

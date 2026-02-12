@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,11 +32,6 @@ package sc.fiji.bdvpg.scijava.services.ui;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
-import mpicbg.spim.data.generic.base.Entity;
-import mpicbg.spim.data.generic.base.NamedEntity;
-import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
-import mpicbg.spim.data.generic.sequence.BasicViewDescription;
-import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import org.scijava.Context;
 import org.scijava.object.ObjectService;
 import org.slf4j.Logger;
@@ -46,6 +41,9 @@ import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.scijava.services.ui.swingdnd.SourceAndConverterServiceUITransferHandler;
+import sc.fiji.bdvpg.scijava.services.ui.tree.FilterNode;
+import sc.fiji.bdvpg.scijava.services.ui.tree.SourceTreeModel;
+import sc.fiji.bdvpg.scijava.services.ui.tree.SourceTreeView;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import javax.swing.DropMode;
@@ -69,55 +67,30 @@ import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Swing UI for SciJava {@link SourceAndConverterService} All the
- * {@link SourceAndConverter} are inserted into the tree potentially multiple
- * times, in order to allow for multiple useful hierarchy to appear. The most
- * basic example is a SourceAndConverter which is part of a SpimData object.
- * This source will be caught by the appropriate {@link SpimDataFilterNode} in
- * which it will appear again multiple times, sorted by {@link Entity} class
- * found in the spimdata object (Illumination, Angle, Channel ...) Nodes are
- * {@link DefaultMutableTreeNode} containing potentially: -
- * {@link RenamableSourceAndConverter} (SourceAndConverter with an overridden
- * toString method) - Filtering nodes : {@link SourceFilterNode} nodes that can
- * filter SourceAndConverters, they contain a {@link Predicate}
- * {@link SourceAndConverter} that decides whether a SourceAndConverter object
- * should be included in the tree nodes below this filter; - Filtering nodes can
- * conveniently be chained in order to make complex filtering easily.
- * SourceFilterNode can be dragged and dropped in the tree in order to make
- * these sub groups SourceFilterNodes contains a flag which decides whether the
- * filtered nodes should be displayed directly below the node or not. Usually it
- * is more convenient to create a non filtering SourceFilterNode at the end of
- * the branch. - Programmatically new SourceFilterNode(model, "AllSources", () -
- * true, true); - Or with a Right-Click 'Create a show all filter node' NB : All
- * SourceFilterNodes contains a reference to the tree model, this is used to
- * fire only necessary tree update fire events - and in the EDT thread only in
- * order to avoid many exceptions WARNING ! It is probably not safe to modify in
- * a parallel fashion this UI. TODO : Documentation for inspection - Getter Node
- * for Source properties. For instance in the inspect method, a Transformed
- * Source will create a Node for the wrapped source and another node which holds
- * a getter for the fixedAffineTransform
+ * Swing UI for SciJava {@link SourceAndConverterService}.
+ *
+ * <p>This UI displays sources in a tree structure with filtering capabilities.
+ * Sources can appear multiple times in the tree, organized by different criteria
+ * such as SpimData membership, Channel, Angle, etc.</p>
+ *
+ * <p>The architecture uses a Model-View separation:</p>
+ * <ul>
+ *   <li>{@link SourceTreeModel} - Thread-safe data model with no Swing dependencies</li>
+ *   <li>{@link SourceTreeView} - Swing view that renders the model efficiently using incremental updates</li>
+ * </ul>
  *
  * @author Nicolas Chiaruttini, BIOP, EPFL
  */
-
 public class SourceAndConverterServiceUI {
 
 	protected static final Logger logger = LoggerFactory.getLogger(
@@ -146,19 +119,19 @@ public class SourceAndConverterServiceUI {
 	final JTree tree;
 
 	/**
-	 * Tree root note
+	 * Thread-safe source tree model
 	 */
-	final SourceFilterNode top;
+	private final SourceTreeModel sourceTreeModel;
 
 	/**
-	 * Tree model
+	 * Swing view for the tree model
 	 */
-	private final DefaultTreeModel model;
+	private final SourceTreeView sourceTreeView;
 
 	/**
-	 * Spimdata Filter nodes currently present in the tree
+	 * Counter for SpimData naming
 	 */
-	final List<SpimDataFilterNode> spimdataFilterNodes = new ArrayList<>();
+	private final AtomicInteger spimDataCounter = new AtomicInteger(0);
 
 	/**
 	 * Constructor : Initialize fields + standard actions
@@ -174,25 +147,17 @@ public class SourceAndConverterServiceUI {
 		this.sourceAndConverterService = sourceAndConverterService;
 		this.context = context;
 
-		// Tree view of Spimdata
-		top = new SourceFilterNode(null, "Sources", (sac) -> true, false);
-		model = new DefaultTreeModel(top);
-		top.model = model;
+		// Create the model and view
+		sourceTreeModel = new SourceTreeModel(sourceAndConverterService);
+		sourceTreeView = new SourceTreeView(sourceTreeModel);
 
 		// Registers the action which would inspect selected sources
 		this.sourceAndConverterService.registerAction("Inspect Sources",
 				this::inspectSources);
 
-		tree = new JTree(model);
-
-
-		SourceFilterNode outsideSpimDataSources = new SourceFilterNode(model,
-			"Other Sources", (sac) -> !sourceAndConverterService.containsMetadata(sac,
-				SPIM_DATA_INFO), true);
-		top.add(outsideSpimDataSources);
+		tree = new JTree(sourceTreeView.getTreeModel());
 
 		if (makeGUI) {
-			tree.setCellRenderer(new SourceAndConverterTreeCellRenderer());
 			frame = new JFrame("BDV Sources");
 			JPanel panel = new JPanel(new BorderLayout());
 			JScrollPane treeView = new JScrollPane(tree);
@@ -226,7 +191,8 @@ public class SourceAndConverterServiceUI {
 			// Enables:
 			// - drag -> SourceAndConverters
 			// - drop -> automatically import xml BDV datasets
-			tree.setTransferHandler(new SourceAndConverterServiceUITransferHandler());
+			tree.setTransferHandler(new SourceAndConverterServiceUITransferHandler(
+				sourceTreeModel, sourceTreeView));
 
 			// get the screen size as a java dimension
 			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -271,7 +237,6 @@ public class SourceAndConverterServiceUI {
 			guiAvailable = false;
 			frame = null;
 		}
-
 	}
 
 	public void show() {
@@ -286,79 +251,24 @@ public class SourceAndConverterServiceUI {
 		}
 	}
 
-	SourceFilterNode copiedNode = null;
-
 	void addUISpecificActions(JPopupMenu popup) {
 		// Delete node for inspection result only
 		JMenuItem deleteInspectNodesMenuItem = new JMenuItem(
 			"Delete Selected Inspect Nodes");
 		deleteInspectNodesMenuItem.addActionListener(e -> {
-			for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
-				if ((tp.getLastPathComponent()).toString().startsWith(
-					"Inspect Results ["))
-				{
-					// TODO Fix The little guy who would name its source "Inspect Results
-					// [whatever"
-					((DefaultMutableTreeNode) tp.getLastPathComponent())
-						.removeFromParent();
+			TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
+			if (paths != null) {
+				for (TreePath tp : paths) {
+					if ((tp.getLastPathComponent()).toString().startsWith(
+						"Inspect Results ["))
+					{
+						((DefaultMutableTreeNode) tp.getLastPathComponent())
+							.removeFromParent();
+					}
 				}
+				// Refresh the tree model
+				sourceTreeView.getTreeModel().reload();
 			}
-		});
-
-		// Copy : only if a single node is selected, and if it is of class
-		// SourceFilterNode
-		JMenuItem copyFilterNodeMenuItem = new JMenuItem("Copy Filter Node");
-		copyFilterNodeMenuItem.addActionListener(e -> {
-			TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
-			if (paths.length != 1) {
-				logger.error("Only one node should be selected");
-				return;
-			}
-			if ((paths[0].getLastPathComponent()) instanceof SourceFilterNode) {
-				copiedNode = (SourceFilterNode) ((SourceFilterNode) (paths[0]
-					.getLastPathComponent())).clone();
-			}
-			else {
-				logger.error("A source filter node should be selected");
-			}
-
-		});
-
-		// Paste : only if a single node is selected, and if it is of class
-		// SourceFilterNode
-		JMenuItem pasteFilterNodeMenuItem = new JMenuItem("Paste Filter Node");
-		pasteFilterNodeMenuItem.addActionListener(e -> {
-			TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
-			if (paths.length != 1) {
-				logger.error("Only one node should be selected");
-				return;
-			}
-			if ((paths[0].getLastPathComponent()) instanceof SourceFilterNode) {
-				SourceFilterNode sfn = ((SourceFilterNode) (paths[0]
-					.getLastPathComponent()));
-				sfn.add(copiedNode);
-			}
-			else {
-				logger.error("A source filter node should be selected");
-			}
-		});
-
-		// Delete filter nodes
-		JMenuItem deleteFilterNodesMenuItem = new JMenuItem(
-			"Delete Filter Node(s)");
-		deleteFilterNodesMenuItem.addActionListener(e -> {
-			TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
-
-			Stream.of(paths).map(TreePath::getLastPathComponent).filter(
-				n -> n instanceof SourceFilterNode).forEach(n -> {
-					SourceFilterNode sfn = (SourceFilterNode) n;
-					if (sfn.equals(top)) {
-						logger.error("The root can't be deleted");
-					}
-					else {
-						sfn.removeFromParent();
-					}
-				});
 		});
 
 		// Add show all item
@@ -366,21 +276,17 @@ public class SourceAndConverterServiceUI {
 			"Add 'Show All' Filter Node");
 		addShowAllFilterNodeMenuItem.addActionListener(e -> {
 			TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
-			if (paths.length != 1) {
+			if (paths == null || paths.length != 1) {
 				logger.error("Only one node should be selected");
 				return;
 			}
-			if ((paths[0].getLastPathComponent()) instanceof SourceFilterNode) {
-
-				SourceFilterNode sfn = (SourceFilterNode) (paths[0]
-					.getLastPathComponent());
-				SourceFilterNode newNode = new SourceFilterNode(model, "All sources", (
-					sac) -> true, true);
-				sfn.add(newNode);
-
-			}
-			else {
-				logger.error("A source filter node should be selected");
+			DefaultMutableTreeNode selectedTreeNode = (DefaultMutableTreeNode) paths[0].getLastPathComponent();
+			FilterNode filterNode = sourceTreeView.getFilterNode(selectedTreeNode);
+			if (filterNode != null) {
+				FilterNode newNode = new FilterNode("All Sources", sac -> true, true);
+				sourceTreeModel.addNode(filterNode, newNode);
+			} else {
+				logger.error("A filter node should be selected");
 			}
 		});
 
@@ -404,16 +310,13 @@ public class SourceAndConverterServiceUI {
 		}
 
 		child.add(deleteInspectNodesMenuItem);
-		child.add(copyFilterNodeMenuItem);
-		child.add(pasteFilterNodeMenuItem);
 		child.add(addShowAllFilterNodeMenuItem);
-		child.add(deleteFilterNodesMenuItem);
 	}
 
 	/**
 	 * Recursive source inspection of an array of {@link SourceAndConverter} -
 	 * adds a node per source which summarizes the results of the inspection
-	 * 
+	 *
 	 * @param sacs sources that should be inspected
 	 */
 	public void inspectSources(SourceAndConverter<?>[] sacs) {
@@ -425,7 +328,7 @@ public class SourceAndConverterServiceUI {
 	/**
 	 * Recursive source inspection of a {@link SourceAndConverter} - adds a node
 	 * per source which summarizes the results of the inspection
-	 * 
+	 *
 	 * @param sac source to inspect
 	 */
 	public void inspectSource(SourceAndConverter sac) {
@@ -436,227 +339,113 @@ public class SourceAndConverterServiceUI {
 			"Inspect Results [" + sac.getSpimSource().getName() + "]");
 		SourceAndConverterInspector.appendInspectorResult(parentNodeInspect, sac,
 			sourceAndConverterService, false);
-		top.add(parentNodeInspect);
-	}
-
-	public void removeBdvHandleNodes(BdvHandle bdvh) {
-		visitAllNodesAndProcess(top, (node) -> {
-			if (node instanceof BdvHandleFilterNode) {
-				BdvHandleFilterNode bfn = (BdvHandleFilterNode) node;
-
-				if (bfn.bdvh.equals(bdvh)) {
-					bfn.removeFromParent();
-					bfn.clear();
-				}
-			}
-		});
+		// Add to tree root directly via Swing model
+		DefaultMutableTreeNode treeRoot = sourceTreeView.getTreeRoot();
+		treeRoot.add(parentNodeInspect);
+		sourceTreeView.getTreeModel().nodesWereInserted(treeRoot, new int[]{treeRoot.getChildCount() - 1});
 	}
 
 	/**
-	 * TODO : understand is this method is really for update or only for
-	 * creation...
-	 * 
-	 * @param sac source which UI needs to be updated
+	 * Removes BdvHandle filter nodes from the tree.
+	 *
+	 * @param bdvh the BdvHandle to remove
+	 */
+	public void removeBdvHandleNodes(BdvHandle bdvh) {
+		sourceTreeModel.removeBdvHandleNodes(bdvh);
+	}
+
+	// ============ Source Management (Batch API) ============
+
+	/**
+	 * Adds a single source to the tree.
+	 * For adding multiple sources, prefer {@link #addSources(Collection)} for better performance.
+	 *
+	 * @param sac source to add
 	 */
 	public void update(SourceAndConverter sac) {
-		if ((guiAvailable)&&(!frame.isVisible())) {
+		if ((guiAvailable) && (frame != null) && (!frame.isVisible())) {
 			show();
 		}
-		synchronized (tree) {
-			updateSpimDataFilterNodes();
-			if (top.hasConsumed(sac)) {
-				top.update(new SourceFilterNode.SourceUpdateEvent(sac));
-			}
-			else {
-				top.add(new DefaultMutableTreeNode(new RenamableSourceAndConverter(
-					sac)));
-			}
-		}
+		// Check if new SpimData needs to be added
+		updateSpimDataFilterNodes();
+		sourceTreeModel.addSource(sac);
 	}
 
 	/**
-	 * Method responsible for - removes {@link SpimDataFilterNode} if no sac
-	 * belonging to a previous opened SpimData is not there anymore - adds a
-	 * {@link SpimDataFilterNode} if sac belonging to a new SpimData is newly
-	 * appended in the UI
+	 * Adds multiple sources to the tree in a single batch operation.
+	 * This is more efficient than calling {@link #update(SourceAndConverter)} multiple times.
+	 *
+	 * @param sources the sources to add
+	 */
+	public void addSources(Collection<SourceAndConverter<?>> sources) {
+		if (sources.isEmpty()) return;
+		if ((guiAvailable) && (frame != null) && (!frame.isVisible())) {
+			show();
+		}
+		updateSpimDataFilterNodes();
+		sourceTreeModel.addSources(sources);
+	}
+
+	/**
+	 * Updates SpimData filter nodes based on currently registered SpimData sets.
 	 */
 	private void updateSpimDataFilterNodes() {
-		synchronized (tree) {
-			// Fetch All Spimdata from all Sources
-			Set<AbstractSpimData<?>> currentSpimdatas = sourceAndConverterService
-				.getSpimDatasets();
+		Set<AbstractSpimData<?>> currentSpimdatas = sourceAndConverterService.getSpimDatasets();
 
-			Set<SpimDataFilterNode> obsoleteSpimDataFilterNodes = new HashSet<>();
-
-			// Check for obsolete spimdatafilternodes
-			spimdataFilterNodes.forEach(fnode -> {
-				if (!currentSpimdatas.contains(fnode.asd)) {
-					if (fnode.getParent() != null) {
-						obsoleteSpimDataFilterNodes.add(fnode);
-						fnode.removeFromParent();
-					}
-				}
-			});
-
-			// Important to avoid memory leak
-			spimdataFilterNodes.removeAll(obsoleteSpimDataFilterNodes);
-
-			// Check for new spimdata
-			currentSpimdatas.forEach(asd -> {
-				if ((spimdataFilterNodes.isEmpty()) || (spimdataFilterNodes.stream()
-					.noneMatch(fnode -> fnode.asd.equals(asd))))
-				{
-					SpimDataFilterNode newNode = new SpimDataFilterNode(model,
-						"SpimData " + spimdataFilterNodes.size(), asd,
-						sourceAndConverterService);
-					SourceFilterNode allSources = new SourceFilterNode(model,
-						"All Sources", (in) -> true, true);
-					spimdataFilterNodes.add(newNode);
-					newNode.add(allSources);
-					top.add(newNode);
-					addEntityFilterNodes(newNode,
-						(AbstractSpimData<AbstractSequenceDescription<BasicViewSetup, ?, ?>>) asd);
-				}
-			});
+		for (AbstractSpimData<?> asd : currentSpimdatas) {
+			if (sourceTreeModel.getSpimDataNode(asd) == null) {
+				String name = "SpimData " + spimDataCounter.getAndIncrement();
+				sourceTreeModel.addSpimData(asd, name);
+			}
 		}
 	}
 
 	/**
-	 * Renames in the UI a SpimData node by another one
-	 * 
+	 * Renames a SpimData node in the UI.
+	 *
 	 * @param asd_renamed spimdata to rename
 	 * @param name new name
 	 */
 	public void updateSpimDataName(AbstractSpimData asd_renamed, String name) {
-		synchronized (tree) {
-			visitAllNodesAndProcess(top, node -> {
-				if (node instanceof SpimDataFilterNode) {
-					if (((SpimDataFilterNode) node).asd.equals(asd_renamed)) {
-						((SpimDataFilterNode) node).setName(name);
-						SourceFilterNode.safeModelReloadAction(() -> model.nodeChanged(
-							node));
-					}
-				}
-			});
-		}
+		sourceTreeModel.renameSpimData(asd_renamed, name);
 	}
 
 	/**
-	 * Applies an operation ({@link Consumer} on all nodes of the tree
-	 * 
-	 * @param node root node of the tree to be processed
-	 * @param processor how to process the node
-	 */
-	private static void visitAllNodesAndProcess(TreeNode node,
-		Consumer<DefaultMutableTreeNode> processor)
-	{
-		if (node.getChildCount() >= 0) {
-			for (Enumeration e = node.children(); e.hasMoreElements();) {
-				TreeNode n = (TreeNode) e.nextElement();
-				visitAllNodesAndProcess(n, processor);
-				if (n instanceof DefaultMutableTreeNode) {
-					processor.accept((DefaultMutableTreeNode) n);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Adds all the filtering nodes which are sorting the source contained in a
-	 * SpimData according to each {@link Entity} and before by class (
-	 * {@link Entity#getClass()} )
-	 * 
-	 * @param nodeSpimData spimdata node where to append the filter nodes
-	 * @param asd spimdata to filter
-	 */
-	private void addEntityFilterNodes(SpimDataFilterNode nodeSpimData,
-		AbstractSpimData<AbstractSequenceDescription<BasicViewSetup, ?, ?>> asd)
-	{
-		// Gets all entities by class
-
-		Map<Class, List<Entity>> entitiesByClass = asd.getSequenceDescription()
-			.getViewDescriptions()
-			// Streams viewSetups
-			.values().stream()
-			// Filters if view is present
-			.filter(BasicViewDescription::isPresent)
-			// Gets Entities associated to ViewSetup
-			.map(v -> v.getViewSetup().getAttributes().values())
-			// Reduce into a single list and stream
-			.reduce(new ArrayList<>(), (a, b) -> {
-				a.addAll(b);
-				return a;
-			}).stream()
-			// removes null entities
-			.filter(Objects::nonNull)
-			// Collected and sorted by class
-			.collect(Collectors.groupingBy(Entity::getClass, Collectors.toList()));
-
-		Map<Class, SourceFilterNode> classNodes = new HashMap<>();
-		entitiesByClass.keySet().forEach((c) -> classNodes.put(c,
-			new SourceFilterNode(model, c.getSimpleName(), (sac) -> true, false)));
-
-		List<SourceFilterNode> orderedNodes = new ArrayList<>(classNodes.values());
-		orderedNodes.sort(Comparator.comparing(SourceFilterNode::getName));
-		orderedNodes.forEach(nodeSpimData::add);
-
-		Set<Entity> entitiesAlreadyRegistered = new HashSet<>();
-		entitiesByClass.forEach((c, el) -> el.forEach(entity -> {
-			if (!entitiesAlreadyRegistered.contains(entity)) {
-				// Attempt to use NamedEntity if applicable
-				String entityName = null;
-				if (entity instanceof NamedEntity) {
-					entityName = ((NamedEntity) entity).getName();
-				}
-				if ((entityName == null) || (entityName.isEmpty())) {
-					entityName = c.getSimpleName() + " " + entity.getId();
-				}
-				entitiesAlreadyRegistered.add(entity);
-
-				SpimDataElementFilter nodeElement = new SpimDataElementFilter(model,
-					entityName, entity, sourceAndConverterService);
-
-				SourceFilterNode showAllSources = new SourceFilterNode(model,
-					"All Sources", (sac) -> true, true);
-
-				classNodes.get(c).add(nodeElement);
-				nodeElement.add(showAllSources);
-			}
-		}));
-
-	}
-
-	/**
-	 * Remove a {@link SourceAndConverter} from the UI of a
-	 * SourceAndConverterService
-	 * 
+	 * Removes a source from the UI.
+	 *
 	 * @param sac source to remove
 	 */
 	public void remove(SourceAndConverter sac) {
-		if ((guiAvailable)&&(!frame.isVisible())) {
+		if ((guiAvailable) && (frame != null) && (!frame.isVisible())) {
 			show();
 		}
-		synchronized (tree) {
-			if (top.currentInputSacs.contains(sac)) {
-				top.remove(sac);
-				updateSpimDataFilterNodes();
-			}
+		sourceTreeModel.removeSource(sac);
+	}
+
+	/**
+	 * Removes multiple sources from the UI in a batch operation.
+	 *
+	 * @param sources sources to remove
+	 */
+	public void removeSources(Collection<SourceAndConverter<?>> sources) {
+		if ((guiAvailable) && (frame != null) && (!frame.isVisible())) {
+			show();
 		}
+		sourceTreeModel.removeSources(sources);
 	}
 
 	/**
 	 * @param tree the tree view of sourceandconverters
 	 * @return an array containing the list of all {@link SourceAndConverter}
-	 *         selected by the user: - all children of a selected node are
-	 *         considered selected - the list does not contain duplicates - the
-	 *         list is ordered according to
-	 *         {@link SourceAndConverterHelper#sortDefault(SourceAndConverter[])}
+	 *         selected by the user
 	 */
 	public SourceAndConverter[] getSelectedSourceAndConverters(JTree tree) {
-		Set<SourceAndConverter<?>> sacList = new HashSet<>(); // A set avoids
-																													// duplicate
-																													// SourceAndConverter
-		for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
+		Set<SourceAndConverter<?>> sacList = new HashSet<>();
+		TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
+		if (paths == null) {
+			return new SourceAndConverter[0];
+		}
+		for (TreePath tp : paths) {
 			if (((DefaultMutableTreeNode) tp.getLastPathComponent())
 				.getUserObject() instanceof RenamableSourceAndConverter)
 			{
@@ -677,38 +466,27 @@ public class SourceAndConverterServiceUI {
 	/**
 	 * @param node root node to get sources from
 	 * @return a set containing the list of all {@link SourceAndConverter}
-	 *         below the @param node: - the list does not contain duplicates - the
-	 *         list order can be considered random
+	 *         below the node
 	 */
 	public Set<SourceAndConverter<?>> getSourceAndConvertersFromChildrenOf(
 		DefaultMutableTreeNode node)
 	{
-
 		Set<SourceAndConverter<?>> sacs = new HashSet<>();
 		if (node.getUserObject() instanceof RenamableSourceAndConverter) {
 			Object userObj = ((RenamableSourceAndConverter) (node
 				.getUserObject())).sac;
 			sacs.add((SourceAndConverter) userObj);
 		}
-		else if (node instanceof SourceFilterNode) {
-			sacs.addAll(((SourceFilterNode) node).currentOutputSacs);
-		}
 		else {
-			for (int i = 0; i < node.getChildCount(); i++) {
-				DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(
-					i);
-				if (child instanceof SourceFilterNode) {
-					sacs.addAll(((SourceFilterNode) child).currentOutputSacs);
-				}
-				else {
-					if (child.getUserObject() instanceof RenamableSourceAndConverter) {
-						Object userObj = ((RenamableSourceAndConverter) (child
-							.getUserObject())).sac;
-						sacs.add((SourceAndConverter) userObj);
-					}
-					else {
-						sacs.addAll(getSourceAndConvertersFromChildrenOf(child));
-					}
+			// Check if this is a filter node and get sources from the model
+			FilterNode filterNode = sourceTreeView.getFilterNode(node);
+			if (filterNode != null) {
+				sacs.addAll(filterNode.getOutputSources());
+			} else {
+				// Fallback: traverse children
+				for (int i = 0; i < node.getChildCount(); i++) {
+					DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
+					sacs.addAll(getSourceAndConvertersFromChildrenOf(child));
 				}
 			}
 		}
@@ -716,32 +494,36 @@ public class SourceAndConverterServiceUI {
 	}
 
 	/**
-	 * Method used by
-	 * {@link sc.fiji.bdvpg.scijava.widget.SwingSourceAndConverterListWidget} and
-	 * {@link sc.fiji.bdvpg.scijava.widget.SwingSourceAndConverterWidget} TAKE
-	 * CARE TO MEMORY LEAKS IF YOU USE THIS! Check how memory leaks are avoided in
-	 * the widgets linked above
-	 * 
-	 * @return the model of the tree
+	 * @return the Swing tree model
 	 */
 	public DefaultTreeModel getTreeModel() {
-		return model;
+		return sourceTreeView.getTreeModel();
 	}
 
 	/**
-	 * Allows to get the tree path from a String, nodes names are separated by the
-	 * "&gt;" character Like SpimData_0 &gt; Channel &gt; 0 will return the
-	 * {@link TreePath} to the childrennode Used in
-	 * {@link sc.fiji.bdvpg.scijava.converters.StringToSourceAndConverterArray}
-	 * Not the ideal situation where the UI is used to retrieve SourceAndConverter
+	 * @return the source tree model (thread-safe data model)
+	 */
+	public SourceTreeModel getSourceTreeModel() {
+		return sourceTreeModel;
+	}
+
+	/**
+	 * @return the source tree view
+	 */
+	public SourceTreeView getSourceTreeView() {
+		return sourceTreeView;
+	}
+
+	/**
+	 * Gets the tree path from a string representation.
 	 *
-	 * @param path path as string
+	 * @param path path as string (nodes separated by "&gt;")
 	 * @return treepath fetched from the path
 	 */
 	public TreePath getTreePathFromString(String path) {
 		String[] stringPath = path.split(">");
 		Object[] nodes = new Object[stringPath.length];
-		TreeNode current = top;
+		TreeNode current = sourceTreeView.getTreeRoot();
 		int currentDepth = 0;
 
 		while (currentDepth < stringPath.length) {
@@ -749,17 +531,12 @@ public class SourceAndConverterServiceUI {
 			boolean found = false;
 			while (children.hasMoreElements()) {
 				TreeNode testNode = (TreeNode) children.nextElement();
-				if (testNode.toString().trim().equals(stringPath[currentDepth]
-					.trim()))
-				{
+				if (testNode.toString().trim().equals(stringPath[currentDepth].trim())) {
 					nodes[currentDepth] = testNode;
 					currentDepth++;
 					current = testNode;
 					found = true;
 					break;
-				}
-				else {
-					logger.error("Unmatched " + testNode.toString().trim());
 				}
 			}
 			if (!found) break;
@@ -767,76 +544,57 @@ public class SourceAndConverterServiceUI {
 
 		if (currentDepth == stringPath.length) {
 			return new TreePath(nodes);
-		}
-		else {
-			// Better not show anything : a null return is used by the converter to
-			// discard any string which cannot be converter to a SourceAndConverter
-			// array
-			// errlog.accept("TreePath "+path+" not found.");
+		} else {
 			return null;
 		}
 	}
 
 	/**
-	 * Used by
-	 * {@link sc.fiji.bdvpg.scijava.converters.StringToSourceAndConverterArray}
-	 * Note the sorting of SourceAndConverter by
-	 * {@link SourceAndConverterHelper#sortDefaultGeneric}
-	 * 
+	 * Gets sources from a tree path.
+	 *
 	 * @param path path
 	 * @return the list of sources in the path
 	 */
-	public List<SourceAndConverter<?>> getSourceAndConvertersFromTreePath(
-		TreePath path)
-	{
+	public List<SourceAndConverter<?>> getSourceAndConvertersFromTreePath(TreePath path) {
 		return SourceAndConverterHelper.sortDefaultGeneric(
-			getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) path
-				.getLastPathComponent()));
+			getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) path.getLastPathComponent()));
 	}
 
 	/**
-	 * Used by
-	 * {@link sc.fiji.bdvpg.scijava.converters.StringToSourceAndConverterArray}
-	 * Note the sorting of SourceAndConverter by
-	 * {@link SourceAndConverterHelper#sortDefaultGeneric}
-	 * 
+	 * Gets sources from a path string.
+	 *
 	 * @param path path
 	 * @return the list of sources in the path
 	 */
-	public List<SourceAndConverter<?>> getSourceAndConvertersFromPath(
-		String path)
-	{
+	public List<SourceAndConverter<?>> getSourceAndConvertersFromPath(String path) {
 		TreePath tp = getTreePathFromString(path);
 		if (tp != null) {
 			return getSourceAndConvertersFromTreePath(tp);
-		}
-		else {
+		} else {
 			return new ArrayList<>();
 		}
 	}
 
 	public synchronized void addNode(DefaultMutableTreeNode node) {
-		top.add(node);
+		DefaultMutableTreeNode root = sourceTreeView.getTreeRoot();
+		root.add(node);
+		sourceTreeView.getTreeModel().nodesWereInserted(root, new int[]{root.getChildCount() - 1});
 	}
 
 	public synchronized void removeNode(DefaultMutableTreeNode node) {
 		getTreeModel().removeNodeFromParent(node);
 	}
 
-	public synchronized void addNode(DefaultMutableTreeNode parent,
-		DefaultMutableTreeNode node)
-	{
+	public synchronized void addNode(DefaultMutableTreeNode parent, DefaultMutableTreeNode node) {
 		parent.add(node);
+		sourceTreeView.getTreeModel().nodesWereInserted(parent, new int[]{parent.getChildCount() - 1});
 	}
 
 	public Node getRoot() {
-		return new Node((TreeNode) model.getRoot());
+		return new Node(sourceTreeView.getTreeRoot());
 	}
 
 	public static class Node {
-
-		// SourceFilterNode
-		// RenamableSourceAndConverter
 
 		private final TreeNode node;
 
@@ -889,19 +647,15 @@ public class SourceAndConverterServiceUI {
 		}
 
 		public SourceAndConverter<?>[] sources() {
-			if (node instanceof SourceFilterNode) {
-				Set<SourceAndConverter<?>> sourcesSet =
-					((SourceFilterNode) node).currentOutputSacs;
-				return SourceAndConverterHelper.sortDefault(sourcesSet.toArray(
-					new SourceAndConverter<?>[0]));
+			if (node instanceof DefaultMutableTreeNode) {
+				DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) node;
+				Object userObject = dmtn.getUserObject();
+				if (userObject instanceof RenamableSourceAndConverter) {
+					return new SourceAndConverter[] {
+						((RenamableSourceAndConverter) userObject).sac };
+				}
 			}
-			else if (node instanceof RenamableSourceAndConverter) {
-				return new SourceAndConverter[] {
-					((RenamableSourceAndConverter) node).sac };
-			}
-			else {
-				return null;
-			}
+			return null;
 		}
 
 		public Node parent() {
@@ -934,7 +688,7 @@ public class SourceAndConverterServiceUI {
 	 * @param depth the maximum depth to expand (0 = root only, 1 = root + first level, etc.)
 	 */
 	public void expandToDepth(int depth) {
-		SwingUtilities.invokeLater(() -> expandNode(top, 0, depth));
+		SwingUtilities.invokeLater(() -> expandNode(sourceTreeView.getTreeRoot(), 0, depth));
 	}
 
 	private void expandNode(TreeNode node, int currentDepth, int maxDepth) {
@@ -967,7 +721,6 @@ public class SourceAndConverterServiceUI {
 
 	/**
 	 * Expands a path specified as a string (nodes separated by superior sign).
-	 * Example: "Sources (superior) mri-stack.xml"
 	 * @param pathString the path to expand
 	 */
 	public void expandPath(String pathString) {
@@ -981,16 +734,13 @@ public class SourceAndConverterServiceUI {
 
 	/**
 	 * Adjusts the view of the active BDV window to show the currently selected sources.
-	 * Does nothing if no BDV window is active or no sources are selected.
 	 */
 	private void adjustViewOnSelectedSources() {
-		// Get the selected sources
 		SourceAndConverter<?>[] selectedSources = getSelectedSourceAndConverters(tree);
 		if (selectedSources == null || selectedSources.length == 0) {
 			return;
 		}
 
-		// Try to get the BDV display service
 		SourceAndConverterBdvDisplayService bdvDisplayService =
 			context.getService(SourceAndConverterBdvDisplayService.class);
 		if (bdvDisplayService == null) {
@@ -1002,14 +752,11 @@ public class SourceAndConverterServiceUI {
 			return;
 		}
 
-		// Get the active BDV handle
 		BdvHandle activeBdv = bdvDisplayService.getActiveBdv();
 		if (activeBdv == null) {
 			return;
 		}
 
-		// Adjust the view on the selected sources with animation
 		new ViewerTransformAdjuster(activeBdv, selectedSources, 300).run();
 	}
-
 }
