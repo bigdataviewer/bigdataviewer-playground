@@ -517,7 +517,7 @@ public class SourceAndConverterServiceUI {
 	/**
 	 * Gets the tree path from a string representation.
 	 *
-	 * @param path path as string (nodes separated by ">")
+	 * @param path path as string (nodes separated by "&gt;")
 	 * @return treepath fetched from the path
 	 */
 	public TreePath getTreePathFromString(String path) {
