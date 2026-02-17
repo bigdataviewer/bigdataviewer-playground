@@ -29,25 +29,34 @@
 package sc.fiji.bdvpg;
 
 import org.reflections.Reflections;
+import org.scijava.Context;
 import org.scijava.ItemIO;
 import org.scijava.command.Command;
+import org.scijava.command.CommandService;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class BuildDocumentation {
     static String doc = "";
-    static final String linkGitHubRepoPrefix = "https://github.com/bigdataviewer/bigdataviewer-playground/tree/master/src/main/java/";
+    static final String linkGitHubRepoPrefix = "https://raw.githubusercontent.com/bigdataviewer/bigdataviewer-playground/tree/master/src/main/java/";
+
+    static Set<Class<?>> ignoredClasses = new HashSet<>();
 
     public static void main(String... args) {
         //
+
+        ignoredClasses.add(SourceAndConverterService.class);
+        ignoredClasses.add(CommandService.class);
+        ignoredClasses.add(LogService.class);
+        ignoredClasses.add(SourceAndConverterBdvDisplayService.class);
+        ignoredClasses.add(Context.class);
 
         Reflections reflections = new Reflections("sc.fiji.bdvpg");
 
@@ -69,6 +78,7 @@ public class BuildDocumentation {
 
                 Field[] fields = c.getDeclaredFields();
                 List<Field> inputFields = Arrays.stream(fields)
+                        .filter(f -> !ignoredClasses.contains(f.getType()))
                         .filter(f -> f.isAnnotationPresent(Parameter.class))
                         .filter(f -> {
                             Parameter p = f.getAnnotation(Parameter.class);
