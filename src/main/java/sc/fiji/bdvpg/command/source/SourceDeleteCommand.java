@@ -26,29 +26,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.demos.io;
 
-import net.imagej.ImageJ;
-import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.command.dataset.DatasetXMLLoadCommand;
+package sc.fiji.bdvpg.command.source;
 
-import java.io.File;
+import bdv.viewer.SourceAndConverter;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
-public class MultipleSpimDataImporterCommandDemo
-{
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-	static ImageJ ij;
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "Sources>Source - Delete",
+	description = "Removes sources from the source service")
+public class SourceDeleteCommand implements BdvPlaygroundActionCommand {
 
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to remove from the service")
+	SourceAndConverter<?>[] sources;
 
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( DatasetXMLLoadCommand.class, true, "files", files);
+	@Parameter
+	SourceAndConverterService source_service;
+
+	@Override
+	public void run() {
+		source_service.remove(sources);
+		sources = null; // avoid holding a reference to sources, shouldn't be necessary honestly
 	}
-
 }

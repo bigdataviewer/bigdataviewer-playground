@@ -26,29 +26,43 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.demos.io;
 
-import net.imagej.ImageJ;
-import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.command.dataset.DatasetXMLLoadCommand;
+package sc.fiji.bdvpg.command.viewer.bdv;
 
-import java.io.File;
+import bdv.util.BdvHandle;
+import bdv.viewer.SourceAndConverter;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 
-public class MultipleSpimDataImporterCommandDemo
-{
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-	static ImageJ ij;
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu +
+		"Viewers>BDV>BDV - Show Sources In Multiple BDV Windows",
+	description = "Adds one or several sources into several existing BDV windows")
+public class MultiBdvSourcesAddCommand implements BdvPlaygroundActionCommand {
 
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
+	@Parameter(label = "Select BDV Windows",
+			description = "The BigDataViewer windows where sources will be displayed",
+			persist = false)
+	BdvHandle[] bdvhs;
 
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( DatasetXMLLoadCommand.class, true, "files", files);
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to add to all selected BDV windows")
+	SourceAndConverter<?>[] sources;
+
+	@Parameter
+	SourceAndConverterBdvDisplayService bdvDisplayService;
+
+	@Override
+	public void run() {
+		for (BdvHandle bdvh : bdvhs) {
+			bdvDisplayService.show(bdvh, sources);
+		}
 	}
-
 }

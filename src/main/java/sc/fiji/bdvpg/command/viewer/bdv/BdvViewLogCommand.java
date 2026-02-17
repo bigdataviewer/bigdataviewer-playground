@@ -26,29 +26,52 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.demos.io;
 
-import net.imagej.ImageJ;
-import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.command.dataset.DatasetXMLLoadCommand;
+package sc.fiji.bdvpg.command.viewer.bdv;
 
-import java.io.File;
+import bdv.util.BdvHandle;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformLogger;
+import sc.fiji.bdvpg.log.Logger;
+import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 
-public class MultipleSpimDataImporterCommandDemo
-{
+/**
+ * ViewTransformLoggerCommand Author: @haesleinhuepf 12 2019
+ */
 
-	static ImageJ ij;
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewers>BDV>BDV - Log View Transform",
+	description = "Outputs the current view transform of a BDV window into the standard IJ logger")
 
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( DatasetXMLLoadCommand.class, true, "files", files);
+public class BdvViewLogCommand implements BdvPlaygroundActionCommand {
+
+	@Parameter(label = "Select BDV Window",
+			description = "The BigDataViewer window whose view transform will be logged")
+	BdvHandle bdvh;
+
+	@Parameter
+	LogService ls;
+
+	@Override
+	public void run() {
+		new ViewerTransformLogger(bdvh, new Logger() {
+
+			@Override
+			public void out(String msg) {
+				ls.info(msg);
+			}
+
+			@Override
+			public void err(String msg) {
+				ls.error(msg);
+			}
+		}).run();
 	}
-
 }

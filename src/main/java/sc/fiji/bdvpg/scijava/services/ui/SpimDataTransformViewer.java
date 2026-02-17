@@ -57,9 +57,9 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.scijava.command.CommandService;
-import sc.fiji.bdvpg.scijava.command.spimdata.AddSpimDataTransformCommand;
-import sc.fiji.bdvpg.scijava.command.spimdata.RemoveSpimDataTransformsCommand;
-import sc.fiji.bdvpg.scijava.command.spimdata.SetSpimDataTransformsCommand;
+import sc.fiji.bdvpg.command.dataset.transform.DatasetTransformAddCommand;
+import sc.fiji.bdvpg.command.dataset.transform.DatasetTransformRemoveCommand;
+import sc.fiji.bdvpg.command.dataset.transform.DatasetTransformSetCommand;
 
 /**
  * A viewer for SpimData transforms with configurable 3D dimensions.
@@ -513,7 +513,7 @@ public class SpimDataTransformViewer extends JFrame {
 		}
 
 		// Run command with pre-filled values, then refresh when done
-		Future<?> future = commandService.run(SetSpimDataTransformsCommand.class, true,
+		Future<?> future = commandService.run(DatasetTransformSetCommand.class, true,
 			"sacs", selectedSacs,
 			"timepoint_range", tpRange,
 			"transform_index_range", trRange);
@@ -589,7 +589,7 @@ public class SpimDataTransformViewer extends JFrame {
 		}
 
 		// Run command with pre-filled values, then refresh when done
-		Future<?> future = commandService.run(AddSpimDataTransformCommand.class, true,
+		Future<?> future = commandService.run(DatasetTransformAddCommand.class, true,
 			"sacs", selectedSacs,
 			"timepoint_range", tpRange);
 
@@ -667,7 +667,7 @@ public class SpimDataTransformViewer extends JFrame {
 		}
 
 		// Run command with pre-filled values, then refresh when done
-		Future<?> future = commandService.run(RemoveSpimDataTransformsCommand.class, true,
+		Future<?> future = commandService.run(DatasetTransformRemoveCommand.class, true,
 			"sacs", selectedSacs,
 			"timepoint_range", tpRange,
 			"transform_index_range", trRange);

@@ -26,29 +26,40 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.demos.io;
 
-import net.imagej.ImageJ;
-import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.command.dataset.DatasetXMLLoadCommand;
+package sc.fiji.bdvpg.command.viewer.bdv.settings;
 
-import java.io.File;
+import bdv.util.BdvHandle;
+import ij.IJ;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.bdv.navigate.RayCastPositionerSliderAdder;
+import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 
-public class MultipleSpimDataImporterCommandDemo
-{
+import javax.swing.SwingUtilities;
 
-	static ImageJ ij;
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewers>BDV>Settings>BDV - Add Z Slider",
+	description = "Adds a z slider onto BDV windows")
+public class MultiBdvZSliderAddCommand implements BdvPlaygroundActionCommand {
 
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( DatasetXMLLoadCommand.class, true, "files", files);
+	@Parameter(label = "Select BDV Windows",
+			description = "The BigDataViewer windows where Z sliders will be added",
+			persist = false)
+	BdvHandle[] bdvhs;
+
+	@Override
+	public void run() {
+		if (bdvhs.length == 0) IJ.log("Please make sure to select a Bdv window.");
+		SwingUtilities.invokeLater(() -> {
+			for (BdvHandle bdvh : bdvhs) {
+				new RayCastPositionerSliderAdder(bdvh).run();
+			}
+		});
 	}
-
 }

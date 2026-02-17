@@ -39,9 +39,8 @@ import org.scijava.Context;
 import org.scijava.command.CommandService;
 import org.scijava.script.ScriptService;
 import org.scijava.ui.UIService;
-import org.scijava.ui.swing.SwingUI;
-import sc.fiji.bdvpg.scijava.command.source.NewSourceCommand;
-import sc.fiji.bdvpg.scijava.command.source.SourcesRemoverCommand;
+import sc.fiji.bdvpg.command.source.SourceCreateFromModelCommand;
+import sc.fiji.bdvpg.command.source.SourceDeleteCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
@@ -77,21 +76,21 @@ public class TestSourcesCommands {
     @Test(timeout=5000)
     public void testSourceDeleteCommand() throws ExecutionException, InterruptedException {
         Assert.assertEquals("Error - there should be two sources at the beginning of the test", 2, sourceService.getSourceAndConverters().size() );
-        commandService.run(SourcesRemoverCommand.class,true, "sacs", "mri-stack.xml").get();
+        commandService.run(SourceDeleteCommand.class,true, "sources", "mri-stack.xml").get();
         Assert.assertEquals("Error - there should be one source left", 1, sourceService.getSourceAndConverters().size());
     }
 
     @Test(timeout=5000)
     public void testSourceDeleteIJ1Macro() throws ExecutionException, InterruptedException{
         ctx.getService(ScriptService.class).run("dummy.ijm",
-                "run(\"Delete Sources\", \"sacs=[mri-stack.xml]\");", true).get();
+                "run(\"Source - Delete\", \"sources=[mri-stack.xml]\");", true).get();
         Assert.assertEquals("Error - there should be one source left", 1, sourceService.getSourceAndConverters().size() );
     }
 
     @Test(timeout=5000)
     public void testSourceDeleteNestedPathCommand() throws ExecutionException, InterruptedException {
         Assert.assertEquals("Error - there should be two sources at the beginning of the test", 2, sourceService.getSourceAndConverters().size() );
-        commandService.run(SourcesRemoverCommand.class,true, "sacs", "mri-stack.xml>Channel>1").get();
+        commandService.run(SourceDeleteCommand.class,true, "sources", "mri-stack.xml>Channel>1").get();
         Assert.assertEquals("Error - there should be one source left", 1, sourceService.getSourceAndConverters().size());
     }
 
@@ -99,7 +98,7 @@ public class TestSourcesCommands {
     public void testSourceDeleteNestedPathIJ1Macro() throws ExecutionException, InterruptedException {
         Assert.assertEquals("Error - there should be two sources at the beginning of the test", 2, sourceService.getSourceAndConverters().size() );
         ctx.getService(ScriptService.class).run("dummy.ijm",
-                "run(\"Delete Sources\", \"sacs=[mri-stack.xml>Channel>1]\");", true).get();
+                "run(\"Source - Delete\", \"sources=[mri-stack.xml>Channel>1]\");", true).get();
         Assert.assertEquals("Error - there should be one source left", 1, sourceService.getSourceAndConverters().size());
     }
 
@@ -125,12 +124,12 @@ public class TestSourcesCommands {
     @Test(timeout=5000)
     public void testNewSourceCommand() throws ExecutionException, InterruptedException {
         Assert.assertEquals("Error - there should be two sources at the beginning of the test", 2, sourceService.getSourceAndConverters().size());
-        commandService.run(NewSourceCommand.class,true,
+        commandService.run(SourceCreateFromModelCommand.class,true,
                 "model", "mri-stack.xml>Channel>1",
                 "name", "model",
-                "voxsizex",1,
-                "voxsizey",1,
-                "voxsizez",1,
+                "vox_size_x",1,
+                "vox_size_y",1,
+                "vox_size_z",1,
                 "timepoint",0).get();
         Assert.assertEquals("Error - there should three sources after one is created", 3, sourceService.getSourceAndConverters().size());
     }
@@ -140,12 +139,12 @@ public class TestSourcesCommands {
         Assert.assertEquals("Error - there should be two sources at the beginning of the test", 2, sourceService.getSourceAndConverters().size());
         //New Source Based on Model Source
         ctx.getService(ScriptService.class).run("dummy.ijm",
-                "run(\"New Source Based on Model Source\", \""+
+                "run(\"Source - Create New Source Based On Model\", \""+
                         "model=[mri-stack.xml>Channel>1] " +
                         "name=model " +
-                        "voxsizex=1 " +
-                        "voxsizey=1 " +
-                        "voxsizez=1 " +
+                        "vox_size_x=1 " +
+                        "vox_size_y=1 " +
+                        "vox_size_z=1 " +
                         "timepoint=0 " +
                         "\");", true).get();
         Assert.assertEquals("Error - there should three sources after one is created", 3, sourceService.getSourceAndConverters().size());

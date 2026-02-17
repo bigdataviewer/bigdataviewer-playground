@@ -39,13 +39,13 @@ import org.scijava.ui.behaviour.util.Behaviours;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesShowCommand;
-import sc.fiji.bdvpg.scijava.command.source.BasicTransformerCommand;
-import sc.fiji.bdvpg.scijava.command.source.InteractiveBrightnessAdjusterCommand;
-import sc.fiji.bdvpg.scijava.command.source.SourceColorChangerCommand;
-import sc.fiji.bdvpg.scijava.command.source.SourcesInvisibleMakerCommand;
-import sc.fiji.bdvpg.scijava.command.source.SourcesRemoverCommand;
+import sc.fiji.bdvpg.command.viewer.bdv.BdvSourcesRemoveCommand;
+import sc.fiji.bdvpg.command.viewer.bdv.BdvSourcesShowCommand;
+import sc.fiji.bdvpg.command.source.transform.SourceTransformSimpleCommand;
+import sc.fiji.bdvpg.command.source.display.SourceBrightnessAdjustInteractiveCommand;
+import sc.fiji.bdvpg.command.source.display.SourceColorChangeCommand;
+import sc.fiji.bdvpg.command.source.display.SourceVisibleOFFCommand;
+import sc.fiji.bdvpg.command.source.SourceDeleteCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.io.File;
@@ -77,12 +77,12 @@ public class EditorBehaviourInstaller implements Runnable {
 		File f = BdvSettingsGUISetter.getActionFile(editorActionsPath, "editor");// new
 																																							// File("bdvpgsettings"+File.separator+"DefaultEditorActions.json");
 		String[] popupActions = { getCommandName(BdvSourcesShowCommand.class),
-			getCommandName(BasicTransformerCommand.class), getCommandName(
-				BdvSourcesRemoverCommand.class), "Inspect Sources", "PopupLine",
-			getCommandName(SourcesInvisibleMakerCommand.class), getCommandName(
-				InteractiveBrightnessAdjusterCommand.class), getCommandName(
-					SourceColorChangerCommand.class), "PopupLine", getCommandName(
-						SourcesRemoverCommand.class) };
+			getCommandName(SourceTransformSimpleCommand.class), getCommandName(
+				BdvSourcesRemoveCommand.class), "Inspect Sources", "PopupLine",
+			getCommandName(SourceVisibleOFFCommand.class), getCommandName(
+				SourceBrightnessAdjustInteractiveCommand.class), getCommandName(
+					SourceColorChangeCommand.class), "PopupLine", getCommandName(
+						SourceDeleteCommand.class) };
 
 		if (f.exists()) {
 			try {

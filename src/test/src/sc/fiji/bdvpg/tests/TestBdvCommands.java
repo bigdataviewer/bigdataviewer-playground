@@ -39,7 +39,7 @@ import org.scijava.Context;
 import org.scijava.command.CommandService;
 import org.scijava.script.ScriptService;
 import org.scijava.ui.UIService;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvCreatorCommand;
+import sc.fiji.bdvpg.command.viewer.bdv.BdvCreateCommand;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 import sc.fiji.persist.IObjectScijavaAdapterService;
@@ -70,14 +70,14 @@ public class TestBdvCommands {
 
     @Test
     public void testBdvCreatorCommand() throws ExecutionException, InterruptedException {
-        commandService.run(BdvCreatorCommand.class,true).get();
+        commandService.run(BdvCreateCommand.class,true).get();
         Assert.assertEquals("Error - there should be one bdv created", 1, sourceDisplayService.getDisplays().size() );
     }
 
     @Test
     public void testBdvCreatorIJ1Macro() throws ExecutionException, InterruptedException{
         ctx.getService(ScriptService.class).run("dummy.ijm",
-                "run(\"BDV - Create empty BDV window\");", true).get();
+                "run(\"BDV - Create Empty BDV Window\");", true).get();
         Assert.assertEquals("Error - there should be one bdv created", 1, sourceDisplayService.getDisplays().size() );
     }
 

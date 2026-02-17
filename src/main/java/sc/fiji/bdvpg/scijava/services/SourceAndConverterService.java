@@ -77,7 +77,7 @@ import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.cache.AbstractGlobalCache;
 import sc.fiji.bdvpg.cache.GlobalCacheBuilder;
 import sc.fiji.bdvpg.cache.GlobalLoaderCache;
-import sc.fiji.bdvpg.scijava.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.ISourceAndConverterService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;

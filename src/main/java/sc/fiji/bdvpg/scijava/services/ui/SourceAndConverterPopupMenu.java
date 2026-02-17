@@ -32,23 +32,22 @@ package sc.fiji.bdvpg.scijava.services.ui;
 import bdv.viewer.SourceAndConverter;
 import com.google.gson.Gson;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesAdderCommand;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesRemoverCommand;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvSourcesShowCommand;
-import sc.fiji.bdvpg.scijava.command.source.BasicTransformerCommand;
-import sc.fiji.bdvpg.scijava.command.source.ColorSourceCreatorCommand;
-import sc.fiji.bdvpg.scijava.command.source.InteractiveBrightnessAdjusterCommand;
-import sc.fiji.bdvpg.scijava.command.source.LUTSourceCreatorCommand;
-import sc.fiji.bdvpg.scijava.command.source.MakeMetadataFilterNodeCommand;
-import sc.fiji.bdvpg.scijava.command.source.ManualTransformCommand;
-import sc.fiji.bdvpg.scijava.command.source.SourceColorChangerCommand;
-import sc.fiji.bdvpg.scijava.command.source.SourcesDuplicatorCommand;
-import sc.fiji.bdvpg.scijava.command.source.SourcesInvisibleMakerCommand;
-import sc.fiji.bdvpg.scijava.command.source.SourcesRemoverCommand;
-import sc.fiji.bdvpg.scijava.command.source.SourcesResamplerCommand;
-import sc.fiji.bdvpg.scijava.command.source.SourcesVisibleMakerCommand;
-import sc.fiji.bdvpg.scijava.command.source.TransformedSourceWrapperCommand;
-import sc.fiji.bdvpg.scijava.command.source.XmlHDF5ExporterCommand;
+import sc.fiji.bdvpg.command.viewer.bdv.BdvSourcesAddCommand;
+import sc.fiji.bdvpg.command.viewer.bdv.BdvSourcesRemoveCommand;
+import sc.fiji.bdvpg.command.viewer.bdv.BdvSourcesShowCommand;
+import sc.fiji.bdvpg.command.source.transform.SourceTransformSimpleCommand;
+import sc.fiji.bdvpg.command.source.display.SourceBrightnessAdjustInteractiveCommand;
+import sc.fiji.bdvpg.command.source.SourceDuplicateWithLUTCommand;
+import sc.fiji.bdvpg.command.tree.TreeNodeFilterMetadataCommand;
+import sc.fiji.bdvpg.command.source.transform.SourceTransformManualCommand;
+import sc.fiji.bdvpg.command.source.display.SourceColorChangeCommand;
+import sc.fiji.bdvpg.command.source.SourceDuplicateCommand;
+import sc.fiji.bdvpg.command.source.display.SourceVisibleOFFCommand;
+import sc.fiji.bdvpg.command.source.SourceDeleteCommand;
+import sc.fiji.bdvpg.command.source.SourceResampleCommand;
+import sc.fiji.bdvpg.command.source.display.SourceVisibleONCommand;
+import sc.fiji.bdvpg.command.source.transform.SourceWrapTransformCommand;
+import sc.fiji.bdvpg.command.source.SourceExportXmlHDF5Command;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.JComponent;
@@ -71,27 +70,26 @@ public class SourceAndConverterPopupMenu {
 	private final Supplier<SourceAndConverter<?>[]> sacs_supplier;
 
 	final public static String[] defaultPopupActions = {
-			getCommandName(BdvSourcesAdderCommand.class),
+			getCommandName(BdvSourcesAddCommand.class),
 			getCommandName(BdvSourcesShowCommand.class),
-			getCommandName(BdvSourcesRemoverCommand.class),
+			getCommandName(BdvSourcesRemoveCommand.class),
 			"Inspect Sources", "PopupLine",
-			getCommandName(SourcesInvisibleMakerCommand.class),
-			getCommandName(SourcesVisibleMakerCommand.class),
-			getCommandName(InteractiveBrightnessAdjusterCommand.class),
-			getCommandName(SourceColorChangerCommand.class),
+			getCommandName(SourceVisibleOFFCommand.class),
+			getCommandName(SourceVisibleONCommand.class),
+			getCommandName(SourceBrightnessAdjustInteractiveCommand.class),
+			getCommandName(SourceColorChangeCommand.class),
 			"PopupLine",
-			getCommandName(BasicTransformerCommand.class),
-			getCommandName(SourcesDuplicatorCommand.class),
-			getCommandName(ManualTransformCommand.class),
-			getCommandName(TransformedSourceWrapperCommand.class),
-			getCommandName(SourcesResamplerCommand.class),
-			getCommandName(ColorSourceCreatorCommand.class),
-			getCommandName(LUTSourceCreatorCommand.class),
+			getCommandName(SourceTransformSimpleCommand.class),
+			getCommandName(SourceDuplicateCommand.class),
+			getCommandName(SourceTransformManualCommand.class),
+			getCommandName(SourceWrapTransformCommand.class),
+			getCommandName(SourceResampleCommand.class),
+			getCommandName(SourceDuplicateWithLUTCommand.class),
 			"PopupLine",
-			getCommandName(SourcesRemoverCommand.class),
-			getCommandName(XmlHDF5ExporterCommand.class),
+			getCommandName(SourceDeleteCommand.class),
+			getCommandName(SourceExportXmlHDF5Command.class),
 			"PopupLine",
-			getCommandName(MakeMetadataFilterNodeCommand.class)
+			getCommandName(TreeNodeFilterMetadataCommand.class)
 	};
 
 	String[] popupActionWithPaths;

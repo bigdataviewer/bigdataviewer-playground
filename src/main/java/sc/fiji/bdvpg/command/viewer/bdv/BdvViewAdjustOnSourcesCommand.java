@@ -26,29 +26,40 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.demos.io;
 
-import net.imagej.ImageJ;
-import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.command.dataset.DatasetXMLLoadCommand;
+package sc.fiji.bdvpg.command.viewer.bdv;
 
-import java.io.File;
+import bdv.util.BdvHandle;
+import bdv.viewer.SourceAndConverter;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 
-public class MultipleSpimDataImporterCommandDemo
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
+
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "Viewers>BDV>BDV - Adjust View On Sources",
+	description = "Adjust current Bdv view on the selected sources")
+public class BdvViewAdjustOnSourcesCommand implements
+	BdvPlaygroundActionCommand
 {
 
-	static ImageJ ij;
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) that the view will be adjusted to span")
+	SourceAndConverter<?>[] sacs;
 
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
+	@Parameter(label = "Select BDV Window",
+			description = "The BigDataViewer window whose view will be adjusted to fit all selected sources")
+	BdvHandle bdvh;
 
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( DatasetXMLLoadCommand.class, true, "files", files);
+	@Override
+	public void run() {
+		if (sacs.length > 0) {
+			new ViewerTransformAdjuster(bdvh, sacs).run();
+		}
 	}
-
 }

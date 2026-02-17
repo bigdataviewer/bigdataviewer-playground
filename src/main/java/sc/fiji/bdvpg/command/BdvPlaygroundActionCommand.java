@@ -26,29 +26,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.demos.io;
 
-import net.imagej.ImageJ;
-import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.command.dataset.DatasetXMLLoadCommand;
+package sc.fiji.bdvpg.command;
 
-import java.io.File;
+import org.scijava.command.Command;
 
-public class MultipleSpimDataImporterCommandDemo
-{
-
-	static ImageJ ij;
-
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
-
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( DatasetXMLLoadCommand.class, true, "files", files);
-	}
-
-}
+/**
+ * Top interface for SciJava Commands which can be auto discovered by
+ * BigDataViewer Playground
+ */
+public interface BdvPlaygroundActionCommand extends Command {}
