@@ -62,7 +62,7 @@ public class SourceAndConverterAdapter implements
 	protected static final Logger logger = LoggerFactory.getLogger(
 		SourceAndConverterAdapter.class);
 
-	final sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer;
+	final sc.fiji.bdvpg.services.SourceAndConverterAdapter sourceSerializer;
 
 	final Map<Class<? extends Source<?>>, ISourceAdapter<?>> sourceSerializers =
 		new HashMap<>();
@@ -70,15 +70,15 @@ public class SourceAndConverterAdapter implements
 		new HashMap<>();
 
 	public SourceAndConverterAdapter(
-		sc.fiji.bdvpg.services.SourceAndConverterAdapter sacSerializer)
+		sc.fiji.bdvpg.services.SourceAndConverterAdapter sourceSerializer)
 	{
-		this.sacSerializer = sacSerializer;
-		sacSerializer.getScijavaContext().getService(
+		this.sourceSerializer = sourceSerializer;
+		sourceSerializer.getScijavaContext().getService(
 			IObjectScijavaAdapterService.class).getAdapters(ISourceAdapter.class)
 			.forEach(pi -> {
 				try {
 					ISourceAdapter adapter = pi.createInstance();
-					adapter.setSacSerializer(sacSerializer);
+					adapter.setSourceSerializer(sourceSerializer);
 					sourceSerializers.put(adapter.getSourceClass(), adapter);
 					sourceSerializersFromName.put(adapter.getSourceClass().getName(),
 						adapter);
@@ -101,7 +101,7 @@ public class SourceAndConverterAdapter implements
 				.getClass().getName());
 			obj.addProperty("converter_class", sourceAndConverter.getConverter()
 				.getClass().toString());
-			obj.addProperty("source_id", sacSerializer.getSacToId().get(
+			obj.addProperty("source_id", sourceSerializer.getSacToId().get(
 				sourceAndConverter));
 
 			if (sourceAndConverter.getConverter() instanceof ColorConverter) {
@@ -176,40 +176,40 @@ public class SourceAndConverterAdapter implements
 			throw new UnsupportedOperationException();
 		}
 
-		SourceAndConverter<?> sac = sourceSerializersFromName.get(sourceClass)
+		SourceAndConverter<?> source = sourceSerializersFromName.get(sourceClass)
 			.deserialize(jsonObject.get("sac"), SourceAndConverter.class,
 				jsonDeserializationContext);
 
-		if (sac != null) {
+		if (source != null) {
 			if (jsonObject.getAsJsonPrimitive("color") != null) {
 				// Now the color
 				int color = jsonObject.getAsJsonPrimitive("color").getAsInt();
-				new ColorChanger(sac, new ARGBType(color)).run(); // TO deal with
+				new ColorChanger(source, new ARGBType(color)).run(); // TO deal with
 																													// volatile and
 																													// non-volatile
 				// Min Max display
 				SourceAndConverterServices.getSourceAndConverterService()
-					.getConverterSetup(sac).setDisplayRange(jsonObject.getAsJsonPrimitive(
+					.getConverterSetup(source).setDisplayRange(jsonObject.getAsJsonPrimitive(
 						"converter_setup_min").getAsDouble(), jsonObject.getAsJsonPrimitive(
 							"converter_setup_max").getAsDouble());
 			}
 
 			// unique identifier
 			int idSource = jsonObject.getAsJsonPrimitive("source_id").getAsInt();
-			sacSerializer.getIdToSac().put(idSource, sac);
-			sacSerializer.getSacToId().put(sac, idSource);
-			sacSerializer.getSourceToId().put(sac.getSpimSource(), idSource);
-			sacSerializer.getIdToSource().put(idSource, sac.getSpimSource());
-			sacSerializer.alreadyDeSerializedSacs.add(idSource);
+			sourceSerializer.getIdToSac().put(idSource, source);
+			sourceSerializer.getSacToId().put(source, idSource);
+			sourceSerializer.getSourceToId().put(source.getSpimSource(), idSource);
+			sourceSerializer.getIdToSource().put(idSource, source.getSpimSource());
+			sourceSerializer.alreadyDeSerializedSources.add(idSource);
 
 			Map<String, String> stringMetaData = jsonDeserializationContext
 				.deserialize(jsonObject.get("string_metadata"), Map.class);// ,jsonSerializationContext.serialize(stringMetaData));
 
 			stringMetaData.keySet().forEach(key -> SourceAndConverterServices
-				.getSourceAndConverterService().setMetadata(sac, key, stringMetaData
+				.getSourceAndConverterService().setMetadata(source, key, stringMetaData
 					.get(key)));
 
-			return sac;
+			return source;
 		}
 
 		return null;

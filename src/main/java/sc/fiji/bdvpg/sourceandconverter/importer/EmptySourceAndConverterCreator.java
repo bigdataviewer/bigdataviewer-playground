@@ -263,10 +263,10 @@ public class EmptySourceAndConverterCreator implements Runnable,
 
 		Source<?> src = new EmptySource(nx, ny, nz, at3D, name, voxelDimensions);
 
-		SourceAndConverter<?> sac;
+		SourceAndConverter<?> source;
 
-		sac = SourceAndConverterHelper.createSourceAndConverter(src);
+		source = SourceAndConverterHelper.createSourceAndConverter(src);
 
-		return sac;
+		return source;
 	}
 }

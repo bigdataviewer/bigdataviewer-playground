@@ -36,7 +36,7 @@ import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
+import sc.fiji.bdvpg.scijava.services.ui.RenamableSource;
 import sc.fiji.bdvpg.scijava.services.ui.swingdnd.JListTransferHandler;
 import sc.fiji.bdvpg.scijava.services.ui.swingdnd.SourceAndConverterServiceUITransferHandler;
 
@@ -92,13 +92,13 @@ public class SwingSourceAndConverterSortedListWidget extends
 		int nSources = sortedSourceList.getModel().getSize();
 		SourceAndConverter<?>[] selection = new SourceAndConverter[nSources];
 		for (int i = 0; i < nSources; i++) {
-			selection[i] = (sortedSourceList.getModel().getElementAt(i)).sac;
+			selection[i] = (sortedSourceList.getModel().getElementAt(i)).source;
 		}
 		return selection;
 	}
 
 	JTree tree;
-	JList<RenamableSourceAndConverter> sortedSourceList;
+	JList<RenamableSource> sortedSourceList;
 
 	@Override
 	public void set(final WidgetModel model) {
@@ -218,7 +218,7 @@ public class SwingSourceAndConverterSortedListWidget extends
 		@Override
 		public void add(int index, Object element) {
 			if (element instanceof SourceAndConverter) {
-				super.add(index, new RenamableSourceAndConverter(
+				super.add(index, new RenamableSource(
 					(SourceAndConverter) element));
 			}
 		}

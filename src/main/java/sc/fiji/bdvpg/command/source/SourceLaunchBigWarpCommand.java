@@ -100,21 +100,21 @@ public class SourceLaunchBigWarpCommand implements BdvPlaygroundActionCommand {
 	SourceAndConverterBdvDisplayService bsds;
 
 	@Parameter
-	SourceAndConverterService sac_service;
+	SourceAndConverterService source_service;
 
 	public void run() {
-		List<SourceAndConverter<?>> movingSacs = Arrays.stream(moving_sources)
+		List<SourceAndConverter<?>> movingSources = Arrays.stream(moving_sources)
 			.collect(Collectors.toList());
-		List<SourceAndConverter<?>> fixedSacs = Arrays.stream(fixed_sources).collect(
+		List<SourceAndConverter<?>> fixedSources = Arrays.stream(fixed_sources).collect(
 			Collectors.toList());
 
 		List<ConverterSetup> converterSetups = Arrays.stream(moving_sources).map(
-			src -> sac_service.getConverterSetup(src)).collect(Collectors.toList());
-		converterSetups.addAll(Arrays.stream(fixed_sources).map(src -> sac_service
+			src -> source_service.getConverterSetup(src)).collect(Collectors.toList());
+		converterSetups.addAll(Arrays.stream(fixed_sources).map(src -> source_service
 			.getConverterSetup(src)).collect(Collectors.toList()));
 
 		// Launch BigWarp
-		BigWarpLauncher bwl = new BigWarpLauncher(movingSacs, fixedSacs,
+		BigWarpLauncher bwl = new BigWarpLauncher(movingSources, fixedSources,
 				bigwarp_name, converterSetups);
 		bwl.run();
 

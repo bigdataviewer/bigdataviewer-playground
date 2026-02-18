@@ -57,8 +57,8 @@ public class SourceVisibleOFFCommand implements
 
 	@Override
 	public void run() {
-		for (SourceAndConverter<?> sac : sources) {
-			bsds.setVisible(sac, false);
+		for (SourceAndConverter<?> source : sources) {
+			bsds.setVisible(source, false);
 		}
 	}
 }

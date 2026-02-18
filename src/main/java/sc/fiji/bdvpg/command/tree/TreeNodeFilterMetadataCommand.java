@@ -66,9 +66,9 @@ public class TreeNodeFilterMetadataCommand implements
 
 	@Override
 	public void run() {
-		FilterNode filterNode = new FilterNode(group_name, (sac) -> {
-			if (source_service.containsMetadata(sac, key)) {
-				Object o = source_service.getMetadata(sac, key);
+		FilterNode filterNode = new FilterNode(group_name, (source) -> {
+			if (source_service.containsMetadata(source, key)) {
+				Object o = source_service.getMetadata(source, key);
 				if (o instanceof String) {
 					String str = (String) o;
 					return str.matches(value_regex);

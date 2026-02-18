@@ -81,7 +81,7 @@ public class SourceAndConverterAdapter {
 	Map<Integer, Source<?>> idToSource;
 	Map<Source<?>, Integer> sourceToId;
 
-	public final Set<Integer> alreadyDeSerializedSacs = new HashSet<>();
+	public final Set<Integer> alreadyDeSerializedSources = new HashSet<>();
 	public final Map<Integer, JsonElement> idToJsonElement = new HashMap<>();
 
 	final Context ctx;

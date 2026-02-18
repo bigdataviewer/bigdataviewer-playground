@@ -66,14 +66,14 @@ public interface ISourceInspector {
 	 * </ul>
 	 *
 	 * @param parent the tree node to add inspection results to
-	 * @param sac the source and converter to inspect
+	 * @param source the source and converter to inspect
 	 * @param sourceAndConverterService the service for metadata lookup and source registration
 	 * @param registerIntermediateSources whether to register intermediate/wrapped sources in the service
 	 * @return a set of wrapped/child SourceAndConverters that should be recursively inspected
 	 */
 	Set<SourceAndConverter<?>> inspect(
 		DefaultMutableTreeNode parent,
-		SourceAndConverter<?> sac,
+		SourceAndConverter<?> source,
 		ISourceAndConverterService sourceAndConverterService,
 		boolean registerIntermediateSources
 	);

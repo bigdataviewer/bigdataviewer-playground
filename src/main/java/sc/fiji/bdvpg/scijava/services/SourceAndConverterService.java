@@ -162,7 +162,7 @@ public class SourceAndConverterService extends AbstractService implements
 	 * Map containing objects that are 1 to 1 linked to a Source Keys are Weakly
 	 * referenced -> Metadata should be GCed if referenced only here
 	 */
-	Cache<SourceAndConverter<?>, Map<String, Object>> sacToMetadata;
+	Cache<SourceAndConverter<?>, Map<String, Object>> sourceToMetadata;
 
 	/**
 	 * Test if a Source is already registered in the Service
@@ -171,7 +171,7 @@ public class SourceAndConverterService extends AbstractService implements
 	 * @return true if a source is already registered
 	 */
 	public boolean isRegistered(SourceAndConverter<?> src) {
-		return sacToMetadata.getIfPresent(src) != null;
+		return sourceToMetadata.getIfPresent(src) != null;
 	}
 
 	public void setDisplayService(SourceAndConverterBdvDisplayService bsds) {
@@ -179,28 +179,28 @@ public class SourceAndConverterService extends AbstractService implements
 	}
 
 	@Override
-	public void setMetadata(SourceAndConverter<?> sac, String key, Object data) {
-		if (sac == null) {
-			logger.error("Error : sac is null in setMetadata function! ");
+	public void setMetadata(SourceAndConverter<?> source, String key, Object data) {
+		if (source == null) {
+			logger.error("Error : source is null in setMetadata function! ");
 			return;
 		}
 
-		if (sacToMetadata.getIfPresent(sac) == null) {
+		if (sourceToMetadata.getIfPresent(source) == null) {
 			logger.error(
-				"Error : sac has no associated metadata ! This should not happen. ");
-			logger.error("Sac : " + sac.getSpimSource().getName());
-			logger.error("SpimSource class: " + sac.getSpimSource().getClass()
+				"Error : source has no associated metadata ! This should not happen. ");
+			logger.error("Source : " + source.getSpimSource().getName());
+			logger.error("SpimSource class: " + source.getSpimSource().getClass()
 				.getSimpleName());
 			// return;
 		}
 		else {
-			sacToMetadata.getIfPresent(sac).put(key, data);
+			sourceToMetadata.getIfPresent(source).put(key, data);
 		}
 	}
 
 	@Override
-	public Object getMetadata(SourceAndConverter<?> sac, String key) {
-		Map<String, Object> meta = sacToMetadata.getIfPresent(sac);
+	public Object getMetadata(SourceAndConverter<?> source, String key) {
+		Map<String, Object> meta = sourceToMetadata.getIfPresent(source);
 		if (meta != null) {
 			return meta.get(key);
 		}
@@ -210,16 +210,16 @@ public class SourceAndConverterService extends AbstractService implements
 	}
 
 	@Override
-	public void removeMetadata(SourceAndConverter<?> sac, String key) {
-		Map<String, Object> metadata = sacToMetadata.getIfPresent(sac);
+	public void removeMetadata(SourceAndConverter<?> source, String key) {
+		Map<String, Object> metadata = sourceToMetadata.getIfPresent(source);
 		if (metadata != null) {
 			metadata.remove(key);
 		}
 	}
 
 	@Override
-	public Collection<String> getMetadataKeys(SourceAndConverter<?> sac) {
-		Map<String, Object> map = sacToMetadata.getIfPresent(sac);
+	public Collection<String> getMetadataKeys(SourceAndConverter<?> source) {
+		Map<String, Object> map = sourceToMetadata.getIfPresent(source);
 		if (map == null) {
 			return new ArrayList<>();
 		}
@@ -229,33 +229,33 @@ public class SourceAndConverterService extends AbstractService implements
 	}
 
 	@Override
-	public boolean containsMetadata(SourceAndConverter<?> sac, String key) {
-		return getMetadata(sac, key) != null;
+	public boolean containsMetadata(SourceAndConverter<?> source, String key) {
+		return getMetadata(source, key) != null;
 	}
 
 	/**
 	 * Register a BDV Source in this Service. Called in the BdvSourcePostProcessor
 	 *
-	 * @param sac source
+	 * @param source source
 	 */
-	public void register(SourceAndConverter<?> sac) {
-		register(sac, true);
+	public void register(SourceAndConverter<?> source) {
+		register(source, true);
 	}
 
 	/**
 	 * Register a BDV Source in this Service. Called in the BdvSourcePostProcessor
 	 * 
-	 * @param sac source
+	 * @param source source
 	 */
-	private synchronized void register(SourceAndConverter<?> sac, boolean treeView) {
-		if (objectService.getObjects(SourceAndConverter.class).contains(sac)) {
+	private synchronized void register(SourceAndConverter<?> source, boolean treeView) {
+		if (objectService.getObjects(SourceAndConverter.class).contains(source)) {
 			logger.debug("Source already registered");
 			return;
 		}
-		if (sacToMetadata.getIfPresent(sac) == null) {
+		if (sourceToMetadata.getIfPresent(source) == null) {
 			Map<String, Object> sourceData = new HashMap<>();
 			sourceData.put(UNIQUE_ID_KEY, getNewUniqueId());
-			sacToMetadata.put(sac, sourceData);
+			sourceToMetadata.put(source, sourceData);
 		}
 		/*
 		  TODO FIX
@@ -277,9 +277,9 @@ public class SourceAndConverterService extends AbstractService implements
 		            at org.scijava.object.ObjectService.addObject(ObjectService.java:86)
 		            at sc.fiji.bdvpg.scijava.services.SourceAndConverterService.register(SourceAndConverterService.java:235)
 		 */
-		objectService.addObject(sac);
+		objectService.addObject(source);
 
-		if (treeView) ui.update(sac);
+		if (treeView) ui.update(source);
 	}
 
 	@Override
@@ -299,17 +299,17 @@ public class SourceAndConverterService extends AbstractService implements
 		return sourceCounter.incrementAndGet();
 	}
 
-	public int getUniqueId(SourceAndConverter<?> sac) {
-		return (Integer) getMetadata(sac, UNIQUE_ID_KEY);
+	public int getUniqueId(SourceAndConverter<?> source) {
+		return (Integer) getMetadata(source, UNIQUE_ID_KEY);
 	}
 
-	public void setUniqueId(SourceAndConverter<?> sac, Integer id) {
-		setMetadata(sac, UNIQUE_ID_KEY, id);
+	public void setUniqueId(SourceAndConverter<?> source, Integer id) {
+		setMetadata(source, UNIQUE_ID_KEY, id);
 	}
 
 	public synchronized void register(Collection<SourceAndConverter<?>> sources) {
-		for (SourceAndConverter<?> sac : sources) {
-			this.register(sac);
+		for (SourceAndConverter<?> source : sources) {
+			this.register(source);
 		}
 	}
 
@@ -322,15 +322,15 @@ public class SourceAndConverterService extends AbstractService implements
 	 */
 	public synchronized void registerBatch(Collection<SourceAndConverter<?>> sources) {
 		List<SourceAndConverter<?>> newSources = new ArrayList<>();
-		for (SourceAndConverter<?> sac : sources) {
-			if (!isRegistered(sac)) {
-				if (sacToMetadata.getIfPresent(sac) == null) {
+		for (SourceAndConverter<?> source : sources) {
+			if (!isRegistered(source)) {
+				if (sourceToMetadata.getIfPresent(source) == null) {
 					Map<String, Object> sourceData = new HashMap<>();
 					sourceData.put(UNIQUE_ID_KEY, getNewUniqueId());
-					sacToMetadata.put(sac, sourceData);
+					sourceToMetadata.put(source, sourceData);
 				}
-				objectService.addObject(sac);
-				newSources.add(sac);
+				objectService.addObject(source);
+				newSources.add(source);
 			}
 		}
 		// Single UI update for all sources
@@ -534,11 +534,11 @@ public class SourceAndConverterService extends AbstractService implements
 		// Collect all sources for batch registration
 		List<SourceAndConverter<?>> allSources = new ArrayList<>();
 		setupIdToSourceAndConverter.keySet().forEach(id -> {
-			SourceAndConverter<?> sac = setupIdToSourceAndConverter.get(id);
+			SourceAndConverter<?> source = setupIdToSourceAndConverter.get(id);
 			// Register without tree update (we'll batch update later)
-			register(sac, "no tree");
-			linkToSpimData(sac, asd, id);
-			allSources.add(sac);
+			register(source, "no tree");
+			linkToSpimData(source, asd, id);
+			allSources.add(source);
 		});
 
 		// Single batch UI update for all sources
@@ -594,23 +594,23 @@ public class SourceAndConverterService extends AbstractService implements
 	 * converters can be associated to a Source (volatile and non-volatile), only
 	 * one ConverterSetup is associated to a Source
 	 * 
-	 * @param sac source to get the convertersetup from
+	 * @param source source to get the convertersetup from
 	 * @return the converter setup of the source
 	 */
-	public ConverterSetup getConverterSetup(SourceAndConverter<?> sac) {
-		if (!isRegistered(sac)) {
-			register(sac);
+	public ConverterSetup getConverterSetup(SourceAndConverter<?> source) {
+		if (!isRegistered(source)) {
+			register(source);
 		}
-		Map<String, Object> meta = sacToMetadata.getIfPresent(sac);
+		Map<String, Object> meta = sourceToMetadata.getIfPresent(source);
 
 		if (meta == null) {
-			logger.error("getConverterSetup NPE : the source " + sac.getSpimSource()
+			logger.error("getConverterSetup NPE : the source " + source.getSpimSource()
 				.getName() + " has no metadata associated! ");
 			return null;
 		}
 		// If no ConverterSetup is built then build it
 		if (meta.get(CONVERTER_SETUP) == null) {
-			ConverterSetup setup = SourceAndConverterHelper.createConverterSetup(sac);
+			ConverterSetup setup = SourceAndConverterHelper.createConverterSetup(source);
 			meta.put(CONVERTER_SETUP, setup);
 		}
 
@@ -618,17 +618,17 @@ public class SourceAndConverterService extends AbstractService implements
 	}
 
 	@Override
-	public synchronized void remove(SourceAndConverter<?>... sacs) {
+	public synchronized void remove(SourceAndConverter<?>... sources) {
 		// Remove displays
-		if (sacs != null) {
+		if (sources != null) {
 			if (bsds != null) {
-				bsds.removeFromAllBdvs(sacs);
+				bsds.removeFromAllBdvs(sources);
 			}
-			for (SourceAndConverter sac : sacs) {
+			for (SourceAndConverter source : sources) {
 				// Checks if it's the last of a spimdataset -> should shutdown cache
 				// ----------------------------
 				AbstractSpimData asd = null;
-				Map<String, Object> meta = sacToMetadata.getIfPresent(sac);
+				Map<String, Object> meta = sourceToMetadata.getIfPresent(source);
 				if (meta != null) {
 					if (meta.get(SPIM_DATA_INFO) != null) {
 						asd = ((SpimDataInfo) (meta.get(SPIM_DATA_INFO))).asd;
@@ -668,10 +668,10 @@ public class SourceAndConverterService extends AbstractService implements
 					}
 					// ----------------
 
-					sacToMetadata.invalidate(sac);
+					sourceToMetadata.invalidate(source);
 				}
 				else {
-					logger.error(sac.getSpimSource().getName() +
+					logger.error(source.getSpimSource().getName() +
 						" has no associated metadata");
 				}
 				/*
@@ -694,7 +694,7 @@ public class SourceAndConverterService extends AbstractService implements
 				            at org.scijava.object.ObjectService.addObject(ObjectService.java:86)
 				            at sc.fiji.bdvpg.scijava.services.SourceAndConverterService.register(SourceAndConverterService.java:235)
 				 */
-				objectService.removeObject(sac);
+				objectService.removeObject(source);
 				/*
 				Does not work
 				AtomicBoolean flagPerformed = new AtomicBoolean();
@@ -706,7 +706,7 @@ public class SourceAndConverterService extends AbstractService implements
 				while (!flagPerformed.get()) {
 				    // busy waiting
 				}*/
-				ui.remove(sac);
+				ui.remove(source);
 			}
 		}
 	}
@@ -726,19 +726,19 @@ public class SourceAndConverterService extends AbstractService implements
 		AbstractSpimData<?> asd)
 	{
 		List<SourceAndConverter> rawList = objectService.getObjects(
-			SourceAndConverter.class).stream().filter(s -> (sacToMetadata
+			SourceAndConverter.class).stream().filter(s -> (sourceToMetadata
 				.getIfPresent(s).get(SPIM_DATA_INFO) != null)).filter(
-					s -> ((SpimDataInfo) sacToMetadata.getIfPresent(s).get(
+					s -> ((SpimDataInfo) sourceToMetadata.getIfPresent(s).get(
 						SPIM_DATA_INFO)).asd.equals(asd)).collect(Collectors.toList());
 		List<SourceAndConverter<?>> list = new ArrayList<>();
 		rawList.forEach(list::add);
 		return list;
 	}
 
-	public void linkToSpimData(SourceAndConverter sac, AbstractSpimData asd,
+	public void linkToSpimData(SourceAndConverter source, AbstractSpimData asd,
 		int idSetup)
 	{
-		sacToMetadata.getIfPresent(sac).put(SPIM_DATA_INFO, new SpimDataInfo(asd,
+		sourceToMetadata.getIfPresent(source).put(SPIM_DATA_INFO, new SpimDataInfo(asd,
 			idSetup));
 	}
 
@@ -763,7 +763,7 @@ public class SourceAndConverterService extends AbstractService implements
 		scriptService.addAlias(AffineTransform3D.class);
 		scriptService.addAlias(AbstractSpimData.class);
 		// -- TODO End of to check
-		sacToMetadata = CacheBuilder.newBuilder().weakKeys().build();// new
+		sourceToMetadata = CacheBuilder.newBuilder().weakKeys().build();// new
 																																	// HashMap<>();
 		spimdataToMetadata = CacheBuilder.newBuilder().weakKeys().build();
 
@@ -808,7 +808,7 @@ public class SourceAndConverterService extends AbstractService implements
 	public List<SourceAndConverter<?>> getSourceAndConvertersFromSource(
 		Source src)
 	{
-		return getSourceAndConverters().stream().filter(sac -> sac.getSpimSource()
+		return getSourceAndConverters().stream().filter(source -> source.getSpimSource()
 			.equals(src)).collect(Collectors.toList());
 	}
 
@@ -835,9 +835,9 @@ public class SourceAndConverterService extends AbstractService implements
 	@Override
 	public Set<AbstractSpimData<?>> getSpimDatasets() {
 		Set<AbstractSpimData<?>> asds = new HashSet<>();
-		this.getSourceAndConverters().forEach(sac -> {
-			if (containsMetadata(sac, SPIM_DATA_INFO)) {
-				asds.add(((SpimDataInfo) getMetadata(sac, SPIM_DATA_INFO)).asd);
+		this.getSourceAndConverters().forEach(source -> {
+			if (containsMetadata(source, SPIM_DATA_INFO)) {
+				asds.add(((SpimDataInfo) getMetadata(source, SPIM_DATA_INFO)).asd);
 			}
 		});
 		return asds;
@@ -886,10 +886,10 @@ public class SourceAndConverterService extends AbstractService implements
 				for (ModuleItem input : ci.inputs()) {
 					if (input.getType().equals(SourceAndConverter.class)) {
 						// It's an action which takes a SourceAndConverter
-						registerAction(ci.getMenuPath().getLeaf().toString(), (sacs) -> {
+						registerAction(ci.getMenuPath().getLeaf().toString(), (sources) -> {
 							// Todo : improve by sending the parameters all over again
-							for (SourceAndConverter sac : sacs) {
-								commandService.run(ci, true, input.getName(), sac);// .get();
+							for (SourceAndConverter source : sources) {
+								commandService.run(ci, true, input.getName(), source);// .get();
 																																		// not
 																																		// possible
 																																		// in this
@@ -901,8 +901,8 @@ public class SourceAndConverterService extends AbstractService implements
 					}
 					if (input.getType().equals(SourceAndConverter[].class)) {
 						// It's an action which takes a SourceAndConverter List
-						registerAction(ci.getMenuPath().getLeaf().toString(), (sacs) -> {
-							commandService.run(ci, true, input.getName(), sacs);// .get();
+						registerAction(ci.getMenuPath().getLeaf().toString(), (sources) -> {
+							commandService.run(ci, true, input.getName(), sources);// .get();
 						});
 						logger.debug("Registering action entitled " + ci.getMenuPath()
 							.getLeaf().toString() + " from command " + ci.getClassName());
@@ -911,10 +911,10 @@ public class SourceAndConverterService extends AbstractService implements
 			}
 			else {
 				registerAction(ci.getMenuPath().getLeaf().toString(), (
-					sacs) -> commandService.run(ci, true));
+					sources) -> commandService.run(ci, true));
 				logger.debug("Registering action entitled " + ci.getMenuPath()
 					.getMenuString() + " from command " + ci.getClassName() +
-					" sacs ignored");
+					" sources ignored");
 			}
 		}
 		catch (NullPointerException npe) {

@@ -67,7 +67,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getComman
 public class SourceAndConverterPopupMenu {
 
 	private final JPopupMenu popup;
-	private final Supplier<SourceAndConverter<?>[]> sacs_supplier;
+	private final Supplier<SourceAndConverter<?>[]> sources_supplier;
 
 	final public static String[] defaultPopupActions = {
 			getCommandName(BdvSourcesAddCommand.class),
@@ -95,11 +95,11 @@ public class SourceAndConverterPopupMenu {
 	String[] popupActionWithPaths;
 
 	public SourceAndConverterPopupMenu(
-		Supplier<SourceAndConverter<?>[]> sacs_supplier, String path,
-		String context)
+			Supplier<SourceAndConverter<?>[]> sources_supplier, String path,
+			String context)
 	{
 
-		this.sacs_supplier = sacs_supplier;
+		this.sources_supplier = sources_supplier;
 		this.popupActionWithPaths = defaultPopupActions;
 
 		File f = BdvSettingsGUISetter.getActionFile(path, context);
@@ -149,15 +149,15 @@ public class SourceAndConverterPopupMenu {
 	}
 
 	public SourceAndConverterPopupMenu(
-		Supplier<SourceAndConverter<?>[]> sacs_supplier)
+		Supplier<SourceAndConverter<?>[]> sources_supplier)
 	{
-		this(sacs_supplier, "", "tree");
+		this(sources_supplier, "", "tree");
 	}
 
 	public SourceAndConverterPopupMenu(
-		Supplier<SourceAndConverter<?>[]> sacs_supplier, String[] actionWithPaths)
+			Supplier<SourceAndConverter<?>[]> sources_supplier, String[] actionWithPaths)
 	{
-		this.sacs_supplier = sacs_supplier;
+		this.sources_supplier = sources_supplier;
 		this.popupActionWithPaths = actionWithPaths;
 
 		this.popup = new JPopupMenu();
@@ -214,7 +214,7 @@ public class SourceAndConverterPopupMenu {
 
 		JMenuItem menuItem = new JMenuItem(actionName);
 		if (action != null) {
-			menuItem.addActionListener(e -> action.accept(sacs_supplier.get()));
+			menuItem.addActionListener(e -> action.accept(sources_supplier.get()));
 
 		} else {
 			menuItem.addActionListener(e ->

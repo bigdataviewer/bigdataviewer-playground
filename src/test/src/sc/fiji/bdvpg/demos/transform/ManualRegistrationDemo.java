@@ -102,21 +102,21 @@ public class ManualRegistrationDemo {
         BdvHandle bdvHandle = bdvDisplayService.getNewBdv();
 
         // Creates SourceAndConverter Reference
-        SourceAndConverter<T> sacReference = SourceAndConverterHelper.createSourceAndConverter(source);
+        SourceAndConverter<T> sourceReference = SourceAndConverterHelper.createSourceAndConverter(source);
 
         if (demoMode == CreateNewTransformedSourceAndConverter) {
 
-            SourceAndConverter<T> sacToTransform;
-            sacToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
-            new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
+            SourceAndConverter<T> sourceToTransform;
+            sourceToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
+            new ColorChanger(sourceToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
 
-            bdvDisplayService.show(bdvHandle, sacReference);
-            bdvDisplayService.show(bdvHandle, sacToTransform);
+            bdvDisplayService.show(bdvHandle, sourceReference);
+            bdvDisplayService.show(bdvHandle, sourceToTransform);
 
             // Adjust view on SourceAndConverter
-            new ViewerTransformAdjuster(bdvHandle, sacReference).run();
+            new ViewerTransformAdjuster(bdvHandle, sourceReference).run();
 
-            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacToTransform);
+            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sourceToTransform);
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
@@ -129,18 +129,18 @@ public class ManualRegistrationDemo {
 
         } else if (demoMode == MutateTransformedSourceAndConverter) {
 
-            SourceAndConverter<T> sacToTransform;
-            sacToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
-            sacToTransform = new SourceAffineTransformer<>(sacToTransform, new AffineTransform3D()).get();
-            new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
+            SourceAndConverter<T> sourceToTransform;
+            sourceToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
+            sourceToTransform = new SourceAffineTransformer<>(sourceToTransform, new AffineTransform3D()).get();
+            new ColorChanger(sourceToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
 
-            bdvDisplayService.show(bdvHandle, sacReference);
-            bdvDisplayService.show(bdvHandle, sacToTransform);
+            bdvDisplayService.show(bdvHandle, sourceReference);
+            bdvDisplayService.show(bdvHandle, sourceToTransform);
 
             // Adjust view on SourceAndConverter
-            new ViewerTransformAdjuster(bdvHandle, sacReference).run();
+            new ViewerTransformAdjuster(bdvHandle, sourceReference).run();
 
-            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacToTransform);
+            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sourceToTransform);
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
@@ -161,18 +161,18 @@ public class ManualRegistrationDemo {
             AbstractSpimData<?> asd =  new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
 
             // Show all SourceAndConverter associated with above SpimData
-            sourceService.getSourceAndConverters().forEach( sac -> {
-                bdvDisplayService.show(bdvHandle, sac);
-                new BrightnessAutoAdjuster<>(sac, 0).run();
+            sourceService.getSourceAndConverters().forEach( src -> {
+                bdvDisplayService.show(bdvHandle, src);
+                new BrightnessAutoAdjuster<>(src, 0).run();
             });
 
-            bdvDisplayService.show(bdvHandle, sacReference);
-            new ViewerTransformAdjuster(bdvHandle, sacReference).run();
+            bdvDisplayService.show(bdvHandle, sourceReference);
+            new ViewerTransformAdjuster(bdvHandle, sourceReference).run();
 
-            List<SourceAndConverter<?>> sacList = sourceService
+            List<SourceAndConverter<?>> sourceList = sourceService
                     .getSourceAndConverterFromSpimdata(asd);
 
-            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacList.toArray(new SourceAndConverter[0]));
+            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sourceList.toArray(new SourceAndConverter[0]));
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
@@ -196,19 +196,19 @@ public class ManualRegistrationDemo {
             AbstractSpimData<?> asd =  new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
 
             // Show all SourceAndConverter associated with above SpimData
-            sourceService.getSourceAndConverters().forEach( sac -> {
-                bdvDisplayService.show(bdvHandle, sac);
-                new BrightnessAutoAdjuster<>(sac, 0).run();
+            sourceService.getSourceAndConverters().forEach( src -> {
+                bdvDisplayService.show(bdvHandle, src);
+                new BrightnessAutoAdjuster<>(src, 0).run();
             });
 
-            bdvDisplayService.show(bdvHandle, sacReference);
-            new ViewerTransformAdjuster(bdvHandle, sacReference).run();
+            bdvDisplayService.show(bdvHandle, sourceReference);
+            new ViewerTransformAdjuster(bdvHandle, sourceReference).run();
 
-            List<SourceAndConverter<?>> sacList = sourceService
+            List<SourceAndConverter<?>> sourceList = sourceService
                     .getSourceAndConverterFromSpimdata(asd);
 
 
-            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacList.toArray(new SourceAndConverter[0]));
+            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sourceList.toArray(new SourceAndConverter[0]));
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)

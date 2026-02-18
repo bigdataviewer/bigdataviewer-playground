@@ -293,9 +293,9 @@ public class XmlHDF5SpimdataExporter implements Runnable {
 					basicviewsetup.setAttribute(new Tile(idx_current_src + 1));
 				}
 
-				SourceAndConverter<?> sac = sources.get(idxSourceToSac.get(src));
+				SourceAndConverter<?> source = sources.get(idxSourceToSac.get(src));
 
-				attributeAdder.accept(sac, basicviewsetup);
+				attributeAdder.accept(source, basicviewsetup);
 
 				setups.put(idx_current_src, basicviewsetup); // Hum hum, order according
 																											// to hashmap size TODO

@@ -153,16 +153,16 @@ public class SourceAndConverterServiceUITransferHandler extends
 				SourceAndConverterServiceUI ui =
 					((SourceAndConverterService) SourceAndConverterServices
 						.getSourceAndConverterService()).getUI();
-				List<SourceAndConverter<?>> sacs = new ArrayList<>();
+				List<SourceAndConverter<?>> sources = new ArrayList<>();
 				// noinspection ManualArrayToCollectionCopy
-				for (SourceAndConverter<?> sac : ui.getSelectedSourceAndConverters(
+				for (SourceAndConverter<?> source : ui.getSelectedSourceAndConverters(
 					(JTree) c))
 				{
-					sacs.add(sac);
+					sources.add(source);
 				}
-				// Collections.addAll(sacs, ui.getSelectedSourceAndConverters()); // Do
+				// Collections.addAll(sources, ui.getSelectedSourceAndConverters()); // Do
 				// not work, even if intellij suggests it
-				extT.setSourcesList(sacs);
+				extT.setSourcesList(sources);
 			}
 			return extT;
 		}

@@ -45,11 +45,11 @@ import java.lang.reflect.Type;
 @Plugin(type = ISourceAdapter.class)
 public class EmptySourceAdapter implements ISourceAdapter<EmptySource> {
 
-	SourceAndConverterAdapter sacSerializer;
+	SourceAndConverterAdapter sourceSerializer;
 
 	@Override
-	public void setSacSerializer(SourceAndConverterAdapter sacSerializer) {
-		this.sacSerializer = sacSerializer;
+	public void setSourceSerializer(SourceAndConverterAdapter sourceSerializer) {
+		this.sourceSerializer = sourceSerializer;
 	}
 
 	@Override
@@ -58,12 +58,12 @@ public class EmptySourceAdapter implements ISourceAdapter<EmptySource> {
 	}
 
 	@Override
-	public JsonElement serialize(SourceAndConverter<?> sac, Type type,
+	public JsonElement serialize(SourceAndConverter<?> source, Type type,
 		JsonSerializationContext jsonSerializationContext)
 	{
 		JsonObject obj = new JsonObject();
-		EmptySource source = (EmptySource) sac.getSpimSource();
-		obj.add("empty_source_parameters", jsonSerializationContext.serialize(source
+		EmptySource emptySource = (EmptySource) source.getSpimSource();
+		obj.add("empty_source_parameters", jsonSerializationContext.serialize(emptySource
 			.getParameters()));
 		return obj;
 	}

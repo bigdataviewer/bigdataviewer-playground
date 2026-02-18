@@ -69,9 +69,9 @@ public class SourceGroupMakeCommand implements BdvPlaygroundActionCommand {
 
 	@Override
 	public void run() {
-		final Set<SourceAndConverter<?>> sacs_set = new HashSet<>(Arrays.asList(
+		final Set<SourceAndConverter<?>> sources_set = new HashSet<>(Arrays.asList(
 				sources));
-		FilterNode filterNode = new FilterNode(group_name, sacs_set::contains,
+		FilterNode filterNode = new FilterNode(group_name, sources_set::contains,
 				display_sources);
 		SourceTreeModel model = source_service.getUI().getSourceTreeModel();
 		model.addNode(model.getRoot(), filterNode);

@@ -71,14 +71,14 @@ public class AffineTransformSourceDemo {
 
         final AbstractSpimData<?> spimData = importer.get();
 
-        SourceAndConverter<?> sac = ij.get(SourceAndConverterService.class)
+        SourceAndConverter<?> source = ij.get(SourceAndConverterService.class)
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
 
-        new ViewerTransformAdjuster(bdvHandle, sac).run();
-        new BrightnessAutoAdjuster<>(sac, 0).run();
+        new ViewerTransformAdjuster(bdvHandle, source).run();
+        new BrightnessAutoAdjuster<>(source, 0).run();
 
-        ArrayList<SourceAndConverter<?>> sacs = new ArrayList<>();
+        ArrayList<SourceAndConverter<?>> sources = new ArrayList<>();
         for (int x = 0; x < numberOfSourcesInOneAxis;x++) {
             for (int y = 0; y < numberOfSourcesInOneAxis; y++) {
 
@@ -89,21 +89,21 @@ public class AffineTransformSourceDemo {
                     at3d.scale(0.5 + Math.random() / 4, 0.5 + Math.random() / 4, 1);
                     at3d.translate(200 * x, 200 * y, 0);
 
-                    SourceAffineTransformer<?> sat = new SourceAffineTransformer<>(sac, at3d);
+                    SourceAffineTransformer<?> sat = new SourceAffineTransformer<>(source, at3d);
                     sat.run();
 
-                    SourceAndConverter<?> transformedSac = sat.get();
+                    SourceAndConverter<?> transformedSource = sat.get();
 
-                    sacs.add(transformedSac);
+                    sources.add(transformedSource);
                 }
             }
         }
 
         ij.get(SourceAndConverterBdvDisplayService.class)
-                .show(bdvHandle, sacs.toArray(new SourceAndConverter[0]));
+                .show(bdvHandle, sources.toArray(new SourceAndConverter[0]));
 
         SourceGroup sg = bdvHandle.getViewerPanel().state().getGroups().get(1);
 
-        bdvHandle.getViewerPanel().state().addSourcesToGroup(sacs, sg);
+        bdvHandle.getViewerPanel().state().addSourcesToGroup(sources, sg);
     }
 }

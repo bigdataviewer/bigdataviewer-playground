@@ -50,7 +50,7 @@ public class BdvViewAdjustOnSourcesCommand implements
 
 	@Parameter(label = "Select Source(s)",
 			description = "The source(s) that the view will be adjusted to span")
-	SourceAndConverter<?>[] sacs;
+	SourceAndConverter<?>[] sources;
 
 	@Parameter(label = "Select BDV Window",
 			description = "The BigDataViewer window whose view will be adjusted to fit all selected sources")
@@ -58,8 +58,8 @@ public class BdvViewAdjustOnSourcesCommand implements
 
 	@Override
 	public void run() {
-		if (sacs.length > 0) {
-			new ViewerTransformAdjuster(bdvh, sacs).run();
+		if (sources.length > 0) {
+			new ViewerTransformAdjuster(bdvh, sources).run();
 		}
 	}
 }

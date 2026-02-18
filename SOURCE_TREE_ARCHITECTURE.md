@@ -97,8 +97,8 @@ Instead of updating the UI for each source individually, batch operations collec
 
 ```java
 // OLD: N UI updates for N sources
-for (SourceAndConverter<?> sac : sources) {
-    ui.update(sac);  // triggers tree reload each time
+for (SourceAndConverter<?> source : sources) {
+    ui.update(source);  // triggers tree reload each time
 }
 
 // NEW: 1 UI update for N sources
@@ -166,7 +166,7 @@ public class FilterNode {
 
     // Package-private modifiers are also synchronized
     synchronized void addChild(FilterNode child) { ... }
-    synchronized boolean addSource(SourceAndConverter<?> sac) { ... }
+    synchronized boolean addSource(SourceAndConverter<?> source) { ... }
 }
 ```
 
@@ -228,10 +228,10 @@ This keeps the Model simple and allows different Views to use different sort ord
 // In SourceAndConverterService
 public synchronized void registerBatch(Collection<SourceAndConverter<?>> sources) {
     List<SourceAndConverter<?>> newSources = new ArrayList<>();
-    for (SourceAndConverter<?> sac : sources) {
-        if (!isRegistered(sac)) {
+    for (SourceAndConverter<?> source : sources) {
+        if (!isRegistered(source)) {
             // ... register source
-            newSources.add(sac);
+            newSources.add(source);
         }
     }
     // Single UI update for all sources
@@ -247,10 +247,10 @@ public synchronized void registerBatch(Collection<SourceAndConverter<?>> sources
 // Collect all sources first
 List<SourceAndConverter<?>> allSources = new ArrayList<>();
 setupIdToSourceAndConverter.keySet().forEach(id -> {
-    SourceAndConverter<?> sac = setupIdToSourceAndConverter.get(id);
-    register(sac, "no tree");  // register without UI update
-    linkToSpimData(sac, asd, id);
-    allSources.add(sac);
+    SourceAndConverter<?> source = setupIdToSourceAndConverter.get(id);
+    register(source, "no tree");  // register without UI update
+    linkToSpimData(source, asd, id);
+    allSources.add(source);
 });
 
 // Single batch UI update
@@ -263,7 +263,7 @@ ui.addSources(allSources);
 SourceTreeModel model = ui.getSourceTreeModel();
 FilterNode parent = model.getRoot();
 FilterNode customFilter = new FilterNode("My Filter",
-    sac -> sac.getSpimSource().getName().contains("GFP"),
+    source -> source.getSpimSource().getName().contains("GFP"),
     true);  // displaySources = true
 model.addNode(parent, customFilter);
 ```
@@ -272,13 +272,13 @@ model.addNode(parent, customFilter);
 
 The public API of `SourceAndConverterServiceUI` is preserved for backward compatibility:
 
-| Method | Behavior |
-|--------|----------|
-| `update(sac)` | Adds single source (still works, less efficient) |
-| `addSources(collection)` | **New**: Batch add with single UI update |
-| `remove(sac)` | Removes single source |
+| Method                      | Behavior |
+|-----------------------------|----------|
+| `update(source)`            | Adds single source (still works, less efficient) |
+| `addSources(collection)`    | **New**: Batch add with single UI update |
+| `remove(source)`            | Removes single source |
 | `removeSources(collection)` | **New**: Batch remove |
-| `getTreeModel()` | Returns Swing `DefaultTreeModel` |
-| `getSourceTreeModel()` | **New**: Returns thread-safe `SourceTreeModel` |
+| `getTreeModel()`            | Returns Swing `DefaultTreeModel` |
+| `getSourceTreeModel()`      | **New**: Returns thread-safe `SourceTreeModel` |
 
 The old `SourceFilterNode`, `SpimDataFilterNode` (old), `SpimDataElementFilter`, and `BdvHandleFilterNode` (old) classes in `sc.fiji.bdvpg.scijava.services.ui` are no longer used by the UI but remain for any external code that may reference them.

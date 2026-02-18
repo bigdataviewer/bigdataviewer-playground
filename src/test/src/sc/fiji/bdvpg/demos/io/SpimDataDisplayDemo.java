@@ -63,10 +63,10 @@ public class SpimDataDisplayDemo
 		new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
 
 		// Show all SourceAndConverter associated with above SpimData
-		SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
-			SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
-			new ViewerTransformAdjuster(bdvHandle, sac).run();
-			new BrightnessAutoAdjuster<>(sac, 0).run();
+		SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( source -> {
+			SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source);
+			new ViewerTransformAdjuster(bdvHandle, source).run();
+			new BrightnessAutoAdjuster<>(source, 0).run();
 		});
 
 		// Expand all nodes in the tree view (up to depth 3)

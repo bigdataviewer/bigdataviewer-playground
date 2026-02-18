@@ -37,7 +37,7 @@ import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
+import sc.fiji.bdvpg.scijava.services.ui.RenamableSource;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -88,26 +88,26 @@ public class SwingSourceAndConverterWidget extends
 	JTree tree;
 
 	public SourceAndConverter<?> getSelectedSourceAndConverter() {
-		ArrayList<SourceAndConverter<?>> sacList = new ArrayList<>(); // A set
+		ArrayList<SourceAndConverter<?>> sourceList = new ArrayList<>(); // A set
 																																	// avoids
 																																	// duplicate
 																																	// SourceAndConverter
 		for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
 			if (((DefaultMutableTreeNode) tp.getLastPathComponent())
-				.getUserObject() instanceof RenamableSourceAndConverter)
+				.getUserObject() instanceof RenamableSource)
 			{
 				SourceAndConverter<?> userObj =
-					((RenamableSourceAndConverter) ((DefaultMutableTreeNode) tp
-						.getLastPathComponent()).getUserObject()).sac;
-				sacList.add(userObj);
+					((RenamableSource) ((DefaultMutableTreeNode) tp
+						.getLastPathComponent()).getUserObject()).source;
+				sourceList.add(userObj);
 			}
 			else {
-				sacList.addAll(getSourceAndConvertersFromChildrenOf(
+				sourceList.addAll(getSourceAndConvertersFromChildrenOf(
 					(DefaultMutableTreeNode) tp.getLastPathComponent()));
 			}
 		}
-		if (!sacList.isEmpty()) {
-			return sacList.get(0);
+		if (!sourceList.isEmpty()) {
+			return sourceList.get(0);
 		}
 		else {
 			return null;
@@ -117,20 +117,20 @@ public class SwingSourceAndConverterWidget extends
 	private Set<SourceAndConverter<?>> getSourceAndConvertersFromChildrenOf(
 		DefaultMutableTreeNode node)
 	{
-		Set<SourceAndConverter<?>> sacs = new HashSet<>();
+		Set<SourceAndConverter<?>> sources = new HashSet<>();
 		for (int i = 0; i < node.getChildCount(); i++) {
 			DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(
 				i);
-			if (child.getUserObject() instanceof RenamableSourceAndConverter) {
-				SourceAndConverter<?> userObj = ((RenamableSourceAndConverter) (child
-					.getUserObject())).sac;
-				sacs.add(userObj);
+			if (child.getUserObject() instanceof RenamableSource) {
+				SourceAndConverter<?> userObj = ((RenamableSource) (child
+					.getUserObject())).source;
+				sources.add(userObj);
 			}
 			else {
-				sacs.addAll(getSourceAndConvertersFromChildrenOf(child));
+				sources.addAll(getSourceAndConvertersFromChildrenOf(child));
 			}
 		}
-		return sacs;
+		return sources;
 	}
 
 	@Override

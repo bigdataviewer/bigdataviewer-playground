@@ -56,12 +56,12 @@ public class SourceAndConverterPostprocessor extends
 
 		module.getOutputs().forEach((name, object) -> {
 			if (object instanceof SourceAndConverter<?>) {
-				SourceAndConverter<?> sac = (SourceAndConverter<?>) object;
+				SourceAndConverter<?> source = (SourceAndConverter<?>) object;
 				logger.debug("Source found.");
 				logger.debug("Is it registered ? ");
-				if (!bss.isRegistered(sac)) {
+				if (!bss.isRegistered(source)) {
 					logger.debug("No, registers it.");
-					bss.register(sac);
+					bss.register(source);
 				}
 				else {
 					logger.debug("Yes.");
@@ -69,13 +69,13 @@ public class SourceAndConverterPostprocessor extends
 				module.resolveOutput(name);
 			}
 			if (object instanceof SourceAndConverter<?>[]) {
-				SourceAndConverter<?>[] sacs = (SourceAndConverter<?>[]) object;
-				for (SourceAndConverter<?> sac : sacs) {
+				SourceAndConverter<?>[] sources = (SourceAndConverter<?>[]) object;
+				for (SourceAndConverter<?> source : sources) {
 					logger.debug("Source found.");
 					logger.debug("Is it registered ? ");
-					if (!bss.isRegistered(sac)) {
+					if (!bss.isRegistered(source)) {
 						logger.debug("No.");
-						bss.register(sac);
+						bss.register(source);
 					}
 					else {
 						logger.debug("Yes.");

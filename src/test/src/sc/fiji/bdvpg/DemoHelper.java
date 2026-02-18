@@ -51,14 +51,14 @@ public class DemoHelper {
         try {
 
             // Closes bdv windows
-            SourceAndConverterBdvDisplayService sac_display_service =
+            SourceAndConverterBdvDisplayService ssource_display_service =
                     ij.context().getService(SourceAndConverterBdvDisplayService.class);
-            sac_display_service.getDisplays().forEach(BdvHandle::close);
+            ssource_display_service.getDisplays().forEach(BdvHandle::close);
 
             // Clears all sources
-            SourceAndConverterService sac_service =
+            SourceAndConverterService source_service =
                     ij.context().getService(SourceAndConverterService.class);
-            sac_service.remove(sac_service.getSourceAndConverters().toArray(new SourceAndConverter[0]));
+            source_service.remove(source_service.getSourceAndConverters().toArray(new SourceAndConverter[0]));
 
             // Closes ij context
             ij.context().close();

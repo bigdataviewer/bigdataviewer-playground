@@ -50,11 +50,11 @@ public class SourceAdder implements Runnable,
 	Consumer<SourceAndConverter<?>[]>
 {
 
-	SourceAndConverter<?>[] sacsIn;
+	SourceAndConverter<?>[] sources;
 	final BdvHandle bdvh;
 
-	public SourceAdder(BdvHandle bdvh, SourceAndConverter<?>... sacsIn) {
-		this.sacsIn = sacsIn;
+	public SourceAdder(BdvHandle bdvh, SourceAndConverter<?>... sources) {
+		this.sources = sources;
 		this.bdvh = bdvh;
 	}
 
@@ -63,11 +63,11 @@ public class SourceAdder implements Runnable,
 	}
 
 	public void run() {
-		accept(sacsIn);
+		accept(sources);
 	}
 
 	@Override
-	public void accept(SourceAndConverter<?>... sacs) {
-		SourceAndConverterServices.getBdvDisplayService().show(bdvh, sacs);
+	public void accept(SourceAndConverter<?>... sources) {
+		SourceAndConverterServices.getBdvDisplayService().show(bdvh, sources);
 	}
 }

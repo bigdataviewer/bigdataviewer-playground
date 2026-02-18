@@ -35,15 +35,15 @@ import bdv.viewer.SourceAndConverter;
  * Wraps a SourceAndConverter and allow to change its name
  */
 
-public class RenamableSourceAndConverter {
+public class RenamableSource {
 
-	public final SourceAndConverter<?> sac;
+	public final SourceAndConverter<?> source;
 
-	public RenamableSourceAndConverter(SourceAndConverter<?> sac) {
-		this.sac = sac;
+	public RenamableSource(SourceAndConverter<?> source) {
+		this.source = source;
 	}
 
 	public String toString() {
-		return sac.getSpimSource().getName();
+		return source.getSpimSource().getName();
 	}
 }

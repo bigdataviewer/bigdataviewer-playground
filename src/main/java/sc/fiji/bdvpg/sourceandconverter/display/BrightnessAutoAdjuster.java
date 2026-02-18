@@ -41,22 +41,22 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 public class BrightnessAutoAdjuster<T extends RealType<T>> implements Runnable {
 
-	private final SourceAndConverter<?> sac;
+	private final SourceAndConverter<?> source;
 	private final double cumulativeMinCutoff;
 	private final double cumulativeMaxCutoff;
 	private final int timePoint;
 
-	public BrightnessAutoAdjuster(final SourceAndConverter<?> sac,
+	public BrightnessAutoAdjuster(final SourceAndConverter<?> source,
 		int timePoint)
 	{
-		this(sac, timePoint, 0.01, 0.99);
+		this(source, timePoint, 0.01, 0.99);
 	}
 
-	public BrightnessAutoAdjuster(final SourceAndConverter<?> sac,
+	public BrightnessAutoAdjuster(final SourceAndConverter<?> source,
 		final int timePoint, final double cumulativeMinCutoff,
 		final double cumulativeMaxCutoff)
 	{
-		this.sac = sac;
+		this.source = source;
 		this.cumulativeMinCutoff = cumulativeMinCutoff;
 		this.cumulativeMaxCutoff = cumulativeMaxCutoff;
 		this.timePoint = timePoint;
@@ -64,16 +64,16 @@ public class BrightnessAutoAdjuster<T extends RealType<T>> implements Runnable {
 
 	@Override
 	public void run() {
-		if (!sac.getSpimSource().isPresent(timePoint)) return;
-		if (!(sac.getSpimSource().getType() instanceof RealType)) {
-			System.out.println("Can't auto adjust brightness of pixel type " + sac
+		if (!source.getSpimSource().isPresent(timePoint)) return;
+		if (!(source.getSpimSource().getType() instanceof RealType)) {
+			System.out.println("Can't auto adjust brightness of pixel type " + source
 				.getSpimSource().getType().getClass().getSimpleName());
 			return;
 		}
 
 		@SuppressWarnings("unchecked")
-		final RandomAccessibleInterval<T> img = (RandomAccessibleInterval<T>) sac
-			.getSpimSource().getSource(timePoint, sac.getSpimSource()
+		final RandomAccessibleInterval<T> img = (RandomAccessibleInterval<T>) source
+			.getSpimSource().getSource(timePoint, source.getSpimSource()
 				.getNumMipmapLevels() - 1);
 		final long zMiddle = (img.min(2) + img.max(2) + 1) / 2;
 
@@ -111,7 +111,7 @@ public class BrightnessAutoAdjuster<T extends RealType<T>> implements Runnable {
 			minValue;
 
 		ConverterSetup converterSetup = SourceAndConverterServices
-			.getSourceAndConverterService().getConverterSetup(sac);
+			.getSourceAndConverterService().getConverterSetup(source);
 		converterSetup.setDisplayRange(min, max);
 	}
 

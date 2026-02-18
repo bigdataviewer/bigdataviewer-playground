@@ -74,7 +74,7 @@ public class ViewTransformSynchronizationDemo {
 
         // Makes BDV Source
         Source<UnsignedByteType> source = new RandomAccessibleIntervalSource<>(rai, rai.getType(), "blobs");
-        SourceAndConverter<UnsignedByteType> sac = SourceAndConverterHelper.createSourceAndConverter(source);
+        SourceAndConverter<UnsignedByteType> src = SourceAndConverterHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
         BdvHandle bdvHandle1 = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
@@ -93,10 +93,10 @@ public class ViewTransformSynchronizationDemo {
 
         for (BdvHandle bdvHandle:bdvhs) {
             // Show the SourceAndConverter
-            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
+            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, src);
 
             // Adjust view on SourceAndConverter
-            new ViewerTransformAdjuster(bdvHandle, sac).run();
+            new ViewerTransformAdjuster(bdvHandle, src).run();
 
             new ClickBehaviourInstaller(bdvHandle, (x,y) -> {
                 if (isSynchronizing) {

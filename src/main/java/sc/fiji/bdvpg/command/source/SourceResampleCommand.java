@@ -86,8 +86,8 @@ public class SourceResampleCommand implements BdvPlaygroundActionCommand {
 		sources_out = new SourceAndConverter<?>[sources.length];
 		final String[] names = name.split(",");
 		for (int i = 0; i < sources.length; i++) {
-			SourceAndConverter<?> sac = sources[i];
-			sources_out[i] = new SourceResampler(sac, model, names[i], reuse_mipmaps,
+			SourceAndConverter<?> source = sources[i];
+			sources_out[i] = new SourceResampler(source, model, names[i], reuse_mipmaps,
 				cache, interpolate, default_mipmap_level).get();
 		}
 	}

@@ -187,20 +187,20 @@ public class FilterNode {
 
     /**
      * Tests if this node has already processed the given source.
-     * @param sac the source to test
+     * @param source the source to test
      * @return true if the source has passed through this node's filter and is in outputSources
      */
-    public synchronized boolean hasConsumed(SourceAndConverter<?> sac) {
-        return outputSources.contains(sac);
+    public synchronized boolean hasConsumed(SourceAndConverter<?> source) {
+        return outputSources.contains(source);
     }
 
     /**
      * Tests if the given source has been received as input by this node.
-     * @param sac the source to test
+     * @param source the source to test
      * @return true if the source is in inputSources
      */
-    public synchronized boolean hasReceived(SourceAndConverter<?> sac) {
-        return inputSources.contains(sac);
+    public synchronized boolean hasReceived(SourceAndConverter<?> source) {
+        return inputSources.contains(source);
     }
 
     // ============ Package-private methods for SourceTreeModel to use ============
@@ -251,23 +251,23 @@ public class FilterNode {
      * Adds a source to the input set and tests the filter.
      * Package-private, called by SourceTreeModel.
      *
-     * @param sac the source to add
+     * @param source the source to add
      * @return true if the source passed the filter and was added to outputSources
      */
-    synchronized boolean addSource(SourceAndConverter<?> sac) {
-        if (inputSources.contains(sac)) {
+    synchronized boolean addSource(SourceAndConverter<?> source) {
+        if (inputSources.contains(source)) {
             if (!dynamicFilter) {
                 return false; // Static filter: already processed, result won't change
             }
             // Dynamic filter: re-evaluate, but only report as added if newly passing
-            if (filter.test(sac)) {
-                return outputSources.add(sac); // returns false if already present
+            if (filter.test(source)) {
+                return outputSources.add(source); // returns false if already present
             }
             return false;
         }
-        inputSources.add(sac);
-        if (filter.test(sac)) {
-            return outputSources.add(sac);
+        inputSources.add(source);
+        if (filter.test(source)) {
+            return outputSources.add(source);
         }
         return false;
     }
@@ -281,9 +281,9 @@ public class FilterNode {
      */
     synchronized List<SourceAndConverter<?>> addSources(Collection<SourceAndConverter<?>> sources) {
         List<SourceAndConverter<?>> passed = new ArrayList<>();
-        for (SourceAndConverter<?> sac : sources) {
-            if (addSourceInternal(sac)) {
-                passed.add(sac);
+        for (SourceAndConverter<?> source : sources) {
+            if (addSourceInternal(source)) {
+                passed.add(source);
             }
         }
         return passed;
@@ -292,13 +292,13 @@ public class FilterNode {
     /**
      * Internal add without synchronization (called from already synchronized methods).
      */
-    private boolean addSourceInternal(SourceAndConverter<?> sac) {
-        if (inputSources.contains(sac)) {
+    private boolean addSourceInternal(SourceAndConverter<?> source) {
+        if (inputSources.contains(source)) {
             return false;
         }
-        inputSources.add(sac);
-        if (filter.test(sac)) {
-            outputSources.add(sac);
+        inputSources.add(source);
+        if (filter.test(source)) {
+            outputSources.add(source);
             return true;
         }
         return false;
@@ -308,12 +308,12 @@ public class FilterNode {
      * Removes a source from this node.
      * Package-private, called by SourceTreeModel.
      *
-     * @param sac the source to remove
+     * @param source the source to remove
      * @return true if the source was in outputSources (and thus was visible)
      */
-    synchronized boolean removeSource(SourceAndConverter<?> sac) {
-        inputSources.remove(sac);
-        return outputSources.remove(sac);
+    synchronized boolean removeSource(SourceAndConverter<?> source) {
+        inputSources.remove(source);
+        return outputSources.remove(source);
     }
 
     /**
@@ -325,9 +325,9 @@ public class FilterNode {
      */
     synchronized List<SourceAndConverter<?>> removeSources(Collection<SourceAndConverter<?>> sources) {
         List<SourceAndConverter<?>> removed = new ArrayList<>();
-        for (SourceAndConverter<?> sac : sources) {
-            if (removeSourceInternal(sac)) {
-                removed.add(sac);
+        for (SourceAndConverter<?> source : sources) {
+            if (removeSourceInternal(source)) {
+                removed.add(source);
             }
         }
         return removed;
@@ -336,31 +336,31 @@ public class FilterNode {
     /**
      * Internal remove without synchronization (called from already synchronized methods).
      */
-    private boolean removeSourceInternal(SourceAndConverter<?> sac) {
-        inputSources.remove(sac);
-        return outputSources.remove(sac);
+    private boolean removeSourceInternal(SourceAndConverter<?> source) {
+        inputSources.remove(source);
+        return outputSources.remove(source);
     }
 
     /**
      * Re-evaluates the filter for a source.
      * Package-private, called by SourceTreeModel.
      *
-     * @param sac the source to re-evaluate
+     * @param source the source to re-evaluate
      * @return -1 if source was removed from output, 0 if unchanged, 1 if source was added to output
      */
-    synchronized int reevaluateSource(SourceAndConverter<?> sac) {
-        if (!inputSources.contains(sac)) {
+    synchronized int reevaluateSource(SourceAndConverter<?> source) {
+        if (!inputSources.contains(source)) {
             return 0; // Not our source
         }
 
-        boolean wasInOutput = outputSources.contains(sac);
-        boolean passesNow = filter.test(sac);
+        boolean wasInOutput = outputSources.contains(source);
+        boolean passesNow = filter.test(source);
 
         if (wasInOutput && !passesNow) {
-            outputSources.remove(sac);
+            outputSources.remove(source);
             return -1; // Removed
         } else if (!wasInOutput && passesNow) {
-            outputSources.add(sac);
+            outputSources.add(source);
             return 1; // Added
         }
         return 0; // Unchanged

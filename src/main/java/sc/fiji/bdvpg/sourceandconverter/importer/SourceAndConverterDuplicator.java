@@ -38,10 +38,10 @@ public class SourceAndConverterDuplicator<T> implements Runnable,
 	Function<SourceAndConverter<T>, SourceAndConverter<T>>
 {
 
-	final SourceAndConverter<T> sac_in;
+	final SourceAndConverter<T> source;
 
-	public SourceAndConverterDuplicator(SourceAndConverter<T> sac) {
-		sac_in = sac;
+	public SourceAndConverterDuplicator(SourceAndConverter<T> source) {
+		this.source = source;
 	}
 
 	@Override
@@ -50,27 +50,27 @@ public class SourceAndConverterDuplicator<T> implements Runnable,
 	}
 
 	public SourceAndConverter<T> get() {
-		return apply(sac_in);
+		return apply(source);
 	}
 
 	@Override
-	public SourceAndConverter<T> apply(SourceAndConverter<T> sourceAndConverter) {
-		SourceAndConverter<T> sac;
-		if (sourceAndConverter.asVolatile() != null) {
-			sac = new SourceAndConverter<>(sourceAndConverter.getSpimSource(),
-				SourceAndConverterHelper.cloneConverter(sourceAndConverter
-					.getConverter(), sourceAndConverter), new SourceAndConverter(
-						sourceAndConverter.asVolatile().getSpimSource(),
-						SourceAndConverterHelper.cloneConverter(sourceAndConverter
-							.asVolatile().getConverter(), sourceAndConverter.asVolatile())));
+	public SourceAndConverter<T> apply(SourceAndConverter<T> source) {
+		SourceAndConverter<T> src;
+		if (source.asVolatile() != null) {
+			src = new SourceAndConverter<>(source.getSpimSource(),
+				SourceAndConverterHelper.cloneConverter(source
+					.getConverter(), source), new SourceAndConverter(
+						source.asVolatile().getSpimSource(),
+						SourceAndConverterHelper.cloneConverter(source
+							.asVolatile().getConverter(), source.asVolatile())));
 		}
 		else {
-			sac = new SourceAndConverter<>(sourceAndConverter.getSpimSource(),
-				SourceAndConverterHelper.cloneConverter(sourceAndConverter
-					.getConverter(), sourceAndConverter));
+			src = new SourceAndConverter<>(source.getSpimSource(),
+				SourceAndConverterHelper.cloneConverter(source
+					.getConverter(), source));
 		}
 
-		return sac;
+		return src;
 	}
 
 }

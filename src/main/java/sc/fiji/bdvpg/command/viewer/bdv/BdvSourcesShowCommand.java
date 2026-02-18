@@ -52,15 +52,15 @@ public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
 
 	@Parameter(label = "Select Source(s)",
 			description = "The source(s) to display in the new BDV window")
-	SourceAndConverter<?>[] sacs;
+	SourceAndConverter<?>[] sources;
 
 	@Parameter(label = "Auto Contrast",
 			description = "Automatically adjusts brightness and contrast based on the current timepoint")
 	boolean auto_contrast;
 
-	@Parameter(label = "Adjust View on Source",
+	@Parameter(label = "Adjust View on Sources",
 			description = "Centers and zooms the view to fit the displayed sources")
-	boolean adjust_view_on_source;
+	boolean adjust_view;
 
 	@Parameter(label = "Interpolate",
 			description = "Enables interpolation for smoother rendering")
@@ -81,16 +81,16 @@ public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
 	public void run() {
 		bdvh = bdvDisplayService.getNewBdv();
 
-		bdvDisplayService.show(bdvh, sacs);
+		bdvDisplayService.show(bdvh, sources);
 		if (auto_contrast) {
-			for (SourceAndConverter<?> sac : sacs) {
+			for (SourceAndConverter<?> source : sources) {
 				int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
-				new BrightnessAutoAdjuster<>(sac, timepoint).run();
+				new BrightnessAutoAdjuster<>(source, timepoint).run();
 			}
 		}
 
-		if ((adjust_view_on_source) && (sacs.length > 0)) {
-			new ViewerTransformAdjuster(bdvh, sacs).run();
+		if ((adjust_view) && (sources.length > 0)) {
+			new ViewerTransformAdjuster(bdvh, sources).run();
 		}
 	}
 }

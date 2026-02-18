@@ -36,7 +36,7 @@ import bdv.viewer.ViewerPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
+import sc.fiji.bdvpg.scijava.services.ui.RenamableSource;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
@@ -122,7 +122,7 @@ public class JListTransferHandler extends TransferHandler {
 			SourcesTransferable.flavor))
 		{
 			try {
-				final List<SourceAndConverter<?>> sacs = SourceAndConverterHelper
+				final List<SourceAndConverter<?>> sources = SourceAndConverterHelper
 					.sortDefaultGeneric(((SourcesTransferable.SourceList) support
 						.getTransferable().getTransferData(SourcesTransferable.flavor))
 							.getSources());
@@ -132,7 +132,7 @@ public class JListTransferHandler extends TransferHandler {
 					JList.DropLocation dropLocation = (JList.DropLocation) support
 						.getDropLocation();
 					int idxInsert = dropLocation.getIndex();
-					for (SourceAndConverter source : sacs) {
+					for (SourceAndConverter source : sources) {
 						model.add(idxInsert, source);
 						idxInsert++;
 					}
@@ -162,7 +162,7 @@ public class JListTransferHandler extends TransferHandler {
 			if (SourceAndConverterServices
 				.getSourceAndConverterService() instanceof SourceAndConverterService)
 			{
-				List<SourceAndConverter<?>> sacs = new ArrayList<>();
+				List<SourceAndConverter<?>> sources = new ArrayList<>();
 				SourceAndConverterServiceUI ui =
 					((SourceAndConverterService) SourceAndConverterServices
 						.getSourceAndConverterService()).getUI();
@@ -171,17 +171,17 @@ public class JListTransferHandler extends TransferHandler {
 					DefaultMutableTreeNode unwrapped = (DefaultMutableTreeNode) (node
 						.getUserObject());
 					if (unwrapped
-						.getUserObject() instanceof RenamableSourceAndConverter)
+						.getUserObject() instanceof RenamableSource)
 					{
-						sacs.add(((RenamableSourceAndConverter) unwrapped
-							.getUserObject()).sac);
+						sources.add(((RenamableSource) unwrapped
+							.getUserObject()).source);
 					}
 					else {
-						for (SourceAndConverter sac : ui
+						for (SourceAndConverter source : ui
 							.getSourceAndConvertersFromChildrenOf(unwrapped))
 						{
 							// noinspection UseBulkOperation
-							sacs.add(sac);
+							sources.add(source);
 						}
 					}
 				}
@@ -191,7 +191,7 @@ public class JListTransferHandler extends TransferHandler {
 					JList.DropLocation dropLocation = (JList.DropLocation) support
 						.getDropLocation();
 					int idxInsert = dropLocation.getIndex();
-					for (SourceAndConverter source : sacs) {
+					for (SourceAndConverter source : sources) {
 						model.add(idxInsert, source);
 						idxInsert++;
 					}

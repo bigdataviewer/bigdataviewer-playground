@@ -91,11 +91,11 @@ public class SourceTreeModel {
         this.spimDataFilterFactory = new SpimDataFilterFactory(sourceAndConverterService);
 
         // Create root node
-        this.root = new FilterNode("Sources", sac -> true, false);
+        this.root = new FilterNode("Sources", source -> true, false);
 
         // Create "Other Sources" node for sources not in any SpimData
         this.otherSourcesNode = new FilterNode("Other Sources",
-                sac -> !sourceAndConverterService.containsMetadata(sac,
+                source -> !sourceAndConverterService.containsMetadata(source,
                         SourceAndConverterService.SPIM_DATA_INFO), true);
         root.addChild(otherSourcesNode);
     }
@@ -160,10 +160,10 @@ public class SourceTreeModel {
 
     /**
      * Adds a single source to the model.
-     * @param sac the source to add
+     * @param source the source to add
      */
-    public void addSource(SourceAndConverter<?> sac) {
-        addSources(Collections.singletonList(sac));
+    public void addSource(SourceAndConverter<?> source) {
+        addSources(Collections.singletonList(source));
     }
 
     /**
@@ -179,8 +179,8 @@ public class SourceTreeModel {
         try {
             Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
 
-            for (SourceAndConverter<?> sac : sources) {
-                addSourceToNode(sac, root, affectedNodes);
+            for (SourceAndConverter<?> source : sources) {
+                addSourceToNode(source, root, affectedNodes);
             }
 
             // Fire single event for all sources
@@ -195,31 +195,31 @@ public class SourceTreeModel {
     /**
      * Recursively adds a source to a node and its children, tracking affected nodes.
      */
-    private void addSourceToNode(SourceAndConverter<?> sac, FilterNode node,
+    private void addSourceToNode(SourceAndConverter<?> source, FilterNode node,
                                   Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes) {
-        boolean passed = node.addSource(sac);
+        boolean passed = node.addSource(source);
         if (passed) {
             // Track that this node displays the source
             if (node.isDisplaySources()) {
-                affectedNodes.computeIfAbsent(node, k -> new ArrayList<>()).add(sac);
+                affectedNodes.computeIfAbsent(node, k -> new ArrayList<>()).add(source);
             }
 
             // Update source index
-            sourceIndex.computeIfAbsent(sac, k -> new HashSet<>()).add(node);
+            sourceIndex.computeIfAbsent(source, k -> new HashSet<>()).add(node);
 
             // Recursively add to children
             for (FilterNode child : node.getChildren()) {
-                addSourceToNode(sac, child, affectedNodes);
+                addSourceToNode(source, child, affectedNodes);
             }
         }
     }
 
     /**
      * Removes a single source from the model.
-     * @param sac the source to remove
+     * @param source the source to remove
      */
-    public void removeSource(SourceAndConverter<?> sac) {
-        removeSources(Collections.singletonList(sac));
+    public void removeSource(SourceAndConverter<?> source) {
+        removeSources(Collections.singletonList(source));
     }
 
     /**
@@ -234,11 +234,11 @@ public class SourceTreeModel {
         try {
             Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
 
-            for (SourceAndConverter<?> sac : sources) {
-                removeSourceFromNode(sac, root, affectedNodes);
+            for (SourceAndConverter<?> source : sources) {
+                removeSourceFromNode(source, root, affectedNodes);
 
                 // Remove from source index
-                sourceIndex.remove(sac);
+                sourceIndex.remove(source);
             }
 
             // Fire source removal event first, so the view can update
@@ -271,8 +271,8 @@ public class SourceTreeModel {
             root.removeChild(spimDataNode);
 
             // Clean up source index (should be empty, but be safe)
-            for (SourceAndConverter<?> sac : spimDataNode.getOutputSources()) {
-                Set<FilterNode> nodes = sourceIndex.get(sac);
+            for (SourceAndConverter<?> source : spimDataNode.getOutputSources()) {
+                Set<FilterNode> nodes = sourceIndex.get(source);
                 if (nodes != null) {
                     removeNodesRecursively(spimDataNode, nodes);
                 }
@@ -290,16 +290,16 @@ public class SourceTreeModel {
     /**
      * Recursively removes a source from a node and its children.
      */
-    private void removeSourceFromNode(SourceAndConverter<?> sac, FilterNode node,
+    private void removeSourceFromNode(SourceAndConverter<?> source, FilterNode node,
                                        Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes) {
-        boolean wasVisible = node.removeSource(sac);
+        boolean wasVisible = node.removeSource(source);
         if (wasVisible && node.isDisplaySources()) {
-            affectedNodes.computeIfAbsent(node, k -> new ArrayList<>()).add(sac);
+            affectedNodes.computeIfAbsent(node, k -> new ArrayList<>()).add(source);
         }
 
         // Recursively remove from children
         for (FilterNode child : node.getChildren()) {
-            removeSourceFromNode(sac, child, affectedNodes);
+            removeSourceFromNode(source, child, affectedNodes);
         }
     }
 
@@ -316,8 +316,8 @@ public class SourceTreeModel {
             Map<FilterNode, List<SourceAndConverter<?>>> addedNodes = new HashMap<>();
             Map<FilterNode, List<SourceAndConverter<?>>> removedNodes = new HashMap<>();
 
-            for (SourceAndConverter<?> sac : sources) {
-                updateSourceInNode(sac, root, addedNodes, removedNodes);
+            for (SourceAndConverter<?> source : sources) {
+                updateSourceInNode(source, root, addedNodes, removedNodes);
             }
 
             // Fire events for added and removed
@@ -339,23 +339,23 @@ public class SourceTreeModel {
     /**
      * Re-evaluates a source in a node and its children.
      */
-    private void updateSourceInNode(SourceAndConverter<?> sac, FilterNode node,
+    private void updateSourceInNode(SourceAndConverter<?> source, FilterNode node,
                                      Map<FilterNode, List<SourceAndConverter<?>>> addedNodes,
                                      Map<FilterNode, List<SourceAndConverter<?>>> removedNodes) {
-        int result = node.reevaluateSource(sac);
+        int result = node.reevaluateSource(source);
         if (result != 0 && node.isDisplaySources()) {
             if (result > 0) {
-                addedNodes.computeIfAbsent(node, k -> new ArrayList<>()).add(sac);
+                addedNodes.computeIfAbsent(node, k -> new ArrayList<>()).add(source);
             } else {
-                removedNodes.computeIfAbsent(node, k -> new ArrayList<>()).add(sac);
+                removedNodes.computeIfAbsent(node, k -> new ArrayList<>()).add(source);
             }
         }
 
         // Update source index
         if (result > 0) {
-            sourceIndex.computeIfAbsent(sac, k -> new HashSet<>()).add(node);
+            sourceIndex.computeIfAbsent(source, k -> new HashSet<>()).add(node);
         } else if (result < 0) {
-            Set<FilterNode> nodes = sourceIndex.get(sac);
+            Set<FilterNode> nodes = sourceIndex.get(source);
             if (nodes != null) {
                 nodes.remove(node);
             }
@@ -363,7 +363,7 @@ public class SourceTreeModel {
 
         // Recursively update children
         for (FilterNode child : node.getChildren()) {
-            updateSourceInNode(sac, child, addedNodes, removedNodes);
+            updateSourceInNode(source, child, addedNodes, removedNodes);
         }
     }
 
@@ -394,8 +394,8 @@ public class SourceTreeModel {
                     .getSourceAndConverterFromSpimdata(spimData);
             if (!existingSources.isEmpty()) {
                 Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
-                for (SourceAndConverter<?> sac : existingSources) {
-                    addSourceToNode(sac, spimDataNode, affectedNodes);
+                for (SourceAndConverter<?> source : existingSources) {
+                    addSourceToNode(source, spimDataNode, affectedNodes);
                 }
             }
 
@@ -434,8 +434,8 @@ public class SourceTreeModel {
             root.removeChild(spimDataNode);
 
             // Clean up source index
-            for (SourceAndConverter<?> sac : spimDataNode.getOutputSources()) {
-                Set<FilterNode> nodes = sourceIndex.get(sac);
+            for (SourceAndConverter<?> source : spimDataNode.getOutputSources()) {
+                Set<FilterNode> nodes = sourceIndex.get(source);
                 if (nodes != null) {
                     removeNodesRecursively(spimDataNode, nodes);
                 }
@@ -472,8 +472,8 @@ public class SourceTreeModel {
      */
     private void clearNodeSources(FilterNode node) {
         // Clean source index for this node and all descendants
-        for (SourceAndConverter<?> sac : node.getOutputSources()) {
-            Set<FilterNode> nodes = sourceIndex.get(sac);
+        for (SourceAndConverter<?> source : node.getOutputSources()) {
+            Set<FilterNode> nodes = sourceIndex.get(source);
             if (nodes != null) {
                 removeNodesRecursively(node, nodes);
             }
@@ -545,15 +545,15 @@ public class SourceTreeModel {
             });
 
             // Add "All Sources" child
-            FilterNode allSourcesNode = new FilterNode("All Sources", sac -> true, true);
+            FilterNode allSourcesNode = new FilterNode("All Sources", source -> true, true);
             bdvNode.addChild(allSourcesNode);
 
             // Populate with sources already in the parent BEFORE firing NODES_ADDED
             // This prevents the view from seeing an empty node and then receiving
             // a separate SOURCES_ADDED event that would double the source tree nodes
-            for (SourceAndConverter<?> sac : parentNode.getOutputSources()) {
+            for (SourceAndConverter<?> source : parentNode.getOutputSources()) {
                 Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
-                addSourceToNode(sac, bdvNode, affectedNodes);
+                addSourceToNode(source, bdvNode, affectedNodes);
             }
 
             int insertIndex = parentNode.getChildCount();
@@ -671,15 +671,15 @@ public class SourceTreeModel {
 
             // Add sources that are in BDV but not yet in this node's output
             List<SourceAndConverter<?>> toAdd = new ArrayList<>();
-            for (SourceAndConverter<?> sac : bdvSources) {
-                if (!currentOutput.contains(sac)) {
-                    toAdd.add(sac);
+            for (SourceAndConverter<?> source : bdvSources) {
+                if (!currentOutput.contains(source)) {
+                    toAdd.add(source);
                 }
             }
             if (!toAdd.isEmpty()) {
                 Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
-                for (SourceAndConverter<?> sac : toAdd) {
-                    addSourceToNode(sac, bdvNode, affectedNodes);
+                for (SourceAndConverter<?> source : toAdd) {
+                    addSourceToNode(source, bdvNode, affectedNodes);
                 }
                 if (!affectedNodes.isEmpty()) {
                     SourcesChangedEvent event = new SourcesChangedEvent(
@@ -690,15 +690,15 @@ public class SourceTreeModel {
 
             // Remove sources that are in this node's output but no longer in BDV
             List<SourceAndConverter<?>> toRemove = new ArrayList<>();
-            for (SourceAndConverter<?> sac : currentOutput) {
-                if (!bdvSources.contains(sac)) {
-                    toRemove.add(sac);
+            for (SourceAndConverter<?> source : currentOutput) {
+                if (!bdvSources.contains(source)) {
+                    toRemove.add(source);
                 }
             }
             if (!toRemove.isEmpty()) {
                 Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
-                for (SourceAndConverter<?> sac : toRemove) {
-                    removeSourceFromNode(sac, bdvNode, affectedNodes);
+                for (SourceAndConverter<?> source : toRemove) {
+                    removeSourceFromNode(source, bdvNode, affectedNodes);
                 }
                 if (!affectedNodes.isEmpty()) {
                     SourcesChangedEvent event = new SourcesChangedEvent(
@@ -730,9 +730,9 @@ public class SourceTreeModel {
             // Populate with sources from parent BEFORE firing NODES_ADDED
             // This prevents the view from seeing an empty node and then receiving
             // a separate SOURCES_ADDED event that would double the source tree nodes
-            for (SourceAndConverter<?> sac : parent.getOutputSources()) {
+            for (SourceAndConverter<?> source : parent.getOutputSources()) {
                 Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
-                addSourceToNode(sac, child, affectedNodes);
+                addSourceToNode(source, child, affectedNodes);
             }
 
             int insertIndex = parent.getChildCount();
@@ -767,8 +767,8 @@ public class SourceTreeModel {
             parent.removeChild(node);
 
             // Clean up source index
-            for (SourceAndConverter<?> sac : node.getOutputSources()) {
-                Set<FilterNode> nodes = sourceIndex.get(sac);
+            for (SourceAndConverter<?> source : node.getOutputSources()) {
+                Set<FilterNode> nodes = sourceIndex.get(source);
                 if (nodes != null) {
                     removeNodesRecursively(node, nodes);
                 }
@@ -788,13 +788,13 @@ public class SourceTreeModel {
     /**
      * Gets the filter nodes that contain a specific source.
      *
-     * @param sac the source to look up
+     * @param source the source to look up
      * @return an unmodifiable set of filter nodes, or empty set if not found
      */
-    public Set<FilterNode> getNodesForSource(SourceAndConverter<?> sac) {
+    public Set<FilterNode> getNodesForSource(SourceAndConverter<?> source) {
         lock.readLock().lock();
         try {
-            Set<FilterNode> nodes = sourceIndex.get(sac);
+            Set<FilterNode> nodes = sourceIndex.get(source);
             return nodes != null ? Collections.unmodifiableSet(new HashSet<>(nodes)) : Collections.emptySet();
         } finally {
             lock.readLock().unlock();
@@ -804,13 +804,13 @@ public class SourceTreeModel {
     /**
      * Checks if a source has been consumed by any filter node.
      *
-     * @param sac the source to check
+     * @param source the source to check
      * @return true if the source is in the model
      */
-    public boolean hasConsumed(SourceAndConverter<?> sac) {
+    public boolean hasConsumed(SourceAndConverter<?> source) {
         lock.readLock().lock();
         try {
-            return root.hasConsumed(sac);
+            return root.hasConsumed(source);
         } finally {
             lock.readLock().unlock();
         }

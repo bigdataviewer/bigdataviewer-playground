@@ -55,8 +55,8 @@ public class SourceVisibleONCommand implements BdvPlaygroundActionCommand {
 
 	@Override
 	public void run() {
-		for (SourceAndConverter<?> sac : sources) {
-			bsds.setVisible(sac, true);
+		for (SourceAndConverter<?> source : sources) {
+			bsds.setVisible(source, true);
 		}
 	}
 }

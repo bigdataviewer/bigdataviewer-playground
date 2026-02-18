@@ -76,10 +76,10 @@ public class DatasetXMLSaveCommand implements BdvPlaygroundActionCommand {
 					"More than one source selected! Getting the first one to catch the linked spimdata object.");
 			}
 
-			SourceAndConverter<?> sac = sources[0];
+			SourceAndConverter<?> source = sources[0];
 
 			if (SourceAndConverterServices.getSourceAndConverterService().getMetadata(
-				sac, SourceAndConverterService.SPIM_DATA_INFO) == null)
+				source, SourceAndConverterService.SPIM_DATA_INFO) == null)
 			{
 				System.err.println(
 					"No BDVDataset associated to the chosen source - Aborting save command");
@@ -88,7 +88,7 @@ public class DatasetXMLSaveCommand implements BdvPlaygroundActionCommand {
 
 			AbstractSpimData<?> asd =
 				((SourceAndConverterService.SpimDataInfo) SourceAndConverterServices
-					.getSourceAndConverterService().getMetadata(sac,
+					.getSourceAndConverterService().getMetadata(source,
 						SourceAndConverterService.SPIM_DATA_INFO)).asd;
 
 			asd.setBasePath(new File(xmlfilepath.getParent()));

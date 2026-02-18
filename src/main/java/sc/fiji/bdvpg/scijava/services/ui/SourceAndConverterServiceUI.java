@@ -283,7 +283,7 @@ public class SourceAndConverterServiceUI {
 			DefaultMutableTreeNode selectedTreeNode = (DefaultMutableTreeNode) paths[0].getLastPathComponent();
 			FilterNode filterNode = sourceTreeView.getFilterNode(selectedTreeNode);
 			if (filterNode != null) {
-				FilterNode newNode = new FilterNode("All Sources", sac -> true, true);
+				FilterNode newNode = new FilterNode("All Sources", source -> true, true);
 				sourceTreeModel.addNode(filterNode, newNode);
 			} else {
 				logger.error("A filter node should be selected");
@@ -317,11 +317,11 @@ public class SourceAndConverterServiceUI {
 	 * Recursive source inspection of an array of {@link SourceAndConverter} -
 	 * adds a node per source which summarizes the results of the inspection
 	 *
-	 * @param sacs sources that should be inspected
+	 * @param sources sources that should be inspected
 	 */
-	public void inspectSources(SourceAndConverter<?>[] sacs) {
-		for (SourceAndConverter sac : sacs) {
-			inspectSource(sac);
+	public void inspectSources(SourceAndConverter<?>[] sources) {
+		for (SourceAndConverter source : sources) {
+			inspectSource(source);
 		}
 	}
 
@@ -329,15 +329,15 @@ public class SourceAndConverterServiceUI {
 	 * Recursive source inspection of a {@link SourceAndConverter} - adds a node
 	 * per source which summarizes the results of the inspection
 	 *
-	 * @param sac source to inspect
+	 * @param source source to inspect
 	 */
-	public void inspectSource(SourceAndConverter sac) {
+	public void inspectSource(SourceAndConverter source) {
 		if ((guiAvailable)&&(!frame.isVisible())) {
 			show();
 		}
 		DefaultMutableTreeNode parentNodeInspect = new DefaultMutableTreeNode(
-			"Inspect Results [" + sac.getSpimSource().getName() + "]");
-		SourceAndConverterInspector.appendInspectorResult(parentNodeInspect, sac,
+			"Inspect Results [" + source.getSpimSource().getName() + "]");
+		SourceAndConverterInspector.appendInspectorResult(parentNodeInspect, source,
 			sourceAndConverterService, false);
 		// Add to tree root directly via Swing model
 		DefaultMutableTreeNode treeRoot = sourceTreeView.getTreeRoot();
@@ -360,15 +360,15 @@ public class SourceAndConverterServiceUI {
 	 * Adds a single source to the tree.
 	 * For adding multiple sources, prefer {@link #addSources(Collection)} for better performance.
 	 *
-	 * @param sac source to add
+	 * @param source source to add
 	 */
-	public void update(SourceAndConverter sac) {
+	public void update(SourceAndConverter source) {
 		if ((guiAvailable) && (frame != null) && (!frame.isVisible())) {
 			show();
 		}
 		// Check if new SpimData needs to be added
 		updateSpimDataFilterNodes();
-		sourceTreeModel.addSource(sac);
+		sourceTreeModel.addSource(source);
 	}
 
 	/**
@@ -413,13 +413,13 @@ public class SourceAndConverterServiceUI {
 	/**
 	 * Removes a source from the UI.
 	 *
-	 * @param sac source to remove
+	 * @param source source to remove
 	 */
-	public void remove(SourceAndConverter sac) {
+	public void remove(SourceAndConverter source) {
 		if ((guiAvailable) && (frame != null) && (!frame.isVisible())) {
 			show();
 		}
-		sourceTreeModel.removeSource(sac);
+		sourceTreeModel.removeSource(source);
 	}
 
 	/**
@@ -440,26 +440,26 @@ public class SourceAndConverterServiceUI {
 	 *         selected by the user
 	 */
 	public SourceAndConverter[] getSelectedSourceAndConverters(JTree tree) {
-		Set<SourceAndConverter<?>> sacList = new HashSet<>();
+		Set<SourceAndConverter<?>> sourceList = new HashSet<>();
 		TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
 		if (paths == null) {
 			return new SourceAndConverter[0];
 		}
 		for (TreePath tp : paths) {
 			if (((DefaultMutableTreeNode) tp.getLastPathComponent())
-				.getUserObject() instanceof RenamableSourceAndConverter)
+				.getUserObject() instanceof RenamableSource)
 			{
 				SourceAndConverter<?> userObj =
-					((RenamableSourceAndConverter) ((DefaultMutableTreeNode) tp
-						.getLastPathComponent()).getUserObject()).sac;
-				sacList.add(userObj);
+					((RenamableSource) ((DefaultMutableTreeNode) tp
+						.getLastPathComponent()).getUserObject()).source;
+				sourceList.add(userObj);
 			}
 			else {
-				sacList.addAll(getSourceAndConvertersFromChildrenOf(
+				sourceList.addAll(getSourceAndConvertersFromChildrenOf(
 					(DefaultMutableTreeNode) tp.getLastPathComponent()));
 			}
 		}
-		return SourceAndConverterHelper.sortDefaultGeneric(sacList).toArray(
+		return SourceAndConverterHelper.sortDefaultGeneric(sourceList).toArray(
 			new SourceAndConverter<?>[0]);
 	}
 
@@ -471,26 +471,26 @@ public class SourceAndConverterServiceUI {
 	public Set<SourceAndConverter<?>> getSourceAndConvertersFromChildrenOf(
 		DefaultMutableTreeNode node)
 	{
-		Set<SourceAndConverter<?>> sacs = new HashSet<>();
-		if (node.getUserObject() instanceof RenamableSourceAndConverter) {
-			Object userObj = ((RenamableSourceAndConverter) (node
-				.getUserObject())).sac;
-			sacs.add((SourceAndConverter) userObj);
+		Set<SourceAndConverter<?>> sources = new HashSet<>();
+		if (node.getUserObject() instanceof RenamableSource) {
+			Object userObj = ((RenamableSource) (node
+				.getUserObject())).source;
+			sources.add((SourceAndConverter) userObj);
 		}
 		else {
 			// Check if this is a filter node and get sources from the model
 			FilterNode filterNode = sourceTreeView.getFilterNode(node);
 			if (filterNode != null) {
-				sacs.addAll(filterNode.getOutputSources());
+				sources.addAll(filterNode.getOutputSources());
 			} else {
 				// Fallback: traverse children
 				for (int i = 0; i < node.getChildCount(); i++) {
 					DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
-					sacs.addAll(getSourceAndConvertersFromChildrenOf(child));
+					sources.addAll(getSourceAndConvertersFromChildrenOf(child));
 				}
 			}
 		}
-		return sacs;
+		return sources;
 	}
 
 	/**
@@ -650,9 +650,9 @@ public class SourceAndConverterServiceUI {
 			if (node instanceof DefaultMutableTreeNode) {
 				DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) node;
 				Object userObject = dmtn.getUserObject();
-				if (userObject instanceof RenamableSourceAndConverter) {
+				if (userObject instanceof RenamableSource) {
 					return new SourceAndConverter[] {
-						((RenamableSourceAndConverter) userObject).sac };
+						((RenamableSource) userObject).source};
 				}
 			}
 			return null;

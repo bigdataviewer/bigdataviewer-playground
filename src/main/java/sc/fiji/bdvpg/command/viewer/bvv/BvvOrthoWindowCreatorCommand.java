@@ -135,7 +135,7 @@ public class BvvOrthoWindowCreatorCommand implements
 
 	BvvHandle createBvv(String suffix, double locX, double locY) {
 		BvvOptions opts = BvvOptions.options();// .frameTitle("BVV-"+suffix);
-		BvvHandle bvvh = new BvvCreator(opts, ntimepoints).get();// sacDisplayService.getNewBdv();
+		BvvHandle bvvh = new BvvCreator(opts, ntimepoints).get();
 		BvvHandleHelper.setWindowTitle(bvvh, BvvHandleHelper.getWindowTitle(bvvh) +
 			suffix);
 

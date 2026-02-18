@@ -67,12 +67,12 @@ public class SpimDataFilterNode extends FilterNode {
     /**
      * Filters sources that belong to this SpimData.
      */
-    private boolean filter(SourceAndConverter<?> sac) {
-        if (!sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO)) {
+    private boolean filter(SourceAndConverter<?> source) {
+        if (!sourceAndConverterService.containsMetadata(source, SPIM_DATA_INFO)) {
             return false;
         }
         SourceAndConverterService.SpimDataInfo info =
-                (SourceAndConverterService.SpimDataInfo) sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO);
+                (SourceAndConverterService.SpimDataInfo) sourceAndConverterService.getMetadata(source, SPIM_DATA_INFO);
         return info != null && info.asd.equals(spimData);
     }
 

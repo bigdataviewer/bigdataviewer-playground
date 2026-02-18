@@ -72,13 +72,13 @@ public class EntityFilterNode extends FilterNode {
      * Filters sources that have this entity in their view setup attributes.
      */
     @SuppressWarnings("unchecked")
-    private boolean filter(SourceAndConverter<?> sac) {
-        if (!sourceAndConverterService.containsMetadata(sac, SPIM_DATA_INFO)) {
+    private boolean filter(SourceAndConverter<?> source) {
+        if (!sourceAndConverterService.containsMetadata(source, SPIM_DATA_INFO)) {
             return false;
         }
 
         SourceAndConverterService.SpimDataInfo info =
-                (SourceAndConverterService.SpimDataInfo) sourceAndConverterService.getMetadata(sac, SPIM_DATA_INFO);
+                (SourceAndConverterService.SpimDataInfo) sourceAndConverterService.getMetadata(source, SPIM_DATA_INFO);
         if (info == null) {
             return false;
         }

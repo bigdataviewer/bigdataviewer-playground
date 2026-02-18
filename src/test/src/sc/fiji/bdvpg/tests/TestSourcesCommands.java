@@ -108,7 +108,7 @@ public class TestSourcesCommands {
     @Test(timeout=5000)
     public void testMultipleSourcesDeleteCommand() throws ExecutionException, InterruptedException {
         Assert.assertEquals("Error - there should be two sources at the beginning of the test", 2, sourceService.getSourceAndConverters().size() );
-        commandService.run(SourcesRemoverCommand.class,true, "sacs", "mri-stack.xml, demoSlice.xml").get();
+        commandService.run(SourcesRemoverCommand.class,true, "sources", "mri-stack.xml, demoSlice.xml").get();
         Assert.assertEquals("Error - there should be one source left", 1, sourceService.getSourceAndConverters().size());
     }
 

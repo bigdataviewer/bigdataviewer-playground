@@ -36,7 +36,7 @@ import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
+import sc.fiji.bdvpg.scijava.services.ui.RenamableSource;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import javax.swing.JPanel;
@@ -87,43 +87,43 @@ public class SwingSourceAndConverterListWidget extends
 	SourceAndConverterService bss;
 
 	public SourceAndConverter<?>[] getSelectedSourceAndConverters() {
-		Set<SourceAndConverter<?>> sacList = new HashSet<>(); // A set avoids
+		Set<SourceAndConverter<?>> sourceList = new HashSet<>(); // A set avoids
 																													// duplicate
 																													// SourceAndConverter
 		for (TreePath tp : tree.getSelectionModel().getSelectionPaths()) {
 			if (((DefaultMutableTreeNode) tp.getLastPathComponent())
-				.getUserObject() instanceof RenamableSourceAndConverter)
+				.getUserObject() instanceof RenamableSource)
 			{
 				SourceAndConverter<?> userObj =
-					((RenamableSourceAndConverter) ((DefaultMutableTreeNode) tp
-						.getLastPathComponent()).getUserObject()).sac;
-				sacList.add(userObj);
+					((RenamableSource) ((DefaultMutableTreeNode) tp
+						.getLastPathComponent()).getUserObject()).source;
+				sourceList.add(userObj);
 			}
 			else {
-				sacList.addAll(getSourceAndConvertersFromChildrenOf(
+				sourceList.addAll(getSourceAndConvertersFromChildrenOf(
 					(DefaultMutableTreeNode) tp.getLastPathComponent()));
 			}
 		}
-		return sacList.toArray(new SourceAndConverter[0]);
+		return sourceList.toArray(new SourceAndConverter[0]);
 	}
 
 	private Set<SourceAndConverter<?>> getSourceAndConvertersFromChildrenOf(
 		DefaultMutableTreeNode node)
 	{
-		Set<SourceAndConverter<?>> sacs = new HashSet<>();
+		Set<SourceAndConverter<?>> sources = new HashSet<>();
 		for (int i = 0; i < node.getChildCount(); i++) {
 			DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(
 				i);
-			if (child.getUserObject() instanceof RenamableSourceAndConverter) {
-				SourceAndConverter<?> userObj = ((RenamableSourceAndConverter) (child
-					.getUserObject())).sac;
-				sacs.add(userObj);
+			if (child.getUserObject() instanceof RenamableSource) {
+				SourceAndConverter<?> userObj = ((RenamableSource) (child
+					.getUserObject())).source;
+				sources.add(userObj);
 			}
 			else {
-				sacs.addAll(getSourceAndConvertersFromChildrenOf(child));
+				sources.addAll(getSourceAndConvertersFromChildrenOf(child));
 			}
 		}
-		return sacs;
+		return sources;
 	}
 
 	JTree tree;

@@ -51,15 +51,15 @@ public class SourceOutOfBoundsColorChanger<T extends NumericType<T> & NativeType
 	implements Runnable, Function<SourceAndConverter<T>, SourceAndConverter<T>>
 {
 
-	final SourceAndConverter<T> sac_in;
+	final SourceAndConverter<T> source;
 
 	final T outOfBoundsColor;
 
-	public SourceOutOfBoundsColorChanger(final SourceAndConverter<T> sac_in,
+	public SourceOutOfBoundsColorChanger(final SourceAndConverter<T> source,
                                          final T outOfBoundsColor)
 	{
 		this.outOfBoundsColor = outOfBoundsColor;
-		this.sac_in = sac_in;
+		this.source = source;
 	}
 
 	@Override
@@ -68,16 +68,16 @@ public class SourceOutOfBoundsColorChanger<T extends NumericType<T> & NativeType
 	}
 
 	public SourceAndConverter<T> get() {
-		return apply(sac_in);
+		return apply(source);
 	}
 
 	@Override
 	public SourceAndConverter<T> apply(final SourceAndConverter<T> src) {
 		final Source<T> srcNewBg = new OutOfBoundsColorChangedSource<>(src.getSpimSource(), outOfBoundsColor);
 
-		SourceAndConverter<T> sac;
+		SourceAndConverter<T> source;
 		if (src.asVolatile() != null) {
-			SourceAndConverter<? extends Volatile<T>> vsac;
+			SourceAndConverter<? extends Volatile<T>> vsource;
 			Source<? extends Volatile<T>> vsrcNewBg;
 			// Rah...
 			Volatile<T> vOutOfBoundsColor;
@@ -94,15 +94,15 @@ public class SourceOutOfBoundsColorChanger<T extends NumericType<T> & NativeType
 			}
 
 			vsrcNewBg = new OutOfBoundsColorChangedSource(src.asVolatile().getSpimSource(), (NumericType) vOutOfBoundsColor);
-			vsac = new SourceAndConverter(vsrcNewBg, SourceAndConverterHelper
+			vsource = new SourceAndConverter(vsrcNewBg, SourceAndConverterHelper
 				.cloneConverter(src.asVolatile().getConverter(), src.asVolatile()));
-			sac = new SourceAndConverter<>(srcNewBg, SourceAndConverterHelper
-				.cloneConverter(src.getConverter(), src), vsac);
+			source = new SourceAndConverter<>(srcNewBg, SourceAndConverterHelper
+				.cloneConverter(src.getConverter(), src), vsource);
 		}
 		else {
-			sac = new SourceAndConverter<>(srcNewBg, SourceAndConverterHelper
+			source = new SourceAndConverter<>(srcNewBg, SourceAndConverterHelper
 				.cloneConverter(src.getConverter(), src));
 		}
-		return sac;
+		return source;
 	}
 }

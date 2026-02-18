@@ -95,7 +95,7 @@ public class SourceTransformSimpleCommand implements BdvPlaygroundActionCommand 
 
 	@Override
 	public void run() {
-		for (SourceAndConverter<?> sac : sources) {
+		for (SourceAndConverter<?> source : sources) {
 			{
 				AffineTransform3D at3D_global = new AffineTransform3D();
 				at3D_global.identity();
@@ -114,14 +114,14 @@ public class SourceTransformSimpleCommand implements BdvPlaygroundActionCommand 
 						break;
 				}
 				if (global_change) {
-					if (sac.getSpimSource() instanceof TransformedSource) {
+					if (source.getSpimSource() instanceof TransformedSource) {
 						SourceTransformHelper.mutate(at3D_global,
-							new SourceAndConverterAndTimeRange<>(sac, ini_timepoint,
+							new SourceAndConverterAndTimeRange<>(source, ini_timepoint,
 								ini_timepoint + n_timepoints));
 					}
 					else {
 						SourceTransformHelper.append(at3D_global,
-							new SourceAndConverterAndTimeRange<>(sac, ini_timepoint,
+							new SourceAndConverterAndTimeRange<>(source, ini_timepoint,
 								ini_timepoint + n_timepoints));
 					}
 				}
@@ -133,9 +133,9 @@ public class SourceTransformSimpleCommand implements BdvPlaygroundActionCommand 
 						AffineTransform3D at3D = new AffineTransform3D();
 						at3D.identity();
 						// double[] m = at3D.getRowPackedCopy();
-						sac.getSpimSource().getSourceTransform(timepoint, 0, at3D);
+						source.getSpimSource().getSourceTransform(timepoint, 0, at3D);
 						long[] dims = new long[3];
-						sac.getSpimSource().getSource(timepoint, 0).dimensions(dims);
+						source.getSpimSource().getSource(timepoint, 0).dimensions(dims);
 
 						RealPoint ptCenterGlobalBefore = new RealPoint(3);
 						RealPoint ptCenterPixel = new RealPoint((dims[0] - 1.0) / 2.0,
@@ -161,13 +161,13 @@ public class SourceTransformSimpleCommand implements BdvPlaygroundActionCommand 
 
 						at3D_global.set(m);
 
-						if (sac.getSpimSource() instanceof TransformedSource) {
+						if (source.getSpimSource() instanceof TransformedSource) {
 							SourceTransformHelper.mutate(at3D_global,
-								new SourceAndConverterAndTimeRange<>(sac, timepoint));
+								new SourceAndConverterAndTimeRange<>(source, timepoint));
 						}
 						else {
 							SourceTransformHelper.append(at3D_global,
-								new SourceAndConverterAndTimeRange<>(sac, timepoint));
+								new SourceAndConverterAndTimeRange<>(source, timepoint));
 						}
 					}
 				}

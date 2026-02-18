@@ -106,17 +106,17 @@ public class XmlFromSpimDataExporter implements Runnable {
 				IEntityHandlerService entityHandlerService = context.getService(
 					IEntityHandlerService.class);
 
-				// For convenience : map setup id with sacs
-				Map<Integer, SourceAndConverter<?>> idToSac = new HashMap<>();
+				// For convenience : map setup id with sources
+				Map<Integer, SourceAndConverter<?>> idToSource = new HashMap<>();
 
-				SourceAndConverterService sac_service = context.getService(
+				SourceAndConverterService source_service = context.getService(
 					SourceAndConverterService.class);
 
-				sac_service.getSourceAndConverterFromSpimdata(spimData).forEach(sac -> {
+				source_service.getSourceAndConverterFromSpimdata(spimData).forEach(source -> {
 					SourceAndConverterService.SpimDataInfo sdi =
-						(SourceAndConverterService.SpimDataInfo) sac_service.getMetadata(
-							sac, SPIM_DATA_INFO);
-					idToSac.put(sdi.setupId, sac);
+						(SourceAndConverterService.SpimDataInfo) source_service.getMetadata(
+							source, SPIM_DATA_INFO);
+					idToSource.put(sdi.setupId, source);
 				});
 
 				entityHandlerService.getHandlers(EntityHandler.class).forEach(pi -> {
@@ -141,9 +141,9 @@ public class XmlFromSpimDataExporter implements Runnable {
 					entityClassToHandler.keySet().forEach(entityClass -> {
 						Entity e = setup.getAttribute(entityClass);
 						if (e != null) {
-							if (idToSac.containsKey(setup)) {
-								SourceAndConverter<?> sac = idToSac.get(setup);
-								entityClassToHandler.get(entityClass).writeEntity(setup, sac);// .loadEntity(asd,
+							if (idToSource.containsKey(setup)) {
+								SourceAndConverter<?> source = idToSource.get(setup);
+								entityClassToHandler.get(entityClass).writeEntity(setup, source);// .loadEntity(asd,
 																																							// setup);
 							}
 							else {

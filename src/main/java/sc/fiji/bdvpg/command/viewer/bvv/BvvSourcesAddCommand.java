@@ -58,25 +58,25 @@ public class BvvSourcesAddCommand implements BdvPlaygroundActionCommand {
 
 	@Parameter(label = "Adjust View on Source",
 			description = "Centers and zooms the view to fit the added sources")
-	boolean adjustviewonsource;
+	boolean adjust_view;
 
 	@Parameter(label = "Select source(s)",
 			description = "The source(s) to add")
-	SourceAndConverter<?>[] sacs;
+	SourceAndConverter<?>[] sources;
 
 	@Override
 	public void run() {
 
-		for (SourceAndConverter<?> sac : sacs) {
-            bvvh.getConverterSetups().put(sac, SourceAndConverterServices
-                .getSourceAndConverterService().getConverterSetup(sac));
-            bvvh.getViewerPanel().state().addSource(sac);
+		for (SourceAndConverter<?> source : sources) {
+            bvvh.getConverterSetups().put(source, SourceAndConverterServices
+                .getSourceAndConverterService().getConverterSetup(source));
+            bvvh.getViewerPanel().state().addSource(source);
 
-            bvvh.getViewerPanel().state().setSourceActive(sac, true);
+            bvvh.getViewerPanel().state().setSourceActive(source, true);
 		}
 
-		if ((adjustviewonsource) && (sacs.length > 0)) {
-			new ViewerTransformAdjuster(new ViewerAdapter(bvvh), sacs).run();
+		if ((adjust_view) && (sources.length > 0)) {
+			new ViewerTransformAdjuster(new ViewerAdapter(bvvh), sources).run();
 		}
 
 	}

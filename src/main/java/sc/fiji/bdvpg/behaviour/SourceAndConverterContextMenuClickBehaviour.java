@@ -109,11 +109,11 @@ public class SourceAndConverterContextMenuClickBehaviour implements
 	}
 
 	private void showPopupMenu(BdvHandle bdv, int x, int y) {
-		final List<SourceAndConverter<?>> sacs = new ArrayList<>(sourcesSupplier
+		final List<SourceAndConverter<?>> sources = new ArrayList<>(sourcesSupplier
 			.get());
 
 		final SourceAndConverterPopupMenu popupMenu =
-			new SourceAndConverterPopupMenu(() -> sacs.toArray(
+			new SourceAndConverterPopupMenu(() -> sources.toArray(
 				new SourceAndConverter[0]), popupActions);
 
 		popupMenu.getPopup().show(bdv.getViewerPanel().getDisplay(), x, y);

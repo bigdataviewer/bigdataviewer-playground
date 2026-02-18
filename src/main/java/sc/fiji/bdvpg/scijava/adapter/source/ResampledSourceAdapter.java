@@ -51,11 +51,11 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
 	protected static final Logger logger = LoggerFactory.getLogger(
 		ResampledSourceAdapter.class);
 
-	SourceAndConverterAdapter sacSerializer;
+	SourceAndConverterAdapter sourceSerializer;
 
 	@Override
-	public void setSacSerializer(SourceAndConverterAdapter sacSerializer) {
-		this.sacSerializer = sacSerializer;
+	public void setSourceSerializer(SourceAndConverterAdapter sourceSerializer) {
+		this.sourceSerializer = sourceSerializer;
 	}
 
 	@Override
@@ -64,35 +64,35 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
 	}
 
 	@Override
-	public JsonElement serialize(SourceAndConverter sac, Type type,
+	public JsonElement serialize(SourceAndConverter source, Type type,
 		JsonSerializationContext jsonSerializationContext)
 	{
 		JsonObject obj = new JsonObject();
 
-		ResampledSource source = (ResampledSource) sac.getSpimSource();
+		ResampledSource resampledSource = (ResampledSource) source.getSpimSource();
 
 		obj.addProperty("type", ResampledSource.class.getSimpleName());
 
-		obj.add("interpolate", jsonSerializationContext.serialize(source
+		obj.add("interpolate", jsonSerializationContext.serialize(resampledSource
 			.originInterpolation()));
-		obj.addProperty("cache", source.isCached());
-		obj.addProperty("name", source.getName());
-		obj.addProperty("mipmaps_reused", source.areMipmapsReused());
-		obj.addProperty("defaultMipmapLevel", source.getDefaultMipMapLevel());
+		obj.addProperty("cache", resampledSource.isCached());
+		obj.addProperty("name", resampledSource.getName());
+		obj.addProperty("mipmaps_reused", resampledSource.areMipmapsReused());
+		obj.addProperty("defaultMipmapLevel", resampledSource.getDefaultMipMapLevel());
 
-		Integer idOrigin = sacSerializer.getSourceToId().get(source
+		Integer idOrigin = sourceSerializer.getSourceToId().get(resampledSource
 			.getOriginalSource());
-		Integer idModel = sacSerializer.getSourceToId().get(source
+		Integer idModel = sourceSerializer.getSourceToId().get(resampledSource
 			.getModelResamplerSource());
 
 		if (idOrigin == null) {
-			logger.error("The resampled source " + source.getOriginalSource()
+			logger.error("The resampled source " + resampledSource.getOriginalSource()
 				.getName() + " couldn't be serialized : origin source not identified.");
 			return null;
 		}
 
 		if (idModel == null) {
-			logger.error("The resampled source " + source.getOriginalSource()
+			logger.error("The resampled source " + resampledSource.getOriginalSource()
 				.getName() + " couldn't be serialized : model source not identified.");
 			return null;
 		}
@@ -122,44 +122,44 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
 		int defaultMipMapLevel = obj.getAsJsonPrimitive("defaultMipmapLevel")
 			.getAsInt();
 
-		SourceAndConverter<?> originSac;
-		SourceAndConverter<?> modelSac;
+		SourceAndConverter<?> originSource;
+		SourceAndConverter<?> modelSource;
 
-		if (sacSerializer.getIdToSac().containsKey(origin_source_id)) {
+		if (sourceSerializer.getIdToSac().containsKey(origin_source_id)) {
 			// Already deserialized
-			originSac = sacSerializer.getIdToSac().get(origin_source_id);
+			originSource = sourceSerializer.getIdToSac().get(origin_source_id);
 		}
 		else {
 			// Should be deserialized first
-			JsonElement element = sacSerializer.idToJsonElement.get(origin_source_id);
-			originSac = sacSerializer.getGson().fromJson(element,
+			JsonElement element = sourceSerializer.idToJsonElement.get(origin_source_id);
+			originSource = sourceSerializer.getGson().fromJson(element,
 				SourceAndConverter.class);
 		}
 
-		if (sacSerializer.getIdToSac().containsKey(model_source_id)) {
+		if (sourceSerializer.getIdToSac().containsKey(model_source_id)) {
 			// Already deserialized
-			modelSac = sacSerializer.getIdToSac().get(model_source_id);
+			modelSource = sourceSerializer.getIdToSac().get(model_source_id);
 		}
 		else {
 			// Should be deserialized first
-			JsonElement element = sacSerializer.idToJsonElement.get(model_source_id);
-			modelSac = sacSerializer.getGson().fromJson(element,
+			JsonElement element = sourceSerializer.idToJsonElement.get(model_source_id);
+			modelSource = sourceSerializer.getGson().fromJson(element,
 				SourceAndConverter.class);
 		}
 
-		if (originSac == null) {
+		if (originSource == null) {
 			System.err.println(
 				"Couldn't deserialize origin source in Resampled Source");
 			return null;
 		}
 
-		if (modelSac == null) {
+		if (modelSource == null) {
 			System.err.println(
 				"Couldn't deserialize model source in Resampled Source");
 			return null;
 		}
 
-		return new SourceResampler(originSac, modelSac, name, reuseMipMaps, cache,
+		return new SourceResampler(originSource, modelSource, name, reuseMipMaps, cache,
 			interpolation.equals(Interpolation.NLINEAR), defaultMipMapLevel).get();
 	}
 }

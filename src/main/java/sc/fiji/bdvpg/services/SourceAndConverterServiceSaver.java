@@ -63,7 +63,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter
 
 	final File f;
 
-	List<SourceAndConverter<?>> sacs;
+	List<SourceAndConverter<?>> sources;
 
 	public SourceAndConverterServiceSaver(File f, Context ctx) {
 		this(f, ctx, SourceAndConverterServices.getSourceAndConverterService()
@@ -71,10 +71,10 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter
 	}
 
 	public SourceAndConverterServiceSaver(File f, Context ctx,
-		List<SourceAndConverter<?>> sacs)
+		List<SourceAndConverter<?>> sources)
 	{
 		super(ctx, f.getParentFile(), false);
-		this.sacs = sacs;
+		this.sources = sources;
 		this.f = f;
 		idToSac = new HashMap<>();
 		sacToId = new HashMap<>();
@@ -83,10 +83,10 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter
 	}
 
 	public SourceAndConverterServiceSaver(File f, Context ctx,
-										  List<SourceAndConverter<?>> sacs, boolean useRelativePaths)
+										  List<SourceAndConverter<?>> sources, boolean useRelativePaths)
 	{
 		super(ctx, f.getParentFile(), useRelativePaths);
-		this.sacs = sacs;
+		this.sources = sources;
 		this.f = f;
 		idToSac = new HashMap<>();
 		sacToId = new HashMap<>();
@@ -104,21 +104,21 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter
 			// Makes sure each source is associated to at least one sourceAndConverter
 			// this happens via recursive source inspection
 
-			sacs.forEach(sac -> setOfSourcesNeedingSerialization.addAll(
+			sources.forEach(source -> setOfSourcesNeedingSerialization.addAll(
 				SourceAndConverterInspector.appendInspectorResult(
-					new DefaultMutableTreeNode(), sac, SourceAndConverterServices
+					new DefaultMutableTreeNode(), source, SourceAndConverterServices
 						.getSourceAndConverterService(), true)));
 
-			// Then let's get back all the sacs - they may have increase in number
-			sacs = new ArrayList<>(setOfSourcesNeedingSerialization);
+			// Then let's get back all the sources - they may have increase in number
+			sources = new ArrayList<>(setOfSourcesNeedingSerialization);
 
-			sacs = SourceAndConverterHelper.sortDefaultGeneric(sacs);
+			sources = SourceAndConverterHelper.sortDefaultGeneric(sources);
 
-			for (int i = 0; i < sacs.size(); i++) {
-				idToSac.put(i, sacs.get(i));
-				sacToId.put(sacs.get(i), i);
-				idToSource.put(i, sacs.get(i).getSpimSource());
-				sourceToId.put(sacs.get(i).getSpimSource(), i);
+			for (int i = 0; i < sources.size(); i++) {
+				idToSac.put(i, sources.get(i));
+				sacToId.put(sources.get(i), i);
+				idToSource.put(i, sources.get(i).getSpimSource());
+				sourceToId.put(sources.get(i).getSpimSource(), i);
 			}
 
 			Gson gson = getGson();
@@ -132,10 +132,10 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter
 
 			// Avoid unnecessary serialization of unneeded spimdata
 			asds = asds.stream().filter(asd -> {
-				List<SourceAndConverter<?>> sacs_in_asd = SourceAndConverterServices
+				List<SourceAndConverter<?>> sources_in_asd = SourceAndConverterServices
 					.getSourceAndConverterService().getSourceAndConverterFromSpimdata(
 						asd);
-				return sacs_in_asd.stream().anyMatch(sac -> sacs.contains(sac));
+				return sources_in_asd.stream().anyMatch(source -> sources.contains(source));
 			}).collect(Collectors.toSet());
 
 			Map<AbstractSpimData<?>, String> originalLocations = new HashMap<>();
@@ -158,7 +158,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter
 			try {
 				logger.info("Writing state file " + f.getAbsolutePath());
 				FileWriter writer = new FileWriter(f.getAbsolutePath());
-				gson.toJson(sacs, writer);
+				gson.toJson(sources, writer);
 				writer.flush();
 				writer.close();
 

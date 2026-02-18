@@ -30,15 +30,13 @@
 package sc.fiji.bdvpg.scijava.services.ui.tree;
 
 import bdv.viewer.SourceAndConverter;
-import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
+import sc.fiji.bdvpg.scijava.services.ui.RenamableSource;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -60,7 +58,7 @@ import java.util.Set;
  * <ul>
  *   <li>Sorting happens here in the View (not in the Model)</li>
  *   <li>Maintains bidirectional mappings for O(1) lookup between FilterNode and TreeNode</li>
- *   <li>Source nodes are wrapped in {@link RenamableSourceAndConverter} for display</li>
+ *   <li>Source nodes are wrapped in {@link RenamableSource} for display</li>
  * </ul>
  *
  * @author Nicolas Chiaruttini, BIOP, EPFL
@@ -98,8 +96,8 @@ public class SourceTreeView implements SourceTreeModelListener {
         buildTreeNode(modelRoot, treeRoot);
 
         // Use the default source comparator
-        sourceComparator = Comparator.comparingInt(sac ->
-                SourceAndConverterHelper.sortDefaultGeneric(Collections.singletonList(sac)).isEmpty() ? 0 : 0);
+        sourceComparator = Comparator.comparingInt(source ->
+                SourceAndConverterHelper.sortDefaultGeneric(Collections.singletonList(source)).isEmpty() ? 0 : 0);
 
         // Register as listener
         sourceModel.addListener(this);
@@ -138,11 +136,11 @@ public class SourceTreeView implements SourceTreeModelListener {
             // getOutputSources() returns a thread-safe copy
             List<SourceAndConverter<?>> sortedSources = SourceAndConverterHelper.sortDefaultGeneric(
                     filterNode.getOutputSources());
-            for (SourceAndConverter<?> sac : sortedSources) {
+            for (SourceAndConverter<?> source : sortedSources) {
                 DefaultMutableTreeNode sourceNode = new DefaultMutableTreeNode(
-                        new RenamableSourceAndConverter(sac));
+                        new RenamableSource(source));
                 treeNode.add(sourceNode);
-                sourceToTreeNodes.computeIfAbsent(sac, k -> new HashSet<>()).add(sourceNode);
+                sourceToTreeNodes.computeIfAbsent(source, k -> new HashSet<>()).add(sourceNode);
             }
         }
     }
@@ -198,17 +196,17 @@ public class SourceTreeView implements SourceTreeModelListener {
             for (int i = 0; i < treeNode.getChildCount(); i++) {
                 DefaultMutableTreeNode child = (DefaultMutableTreeNode) treeNode.getChildAt(i);
                 Object userObject = child.getUserObject();
-                if (userObject instanceof RenamableSourceAndConverter) {
-                    existingSources.add(((RenamableSourceAndConverter) userObject).sac);
+                if (userObject instanceof RenamableSource) {
+                    existingSources.add(((RenamableSource) userObject).source);
                 }
             }
 
             // Filter out sources already present in the tree (prevents duplicates from race conditions
             // between NODES_ADDED/buildTreeNode and SOURCES_ADDED/applySourcesAdded)
             List<SourceAndConverter<?>> newSources = new ArrayList<>();
-            for (SourceAndConverter<?> sac : sources) {
-                if (!existingSources.contains(sac)) {
-                    newSources.add(sac);
+            for (SourceAndConverter<?> source : sources) {
+                if (!existingSources.contains(source)) {
+                    newSources.add(source);
                 }
             }
             if (newSources.isEmpty()) {
@@ -222,17 +220,17 @@ public class SourceTreeView implements SourceTreeModelListener {
 
             // Find insertion points for each new source
             List<int[]> insertions = new ArrayList<>();
-            for (SourceAndConverter<?> sac : newSources) {
-                int sortedIndex = sortedSources.indexOf(sac);
+            for (SourceAndConverter<?> source : newSources) {
+                int sortedIndex = sortedSources.indexOf(source);
                 // Account for filter node children (non-source children)
                 int filterChildCount = countFilterChildren(treeNode);
                 int treeIndex = filterChildCount + sortedIndex;
 
                 DefaultMutableTreeNode sourceNode = new DefaultMutableTreeNode(
-                        new RenamableSourceAndConverter(sac));
+                        new RenamableSource(source));
 
                 treeNode.insert(sourceNode, treeIndex);
-                sourceToTreeNodes.computeIfAbsent(sac, k -> new HashSet<>()).add(sourceNode);
+                sourceToTreeNodes.computeIfAbsent(source, k -> new HashSet<>()).add(sourceNode);
                 insertions.add(new int[]{treeIndex});
             }
 
@@ -273,9 +271,9 @@ public class SourceTreeView implements SourceTreeModelListener {
             for (int i = 0; i < treeNode.getChildCount(); i++) {
                 DefaultMutableTreeNode child = (DefaultMutableTreeNode) treeNode.getChildAt(i);
                 Object userObject = child.getUserObject();
-                if (userObject instanceof RenamableSourceAndConverter) {
-                    SourceAndConverter<?> sac = ((RenamableSourceAndConverter) userObject).sac;
-                    if (sources.contains(sac)) {
+                if (userObject instanceof RenamableSource) {
+                    SourceAndConverter<?> source = ((RenamableSource) userObject).source;
+                    if (sources.contains(source)) {
                         nodesToRemove.add(child);
                         indicesToRemove.add(i);
                     }
@@ -295,13 +293,13 @@ public class SourceTreeView implements SourceTreeModelListener {
 
                 // Update sourceToTreeNodes mapping
                 Object userObject = nodeToRemove.getUserObject();
-                if (userObject instanceof RenamableSourceAndConverter) {
-                    SourceAndConverter<?> sac = ((RenamableSourceAndConverter) userObject).sac;
-                    Set<DefaultMutableTreeNode> nodes = sourceToTreeNodes.get(sac);
+                if (userObject instanceof RenamableSource) {
+                    SourceAndConverter<?> source = ((RenamableSource) userObject).source;
+                    Set<DefaultMutableTreeNode> nodes = sourceToTreeNodes.get(source);
                     if (nodes != null) {
                         nodes.remove(nodeToRemove);
                         if (nodes.isEmpty()) {
-                            sourceToTreeNodes.remove(sac);
+                            sourceToTreeNodes.remove(source);
                         }
                     }
                 }
@@ -321,7 +319,7 @@ public class SourceTreeView implements SourceTreeModelListener {
         int count = 0;
         for (int i = 0; i < treeNode.getChildCount(); i++) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) treeNode.getChildAt(i);
-            if (!(child.getUserObject() instanceof RenamableSourceAndConverter)) {
+            if (!(child.getUserObject() instanceof RenamableSource)) {
                 count++;
             }
         }
@@ -427,13 +425,13 @@ public class SourceTreeView implements SourceTreeModelListener {
         for (int i = 0; i < treeNode.getChildCount(); i++) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) treeNode.getChildAt(i);
             Object userObject = child.getUserObject();
-            if (userObject instanceof RenamableSourceAndConverter) {
-                SourceAndConverter<?> sac = ((RenamableSourceAndConverter) userObject).sac;
-                Set<DefaultMutableTreeNode> nodes = sourceToTreeNodes.get(sac);
+            if (userObject instanceof RenamableSource) {
+                SourceAndConverter<?> source = ((RenamableSource) userObject).source;
+                Set<DefaultMutableTreeNode> nodes = sourceToTreeNodes.get(source);
                 if (nodes != null) {
                     nodes.remove(child);
                     if (nodes.isEmpty()) {
-                        sourceToTreeNodes.remove(sac);
+                        sourceToTreeNodes.remove(source);
                     }
                 }
             }
@@ -475,11 +473,11 @@ public class SourceTreeView implements SourceTreeModelListener {
     /**
      * Gets all tree nodes that display a source.
      *
-     * @param sac the source
+     * @param source the source
      * @return a set of tree nodes, or empty set if not found
      */
-    public Set<DefaultMutableTreeNode> getTreeNodes(SourceAndConverter<?> sac) {
-        Set<DefaultMutableTreeNode> nodes = sourceToTreeNodes.get(sac);
+    public Set<DefaultMutableTreeNode> getTreeNodes(SourceAndConverter<?> source) {
+        Set<DefaultMutableTreeNode> nodes = sourceToTreeNodes.get(source);
         return nodes != null ? new HashSet<>(nodes) : new HashSet<>();
     }
 
@@ -497,8 +495,8 @@ public class SourceTreeView implements SourceTreeModelListener {
 
     private void collectSources(DefaultMutableTreeNode treeNode, Set<SourceAndConverter<?>> sources) {
         Object userObject = treeNode.getUserObject();
-        if (userObject instanceof RenamableSourceAndConverter) {
-            sources.add(((RenamableSourceAndConverter) userObject).sac);
+        if (userObject instanceof RenamableSource) {
+            sources.add(((RenamableSource) userObject).source);
         }
 
         for (int i = 0; i < treeNode.getChildCount(); i++) {

@@ -63,8 +63,8 @@ public class SourceMetadataAddCommand implements BdvPlaygroundActionCommand {
 
 	@Override
 	public void run() {
-		for (SourceAndConverter<?> sac : sources) {
-			source_service.setMetadata(sac, key, value);
+		for (SourceAndConverter<?> source : sources) {
+			source_service.setMetadata(source, key, value);
 		}
 	}
 }

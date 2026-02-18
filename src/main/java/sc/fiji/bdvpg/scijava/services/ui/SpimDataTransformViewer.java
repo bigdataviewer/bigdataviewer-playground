@@ -85,7 +85,7 @@ public class SpimDataTransformViewer extends JFrame {
 	private final List<SourceEntry> sourceEntries = new ArrayList<>();
 	private final List<Integer> allTimepoints = new ArrayList<>();
 	private int maxTransformChainLength = 0;
-	private final SourceAndConverterService sacService;
+	private final SourceAndConverterService sourceService;
 
 	// UI components
 	private JComboBox<Dimension> rowDimensionCombo;
@@ -126,35 +126,35 @@ public class SpimDataTransformViewer extends JFrame {
 	 * Entry holding source info and its SpimData reference
 	 */
 	private static class SourceEntry {
-		final SourceAndConverter<?> sac;
+		final SourceAndConverter<?> source;
 		final AbstractSpimData<?> spimData;
 		final int setupId;
 		final String name;
 
-		SourceEntry(SourceAndConverter<?> sac, AbstractSpimData<?> spimData,
-			int setupId)
+		SourceEntry(SourceAndConverter<?> source, AbstractSpimData<?> spimData,
+					int setupId)
 		{
-			this.sac = sac;
+			this.source = source;
 			this.spimData = spimData;
 			this.setupId = setupId;
-			this.name = sac.getSpimSource().getName();
+			this.name = source.getSpimSource().getName();
 		}
 	}
 
 	/**
 	 * Creates a new transform viewer for the given sources.
 	 *
-	 * @param sacs array of SourceAndConverter to display
-	 * @param sacService the SourceAndConverterService for metadata access
+	 * @param sources array of SourceAndConverter to display
+	 * @param sourceService the SourceAndConverterService for metadata access
 	 */
-	public SpimDataTransformViewer(SourceAndConverter<?>[] sacs,
-		SourceAndConverterService sacService)
+	public SpimDataTransformViewer(SourceAndConverter<?>[] sources,
+		SourceAndConverterService sourceService)
 	{
 		super("SpimData Transform Viewer");
-		this.sacService = sacService;
+		this.sourceService = sourceService;
 
 		// Collect valid sources (those with SpimData)
-		collectSources(sacs, sacService);
+		collectSources(sources, sourceService);
 
 		if (sourceEntries.isEmpty()) {
 			JOptionPane.showMessageDialog(this,
@@ -176,17 +176,17 @@ public class SpimDataTransformViewer extends JFrame {
 		setLocationRelativeTo(null);
 	}
 
-	private void collectSources(SourceAndConverter<?>[] sacs,
-		SourceAndConverterService sacService)
+	private void collectSources(SourceAndConverter<?>[] sources,
+		SourceAndConverterService sourceService)
 	{
 		int excludedCount = 0;
-		for (SourceAndConverter<?> sac : sacs) {
-			Object metadata = sacService.getMetadata(sac,
+		for (SourceAndConverter<?> source : sources) {
+			Object metadata = sourceService.getMetadata(source,
 				SourceAndConverterService.SPIM_DATA_INFO);
 			if (metadata instanceof SourceAndConverterService.SpimDataInfo) {
 				SourceAndConverterService.SpimDataInfo info =
 					(SourceAndConverterService.SpimDataInfo) metadata;
-				sourceEntries.add(new SourceEntry(sac, info.asd, info.setupId));
+				sourceEntries.add(new SourceEntry(source, info.asd, info.setupId));
 			}
 			else {
 				excludedCount++;
@@ -485,12 +485,12 @@ public class SpimDataTransformViewer extends JFrame {
 		}
 
 		// Get selected sources
-		SourceAndConverter<?>[] selectedSacs = sourceIndices.stream()
+		SourceAndConverter<?>[] selectedSources = sourceIndices.stream()
 			.filter(i -> i < sourceEntries.size())
-			.map(i -> sourceEntries.get(i).sac)
+			.map(i -> sourceEntries.get(i).source)
 			.toArray(SourceAndConverter[]::new);
 
-		if (selectedSacs.length == 0) {
+		if (selectedSources.length == 0) {
 			JOptionPane.showMessageDialog(this,
 				"No valid sources in selection.",
 				"Invalid Selection", JOptionPane.WARNING_MESSAGE);
@@ -504,7 +504,7 @@ public class SpimDataTransformViewer extends JFrame {
 		String trRange = buildRangeString(transformIndices);
 
 		// Get CommandService and launch the command
-		CommandService commandService = sacService.getContext()
+		CommandService commandService = sourceService.getContext()
 			.getService(CommandService.class);
 
 		if (commandService == null) {
@@ -514,7 +514,7 @@ public class SpimDataTransformViewer extends JFrame {
 
 		// Run command with pre-filled values, then refresh when done
 		Future<?> future = commandService.run(DatasetTransformSetCommand.class, true,
-			"sacs", selectedSacs,
+			"sources", selectedSources,
 			"timepoint_range", tpRange,
 			"transform_index_range", trRange);
 
@@ -562,12 +562,12 @@ public class SpimDataTransformViewer extends JFrame {
 		}
 
 		// Get selected sources
-		SourceAndConverter<?>[] selectedSacs = sourceIndices.stream()
+		SourceAndConverter<?>[] selectedSources = sourceIndices.stream()
 			.filter(i -> i < sourceEntries.size())
-			.map(i -> sourceEntries.get(i).sac)
+			.map(i -> sourceEntries.get(i).source)
 			.toArray(SourceAndConverter[]::new);
 
-		if (selectedSacs.length == 0) {
+		if (selectedSources.length == 0) {
 			JOptionPane.showMessageDialog(this,
 				"No valid sources in selection.",
 				"Invalid Selection", JOptionPane.WARNING_MESSAGE);
@@ -580,7 +580,7 @@ public class SpimDataTransformViewer extends JFrame {
 			.collect(Collectors.toSet()));
 
 		// Get CommandService and launch the command
-		CommandService commandService = sacService.getContext()
+		CommandService commandService = sourceService.getContext()
 			.getService(CommandService.class);
 
 		if (commandService == null) {
@@ -590,7 +590,7 @@ public class SpimDataTransformViewer extends JFrame {
 
 		// Run command with pre-filled values, then refresh when done
 		Future<?> future = commandService.run(DatasetTransformAddCommand.class, true,
-			"sacs", selectedSacs,
+			"sources", selectedSources,
 			"timepoint_range", tpRange);
 
 		// Wait in background thread, then refresh on EDT when done
@@ -639,12 +639,12 @@ public class SpimDataTransformViewer extends JFrame {
 		}
 
 		// Get selected sources
-		SourceAndConverter<?>[] selectedSacs = sourceIndices.stream()
+		SourceAndConverter<?>[] selectedSources = sourceIndices.stream()
 			.filter(i -> i < sourceEntries.size())
-			.map(i -> sourceEntries.get(i).sac)
+			.map(i -> sourceEntries.get(i).source)
 			.toArray(SourceAndConverter[]::new);
 
-		if (selectedSacs.length == 0) {
+		if (selectedSources.length == 0) {
 			JOptionPane.showMessageDialog(this,
 				"No valid sources in selection.",
 				"Invalid Selection", JOptionPane.WARNING_MESSAGE);
@@ -658,7 +658,7 @@ public class SpimDataTransformViewer extends JFrame {
 		String trRange = buildRangeString(transformIndices);
 
 		// Get CommandService and launch the command
-		CommandService commandService = sacService.getContext()
+		CommandService commandService = sourceService.getContext()
 			.getService(CommandService.class);
 
 		if (commandService == null) {
@@ -668,7 +668,7 @@ public class SpimDataTransformViewer extends JFrame {
 
 		// Run command with pre-filled values, then refresh when done
 		Future<?> future = commandService.run(DatasetTransformRemoveCommand.class, true,
-			"sacs", selectedSacs,
+			"sources", selectedSources,
 			"timepoint_range", tpRange,
 			"transform_index_range", trRange);
 

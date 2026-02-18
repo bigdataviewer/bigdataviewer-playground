@@ -76,34 +76,34 @@ public class SourceAndConverterServiceLoader extends SourceAndConverterAdapter
 	public void run() {
 
 		// Empty service
-		SourceAndConverter<?>[] sacs = SourceAndConverterServices
+		SourceAndConverter<?>[] sources = SourceAndConverterServices
 			.getSourceAndConverterService().getSourceAndConverters().toArray(
 				new SourceAndConverter[0]);
 
 		if (erasePreviousState) {
-			SourceAndConverterServices.getSourceAndConverterService().remove(sacs);
+			SourceAndConverterServices.getSourceAndConverterService().remove(sources);
 		}
 
 		try {
 			FileReader fileReader = new FileReader(filePath);
 
 			Gson gson = new Gson();
-			JsonArray rawSacsArray = gson.fromJson(fileReader, JsonArray.class);
-			// System.out.println(rawSacsArray.size());
+			JsonArray rawSourcesArray = gson.fromJson(fileReader, JsonArray.class);
+			// System.out.println(rawSourcesArray.size());
 
-			for (int i = 0; i < rawSacsArray.size(); i++) {
-				if (rawSacsArray.get(i).isJsonObject()) {
-					idToJsonElement.put(rawSacsArray.get(i).getAsJsonObject().get(
-						"source_id").getAsInt(), rawSacsArray.get(i));
+			for (int i = 0; i < rawSourcesArray.size(); i++) {
+				if (rawSourcesArray.get(i).isJsonObject()) {
+					idToJsonElement.put(rawSourcesArray.get(i).getAsJsonObject().get(
+						"source_id").getAsInt(), rawSourcesArray.get(i));
 				} else {
 					// Source couldn't be serialized
 					System.err.println("Error : source " + i + " couldn't be serialized");
-					System.err.println(rawSacsArray.get(i));
+					System.err.println(rawSourcesArray.get(i));
 				}
 			}
 
-			// SourceAndConverter[] sacs_loaded =
-			getGson().fromJson(rawSacsArray, SourceAndConverter[].class);
+			// SourceAndConverter[] sources_loaded =
+			getGson().fromJson(rawSourcesArray, SourceAndConverter[].class);
 			fileReader.close();
 
 		} catch (Exception e) {

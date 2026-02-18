@@ -55,7 +55,7 @@ public class BdvDefaultViewerSetCommand implements
 		label = "Reset to default",
 		description = "If checked, ignores all other parameters and resets to default settings",
 		persist = false)
-	boolean resetToDefault = false;
+	boolean reset_to_default = false;
 
 	@Parameter(label = "Window width",
 			description = "Default width in pixels for new BDV windows")
@@ -67,23 +67,23 @@ public class BdvDefaultViewerSetCommand implements
 
 	@Parameter(label = "Screen scales",
 			description = "Comma-separated list of scale factors for multi-resolution rendering (e.g., 1, 0.5, 0.25)")
-	String screenscales = "1, 0.75, 0.5, 0.25, 0.125";
+	String screen_scales = "1, 0.75, 0.5, 0.25, 0.125";
 
 	@Parameter(label = "Target render time (ms)",
 			description = "Target time in milliseconds for rendering a single frame")
-	long targetrenderms = 30;// * 1000000l;
+	long target_render_ms = 30;// * 1000000l;
 
 	@Parameter(label = "Number of rendering threads",
 			description = "Number of threads used for rendering")
-	int numrenderingthreads = 3;
+	int num_rendering_threads = 3;
 
 	@Parameter(label = "Number of source groups",
 			description = "Number of source groups available in the BDV window")
-	int numsourcegroups = 10;
+	int num_source_groups = 10;
 
 	@Parameter(label = "Window title",
 			description = "Default title for new BDV windows")
-	String frametitle = "BigDataViewer";
+	String frame_title = "BigDataViewer";
 
 	@Parameter(label = "2D mode",
 			description = "If enabled, restricts navigation to 2D (only Z-rotations)")
@@ -95,32 +95,32 @@ public class BdvDefaultViewerSetCommand implements
 
 	@Parameter(label = "Number of timepoints",
 			description = "Default number of timepoints for new BDV windows")
-	int numtimepoints = 1;
+	int n_timepoints = 1;
 
 	@Parameter
-	SourceAndConverterBdvDisplayService sacDisplayService;
+	SourceAndConverterBdvDisplayService sourceDisplayService;
 
 	@Override
 	public void run() {
-		if (resetToDefault) {
+		if (reset_to_default) {
 			IBdvSupplier bdvSupplier = new DefaultBdvSupplier(
 				new SerializableBdvOptions());
-			sacDisplayService.setDefaultBdvSupplier(bdvSupplier);
+			sourceDisplayService.setDefaultBdvSupplier(bdvSupplier);
 		}
 		else {
 			SerializableBdvOptions options = new SerializableBdvOptions();
-			options.frameTitle = frametitle;
+			options.frameTitle = frame_title;
 			options.is2D = is2d;
-			options.numRenderingThreads = numrenderingthreads;
-			options.screenScales = Arrays.stream(screenscales.split(",")).mapToDouble(
+			options.numRenderingThreads = num_rendering_threads;
+			options.screenScales = Arrays.stream(screen_scales.split(",")).mapToDouble(
 				Double::parseDouble).toArray();
 			options.height = height;
 			options.width = width;
-			options.numSourceGroups = numsourcegroups;
-			options.numTimePoints = numtimepoints;
+			options.numSourceGroups = num_source_groups;
+			options.numTimePoints = n_timepoints;
 			options.interpolate = interpolate;
 			IBdvSupplier bdvSupplier = new DefaultBdvSupplier(options);
-			sacDisplayService.setDefaultBdvSupplier(bdvSupplier);
+			sourceDisplayService.setDefaultBdvSupplier(bdvSupplier);
 		}
 
 	}

@@ -200,31 +200,31 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * Displays a Source, the last active bdvh is chosen since none is specified
 	 * in this method
 	 * 
-	 * @param sacs sources to display
+	 * @param sources sources to display
 	 */
-	public void show(SourceAndConverter<?>... sacs) {
-		show(getActiveBdv(), sacs);
+	public void show(SourceAndConverter<?>... sources) {
+		show(getActiveBdv(), sources);
 	}
 
 	/**
 	 * Makes visible or invisible a source, applies this to all bdvs according to
 	 * BdvhReferences
 	 * 
-	 * @param sac source
+	 * @param source source
 	 * @param visible whether to set it visible
 	 */
-	public void setVisible(SourceAndConverter<?> sac, boolean visible) {
-		getDisplaysOf(sac).forEach(bdvhr -> bdvhr.getViewerPanel().state()
-			.setSourceActive(sac, visible));
+	public void setVisible(SourceAndConverter<?> source, boolean visible) {
+		getDisplaysOf(source).forEach(bdvhr -> bdvhr.getViewerPanel().state()
+			.setSourceActive(source, visible));
 	}
 
 	/**
-	 * @param sac source to display
+	 * @param source source to display
 	 * @param bdvh bdv window where to check this property
 	 * @return true if the source is visible
 	 */
-	public boolean isVisible(SourceAndConverter<?> sac, BdvHandle bdvh) {
-		return bdvh.getViewerPanel().state().isSourceActive(sac);
+	public boolean isVisible(SourceAndConverter<?> source, BdvHandle bdvh) {
+		return bdvh.getViewerPanel().state().isSourceActive(source);
 	}
 
 	/**
@@ -233,11 +233,11 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * functions of BdvVisTools because it is responsible to create converter,
 	 * volatiles, convertersetups and so on
 	 * 
-	 * @param sacs sources to display
+	 * @param sources sources to display
 	 * @param bdvh bdvhandle to append the sources
 	 */
-	public void show(BdvHandle bdvh, SourceAndConverter<?>... sacs) {
-		show(bdvh, true, sacs);
+	public void show(BdvHandle bdvh, SourceAndConverter<?>... sources) {
+		show(bdvh, true, sources);
 	}
 
 	/**
@@ -246,66 +246,66 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * functions of BdvVisTools because it is responsible to create converter,
 	 * volatiles, converter setups and so on
 	 * 
-	 * @param sacs sources to display
+	 * @param sources sources to display
 	 * @param visible whether to make the source active (=visible)
 	 * @param bdvh bdvhandle to append the sources
 	 */
 	public void show(BdvHandle bdvh, boolean visible,
-		SourceAndConverter<?>... sacs)
+		SourceAndConverter<?>... sources)
 	{
 
-		List<SourceAndConverter<?>> sacsToDisplay = new ArrayList<>();
+		List<SourceAndConverter<?>> sourcesToDisplay = new ArrayList<>();
 
-		for (SourceAndConverter<?> sac : sacs) {
-			if (!bdvSourceAndConverterService.isRegistered(sac)) {
-				bdvSourceAndConverterService.register(sac);
+		for (SourceAndConverter<?> source : sources) {
+			if (!bdvSourceAndConverterService.isRegistered(source)) {
+				bdvSourceAndConverterService.register(source);
 			}
 
 			boolean escape = false;
 
-			if (bdvh.getViewerPanel().state().getSources().contains(sac)) {
+			if (bdvh.getViewerPanel().state().getSources().contains(source)) {
 				escape = true;
 			}
 
 			// Do not display 2 times the same source and converter
-			if (sacsToDisplay.contains(sac)) {
+			if (sourcesToDisplay.contains(source)) {
 				escape = true;
 			}
 
 			if (!escape) {
-				sacsToDisplay.add(sac);
-				bdvh.getConverterSetups().put(sac, bdvSourceAndConverterService
-					.getConverterSetup(sac));
+				sourcesToDisplay.add(source);
+				bdvh.getConverterSetups().put(source, bdvSourceAndConverterService
+					.getConverterSetup(source));
 			}
 		}
 
 		// Actually display the sources -> repaint called only once!
-		bdvh.getViewerPanel().state().addSources(sacsToDisplay);
+		bdvh.getViewerPanel().state().addSources(sourcesToDisplay);
 		// And make them active
-		bdvh.getViewerPanel().state().setSourcesActive(sacsToDisplay, visible);
+		bdvh.getViewerPanel().state().setSourcesActive(sourcesToDisplay, visible);
 	}
 
 	/**
 	 * Removes a SourceAndConverter from all BdvHandle displaying this
 	 * SourceAndConverter Updates all references of other Sources present
 	 * 
-	 * @param sacs sources to remove
+	 * @param sources sources to remove
 	 */
-	public void removeFromAllBdvs(SourceAndConverter<?>... sacs) {
-		getDisplaysOf(sacs).forEach(bdv -> bdv.getViewerPanel().state()
-			.removeSources(Arrays.asList(sacs)));
+	public void removeFromAllBdvs(SourceAndConverter<?>... sources) {
+		getDisplaysOf(sources).forEach(bdv -> bdv.getViewerPanel().state()
+			.removeSources(Arrays.asList(sources)));
 	}
 
 	/**
 	 * Removes a SourceAndConverter from the active Bdv Updates all references of
 	 * other Sources present
 	 * 
-	 * @param sacs sources to remove from active bdv
+	 * @param sources sources to remove from active bdv
 	 */
-	public void removeFromActiveBdv(SourceAndConverter<?>... sacs) {
+	public void removeFromActiveBdv(SourceAndConverter<?>... sources) {
 		// This condition avoids creating a window for nothing
 		if (!os.getObjects(BdvHandle.class).isEmpty()) {
-			remove(getActiveBdv(), sacs);
+			remove(getActiveBdv(), sources);
 		}
 	}
 
@@ -314,10 +314,10 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * other Sources present
 	 * 
 	 * @param bdvh bdvhandle
-	 * @param sacs Array of SourceAndConverter
+	 * @param sources Array of SourceAndConverter
 	 */
-	public void remove(BdvHandle bdvh, SourceAndConverter<?>... sacs) {
-		bdvh.getViewerPanel().state().removeSources(Arrays.asList(sacs));
+	public void remove(BdvHandle bdvh, SourceAndConverter<?>... sources) {
+		bdvh.getViewerPanel().state().removeSources(Arrays.asList(sources));
 		bdvh.getViewerPanel().requestRepaint();
 	}
 
@@ -407,26 +407,26 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * @param bdvh_in bdvhandle fetched for registration
 	 */
 	public void registerBdvSource(BdvHandle bdvh_in) {
-		bdvh_in.getViewerPanel().state().getSources().forEach(sac -> {
-			if (!bdvSourceAndConverterService.isRegistered(sac)) {
-				bdvSourceAndConverterService.register(sac);
+		bdvh_in.getViewerPanel().state().getSources().forEach(source -> {
+			if (!bdvSourceAndConverterService.isRegistered(source)) {
+				bdvSourceAndConverterService.register(source);
 			}
 		});
 	}
 
 	/**
-	 * Updates bdvHandles which are displaying at least one of these sacs
+	 * Updates bdvHandles which are displaying at least one of these sources
 	 * Potentially improvement is to check whether the timepoint need an update ?
 	 * 
-	 * @param sacs sources to update
+	 * @param sources sources to update
 	 */
-	public void updateDisplays(SourceAndConverter<?>... sacs) {
-		getDisplaysOf(sacs).forEach(bdvHandle -> bdvHandle.getViewerPanel()
+	public void updateDisplays(SourceAndConverter<?>... sources) {
+		getDisplaysOf(sources).forEach(bdvHandle -> bdvHandle.getViewerPanel()
 			.requestRepaint());
 	}
 
 	/**
-	 * Returns the list of sacs held within a BdvHandle ( whether they are visible
+	 * Returns the list of sources held within a BdvHandle ( whether they are visible
 	 * or not ) List is ordered by index in the BdvHandle - complexification to
 	 * implement the mixed projector TODO : Avoid duplicates by returning a Set
 	 * 
@@ -440,23 +440,23 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	}
 
 	/**
-	 * Returns a List of BdvHandle which are currently displaying a sac Returns an
-	 * empty set in case the sac is not displayed
+	 * Returns a List of BdvHandle which are currently displaying a source Returns an
+	 * empty set in case the source is not displayed
 	 * 
-	 * @param sacs the sources queried
+	 * @param sources the sources queried
 	 * @return all bdvhandle which contain the source
 	 */
-	public Set<BdvHandle> getDisplaysOf(SourceAndConverter<?>... sacs) {
-		if (sacs == null) {
+	public Set<BdvHandle> getDisplaysOf(SourceAndConverter<?>... sources) {
+		if (sources == null) {
 			return new HashSet<>();
 		}
 
-		List<SourceAndConverter<?>> sacList = Arrays.asList(sacs);
+		List<SourceAndConverter<?>> sourceList = Arrays.asList(sources);
 
 		return os.getObjects(BdvHandle.class).stream().filter(bdv -> {
 			synchronized (bdv.getViewerPanel().state()) {
 				return bdv.getViewerPanel().state().getSources().stream().anyMatch(
-					sacList::contains);
+					sourceList::contains);
 			}
 		}).collect(Collectors.toSet());
 
@@ -509,20 +509,20 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 			BdvHandleHelper.setWindowTitle(bdvh, windowTitle);
 
 			// ------------ Event handling in bdv sourceandconverterserviceui
-			final SourceAndConverterService sacService =
+			final SourceAndConverterService source_service =
 				(SourceAndConverterService) SourceAndConverterServices
 					.getSourceAndConverterService();
-			SourceTreeModel model = sacService.getUI().getSourceTreeModel();
+			SourceTreeModel model = source_service.getUI().getSourceTreeModel();
 			model.addBdvHandle(bdvh, windowTitle, model.getRoot());
 
 			// ------------ Allows to remove the BdvHandle from the objectService when
 			// closed by the user
 			BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService, this, true,
-				() -> sacService.getUI().removeBdvHandleNodes(bdvh));
+				() -> source_service.getUI().removeBdvHandleNodes(bdvh));
 
-			//sacService.getUI().getTreeModel().
+			//source_service.getUI().getTreeModel().
 
-			//((SourceFilterNode) sacService.getUI().getTreeModel().getRoot()).insert(
+			//((SourceFilterNode) source_service.getUI().getTreeModel().getRoot()).insert(
 			//	node, 0);
 
 		}

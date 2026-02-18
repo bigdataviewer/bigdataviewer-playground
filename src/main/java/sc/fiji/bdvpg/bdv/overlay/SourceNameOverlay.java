@@ -105,10 +105,10 @@ public class SourceNameOverlay extends BdvOverlay {
 		if (sources!=null && !sources.isEmpty() && sorter!=null) {
 			SourceAndConverter<?>[] sorted = sorter.apply(sources.toArray(new SourceAndConverter<?>[0]));
 			if (sorted != null) {
-				for (SourceAndConverter<?> sac : sorted) {
-					if (sac.getSpimSource().getSource(viewer.state().getCurrentTimepoint(),
+				for (SourceAndConverter<?> source : sorted) {
+					if (source.getSpimSource().getSource(viewer.state().getCurrentTimepoint(),
 							0) != null) { // TODO : fix hack to avoid dirty overlay filter
-						newSourcesBoxOverlay.add(new SourceBoxOverlay(sac));
+						newSourcesBoxOverlay.add(new SourceBoxOverlay(source));
 					}
 				}
 			}
@@ -125,7 +125,7 @@ public class SourceNameOverlay extends BdvOverlay {
 		return fontMetrics.stringWidth(str);
 	}
 
-	private Map<Integer,Set<Integer>> displayNameAt(SourceAndConverter<?> sac, Graphics2D graphics, double xp, double yp, String name, Map<Integer,Set<Integer>> occupied) {
+	private Map<Integer,Set<Integer>> displayNameAt(SourceAndConverter<?> source, Graphics2D graphics, double xp, double yp, String name, Map<Integer,Set<Integer>> occupied) {
 		double binSizeX = 100;
 		double binSizeY = this.font.getSize();
 		int binX = (int) (xp/binSizeX);
@@ -142,19 +142,19 @@ public class SourceNameOverlay extends BdvOverlay {
 			shiftY += (int) binSizeY;
 		}
 		occupiedY.add(binY);
-		String str = sac.getSpimSource().getName();
+		String str = source.getSpimSource().getName();
 		graphics.drawString(str,(int) (xp+shiftX-getStringWidth(str, graphics)/2.0),(int) (yp+shiftY));
 		return occupied;
 	}
 
 	class SourceBoxOverlay implements TransformedBox {
 
-		final SourceAndConverter<?> sac;
+		final SourceAndConverter<?> source;
 
 		final RenderBoxHelper rbh;
 
-		public SourceBoxOverlay(SourceAndConverter<?> sac) {
-			this.sac = sac;
+		public SourceBoxOverlay(SourceAndConverter<?> source) {
+			this.source = source;
 			rbh = new RenderBoxHelper();
 		}
 
@@ -191,10 +191,10 @@ public class SourceNameOverlay extends BdvOverlay {
 						a.intersect(new Area(screen));
 						double cx = a.getBounds2D().getCenterX();
 						double cy = a.getBounds2D().getCenterY();
-						//graphics.drawString(sac.getSpimSource().getName(),(int) cx,(int)cy);
+						//graphics.drawString(source.getSpimSource().getName(),(int) cx,(int)cy);
 
 
-						occupied = displayNameAt(sac, graphics, cx, cy, sac.getSpimSource().getName(), occupied);
+						occupied = displayNameAt(source, graphics, cx, cy, source.getSpimSource().getName(), occupied);
 					}
 				}
 			}
@@ -207,8 +207,8 @@ public class SourceNameOverlay extends BdvOverlay {
 		public RealInterval getInterval() {
 			long[] dims = new long[3];
 			int currentTimePoint = viewer.state().getCurrentTimepoint();
-			if (sac.getSpimSource().isPresent(currentTimePoint)) {
-				sac.getSpimSource().getSource(currentTimePoint, 0).dimensions(dims);
+			if (source.getSpimSource().isPresent(currentTimePoint)) {
+				source.getSpimSource().getSource(currentTimePoint, 0).dimensions(dims);
 				return new FinalRealInterval(new double[] { -0.5, -0.5, -0.5 },
 					new double[] { dims[0] - 0.5, dims[1] - 0.5, dims[2] - 0.5 });
 			}
@@ -217,7 +217,7 @@ public class SourceNameOverlay extends BdvOverlay {
 
 		@Override
 		public void getTransform(AffineTransform3D transform) {
-			sac.getSpimSource().getSourceTransform(viewer.state()
+			source.getSpimSource().getSourceTransform(viewer.state()
 				.getCurrentTimepoint(), 0, transform);
 		}
 

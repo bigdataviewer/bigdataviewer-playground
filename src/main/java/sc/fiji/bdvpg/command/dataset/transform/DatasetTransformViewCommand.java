@@ -70,7 +70,7 @@ public class DatasetTransformViewCommand implements BdvPlaygroundActionCommand
 	SourceAndConverter<?>[] sources;
 
 	@Parameter
-	SourceAndConverterService sacService;
+	SourceAndConverterService source_service;
 	@Override
 	public void run() {
 		if (sources == null || sources.length == 0) {
@@ -83,7 +83,7 @@ public class DatasetTransformViewCommand implements BdvPlaygroundActionCommand
 
 		SwingUtilities.invokeLater(() -> {
 			SpimDataTransformViewer viewer = new SpimDataTransformViewer(sources,
-				sacService);
+					source_service);
 			viewer.showViewer();
 		});
 	}

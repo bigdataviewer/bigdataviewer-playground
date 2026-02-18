@@ -68,21 +68,21 @@ public class WarpedSourceDemo {
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter("src/test/resources/mri-stack-multilevel.xml");
         AbstractSpimData<?> asd = importer.get();
 
-        SourceAndConverter<?> sac = SourceAndConverterServices
+        SourceAndConverter<?> source = SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(asd)
                 .get(0);
 
         SourceAndConverterServices
                 .getBdvDisplayService()
-                .show(sac);
+                .show(source);
 
         // Gets active BdvHandle instance
         BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
-        SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
-        new ViewerTransformAdjuster(bdvHandle, sac).run();
-        new BrightnessAutoAdjuster<>(sac, 0).run();
+        SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source);
+        new ViewerTransformAdjuster(bdvHandle, source).run();
+        new BrightnessAutoAdjuster<>(source, 0).run();
 
         List<RealTransform> transform_tested = new ArrayList<>();
 
@@ -119,7 +119,7 @@ public class WarpedSourceDemo {
 
         // Register sources and display source
         for (RealTransform rt : transform_tested) {
-            SourceAndConverter<?> transformed_source = new SourceRealTransformer(rt).apply(sac);
+            SourceAndConverter<?> transformed_source = new SourceRealTransformer(rt).apply(source);
 
             SourceAndConverterServices
                     .getSourceAndConverterService()

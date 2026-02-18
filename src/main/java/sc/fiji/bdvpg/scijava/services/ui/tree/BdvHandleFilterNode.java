@@ -73,8 +73,8 @@ public class BdvHandleFilterNode extends FilterNode {
     /**
      * Filters sources that are present in the BdvHandle's viewer.
      */
-    private boolean filter(SourceAndConverter<?> sac) {
-        return bdvHandle.getViewerPanel().state().getSources().contains(sac);
+    private boolean filter(SourceAndConverter<?> source) {
+        return bdvHandle.getViewerPanel().state().getSources().contains(source);
     }
 
     /**

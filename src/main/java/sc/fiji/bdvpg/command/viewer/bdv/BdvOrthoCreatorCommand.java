@@ -111,7 +111,7 @@ public class BdvOrthoCreatorCommand implements BdvPlaygroundActionCommand {
 	public BdvHandle bdvhz;
 
 	@Parameter
-	SourceAndConverterBdvDisplayService sacDisplayService;
+	SourceAndConverterBdvDisplayService sourceDisplayService;
 
 	@Parameter(label = "Synchronize sources",
 			description = "When enabled, sources added to one window will appear in all three windows")
@@ -148,7 +148,7 @@ public class BdvOrthoCreatorCommand implements BdvPlaygroundActionCommand {
 
 	BdvHandle createBdv(String suffix, double locX, double locY) {
 
-		BdvHandle bdvh = sacDisplayService.getNewBdv();
+		BdvHandle bdvh = sourceDisplayService.getNewBdv();
 		BdvHandleHelper.setWindowTitle(bdvh, BdvHandleHelper.getWindowTitle(bdvh) +
 			suffix);
 

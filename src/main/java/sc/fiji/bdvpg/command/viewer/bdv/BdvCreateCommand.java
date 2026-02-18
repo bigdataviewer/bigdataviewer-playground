@@ -56,11 +56,11 @@ public class BdvCreateCommand implements BdvPlaygroundActionCommand {
 	public BdvHandle bdvh;
 
 	@Parameter
-	SourceAndConverterBdvDisplayService sacDisplayService;
+	SourceAndConverterBdvDisplayService sourceDisplayService;
 
 	@Override
 	public void run() {
-		bdvh = sacDisplayService.getNewBdv();
+		bdvh = sourceDisplayService.getNewBdv();
 	}
 
 }

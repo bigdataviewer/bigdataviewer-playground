@@ -61,12 +61,12 @@ public class AbstractSpimdataAdapter implements
 	protected static final Logger logger = LoggerFactory.getLogger(
 		AbstractSpimData.class);
 
-	final SourceAndConverterAdapter sacSerializer;
+	final SourceAndConverterAdapter sourceSerializer;
 
 	int spimdataCounter = 0;
 
-	public AbstractSpimdataAdapter(SourceAndConverterAdapter sacSerializer) {
-		this.sacSerializer = sacSerializer;
+	public AbstractSpimdataAdapter(SourceAndConverterAdapter sourceSerializer) {
+		this.sourceSerializer = sourceSerializer;
 	}
 
 	@Override
@@ -74,23 +74,23 @@ public class AbstractSpimdataAdapter implements
 		JsonSerializationContext jsonSerializationContext)
 	{
 		JsonObject obj = new JsonObject();
-		String dataLocation = (String) sacSerializer.getScijavaContext()
+		String dataLocation = (String) sourceSerializer.getScijavaContext()
 				.getService(SourceAndConverterService.class).getMetadata(asd, SPIM_DATA_LOCATION);
 		if ((dataLocation == null) || (dataLocation.isEmpty())) {
-			dataLocation = new File(sacSerializer.getBasePath(), "_bdvdataset_" +
+			dataLocation = new File(sourceSerializer.getBasePath(), "_bdvdataset_" +
 				spimdataCounter + ".xml").getAbsolutePath();
 			while (new File(dataLocation).exists()) {
 				spimdataCounter++;
-				dataLocation = new File(sacSerializer.getBasePath(), "_bdvdataset_" +
+				dataLocation = new File(sourceSerializer.getBasePath(), "_bdvdataset_" +
 					spimdataCounter + ".xml").getAbsolutePath();
 			}
 			spimdataCounter++;
 			logger.info("Previously unsaved bdv dataset, saving it to " +
 				dataLocation);
-			new XmlFromSpimDataExporter(asd, dataLocation, sacSerializer
+			new XmlFromSpimDataExporter(asd, dataLocation, sourceSerializer
 				.getScijavaContext()).run();
 		}
-		if (sacSerializer.useRelativePaths()) {
+		if (sourceSerializer.useRelativePaths()) {
 			dataLocation = new File(dataLocation).getName();
 		}
 		obj.addProperty("datalocation", dataLocation);
@@ -104,19 +104,19 @@ public class AbstractSpimdataAdapter implements
 	{
 		String datalocation = jsonElement.getAsJsonObject().get("datalocation")
 			.getAsString();
-		if (sacSerializer.useRelativePaths()) {
-			datalocation = new File(sacSerializer.getBasePath(), datalocation).getAbsolutePath();
+		if (sourceSerializer.useRelativePaths()) {
+			datalocation = new File(sourceSerializer.getBasePath(), datalocation).getAbsolutePath();
 		}
 		String finalDataLocation = datalocation;
 		// System.out.println("Deserialization of "+datalocation);
 		if (datalocation.endsWith(".qpath")) {
 			logger.error("qpath project unhandled in deserialization!");
 		}
-		SourceAndConverterService sacService = sacSerializer.getScijavaContext()
+		SourceAndConverterService sourceService = sourceSerializer.getScijavaContext()
 				.getService(SourceAndConverterService.class);
-		List<AbstractSpimData<?>> asds = sacService.getSpimDatasets().stream().filter(
+		List<AbstractSpimData<?>> asds = sourceService.getSpimDatasets().stream().filter(
 				asd -> {
-					Object location = sacService.getMetadata(asd, SPIM_DATA_LOCATION);
+					Object location = sourceService.getMetadata(asd, SPIM_DATA_LOCATION);
 					return location != null && location.equals(finalDataLocation);
 				}).collect(
 						Collectors.toList());

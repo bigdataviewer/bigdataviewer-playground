@@ -34,14 +34,14 @@ import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 public class BrightnessAdjuster implements Runnable {
 
-	private final SourceAndConverter<?> sac;
+	private final SourceAndConverter<?> source;
 	private final double min;
 	private final double max;
 
-	public BrightnessAdjuster(final SourceAndConverter<?> sac, double min,
-		double max)
+	public BrightnessAdjuster(final SourceAndConverter<?> source, double min,
+							  double max)
 	{
-		this.sac = sac;
+		this.source = source;
 		this.min = min;
 		this.max = max;
 	}
@@ -49,7 +49,7 @@ public class BrightnessAdjuster implements Runnable {
 	@Override
 	public void run() {
 		SourceAndConverterServices.getSourceAndConverterService().getConverterSetup(
-			sac).setDisplayRange(min, max);
+				source).setDisplayRange(min, max);
 	}
 
 }

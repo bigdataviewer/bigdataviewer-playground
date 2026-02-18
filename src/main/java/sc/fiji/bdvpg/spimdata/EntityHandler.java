@@ -68,11 +68,11 @@ public interface EntityHandler extends SciJavaPlugin {
 
 	/**
 	 * @param viewSetup currently being stored
-	 * @param sac SourceAndConverter being saved
+	 * @param source SourceAndConverter being saved
 	 * @return true if this entity was written, the entity is not always
 	 *         necessarily written when saving the data
 	 */
-	boolean writeEntity(BasicViewSetup viewSetup, SourceAndConverter<?> sac);
+	boolean writeEntity(BasicViewSetup viewSetup, SourceAndConverter<?> source);
 
 	/**
 	 * This method is called before the SourceAndConverter object is created
@@ -89,11 +89,11 @@ public interface EntityHandler extends SciJavaPlugin {
 	 * 
 	 * @param spimData object which is being opened
 	 * @param viewSetup viewSetup associated to the SourceAndConverter
-	 * @param sac current SourceAndConverter being opened from the spimData object
+	 * @param source current SourceAndConverter being opened from the spimData object
 	 * @return true is the entity was loaded
 	 */
 	boolean loadEntity(AbstractSpimData<?> spimData, BasicViewSetup viewSetup,
-		SourceAndConverter<?> sac);
+		SourceAndConverter<?> source);
 
 	/**
 	 * If canCreateSourceAndConverter returns true, this function is called in

@@ -36,7 +36,7 @@ import bdv.viewer.ViewerPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.RenamableSourceAndConverter;
+import sc.fiji.bdvpg.scijava.services.ui.RenamableSource;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
@@ -83,14 +83,14 @@ public class BdvTransferHandler extends TransferHandler {
 		// Do nothing : can be extended for custom behaviour
 	}
 
-	public void importSourcesAndConverters(TransferSupport support,
-		List<SourceAndConverter<?>> sacs)
+	public void importSources(TransferSupport support,
+							  List<SourceAndConverter<?>> sources)
 	{
 		// Can be extended for custom action on sources import
 		Optional<BdvHandle> bdvh = getBdvHandleFromViewerPanel(
 			((bdv.viewer.ViewerPanel) support.getComponent()));
 		bdvh.ifPresent(bdvHandle -> SourceAndConverterServices
-			.getBdvDisplayService().show(bdvHandle, sacs.toArray(
+			.getBdvDisplayService().show(bdvHandle, sources.toArray(
 				new SourceAndConverter[0])));
 	}
 
@@ -129,10 +129,10 @@ public class BdvTransferHandler extends TransferHandler {
 			SourcesTransferable.flavor))
 		{
 			try {
-				final List<SourceAndConverter<?>> sacs =
+				final List<SourceAndConverter<?>> sources =
 					((SourcesTransferable.SourceList) support.getTransferable()
 						.getTransferData(SourcesTransferable.flavor)).getSources();
-				importSourcesAndConverters(support, sacs);
+				importSources(support, sources);
 				return true;
 			}
 			catch (Exception ignored) {
@@ -162,7 +162,7 @@ public class BdvTransferHandler extends TransferHandler {
 			if (SourceAndConverterServices
 				.getSourceAndConverterService() instanceof SourceAndConverterService)
 			{
-				List<SourceAndConverter<?>> sacs = new ArrayList<>();
+				List<SourceAndConverter<?>> sources = new ArrayList<>();
 				SourceAndConverterServiceUI ui =
 					((SourceAndConverterService) SourceAndConverterServices
 						.getSourceAndConverterService()).getUI();
@@ -170,22 +170,22 @@ public class BdvTransferHandler extends TransferHandler {
 					DefaultMutableTreeNode unwrapped = (DefaultMutableTreeNode) (node
 						.getUserObject());
 					if (unwrapped
-						.getUserObject() instanceof RenamableSourceAndConverter)
+						.getUserObject() instanceof RenamableSource)
 					{
-						sacs.add(((RenamableSourceAndConverter) unwrapped
-							.getUserObject()).sac);
+						sources.add(((RenamableSource) unwrapped
+							.getUserObject()).source);
 					}
 					else {
-						for (SourceAndConverter<?> sac : ui
+						for (SourceAndConverter<?> source : ui
 							.getSourceAndConvertersFromChildrenOf(unwrapped))
 						{
 							// noinspection UseBulkOperation
-							sacs.add(sac);
+							sources.add(source);
 						}
 					}
 				}
 
-				importSourcesAndConverters(support, sacs);
+				importSources(support, sources);
 
 				return true;
 			}

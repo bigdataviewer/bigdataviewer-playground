@@ -75,8 +75,8 @@ public class OrthoViewDemo {
 
         BdvHandle[] bdvhs = new BdvHandle[]{bdvHandleX,bdvHandleY,bdvHandleZ};
 
-        // Get a handle on the sacs
-        final List< SourceAndConverter<?> > sacs = sourceService.getSourceAndConverters();
+        // Get a handle on the sources
+        final List< SourceAndConverter<?> > sources = sourceService.getSourceAndConverters();
 
         ViewerOrthoSyncStarter syncstart = new ViewerOrthoSyncStarter(
                 new ViewerAdapter(bdvHandleX),
@@ -89,10 +89,10 @@ public class OrthoViewDemo {
 
         for (BdvHandle bdvHandle:bdvhs) {
 
-            sacs.forEach( sac -> {
-                bdvDisplayService.show(bdvHandle, sac);
-                new ViewerTransformAdjuster(bdvHandle, sac).run();
-                new BrightnessAutoAdjuster<>(sac, 0).run();
+            sources.forEach( source -> {
+                bdvDisplayService.show(bdvHandle, source);
+                new ViewerTransformAdjuster(bdvHandle, source).run();
+                new BrightnessAutoAdjuster<>(source, 0).run();
             });
 
             new ClickBehaviourInstaller(bdvHandle, (x,y) -> {

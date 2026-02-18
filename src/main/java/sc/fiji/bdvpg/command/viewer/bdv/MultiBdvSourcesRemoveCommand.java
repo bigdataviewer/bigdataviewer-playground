@@ -56,7 +56,7 @@ public class MultiBdvSourcesRemoveCommand implements
 
 	@Parameter(label = "Select Source(s)",
 			description = "The source(s) to remove from all selected BDV windows")
-	SourceAndConverter<?>[] sacs;
+	SourceAndConverter<?>[] sources;
 
 	@Parameter
 	SourceAndConverterBdvDisplayService bdvDisplayService;
@@ -64,7 +64,7 @@ public class MultiBdvSourcesRemoveCommand implements
 	@Override
 	public void run() {
 		for (BdvHandle bdvh : bdvhs) {
-			bdvDisplayService.remove(bdvh, sacs);
+			bdvDisplayService.remove(bdvh, sources);
 		}
 	}
 }

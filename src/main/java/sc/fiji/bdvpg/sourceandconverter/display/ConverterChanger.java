@@ -40,25 +40,25 @@ public class ConverterChanger<T> implements Runnable,
 	Function<SourceAndConverter<T>, SourceAndConverter<T>>
 {
 
-	final SourceAndConverter<T> sac_in;
+	final SourceAndConverter<T> source;
 
 	final Converter<T, ARGBType> nonVolatileConverter;
 
 	final Converter<? extends Volatile<T>, ARGBType> volatileConverter;
 
-	public ConverterChanger(SourceAndConverter<T> sac,
+	public ConverterChanger(SourceAndConverter<T> source,
 		Converter<T, ARGBType> cvtnv,
 		Converter<? extends Volatile<T>, ARGBType> cvt)
 	{
-		sac_in = sac;
+		this.source = source;
 		nonVolatileConverter = cvtnv;
 		volatileConverter = cvt;
 	}
 
-	public ConverterChanger(SourceAndConverter<T> sac,
+	public ConverterChanger(SourceAndConverter<T> src,
 		Converter<T, ARGBType> cvtnv)
 	{
-		sac_in = sac;
+		source = src;
 		nonVolatileConverter = cvtnv;
 		volatileConverter = (Converter<? extends Volatile<T>, ARGBType>) cvtnv;
 	}
@@ -69,7 +69,7 @@ public class ConverterChanger<T> implements Runnable,
 	}
 
 	public SourceAndConverter<T> get() {
-		return apply(sac_in);
+		return apply(source);
 	}
 
 	@Override

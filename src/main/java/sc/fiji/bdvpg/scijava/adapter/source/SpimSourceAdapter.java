@@ -51,11 +51,11 @@ import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_INFO;
 @Plugin(type = ISourceAdapter.class)
 public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 
-	SourceAndConverterAdapter sacSerializer;
+	SourceAndConverterAdapter sourceSerializer;
 
 	@Override
-	public void setSacSerializer(SourceAndConverterAdapter sacSerializer) {
-		this.sacSerializer = sacSerializer;
+	public void setSourceSerializer(SourceAndConverterAdapter sourceSerializer) {
+		this.sourceSerializer = sourceSerializer;
 	}
 
 	@Override
@@ -64,17 +64,17 @@ public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 	}
 
 	@Override
-	public JsonElement serialize(SourceAndConverter sac, Type type,
+	public JsonElement serialize(SourceAndConverter source, Type type,
 		JsonSerializationContext jsonSerializationContext)
 	{
 		JsonObject obj = new JsonObject();
 
 		SourceAndConverterService.SpimDataInfo sdi =
 			(SourceAndConverterService.SpimDataInfo) SourceAndConverterServices
-				.getSourceAndConverterService().getMetadata(sac, SPIM_DATA_INFO);
+				.getSourceAndConverterService().getMetadata(source, SPIM_DATA_INFO);
 
 		if (sdi == null) {
-			System.err.println("Spim Source " + sac.getSpimSource().getName() +
+			System.err.println("Spim Source " + source.getSpimSource().getName() +
 				"  has no associated spimdata. Deserialization will fail.");
 		}
 		else {
@@ -98,22 +98,22 @@ public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 		}
 		else {
 			int setupId = obj.getAsJsonPrimitive("viewsetup").getAsInt();
-			final ISourceAndConverterService sacservice = SourceAndConverterServices
+			final ISourceAndConverterService sourceService = SourceAndConverterServices
 				.getSourceAndConverterService();
-			Optional<SourceAndConverter<?>> futureSac = sacservice
-				.getSourceAndConverters().stream().filter(sac -> sacservice
-					.containsMetadata(sac, SPIM_DATA_INFO)).filter(sac -> {
+			Optional<SourceAndConverter<?>> futureSource = sourceService
+				.getSourceAndConverters().stream().filter(source -> sourceService
+					.containsMetadata(source, SPIM_DATA_INFO)).filter(source -> {
 						SourceAndConverterService.SpimDataInfo sdi =
-							(SourceAndConverterService.SpimDataInfo) sacservice.getMetadata(
-								sac, SPIM_DATA_INFO);
+							(SourceAndConverterService.SpimDataInfo) sourceService.getMetadata(
+								source, SPIM_DATA_INFO);
 						return sdi.asd.equals(asd) && sdi.setupId == setupId;
 					}).findFirst();
-			if (futureSac.isPresent()) {
-				return futureSac.get();
+			if (futureSource.isPresent()) {
+				return futureSource.get();
 			}
 			else {
 				System.err.println(
-					"Couldn't deserialize spim source from json element " + jsonElement
+					"Couldn't deserialize spim source from JSON element " + jsonElement
 						.getAsString());
 				return null;
 			}

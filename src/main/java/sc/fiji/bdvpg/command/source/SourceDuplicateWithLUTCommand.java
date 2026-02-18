@@ -99,9 +99,9 @@ public class SourceDuplicateWithLUTCommand extends DynamicCommand implements
 		}
 	}
 
-	private <T> SourceAndConverter<T> convert(SourceAndConverter<T> sac) {
+	private <T> SourceAndConverter<T> convert(SourceAndConverter<T> source) {
 		Converter<T, ARGBType> bdvLut = cs.convert(table, Converter.class);
-		ConverterChanger<T> cc = new ConverterChanger<>(sac, bdvLut);
+		ConverterChanger<T> cc = new ConverterChanger<>(source, bdvLut);
 		cc.run();
 		return cc.get();
 	}

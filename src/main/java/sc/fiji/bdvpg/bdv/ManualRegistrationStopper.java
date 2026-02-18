@@ -107,35 +107,35 @@ public class ManualRegistrationStopper implements Runnable {
 
 		// Removes temporary TransformedSourceAndConverter - a two-step process in
 		// order to improve performance
-		List<SourceAndConverter<?>> tempSacs = starter
+		List<SourceAndConverter<?>> tempSources = starter
 			.getTransformedSourceAndConverterDisplayed();
 
 		SourceAndConverterServices.getBdvDisplayService().remove(starter.bdvHandle,
-			tempSacs.toArray(new SourceAndConverter[0]));
+			tempSources.toArray(new SourceAndConverter[0]));
 
-		for (SourceAndConverter<?> sac : tempSacs) {
-			SourceAndConverterServices.getSourceAndConverterService().remove(sac);
+		for (SourceAndConverter<?> source : tempSources) {
+			SourceAndConverterServices.getSourceAndConverterService().remove(source);
 		}
 
-		int nSources = starter.getOriginalSourceAndConverter().length;
+		int nSources = starter.getOriginalSources().length;
 		transformedSources = new SourceAndConverter[nSources];
 
-		List<SourceAndConverter<?>> transformedSacsToDisplay = new ArrayList<>();
+		List<SourceAndConverter<?>> transformedSourcesToDisplay = new ArrayList<>();
 		// Applies the policy
 		for (int i = 0; i < nSources; i++) {
-			SourceAndConverter<?> sac = this.starter
-				.getOriginalSourceAndConverter()[i];
+			SourceAndConverter<?> source = this.starter
+				.getOriginalSources()[i];
 
 			transformedSources[i] = registrationPolicy.apply(transform3D,
-				new SourceAndConverterAndTimeRange<>(sac, minTimepoint, maxTimepoint));
-			if (starter.getOriginallyDisplayedSourceAndConverter().contains(sac)) {
-				transformedSacsToDisplay.add(transformedSources[i]);
+				new SourceAndConverterAndTimeRange<>(source, minTimepoint, maxTimepoint));
+			if (starter.getOriginallyDisplayedSources().contains(source)) {
+				transformedSourcesToDisplay.add(transformedSources[i]);
 			}
 		}
 
 		// Calls display ( array for better performance )
 		SourceAndConverterServices.getBdvDisplayService().show(starter
-			.getBdvHandle(), transformedSacsToDisplay.toArray(
+			.getBdvHandle(), transformedSourcesToDisplay.toArray(
 				new SourceAndConverter<?>[0]));
 
 	}

@@ -70,7 +70,7 @@ public class BigWarpDemo {
 
         AbstractSpimData<?> spimData = importer.get();
 
-        SourceAndConverter<?> sacFixed = sourceService
+        SourceAndConverter<?> sourceFixed = sourceService
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
 
@@ -78,7 +78,7 @@ public class BigWarpDemo {
 
         spimData = importer.get();
 
-        SourceAndConverter<?> sacMoving = sourceService
+        SourceAndConverter<?> sourceMoving = sourceService
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
 
@@ -87,22 +87,22 @@ public class BigWarpDemo {
         BdvHandle bdvHandle = displayService.getActiveBdv();
 
         // Show the SourceAndConverter
-        displayService.show(bdvHandle, sacFixed);
+        displayService.show(bdvHandle, sourceFixed);
 
-        sourceService.getConverterSetup(sacMoving)
+        sourceService.getConverterSetup(sourceMoving)
                 .setColor(new ARGBType(ARGBType.rgba(0, 255, 255,0)));
 
-        new BrightnessAutoAdjuster<>(sacFixed, 0).run();
+        new BrightnessAutoAdjuster<>(sourceFixed, 0).run();
 
-        new BrightnessAutoAdjuster<>(sacMoving, 0).run();
+        new BrightnessAutoAdjuster<>(sourceMoving, 0).run();
 
-        new ViewerTransformAdjuster(bdvHandle, sacFixed).run();
+        new ViewerTransformAdjuster(bdvHandle, sourceFixed).run();
 
         List<SourceAndConverter<?>> movingSources = new ArrayList<>();
-        movingSources.add(sacMoving);
+        movingSources.add(sourceMoving);
 
         List<SourceAndConverter<?>> fixedSources = new ArrayList<>();
-        fixedSources.add(sacFixed);
+        fixedSources.add(sourceFixed);
 
         List<ConverterSetup> converterSetups = movingSources.stream().map(sourceService::getConverterSetup).collect(Collectors.toList());
         converterSetups.addAll(fixedSources.stream().map(sourceService::getConverterSetup).collect(Collectors.toList()));
@@ -115,8 +115,8 @@ public class BigWarpDemo {
         bwl.getBigWarp().toggleMovingImageDisplay();
         bwl.getBigWarp().matchActiveViewerPanelToOther();
 
-        for (SourceAndConverter<?> sac : bwl.getWarpedSources()) {
-            sourceService.register(sac);
+        for (SourceAndConverter<?> source : bwl.getWarpedSources()) {
+            sourceService.register(source);
         }
     }
 
@@ -134,7 +134,7 @@ public class BigWarpDemo {
 
         AbstractSpimData<?> spimData = importer.get();
 
-        SourceAndConverter<?> sacFixed = sourceService
+        SourceAndConverter<?> sourceFixed = sourceService
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
 
@@ -143,7 +143,7 @@ public class BigWarpDemo {
 
         spimData = importer.get();
 
-        SourceAndConverter<?> sacMoving = sourceService
+        SourceAndConverter<?> sourceMoving = sourceService
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
 
@@ -152,22 +152,22 @@ public class BigWarpDemo {
         BdvHandle bdvHandle = displayService.getActiveBdv();
 
         // Show the SourceAndConverter
-        displayService.show(bdvHandle, sacFixed);
+        displayService.show(bdvHandle, sourceFixed);
 
-        sourceService.getConverterSetup(sacMoving)
+        sourceService.getConverterSetup(sourceMoving)
                 .setColor(new ARGBType(ARGBType.rgba(0, 255, 255,0)));
 
-        new BrightnessAutoAdjuster<>(sacFixed, 0).run();
+        new BrightnessAutoAdjuster<>(sourceFixed, 0).run();
 
-        new BrightnessAutoAdjuster<>(sacMoving, 0).run();
+        new BrightnessAutoAdjuster<>(sourceMoving, 0).run();
 
-        new ViewerTransformAdjuster(bdvHandle, sacFixed).run();
+        new ViewerTransformAdjuster(bdvHandle, sourceFixed).run();
 
         List<SourceAndConverter<?>> movingSources = new ArrayList<>();
-        movingSources.add(sacMoving);
+        movingSources.add(sourceMoving);
 
         List<SourceAndConverter<?>> fixedSources = new ArrayList<>();
-        fixedSources.add(sacFixed);
+        fixedSources.add(sourceFixed);
 
         List<ConverterSetup> converterSetups = movingSources.stream().map(sourceService::getConverterSetup).collect(Collectors.toList());
         converterSetups.addAll(fixedSources.stream().map(sourceService::getConverterSetup).collect(Collectors.toList()));
@@ -180,8 +180,8 @@ public class BigWarpDemo {
         bwl.getBigWarp().toggleMovingImageDisplay();
         bwl.getBigWarp().matchActiveViewerPanelToOther();
 
-        for (SourceAndConverter<?> sac : bwl.getWarpedSources()) {
-            sourceService.register(sac);
+        for (SourceAndConverter<?> source : bwl.getWarpedSources()) {
+            sourceService.register(source);
         }
 
         BdvHandle bdvh = displayService.getNewBdv();

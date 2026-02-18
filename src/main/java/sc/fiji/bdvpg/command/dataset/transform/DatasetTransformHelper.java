@@ -164,11 +164,11 @@ public class DatasetTransformHelper {
 	 * Forces a BDV source to reload its transform from SpimData.
 	 * Uses reflection to call the private loadTimepoint method.
 	 *
-	 * @param sac the source to reload
+	 * @param source the source to reload
 	 * @param timepoint the timepoint to reload
 	 */
-	public static void reloadSourceTransform(SourceAndConverter<?> sac, int timepoint) {
-		if (!(sac.getSpimSource() instanceof AbstractSpimSource)) {
+	public static void reloadSourceTransform(SourceAndConverter<?> source, int timepoint) {
+		if (!(source.getSpimSource() instanceof AbstractSpimSource)) {
 			return;
 		}
 
@@ -177,15 +177,15 @@ public class DatasetTransformHelper {
 				.getDeclaredMethod("loadTimepoint", int.class);
 			loadTimepoint.setAccessible(true);
 
-			AbstractSpimSource<?> spimSource = (AbstractSpimSource<?>) sac.getSpimSource();
+			AbstractSpimSource<?> spimSource = (AbstractSpimSource<?>) source.getSpimSource();
 			loadTimepoint.invoke(spimSource, timepoint);
 
 			// Also reload volatile source if present
-			if (sac.asVolatile() != null &&
-				sac.asVolatile().getSpimSource() instanceof AbstractSpimSource)
+			if (source.asVolatile() != null &&
+				source.asVolatile().getSpimSource() instanceof AbstractSpimSource)
 			{
 				AbstractSpimSource<?> volatileSource =
-					(AbstractSpimSource<?>) sac.asVolatile().getSpimSource();
+					(AbstractSpimSource<?>) source.asVolatile().getSpimSource();
 				loadTimepoint.invoke(volatileSource, timepoint);
 			}
 		}

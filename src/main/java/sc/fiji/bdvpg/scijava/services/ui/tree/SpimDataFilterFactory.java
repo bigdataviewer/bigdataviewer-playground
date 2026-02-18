@@ -96,7 +96,7 @@ public class SpimDataFilterFactory {
         SpimDataFilterNode spimDataNode = new SpimDataFilterNode(name, spimData, sourceAndConverterService);
 
         // Add "All Sources" node
-        FilterNode allSourcesNode = new FilterNode("All Sources", sac -> true, true);
+        FilterNode allSourcesNode = new FilterNode("All Sources", source -> true, true);
         spimDataNode.addChild(allSourcesNode);
 
         // Add entity-based filter nodes
@@ -128,7 +128,7 @@ public class SpimDataFilterFactory {
         // Create class-level filter nodes
         Map<Class<?>, FilterNode> classNodes = new HashMap<>();
         for (Class<?> entityClass : entitiesByClass.keySet()) {
-            FilterNode classNode = new FilterNode(entityClass.getSimpleName(), sac -> true, false);
+            FilterNode classNode = new FilterNode(entityClass.getSimpleName(), source -> true, false);
             classNodes.put(entityClass, classNode);
         }
 
@@ -164,7 +164,7 @@ public class SpimDataFilterFactory {
                 EntityFilterNode entityNode = new EntityFilterNode(entityName, entity, sourceAndConverterService);
 
                 // Add "All Sources" child to entity node
-                FilterNode allSourcesNode = new FilterNode("All Sources", sac -> true, true);
+                FilterNode allSourcesNode = new FilterNode("All Sources", source -> true, true);
                 entityNode.addChild(allSourcesNode);
 
                 // Add to class node

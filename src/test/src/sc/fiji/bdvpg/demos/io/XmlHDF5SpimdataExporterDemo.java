@@ -57,16 +57,16 @@ public class XmlHDF5SpimdataExporterDemo {
 
         // Arrange
         // creates a Voronoi SourceAndConverter
-        SourceAndConverter<?> sac = new VoronoiSourceGetter(new long[]{512,512,1},256,true).get();
+        SourceAndConverter<?> source = new VoronoiSourceGetter(new long[]{512,512,1},256,true).get();
         // Puts it into a List
-        List<SourceAndConverter<?>> sacs = new ArrayList<>();
-        sacs.add(sac);
+        List<SourceAndConverter<?>> sources = new ArrayList<>();
+        sources.add(source);
         // Makes temp file which will be deleted at the end of the test execution
         File fileXmlGen = folder.newFile("testVoronoi.xml");
         File fileH5Gen = folder.newFile("testVoronoi.h5");
 
         // Act
-        XmlHDF5SpimdataExporter exporter = new XmlHDF5SpimdataExporter(sacs,"Channel", 1,0,1,4,64,64,1,512, fileXmlGen);
+        XmlHDF5SpimdataExporter exporter = new XmlHDF5SpimdataExporter(sources,"Channel", 1,0,1,4,64,64,1,512, fileXmlGen);
         exporter.run();
 
         // Assert

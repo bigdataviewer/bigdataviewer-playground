@@ -48,7 +48,7 @@ import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
 public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle> {
 
 	@Parameter
-	SourceAndConverterBdvDisplayService sacDisplayService;
+	SourceAndConverterBdvDisplayService sourceDisplayService;
 
 	public ActiveBdvPreprocessor() {
 		super(BdvHandle.class);
@@ -59,7 +59,7 @@ public class ActiveBdvPreprocessor extends SingleInputPreprocessor<BdvHandle> {
 	@Override
 	public BdvHandle getValue() {
 
-		return sacDisplayService.getActiveBdv();
+		return sourceDisplayService.getActiveBdv();
 
 	}
 

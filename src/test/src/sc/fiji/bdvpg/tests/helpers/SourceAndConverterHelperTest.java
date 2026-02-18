@@ -526,10 +526,10 @@ public class SourceAndConverterHelperTest {
         AffineTransform3D transform = new AffineTransform3D();
         transform.identity();
         EmptySource source = createTestSource(100, 100, 50, "TestSource", transform);
-        SourceAndConverter<UnsignedShortType> sac = new SourceAndConverter<>(source,
+        SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceAndConverterHelper.createConverterRealType(new UnsignedShortType()));
 
-        RealPoint center = SourceAndConverterHelper.getSourceAndConverterCenterPoint(sac, 0);
+        RealPoint center = SourceAndConverterHelper.getSourceAndConverterCenterPoint(src, 0);
 
         // Center of 100x100x50 volume at identity transform: (49.5, 49.5, 24.5)
         assertEquals(49.5, center.getDoublePosition(0), EPSILON);
@@ -543,10 +543,10 @@ public class SourceAndConverterHelperTest {
         transform.identity();
         transform.translate(100.0, 200.0, 300.0);
         EmptySource source = createTestSource(100, 100, 50, "TestSource", transform);
-        SourceAndConverter<UnsignedShortType> sac = new SourceAndConverter<>(source,
+        SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceAndConverterHelper.createConverterRealType(new UnsignedShortType()));
 
-        RealPoint center = SourceAndConverterHelper.getSourceAndConverterCenterPoint(sac, 0);
+        RealPoint center = SourceAndConverterHelper.getSourceAndConverterCenterPoint(src, 0);
 
         // Center should be translated
         assertEquals(149.5, center.getDoublePosition(0), EPSILON);
@@ -560,10 +560,10 @@ public class SourceAndConverterHelperTest {
         transform.identity();
         transform.scale(2.0);
         EmptySource source = createTestSource(100, 100, 50, "TestSource", transform);
-        SourceAndConverter<UnsignedShortType> sac = new SourceAndConverter<>(source,
+        SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceAndConverterHelper.createConverterRealType(new UnsignedShortType()));
 
-        RealPoint center = SourceAndConverterHelper.getSourceAndConverterCenterPoint(sac, 0);
+        RealPoint center = SourceAndConverterHelper.getSourceAndConverterCenterPoint(src, 0);
 
         // Center in pixel space is (49.5, 49.5, 24.5), scaled by 2
         assertEquals(99.0, center.getDoublePosition(0), EPSILON);
@@ -599,11 +599,11 @@ public class SourceAndConverterHelperTest {
 
     @Test
     public void testRayIntersect_nullSource() {
-        SourceAndConverter<?> sac = new SourceAndConverter<>(null, null);
+        SourceAndConverter<?> source = new SourceAndConverter<>(null, null);
         RealPoint origin = new RealPoint(0.0, 0.0, 0.0);
         RealPoint direction = new RealPoint(0.0, 0.0, 1.0);
 
-        List<Double> intersections = SourceAndConverterHelper.rayIntersect(sac, 0, origin, direction);
+        List<Double> intersections = SourceAndConverterHelper.rayIntersect(source, 0, origin, direction);
 
         assertTrue("Null source should return empty list", intersections.isEmpty());
     }
@@ -614,13 +614,13 @@ public class SourceAndConverterHelperTest {
         AffineTransform3D transform = new AffineTransform3D();
         transform.identity();
         EmptySource source = createTestSource(100, 100, 50, "TestSource", transform);
-        SourceAndConverter<UnsignedShortType> sac = new SourceAndConverter<>(source,
+        SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceAndConverterHelper.createConverterRealType(new UnsignedShortType()));
 
         RealPoint origin = new RealPoint(50.0, 50.0, -10.0);
         RealPoint direction = new RealPoint(0.0, 0.0, 1.0);
 
-        List<Double> intersections = SourceAndConverterHelper.rayIntersect(sac, 0, origin, direction);
+        List<Double> intersections = SourceAndConverterHelper.rayIntersect(src, 0, origin, direction);
 
         assertNotNull("Should return intersection list", intersections);
         assertEquals("Should have 50 Z planes", 50, intersections.size());
@@ -632,13 +632,13 @@ public class SourceAndConverterHelperTest {
         AffineTransform3D transform = new AffineTransform3D();
         transform.identity();
         EmptySource source = createTestSource(100, 100, 50, "TestSource", transform);
-        SourceAndConverter<UnsignedShortType> sac = new SourceAndConverter<>(source,
+        SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceAndConverterHelper.createConverterRealType(new UnsignedShortType()));
 
         RealPoint origin = new RealPoint(-10.0, 50.0, 25.0);
         RealPoint direction = new RealPoint(1.0, 0.0, 0.0);
 
-        List<Double> intersections = SourceAndConverterHelper.rayIntersect(sac, 0, origin, direction);
+        List<Double> intersections = SourceAndConverterHelper.rayIntersect(src, 0, origin, direction);
 
         assertNotNull("Should return intersection list", intersections);
         assertEquals("Should have 100 X planes", 100, intersections.size());
@@ -650,14 +650,14 @@ public class SourceAndConverterHelperTest {
         AffineTransform3D transform = new AffineTransform3D();
         transform.identity();
         EmptySource source = createTestSource(100, 100, 100, "CubicSource", transform);
-        SourceAndConverter<UnsignedShortType> sac = new SourceAndConverter<>(source,
+        SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceAndConverterHelper.createConverterRealType(new UnsignedShortType()));
 
         RealPoint origin = new RealPoint(-10.0, -10.0, -10.0);
         RealPoint direction = new RealPoint(1.0, 1.0, 1.0);
         SourceAndConverterHelper.normalize3(direction);
 
-        List<Double> intersections = SourceAndConverterHelper.rayIntersect(sac, 0, origin, direction);
+        List<Double> intersections = SourceAndConverterHelper.rayIntersect(src, 0, origin, direction);
 
         assertNotNull("Should return intersection list", intersections);
         assertFalse("Should have intersections", intersections.isEmpty());
@@ -669,14 +669,14 @@ public class SourceAndConverterHelperTest {
         AffineTransform3D transform = new AffineTransform3D();
         transform.identity();
         EmptySource source = createTestSource(100, 100, 50, "TestSource", transform);
-        SourceAndConverter<UnsignedShortType> sac = new SourceAndConverter<>(source,
+        SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceAndConverterHelper.createConverterRealType(new UnsignedShortType()));
 
         // Ray parallel to Z axis but starting far outside the XY bounds
         RealPoint origin = new RealPoint(500.0, 500.0, -10.0);
         RealPoint direction = new RealPoint(0.0, 0.0, 1.0);
 
-        List<Double> intersections = SourceAndConverterHelper.rayIntersect(sac, 0, origin, direction);
+        List<Double> intersections = SourceAndConverterHelper.rayIntersect(src, 0, origin, direction);
 
         assertTrue("Should have no intersections when ray misses", intersections.isEmpty());
     }
@@ -688,14 +688,14 @@ public class SourceAndConverterHelperTest {
         transform.identity();
         transform.scale(2.0);
         EmptySource source = createTestSource(100, 100, 50, "ScaledSource", transform);
-        SourceAndConverter<UnsignedShortType> sac = new SourceAndConverter<>(source,
+        SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceAndConverterHelper.createConverterRealType(new UnsignedShortType()));
 
         // Ray along Z starting at center of scaled source (center is at 99, 99, 49)
         RealPoint origin = new RealPoint(100.0, 100.0, -10.0);
         RealPoint direction = new RealPoint(0.0, 0.0, 1.0);
 
-        List<Double> intersections = SourceAndConverterHelper.rayIntersect(sac, 0, origin, direction);
+        List<Double> intersections = SourceAndConverterHelper.rayIntersect(src, 0, origin, direction);
 
         assertNotNull("Should return intersection list", intersections);
         assertEquals("Should have 50 Z planes", 50, intersections.size());
@@ -708,14 +708,14 @@ public class SourceAndConverterHelperTest {
         transform.identity();
         transform.translate(100.0, 100.0, 100.0);
         EmptySource source = createTestSource(50, 50, 50, "TranslatedSource", transform);
-        SourceAndConverter<UnsignedShortType> sac = new SourceAndConverter<>(source,
+        SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceAndConverterHelper.createConverterRealType(new UnsignedShortType()));
 
         // Ray along Z through the translated source center
         RealPoint origin = new RealPoint(125.0, 125.0, 50.0);
         RealPoint direction = new RealPoint(0.0, 0.0, 1.0);
 
-        List<Double> intersections = SourceAndConverterHelper.rayIntersect(sac, 0, origin, direction);
+        List<Double> intersections = SourceAndConverterHelper.rayIntersect(src, 0, origin, direction);
 
         assertNotNull("Should return intersection list", intersections);
         assertEquals("Should have 50 Z planes", 50, intersections.size());
@@ -734,14 +734,14 @@ public class SourceAndConverterHelperTest {
         fixedTransform.translate(50, 50, 0);
         transformedSource.setFixedTransform(fixedTransform);
 
-        SourceAndConverter<UnsignedShortType> sac = new SourceAndConverter<>(transformedSource,
+        SourceAndConverter<UnsignedShortType> source = new SourceAndConverter<>(transformedSource,
             SourceAndConverterHelper.createConverterRealType(new UnsignedShortType()));
 
         // Ray along Z through the transformed source
         RealPoint origin = new RealPoint(100.0, 100.0, -10.0);
         RealPoint direction = new RealPoint(0.0, 0.0, 1.0);
 
-        List<Double> intersections = SourceAndConverterHelper.rayIntersect(sac, 0, origin, direction);
+        List<Double> intersections = SourceAndConverterHelper.rayIntersect(source, 0, origin, direction);
 
         assertNotNull("Should return intersection list", intersections);
         assertEquals("Should have 50 Z planes", 50, intersections.size());
@@ -783,13 +783,13 @@ public class SourceAndConverterHelperTest {
         AffineTransform3D transform = new AffineTransform3D();
         transform.identity();
         EmptySource source = createTestSource(100, 100, 50, "TestSource", transform);
-        SourceAndConverter<UnsignedShortType> sac = new SourceAndConverter<>(source,
+        SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceAndConverterHelper.createConverterRealType(new UnsignedShortType()));
 
         RealPoint position = new RealPoint(50.0, 50.0, 25.0);
 
         boolean inside = SourceAndConverterHelper.isPositionWithinSourceInterval(
-            sac, position, 0, false);
+            src, position, 0, false);
 
         assertTrue("Position should be inside the source interval", inside);
     }
@@ -799,13 +799,13 @@ public class SourceAndConverterHelperTest {
         AffineTransform3D transform = new AffineTransform3D();
         transform.identity();
         EmptySource source = createTestSource(100, 100, 50, "TestSource", transform);
-        SourceAndConverter<UnsignedShortType> sac = new SourceAndConverter<>(source,
+        SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceAndConverterHelper.createConverterRealType(new UnsignedShortType()));
 
         RealPoint position = new RealPoint(150.0, 150.0, 75.0);
 
         boolean inside = SourceAndConverterHelper.isPositionWithinSourceInterval(
-            sac, position, 0, false);
+            src, position, 0, false);
 
         assertFalse("Position should be outside the source interval", inside);
     }
@@ -815,14 +815,14 @@ public class SourceAndConverterHelperTest {
         AffineTransform3D transform = new AffineTransform3D();
         transform.identity();
         EmptySource source = createTestSource(100, 100, 1, "2DSource", transform);
-        SourceAndConverter<UnsignedShortType> sac = new SourceAndConverter<>(source,
+        SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceAndConverterHelper.createConverterRealType(new UnsignedShortType()));
 
         // Position inside XY but with arbitrary Z (should be ignored in 2D mode)
         RealPoint position = new RealPoint(50.0, 50.0, 1000.0);
 
         boolean inside = SourceAndConverterHelper.isPositionWithinSourceInterval(
-            sac, position, 0, true);
+            src, position, 0, true);
 
         assertTrue("Position should be inside when checking 2D only", inside);
     }
@@ -832,14 +832,14 @@ public class SourceAndConverterHelperTest {
         AffineTransform3D transform = new AffineTransform3D();
         transform.identity();
         EmptySource source = createTestSource(100, 100, 50, "TestSource", transform);
-        SourceAndConverter<UnsignedShortType> sac = new SourceAndConverter<>(source,
+        SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceAndConverterHelper.createConverterRealType(new UnsignedShortType()));
 
         // Position at the corner (0, 0, 0)
         RealPoint position = new RealPoint(0.0, 0.0, 0.0);
 
         boolean inside = SourceAndConverterHelper.isPositionWithinSourceInterval(
-            sac, position, 0, false);
+            src, position, 0, false);
 
         assertTrue("Position at origin corner should be inside", inside);
     }
@@ -864,10 +864,10 @@ public class SourceAndConverterHelperTest {
         transform.identity();
         transform.scale(3.0);
         EmptySource source = createTestSource(100, 100, 50, "TestSource", transform);
-        SourceAndConverter<UnsignedShortType> sac = new SourceAndConverter<>(source,
+        SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceAndConverterHelper.createConverterRealType(new UnsignedShortType()));
 
-        double voxelSize = SourceAndConverterHelper.getCharacteristicVoxelSize(sac, 0, 0);
+        double voxelSize = SourceAndConverterHelper.getCharacteristicVoxelSize(src, 0, 0);
 
         assertEquals(3.0, voxelSize, EPSILON);
     }

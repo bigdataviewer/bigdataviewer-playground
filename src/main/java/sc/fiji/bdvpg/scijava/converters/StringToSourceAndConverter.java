@@ -49,14 +49,14 @@ public class StringToSourceAndConverter<I extends String> extends
 {
 
 	@Parameter
-	SourceAndConverterService sacsService;
+	SourceAndConverterService source_service;
 
 	@Override
 	public <T> T convert(Object src, Class<T> dest) {
 		String str = (String) src;
-		TreePath tp = sacsService.getUI().getTreePathFromString(str);
+		TreePath tp = source_service.getUI().getTreePathFromString(str);
 		if (tp != null) {
-			List<SourceAndConverter<?>> potentialSources = sacsService.getUI().getSourceAndConvertersFromTreePath(tp);
+			List<SourceAndConverter<?>> potentialSources = source_service.getUI().getSourceAndConvertersFromTreePath(tp);
 			if (potentialSources.size()!=1) {
 				log().warn("The specified parameters refers no either no source or too many sources");
 				return null;

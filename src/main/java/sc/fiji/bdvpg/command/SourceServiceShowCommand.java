@@ -43,11 +43,11 @@ public class SourceServiceShowCommand implements
 {
 
 	@Parameter
-	SourceAndConverterService sacs;
+	SourceAndConverterService source_service;
 
 	public void run() {
-		if (sacs.getUI() != null) {
-			sacs.getUI().show();
+		if (source_service.getUI() != null) {
+			source_service.getUI().show();
 		}
 		else {
 			System.err.println("Error : no UI available");

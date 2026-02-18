@@ -50,15 +50,15 @@ public class StringToSourceAndConverterArray<I extends String> extends
 {
 
 	@Parameter
-	SourceAndConverterService sacsService;
+	SourceAndConverterService source_service;
 
 	@Override
 	public <T> T convert(Object src, Class<T> dest) {
 		String str = (String) src;
-		TreePath tp = sacsService.getUI().getTreePathFromString(str);
+		TreePath tp = source_service.getUI().getTreePathFromString(str);
 		if (tp != null) {
-			return (T) sacsService.getUI().getSourceAndConvertersFromTreePath(tp)
-				.toArray(new SourceAndConverter[0]);// sacsService.getUI().getSourceAndConvertersFromTreePath(tp).toArray(new
+			return (T) source_service.getUI().getSourceAndConvertersFromTreePath(tp)
+				.toArray(new SourceAndConverter[0]);// source_service.getUI().getSourceAndConvertersFromTreePath(tp).toArray(new
 																						// SourceAndConverter[0]);
 		}
 		else {

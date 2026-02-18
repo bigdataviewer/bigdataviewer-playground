@@ -74,18 +74,18 @@ public class SourceAndConverterInspector {
 	 * Appends all the metadata of a SourceAndConverter into a tree structure
 	 * 
 	 * @param parent node below which the metadata nodes will be added
-	 * @param sac source for which the metadata are fetched
+	 * @param source source for which the metadata are fetched
 	 */
 	public static void appendMetadata(DefaultMutableTreeNode parent,
-		SourceAndConverter<?> sac)
+		SourceAndConverter<?> source)
 	{
 		SourceAndConverterServices.getSourceAndConverterService().getMetadataKeys(
-			sac).forEach(k -> {
+			source).forEach(k -> {
 				DefaultMutableTreeNode nodeMetaKey = new DefaultMutableTreeNode(k);
 				parent.add(nodeMetaKey);
 				DefaultMutableTreeNode nodeMetaValue = new DefaultMutableTreeNode(
 					SourceAndConverterServices.getSourceAndConverterService().getMetadata(
-						sac, k));
+						source, k));
 				nodeMetaKey.add(nodeMetaValue);
 			});
 	}
@@ -97,35 +97,35 @@ public class SourceAndConverterInspector {
 	 * {@link TransformedSource} - ResampledSource {@link ResampledSource}
 	 *
 	 * @param parent parent node
-	 * @param sac source
+	 * @param source source
 	 * @param registerIntermediateSources if you want the intermediate sources
 	 *          registered in the source and converter service
 	 * @param sourceAndConverterService source service
-	 * @return the set of sources that were necessary to build the sac (including
+	 * @return the set of sources that were necessary to build the source (including
 	 *         itself)
 	 */
 	public static Set<SourceAndConverter<?>> appendInspectorResult(
-		DefaultMutableTreeNode parent, SourceAndConverter<?> sac,
+		DefaultMutableTreeNode parent, SourceAndConverter<?> source,
 		ISourceAndConverterService sourceAndConverterService,
 		boolean registerIntermediateSources)
 	{
 		Set<SourceAndConverter<?>> subSources = new HashSet<>();
-		subSources.add(sac);
+		subSources.add(source);
 
-		if (sac.getSpimSource() instanceof TransformedSource) {
+		if (source.getSpimSource() instanceof TransformedSource) {
 			DefaultMutableTreeNode nodeTransformedSource = new DefaultMutableTreeNode(
 				"Transformed Source");
 			parent.add(nodeTransformedSource);
-			TransformedSource<?> source = (TransformedSource<?>) sac.getSpimSource();
+			TransformedSource<?> transformedSource = (TransformedSource<?>) source.getSpimSource();
 
-			if (!sourceAndConverterService.getSourceAndConvertersFromSource(source
+			if (!sourceAndConverterService.getSourceAndConvertersFromSource(transformedSource
                     .getWrappedSource()).isEmpty())
 			{
 				// at least a SourceAndConverter already exists for this source
-				sourceAndConverterService.getSourceAndConvertersFromSource(source
+				sourceAndConverterService.getSourceAndConvertersFromSource(transformedSource
 					.getWrappedSource()).forEach((src) -> {
 						DefaultMutableTreeNode wrappedSourceNode =
-							new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
+							new DefaultMutableTreeNode(new RenamableSource(src));
 						nodeTransformedSource.add(wrappedSourceNode);
 						subSources.addAll(appendInspectorResult(wrappedSourceNode, src,
 							sourceAndConverterService, registerIntermediateSources));
@@ -134,12 +134,12 @@ public class SourceAndConverterInspector {
 			else {
 				// no source and converter exist for this source : creates it
 				SourceAndConverter<?> src = SourceAndConverterHelper
-					.createSourceAndConverter(source.getWrappedSource());
+					.createSourceAndConverter(transformedSource.getWrappedSource());
 				if (registerIntermediateSources) {
 					sourceAndConverterService.register(src);
 				}
 				DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(
-					new RenamableSourceAndConverter(src));
+					new RenamableSource(src));
 				nodeTransformedSource.add(wrappedSourceNode);
 				subSources.addAll(appendInspectorResult(wrappedSourceNode, src,
 					sourceAndConverterService, registerIntermediateSources));
@@ -151,33 +151,33 @@ public class SourceAndConverterInspector {
 
 					public AffineTransform3D get() {
 						AffineTransform3D at3D = new AffineTransform3D();
-						source.getFixedTransform(at3D);
+						transformedSource.getFixedTransform(at3D);
 						return at3D;
 					}
 
 					public String toString() {
-						return "AffineTransform[" + source.getName() + "]";
+						return "AffineTransform[" + transformedSource.getName() + "]";
 					}
 				});
 
 			nodeTransformedSource.add(nodeAffineTransformGetter);
-			appendMetadata(nodeTransformedSource, sac);
+			appendMetadata(nodeTransformedSource, source);
 		}
 
-		else if (sac.getSpimSource() instanceof WarpedSource) {
+		else if (source.getSpimSource() instanceof WarpedSource) {
 			DefaultMutableTreeNode nodeWarpedSource = new DefaultMutableTreeNode(
 				"Warped Source");
 			parent.add(nodeWarpedSource);
-			WarpedSource<?> source = (WarpedSource<?>) sac.getSpimSource();
+			WarpedSource<?> warpedSource = (WarpedSource<?>) source.getSpimSource();
 
-			if (!sourceAndConverterService.getSourceAndConvertersFromSource(source
+			if (!sourceAndConverterService.getSourceAndConvertersFromSource(warpedSource
                     .getWrappedSource()).isEmpty())
 			{
 				// at least a SourceAndConverter already exists for this source
-				sourceAndConverterService.getSourceAndConvertersFromSource(source
+				sourceAndConverterService.getSourceAndConvertersFromSource(warpedSource
 					.getWrappedSource()).forEach((src) -> {
 						DefaultMutableTreeNode wrappedSourceNode =
-							new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
+							new DefaultMutableTreeNode(new RenamableSource(src));
 						nodeWarpedSource.add(wrappedSourceNode);
 						subSources.addAll(appendInspectorResult(wrappedSourceNode, src,
 							sourceAndConverterService, registerIntermediateSources));
@@ -186,12 +186,12 @@ public class SourceAndConverterInspector {
 			else {
 				// no source and converter exist for this source : creates it
 				SourceAndConverter<?> src = SourceAndConverterHelper
-					.createSourceAndConverter(source.getWrappedSource());
+					.createSourceAndConverter(warpedSource.getWrappedSource());
 				if (registerIntermediateSources) {
 					sourceAndConverterService.register(src);
 				}
 				DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(
-					new RenamableSourceAndConverter(src));
+					new RenamableSource(src));
 				nodeWarpedSource.add(wrappedSourceNode);
 				subSources.addAll(appendInspectorResult(wrappedSourceNode, src,
 					sourceAndConverterService, registerIntermediateSources));
@@ -201,34 +201,34 @@ public class SourceAndConverterInspector {
 				{
 
 					public RealTransform get() {
-						return source.getTransform();
+						return warpedSource.getTransform();
 					}
 
 					public String toString() {
-						return "RealTransform[" + source.getName() + "]";
+						return "RealTransform[" + warpedSource.getName() + "]";
 					}
 				});
 			nodeWarpedSource.add(nodeRealTransformGetter);
-			appendMetadata(nodeWarpedSource, sac);
+			appendMetadata(nodeWarpedSource, source);
 		}
 
-		else if (sac.getSpimSource() instanceof ResampledSource) {
+		else if (source.getSpimSource() instanceof ResampledSource) {
 			DefaultMutableTreeNode nodeResampledSource = new DefaultMutableTreeNode(
 				"Resampled Source");
 			parent.add(nodeResampledSource);
-			ResampledSource<?> source = (ResampledSource<?>) sac.getSpimSource();
+			ResampledSource<?> resampledSource = (ResampledSource<?>) source.getSpimSource();
 
 			DefaultMutableTreeNode nodeOrigin = new DefaultMutableTreeNode("Origin");
 			nodeResampledSource.add(nodeOrigin);
 
-			if (!sourceAndConverterService.getSourceAndConvertersFromSource(source
+			if (!sourceAndConverterService.getSourceAndConvertersFromSource(resampledSource
                     .getOriginalSource()).isEmpty())
 			{
 				// at least a SourceAndConverter already exists for this source
-				sourceAndConverterService.getSourceAndConvertersFromSource(source
+				sourceAndConverterService.getSourceAndConvertersFromSource(resampledSource
 					.getOriginalSource()).forEach((src) -> {
 						DefaultMutableTreeNode wrappedSourceNode =
-							new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
+							new DefaultMutableTreeNode(new RenamableSource(src));
 						nodeOrigin.add(wrappedSourceNode);
 						subSources.addAll(appendInspectorResult(wrappedSourceNode, src,
 							sourceAndConverterService, registerIntermediateSources));
@@ -237,12 +237,12 @@ public class SourceAndConverterInspector {
 			else {
 				// no source and converter exist for this source : creates it
 				SourceAndConverter<?> src = SourceAndConverterHelper
-					.createSourceAndConverter(source.getOriginalSource());
+					.createSourceAndConverter(resampledSource.getOriginalSource());
 				if (registerIntermediateSources) {
 					sourceAndConverterService.register(src);
 				}
 				DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(
-					new RenamableSourceAndConverter(src));
+					new RenamableSource(src));
 				nodeOrigin.add(wrappedSourceNode);
 				subSources.addAll(appendInspectorResult(wrappedSourceNode, src,
 					sourceAndConverterService, registerIntermediateSources));
@@ -252,14 +252,14 @@ public class SourceAndConverterInspector {
 				"Sampler Model");
 			nodeResampledSource.add(nodeResampler);
 
-			if (!sourceAndConverterService.getSourceAndConvertersFromSource(source
+			if (!sourceAndConverterService.getSourceAndConvertersFromSource(resampledSource
                     .getModelResamplerSource()).isEmpty())
 			{
 				// at least a SourceAndConverter already exists for this source
-				sourceAndConverterService.getSourceAndConvertersFromSource(source
+				sourceAndConverterService.getSourceAndConvertersFromSource(resampledSource
 					.getModelResamplerSource()).forEach((src) -> {
 						DefaultMutableTreeNode wrappedSourceNode =
-							new DefaultMutableTreeNode(new RenamableSourceAndConverter(src));
+							new DefaultMutableTreeNode(new RenamableSource(src));
 						nodeResampler.add(wrappedSourceNode);
 						subSources.addAll(appendInspectorResult(wrappedSourceNode, src,
 							sourceAndConverterService, registerIntermediateSources));
@@ -268,12 +268,12 @@ public class SourceAndConverterInspector {
 			else {
 				// no source and converter exist for this source : creates it
 				SourceAndConverter<?> src = SourceAndConverterHelper
-					.createSourceAndConverter(source.getModelResamplerSource());
+					.createSourceAndConverter(resampledSource.getModelResamplerSource());
 				if (registerIntermediateSources) {
 					sourceAndConverterService.register(src);
 				}
 				DefaultMutableTreeNode wrappedSourceNode = new DefaultMutableTreeNode(
-					new RenamableSourceAndConverter(src));
+					new RenamableSource(src));
 				nodeResampler.add(wrappedSourceNode);
 				subSources.addAll(appendInspectorResult(wrappedSourceNode, src,
 					sourceAndConverterService, registerIntermediateSources));
@@ -291,7 +291,7 @@ public class SourceAndConverterInspector {
 
 				// Get cache stats for all timepoints
 				AbstractGlobalCache.CacheStats allStats = globalCache.getCacheStats(
-					source, -1);
+					resampledSource, -1);
 				if (allStats.numberOfCells > 0) {
 					cacheNode.add(new DefaultMutableTreeNode("All timepoints: " +
 						allStats.numberOfCells + " cells, " + allStats.getSizeInMB() +
@@ -299,10 +299,10 @@ public class SourceAndConverterInspector {
 
 					// Also show per-timepoint breakdown if there are not too many
 					// timepoints
-					int numTimepoints = SourceAndConverterHelper.getMaxTimepoint(source)+1;
+					int numTimepoints = SourceAndConverterHelper.getMaxTimepoint(resampledSource)+1;
                     for (int t = 0; t < numTimepoints; t++) {
                         AbstractGlobalCache.CacheStats tpStats = globalCache
-                            .getCacheStats(source, t);
+                            .getCacheStats(resampledSource, t);
                         if (tpStats.numberOfCells > 0) {
                             cacheNode.add(new DefaultMutableTreeNode("Timepoint " + t +
                                 ": " + tpStats.numberOfCells + " cells, " + tpStats
@@ -319,28 +319,28 @@ public class SourceAndConverterInspector {
 			logger.debug("Could not get cache stats for ResampledSource: " + e
 				.getMessage());
 		}
-			appendMetadata(nodeResampledSource, sac);
+			appendMetadata(nodeResampledSource, source);
 		}
 
-		else if (sac.getSpimSource() instanceof AbstractSpimSource) {
+		else if (source.getSpimSource() instanceof AbstractSpimSource) {
 			DefaultMutableTreeNode nodeSpimSource = new DefaultMutableTreeNode(
 				"Spim Source");
 			parent.add(nodeSpimSource);
 
 			// Add detailed SpimData information if available
-			appendSpimDataInfo(nodeSpimSource, sac, sourceAndConverterService);
+			appendSpimDataInfo(nodeSpimSource, source, sourceAndConverterService);
 
 			// Add general metadata
-			appendMetadata(nodeSpimSource, sac);
+			appendMetadata(nodeSpimSource, source);
 		}
 
-		else if (sac.getSpimSource() instanceof ISourceInspector) {
-			ISourceInspector inspector = (ISourceInspector) (sac.getSpimSource());
+		else if (source.getSpimSource() instanceof ISourceInspector) {
+			ISourceInspector inspector = (ISourceInspector) (source.getSpimSource());
 
 			DefaultMutableTreeNode nodeSource = new DefaultMutableTreeNode(
-					sac.getSpimSource().getClass().getSimpleName());
+					source.getSpimSource().getClass().getSimpleName());
 
-			subSources.addAll(inspector.inspect(nodeSource, sac, sourceAndConverterService, registerIntermediateSources));
+			subSources.addAll(inspector.inspect(nodeSource, source, sourceAndConverterService, registerIntermediateSources));
 
 			parent.add(nodeSource);
 		}
@@ -361,24 +361,24 @@ public class SourceAndConverterInspector {
 	 * {@link TransformedSource} nor on a {@link WarpedSource} because these three
 	 * class are wrappers
 	 *
-	 * @param sac source to check
-	 * @param sacService source and converter service, useful to find the root
+	 * @param source source to check
+	 * @param sourceService source and converter service, useful to find the root
 	 * @return root source and converter object
 	 */
 	public static SourceAndConverter<?> getRootSourceAndConverter(
-		SourceAndConverter<?> sac, SourceAndConverterService sacService)
+		SourceAndConverter<?> source, SourceAndConverterService sourceService)
 	{
-		return getListToRootSourceAndConverter(sac, sacService).getLast();
+		return getListToRootSourceAndConverter(source, sourceService).getLast();
 	}
 
 	/**
-	 * @param sac the source to investigate
+	 * @param source the source to investigate
 	 * @return the root source
 	 */
 	public static SourceAndConverter<?> getRootSourceAndConverter(
-		SourceAndConverter<?> sac)
+		SourceAndConverter<?> source)
 	{
-		return getListToRootSourceAndConverter(sac,
+		return getListToRootSourceAndConverter(source,
 			(SourceAndConverterService) SourceAndConverterServices
 				.getSourceAndConverterService()).getLast();
 	}
@@ -390,16 +390,16 @@ public class SourceAndConverterInspector {
 	public static SourceAndConverter<?> getRootSourceAndConverter(
 		Source<?> source)
 	{
-		SourceAndConverter<?> sac;
-		List<SourceAndConverter<?>> sacs = SourceAndConverterServices
+		SourceAndConverter<?> src;
+		List<SourceAndConverter<?>> sources = SourceAndConverterServices
 			.getSourceAndConverterService().getSourceAndConvertersFromSource(source);
-		if (sacs.isEmpty()) {
-			sac = SourceAndConverterHelper.createSourceAndConverter(source);
+		if (sources.isEmpty()) {
+			src = SourceAndConverterHelper.createSourceAndConverter(source);
 		}
 		else {
-			sac = sacs.get(0);
+			src = sources.get(0);
 		}
-		return getListToRootSourceAndConverter(sac,
+		return getListToRootSourceAndConverter(src,
 			(SourceAndConverterService) SourceAndConverterServices
 				.getSourceAndConverterService()).getLast();
 	}
@@ -407,31 +407,31 @@ public class SourceAndConverterInspector {
 	/**
 	 * TODO
 	 * 
-	 * @param sac TODO
-	 * @param sacService TODO
+	 * @param source TODO
+	 * @param sourceService TODO
 	 * @return TODO
 	 */
 	public static LinkedList<SourceAndConverter<?>>
-		getListToRootSourceAndConverter(SourceAndConverter<?> sac,
-			SourceAndConverterService sacService)
+		getListToRootSourceAndConverter(SourceAndConverter<?> source,
+			SourceAndConverterService sourceService)
 	{
 
 		LinkedList<SourceAndConverter<?>> chain = new LinkedList<>();
 
-		DefaultMutableTreeNode nodeSac = new DefaultMutableTreeNode(
-			new RenamableSourceAndConverter(sac));
+		DefaultMutableTreeNode nodeSource = new DefaultMutableTreeNode(
+			new RenamableSource(source));
 
-		chain.add(sac);
+		chain.add(source);
 
-		appendInspectorResult(nodeSac, sac, sacService, false);
+		appendInspectorResult(nodeSource, source, sourceService, false);
 
-		DefaultMutableTreeNode current = nodeSac;
+		DefaultMutableTreeNode current = nodeSource;
 
 		while (current.getChildCount() > 0) {
 			current = (DefaultMutableTreeNode) current.getFirstChild();
-			if (current.getUserObject() instanceof RenamableSourceAndConverter) {
-				chain.add(((RenamableSourceAndConverter) (current
-					.getUserObject())).sac);
+			if (current.getUserObject() instanceof RenamableSource) {
+				chain.add(((RenamableSource) (current
+					.getUserObject())).source);
 			}
 			else {
 				logger.debug("No renamable source found");
@@ -452,20 +452,20 @@ public class SourceAndConverterInspector {
 	 * This includes ImageLoader info, cache info, attributes, and view registrations.
 	 *
 	 * @param parent parent node to add information to
-	 * @param sac source and converter
+	 * @param source source and converter
 	 * @param sourceAndConverterService service to get metadata
 	 */
 	private static void appendSpimDataInfo(DefaultMutableTreeNode parent,
-		SourceAndConverter<?> sac,
+		SourceAndConverter<?> source,
 		ISourceAndConverterService sourceAndConverterService)
 	{
-		if (!sourceAndConverterService.containsMetadata(sac,
+		if (!sourceAndConverterService.containsMetadata(source,
 			ISourceAndConverterService.SPIM_DATA_INFO))
 		{
 			return;
 		}
 
-		Object metadata = sourceAndConverterService.getMetadata(sac,
+		Object metadata = sourceAndConverterService.getMetadata(source,
 			ISourceAndConverterService.SPIM_DATA_INFO);
 		if (!(metadata instanceof SourceAndConverterService.SpimDataInfo)) {
 			return;
@@ -489,7 +489,7 @@ public class SourceAndConverterInspector {
 		appendAttributesInfo(parent, asd, setupId);
 
 		// Add View Registrations information (transforms)
-		appendViewRegistrationsInfo(parent, asd, setupId, sac);
+		appendViewRegistrationsInfo(parent, asd, setupId, source);
 	}
 
 	/**
@@ -643,14 +643,14 @@ public class SourceAndConverterInspector {
 	/**
 	 * Appends view registration information (transforms) and dimensions for the view setup.
 	 */
-	private static void appendViewRegistrationsInfo(DefaultMutableTreeNode parent, AbstractSpimData<?> asd, int setupId, SourceAndConverter<?> sac) {
+	private static void appendViewRegistrationsInfo(DefaultMutableTreeNode parent, AbstractSpimData<?> asd, int setupId, SourceAndConverter<?> source) {
 
         ViewRegistrations vrs = asd.getViewRegistrations();
         DefaultMutableTreeNode registrationsNode = new DefaultMutableTreeNode("Data");
         parent.add(registrationsNode);
 
         // Get the source to query dimensions
-        Source<?> source = sac.getSpimSource();
+        Source<?> spimSource = source.getSpimSource();
 
         // Get timepoints
         List<TimePoint> timePoints = asd.getSequenceDescription()
@@ -686,15 +686,15 @@ public class SourceAndConverterInspector {
 
                 // Add dimensions for all resolution levels
                 try {
-                    int numMipmapLevels = source.getNumMipmapLevels();
+                    int numMipmapLevels = spimSource.getNumMipmapLevels();
                     if (numMipmapLevels > 1) {
                         DefaultMutableTreeNode dimensionsNode = new DefaultMutableTreeNode(
                             "Dimensions (" + numMipmapLevels + " resolution levels)");
                         tpNode.add(dimensionsNode);
 
                         for (int level = 0; level < numMipmapLevels; level++) {
-                            long[] dims = new long[source.getSource(tp.getId(), level).numDimensions()];
-                            source.getSource(tp.getId(), level).dimensions(dims);
+                            long[] dims = new long[spimSource.getSource(tp.getId(), level).numDimensions()];
+                            spimSource.getSource(tp.getId(), level).dimensions(dims);
 
                             String dimStr = "Level " + level + ": ";
                             if (dims.length == 3) {
@@ -711,8 +711,8 @@ public class SourceAndConverterInspector {
                         }
                     } else {
                         // Single resolution
-                        long[] dims = new long[source.getSource(tp.getId(), 0).numDimensions()];
-                        source.getSource(tp.getId(), 0).dimensions(dims);
+                        long[] dims = new long[spimSource.getSource(tp.getId(), 0).numDimensions()];
+                        spimSource.getSource(tp.getId(), 0).dimensions(dims);
 
                         String dimStr = "Dimensions: ";
                         if (dims.length == 3) {
@@ -737,7 +737,7 @@ public class SourceAndConverterInspector {
                         .getSourceAndConverterService().getCache();
                     if (globalCache != null) {
                         // Get the root source object for cache lookup
-                        //Source<?> rootSource = SourceAndConverterHelper.getRootSource(sac.getSpimSource());
+                        //Source<?> rootSource = SourceAndConverterHelper.getRootSource(source.getSpimSource());
                         AbstractGlobalCache.CacheStats stats = globalCache.getCacheStats(asd, setupId, tp.getId());
                         //if (stats.numberOfCells > 0) {
                             String cacheInfo = "Cache: " + stats.numberOfCells + " cells, " +

@@ -183,21 +183,21 @@ public class SourceAndConverterHelper {
 
 	/**
 	 * @param converter to clone
-	 * @param sac source using this converter, useful to retrieve extra
+	 * @param source source using this converter, useful to retrieve extra
 	 *          information if necessary to clone the converter
 	 * @param <I> the input pixel type of this converter
 	 * @param <O> the output pixel type of this converter
 	 * @return a cloned converter ( could be the same instance ?)
 	 */
 	public static <I, O> Converter<I, O> cloneConverter(Converter<I, O> converter,
-		SourceAndConverter<?> sac)
+		SourceAndConverter<?> source)
 	{
 		if (converter instanceof ICloneableConverter) { // Extensibility of
 																										// converters which
 																										// implements
 																										// ICloneableConverter
 			return (Converter<I, O>) ((ICloneableConverter) converter)
-				.duplicateConverter(sac);
+				.duplicateConverter(source);
 		}
 		else if (converter instanceof ScaledARGBConverter.VolatileARGB) {
 			return (Converter<I, O>) new ScaledARGBConverter.VolatileARGB(
@@ -217,7 +217,7 @@ public class SourceAndConverterHelper {
 		else {
 
 			Converter clonedConverter = BigDataViewer.createConverterToARGB(
-				(NumericType) sac.getSpimSource().getType());
+				(NumericType) source.getSpimSource().getType());
 
 			if (clonedConverter != null) {
 				if ((converter instanceof ColorConverter) &&
@@ -241,29 +241,29 @@ public class SourceAndConverterHelper {
 		}
 	}
 
-	public static ConverterSetup createConverterSetup(SourceAndConverter<?> sac) {
+	public static ConverterSetup createConverterSetup(SourceAndConverter<?> source) {
 
-		if (sac.getConverter() instanceof ColorConverter) {
-			return BigDataViewer.createConverterSetup(sac, -1);
+		if (source.getConverter() instanceof ColorConverter) {
+			return BigDataViewer.createConverterSetup(source, -1);
 		}
-		else if (sac.getConverter() instanceof RealLUTConverter) {
-			if (sac.asVolatile() != null) {
-				return new LUTConverterSetup((RealLUTConverter) sac.getConverter(),
-					(RealLUTConverter) sac.asVolatile().getConverter());
+		else if (source.getConverter() instanceof RealLUTConverter) {
+			if (source.asVolatile() != null) {
+				return new LUTConverterSetup((RealLUTConverter) source.getConverter(),
+					(RealLUTConverter) source.asVolatile().getConverter());
 			}
 			else {
-				return new LUTConverterSetup((RealLUTConverter) sac.getConverter());
+				return new LUTConverterSetup((RealLUTConverter) source.getConverter());
 			}
 		}
 		else {
-			logger.debug("Unmodifiable ConverterSetup for Converters of class " + sac
+			logger.debug("Unmodifiable ConverterSetup for Converters of class " + source
 				.getConverter().getClass());
-			if (sac.asVolatile() != null) {
-				return new UnmodifiableConverterSetup(sac.getConverter(), sac
+			if (source.asVolatile() != null) {
+				return new UnmodifiableConverterSetup(source.getConverter(), source
 					.asVolatile().getConverter());
 			}
 			else {
-				return new UnmodifiableConverterSetup(sac.getConverter());
+				return new UnmodifiableConverterSetup(source.getConverter());
 			}
 		}
 	}
@@ -409,15 +409,15 @@ public class SourceAndConverterHelper {
 	}
 
 	/**
-	 * @param sacs sources
+	 * @param sources sources
 	 * @return the max timepoint found in this source according to the next method
 	 *         ( check limitations )
 	 */
-	public static int getMaxTimepoint(SourceAndConverter... sacs) {
+	public static int getMaxTimepoint(SourceAndConverter... sources) {
 		int max = 0;
-		for (SourceAndConverter<?> sac : sacs) {
-			if (hasAValidTimepoint(sac.getSpimSource()) && isNotGenerative(sac.getSpimSource())) {
-				int sourceMax = getMaxTimepointSingle(sac.getSpimSource());
+		for (SourceAndConverter<?> source : sources) {
+			if (hasAValidTimepoint(source.getSpimSource()) && isNotGenerative(source.getSpimSource())) {
+				int sourceMax = getMaxTimepointSingle(source.getSpimSource());
 				if (sourceMax > max) {
 					max = sourceMax;
 				}
@@ -427,13 +427,13 @@ public class SourceAndConverterHelper {
 	}
 
 	/**
-	 * @param sacs sources
+	 * @param sources sources
 	 * @return the max timepoint found in this source according to the next method
 	 *         ( check limitations )
 	 */
-	public static int getMaxTimepoint(Source... sacs) {
+	public static int getMaxTimepoint(Source... sources) {
 		int max = 0;
-		for (Source<?> source : sacs) {
+		for (Source<?> source : sources) {
 			if (hasAValidTimepoint(source) && isNotGenerative(source)) {
 				int sourceMax = getMaxTimepointSingle(source);
 				if (sourceMax > max) {
@@ -444,9 +444,9 @@ public class SourceAndConverterHelper {
 		return max;
 	}
 
-	public static int getMinTimepoint(Source... sacs) {
+	public static int getMinTimepoint(Source... sources) {
 		int min = Integer.MAX_VALUE;
-		for (Source<?> source : sacs) {
+		for (Source<?> source : sources) {
 			if (hasAValidTimepoint(source) && isNotGenerative(source)) {
 				int sourceMin = getMinTimepointSingle(source);
 				if (sourceMin < min) {
@@ -459,9 +459,9 @@ public class SourceAndConverterHelper {
 		return min;
 	}
 
-	public static int getMinTimepoint(SourceAndConverter... sacs) {
+	public static int getMinTimepoint(SourceAndConverter... sources) {
 		int min = Integer.MAX_VALUE;
-		for (SourceAndConverter<?> source : sacs) {
+		for (SourceAndConverter<?> source : sources) {
 			if (hasAValidTimepoint(source.getSpimSource()) && isNotGenerative(source.getSpimSource())) {
 				int sourceMin = getMinTimepointSingle(source.getSpimSource());
 				if (sourceMin < min) {
@@ -603,22 +603,22 @@ public class SourceAndConverterHelper {
 	 * long to access the data
 	 * 
 	 * @param <T> the input pixel type of this source and converter object
-	 * @param sac source
+	 * @param source source
 	 * @param pt point
 	 * @param timePoint timepoint investigated
 	 * @return true if the source is present
 	 */
-	public static <T> boolean isSourcePresentAt(SourceAndConverter<T> sac,
+	public static <T> boolean isSourcePresentAt(SourceAndConverter<T> source,
 		int timePoint, RealPoint pt)
 	{
 
-		RealRandomAccessible<T> rra_ible = sac.getSpimSource()
+		RealRandomAccessible<T> rra_ible = source.getSpimSource()
 			.getInterpolatedSource(timePoint, 0, Interpolation.NEARESTNEIGHBOR);
 
 		if (rra_ible != null) {
 			// Get transformation of the source
 			final AffineTransform3D sourceTransform = new AffineTransform3D();
-			sac.getSpimSource().getSourceTransform(timePoint, 0, sourceTransform);
+			source.getSpimSource().getSourceTransform(timePoint, 0, sourceTransform);
 
 			// Get access to the source at the pointer location
 			RealRandomAccess<T> rra = rra_ible.realRandomAccess();
@@ -628,7 +628,7 @@ public class SourceAndConverterHelper {
 
 			// Gets converter -> will decide based on ARGB value whether the source is
 			// present or not
-			Converter<T, ARGBType> cvt = sac.getConverter();
+			Converter<T, ARGBType> cvt = source.getConverter();
 			ARGBType colorOut = new ARGBType();
 			cvt.convert(rra.get(), colorOut);
 
@@ -645,9 +645,9 @@ public class SourceAndConverterHelper {
 	}
 
 	public static SourceAndConverter<?>[] sortDefault(
-		SourceAndConverter<?>[] sacs)
+		SourceAndConverter<?>[] sources)
 	{
-		return sortDefaultGeneric(Arrays.asList(sacs)).toArray(
+		return sortDefaultGeneric(Arrays.asList(sources)).toArray(
 			new SourceAndConverter<?>[0]);
 	}
 
@@ -656,14 +656,14 @@ public class SourceAndConverterHelper {
 	 * consistency in channel ordering when exporting / importing TODO : find a
 	 * better way to order between spimdata
 	 * 
-	 * @param sacs sources
+	 * @param sources sources
 	 * @return sorted sources according to the default sorter
 	 */
 	public static List<SourceAndConverter<?>> sortDefaultGeneric(
-		Collection<SourceAndConverter<?>> sacs)
+		Collection<SourceAndConverter<?>> sources)
 	{
-		List<SourceAndConverter<?>> sortedList = new ArrayList<>(sacs.size());
-		sortedList.addAll(sacs);
+		List<SourceAndConverter<?>> sortedList = new ArrayList<>(sources.size());
+		sortedList.addAll(sources);
 
 		// Build a map of asd objects to unique IDs for stable ordering
 		final Map<Object, Integer> asdIdMap = new HashMap<>();
@@ -672,9 +672,9 @@ public class SourceAndConverterHelper {
 		int index = 0;
 		int nextAsdId = 0;
 
-		for (SourceAndConverter<?> sac : sortedList) {
+		for (SourceAndConverter<?> source : sortedList) {
 			Object metadata = SourceAndConverterServices.getSourceAndConverterService()
-				.getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO);
+				.getMetadata(source, SourceAndConverterService.SPIM_DATA_INFO);
 
 			ComparableKey key;
 			if (metadata != null) {
@@ -691,12 +691,12 @@ public class SourceAndConverterHelper {
 				key = new ComparableKey(0, asdId, sdi.setupId, "", index);
 			} else {
 				// No SpimData: use (1) to sort after SpimData sources, then by name
-				String name = sac.getSpimSource().getName();
+				String name = source.getSpimSource().getName();
 				if (name == null) name = "";
 				key = new ComparableKey(1, 0, 0, name, index);
 			}
 
-			keyMap.put(sac, key);
+			keyMap.put(source, key);
 			index++;
 		}
 
@@ -754,16 +754,16 @@ public class SourceAndConverterHelper {
 	 * consistency in channel ordering when exporting / importing TODO : find a
 	 * better way to order between spimdata
 	 * 
-	 * @param sacs sources
+	 * @param sources sources
 	 * @return ordered sources
 	 */
 	@SuppressWarnings("rawtypes")
 	@Deprecated
 	public static List<SourceAndConverter> sortDefaultNoGeneric(
-		Collection<SourceAndConverter> sacs)
+		Collection<SourceAndConverter> sources)
 	{
-		List<SourceAndConverter> sortedList = new ArrayList<>(sacs.size());
-		sortedList.addAll(sacs);
+		List<SourceAndConverter> sortedList = new ArrayList<>(sources.size());
+		sortedList.addAll(sources);
 
 		// Build a map of asd objects to unique IDs for stable ordering
 		final Map<Object, Integer> asdIdMap = new HashMap<>();
@@ -772,9 +772,9 @@ public class SourceAndConverterHelper {
 		int index = 0;
 		int nextAsdId = 0;
 
-		for (SourceAndConverter sac : sortedList) {
+		for (SourceAndConverter source : sortedList) {
 			Object metadata = SourceAndConverterServices.getSourceAndConverterService()
-				.getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO);
+				.getMetadata(source, SourceAndConverterService.SPIM_DATA_INFO);
 
 			ComparableKey key;
 			if (metadata != null) {
@@ -791,12 +791,12 @@ public class SourceAndConverterHelper {
 				key = new ComparableKey(0, asdId, sdi.setupId, "", index);
 			} else {
 				// No SpimData: use (1) to sort after SpimData sources, then by name
-				String name = sac.getSpimSource().getName();
+				String name = source.getSpimSource().getName();
 				if (name == null) name = "";
 				key = new ComparableKey(1, 0, 0, name, index);
 			}
 
-			keyMap.put(sac, key);
+			keyMap.put(source, key);
 			index++;
 		}
 
@@ -981,15 +981,15 @@ public class SourceAndConverterHelper {
 	/**
 	 * See {@link SourceAndConverterHelper#bestLevel(Source, int, double)}
 	 * 
-	 * @param sac source
+	 * @param source source
 	 * @param t timepoint
 	 * @param voxSize target voxel size
 	 * @return mipmap level chosen
 	 */
-	public static int bestLevel(SourceAndConverter<?> sac, int t,
+	public static int bestLevel(SourceAndConverter<?> source, int t,
 		double voxSize)
 	{
-		return bestLevel(sac.getSpimSource(), t, voxSize);
+		return bestLevel(source.getSpimSource(), t, voxSize);
 	}
 
 	/**
@@ -1039,15 +1039,15 @@ public class SourceAndConverterHelper {
 	 * see
 	 * {@link SourceAndConverterHelper#getCharacteristicVoxelSize(AffineTransform3D)}
 	 * 
-	 * @param sac source
+	 * @param source source
 	 * @param t timepoint
 	 * @param level mipmap level
 	 * @return the characteristic voxel size for this level
 	 */
-	public static double getCharacteristicVoxelSize(SourceAndConverter<?> sac,
+	public static double getCharacteristicVoxelSize(SourceAndConverter<?> source,
 		int t, int level)
 	{
-		return getCharacteristicVoxelSize(sac.getSpimSource(), t, level);
+		return getCharacteristicVoxelSize(source.getSpimSource(), t, level);
 	}
 
 	/**
@@ -1120,9 +1120,9 @@ public class SourceAndConverterHelper {
 
 		final List<SourceAndConverter<?>> sourceAndConverters =
 			SourceAndConverterServices.getBdvDisplayService().getSourceAndConverterOf(
-				bdvHandle).stream().filter(sac -> isSourcePresentAt(sac, timePoint,
-					mousePosInBdv)).filter(sac -> SourceAndConverterServices
-						.getBdvDisplayService().isVisible(sac, bdvHandle)).collect(
+				bdvHandle).stream().filter(source -> isSourcePresentAt(source, timePoint,
+					mousePosInBdv)).filter(source -> SourceAndConverterServices
+						.getBdvDisplayService().isVisible(source, bdvHandle)).collect(
 							Collectors.toList());
 
 		return sourceAndConverters;
@@ -1133,21 +1133,21 @@ public class SourceAndConverterHelper {
 	 * different pixel values this is complicated... how to handle warped sources
 	 * ? procedural sources ?
 	 * 
-	 * @param sac source that's investigated
+	 * @param source source that's investigated
 	 * @param origin of the ray
 	 * @param direction of the ray
 	 * @param timepoint of the ray
 	 * @return a list of double position along the ray which should sample each
 	 *         pixel
 	 */
-	public static List<Double> rayIntersect(SourceAndConverter<?> sac,
+	public static List<Double> rayIntersect(SourceAndConverter<?> source,
 		int timepoint, RealPoint origin, RealPoint direction)
 	{
-		if (sac.getSpimSource() == null) {
+		if (source.getSpimSource() == null) {
 			return new ArrayList<>();
 		}
 		else {
-			return rayIntersect(sac.getSpimSource(), timepoint, origin, direction);
+			return rayIntersect(source.getSpimSource(), timepoint, origin, direction);
 		}
 	}
 

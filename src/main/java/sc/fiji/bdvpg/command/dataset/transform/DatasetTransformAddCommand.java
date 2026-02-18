@@ -130,14 +130,14 @@ public class DatasetTransformAddCommand implements BdvPlaygroundActionCommand {
 
 		int addedCount = 0;
 
-		for (SourceAndConverter<?> sac : sources) {
+		for (SourceAndConverter<?> source : sources) {
 			// Get SpimData info
 			Object info = SourceAndConverterServices.getSourceAndConverterService()
-				.getMetadata(sac, SourceAndConverterService.SPIM_DATA_INFO);
+				.getMetadata(source, SourceAndConverterService.SPIM_DATA_INFO);
 
 			if (info == null) {
 				logger.warn("Source '{}' has no associated SpimData, skipping",
-					sac.getSpimSource().getName());
+					source.getSpimSource().getName());
 				continue;
 			}
 
@@ -175,7 +175,7 @@ public class DatasetTransformAddCommand implements BdvPlaygroundActionCommand {
 				vr.updateModel();
 
 				// Force the BDV source to reload
-				DatasetTransformHelper.reloadSourceTransform(sac, tp);
+				DatasetTransformHelper.reloadSourceTransform(source, tp);
 			}
 		}
 

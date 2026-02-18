@@ -166,7 +166,7 @@ public class SourceTreeModelTest {
 
     @Test
     public void filterNode_staticFilter_sourcePassesFilter() {
-        FilterNode node = new FilterNode("Test", sac -> true, true);
+        FilterNode node = new FilterNode("Test", source -> true, true);
         SourceAndConverter<?> source = createTestSource("S1");
 
         assertTrue("Source should pass filter", node.addSource(source));
@@ -176,7 +176,7 @@ public class SourceTreeModelTest {
 
     @Test
     public void filterNode_staticFilter_sourceFailsFilter() {
-        FilterNode node = new FilterNode("Test", sac -> false, true);
+        FilterNode node = new FilterNode("Test", source -> false, true);
         SourceAndConverter<?> source = createTestSource("S1");
 
         assertFalse("Source should fail filter", node.addSource(source));
@@ -186,7 +186,7 @@ public class SourceTreeModelTest {
 
     @Test
     public void filterNode_staticFilter_duplicateAddReturnsFalse() {
-        FilterNode node = new FilterNode("Test", sac -> true, true);
+        FilterNode node = new FilterNode("Test", source -> true, true);
         SourceAndConverter<?> source = createTestSource("S1");
 
         assertTrue("First add should return true", node.addSource(source));
@@ -195,7 +195,7 @@ public class SourceTreeModelTest {
 
     @Test
     public void filterNode_removeSource_removesFromBothSets() {
-        FilterNode node = new FilterNode("Test", sac -> true, true);
+        FilterNode node = new FilterNode("Test", source -> true, true);
         SourceAndConverter<?> source = createTestSource("S1");
         node.addSource(source);
 
@@ -206,7 +206,7 @@ public class SourceTreeModelTest {
 
     @Test
     public void filterNode_removeSource_unknownSourceReturnsFalse() {
-        FilterNode node = new FilterNode("Test", sac -> true, true);
+        FilterNode node = new FilterNode("Test", source -> true, true);
         assertFalse("Remove unknown source should return false",
                 node.removeSource(createTestSource("S1")));
     }
@@ -216,7 +216,7 @@ public class SourceTreeModelTest {
     @Test
     public void filterNode_dynamicFilter_reevaluatesOnSecondAdd() {
         AtomicInteger count = new AtomicInteger(0);
-        FilterNode node = new FilterNode("Test", sac -> count.incrementAndGet() > 1, true);
+        FilterNode node = new FilterNode("Test", source -> count.incrementAndGet() > 1, true);
         node.setDynamicFilter(true);
         SourceAndConverter<?> source = createTestSource("S1");
 
@@ -227,7 +227,7 @@ public class SourceTreeModelTest {
 
     @Test
     public void filterNode_dynamicFilter_alreadyInOutputReturnsFalse() {
-        FilterNode node = new FilterNode("Test", sac -> true, true);
+        FilterNode node = new FilterNode("Test", source -> true, true);
         node.setDynamicFilter(true);
         SourceAndConverter<?> source = createTestSource("S1");
 
@@ -239,7 +239,7 @@ public class SourceTreeModelTest {
 
     @Test
     public void filterNode_reevaluateSource_notInInput() {
-        FilterNode node = new FilterNode("Test", sac -> true, true);
+        FilterNode node = new FilterNode("Test", source -> true, true);
         assertEquals("Should return 0 for unknown source", 0,
                 node.reevaluateSource(createTestSource("S1")));
     }
@@ -247,7 +247,7 @@ public class SourceTreeModelTest {
     @Test
     public void filterNode_reevaluateSource_wasRejectedNowPasses() {
         AtomicInteger count = new AtomicInteger(0);
-        FilterNode node = new FilterNode("Test", sac -> count.incrementAndGet() > 1, true);
+        FilterNode node = new FilterNode("Test", source -> count.incrementAndGet() > 1, true);
         SourceAndConverter<?> source = createTestSource("S1");
         node.addSource(source); // count=1, fails
 
@@ -258,7 +258,7 @@ public class SourceTreeModelTest {
     @Test
     public void filterNode_reevaluateSource_wasAcceptedNowFails() {
         AtomicInteger count = new AtomicInteger(0);
-        FilterNode node = new FilterNode("Test", sac -> count.incrementAndGet() <= 1, true);
+        FilterNode node = new FilterNode("Test", source -> count.incrementAndGet() <= 1, true);
         SourceAndConverter<?> source = createTestSource("S1");
         node.addSource(source); // count=1, passes
 
@@ -269,7 +269,7 @@ public class SourceTreeModelTest {
 
     @Test
     public void filterNode_reevaluateSource_stateUnchanged() {
-        FilterNode node = new FilterNode("Test", sac -> true, true);
+        FilterNode node = new FilterNode("Test", source -> true, true);
         SourceAndConverter<?> source = createTestSource("S1");
         node.addSource(source);
 
@@ -281,19 +281,19 @@ public class SourceTreeModelTest {
     @Test
     public void filterNode_hasOutputSources_empty() {
         assertFalse("Empty node should return false",
-                new FilterNode("Test", sac -> true, true).hasOutputSources());
+                new FilterNode("Test", source -> true, true).hasOutputSources());
     }
 
     @Test
     public void filterNode_hasOutputSources_afterAdding() {
-        FilterNode node = new FilterNode("Test", sac -> true, true);
+        FilterNode node = new FilterNode("Test", source -> true, true);
         node.addSource(createTestSource("S1"));
         assertTrue("Should return true after adding passing source", node.hasOutputSources());
     }
 
     @Test
     public void filterNode_hasOutputSources_afterRemovingAll() {
-        FilterNode node = new FilterNode("Test", sac -> true, true);
+        FilterNode node = new FilterNode("Test", source -> true, true);
         SourceAndConverter<?> source = createTestSource("S1");
         node.addSource(source);
         node.removeSource(source);
@@ -304,8 +304,8 @@ public class SourceTreeModelTest {
 
     @Test
     public void filterNode_addChild_setsParent() {
-        FilterNode parent = new FilterNode("Parent", sac -> true, false);
-        FilterNode child = new FilterNode("Child", sac -> true, true);
+        FilterNode parent = new FilterNode("Parent", source -> true, false);
+        FilterNode child = new FilterNode("Child", source -> true, true);
 
         parent.addChild(child);
 
@@ -316,8 +316,8 @@ public class SourceTreeModelTest {
 
     @Test
     public void filterNode_removeChild_clearsParent() {
-        FilterNode parent = new FilterNode("Parent", sac -> true, false);
-        FilterNode child = new FilterNode("Child", sac -> true, true);
+        FilterNode parent = new FilterNode("Parent", source -> true, false);
+        FilterNode child = new FilterNode("Child", source -> true, true);
         parent.addChild(child);
 
         assertTrue("Remove should return true", parent.removeChild(child));
@@ -327,8 +327,8 @@ public class SourceTreeModelTest {
 
     @Test
     public void filterNode_getChildren_returnsDefensiveCopy() {
-        FilterNode parent = new FilterNode("Parent", sac -> true, false);
-        parent.addChild(new FilterNode("Child", sac -> true, true));
+        FilterNode parent = new FilterNode("Parent", source -> true, false);
+        parent.addChild(new FilterNode("Child", source -> true, true));
 
         List<FilterNode> children = parent.getChildren();
         children.clear(); // modify returned list
@@ -353,8 +353,8 @@ public class SourceTreeModelTest {
         // Sources without SPIM_DATA_INFO metadata go to "Other Sources"
         List<SourceAndConverter<?>> sources = createTestSources(2);
         // Register so the service can answer metadata queries
-        for (SourceAndConverter<?> sac : sources) {
-            sourceService.register(sac);
+        for (SourceAndConverter<?> source : sources) {
+            sourceService.register(source);
         }
 
         model.addSources(sources);
@@ -449,7 +449,7 @@ public class SourceTreeModelTest {
 
         // Create a custom filter node that fails first, passes later
         FilterNode customNode = new FilterNode("Custom",
-                sac -> filterCallCount.incrementAndGet() > 1, true);
+                source -> filterCallCount.incrementAndGet() > 1, true);
         model.addNode(model.getRoot(), customNode);
 
         SourceAndConverter<?> source = createTestSource("S1");
@@ -679,8 +679,8 @@ public class SourceTreeModelTest {
     @Test
     public void model_eventContent_affectedNodesOnlyDisplayNodes() {
         // Create hierarchy: root -> intermediate(displaySources=false) -> leaf(displaySources=true)
-        FilterNode intermediate = new FilterNode("Intermediate", sac -> true, false);
-        FilterNode leaf = new FilterNode("Leaf", sac -> true, true);
+        FilterNode intermediate = new FilterNode("Intermediate", source -> true, false);
+        FilterNode leaf = new FilterNode("Leaf", source -> true, true);
         intermediate.addChild(leaf);
         model.addNode(model.getRoot(), intermediate);
 
@@ -937,8 +937,8 @@ public class SourceTreeModelTest {
     public void model_refreshBdvHandle_multipleSourcesAddedAtOnce() {
         BdvHandle bdvh = createBdvHandle();
         List<SourceAndConverter<?>> sources = createTestSources(3);
-        for (SourceAndConverter<?> sac : sources) {
-            sourceService.register(sac);
+        for (SourceAndConverter<?> source : sources) {
+            sourceService.register(source);
         }
 
         model.addSources(sources);
@@ -948,8 +948,8 @@ public class SourceTreeModelTest {
         bdvh.getViewerPanel().state().addSources(sources);
 
         BdvHandleFilterNode bdvNode = findBdvNode(bdvh);
-        for (SourceAndConverter<?> sac : sources) {
-            assertTrue("Each source should be in BDV node", bdvNode.hasConsumed(sac));
+        for (SourceAndConverter<?> source : sources) {
+            assertTrue("Each source should be in BDV node", bdvNode.hasConsumed(source));
         }
     }
 

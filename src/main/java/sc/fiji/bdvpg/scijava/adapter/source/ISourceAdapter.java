@@ -44,11 +44,11 @@ public interface ISourceAdapter<S extends Source> extends
 	IObjectScijavaAdapter
 {
 
-	void setSacSerializer(SourceAndConverterAdapter sacSerializer);
+	void setSourceSerializer(SourceAndConverterAdapter sourceSerializer);
 
 	Class<S> getSourceClass();
 
-	JsonElement serialize(SourceAndConverter<?> sac, Type type,
+	JsonElement serialize(SourceAndConverter<?> source, Type type,
 		JsonSerializationContext jsonSerializationContext);
 
 	SourceAndConverter<?> deserialize(JsonElement jsonElement, Type type,

@@ -49,37 +49,37 @@ public class SourceRemover implements Runnable,
 	Consumer<SourceAndConverter<?>[]>
 {
 
-	final SourceAndConverter<?> sacIn;
+	final SourceAndConverter<?> source;
 	final BdvHandle bdvh;
 
-	public SourceRemover(BdvHandle bdvh, SourceAndConverter<?> sacIn) {
-		this.sacIn = sacIn;
+	public SourceRemover(BdvHandle bdvh, SourceAndConverter<?> source) {
+		this.source = source;
 		this.bdvh = bdvh;
 	}
 
-	public SourceRemover(SourceAndConverter<?> sacIn) {
-		this.sacIn = sacIn;
+	public SourceRemover(SourceAndConverter<?> source) {
+		this.source = source;
 		this.bdvh = null;
 	}
 
 	public SourceRemover() {
-		this.sacIn = null;
+		this.source = null;
 		this.bdvh = null;
 	}
 
 	public void run() {
-		accept(sacIn);
+		accept(source);
 	}
 
 	@Override
-	public void accept(SourceAndConverter... sacs) {
+	public void accept(SourceAndConverter... sources) {
 		if (bdvh == null) {
 			// Remove from all displays
-			SourceAndConverterServices.getBdvDisplayService().removeFromAllBdvs(sacs);
+			SourceAndConverterServices.getBdvDisplayService().removeFromAllBdvs(sources);
 		}
 		else {
 			// Remove from a specific bdvHandle
-			SourceAndConverterServices.getBdvDisplayService().remove(bdvh, sacs);
+			SourceAndConverterServices.getBdvDisplayService().remove(bdvh, sources);
 		}
 	}
 }

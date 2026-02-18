@@ -46,7 +46,7 @@ public class SourceResampler<T extends NumericType<T> & NativeType<T>>
 	implements Runnable, Function<SourceAndConverter<T>, SourceAndConverter<T>>
 {
 
-	final SourceAndConverter<T> sac_in;
+	final SourceAndConverter<T> source;
 
 	final SourceAndConverter<?> model;
 
@@ -60,14 +60,14 @@ public class SourceResampler<T extends NumericType<T> & NativeType<T>>
 
 	private final String name;
 
-	public SourceResampler(final SourceAndConverter<T> sac_in,
+	public SourceResampler(final SourceAndConverter<T> source,
 		final SourceAndConverter<?> model, final String name, final boolean reuseMipmaps,
 		final boolean cache, final boolean interpolate, final int defaultMipMapLevel)
 	{
 		this.name = name;
 		this.reuseMipMaps = reuseMipmaps;
 		this.model = model;
-		this.sac_in = sac_in;
+		this.source = source;
 		this.interpolate = interpolate;
 		this.cache = cache;
 		this.defaultMipMapLevel = defaultMipMapLevel;
@@ -79,7 +79,7 @@ public class SourceResampler<T extends NumericType<T> & NativeType<T>>
 	}
 
 	public SourceAndConverter<T> get() {
-		return apply(sac_in);
+		return apply(source);
 	}
 
 	@Override
@@ -88,9 +88,9 @@ public class SourceResampler<T extends NumericType<T> & NativeType<T>>
 			.getSpimSource(), name, reuseMipMaps, cache, interpolate,
 			defaultMipMapLevel);
 
-		SourceAndConverter<T> sac;
+		SourceAndConverter<T> source;
 		if (src.asVolatile() != null) {
-			SourceAndConverter<? extends Volatile<T>> vsac;
+			SourceAndConverter<? extends Volatile<T>> vsource;
 			Source<? extends Volatile<T>> vsrcResampled;
 			if (cache) {
 				vsrcResampled = new VolatileSource(
@@ -103,15 +103,15 @@ public class SourceResampler<T extends NumericType<T> & NativeType<T>>
 					model.getSpimSource(), name, reuseMipMaps, false, interpolate,
 					defaultMipMapLevel);
 			}
-			vsac = new SourceAndConverter(vsrcResampled, SourceAndConverterHelper
+			vsource = new SourceAndConverter(vsrcResampled, SourceAndConverterHelper
 				.cloneConverter(src.asVolatile().getConverter(), src.asVolatile()));
-			sac = new SourceAndConverter<>(srcRsampled, SourceAndConverterHelper
-				.cloneConverter(src.getConverter(), src), vsac);
+			source = new SourceAndConverter<>(srcRsampled, SourceAndConverterHelper
+				.cloneConverter(src.getConverter(), src), vsource);
 		}
 		else {
-			sac = new SourceAndConverter<>(srcRsampled, SourceAndConverterHelper
+			source = new SourceAndConverter<>(srcRsampled, SourceAndConverterHelper
 				.cloneConverter(src.getConverter(), src));
 		}
-		return sac;
+		return source;
 	}
 }

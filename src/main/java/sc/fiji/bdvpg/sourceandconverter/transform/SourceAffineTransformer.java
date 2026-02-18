@@ -53,14 +53,14 @@ public class SourceAffineTransformer<T> implements Runnable,
 	Function<SourceAndConverter<T>, SourceAndConverter<T>>
 {
 
-	SourceAndConverter<T> sourceIn;
+	SourceAndConverter<T> source;
 
 	final AffineTransform3D at3D;
 
-	public SourceAffineTransformer(SourceAndConverter<T> src,
+	public SourceAffineTransformer(SourceAndConverter<T> source,
 		AffineTransform3D at3D)
 	{
-		this.sourceIn = src;
+		this.source = source;
 		this.at3D = at3D;
 	}
 
@@ -80,11 +80,11 @@ public class SourceAffineTransformer<T> implements Runnable,
 	}
 
 	public SourceAndConverter<T> get() {
-		return apply(sourceIn);
+		return apply(source);
 	}
 
 	public SourceAndConverter<T> apply(SourceAndConverter<T> in) {
-		SourceAndConverter<T> sac;
+		SourceAndConverter<T> source;
 		TransformedSource<T> src = new TransformedSource<>(in.getSpimSource());
 		src.setFixedTransform(at3D);
 		if (in.asVolatile() != null) {
@@ -93,14 +93,14 @@ public class SourceAffineTransformer<T> implements Runnable,
 			SourceAndConverter<? extends Volatile<T>> vout = new SourceAndConverter(
 				vsrc, SourceAndConverterHelper.cloneConverter(in.asVolatile()
 					.getConverter(), in.asVolatile()));
-			sac = new SourceAndConverter<>(src, SourceAndConverterHelper
+			source = new SourceAndConverter<>(src, SourceAndConverterHelper
 				.cloneConverter(in.getConverter(), in), vout);
 		}
 		else {
-			sac = new SourceAndConverter<>(src, SourceAndConverterHelper
+			source = new SourceAndConverter<>(src, SourceAndConverterHelper
 				.cloneConverter(in.getConverter(), in));
 		}
-		return sac;
+		return source;
 	}
 
 }

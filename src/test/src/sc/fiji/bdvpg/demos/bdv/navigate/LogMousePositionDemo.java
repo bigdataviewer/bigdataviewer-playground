@@ -70,16 +70,16 @@ public class LogMousePositionDemo {
 
         // Makes BDV Source
         Source<T> source = new RandomAccessibleIntervalSource<>(rai, rai.getType(), "blobs");
-        SourceAndConverter<?> sac = SourceAndConverterHelper.createSourceAndConverter(source);
+        SourceAndConverter<?> src = SourceAndConverterHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = ij.get(SourceAndConverterBdvDisplayService.class).getActiveBdv();
 
         // Show the SourceAndConverter
-        ij.get(SourceAndConverterBdvDisplayService.class).show(bdvHandle, sac);
+        ij.get(SourceAndConverterBdvDisplayService.class).show(bdvHandle, src);
 
         // Adjust BDV View on the SourceAndConverter
-        new ViewerTransformAdjuster(bdvHandle, sac).run();
+        new ViewerTransformAdjuster(bdvHandle, src).run();
 
         // Add a click behavior for logging mouse positions
         new ClickBehaviourInstaller( bdvHandle, (x, y) -> new PositionLogger( bdvHandle ).run() ).install( "Log mouse position", "ctrl D" );

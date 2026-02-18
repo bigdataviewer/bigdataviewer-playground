@@ -67,21 +67,21 @@ public class SimpleResamplingDemo {
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter("src/test/resources/mri-stack-multilevel.xml");
         AbstractSpimData<?> asd = importer.get();
 
-        SourceAndConverter<UnsignedShortType> sac = (SourceAndConverter<UnsignedShortType>) SourceAndConverterServices
+        SourceAndConverter<UnsignedShortType> source = (SourceAndConverter<UnsignedShortType>) SourceAndConverterServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(asd)
                 .get(0);
 
         SourceAndConverterServices
                 .getBdvDisplayService()
-                .show(sac);
+                .show(source);
 
         // Gets active BdvHandle instance
         BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
 
-        SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, sac );
-        new ViewerTransformAdjuster( bdvHandle, sac ).run();
-        new BrightnessAutoAdjuster<>( sac, 0 ).run();
+        SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, source );
+        new ViewerTransformAdjuster( bdvHandle, source ).run();
+        new BrightnessAutoAdjuster<>( source, 0 ).run();
 
         final VoxelDimensions voxelDimensions = new FinalVoxelDimensions("micrometer", 0.5, 0.5, 3.0 );
 
@@ -91,7 +91,7 @@ public class SimpleResamplingDemo {
 
         // Resample generative source as model source
         SourceAndConverter<UnsignedShortType> box =
-                new SourceResampler<>(sac, model, "crop", false,false, false,0).get();
+                new SourceResampler<>(source, model, "crop", false,false, false,0).get();
 
         SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, box );
 

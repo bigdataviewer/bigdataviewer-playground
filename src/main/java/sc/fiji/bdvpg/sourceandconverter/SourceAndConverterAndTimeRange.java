@@ -35,28 +35,28 @@ import java.util.stream.IntStream;
 
 public class SourceAndConverterAndTimeRange<T> {
 
-	public final SourceAndConverter<T> sac;
+	public final SourceAndConverter<T> source;
 	private final int timePointBegin;
 	private final int timePointEnd;
 
-	public SourceAndConverterAndTimeRange(SourceAndConverter<T> sac,
+	public SourceAndConverterAndTimeRange(SourceAndConverter<T> source,
 		int timePointBegin, int timePointEnd)
 	{
-		this.sac = sac;
+		this.source = source;
 		this.timePointBegin = timePointBegin;
 		this.timePointEnd = timePointEnd;
 	}
 
-	public SourceAndConverterAndTimeRange(SourceAndConverter<T> sac,
+	public SourceAndConverterAndTimeRange(SourceAndConverter<T> source,
 		int timePoint)
 	{
-		this.sac = sac;
+		this.source = source;
 		this.timePointBegin = timePoint;
 		this.timePointEnd = timePoint + 1;
 	}
 
 	public SourceAndConverter<T> getSourceAndConverter() {
-		return sac;
+		return source;
 	}
 
 	public IntStream getTimePoints() {

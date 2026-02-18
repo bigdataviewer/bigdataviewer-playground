@@ -51,12 +51,12 @@ public class BvvSourcesRemoveCommand implements BdvPlaygroundActionCommand {
 
 	@Parameter(label = "Select Source(s)",
 			description = "The source(s) to remove from the BVV window")
-	SourceAndConverter<?>[] sacs;
+	SourceAndConverter<?>[] sources;
 
 	@Override
 	public void run() {
-		for (SourceAndConverter<?> sac : sacs) {
-			bvvh.getViewerPanel().state().removeSource(sac);
+		for (SourceAndConverter<?> source : sources) {
+			bvvh.getViewerPanel().state().removeSource(source);
 		}
 	}
 }
