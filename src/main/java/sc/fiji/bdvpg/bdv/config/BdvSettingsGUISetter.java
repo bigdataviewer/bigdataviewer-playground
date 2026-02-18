@@ -84,12 +84,7 @@ public class BdvSettingsGUISetter implements Runnable {
 	final String rootPath;
 
 	public final static String bdvKeyConfigFileName = "bdvkeyconfig.yaml";
-	public final static String editorActionsFileName = "bdvpg.editor.actions.txt";
-	public final static String defaultEditorActionsFileName =
-		"bdvpg.editor.actions.txt.default.txt";
-	public final static String treeActionsFileName = "bdvpg.tree.actions.txt";
-	public final static String defaultTreeActionsFileName =
-		"bdvpg.tree.actions.txt.default.txt";
+
 	public final static String defaultBdvPgSettingsRootPath = "plugins" +
 		File.separator + "bdvpgsettings";
 
@@ -193,40 +188,6 @@ public class BdvSettingsGUISetter implements Runnable {
 
 		// ----------------------- TODO the key bindings...
 
-		// Is there a SourceAndConverter context menu file ?
-		String pathDefaultContextMenuSettings = dirDefaultSettings
-			.getAbsolutePath() + File.separator + treeActionsFileName;
-		File treeActionsConfigFile = new File(pathDefaultContextMenuSettings);
-		if (treeActionsConfigFile.exists()) {
-			logger.debug("Actions tree config file already exists.");
-		}
-		else {
-			logger.debug(
-				"Actions tree config file not present. Duplicate default config file");
-			String defaultFile = dirDefaultSettings.getAbsolutePath() +
-				File.separator + defaultTreeActionsFileName;
-			if (new File(defaultFile).exists()) {
-				try {
-					FileUtils.copyFile(new File(defaultFile), new File(
-						pathDefaultContextMenuSettings));
-				}
-				catch (IOException e) {
-					logger.error("Error : couldn't duplicate bdvpg default config file");
-					e.printStackTrace();
-				}
-			}
-			else {
-				logger.warn(
-					"Default tree actions config file for bigdataviewer-playground not present!");
-			}
-		}
-
-		if (treeActionsConfigFile.exists()) {
-			SettingsPage spTreeActions = new BdvPlaygroundContextualMenuSettingsPage(
-				"tree actions", treeActionsConfigFile, context);
-			settings.addPage(spTreeActions);
-		}
-
 		final JDialog dialog = new JDialog((Frame) null, "BDV Playground Settings");
 		dialog.getContentPane().add(settings, BorderLayout.CENTER);
 		dialog.pack();
@@ -280,31 +241,6 @@ public class BdvSettingsGUISetter implements Runnable {
 				e.printStackTrace();
 			}
 		}
-
-		// Is there an editor config file ?
-		String pathEditorFile = pathDir + File.separator + editorActionsFileName;
-		File editorConfig = new File(pathEditorFile);
-
-		if (!editorConfig.exists()) {
-			String pathDefaultEditorFile = pathDir + File.separator +
-				editorActionsFileName + ".default.txt";
-			File editorDefaultConfig = new File(pathDefaultEditorFile);
-			if (editorDefaultConfig.exists()) {
-				try {
-					FileUtils.copyFile(editorDefaultConfig, editorConfig);
-				}
-				catch (IOException e) {
-					logger.error("Error : couldn't duplicate bdvpg default config file");
-					e.printStackTrace();
-				}
-			}
-		}
-
-		if (editorConfig.exists()) {
-			settings.addPage(new BdvPlaygroundContextualMenuSettingsPage(subPath +
-				"> editor", editorConfig, context));
-		}
-
 		// ----------------------- TODO the key bindings...
 
 		// Are there subfolders ?

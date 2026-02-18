@@ -57,6 +57,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
+import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.command.Command;
 import org.scijava.command.CommandInfo;
@@ -848,6 +849,11 @@ public class SourceService extends AbstractService implements
 	 */
 	public Set<String> getActionsKeys() {
 		return actionMap.keySet();
+	}
+
+	@Override
+	public Context getContext() {
+		return context();
 	}
 
 	public static String getCommandName(Class<? extends Command> c) {

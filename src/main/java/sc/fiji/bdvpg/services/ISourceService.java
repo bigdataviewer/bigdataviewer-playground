@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.services;
 
 import bdv.tools.brightness.ConverterSetup;
+import org.scijava.Context;
 import sc.fiji.bdvpg.cache.AbstractGlobalCache;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
@@ -53,6 +54,8 @@ import java.util.function.Consumer;
  */
 
 public interface ISourceService {
+
+	Context getContext();
 
 	/**
 	 * Reserved key for the data map. data.get(SourceAndConverter).get(SPIM_DATA)

@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,53 +27,32 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.services;
+package sc.fiji.bdvpg.command.tree;
 
-import org.scijava.Context;
-import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import bdv.viewer.SourceAndConverter;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.services.SourceService;
 
-/**
- * Static methods to access BdvSourceAndConverterService and
- * BdvSourceAndConverterDisplayService
- * <p>
- * Should ideally not be used:
- * - try to fetch a {@link SourceService} or a
- * - {@link SourceBdvDisplayService}
- * from a scijava {@link org.scijava.Context}
- * instead
- */
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+                                              // are set by SciJava
+                                              // pre-processors
 
-public class SourceAndConverterServices {
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "Tree>Tree - Inspect Sources",
+	description = "Adds an inspection node in the tree view for each selected source, showing details about its properties and type hierarchy")
+public class SourceInspectCommand implements BdvPlaygroundActionCommand {
 
-	private static ISourceService sourceAndConverterService;
+	@Parameter(label = "Source(s) to inspect")
+	SourceAndConverter<?>[] sources;
 
-	private static SourceBdvDisplayService sourceBdvDisplayService;
+	@Parameter
+	SourceService source_service;
 
-	public static ISourceService getSourceAndConverterService() {
-		return sourceAndConverterService;
-	}
-
-	public static void setSourceAndConverterService(
-		ISourceService sourceAndConverterService)
-	{
-		SourceAndConverterServices.sourceAndConverterService =
-			sourceAndConverterService;
-	}
-
-	public static Context getContext() {
-		return sourceAndConverterService != null ? sourceAndConverterService
-			.getContext() : null;
-	}
-
-	public static SourceBdvDisplayService getBdvDisplayService() {
-		return sourceBdvDisplayService;
-	}
-
-	public static void setBdvDisplayService(
-		SourceBdvDisplayService sourceBdvDisplayService)
-	{
-		SourceAndConverterServices.sourceBdvDisplayService =
-				sourceBdvDisplayService;
+	@Override
+	public void run() {
+		source_service.tree().inspectSources(sources);
 	}
 }

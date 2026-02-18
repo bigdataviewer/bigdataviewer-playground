@@ -151,10 +151,6 @@ public class SourceTree {
 		sourceTreeModel = new SourceTreeModel(sourceAndConverterService);
 		sourceTreeView = new SourceTreeView(sourceTreeModel);
 
-		// Registers the action which would inspect selected sources
-		this.sourceAndConverterService.registerAction("Inspect Sources",
-				this::inspectSources);
-
 		tree = new JTree(sourceTreeView.getTreeModel());
 
 		if (makeGUI) {
@@ -172,7 +168,7 @@ public class SourceTree {
 					if (SwingUtilities.isRightMouseButton(e)) {
 
 						JPopupMenu popup = new SourceAndConverterPopupMenu(
-								() -> getSelectedSourceAndConverters(tree)).getPopup();
+								() -> getSelectedSourceAndConverters(tree), context).getPopup();
 
 						addUISpecificActions(popup);
 

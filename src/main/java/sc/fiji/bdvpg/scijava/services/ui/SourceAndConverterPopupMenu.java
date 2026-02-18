@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -30,24 +30,12 @@
 package sc.fiji.bdvpg.scijava.services.ui;
 
 import bdv.viewer.SourceAndConverter;
-import com.google.gson.Gson;
-import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
-import sc.fiji.bdvpg.command.viewer.bdv.BdvSourcesAddCommand;
-import sc.fiji.bdvpg.command.viewer.bdv.BdvSourcesRemoveCommand;
-import sc.fiji.bdvpg.command.viewer.bdv.BdvSourcesShowCommand;
-import sc.fiji.bdvpg.command.source.transform.SourceTransformSimpleCommand;
-import sc.fiji.bdvpg.command.source.display.SourceBrightnessAdjustInteractiveCommand;
-import sc.fiji.bdvpg.command.source.SourceDuplicateWithLUTCommand;
-import sc.fiji.bdvpg.command.tree.TreeNodeFilterMetadataCommand;
-import sc.fiji.bdvpg.command.source.transform.SourceTransformManualCommand;
-import sc.fiji.bdvpg.command.source.display.SourceColorChangeCommand;
-import sc.fiji.bdvpg.command.source.SourceDuplicateCommand;
-import sc.fiji.bdvpg.command.source.display.SourceVisibleOFFCommand;
-import sc.fiji.bdvpg.command.source.SourceDeleteCommand;
-import sc.fiji.bdvpg.command.source.SourceResampleCommand;
-import sc.fiji.bdvpg.command.source.display.SourceVisibleONCommand;
-import sc.fiji.bdvpg.command.source.transform.SourceWrapTransformCommand;
-import sc.fiji.bdvpg.command.source.SourceExportXmlHDF5Command;
+import org.scijava.Context;
+import org.scijava.MenuEntry;
+import org.scijava.command.CommandService;
+import org.scijava.plugin.PluginService;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import javax.swing.JComponent;
@@ -55,188 +43,133 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.Enumeration;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import static sc.fiji.bdvpg.scijava.services.SourceService.getCommandName;
+import java.util.stream.Collectors;
 
 public class SourceAndConverterPopupMenu {
 
 	private final JPopupMenu popup;
 	private final Supplier<SourceAndConverter<?>[]> sources_supplier;
 
-	final public static String[] defaultPopupActions = {
-			getCommandName(BdvSourcesAddCommand.class),
-			getCommandName(BdvSourcesShowCommand.class),
-			getCommandName(BdvSourcesRemoveCommand.class),
-			"Inspect Sources", "PopupLine",
-			getCommandName(SourceVisibleOFFCommand.class),
-			getCommandName(SourceVisibleONCommand.class),
-			getCommandName(SourceBrightnessAdjustInteractiveCommand.class),
-			getCommandName(SourceColorChangeCommand.class),
-			"PopupLine",
-			getCommandName(SourceTransformSimpleCommand.class),
-			getCommandName(SourceDuplicateCommand.class),
-			getCommandName(SourceTransformManualCommand.class),
-			getCommandName(SourceWrapTransformCommand.class),
-			getCommandName(SourceResampleCommand.class),
-			getCommandName(SourceDuplicateWithLUTCommand.class),
-			"PopupLine",
-			getCommandName(SourceDeleteCommand.class),
-			getCommandName(SourceExportXmlHDF5Command.class),
-			"PopupLine",
-			getCommandName(TreeNodeFilterMetadataCommand.class)
-	};
-
 	String[] popupActionWithPaths;
 
+	/**
+	 * Builds the popup menu by discovering all {@link BdvPlaygroundActionCommand}
+	 * plugins via the SciJava context. The commands are sorted by their menu path
+	 * after stripping the {@link ScijavaBdvDefaults#RootMenu} prefix.
+	 *
+	 * @param sources_supplier supplier of sources to act on
+	 * @param context the SciJava context used to discover commands
+	 */
 	public SourceAndConverterPopupMenu(
-			Supplier<SourceAndConverter<?>[]> sources_supplier, String path,
-			String context)
+		Supplier<SourceAndConverter<?>[]> sources_supplier, Context context)
 	{
-
 		this.sources_supplier = sources_supplier;
-		this.popupActionWithPaths = defaultPopupActions;
 
-		File f = BdvSettingsGUISetter.getActionFile(path, context);
-		if (f.exists()) {
-			try {
-				Gson gson = new Gson();
-				popupActionWithPaths = gson.fromJson(new FileReader(f.getAbsoluteFile()),
-					String[].class);
-				if ((popupActionWithPaths == null) || (popupActionWithPaths.length == 0)) {
-					popupActionWithPaths = new String[] { "Warning: Empty " + f
-						.getAbsolutePath() + " config file." };
-				}
-			}
-			catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		else {
-			File fdefault = new File(f.getAbsolutePath() + ".default.txt");
-			if (fdefault.exists()) {
-				try {
-					Gson gson = new Gson();
-					popupActionWithPaths = gson.fromJson(new FileReader(fdefault
-						.getAbsoluteFile()), String[].class);
-					if ((popupActionWithPaths == null) || (popupActionWithPaths.length == 0)) {
-						popupActionWithPaths = new String[] { "Warning: Empty " + fdefault
-							.getAbsolutePath() + " config file." };
-					}
-				}
-				catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}
-			}
-			else {
-				System.err.println("Bdv Playground actions settings File " + f
-					.getAbsolutePath() + " does not exist.");
-				System.err.println("Bdv Playground default actions settings File " +
-					fdefault.getAbsolutePath() + " does not exist.");
+		PluginService pluginService = context.getService(PluginService.class);
+		CommandService commandService = context.getService(CommandService.class);
+		String rootPrefix = ScijavaBdvDefaults.RootMenu;
 
-			}
-		}
+		this.popupActionWithPaths = pluginService
+			.getPluginsOfType(BdvPlaygroundActionCommand.class).stream()
+			.map(pi -> commandService.getCommand(pi.getClassName()))
+			.filter(ci -> ci != null && ci.getMenuPath() != null && !ci.getMenuPath()
+				.isEmpty())
+			.map(ci -> ci.getMenuPath().stream().map(MenuEntry::getName).collect(
+				Collectors.joining(">")))
+			.map(path -> path.startsWith(rootPrefix) ? path.substring(rootPrefix
+				.length()) : path)
+			.filter(s -> !s.isEmpty())
+			.sorted()
+			.toArray(String[]::new);
 
 		this.popup = new JPopupMenu();
 		this.menuRoot = new DefaultMutableTreeNode(popup);
-
 		createPopupMenu();
 	}
 
+	/**
+	 * Convenience constructor that obtains the context from
+	 * {@link SourceAndConverterServices}.
+	 *
+	 * @param sources_supplier supplier of sources to act on
+	 */
 	public SourceAndConverterPopupMenu(
 		Supplier<SourceAndConverter<?>[]> sources_supplier)
 	{
-		this(sources_supplier, "", "tree");
-	}
-
-	public SourceAndConverterPopupMenu(
-			Supplier<SourceAndConverter<?>[]> sources_supplier, String[] actionWithPaths)
-	{
-		this.sources_supplier = sources_supplier;
-		this.popupActionWithPaths = actionWithPaths;
-
-		this.popup = new JPopupMenu();
-		this.menuRoot = new DefaultMutableTreeNode(popup);
-		createPopupMenu();
+		this(sources_supplier, SourceAndConverterServices.getContext());
 	}
 
 	private void createPopupMenu() {
-
 		for (String actionNameWithPath : popupActionWithPaths) {
 			String[] path = actionNameWithPath.split(">");
-			String actionName = path[path.length-1];
+			String actionName = path[path.length - 1];
 			if (actionName.equals("PopupLine")) {
 				this.addPopupLine(path);
 			}
 			else {
 				this.addPopupAction(actionNameWithPath,
-						SourceAndConverterServices
-					.getSourceAndConverterService().getAction(actionName.trim()));
+					SourceAndConverterServices.getSourceAndConverterService().getAction(
+						actionName.trim()));
 			}
 		}
 	}
 
 	/**
-	 * Adds a separator in the popup menu
+	 * Adds a separator in the popup menu.
+	 *
 	 * @param path the menu path where the separator should be added
 	 */
 	public void addPopupLine(String[] path) {
 		JComponent component = this.getNodeFromPath(path);
 		if (component instanceof JPopupMenu) {
 			((JPopupMenu) component).addSeparator();
-		} else if (component instanceof JMenu) {
+		}
+		else if (component instanceof JMenu) {
 			((JMenu) component).addSeparator();
-		} else {
-			System.err.println("Unexpected menu class: "+component.getClass().getSimpleName());
+		}
+		else {
+			System.err.println("Unexpected menu class: " + component.getClass()
+				.getSimpleName());
 		}
 	}
 
 	final DefaultMutableTreeNode menuRoot;
 
 	/**
-	 * Adds a line and an action which consumes all the selected
-	 * SourceAndConverter objects in the popup Menu
-	 * 
+	 * Adds a menu item and an action which consumes all the selected
+	 * SourceAndConverter objects in the popup menu.
+	 *
+	 * @param actionNameWithPath action name including menu path
 	 * @param action action method
-	 * @param actionNameWithPath action name
 	 */
 	public void addPopupAction(String actionNameWithPath,
 		Consumer<SourceAndConverter<?>[]> action)
 	{
 		String[] pathsAndAction = actionNameWithPath.split(">");
-
-		String actionName = pathsAndAction[pathsAndAction.length-1];
+		String actionName = pathsAndAction[pathsAndAction.length - 1];
 
 		JMenuItem menuItem = new JMenuItem(actionName);
 		if (action != null) {
 			menuItem.addActionListener(e -> action.accept(sources_supplier.get()));
-
-		} else {
-			menuItem.addActionListener(e ->
-					System.err.println("No action defined for action named " + actionName)
-			);
+		}
+		else {
+			menuItem.addActionListener(e -> System.err.println(
+				"No action defined for action named " + actionName));
 		}
 		getNodeFromPath(pathsAndAction).add(menuItem);
 	}
 
 	private JComponent getNodeFromPath(String[] pathsAndAction) {
-		//JPopupMenu currentItem = this.popup;
 		DefaultMutableTreeNode currentNode = menuRoot;
 		int idx = 0;
-		while (idx< pathsAndAction.length-1) {
+		while (idx < pathsAndAction.length - 1) {
 			String currentPath = pathsAndAction[idx];
-			//if (currentNode.children().)
 			Enumeration en = currentNode.depthFirstEnumeration();
 			boolean found = false;
 			while (en.hasMoreElements()) {
-
-				// Unfortunately the enumeration isn't genericised so we need to downcast
-				// when calling nextElement():
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) en.nextElement();
 				if (node.getUserObject() instanceof JMenu) {
 					JMenu menuEntry = (JMenu) node.getUserObject();
@@ -251,10 +184,13 @@ public class SourceAndConverterPopupMenu {
 				JMenu entry = new JMenu(currentPath);
 				if (currentNode.getUserObject() instanceof JMenu) {
 					((JMenu) (currentNode.getUserObject())).add(entry);
-				} else if (currentNode.getUserObject() instanceof JPopupMenu) {
+				}
+				else if (currentNode.getUserObject() instanceof JPopupMenu) {
 					((JPopupMenu) (currentNode.getUserObject())).add(entry);
-				} else {
-					System.err.println("Unexpected menu class: "+currentNode.getUserObject().getClass().getSimpleName());
+				}
+				else {
+					System.err.println("Unexpected menu class: " + currentNode
+						.getUserObject().getClass().getSimpleName());
 				}
 				DefaultMutableTreeNode newEntry = new DefaultMutableTreeNode(entry);
 				currentNode.add(newEntry);
@@ -262,9 +198,6 @@ public class SourceAndConverterPopupMenu {
 			}
 			idx++;
 		}
-		//JMenu menu;
-		//JMenuItem menuItem;
-		//JPopupMenu popupMenu;
 		return (JComponent) currentNode.getUserObject();
 	}
 

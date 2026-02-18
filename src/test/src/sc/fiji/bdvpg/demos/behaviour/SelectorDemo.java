@@ -74,7 +74,7 @@ public class SelectorDemo {
         SourceAndConverterServices.getBdvDisplayService().setDisplayMetadata(bdvh,
                 SourceSelectorBehaviour.class.getSimpleName(), ssb);
 
-        new EditorBehaviourInstaller(ssb, "").run();
+        new EditorBehaviourInstaller(ssb).run();
 
         DemoHelper.shot("SelectorDemo");
     }

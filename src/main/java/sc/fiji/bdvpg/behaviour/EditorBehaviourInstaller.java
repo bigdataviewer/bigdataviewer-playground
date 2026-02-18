@@ -32,27 +32,12 @@ package sc.fiji.bdvpg.behaviour;
 import bdv.util.BdvHandle;
 import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
 import ch.epfl.biop.bdv.select.ToggleListener;
-import com.google.gson.Gson;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
-import sc.fiji.bdvpg.command.viewer.bdv.BdvSourcesRemoveCommand;
-import sc.fiji.bdvpg.command.viewer.bdv.BdvSourcesShowCommand;
-import sc.fiji.bdvpg.command.source.transform.SourceTransformSimpleCommand;
-import sc.fiji.bdvpg.command.source.display.SourceBrightnessAdjustInteractiveCommand;
-import sc.fiji.bdvpg.command.source.display.SourceColorChangeCommand;
-import sc.fiji.bdvpg.command.source.display.SourceVisibleOFFCommand;
-import sc.fiji.bdvpg.command.source.SourceDeleteCommand;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-
-import static sc.fiji.bdvpg.scijava.services.SourceService.getCommandName;
 
 /**
  * BDV Actions called by default on each BDV Window being created See
@@ -72,64 +57,9 @@ public class EditorBehaviourInstaller implements Runnable {
 
 	private ToggleListener toggleListener;
 
-	public String[] getEditorPopupActions() {
-		// TODO : fix the file path containing default actions
-		File f = BdvSettingsGUISetter.getActionFile(editorActionsPath, "editor");// new
-																																							// File("bdvpgsettings"+File.separator+"DefaultEditorActions.json");
-		String[] popupActions = { getCommandName(BdvSourcesShowCommand.class),
-			getCommandName(SourceTransformSimpleCommand.class), getCommandName(
-				BdvSourcesRemoveCommand.class), "Inspect Sources", "PopupLine",
-			getCommandName(SourceVisibleOFFCommand.class), getCommandName(
-				SourceBrightnessAdjustInteractiveCommand.class), getCommandName(
-					SourceColorChangeCommand.class), "PopupLine", getCommandName(
-						SourceDeleteCommand.class) };
-
-		if (f.exists()) {
-			try {
-				Gson gson = new Gson();
-				popupActions = gson.fromJson(new FileReader(f.getAbsoluteFile()),
-					String[].class);
-				if ((popupActions == null) || (popupActions.length == 0)) {
-					popupActions = new String[] { "Warning: Empty " + f
-						.getAbsolutePath() + " config file." };
-				}
-			}
-			catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		else {
-			File fdefault = new File(f.getAbsolutePath() + ".default.txt");
-			if (fdefault.exists()) {
-				try {
-					Gson gson = new Gson();
-					popupActions = gson.fromJson(new FileReader(fdefault
-						.getAbsoluteFile()), String[].class);
-					if ((popupActions == null) || (popupActions.length == 0)) {
-						popupActions = new String[] { "Warning: Empty " + fdefault
-							.getAbsolutePath() + " config file." };
-					}
-				}
-				catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}
-			}
-			else {
-				logger.error("Bdv Playground actions settings File " + f
-					.getAbsolutePath() + " does not exist.");
-				logger.error("Bdv Playground default actions settings File " + fdefault
-					.getAbsolutePath() + " does not exist.");
-			}
-		}
-		return popupActions;
-	}
-
-	final String editorActionsPath;
-
-	public EditorBehaviourInstaller(SourceSelectorBehaviour ssb, String context) {
+	public EditorBehaviourInstaller(SourceSelectorBehaviour ssb) {
 		this.ssb = ssb;
 		this.bdvh = ssb.getBdvHandle();
-		this.editorActionsPath = context;
 	}
 
 	@Override
@@ -142,7 +72,7 @@ public class EditorBehaviourInstaller implements Runnable {
 		editor.behaviour(delete, "remove-sources-from-bdv", "DELETE");
 
 		editor.behaviour(new SourceAndConverterContextMenuClickBehaviour(bdvh,
-			ssb::getSelectedSources, getEditorPopupActions()), "Sources Context Menu",
+			ssb::getSelectedSources), "Sources Context Menu",
 			"button3");
 
 		toggleListener = new ToggleListener() {
