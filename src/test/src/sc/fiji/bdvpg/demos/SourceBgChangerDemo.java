@@ -36,9 +36,9 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceOutOfBoundsColorChanger;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.source.transform.SourceOutOfBoundsColorChanger;
+import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
 
 public class SourceBgChangerDemo {
 
@@ -67,7 +67,7 @@ public class SourceBgChangerDemo {
 
         SourceAndConverter<UnsignedShortType> sourceBgModified = new SourceOutOfBoundsColorChanger<>(source, new UnsignedShortType(2000)).get();
 
-        SourceAndConverterServices.getBdvDisplayService().show(bdvHandle,sourceBgModified);
+        SourceServices.getBdvDisplayService().show(bdvHandle,sourceBgModified);
 
         DemoHelper.shot("SourceBgChangerDemo");
     }

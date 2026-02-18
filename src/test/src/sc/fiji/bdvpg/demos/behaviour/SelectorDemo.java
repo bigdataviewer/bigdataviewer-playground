@@ -35,13 +35,13 @@ import org.scijava.Context;
 import org.scijava.ui.UIService;
 import org.scijava.ui.swing.SwingUI;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.behaviour.EditorBehaviourInstaller;
+import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewers.behaviour.EditorBehaviourInstaller;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.source.display.BrightnessAdjuster;
+import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
 
 /**
  * Demo of bigdataviewer-selector. Press E to enter into the selector mode.
@@ -71,7 +71,7 @@ public class SelectorDemo {
         SourceSelectorBehaviour ssb = new SourceSelectorBehaviour(bdvh, "E");
 
         // Stores the associated selector to the display
-        SourceAndConverterServices.getBdvDisplayService().setDisplayMetadata(bdvh,
+        SourceServices.getBdvDisplayService().setDisplayMetadata(bdvh,
                 SourceSelectorBehaviour.class.getSimpleName(), ssb);
 
         new EditorBehaviourInstaller(ssb).run();

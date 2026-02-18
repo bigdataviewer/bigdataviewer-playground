@@ -40,8 +40,8 @@ import com.google.gson.JsonSerializationContext;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
+import sc.fiji.bdvpg.services.SourceAdapter;
+import sc.fiji.bdvpg.source.transform.SourceResampler;
 
 import java.lang.reflect.Type;
 
@@ -51,10 +51,10 @@ public class ResampledSourceAdapter implements ISourceAdapter<ResampledSource> {
 	protected static final Logger logger = LoggerFactory.getLogger(
 		ResampledSourceAdapter.class);
 
-	SourceAndConverterAdapter sourceSerializer;
+	SourceAdapter sourceSerializer;
 
 	@Override
-	public void setSourceSerializer(SourceAndConverterAdapter sourceSerializer) {
+	public void setSourceSerializer(SourceAdapter sourceSerializer) {
 		this.sourceSerializer = sourceSerializer;
 	}
 

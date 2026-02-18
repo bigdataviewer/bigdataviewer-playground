@@ -43,7 +43,7 @@ import sc.fiji.bdvpg.command.source.SourceCreateFromModelCommand;
 import sc.fiji.bdvpg.command.source.SourceDeleteCommand;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
 import sc.fiji.persist.IObjectScijavaAdapterService;
 
 import java.util.concurrent.ExecutionException;

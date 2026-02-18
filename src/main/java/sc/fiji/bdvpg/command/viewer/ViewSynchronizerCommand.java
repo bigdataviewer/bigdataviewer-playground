@@ -36,11 +36,11 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.bvv.BvvHandleHelper;
+import sc.fiji.bdvpg.viewers.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.viewers.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.services.SourceServices;
 import sc.fiji.bdvpg.viewers.ViewerAdapter;
 import sc.fiji.bdvpg.viewers.ViewerTransformSyncStarter;
 import sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper;
@@ -111,7 +111,7 @@ public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {
 		sync = new ViewerTransformSyncStarter(handles, synchronizetime);
 		if (bdvhs.length > 0) {
 			sync.setHandleInitialReference(new ViewerAdapter(
-				SourceAndConverterServices.getBdvDisplayService().getActiveBdv()));
+				SourceServices.getBdvDisplayService().getActiveBdv()));
 		}
 		/*else {
 			sync.setHandleInitialReference(new ViewerAdapter(bvvhs[0]));

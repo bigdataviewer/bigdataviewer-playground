@@ -32,7 +32,7 @@ package sc.fiji.bdvpg.command.viewer.bdv.settings;
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
+import sc.fiji.bdvpg.viewers.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 

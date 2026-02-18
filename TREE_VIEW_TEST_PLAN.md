@@ -1,6 +1,6 @@
 # Source Tree View - Test Plan
 
-This document describes the tests to implement for the source tree view (`sc.fiji.bdvpg.scijava.services.ui.tree`).
+This document describes the tests to implement for the source tree view (`sc.fiji.bdvpg.scijava.services.tree.tree`).
 
 All tests should target `SourceTreeModel` and `FilterNode` directly. A minimal `SourceAndConverterService` and `SourceAndConverterBdvDisplayService` can be used where needed. See `sc.fiji.bdvpg.tests.adapters.sources.SourceSerializationTests` for an example of test that needs setting up a minimal context.
 Be aware that tests are run with a x11 emulated, so creating a BigDataViewer is not an issue.

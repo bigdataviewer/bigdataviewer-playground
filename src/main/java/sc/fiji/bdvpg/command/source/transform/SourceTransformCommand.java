@@ -37,9 +37,9 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAndTimeRange;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
+import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.source.SourceAndTimeRange;
+import sc.fiji.bdvpg.source.transform.SourceTransformHelper;
 
 /**
  * @author Nicolas Chiaruttini, EPFL 2021
@@ -90,17 +90,17 @@ public class SourceTransformCommand implements BdvPlaygroundActionCommand {
 
 			if (source.getSpimSource() instanceof TransformedSource) {
 				SourceTransformHelper.mutate(at3D_global,
-					new SourceAndConverterAndTimeRange(source, ini_timepoint));
+					new SourceAndTimeRange(source, ini_timepoint));
 			}
 			else {
 
 				SourceTransformHelper.append(at3D_global,
-					new SourceAndConverterAndTimeRange(source, ini_timepoint, ini_timepoint +
+					new SourceAndTimeRange(source, ini_timepoint, ini_timepoint +
 							n_timepoints));
 			}
 		}
 
-		SourceAndConverterServices.getBdvDisplayService().updateDisplays(sources);
+		SourceServices.getBdvDisplayService().updateDisplays(sources);
 	}
 
 	public void parseInput() {

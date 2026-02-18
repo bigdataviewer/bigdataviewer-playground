@@ -38,12 +38,12 @@ import net.imglib2.type.numeric.ARGBType;
 import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAndTimeRange;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.register.BigWarpLauncher;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.source.SourceAndTimeRange;
+import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.source.register.BigWarpLauncher;
+import sc.fiji.bdvpg.source.transform.SourceAffineTransformer;
+import sc.fiji.bdvpg.source.transform.SourceTransformHelper;
+import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +120,7 @@ public class BigWarp2DDemo {
         AffineTransform3D translateRight = new AffineTransform3D();
         translateRight.translate(3,0,0);
 
-        SourceAndConverter<?> rotatedTranslatedMovingSource = SourceTransformHelper.mutate(translateRight, new SourceAndConverterAndTimeRange<>(rotatedMovingSource,0,1));
+        SourceAndConverter<?> rotatedTranslatedMovingSource = SourceTransformHelper.mutate(translateRight, new SourceAndTimeRange<>(rotatedMovingSource,0,1));
 
         // Chqnge moving source color
         sourceService.getConverterSetup(rotatedMovingSource)
@@ -150,7 +150,7 @@ public class BigWarp2DDemo {
         AffineTransform3D translateRight = new AffineTransform3D();
         translateRight.translate(5,0,0);
 
-        SourceTransformHelper.mutate(translateRight, new SourceAndConverterAndTimeRange<>(rotatedMovingSource,0,1));
+        SourceTransformHelper.mutate(translateRight, new SourceAndTimeRange<>(rotatedMovingSource,0,1));
 
     }
 

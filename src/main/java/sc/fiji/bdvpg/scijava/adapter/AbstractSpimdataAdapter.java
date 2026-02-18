@@ -40,9 +40,9 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
-import sc.fiji.bdvpg.spimdata.exporter.XmlFromSpimDataExporter;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.services.SourceAdapter;
+import sc.fiji.bdvpg.dataset.exporter.XmlFromSpimDataExporter;
+import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -61,11 +61,11 @@ public class AbstractSpimdataAdapter implements
 	protected static final Logger logger = LoggerFactory.getLogger(
 		AbstractSpimData.class);
 
-	final SourceAndConverterAdapter sourceSerializer;
+	final SourceAdapter sourceSerializer;
 
 	int spimdataCounter = 0;
 
-	public AbstractSpimdataAdapter(SourceAndConverterAdapter sourceSerializer) {
+	public AbstractSpimdataAdapter(SourceAdapter sourceSerializer) {
 		this.sourceSerializer = sourceSerializer;
 	}
 

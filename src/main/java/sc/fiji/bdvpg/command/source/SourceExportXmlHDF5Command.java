@@ -34,7 +34,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.sourceandconverter.exporter.XmlHDF5SpimdataExporter;
+import sc.fiji.bdvpg.source.exporter.XmlHDF5SpimdataExporter;
 
 import java.io.File;
 import java.util.Arrays;

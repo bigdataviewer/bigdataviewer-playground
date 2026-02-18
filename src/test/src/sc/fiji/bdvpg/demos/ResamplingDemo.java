@@ -36,16 +36,16 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
-import sc.fiji.bdvpg.sourceandconverter.importer.MandelbrotSourceGetter;
-import sc.fiji.bdvpg.sourceandconverter.importer.EmptySourceAndConverterCreator;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.source.display.BrightnessAdjuster;
+import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.source.display.ColorChanger;
+import sc.fiji.bdvpg.source.importer.MandelbrotSourceGetter;
+import sc.fiji.bdvpg.source.importer.EmptySourceCreator;
+import sc.fiji.bdvpg.source.transform.SourceAffineTransformer;
+import sc.fiji.bdvpg.source.transform.SourceResampler;
+import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
 
 public class ResamplingDemo {
 
@@ -75,19 +75,19 @@ public class ResamplingDemo {
         AbstractSpimData<?> asd = importer.get();
 
         SourceAndConverter<UnsignedShortType> source = (SourceAndConverter<UnsignedShortType>)
-                SourceAndConverterServices
+                SourceServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(asd)
                 .get(0);
 
-        SourceAndConverterServices
+        SourceServices
                 .getBdvDisplayService()
                 .show(source);
 
         // Gets active BdvHandle instance
-        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceServices.getBdvDisplayService().getActiveBdv();
 
-        SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, source );
+        SourceServices.getBdvDisplayService().show( bdvHandle, source );
         new ViewerTransformAdjuster( bdvHandle, source ).run();
         new BrightnessAutoAdjuster<>( source, 0 ).run();
 
@@ -106,7 +106,7 @@ public class ResamplingDemo {
         SourceResampler<UnsignedShortType> sr = new SourceResampler<>(bigMandelbrot, source, "resampled", false,cache, false,0);
         SourceAndConverter<?> resampledMandelbrot = sr.get();
 
-        SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, resampledMandelbrot );
+        SourceServices.getBdvDisplayService().show( bdvHandle, resampledMandelbrot );
 
         new ColorChanger(resampledMandelbrot, new ARGBType(ARGBType.rgba(255, 0,0,255))).run();
 
@@ -114,13 +114,13 @@ public class ResamplingDemo {
         // ---- Downsample a source
         // ---- Upsample a source
 
-        bdvHandle = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
+        bdvHandle = SourceServices.getBdvDisplayService().getNewBdv();
 
         //SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, source );
         new ViewerTransformAdjuster( bdvHandle, source ).run();
 
         // DOWNSAMPLING
-        EmptySourceAndConverterCreator downSampledModel = new EmptySourceAndConverterCreator("DownSampled",source,0,4,4,4);//, factory);
+        EmptySourceCreator downSampledModel = new EmptySourceCreator("DownSampled",source,0,4,4,4);//, factory);
 
         sr = new SourceResampler<>(source, downSampledModel.get(), "downsampled", false,cache, true,0);
         SourceAndConverter<UnsignedShortType> downsampledSource = sr.get();
@@ -137,12 +137,12 @@ public class ResamplingDemo {
         new ColorChanger( downsampledSourceWithMipmaps, new ARGBType(ARGBType.rgba(120, 120,0,255))).run();
 
         // UPSAMPLING
-        EmptySourceAndConverterCreator upSampledModel = new EmptySourceAndConverterCreator("UpSampled",source,0,0.2,0.2,0.2);//, factory);
+        EmptySourceCreator upSampledModel = new EmptySourceCreator("UpSampled",source,0,0.2,0.2,0.2);//, factory);
 
         sr = new SourceResampler<>(source, upSampledModel.get(), "upsampled", false,cache, true,0);
         SourceAndConverter<UnsignedShortType> upsampledSource = sr.get();
 
-        SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, upsampledSource );
+        SourceServices.getBdvDisplayService().show( bdvHandle, upsampledSource );
 
         new ColorChanger( upsampledSource, new ARGBType(ARGBType.rgba(0, 0,255,255))).run();
 

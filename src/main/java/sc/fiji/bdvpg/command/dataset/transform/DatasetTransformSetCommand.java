@@ -45,7 +45,7 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.services.SourceServices;
 
 import java.util.List;
 import java.util.Set;
@@ -135,7 +135,7 @@ public class DatasetTransformSetCommand implements BdvPlaygroundActionCommand {
 
 		for (SourceAndConverter<?> source : sources) {
 			// Get SpimData info
-			Object info = SourceAndConverterServices.getSourceAndConverterService()
+			Object info = SourceServices.getSourceAndConverterService()
 				.getMetadata(source, SourceService.SPIM_DATA_INFO);
 
 			if (info == null) {

@@ -34,7 +34,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
+import sc.fiji.bdvpg.services.SourceServiceSaver;
 
 import java.io.File;
 
@@ -57,6 +57,6 @@ public class SourceServiceSaveState implements
 
 	@Override
 	public void run() {
-		new SourceAndConverterServiceSaver(file, ctx).run();
+		new SourceServiceSaver(file, ctx).run();
 	}
 }

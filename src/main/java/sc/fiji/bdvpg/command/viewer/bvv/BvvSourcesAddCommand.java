@@ -33,10 +33,10 @@ import bdv.viewer.SourceAndConverter;
 import bvv.vistools.BvvHandle;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.services.SourceServices;
 import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
 /**
@@ -68,7 +68,7 @@ public class BvvSourcesAddCommand implements BdvPlaygroundActionCommand {
 	public void run() {
 
 		for (SourceAndConverter<?> source : sources) {
-            bvvh.getConverterSetups().put(source, SourceAndConverterServices
+            bvvh.getConverterSetups().put(source, SourceServices
                 .getSourceAndConverterService().getConverterSetup(source));
             bvvh.getViewerPanel().state().addSource(source);
 

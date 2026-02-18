@@ -30,7 +30,7 @@ package sc.fiji.bdvpg.demos.io.state;
 
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.services.SourceAndConverterServiceLoader;
+import sc.fiji.bdvpg.services.SourceServiceLoader;
 
 public class BdvPlaygroundStateLoader {
 
@@ -40,7 +40,7 @@ public class BdvPlaygroundStateLoader {
     {
         ij = new ImageJ();
         DemoHelper.startFiji(ij);//ij.ui().showUI();
-        new SourceAndConverterServiceLoader("src/test/resources/bdvplaygroundstate.json", "src/test/resources/", ij.context(), false).run();
+        new SourceServiceLoader("src/test/resources/bdvplaygroundstate.json", "src/test/resources/", ij.context(), false).run();
     }
 
 }

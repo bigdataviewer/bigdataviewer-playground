@@ -33,7 +33,7 @@ import bdv.util.BdvHandle;
 import ij.IJ;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.overlay.SourceNameOverlayAdder;
+import sc.fiji.bdvpg.viewers.bdv.overlay.SourceNameOverlayAdder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 

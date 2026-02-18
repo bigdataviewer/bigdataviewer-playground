@@ -38,12 +38,12 @@ import net.imglib2.realtransform.InvertibleRealTransform;
 import net.imglib2.realtransform.InvertibleRealTransformSequence;
 import net.imglib2.realtransform.RealTransform;
 import net.imglib2.realtransform.RealTransformSequence;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceRealTransformer;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.source.transform.SourceRealTransformer;
+import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -68,19 +68,19 @@ public class WarpedSourceDemo {
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter("src/test/resources/mri-stack-multilevel.xml");
         AbstractSpimData<?> asd = importer.get();
 
-        SourceAndConverter<?> source = SourceAndConverterServices
+        SourceAndConverter<?> source = SourceServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(asd)
                 .get(0);
 
-        SourceAndConverterServices
+        SourceServices
                 .getBdvDisplayService()
                 .show(source);
 
         // Gets active BdvHandle instance
-        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceServices.getBdvDisplayService().getActiveBdv();
 
-        SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source);
+        SourceServices.getBdvDisplayService().show(bdvHandle, source);
         new ViewerTransformAdjuster(bdvHandle, source).run();
         new BrightnessAutoAdjuster<>(source, 0).run();
 
@@ -121,11 +121,11 @@ public class WarpedSourceDemo {
         for (RealTransform rt : transform_tested) {
             SourceAndConverter<?> transformed_source = new SourceRealTransformer(rt).apply(source);
 
-            SourceAndConverterServices
+            SourceServices
                     .getSourceAndConverterService()
                     .register(transformed_source);
 
-            SourceAndConverterServices
+            SourceServices
                     .getBdvDisplayService()
                     .show(bdvHandle, transformed_source);
 

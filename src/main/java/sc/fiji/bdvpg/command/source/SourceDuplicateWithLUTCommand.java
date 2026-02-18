@@ -43,7 +43,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.sourceandconverter.display.ConverterChanger;
+import sc.fiji.bdvpg.source.display.ConverterChanger;
 
 import java.net.URL;
 import java.util.ArrayList;

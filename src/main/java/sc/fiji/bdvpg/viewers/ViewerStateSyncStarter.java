@@ -33,7 +33,7 @@ import bdv.util.PlaceHolderSource;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerStateChange;
 import bdv.viewer.ViewerStateChangeListener;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.services.SourceServices;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -99,17 +99,17 @@ public class ViewerStateSyncStarter implements Runnable {
 					if (adapterTest.bvvPanel != null) {
 						for (SourceAndConverter<?> source : stateToCopy) {
 							adapterTest.bvvPanel.getConverterSetups().put(source,
-								SourceAndConverterServices.getSourceAndConverterService()
+								SourceServices.getSourceAndConverterService()
 									.getConverterSetup(source));
 						}
 					}
 					else {
 						// TODO : improve!
-						SourceAndConverterServices.getBdvDisplayService().getDisplays()
+						SourceServices.getBdvDisplayService().getDisplays()
 							.forEach(bdvh -> {
 								for (SourceAndConverter<?> source : stateToCopy) {
 									bdvh.getConverterSetups().put(source,
-										SourceAndConverterServices.getSourceAndConverterService()
+										SourceServices.getSourceAndConverterService()
 											.getConverterSetup(source));
 								}
 							});

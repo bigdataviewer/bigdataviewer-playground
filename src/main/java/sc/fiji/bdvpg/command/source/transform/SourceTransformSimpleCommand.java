@@ -38,8 +38,8 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAndTimeRange;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
+import sc.fiji.bdvpg.source.SourceAndTimeRange;
+import sc.fiji.bdvpg.source.transform.SourceTransformHelper;
 
 /**
  * Not clever but consistent : always append transform which acts as if it was
@@ -116,12 +116,12 @@ public class SourceTransformSimpleCommand implements BdvPlaygroundActionCommand 
 				if (global_change) {
 					if (source.getSpimSource() instanceof TransformedSource) {
 						SourceTransformHelper.mutate(at3D_global,
-							new SourceAndConverterAndTimeRange<>(source, ini_timepoint,
+							new SourceAndTimeRange<>(source, ini_timepoint,
 								ini_timepoint + n_timepoints));
 					}
 					else {
 						SourceTransformHelper.append(at3D_global,
-							new SourceAndConverterAndTimeRange<>(source, ini_timepoint,
+							new SourceAndTimeRange<>(source, ini_timepoint,
 								ini_timepoint + n_timepoints));
 					}
 				}
@@ -163,11 +163,11 @@ public class SourceTransformSimpleCommand implements BdvPlaygroundActionCommand 
 
 						if (source.getSpimSource() instanceof TransformedSource) {
 							SourceTransformHelper.mutate(at3D_global,
-								new SourceAndConverterAndTimeRange<>(source, timepoint));
+								new SourceAndTimeRange<>(source, timepoint));
 						}
 						else {
 							SourceTransformHelper.append(at3D_global,
-								new SourceAndConverterAndTimeRange<>(source, timepoint));
+								new SourceAndTimeRange<>(source, timepoint));
 						}
 					}
 				}

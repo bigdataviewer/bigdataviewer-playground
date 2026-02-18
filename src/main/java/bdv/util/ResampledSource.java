@@ -45,7 +45,7 @@ import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.Views;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
+import sc.fiji.bdvpg.source.SourceHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,7 +125,7 @@ public class ResampledSource<T extends NumericType<T> & NativeType<T>>
 	 *          origin is much smaller than the model (and provided that the
 	 *          origin is also a multiresolution source) the way the matching is
 	 *          performed is specified in
-	 *          {@link SourceAndConverterHelper#bestLevel(Source, int, double)}.
+	 *          {@link SourceHelper#bestLevel(Source, int, double)}.
 	 *          For more details and limitation, please read the documentation in
 	 *          the linked method above
 	 * @param cache specifies whether the result of the resampling should be
@@ -192,7 +192,7 @@ public class ResampledSource<T extends NumericType<T> & NativeType<T>>
 		for (int l = 0; l < rootOrigin.getNumMipmapLevels(); l++) {
 			AffineTransform3D at3d = new AffineTransform3D();
 			rootOrigin.getSourceTransform(0, l, at3d);
-			double mid = SourceAndConverterHelper.getCharacteristicVoxelSize(at3d);
+			double mid = SourceHelper.getCharacteristicVoxelSize(at3d);
 			originVoxSize.add(mid);
 		}
 
@@ -203,7 +203,7 @@ public class ResampledSource<T extends NumericType<T> & NativeType<T>>
 		for (int l = 0; l < resamplingModel.getNumMipmapLevels(); l++) {
 			if (reuseMipMaps) {
 				resamplingModel.getSourceTransform(0, l, at3D);
-				double middleDim = SourceAndConverterHelper.getCharacteristicVoxelSize(
+				double middleDim = SourceHelper.getCharacteristicVoxelSize(
 					at3D);
 				int match = bestMatch(middleDim);
 				mipmapModelToOrigin.put(l, match);
@@ -217,10 +217,10 @@ public class ResampledSource<T extends NumericType<T> & NativeType<T>>
 			logger.debug("Model mipmap level " + l +
 				" correspond to origin mipmap level " + mipmapModelToOrigin.get(l));
 			logger.debug("Model mipmap level " + l +
-				" has a characteristic voxel size of " + SourceAndConverterHelper
+				" has a characteristic voxel size of " + SourceHelper
 					.getCharacteristicVoxelSize(resamplingModel, 0, l));
 			logger.debug("Origin level " + mipmapModelToOrigin.get(l) +
-				" has a characteristic voxel size of " + SourceAndConverterHelper
+				" has a characteristic voxel size of " + SourceHelper
 					.getCharacteristicVoxelSize(origin, 0, mipmapModelToOrigin.get(l)));
 
 		}

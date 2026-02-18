@@ -40,8 +40,8 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.services.ISourceService;
-import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.services.SourceAdapter;
+import sc.fiji.bdvpg.services.SourceServices;
 
 import java.lang.reflect.Type;
 import java.util.Optional;
@@ -51,10 +51,10 @@ import static sc.fiji.bdvpg.services.ISourceService.SPIM_DATA_INFO;
 @Plugin(type = ISourceAdapter.class)
 public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 
-	SourceAndConverterAdapter sourceSerializer;
+	SourceAdapter sourceSerializer;
 
 	@Override
-	public void setSourceSerializer(SourceAndConverterAdapter sourceSerializer) {
+	public void setSourceSerializer(SourceAdapter sourceSerializer) {
 		this.sourceSerializer = sourceSerializer;
 	}
 
@@ -70,7 +70,7 @@ public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 		JsonObject obj = new JsonObject();
 
 		SourceService.SpimDataInfo sdi =
-			(SourceService.SpimDataInfo) SourceAndConverterServices
+			(SourceService.SpimDataInfo) SourceServices
 				.getSourceAndConverterService().getMetadata(source, SPIM_DATA_INFO);
 
 		if (sdi == null) {
@@ -98,7 +98,7 @@ public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 		}
 		else {
 			int setupId = obj.getAsJsonPrimitive("viewsetup").getAsInt();
-			final ISourceService sourceService = SourceAndConverterServices
+			final ISourceService sourceService = SourceServices
 				.getSourceAndConverterService();
 			Optional<SourceAndConverter<?>> futureSource = sourceService
 				.getSourceAndConverters().stream().filter(source -> sourceService

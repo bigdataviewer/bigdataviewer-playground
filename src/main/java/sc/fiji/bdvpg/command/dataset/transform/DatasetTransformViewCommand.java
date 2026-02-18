@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.scijava.services.ui.SpimDataTransformViewer;
+import sc.fiji.bdvpg.dataset.SpimDataTransformViewer;
 
 import javax.swing.SwingUtilities;
 

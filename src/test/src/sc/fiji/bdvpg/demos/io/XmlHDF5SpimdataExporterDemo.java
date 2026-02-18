@@ -34,8 +34,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.sourceandconverter.exporter.XmlHDF5SpimdataExporter;
-import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
+import sc.fiji.bdvpg.source.exporter.XmlHDF5SpimdataExporter;
+import sc.fiji.bdvpg.source.importer.VoronoiSourceGetter;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -34,12 +34,12 @@ import bdv.viewer.SourceAndConverter;
 import ij.IJ;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.ManualRegistrationStarter;
-import sc.fiji.bdvpg.bdv.ManualRegistrationStopper;
+import sc.fiji.bdvpg.viewers.bdv.ManualRegistrationStarter;
+import sc.fiji.bdvpg.viewers.bdv.ManualRegistrationStopper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
+import sc.fiji.bdvpg.source.SourceHelper;
+import sc.fiji.bdvpg.source.transform.SourceTransformHelper;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -93,7 +93,7 @@ public class SourceTransformManualCommand implements BdvPlaygroundActionCommand 
 			case "Append (all timepoints)":
 				manualRegistrationStopper = new ManualRegistrationStopper(
 					manualRegistrationStarter, SourceTransformHelper::append);
-				manualRegistrationStopper.setTimeRange(0, SourceAndConverterHelper
+				manualRegistrationStopper.setTimeRange(0, SourceHelper
 					.getMaxTimepoint(sources));
 				break;
 			case "Append (timepoints before)":
@@ -106,7 +106,7 @@ public class SourceTransformManualCommand implements BdvPlaygroundActionCommand 
 				manualRegistrationStopper = new ManualRegistrationStopper(
 					manualRegistrationStarter, SourceTransformHelper::append);
 				manualRegistrationStopper.setTimeRange(bdvh.getViewerPanel().state()
-					.getCurrentTimepoint(), SourceAndConverterHelper.getMaxTimepoint(
+					.getCurrentTimepoint(), SourceHelper.getMaxTimepoint(
 						sources));
 				break;
 			case "Log":

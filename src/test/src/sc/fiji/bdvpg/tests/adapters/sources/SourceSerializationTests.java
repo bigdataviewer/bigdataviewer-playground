@@ -42,14 +42,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.scijava.Context;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.services.SourceAndConverterServiceLoader;
-import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceRealTransformer;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.services.SourceServiceLoader;
+import sc.fiji.bdvpg.services.SourceServiceSaver;
+import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.source.SourceHelper;
+import sc.fiji.bdvpg.source.transform.SourceAffineTransformer;
+import sc.fiji.bdvpg.source.transform.SourceRealTransformer;
+import sc.fiji.bdvpg.source.transform.SourceResampler;
+import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
 import sc.fiji.persist.IObjectScijavaAdapterService;
 
 import java.io.File;
@@ -101,15 +101,15 @@ public class SourceSerializationTests {
         params.setVoxelDimensions("um", 0.5, 0.5, 1.0);
 
         EmptySource originalSource = new EmptySource(params);
-        SourceAndConverter<?> originalSrc = SourceAndConverterHelper.createSourceAndConverter(originalSource);
+        SourceAndConverter<?> originalSrc = SourceHelper.createSourceAndConverter(originalSource);
 
         // Register, save, clear, reload
-        SourceAndConverterServices.getSourceAndConverterService().register(originalSrc);
+        SourceServices.getSourceAndConverterService().register(originalSrc);
         saveSource(originalSrc);
         clearAndReload();
 
         // Verify
-        List<SourceAndConverter<?>> restoredSources = SourceAndConverterServices
+        List<SourceAndConverter<?>> restoredSources = SourceServices
                 .getSourceAndConverterService().getSourceAndConverters();
 
         Assert.assertEquals("Should have one restored source", 1, restoredSources.size());
@@ -149,7 +149,7 @@ public class SourceSerializationTests {
         new SpimDataFromXmlImporter(xmlPath).run();
 
         // Get the sources that were registered
-        List<SourceAndConverter<?>> sources = SourceAndConverterServices
+        List<SourceAndConverter<?>> sources = SourceServices
                 .getSourceAndConverterService().getSourceAndConverters();
 
         Assert.assertFalse("Should have loaded sources from SpimData", sources.isEmpty());
@@ -162,7 +162,7 @@ public class SourceSerializationTests {
         clearAndReload();
 
         // Verify
-        List<SourceAndConverter<?>> restoredSources = SourceAndConverterServices
+        List<SourceAndConverter<?>> restoredSources = SourceServices
                 .getSourceAndConverterService().getSourceAndConverters();
 
         Assert.assertEquals("Should have one restored source", 1, restoredSources.size());
@@ -184,7 +184,7 @@ public class SourceSerializationTests {
         String xmlPath = "src/test/resources/mri-stack.xml";
         new SpimDataFromXmlImporter(xmlPath).run();
 
-        List<SourceAndConverter<?>> sources = SourceAndConverterServices
+        List<SourceAndConverter<?>> sources = SourceServices
                 .getSourceAndConverterService().getSourceAndConverters();
 
         SourceAndConverter<?> baseSource = sources.get(0);
@@ -199,14 +199,14 @@ public class SourceSerializationTests {
         SourceAffineTransformer transformer = new SourceAffineTransformer(baseSource, transform);
         SourceAndConverter<?> transformedSource = transformer.get();
 
-        SourceAndConverterServices.getSourceAndConverterService().register(transformedSource);
+        SourceServices.getSourceAndConverterService().register(transformedSource);
 
         // Save both the base and transformed source
         saveSources(Arrays.asList(baseSource, transformedSource));
         clearAndReload();
 
         // Verify
-        List<SourceAndConverter<?>> restoredSources = SourceAndConverterServices
+        List<SourceAndConverter<?>> restoredSources = SourceServices
                 .getSourceAndConverterService().getSourceAndConverters();
 
         Assert.assertEquals("Should have two restored sources", 2, restoredSources.size());
@@ -244,7 +244,7 @@ public class SourceSerializationTests {
         String xmlPath = "src/test/resources/mri-stack.xml";
         new SpimDataFromXmlImporter(xmlPath).run();
 
-        List<SourceAndConverter<?>> sources = SourceAndConverterServices
+        List<SourceAndConverter<?>> sources = SourceServices
                 .getSourceAndConverterService().getSourceAndConverters();
 
         SourceAndConverter<?> baseSource = sources.get(0);
@@ -267,14 +267,14 @@ public class SourceSerializationTests {
         SourceRealTransformer transformer = new SourceRealTransformer(baseSource, tps);
         SourceAndConverter<?> warpedSource = transformer.get();
 
-        SourceAndConverterServices.getSourceAndConverterService().register(warpedSource);
+        SourceServices.getSourceAndConverterService().register(warpedSource);
 
         // Save both sources
         saveSources(Arrays.asList(baseSource, warpedSource));
         clearAndReload();
 
         // Verify
-        List<SourceAndConverter<?>> restoredSources = SourceAndConverterServices
+        List<SourceAndConverter<?>> restoredSources = SourceServices
                 .getSourceAndConverterService().getSourceAndConverters();
 
         Assert.assertEquals("Should have two restored sources", 2, restoredSources.size());
@@ -313,7 +313,7 @@ public class SourceSerializationTests {
         String xmlPath = "src/test/resources/mri-stack.xml";
         new SpimDataFromXmlImporter(xmlPath).run();
 
-        List<SourceAndConverter<?>> sources = SourceAndConverterServices
+        List<SourceAndConverter<?>> sources = SourceServices
                 .getSourceAndConverterService().getSourceAndConverters();
 
         SourceAndConverter<?> originSource = sources.get(0);
@@ -328,8 +328,8 @@ public class SourceSerializationTests {
         modelParams.at3D.scale(2.0); // Downsample by factor of 2
 
         EmptySource modelSource = new EmptySource(modelParams);
-        SourceAndConverter<?> modelSrc = SourceAndConverterHelper.createSourceAndConverter(modelSource);
-        SourceAndConverterServices.getSourceAndConverterService().register(modelSrc);
+        SourceAndConverter<?> modelSrc = SourceHelper.createSourceAndConverter(modelSource);
+        SourceServices.getSourceAndConverterService().register(modelSrc);
 
         // Create a ResampledSource
         SourceResampler resampler = new SourceResampler(
@@ -343,14 +343,14 @@ public class SourceSerializationTests {
         );
         SourceAndConverter<?> resampledSource = resampler.get();
 
-        SourceAndConverterServices.getSourceAndConverterService().register(resampledSource);
+        SourceServices.getSourceAndConverterService().register(resampledSource);
 
         // Save all three sources
         saveSources(Arrays.asList(originSource, modelSrc, resampledSource));
         clearAndReload();
 
         // Verify
-        List<SourceAndConverter<?>> restoredSources = SourceAndConverterServices
+        List<SourceAndConverter<?>> restoredSources = SourceServices
                 .getSourceAndConverterService().getSourceAndConverters();
 
         Assert.assertTrue("Should have at least three restored sources",
@@ -380,7 +380,7 @@ public class SourceSerializationTests {
     }
 
     private void saveSources(List<SourceAndConverter<?>> sources) {
-        new SourceAndConverterServiceSaver(
+        new SourceServiceSaver(
                 tempFile,
                 ctx,
                 sources
@@ -393,7 +393,7 @@ public class SourceSerializationTests {
         sourceService.remove(sourceService.getSourceAndConverters().toArray(new SourceAndConverter[0]));
 
         // Reload from file
-        new SourceAndConverterServiceLoader(
+        new SourceServiceLoader(
                 tempFile.getAbsolutePath(),
                 tempFile.getParent(),
                 ctx,

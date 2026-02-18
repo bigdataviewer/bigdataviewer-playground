@@ -33,7 +33,7 @@ import bdv.util.BdvHandle;
 import ij.IJ;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.navigate.SourceNavigatorSliderAdder;
+import sc.fiji.bdvpg.viewers.bdv.navigate.SourceNavigatorSliderAdder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 

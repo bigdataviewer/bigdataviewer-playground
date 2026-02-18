@@ -32,7 +32,7 @@ package sc.fiji.bdvpg.cache;
 import net.imglib2.cache.CacheLoader;
 import net.imglib2.cache.LoaderCache;
 import net.imglib2.cache.ref.WeakRefLoaderCache;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.services.SourceServices;
 
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
@@ -66,7 +66,7 @@ public class GlobalLoaderCache<K, V> implements LoaderCache<K, V> {
 		this.source = source;
 		this.timepoint = timepoint;
 		this.level = level;
-		globalCache = SourceAndConverterServices.getSourceAndConverterService()
+		globalCache = SourceServices.getSourceAndConverterService()
 			.getCache();
 	}
 
@@ -80,7 +80,7 @@ public class GlobalLoaderCache<K, V> implements LoaderCache<K, V> {
 		this.source = source;
 		this.timepoint = -1;
 		this.level = -1;
-		globalCache = SourceAndConverterServices.getSourceAndConverterService()
+		globalCache = SourceServices.getSourceAndConverterService()
 			.getCache();
 	}
 

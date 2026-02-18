@@ -38,13 +38,13 @@ import net.imglib2.FinalRealInterval;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
-import sc.fiji.bdvpg.sourceandconverter.importer.EmptySourceAndConverterCreator;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceResampler;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.source.display.ColorChanger;
+import sc.fiji.bdvpg.source.importer.EmptySourceCreator;
+import sc.fiji.bdvpg.source.transform.SourceResampler;
+import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
 
 public class SimpleResamplingDemo {
 
@@ -67,25 +67,25 @@ public class SimpleResamplingDemo {
         SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter("src/test/resources/mri-stack-multilevel.xml");
         AbstractSpimData<?> asd = importer.get();
 
-        SourceAndConverter<UnsignedShortType> source = (SourceAndConverter<UnsignedShortType>) SourceAndConverterServices
+        SourceAndConverter<UnsignedShortType> source = (SourceAndConverter<UnsignedShortType>) SourceServices
                 .getSourceAndConverterService()
                 .getSourceAndConverterFromSpimdata(asd)
                 .get(0);
 
-        SourceAndConverterServices
+        SourceServices
                 .getBdvDisplayService()
                 .show(source);
 
         // Gets active BdvHandle instance
-        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceServices.getBdvDisplayService().getActiveBdv();
 
-        SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, source );
+        SourceServices.getBdvDisplayService().show( bdvHandle, source );
         new ViewerTransformAdjuster( bdvHandle, source ).run();
         new BrightnessAutoAdjuster<>( source, 0 ).run();
 
         final VoxelDimensions voxelDimensions = new FinalVoxelDimensions("micrometer", 0.5, 0.5, 3.0 );
 
-        SourceAndConverter<?> model = new EmptySourceAndConverterCreator("Model",
+        SourceAndConverter<?> model = new EmptySourceCreator("Model",
                 new FinalRealInterval(new double[]{50,50,50}, new double[]{150,150,150}),
                 100,100,100, voxelDimensions).get();
 
@@ -93,7 +93,7 @@ public class SimpleResamplingDemo {
         SourceAndConverter<UnsignedShortType> box =
                 new SourceResampler<>(source, model, "crop", false,false, false,0).get();
 
-        SourceAndConverterServices.getBdvDisplayService().show( bdvHandle, box );
+        SourceServices.getBdvDisplayService().show( bdvHandle, box );
 
         new ColorChanger(box, new ARGBType(ARGBType.rgba(255, 0,0,255))).run();
 

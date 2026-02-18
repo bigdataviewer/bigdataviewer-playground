@@ -45,12 +45,12 @@ import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.services.ui.tree.SourceTreeModel;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
-import sc.fiji.bdvpg.bdv.supplier.IBdvSupplier;
-import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
+import sc.fiji.bdvpg.viewers.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.scijava.services.tree.SourceTreeModel;
+import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.viewers.bdv.supplier.DefaultBdvSupplier;
+import sc.fiji.bdvpg.viewers.bdv.supplier.IBdvSupplier;
+import sc.fiji.bdvpg.viewers.bdv.supplier.SerializableBdvOptions;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -345,7 +345,7 @@ public class SourceBdvDisplayService extends AbstractService
 		displayToMetadata = CacheBuilder.newBuilder().weakKeys().build();// new
 																																			// HashMap<>();
 		bdvSourceAndConverterService.setDisplayService(this);
-		SourceAndConverterServices.setBdvDisplayService(this);
+		SourceServices.setBdvDisplayService(this);
 		// Catching bdv supplier from Prefs
 		logger.debug("Bdv Playground Display Service initialized.");
 	}
@@ -508,7 +508,7 @@ public class SourceBdvDisplayService extends AbstractService
 
 			// ------------ Event handling in bdv sourceandconverterserviceui
 			final SourceService source_service =
-				(SourceService) SourceAndConverterServices
+				(SourceService) SourceServices
 					.getSourceAndConverterService();
 			SourceTreeModel model = source_service.tree().getSourceTreeModel();
 			model.addBdvHandle(bdvh, windowTitle, model.getRoot());

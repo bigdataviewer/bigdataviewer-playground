@@ -30,7 +30,7 @@ package sc.fiji.bdvpg.demos.io;
 
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
 
 import java.time.Duration;
 import java.time.Instant;

@@ -37,8 +37,8 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.spimdata.exporter.XmlFromSpimDataExporter;
+import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.dataset.exporter.XmlFromSpimDataExporter;
 
 import java.io.File;
 
@@ -78,7 +78,7 @@ public class DatasetXMLSaveCommand implements BdvPlaygroundActionCommand {
 
 			SourceAndConverter<?> source = sources[0];
 
-			if (SourceAndConverterServices.getSourceAndConverterService().getMetadata(
+			if (SourceServices.getSourceAndConverterService().getMetadata(
 				source, SourceService.SPIM_DATA_INFO) == null)
 			{
 				System.err.println(
@@ -87,7 +87,7 @@ public class DatasetXMLSaveCommand implements BdvPlaygroundActionCommand {
 			}
 
 			AbstractSpimData<?> asd =
-				((SourceService.SpimDataInfo) SourceAndConverterServices
+				((SourceService.SpimDataInfo) SourceServices
 					.getSourceAndConverterService().getMetadata(source,
 						SourceService.SPIM_DATA_INFO)).asd;
 

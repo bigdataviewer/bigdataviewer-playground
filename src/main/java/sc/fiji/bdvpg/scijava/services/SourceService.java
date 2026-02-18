@@ -79,12 +79,12 @@ import sc.fiji.bdvpg.cache.AbstractGlobalCache;
 import sc.fiji.bdvpg.cache.GlobalCacheBuilder;
 import sc.fiji.bdvpg.cache.GlobalLoaderCache;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.ui.SourceTree;
+import sc.fiji.bdvpg.scijava.services.tree.SourceTree;
 import sc.fiji.bdvpg.services.ISourceService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-import sc.fiji.bdvpg.spimdata.EntityHandler;
-import sc.fiji.bdvpg.spimdata.IEntityHandlerService;
+import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.source.SourceHelper;
+import sc.fiji.bdvpg.dataset.EntityHandler;
+import sc.fiji.bdvpg.dataset.IEntityHandlerService;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -474,7 +474,7 @@ public class SourceService extends AbstractService implements
 					final SpimSource<?> s = new SpimSource<>(asd, setupId, sourceName);
 
 					// CASTING to RealType IS NECESSARY!!
-					Converter<?, ARGBType> nonVolatileConverter = SourceAndConverterHelper
+					Converter<?, ARGBType> nonVolatileConverter = SourceHelper
 						.createConverterRealType((RealType) s.getType());
 
 					if (!nonVolatile) {
@@ -482,7 +482,7 @@ public class SourceService extends AbstractService implements
 						final VolatileSpimSource vs = new VolatileSpimSource<>(asd, setupId,
 							sourceName);
 
-						Converter<?, ARGBType> volatileConverter = SourceAndConverterHelper
+						Converter<?, ARGBType> volatileConverter = SourceHelper
 							.createConverterRealType((RealType) vs.getType());
 
 						setupIdToSourceAndConverter.put(setupId, new SourceAndConverter(s,
@@ -503,10 +503,10 @@ public class SourceService extends AbstractService implements
 						sourceName);
 					final SpimSource s = new SpimSource<>(asd, setupId, sourceName);
 
-					Converter<?, ARGBType> nonVolatileConverter = SourceAndConverterHelper
+					Converter<?, ARGBType> nonVolatileConverter = SourceHelper
 						.createConverterARGBType(s);
 
-					Converter<?, ARGBType> volatileConverter = SourceAndConverterHelper
+					Converter<?, ARGBType> volatileConverter = SourceHelper
 						.createConverterARGBType(vs);
 					setupIdToSourceAndConverter.put(setupId, new SourceAndConverter<>(s,
 						nonVolatileConverter, new SourceAndConverter<>(vs,
@@ -611,7 +611,7 @@ public class SourceService extends AbstractService implements
 		}
 		// If no ConverterSetup is built then build it
 		if (meta.get(CONVERTER_SETUP) == null) {
-			ConverterSetup setup = SourceAndConverterHelper.createConverterSetup(source);
+			ConverterSetup setup = SourceHelper.createConverterSetup(source);
 			meta.put(CONVERTER_SETUP, setup);
 		}
 
@@ -718,7 +718,7 @@ public class SourceService extends AbstractService implements
 			SourceAndConverter.class);
 		List<SourceAndConverter<?>> nonRawList = new ArrayList<>();
 		list.forEach(nonRawList::add);
-		nonRawList = SourceAndConverterHelper.sortDefaultGeneric(nonRawList);
+		nonRawList = SourceHelper.sortDefaultGeneric(nonRawList);
 		return nonRawList;
 	}
 
@@ -802,7 +802,7 @@ public class SourceService extends AbstractService implements
 			sourceTree = new SourceTree(this, context(), false);
 		}
 
-		SourceAndConverterServices.setSourceAndConverterService(this);
+		SourceServices.setSourceAndConverterService(this);
 		logger.debug("Service initialized.");
 	}
 

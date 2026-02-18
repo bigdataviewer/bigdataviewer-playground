@@ -58,7 +58,7 @@ The library is built around two main SciJava services that work together:
 
 - `sc.fiji.bdvpg.scijava.command.*` - SciJava commands exposed in Fiji menus
 - `sc.fiji.bdvpg.scijava.services.*` - Core SciJava services
-- `sc.fiji.bdvpg.sourceandconverter` - Source manipulation utilities
+- `sc.fiji.bdvpg.source` - Source manipulation utilities
 - `sc.fiji.bdvpg.bdv.*` - BDV-specific helpers and actions
 - `sc.fiji.bdvpg.cache` - Global caching infrastructure
 - `bdv.util.*` - BDV utility classes (ResampledSource, EmptySource, etc.)
@@ -90,7 +90,7 @@ Test files are in `src/test/src/sc/fiji/bdvpg/` (non-standard path from pom-scij
 mvn test
 
 # Run a specific test class
-mvn test -Dtest=sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelperTest
+mvn test -Dtest=sc.fiji.bdvpg.source.SourceAndConverterHelperTest
 
 # Run adapter serialization tests
 mvn test -Dtest="sc.fiji.bdvpg.tests.adapters.*"

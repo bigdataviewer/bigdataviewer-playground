@@ -37,18 +37,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
+import sc.fiji.bdvpg.services.SourceAdapter;
+import sc.fiji.bdvpg.source.SourceHelper;
 
 import java.lang.reflect.Type;
 
 @Plugin(type = ISourceAdapter.class)
 public class EmptySourceAdapter implements ISourceAdapter<EmptySource> {
 
-	SourceAndConverterAdapter sourceSerializer;
+	SourceAdapter sourceSerializer;
 
 	@Override
-	public void setSourceSerializer(SourceAndConverterAdapter sourceSerializer) {
+	public void setSourceSerializer(SourceAdapter sourceSerializer) {
 		this.sourceSerializer = sourceSerializer;
 	}
 
@@ -78,7 +78,7 @@ public class EmptySourceAdapter implements ISourceAdapter<EmptySource> {
 			.deserialize(obj.get("empty_source_parameters"),
 				EmptySource.EmptySourceParams.class);
 
-		return SourceAndConverterHelper.createSourceAndConverter(new EmptySource(
+		return SourceHelper.createSourceAndConverter(new EmptySource(
 			sourceParams));
 	}
 }

@@ -40,11 +40,11 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.bdv.navigate.PositionLogger;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
+import sc.fiji.bdvpg.viewers.bdv.navigate.PositionLogger;
+import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewers.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
+import sc.fiji.bdvpg.source.SourceHelper;
 
 /**
  * ViewTransformSetAndLogDemo
@@ -70,7 +70,7 @@ public class LogMousePositionDemo {
 
         // Makes BDV Source
         Source<T> source = new RandomAccessibleIntervalSource<>(rai, rai.getType(), "blobs");
-        SourceAndConverter<?> src = SourceAndConverterHelper.createSourceAndConverter(source);
+        SourceAndConverter<?> src = SourceHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
         BdvHandle bdvHandle = ij.get(SourceBdvDisplayService.class).getActiveBdv();

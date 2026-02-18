@@ -42,19 +42,19 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
-import sc.fiji.bdvpg.bdv.ManualRegistrationStarter;
-import sc.fiji.bdvpg.bdv.ManualRegistrationStopper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
+import sc.fiji.bdvpg.viewers.bdv.ManualRegistrationStarter;
+import sc.fiji.bdvpg.viewers.bdv.ManualRegistrationStopper;
+import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewers.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.source.SourceHelper;
+import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.source.display.ColorChanger;
+import sc.fiji.bdvpg.source.transform.SourceAffineTransformer;
+import sc.fiji.bdvpg.source.transform.SourceTransformHelper;
+import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
 
 import java.util.List;
 
@@ -102,12 +102,12 @@ public class ManualRegistrationDemo {
         BdvHandle bdvHandle = bdvDisplayService.getNewBdv();
 
         // Creates SourceAndConverter Reference
-        SourceAndConverter<T> sourceReference = SourceAndConverterHelper.createSourceAndConverter(source);
+        SourceAndConverter<T> sourceReference = SourceHelper.createSourceAndConverter(source);
 
         if (demoMode == CreateNewTransformedSourceAndConverter) {
 
             SourceAndConverter<T> sourceToTransform;
-            sourceToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
+            sourceToTransform = SourceHelper.createSourceAndConverter(source);
             new ColorChanger(sourceToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
 
             bdvDisplayService.show(bdvHandle, sourceReference);
@@ -130,7 +130,7 @@ public class ManualRegistrationDemo {
         } else if (demoMode == MutateTransformedSourceAndConverter) {
 
             SourceAndConverter<T> sourceToTransform;
-            sourceToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
+            sourceToTransform = SourceHelper.createSourceAndConverter(source);
             sourceToTransform = new SourceAffineTransformer<>(sourceToTransform, new AffineTransform3D()).get();
             new ColorChanger(sourceToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
 

@@ -34,7 +34,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceAndConverterServiceLoader;
+import sc.fiji.bdvpg.services.SourceServiceLoader;
 
 import java.io.File;
 
@@ -61,7 +61,7 @@ public class SourceServiceLoadState implements
 
 	@Override
 	public void run() {
-		new SourceAndConverterServiceLoader(file.getAbsolutePath(), file
+		new SourceServiceLoader(file.getAbsolutePath(), file
 			.getParent(), ctx, erase_previous_state).run();
 	}
 }

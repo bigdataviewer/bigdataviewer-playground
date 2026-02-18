@@ -33,12 +33,12 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.source.SourceHelper;
+import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
@@ -72,7 +72,7 @@ public class BdvSourcesAddCommand implements BdvPlaygroundActionCommand {
 	public void run() {
 
 		bdvDisplayService.show(bdvh,
-			SourceAndConverterHelper.sortDefault(sources));
+			SourceHelper.sortDefault(sources));
 		if (auto_contrast) {
 			for (SourceAndConverter<?> source : sources) {
 				int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();

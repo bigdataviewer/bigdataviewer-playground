@@ -37,7 +37,7 @@ import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.scijava.services.ui.RenamableSource;
+import sc.fiji.bdvpg.scijava.services.RenamableSource;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;

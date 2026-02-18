@@ -36,7 +36,7 @@ import sc.fiji.bdvpg.demos.transform.BigWarpDemo;
 import sc.fiji.bdvpg.demos.ResamplingDemo;
 import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.demos.transform.WarpedSourceDemo;
-import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
+import sc.fiji.bdvpg.services.SourceServiceSaver;
 
 import java.io.File;
 
@@ -54,7 +54,7 @@ public class BdvPlaygroundStateSaver {
 
         createSources();
 
-        new SourceAndConverterServiceSaver(
+        new SourceServiceSaver(
                 new File("src/test/resources/bdvplaygroundstate.json"),
                 ij.context()
         ).run();

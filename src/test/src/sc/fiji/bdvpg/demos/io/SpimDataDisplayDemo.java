@@ -31,11 +31,11 @@ package sc.fiji.bdvpg.demos.io;
 import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
 
 /**
  * Demonstrates visualisation of two spimData sources.
@@ -53,15 +53,15 @@ public class SpimDataDisplayDemo
 		DemoHelper.startFiji(ij);
 
 		// Gets active BdvHandle instance
-		BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
+		BdvHandle bdvHandle = SourceServices.getBdvDisplayService().getActiveBdv();
 
 		// Import SpimData
 		new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").run();
 		new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
 
 		// Show all SourceAndConverter associated with above SpimData
-		SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( source -> {
-			SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source);
+		SourceServices.getSourceAndConverterService().getSourceAndConverters().forEach(source -> {
+			SourceServices.getBdvDisplayService().show(bdvHandle, source);
 			new ViewerTransformAdjuster(bdvHandle, source).run();
 			new BrightnessAutoAdjuster<>(source, 0).run();
 		});

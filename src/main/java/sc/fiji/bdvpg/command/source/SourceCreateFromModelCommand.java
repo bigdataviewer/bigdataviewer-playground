@@ -35,7 +35,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.sourceandconverter.importer.EmptySourceAndConverterCreator;
+import sc.fiji.bdvpg.source.importer.EmptySourceCreator;
 
 /**
  * Command which creates an empty Source based on a model Source The created
@@ -88,7 +88,7 @@ public class SourceCreateFromModelCommand implements BdvPlaygroundActionCommand 
 
 	@Override
 	public void run() {
-		source = new EmptySourceAndConverterCreator(name, model, timepoint, vox_size_x,
+		source = new EmptySourceCreator(name, model, timepoint, vox_size_x,
 				vox_size_y, vox_size_z).get();
 	}
 }

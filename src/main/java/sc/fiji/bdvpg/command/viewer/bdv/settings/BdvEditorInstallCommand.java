@@ -33,11 +33,11 @@ import bdv.util.BdvHandle;
 import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.behaviour.EditorBehaviourInstaller;
+import sc.fiji.bdvpg.viewers.behaviour.EditorBehaviourInstaller;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.services.SourceServices;
 
 import javax.swing.SwingUtilities;
 
@@ -69,7 +69,7 @@ public class BdvEditorInstallCommand implements BdvPlaygroundActionCommand {
 		SwingUtilities.invokeLater(() -> {
 			for (BdvHandle bdvh : bdvhs) {
 				// Skip if an editor is already installed on this window
-				if (SourceAndConverterServices.getBdvDisplayService().getDisplayMetadata(
+				if (SourceServices.getBdvDisplayService().getDisplayMetadata(
 					bdvh, EditorBehaviourInstaller.class.getSimpleName()) != null)
 				{
 					continue;

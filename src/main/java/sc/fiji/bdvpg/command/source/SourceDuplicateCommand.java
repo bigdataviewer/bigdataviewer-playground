@@ -34,7 +34,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.sourceandconverter.importer.SourceAndConverterDuplicator;
+import sc.fiji.bdvpg.source.importer.SourceDuplicator;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
@@ -53,7 +53,7 @@ public class SourceDuplicateCommand implements BdvPlaygroundActionCommand {
 	public void run() {
 
 		for (SourceAndConverter<?> source : sources) {
-			new SourceAndConverterDuplicator<>(source).get();
+			new SourceDuplicator<>(source).get();
 		}
 
 	}

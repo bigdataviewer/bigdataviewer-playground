@@ -36,9 +36,9 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.log.SystemLogger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.sourceandconverter.importer.MandelbrotSourceGetter;
-import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
-import sc.fiji.bdvpg.sourceandconverter.importer.Wave3DSourceGetter;
+import sc.fiji.bdvpg.source.importer.MandelbrotSourceGetter;
+import sc.fiji.bdvpg.source.importer.VoronoiSourceGetter;
+import sc.fiji.bdvpg.source.importer.Wave3DSourceGetter;
 
 /**
  * @author Nicolas Chiaruttini, EPFL 2020

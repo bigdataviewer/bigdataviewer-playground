@@ -39,7 +39,7 @@ import java.util.List;
  * ImageLoader from a list of {@link bdv.viewer.Source} This is convenient in
  * order to save some sources which are not originating from an existing
  * dataset. See its use in
- * {@link sc.fiji.bdvpg.sourceandconverter.exporter.XmlHDF5SpimdataExporter}
+ * {@link sc.fiji.bdvpg.source.exporter.XmlHDF5SpimdataExporter}
  * Associated SetupLoader {@link BasicSetupImgLoaderFromSource}
  *
  * @param <T> : Type of the pixel used, should be

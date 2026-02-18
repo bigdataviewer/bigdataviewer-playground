@@ -36,9 +36,9 @@ import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.scijava.services.ui.RenamableSource;
-import sc.fiji.bdvpg.scijava.services.ui.swingdnd.JListTransferHandler;
-import sc.fiji.bdvpg.scijava.services.ui.swingdnd.SourceAndConverterServiceUITransferHandler;
+import sc.fiji.bdvpg.scijava.services.RenamableSource;
+import sc.fiji.bdvpg.scijava.services.tree.swingdnd.JListTransferHandler;
+import sc.fiji.bdvpg.scijava.services.tree.swingdnd.SourceServiceUITransferHandler;
 
 import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
@@ -109,7 +109,7 @@ public class SwingSourceAndConverterSortedListWidget extends
 		getComponent().add(innerPanel, BorderLayout.CENTER);
 		tree = new JTree(bss.tree().getTreeModel());
 		tree.setDragEnabled(true);
-		tree.setTransferHandler(new SourceAndConverterServiceUITransferHandler(
+		tree.setTransferHandler(new SourceServiceUITransferHandler(
 			bss.tree().getSourceTreeModel(), bss.tree().getSourceTreeView()));
 		JScrollPane scrollPaneTree = new JScrollPane(tree);
 		scrollPaneTree.setPreferredSize(new Dimension(350, 200));

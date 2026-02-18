@@ -35,8 +35,8 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.scijava.services.ui.tree.FilterNode;
-import sc.fiji.bdvpg.scijava.services.ui.tree.SourceTreeModel;
+import sc.fiji.bdvpg.scijava.services.tree.FilterNode;
+import sc.fiji.bdvpg.scijava.services.tree.SourceTreeModel;
 
 import java.util.Arrays;
 import java.util.HashSet;

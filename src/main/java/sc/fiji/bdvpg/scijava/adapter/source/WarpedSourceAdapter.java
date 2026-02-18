@@ -39,18 +39,18 @@ import com.google.gson.JsonSerializationContext;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceRealTransformer;
+import sc.fiji.bdvpg.services.SourceAdapter;
+import sc.fiji.bdvpg.source.transform.SourceRealTransformer;
 
 import java.lang.reflect.Type;
 
 @Plugin(type = ISourceAdapter.class)
 public class WarpedSourceAdapter implements ISourceAdapter<WarpedSource> {
 
-	SourceAndConverterAdapter sourceSerializer;
+	SourceAdapter sourceSerializer;
 
 	@Override
-	public void setSourceSerializer(SourceAndConverterAdapter sourceSerializer) {
+	public void setSourceSerializer(SourceAdapter sourceSerializer) {
 		this.sourceSerializer = sourceSerializer;
 	}
 
