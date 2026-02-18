@@ -42,7 +42,7 @@ import sc.fiji.bdvpg.scijava.services.RenamableSource;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourcePopupMenu;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.scijava.services.inspect.SourceInspector;
+import sc.fiji.bdvpg.scijava.services.tree.inspect.SourceInspector;
 import sc.fiji.bdvpg.scijava.services.tree.swingdnd.SourceServiceUITransferHandler;
 import sc.fiji.bdvpg.source.SourceHelper;
 

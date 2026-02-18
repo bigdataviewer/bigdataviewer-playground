@@ -27,7 +27,7 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.scijava.services.inspect;
+package sc.fiji.bdvpg.scijava.services.tree.inspect;
 
 import bdv.viewer.SourceAndConverter;
 import sc.fiji.bdvpg.services.ISourceService;
