@@ -38,7 +38,7 @@ import mpicbg.spim.data.sequence.TimePoint;
 import net.imglib2.realtransform.AffineGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -85,7 +85,7 @@ public class SpimDataTransformViewer extends JFrame {
 	private final List<SourceEntry> sourceEntries = new ArrayList<>();
 	private final List<Integer> allTimepoints = new ArrayList<>();
 	private int maxTransformChainLength = 0;
-	private final SourceAndConverterService sourceService;
+	private final SourceService sourceService;
 
 	// UI components
 	private JComboBox<Dimension> rowDimensionCombo;
@@ -148,7 +148,7 @@ public class SpimDataTransformViewer extends JFrame {
 	 * @param sourceService the SourceAndConverterService for metadata access
 	 */
 	public SpimDataTransformViewer(SourceAndConverter<?>[] sources,
-		SourceAndConverterService sourceService)
+		SourceService sourceService)
 	{
 		super("SpimData Transform Viewer");
 		this.sourceService = sourceService;
@@ -177,15 +177,15 @@ public class SpimDataTransformViewer extends JFrame {
 	}
 
 	private void collectSources(SourceAndConverter<?>[] sources,
-		SourceAndConverterService sourceService)
+		SourceService sourceService)
 	{
 		int excludedCount = 0;
 		for (SourceAndConverter<?> source : sources) {
 			Object metadata = sourceService.getMetadata(source,
-				SourceAndConverterService.SPIM_DATA_INFO);
-			if (metadata instanceof SourceAndConverterService.SpimDataInfo) {
-				SourceAndConverterService.SpimDataInfo info =
-					(SourceAndConverterService.SpimDataInfo) metadata;
+				SourceService.SPIM_DATA_INFO);
+			if (metadata instanceof SourceService.SpimDataInfo) {
+				SourceService.SpimDataInfo info =
+					(SourceService.SpimDataInfo) metadata;
 				sourceEntries.add(new SourceEntry(source, info.asd, info.setupId));
 			}
 			else {

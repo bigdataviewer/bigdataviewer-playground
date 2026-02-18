@@ -34,10 +34,10 @@ import org.scijava.ui.UIService;
 import org.scijava.ui.swing.SwingUI;
 import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.scijava.BdvScijavaHelper;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 
 /**
- * Demos a way to create a Bdv window which will be registered by the {@link SourceAndConverterBdvDisplayService}
+ * Demos a way to create a Bdv window which will be registered by the {@link SourceBdvDisplayService}
  * It is thus discoverable by all the other components of BigDataViewer-playground, in particular
  * as scijava parameters typed {@link bdv.util.BdvHandle} or {@link bdv.util.BdvHandle[]} in
  * {@link org.scijava.command.Command}.
@@ -51,10 +51,10 @@ public class BdvCreatorDemo {
 		ctx.service(UIService.class).showUI(SwingUI.NAME);
 
 		// Creates a new BDV
-		ctx.getService(SourceAndConverterBdvDisplayService.class).getNewBdv();
+		ctx.getService(SourceBdvDisplayService.class).getNewBdv();
 
 		// Returns the previous BDV or the one "on top", meaning the one clicked by the user
-		BdvHandle bdvh = ctx.getService(SourceAndConverterBdvDisplayService.class).getActiveBdv();
+		BdvHandle bdvh = ctx.getService(SourceBdvDisplayService.class).getActiveBdv();
 
 		BdvScijavaHelper.addActionToBdvHandleMenu(bdvh,"File>SubMenu1>SubMenu2>Say Hello 1!",0, () -> bdvh.getViewerPanel().showMessage("Hello!"));
 		BdvScijavaHelper.addSeparator(bdvh,"File>SubMenu1");

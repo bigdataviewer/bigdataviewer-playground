@@ -30,14 +30,14 @@ The project uses Java 8 and inherits from `pom-scijava` parent POM (version 43.0
 
 The library is built around two main SciJava services that work together:
 
-1. **SourceAndConverterService** (`sc.fiji.bdvpg.scijava.services.SourceAndConverterService`)
+1. **SourceAndConverterService** (`sc.fiji.bdvpg.scijava.services.SourceService`)
    - Central registry for all `SourceAndConverter` objects
    - Manages metadata associated with sources (stored in weak-key caches)
    - Handles SpimData registration and source creation from HDF5/N5 datasets (or other backends coming from other libraries)
    - Provides action registration system for contextual menus
    - Manages a global cache for image data across all datasets
 
-2. **SourceAndConverterBdvDisplayService** (`sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService`)
+2. **SourceAndConverterBdvDisplayService** (`sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService`)
    - Manages display of sources in BDV windows
    - Handles multiple simultaneous BdvHandle instances
    - Tracks source visibility across different viewers

@@ -31,9 +31,9 @@ package sc.fiji.bdvpg.scijava.services.ui.tree;
 
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
-import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
+import static sc.fiji.bdvpg.scijava.services.SourceService.SPIM_DATA_INFO;
 
 /**
  * Filter node that selects sources belonging to a specific SpimData dataset.
@@ -46,7 +46,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
 public class SpimDataFilterNode extends FilterNode {
 
     private final AbstractSpimData<?> spimData;
-    private final SourceAndConverterService sourceAndConverterService;
+    private final SourceService sourceAndConverterService;
 
     /**
      * Creates a new SpimDataFilterNode.
@@ -57,7 +57,7 @@ public class SpimDataFilterNode extends FilterNode {
      */
     public SpimDataFilterNode(String name,
                                AbstractSpimData<?> spimData,
-                               SourceAndConverterService sourceAndConverterService) {
+                               SourceService sourceAndConverterService) {
         super(name, null, false);
         this.spimData = spimData;
         this.sourceAndConverterService = sourceAndConverterService;
@@ -71,8 +71,8 @@ public class SpimDataFilterNode extends FilterNode {
         if (!sourceAndConverterService.containsMetadata(source, SPIM_DATA_INFO)) {
             return false;
         }
-        SourceAndConverterService.SpimDataInfo info =
-                (SourceAndConverterService.SpimDataInfo) sourceAndConverterService.getMetadata(source, SPIM_DATA_INFO);
+        SourceService.SpimDataInfo info =
+                (SourceService.SpimDataInfo) sourceAndConverterService.getMetadata(source, SPIM_DATA_INFO);
         return info != null && info.asd.equals(spimData);
     }
 

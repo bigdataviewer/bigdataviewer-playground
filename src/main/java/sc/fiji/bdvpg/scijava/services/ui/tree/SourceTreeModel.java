@@ -32,7 +32,7 @@ package sc.fiji.bdvpg.scijava.services.ui.tree;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,7 +70,7 @@ public class SourceTreeModel {
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final FilterNode root;
     private final FilterNode otherSourcesNode;
-    private final SourceAndConverterService sourceAndConverterService;
+    private final SourceService sourceAndConverterService;
     private final SpimDataFilterFactory spimDataFilterFactory;
 
     // Indexes for O(1) lookup
@@ -86,7 +86,7 @@ public class SourceTreeModel {
      *
      * @param sourceAndConverterService the service for metadata queries
      */
-    public SourceTreeModel(SourceAndConverterService sourceAndConverterService) {
+    public SourceTreeModel(SourceService sourceAndConverterService) {
         this.sourceAndConverterService = sourceAndConverterService;
         this.spimDataFilterFactory = new SpimDataFilterFactory(sourceAndConverterService);
 
@@ -96,7 +96,7 @@ public class SourceTreeModel {
         // Create "Other Sources" node for sources not in any SpimData
         this.otherSourcesNode = new FilterNode("Other Sources",
                 source -> !sourceAndConverterService.containsMetadata(source,
-                        SourceAndConverterService.SPIM_DATA_INFO), true);
+                        SourceService.SPIM_DATA_INFO), true);
         root.addChild(otherSourcesNode);
     }
 

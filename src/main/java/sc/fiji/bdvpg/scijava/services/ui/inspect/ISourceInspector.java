@@ -29,9 +29,8 @@
 
 package sc.fiji.bdvpg.scijava.services.ui.inspect;
 
-import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import sc.fiji.bdvpg.services.ISourceAndConverterService;
+import sc.fiji.bdvpg.services.ISourceService;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.Set;
@@ -74,7 +73,7 @@ public interface ISourceInspector {
 	Set<SourceAndConverter<?>> inspect(
 		DefaultMutableTreeNode parent,
 		SourceAndConverter<?> source,
-		ISourceAndConverterService sourceAndConverterService,
+		ISourceService sourceAndConverterService,
 		boolean registerIntermediateSources
 	);
 }

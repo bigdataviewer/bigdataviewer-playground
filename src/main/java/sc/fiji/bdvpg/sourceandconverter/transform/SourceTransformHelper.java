@@ -36,13 +36,13 @@ import mpicbg.spim.data.registration.ViewRegistration;
 import mpicbg.spim.data.registration.ViewTransform;
 import mpicbg.spim.data.registration.ViewTransformAffine;
 import net.imglib2.realtransform.AffineTransform3D;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAndTimeRange;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
-import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
+import static sc.fiji.bdvpg.scijava.services.SourceService.SPIM_DATA_INFO;
 
 /**
  * Helper class that helps to apply an affinetransform to a
@@ -215,10 +215,10 @@ public class SourceTransformHelper {
 			.containsMetadata(sourceTR.source, SPIM_DATA_INFO);
 		assert SourceAndConverterServices.getSourceAndConverterService()
 			.getMetadata(sourceTR.source,
-				SPIM_DATA_INFO) instanceof SourceAndConverterService.SpimDataInfo;
+				SPIM_DATA_INFO) instanceof SourceService.SpimDataInfo;
 
-		SourceAndConverterService.SpimDataInfo sdi =
-			((SourceAndConverterService.SpimDataInfo) SourceAndConverterServices
+		SourceService.SpimDataInfo sdi =
+			((SourceService.SpimDataInfo) SourceAndConverterServices
 				.getSourceAndConverterService().getMetadata(sourceTR.source, SPIM_DATA_INFO));
 
 		sourceTR.getTimePoints().forEach(timePoint -> {
@@ -276,10 +276,10 @@ public class SourceTransformHelper {
 			.containsMetadata(sourceTR.source, SPIM_DATA_INFO);
 		assert SourceAndConverterServices.getSourceAndConverterService()
 			.getMetadata(sourceTR.source,
-				SPIM_DATA_INFO) instanceof SourceAndConverterService.SpimDataInfo;
+				SPIM_DATA_INFO) instanceof SourceService.SpimDataInfo;
 
-		SourceAndConverterService.SpimDataInfo sdi =
-			((SourceAndConverterService.SpimDataInfo) SourceAndConverterServices
+		SourceService.SpimDataInfo sdi =
+			((SourceService.SpimDataInfo) SourceAndConverterServices
 				.getSourceAndConverterService().getMetadata(sourceTR.source, SPIM_DATA_INFO));
 
 		sourceTR.getTimePoints().forEach(timePoint -> {
@@ -334,10 +334,10 @@ public class SourceTransformHelper {
 			.containsMetadata(sourceTR.source, SPIM_DATA_INFO);
 		assert SourceAndConverterServices.getSourceAndConverterService()
 			.getMetadata(sourceTR.source,
-				SPIM_DATA_INFO) instanceof SourceAndConverterService.SpimDataInfo;
+				SPIM_DATA_INFO) instanceof SourceService.SpimDataInfo;
 
-		SourceAndConverterService.SpimDataInfo sdi =
-			((SourceAndConverterService.SpimDataInfo) SourceAndConverterServices
+		SourceService.SpimDataInfo sdi =
+			((SourceService.SpimDataInfo) SourceAndConverterServices
 				.getSourceAndConverterService().getMetadata(sourceTR.source, SPIM_DATA_INFO));
 
 		ViewTransform newvt = new ViewTransformAffine("Manual transform",

@@ -34,8 +34,8 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceOutOfBoundsColorChanger;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
@@ -52,7 +52,7 @@ public class SourceBgChangerDemo {
 
         // Creates a BdvHandle
         BdvHandle bdvHandle =
-                ij.get(SourceAndConverterBdvDisplayService.class).getActiveBdv();
+                ij.get(SourceBdvDisplayService.class).getActiveBdv();
 
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData
@@ -61,7 +61,7 @@ public class SourceBgChangerDemo {
 
         final AbstractSpimData<?> spimData = importer.get();
 
-        SourceAndConverter<UnsignedShortType> source = (SourceAndConverter<UnsignedShortType>) ij.get(SourceAndConverterService.class)
+        SourceAndConverter<UnsignedShortType> source = (SourceAndConverter<UnsignedShortType>) ij.get(SourceService.class)
                 .getSourceAndConverterFromSpimdata(spimData)
                 .get(0);
 

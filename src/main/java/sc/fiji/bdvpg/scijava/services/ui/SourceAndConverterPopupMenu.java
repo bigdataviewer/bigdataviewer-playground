@@ -62,7 +62,7 @@ import java.util.Enumeration;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getCommandName;
+import static sc.fiji.bdvpg.scijava.services.SourceService.getCommandName;
 
 public class SourceAndConverterPopupMenu {
 

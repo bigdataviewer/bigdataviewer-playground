@@ -38,8 +38,8 @@ import net.imglib2.type.numeric.ARGBType;
 import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.register.BigWarpLauncher;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
@@ -61,8 +61,8 @@ public class BigWarpDemo {
     }
 
     public static void demo3d(ImageJ ij) {
-        SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
-        SourceAndConverterBdvDisplayService displayService = ij.get(SourceAndConverterBdvDisplayService.class);
+        SourceService sourceService = ij.get(SourceService.class);
+        SourceBdvDisplayService displayService = ij.get(SourceBdvDisplayService.class);
 
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData
@@ -122,8 +122,8 @@ public class BigWarpDemo {
 
 
     public static void demo2d(ImageJ ij) {
-        SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
-        SourceAndConverterBdvDisplayService displayService = ij.get(SourceAndConverterBdvDisplayService.class);
+        SourceService sourceService = ij.get(SourceService.class);
+        SourceBdvDisplayService displayService = ij.get(SourceBdvDisplayService.class);
 
         // Makes BDV Source
 

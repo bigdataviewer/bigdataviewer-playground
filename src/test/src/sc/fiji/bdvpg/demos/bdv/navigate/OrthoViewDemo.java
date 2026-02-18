@@ -34,8 +34,8 @@ import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 import sc.fiji.bdvpg.viewers.ViewerAdapter;
@@ -63,8 +63,8 @@ public class OrthoViewDemo {
         DemoHelper.startFiji(ij);
 
         // Gets both services
-        SourceAndConverterBdvDisplayService bdvDisplayService = ij.get(SourceAndConverterBdvDisplayService.class);
-        SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
+        SourceBdvDisplayService bdvDisplayService = ij.get(SourceBdvDisplayService.class);
+        SourceService sourceService = ij.get(SourceService.class);
 
         new SpimDataFromXmlImporter( "src/test/resources/mri-stack.xml" ).run();
 

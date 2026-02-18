@@ -68,11 +68,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import sc.fiji.persist.ScijavaGsonHelper;
 
-import javax.swing.tree.DefaultTreeModel;
-
 /**
  * SciJava Service which handles the Display of BDV SourceAndConverters in one
- * or multiple BDV Windows Pairs with BdvSourceAndConverterService, but this
+ * or multiple BDV Windows Pairs with BdvSourceService, but this
  * service is optional Handling multiple Sources displayed in potentially
  * multiple BDV Windows Make its best to keep in synchronizations all of this,
  * without creating errors nor memory leaks
@@ -81,12 +79,12 @@ import javax.swing.tree.DefaultTreeModel;
 @SuppressWarnings("unused") // Because SciJava parameters are filled through
 														// reflection
 @Plugin(type = Service.class)
-public class SourceAndConverterBdvDisplayService extends AbstractService
+public class SourceBdvDisplayService extends AbstractService
 	implements SciJavaService
 {
 
 	protected static final Logger logger = LoggerFactory.getLogger(
-		SourceAndConverterBdvDisplayService.class);
+		SourceBdvDisplayService.class);
 
 	public static final String CONVERTER_SETUP = "ConverterSetup";
 
@@ -100,7 +98,7 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 	 * Service containing all registered BDV Sources
 	 **/
 	@Parameter
-	SourceAndConverterService bdvSourceAndConverterService;
+	SourceService bdvSourceAndConverterService;
 
 	/**
 	 * Used to retrieve the last active BDV Windows (if the activated callback has
@@ -509,16 +507,16 @@ public class SourceAndConverterBdvDisplayService extends AbstractService
 			BdvHandleHelper.setWindowTitle(bdvh, windowTitle);
 
 			// ------------ Event handling in bdv sourceandconverterserviceui
-			final SourceAndConverterService source_service =
-				(SourceAndConverterService) SourceAndConverterServices
+			final SourceService source_service =
+				(SourceService) SourceAndConverterServices
 					.getSourceAndConverterService();
-			SourceTreeModel model = source_service.getUI().getSourceTreeModel();
+			SourceTreeModel model = source_service.tree().getSourceTreeModel();
 			model.addBdvHandle(bdvh, windowTitle, model.getRoot());
 
 			// ------------ Allows to remove the BdvHandle from the objectService when
 			// closed by the user
 			BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService, this, true,
-				() -> source_service.getUI().removeBdvHandleNodes(bdvh));
+				() -> source_service.tree().removeBdvHandleNodes(bdvh));
 
 			//source_service.getUI().getTreeModel().
 

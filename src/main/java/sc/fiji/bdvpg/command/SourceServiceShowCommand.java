@@ -32,7 +32,7 @@ package sc.fiji.bdvpg.command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
 @SuppressWarnings({ "unused", "CanBeFinal" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
@@ -43,11 +43,11 @@ public class SourceServiceShowCommand implements
 {
 
 	@Parameter
-	SourceAndConverterService source_service;
+	SourceService source_service;
 
 	public void run() {
-		if (source_service.getUI() != null) {
-			source_service.getUI().show();
+		if (source_service.tree() != null) {
+			source_service.tree().show();
 		}
 		else {
 			System.err.println("Error : no UI available");

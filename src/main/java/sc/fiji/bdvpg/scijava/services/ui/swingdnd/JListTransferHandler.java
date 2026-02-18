@@ -35,9 +35,9 @@ import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.scijava.services.ui.RenamableSource;
-import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
+import sc.fiji.bdvpg.scijava.services.ui.SourceTree;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
@@ -160,12 +160,12 @@ public class JListTransferHandler extends TransferHandler {
 			}
 
 			if (SourceAndConverterServices
-				.getSourceAndConverterService() instanceof SourceAndConverterService)
+				.getSourceAndConverterService() instanceof SourceService)
 			{
 				List<SourceAndConverter<?>> sources = new ArrayList<>();
-				SourceAndConverterServiceUI ui =
-					((SourceAndConverterService) SourceAndConverterServices
-						.getSourceAndConverterService()).getUI();
+				SourceTree ui =
+					((SourceService) SourceAndConverterServices
+						.getSourceAndConverterService()).tree();
 
 				for (DefaultMutableTreeNode node : Objects.requireNonNull(nodes)) {
 					DefaultMutableTreeNode unwrapped = (DefaultMutableTreeNode) (node

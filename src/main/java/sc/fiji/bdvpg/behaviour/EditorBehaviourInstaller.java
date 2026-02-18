@@ -52,7 +52,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
-import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.getCommandName;
+import static sc.fiji.bdvpg.scijava.services.SourceService.getCommandName;
 
 /**
  * BDV Actions called by default on each BDV Window being created See

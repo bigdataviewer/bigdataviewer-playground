@@ -40,7 +40,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.function.Function;
 
-import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_LOCATION;
+import static sc.fiji.bdvpg.scijava.services.SourceService.SPIM_DATA_LOCATION;
 
 public class SpimDataFromXmlImporter implements Runnable,
 	Function<String, AbstractSpimData<?>>

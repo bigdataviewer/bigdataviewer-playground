@@ -43,7 +43,7 @@ import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.spimdata.EntityHandler;
 import sc.fiji.bdvpg.spimdata.IEntityHandlerService;
@@ -54,8 +54,8 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_LOCATION;
-import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_INFO;
+import static sc.fiji.bdvpg.scijava.services.SourceService.SPIM_DATA_LOCATION;
+import static sc.fiji.bdvpg.services.ISourceService.SPIM_DATA_INFO;
 
 public class XmlFromSpimDataExporter implements Runnable {
 
@@ -109,12 +109,12 @@ public class XmlFromSpimDataExporter implements Runnable {
 				// For convenience : map setup id with sources
 				Map<Integer, SourceAndConverter<?>> idToSource = new HashMap<>();
 
-				SourceAndConverterService source_service = context.getService(
-					SourceAndConverterService.class);
+				SourceService source_service = context.getService(
+					SourceService.class);
 
 				source_service.getSourceAndConverterFromSpimdata(spimData).forEach(source -> {
-					SourceAndConverterService.SpimDataInfo sdi =
-						(SourceAndConverterService.SpimDataInfo) source_service.getMetadata(
+					SourceService.SpimDataInfo sdi =
+						(SourceService.SpimDataInfo) source_service.getMetadata(
 							source, SPIM_DATA_INFO);
 					idToSource.put(sdi.setupId, source);
 				});

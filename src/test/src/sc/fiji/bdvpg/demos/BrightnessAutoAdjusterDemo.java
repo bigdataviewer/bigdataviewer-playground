@@ -35,8 +35,8 @@ import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.bdv.sourceandconverter.SourceAdder;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
@@ -65,12 +65,12 @@ public class BrightnessAutoAdjusterDemo
 		DemoHelper.startFiji(ij);//ij.ui().showUI();
 
 		// Creates a BdvHandle
-		bdvHandle = ij.get(SourceAndConverterBdvDisplayService.class).getActiveBdv();
+		bdvHandle = ij.get(SourceBdvDisplayService.class).getActiveBdv();
 
         AbstractSpimData<?> asd = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
 
         List<SourceAndConverter<?>> sourcesFromSpimData =
-				ij.get(SourceAndConverterService.class)
+				ij.get(SourceService.class)
                 .getSourceAndConverterFromSpimdata(asd);
 
         addSource(bdvHandle, sourcesFromSpimData.get(0));

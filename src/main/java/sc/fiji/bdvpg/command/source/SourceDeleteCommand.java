@@ -34,7 +34,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
@@ -50,7 +50,7 @@ public class SourceDeleteCommand implements BdvPlaygroundActionCommand {
 	SourceAndConverter<?>[] sources;
 
 	@Parameter
-	SourceAndConverterService source_service;
+    SourceService source_service;
 
 	@Override
 	public void run() {

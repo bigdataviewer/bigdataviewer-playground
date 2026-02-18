@@ -37,7 +37,7 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
@@ -75,7 +75,7 @@ public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
 	public BdvHandle bdvh;
 
 	@Parameter
-	SourceAndConverterBdvDisplayService bdvDisplayService;
+    SourceBdvDisplayService bdvDisplayService;
 
 	@Override
 	public void run() {

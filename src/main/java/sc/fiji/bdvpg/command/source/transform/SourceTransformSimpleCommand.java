@@ -37,7 +37,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAndTimeRange;
 import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
 
@@ -91,7 +91,7 @@ public class SourceTransformSimpleCommand implements BdvPlaygroundActionCommand 
 	boolean global_change;
 
 	@Parameter
-	SourceAndConverterBdvDisplayService bdvDisplayService;
+    SourceBdvDisplayService bdvDisplayService;
 
 	@Override
 	public void run() {

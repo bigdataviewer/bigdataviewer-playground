@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.scijava.services.ui.SpimDataTransformViewer;
 
 import javax.swing.SwingUtilities;
@@ -70,7 +70,7 @@ public class DatasetTransformViewCommand implements BdvPlaygroundActionCommand
 	SourceAndConverter<?>[] sources;
 
 	@Parameter
-	SourceAndConverterService source_service;
+	SourceService source_service;
 	@Override
 	public void run() {
 		if (sources == null || sources.length == 0) {

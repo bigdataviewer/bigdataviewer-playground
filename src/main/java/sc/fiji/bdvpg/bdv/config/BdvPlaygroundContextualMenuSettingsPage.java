@@ -37,7 +37,7 @@ import org.scijava.Context;
 import org.scijava.listeners.Listeners;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
 import javax.swing.DropMode;
 import javax.swing.JList;
@@ -169,7 +169,7 @@ public class BdvPlaygroundContextualMenuSettingsPage implements SettingsPage {
 		public BdvPgContextMenuEditor(String[] initialState, Context context) {
 			this.setLayout(new GridLayout(0, 2));
 			String[] allActionKeys = new ArrayList<>(
-					context.getService(SourceAndConverterService.class).getActionsKeys()).toArray(
+					context.getService(SourceService.class).getActionsKeys()).toArray(
 					new String[0]);
 
 			JList<String> allActions = new JList<>(allActionKeys);

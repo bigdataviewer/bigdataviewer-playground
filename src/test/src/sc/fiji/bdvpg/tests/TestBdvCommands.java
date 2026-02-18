@@ -40,8 +40,8 @@ import org.scijava.command.CommandService;
 import org.scijava.script.ScriptService;
 import org.scijava.ui.UIService;
 import sc.fiji.bdvpg.command.viewer.bdv.BdvCreateCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.persist.IObjectScijavaAdapterService;
 
 import java.util.concurrent.ExecutionException;
@@ -49,21 +49,21 @@ import java.util.concurrent.ExecutionException;
 public class TestBdvCommands {
     Context ctx;
 
-    SourceAndConverterService sourceService;
-    SourceAndConverterBdvDisplayService sourceDisplayService;
+    SourceService sourceService;
+    SourceBdvDisplayService sourceDisplayService;
     CommandService commandService;
     @Before
     public void startFiji() {
         // Initializes static SourceService
         ctx = new Context(UIService.class,
-                SourceAndConverterService.class,
-                SourceAndConverterBdvDisplayService.class,
+                SourceService.class,
+                SourceBdvDisplayService.class,
                 IObjectScijavaAdapterService.class,
                 LegacyService.class); // for ij1 macro testing
 
-        sourceDisplayService = ctx.getService(SourceAndConverterBdvDisplayService.class);
+        sourceDisplayService = ctx.getService(SourceBdvDisplayService.class);
 
-        sourceService = ctx.getService(SourceAndConverterService.class);
+        sourceService = ctx.getService(SourceService.class);
 
         commandService = ctx.getService(CommandService.class);
     }

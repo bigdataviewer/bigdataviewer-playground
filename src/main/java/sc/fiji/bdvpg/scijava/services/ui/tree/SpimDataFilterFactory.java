@@ -35,7 +35,7 @@ import mpicbg.spim.data.generic.base.NamedEntity;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -73,14 +73,14 @@ import java.util.stream.Collectors;
  */
 public class SpimDataFilterFactory {
 
-    private final SourceAndConverterService sourceAndConverterService;
+    private final SourceService sourceAndConverterService;
 
     /**
      * Creates a new SpimDataFilterFactory.
      *
      * @param sourceAndConverterService the service to use for metadata queries
      */
-    public SpimDataFilterFactory(SourceAndConverterService sourceAndConverterService) {
+    public SpimDataFilterFactory(SourceService sourceAndConverterService) {
         this.sourceAndConverterService = sourceAndConverterService;
     }
 

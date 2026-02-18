@@ -52,7 +52,7 @@ import java.util.function.Consumer;
  * view
  */
 
-public interface ISourceAndConverterService {
+public interface ISourceService {
 
 	/**
 	 * Reserved key for the data map. data.get(SourceAndConverter).get(SPIM_DATA)

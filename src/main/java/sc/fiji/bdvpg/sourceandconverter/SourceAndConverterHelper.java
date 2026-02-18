@@ -29,7 +29,6 @@
 
 package sc.fiji.bdvpg.sourceandconverter;
 
-import bdv.AbstractSpimSource;
 import bdv.BigDataViewer;
 import bdv.img.WarpedSource;
 import bdv.tools.brightness.ConverterSetup;
@@ -62,7 +61,7 @@ import net.imglib2.util.Intervals;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.ArrayList;
@@ -674,12 +673,12 @@ public class SourceAndConverterHelper {
 
 		for (SourceAndConverter<?> source : sortedList) {
 			Object metadata = SourceAndConverterServices.getSourceAndConverterService()
-				.getMetadata(source, SourceAndConverterService.SPIM_DATA_INFO);
+				.getMetadata(source, SourceService.SPIM_DATA_INFO);
 
 			ComparableKey key;
 			if (metadata != null) {
-				SourceAndConverterService.SpimDataInfo sdi =
-					(SourceAndConverterService.SpimDataInfo) metadata;
+				SourceService.SpimDataInfo sdi =
+					(SourceService.SpimDataInfo) metadata;
 
 				// Assign a stable ID to each unique asd object
 				if (!asdIdMap.containsKey(sdi.asd)) {
@@ -774,12 +773,12 @@ public class SourceAndConverterHelper {
 
 		for (SourceAndConverter source : sortedList) {
 			Object metadata = SourceAndConverterServices.getSourceAndConverterService()
-				.getMetadata(source, SourceAndConverterService.SPIM_DATA_INFO);
+				.getMetadata(source, SourceService.SPIM_DATA_INFO);
 
 			ComparableKey key;
 			if (metadata != null) {
-				SourceAndConverterService.SpimDataInfo sdi =
-					(SourceAndConverterService.SpimDataInfo) metadata;
+				SourceService.SpimDataInfo sdi =
+					(SourceService.SpimDataInfo) metadata;
 
 				// Assign a stable ID to each unique asd object
 				if (!asdIdMap.containsKey(sdi.asd)) {

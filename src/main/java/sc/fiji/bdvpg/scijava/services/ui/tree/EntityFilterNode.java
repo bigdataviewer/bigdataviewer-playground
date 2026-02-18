@@ -34,9 +34,9 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.base.Entity;
 import mpicbg.spim.data.generic.sequence.AbstractSequenceDescription;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
-import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA_INFO;
+import static sc.fiji.bdvpg.scijava.services.SourceService.SPIM_DATA_INFO;
 
 /**
  * Filter node that selects sources linked to a specific SpimData entity.
@@ -50,7 +50,7 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterService.SPIM_DATA
 public class EntityFilterNode extends FilterNode {
 
     private final Entity entity;
-    private final SourceAndConverterService sourceAndConverterService;
+    private final SourceService sourceAndConverterService;
 
     /**
      * Creates a new EntityFilterNode.
@@ -61,7 +61,7 @@ public class EntityFilterNode extends FilterNode {
      */
     public EntityFilterNode(String name,
                             Entity entity,
-                            SourceAndConverterService sourceAndConverterService) {
+                            SourceService sourceAndConverterService) {
         super(name, null, false);
         this.entity = entity;
         this.sourceAndConverterService = sourceAndConverterService;
@@ -77,8 +77,8 @@ public class EntityFilterNode extends FilterNode {
             return false;
         }
 
-        SourceAndConverterService.SpimDataInfo info =
-                (SourceAndConverterService.SpimDataInfo) sourceAndConverterService.getMetadata(source, SPIM_DATA_INFO);
+        SourceService.SpimDataInfo info =
+                (SourceService.SpimDataInfo) sourceAndConverterService.getMetadata(source, SPIM_DATA_INFO);
         if (info == null) {
             return false;
         }

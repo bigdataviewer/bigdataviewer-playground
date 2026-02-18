@@ -42,8 +42,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.util.Set;
@@ -94,7 +94,7 @@ public class DatasetTransformAddCommand implements BdvPlaygroundActionCommand {
 	String transform_name = "Manual transform";
 
 	@Parameter
-	SourceAndConverterBdvDisplayService displayService;
+	SourceBdvDisplayService displayService;
 
 	@Override
 	public void run() {
@@ -133,7 +133,7 @@ public class DatasetTransformAddCommand implements BdvPlaygroundActionCommand {
 		for (SourceAndConverter<?> source : sources) {
 			// Get SpimData info
 			Object info = SourceAndConverterServices.getSourceAndConverterService()
-				.getMetadata(source, SourceAndConverterService.SPIM_DATA_INFO);
+				.getMetadata(source, SourceService.SPIM_DATA_INFO);
 
 			if (info == null) {
 				logger.warn("Source '{}' has no associated SpimData, skipping",
@@ -141,8 +141,8 @@ public class DatasetTransformAddCommand implements BdvPlaygroundActionCommand {
 				continue;
 			}
 
-			SourceAndConverterService.SpimDataInfo spimDataInfo =
-				(SourceAndConverterService.SpimDataInfo) info;
+			SourceService.SpimDataInfo spimDataInfo =
+				(SourceService.SpimDataInfo) info;
 			AbstractSpimData<?> spimData = spimDataInfo.asd;
 			int setupId = spimDataInfo.setupId;
 

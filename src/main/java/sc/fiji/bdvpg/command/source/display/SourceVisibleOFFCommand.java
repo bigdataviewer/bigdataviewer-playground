@@ -34,7 +34,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
@@ -53,7 +53,7 @@ public class SourceVisibleOFFCommand implements
 	SourceAndConverter<?>[] sources;
 
 	@Parameter
-	SourceAndConverterBdvDisplayService bsds;
+    SourceBdvDisplayService bsds;
 
 	@Override
 	public void run() {

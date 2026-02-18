@@ -37,7 +37,7 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.viewers.ViewerAdapter;
 import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
 import sc.fiji.bdvpg.viewers.ViewerStateSyncStarter;
@@ -111,7 +111,7 @@ public class BdvOrthoCreatorCommand implements BdvPlaygroundActionCommand {
 	public BdvHandle bdvhz;
 
 	@Parameter
-	SourceAndConverterBdvDisplayService sourceDisplayService;
+    SourceBdvDisplayService sourceDisplayService;
 
 	@Parameter(label = "Synchronize sources",
 			description = "When enabled, sources added to one window will appear in all three windows")

@@ -33,7 +33,7 @@ import bdv.viewer.SourceAndConverter;
 import org.scijava.convert.AbstractConverter;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
 import javax.swing.tree.TreePath;
 import java.util.List;
@@ -49,14 +49,14 @@ public class StringToSourceAndConverter<I extends String> extends
 {
 
 	@Parameter
-	SourceAndConverterService source_service;
+	SourceService source_service;
 
 	@Override
 	public <T> T convert(Object src, Class<T> dest) {
 		String str = (String) src;
-		TreePath tp = source_service.getUI().getTreePathFromString(str);
+		TreePath tp = source_service.tree().getTreePathFromString(str);
 		if (tp != null) {
-			List<SourceAndConverter<?>> potentialSources = source_service.getUI().getSourceAndConvertersFromTreePath(tp);
+			List<SourceAndConverter<?>> potentialSources = source_service.tree().getSourceAndConvertersFromTreePath(tp);
 			if (potentialSources.size()!=1) {
 				log().warn("The specified parameters refers no either no source or too many sources");
 				return null;

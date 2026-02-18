@@ -36,8 +36,8 @@ import org.scijava.command.CommandService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -52,10 +52,10 @@ public class BuildDocumentation {
     public static void main(String... args) {
         //
 
-        ignoredClasses.add(SourceAndConverterService.class);
+        ignoredClasses.add(SourceService.class);
         ignoredClasses.add(CommandService.class);
         ignoredClasses.add(LogService.class);
-        ignoredClasses.add(SourceAndConverterBdvDisplayService.class);
+        ignoredClasses.add(SourceBdvDisplayService.class);
         ignoredClasses.add(Context.class);
 
         Reflections reflections = new Reflections("sc.fiji.bdvpg");

@@ -36,7 +36,7 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 
@@ -66,7 +66,7 @@ public class BdvSourcesAddCommand implements BdvPlaygroundActionCommand {
 	boolean adjust_view_on_source;
 
 	@Parameter
-	SourceAndConverterBdvDisplayService bdvDisplayService;
+    SourceBdvDisplayService bdvDisplayService;
 
 	@Override
 	public void run() {

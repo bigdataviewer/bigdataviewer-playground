@@ -38,8 +38,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.PlaygroundPrefs;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.scijava.services.ui.swingdnd.SourceAndConverterServiceUITransferHandler;
 import sc.fiji.bdvpg.scijava.services.ui.tree.FilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.tree.SourceTreeModel;
@@ -77,7 +77,7 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Swing UI for SciJava {@link SourceAndConverterService}.
+ * Swing UI for SciJava {@link SourceService}.
  *
  * <p>This UI displays sources in a tree structure with filtering capabilities.
  * Sources can appear multiple times in the tree, organized by different criteria
@@ -91,15 +91,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author Nicolas Chiaruttini, BIOP, EPFL
  */
-public class SourceAndConverterServiceUI {
+public class SourceTree {
 
 	protected static final Logger logger = LoggerFactory.getLogger(
-		SourceAndConverterServiceUI.class);
+		SourceTree.class);
 
 	/**
-	 * Linked {@link SourceAndConverterService}
+	 * Linked {@link SourceService}
 	 */
-	final SourceAndConverterService sourceAndConverterService;
+	final SourceService sourceAndConverterService;
 
 	/**
 	 * SciJava context for accessing other services
@@ -140,8 +140,8 @@ public class SourceAndConverterServiceUI {
 	 * @param context the SciJava context
 	 * @param makeGUI whether to create and display the GUI
 	 */
-	public SourceAndConverterServiceUI(
-		SourceAndConverterService sourceAndConverterService,
+	public SourceTree(
+		SourceService sourceAndConverterService,
 		Context context, boolean makeGUI)
 	{
 		this.sourceAndConverterService = sourceAndConverterService;
@@ -741,8 +741,8 @@ public class SourceAndConverterServiceUI {
 			return;
 		}
 
-		SourceAndConverterBdvDisplayService bdvDisplayService =
-			context.getService(SourceAndConverterBdvDisplayService.class);
+		SourceBdvDisplayService bdvDisplayService =
+			context.getService(SourceBdvDisplayService.class);
 		if (bdvDisplayService == null) {
 			return;
 		}

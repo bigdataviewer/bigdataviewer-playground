@@ -35,11 +35,12 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.base.Entity;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import org.scijava.plugin.SciJavaPlugin;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
 /**
  * Plugins which can handle {@link mpicbg.spim.data.generic.base.Entity} when
  * they are being loaded with a
- * {@link sc.fiji.bdvpg.scijava.services.SourceAndConverterService} When opening
+ * {@link SourceService} When opening
  * a SpimData object: * a SpimDataEntity Handler can be executed to create the
  * SourceAndConverter object from the {@link Source} and and the
  * {@link BasicViewSetup} : see TODO * Or to modify the SourceAndConverter once

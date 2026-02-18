@@ -34,7 +34,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.scijava.services.ui.tree.FilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.tree.SourceTreeModel;
 
@@ -65,7 +65,7 @@ public class SourceGroupMakeCommand implements BdvPlaygroundActionCommand {
 	boolean display_sources;
 
 	@Parameter
-	SourceAndConverterService source_service;
+	SourceService source_service;
 
 	@Override
 	public void run() {
@@ -73,7 +73,7 @@ public class SourceGroupMakeCommand implements BdvPlaygroundActionCommand {
 				sources));
 		FilterNode filterNode = new FilterNode(group_name, sources_set::contains,
 				display_sources);
-		SourceTreeModel model = source_service.getUI().getSourceTreeModel();
+		SourceTreeModel model = source_service.tree().getSourceTreeModel();
 		model.addNode(model.getRoot(), filterNode);
 	}
 }

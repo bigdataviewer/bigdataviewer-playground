@@ -35,7 +35,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.scijava.services.ui.RenamableSource;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
@@ -84,7 +84,7 @@ public class SwingSourceAndConverterListWidget extends
 	}
 
 	@Parameter
-	SourceAndConverterService bss;
+	SourceService bss;
 
 	public SourceAndConverter<?>[] getSelectedSourceAndConverters() {
 		Set<SourceAndConverter<?>> sourceList = new HashSet<>(); // A set avoids
@@ -131,7 +131,7 @@ public class SwingSourceAndConverterListWidget extends
 	@Override
 	public void set(final WidgetModel model) {
 		super.set(model);
-		tree = new JTree(bss.getUI().getTreeModel());
+		tree = new JTree(bss.tree().getTreeModel());
 
 		JScrollPane scrollPane = new JScrollPane(tree);
 		scrollPane.setPreferredSize(new Dimension(350, 200));

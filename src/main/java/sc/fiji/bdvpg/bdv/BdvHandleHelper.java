@@ -54,7 +54,7 @@ import org.scijava.ui.behaviour.io.yaml.YamlConfigIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.bdv.config.BdvSettingsGUISetter;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
 import javax.swing.JComponent;
@@ -345,8 +345,8 @@ public class BdvHandleHelper {
 	}
 
 	public static void setBdvHandleCloseOperation(BdvHandle bdvh, CacheService cs,
-		SourceAndConverterBdvDisplayService bdvsds, boolean putWindowOnTop,
-		Runnable runnable)
+                                                  SourceBdvDisplayService bdvsds, boolean putWindowOnTop,
+                                                  Runnable runnable)
 	{
 		if (bdvh instanceof BdvHandlePanel) {
 			throw new RuntimeException("The BdvHandle is a Panel, not a Frame");

@@ -34,8 +34,8 @@ import bdv.viewer.SourceAndConverter;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
+import sc.fiji.bdvpg.scijava.services.SourceService;
+import sc.fiji.bdvpg.scijava.services.ui.SourceTree;
 import sc.fiji.bdvpg.scijava.services.ui.tree.FilterNode;
 import sc.fiji.bdvpg.scijava.services.ui.tree.SourceTreeModel;
 import sc.fiji.bdvpg.scijava.services.ui.tree.SourceTreeView;
@@ -148,11 +148,11 @@ public class SourceAndConverterServiceUITransferHandler extends
 		try {
 			extT.setNodesData(t.getTransferData(nodesFlavor));
 			if (SourceAndConverterServices
-				.getSourceAndConverterService() instanceof SourceAndConverterService)
+				.getSourceAndConverterService() instanceof SourceService)
 			{
-				SourceAndConverterServiceUI ui =
-					((SourceAndConverterService) SourceAndConverterServices
-						.getSourceAndConverterService()).getUI();
+				SourceTree ui =
+					((SourceService) SourceAndConverterServices
+						.getSourceAndConverterService()).tree();
 				List<SourceAndConverter<?>> sources = new ArrayList<>();
 				// noinspection ManualArrayToCollectionCopy
 				for (SourceAndConverter<?> source : ui.getSelectedSourceAndConverters(

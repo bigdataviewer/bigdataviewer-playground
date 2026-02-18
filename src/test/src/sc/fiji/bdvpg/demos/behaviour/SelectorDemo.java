@@ -37,8 +37,8 @@ import org.scijava.ui.swing.SwingUI;
 import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.behaviour.EditorBehaviourInstaller;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAdjuster;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
@@ -54,8 +54,8 @@ public class SelectorDemo {
         // Show UI
         ctx.service(UIService.class).showUI(SwingUI.NAME);
 
-        SourceAndConverterBdvDisplayService sourceDisplayService = ctx.getService(SourceAndConverterBdvDisplayService.class);
-        SourceAndConverterService sourceService = ctx.getService(SourceAndConverterService.class);
+        SourceBdvDisplayService sourceDisplayService = ctx.getService(SourceBdvDisplayService.class);
+        SourceService sourceService = ctx.getService(SourceService.class);
 
         // Open two example sources
         new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();

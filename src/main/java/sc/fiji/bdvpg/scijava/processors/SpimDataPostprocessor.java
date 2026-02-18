@@ -37,7 +37,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
 @SuppressWarnings("unused")
 @Plugin(type = PostprocessorPlugin.class)
@@ -47,7 +47,7 @@ public class SpimDataPostprocessor extends AbstractPostprocessorPlugin {
 		SpimDataPostprocessor.class);
 
 	@Parameter
-	SourceAndConverterService bss;
+    SourceService bss;
 
 	@Override
 	public void process(Module module) {

@@ -29,44 +29,45 @@
 
 package sc.fiji.bdvpg.services;
 
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
 /**
  * Static methods to access BdvSourceAndConverterService and
  * BdvSourceAndConverterDisplayService
  * <p>
  * Should ideally not be used:
- * - try to fetch a {@link sc.fiji.bdvpg.scijava.services.SourceAndConverterService} or a
- * - {@link SourceAndConverterBdvDisplayService}
+ * - try to fetch a {@link SourceService} or a
+ * - {@link SourceBdvDisplayService}
  * from a scijava {@link org.scijava.Context}
  * instead
  */
 
 public class SourceAndConverterServices {
 
-	private static ISourceAndConverterService sourceAndConverterService;
+	private static ISourceService sourceAndConverterService;
 
-	private static SourceAndConverterBdvDisplayService sourceAndConverterBdvDisplayService;
+	private static SourceBdvDisplayService sourceBdvDisplayService;
 
-	public static ISourceAndConverterService getSourceAndConverterService() {
+	public static ISourceService getSourceAndConverterService() {
 		return sourceAndConverterService;
 	}
 
 	public static void setSourceAndConverterService(
-		ISourceAndConverterService sourceAndConverterService)
+		ISourceService sourceAndConverterService)
 	{
 		SourceAndConverterServices.sourceAndConverterService =
 			sourceAndConverterService;
 	}
 
-	public static SourceAndConverterBdvDisplayService getBdvDisplayService() {
-		return sourceAndConverterBdvDisplayService;
+	public static SourceBdvDisplayService getBdvDisplayService() {
+		return sourceBdvDisplayService;
 	}
 
 	public static void setBdvDisplayService(
-		SourceAndConverterBdvDisplayService sourceAndConverterBdvDisplayService)
+		SourceBdvDisplayService sourceBdvDisplayService)
 	{
-		SourceAndConverterServices.sourceAndConverterBdvDisplayService =
-			sourceAndConverterBdvDisplayService;
+		SourceAndConverterServices.sourceBdvDisplayService =
+				sourceBdvDisplayService;
 	}
 }

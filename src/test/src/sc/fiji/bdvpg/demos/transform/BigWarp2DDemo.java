@@ -37,7 +37,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAndTimeRange;
 import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.sourceandconverter.register.BigWarpLauncher;
@@ -53,7 +53,7 @@ public class BigWarp2DDemo {
 
     static ImageJ ij;
 
-    static SourceAndConverterService sourceService;
+    static SourceService sourceService;
 
     static final String filePath = "src/test/resources/demoSlice.xml";
 
@@ -62,7 +62,7 @@ public class BigWarp2DDemo {
         ij = new ImageJ();
         DemoHelper.startFiji(ij);//ij.ui().showUI();
         System.out.println("BigWarp version:"+VersionUtils.getVersion(BigWarp.class));
-        sourceService = ij.get(SourceAndConverterService.class);
+        sourceService = ij.get(SourceService.class);
 
         // Makes BDV Source
         // --------------------------- START BIGWARP
@@ -157,7 +157,7 @@ public class BigWarp2DDemo {
 
 
     public static SourceAndConverter<?> takeFirstSource(String xmlPath) {
-        SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
+        SourceService sourceService = ij.get(SourceService.class);
         // Fixed SourceAndConverter
         AbstractSpimData<?> spimDataFixed = new SpimDataFromXmlImporter(xmlPath).get();
 
@@ -172,7 +172,7 @@ public class BigWarp2DDemo {
 
 
     public static void startBigWarp(String bwName, SourceAndConverter<?> fixedSource, SourceAndConverter<?> movingSource, String landmarkFilePath) {
-        SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
+        SourceService sourceService = ij.get(SourceService.class);
 
         List<SourceAndConverter<?>> movingSources = new ArrayList<>();
         movingSources.add(movingSource);

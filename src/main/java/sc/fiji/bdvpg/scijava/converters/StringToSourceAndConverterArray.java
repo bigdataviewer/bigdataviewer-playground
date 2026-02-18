@@ -33,7 +33,7 @@ import bdv.viewer.SourceAndConverter;
 import org.scijava.convert.AbstractConverter;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
 import javax.swing.tree.TreePath;
 
@@ -50,14 +50,14 @@ public class StringToSourceAndConverterArray<I extends String> extends
 {
 
 	@Parameter
-	SourceAndConverterService source_service;
+	SourceService source_service;
 
 	@Override
 	public <T> T convert(Object src, Class<T> dest) {
 		String str = (String) src;
-		TreePath tp = source_service.getUI().getTreePathFromString(str);
+		TreePath tp = source_service.tree().getTreePathFromString(str);
 		if (tp != null) {
-			return (T) source_service.getUI().getSourceAndConvertersFromTreePath(tp)
+			return (T) source_service.tree().getSourceAndConvertersFromTreePath(tp)
 				.toArray(new SourceAndConverter[0]);// source_service.getUI().getSourceAndConvertersFromTreePath(tp).toArray(new
 																						// SourceAndConverter[0]);
 		}

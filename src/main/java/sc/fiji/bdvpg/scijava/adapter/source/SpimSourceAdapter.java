@@ -38,15 +38,15 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.services.ISourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
+import sc.fiji.bdvpg.services.ISourceService;
 import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_INFO;
+import static sc.fiji.bdvpg.services.ISourceService.SPIM_DATA_INFO;
 
 @Plugin(type = ISourceAdapter.class)
 public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
@@ -69,8 +69,8 @@ public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 	{
 		JsonObject obj = new JsonObject();
 
-		SourceAndConverterService.SpimDataInfo sdi =
-			(SourceAndConverterService.SpimDataInfo) SourceAndConverterServices
+		SourceService.SpimDataInfo sdi =
+			(SourceService.SpimDataInfo) SourceAndConverterServices
 				.getSourceAndConverterService().getMetadata(source, SPIM_DATA_INFO);
 
 		if (sdi == null) {
@@ -98,13 +98,13 @@ public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 		}
 		else {
 			int setupId = obj.getAsJsonPrimitive("viewsetup").getAsInt();
-			final ISourceAndConverterService sourceService = SourceAndConverterServices
+			final ISourceService sourceService = SourceAndConverterServices
 				.getSourceAndConverterService();
 			Optional<SourceAndConverter<?>> futureSource = sourceService
 				.getSourceAndConverters().stream().filter(source -> sourceService
 					.containsMetadata(source, SPIM_DATA_INFO)).filter(source -> {
-						SourceAndConverterService.SpimDataInfo sdi =
-							(SourceAndConverterService.SpimDataInfo) sourceService.getMetadata(
+						SourceService.SpimDataInfo sdi =
+							(SourceService.SpimDataInfo) sourceService.getMetadata(
 								source, SPIM_DATA_INFO);
 						return sdi.asd.equals(asd) && sdi.setupId == setupId;
 					}).findFirst();

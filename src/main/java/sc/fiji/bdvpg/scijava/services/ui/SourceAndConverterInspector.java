@@ -50,9 +50,9 @@ import net.imglib2.realtransform.RealTransform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.cache.AbstractGlobalCache;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.scijava.services.ui.inspect.ISourceInspector;
-import sc.fiji.bdvpg.services.ISourceAndConverterService;
+import sc.fiji.bdvpg.services.ISourceService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
@@ -106,7 +106,7 @@ public class SourceAndConverterInspector {
 	 */
 	public static Set<SourceAndConverter<?>> appendInspectorResult(
 		DefaultMutableTreeNode parent, SourceAndConverter<?> source,
-		ISourceAndConverterService sourceAndConverterService,
+		ISourceService sourceAndConverterService,
 		boolean registerIntermediateSources)
 	{
 		Set<SourceAndConverter<?>> subSources = new HashSet<>();
@@ -366,7 +366,7 @@ public class SourceAndConverterInspector {
 	 * @return root source and converter object
 	 */
 	public static SourceAndConverter<?> getRootSourceAndConverter(
-		SourceAndConverter<?> source, SourceAndConverterService sourceService)
+		SourceAndConverter<?> source, SourceService sourceService)
 	{
 		return getListToRootSourceAndConverter(source, sourceService).getLast();
 	}
@@ -379,7 +379,7 @@ public class SourceAndConverterInspector {
 		SourceAndConverter<?> source)
 	{
 		return getListToRootSourceAndConverter(source,
-			(SourceAndConverterService) SourceAndConverterServices
+			(SourceService) SourceAndConverterServices
 				.getSourceAndConverterService()).getLast();
 	}
 
@@ -400,7 +400,7 @@ public class SourceAndConverterInspector {
 			src = sources.get(0);
 		}
 		return getListToRootSourceAndConverter(src,
-			(SourceAndConverterService) SourceAndConverterServices
+			(SourceService) SourceAndConverterServices
 				.getSourceAndConverterService()).getLast();
 	}
 
@@ -413,7 +413,7 @@ public class SourceAndConverterInspector {
 	 */
 	public static LinkedList<SourceAndConverter<?>>
 		getListToRootSourceAndConverter(SourceAndConverter<?> source,
-			SourceAndConverterService sourceService)
+			SourceService sourceService)
 	{
 
 		LinkedList<SourceAndConverter<?>> chain = new LinkedList<>();
@@ -457,22 +457,22 @@ public class SourceAndConverterInspector {
 	 */
 	private static void appendSpimDataInfo(DefaultMutableTreeNode parent,
 		SourceAndConverter<?> source,
-		ISourceAndConverterService sourceAndConverterService)
+		ISourceService sourceAndConverterService)
 	{
 		if (!sourceAndConverterService.containsMetadata(source,
-			ISourceAndConverterService.SPIM_DATA_INFO))
+			ISourceService.SPIM_DATA_INFO))
 		{
 			return;
 		}
 
 		Object metadata = sourceAndConverterService.getMetadata(source,
-			ISourceAndConverterService.SPIM_DATA_INFO);
-		if (!(metadata instanceof SourceAndConverterService.SpimDataInfo)) {
+			ISourceService.SPIM_DATA_INFO);
+		if (!(metadata instanceof SourceService.SpimDataInfo)) {
 			return;
 		}
 
-		SourceAndConverterService.SpimDataInfo spimDataInfo =
-			(SourceAndConverterService.SpimDataInfo) metadata;
+		SourceService.SpimDataInfo spimDataInfo =
+			(SourceService.SpimDataInfo) metadata;
 		AbstractSpimData<?> asd = spimDataInfo.asd;
 		int setupId = spimDataInfo.setupId;
 

@@ -41,7 +41,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.scijava.Context;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.services.SourceAndConverterServiceLoader;
 import sc.fiji.bdvpg.services.SourceAndConverterServiceSaver;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
@@ -70,7 +70,7 @@ public class SourceSerializationTests {
 
     @Before
     public void setUp() throws IOException {
-        ctx = new Context(SourceAndConverterService.class, IObjectScijavaAdapterService.class);
+        ctx = new Context(SourceService.class, IObjectScijavaAdapterService.class);
         // ctx.getService(UIService.class).setHeadless(true); too late
         tempFile = File.createTempFile("bdvpg_test_", ".json");
         tempFile.deleteOnExit();
@@ -389,7 +389,7 @@ public class SourceSerializationTests {
 
     private void clearAndReload() {
         // Clear existing sources
-        SourceAndConverterService sourceService = ctx.getService(SourceAndConverterService.class);
+        SourceService sourceService = ctx.getService(SourceService.class);
         sourceService.remove(sourceService.getSourceAndConverters().toArray(new SourceAndConverter[0]));
 
         // Reload from file

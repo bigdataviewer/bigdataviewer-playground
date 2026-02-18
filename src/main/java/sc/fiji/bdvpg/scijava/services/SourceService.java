@@ -78,8 +78,8 @@ import sc.fiji.bdvpg.cache.AbstractGlobalCache;
 import sc.fiji.bdvpg.cache.GlobalCacheBuilder;
 import sc.fiji.bdvpg.cache.GlobalLoaderCache;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
-import sc.fiji.bdvpg.services.ISourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.ui.SourceTree;
+import sc.fiji.bdvpg.services.ISourceService;
 import sc.fiji.bdvpg.services.SourceAndConverterServices;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.bdvpg.spimdata.EntityHandler;
@@ -100,7 +100,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService.CONVERTER_SETUP;
+import static sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService.CONVERTER_SETUP;
 
 /**
  * SciJava Service which centralizes BDV Sources, independently of their display
@@ -115,12 +115,12 @@ import static sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService
 @SuppressWarnings({ "unused", "CanBeFinal" }) // Because parameters are set
 																							// through reflection
 @Plugin(type = Service.class, headless = true)
-public class SourceAndConverterService extends AbstractService implements
-	SciJavaService, ISourceAndConverterService
+public class SourceService extends AbstractService implements
+	SciJavaService, ISourceService
 {
 
 	protected static final Logger logger = LoggerFactory.getLogger(
-		SourceAndConverterService.class);
+		SourceService.class);
 
 	static {
 		LegacyInjector.preinit();
@@ -156,7 +156,7 @@ public class SourceAndConverterService extends AbstractService implements
 	 * Display service : cannot be set through Parameter annotation due to
 	 * 'circular dependency'
 	 */
-	SourceAndConverterBdvDisplayService bsds = null;
+	SourceBdvDisplayService bsds = null;
 
 	/**
 	 * Map containing objects that are 1 to 1 linked to a Source Keys are Weakly
@@ -174,7 +174,7 @@ public class SourceAndConverterService extends AbstractService implements
 		return sourceToMetadata.getIfPresent(src) != null;
 	}
 
-	public void setDisplayService(SourceAndConverterBdvDisplayService bsds) {
+	public void setDisplayService(SourceBdvDisplayService bsds) {
 		this.bsds = bsds;
 	}
 
@@ -279,7 +279,7 @@ public class SourceAndConverterService extends AbstractService implements
 		 */
 		objectService.addObject(source);
 
-		if (treeView) ui.update(source);
+		if (treeView) sourceTree.update(source);
 	}
 
 	@Override
@@ -335,7 +335,7 @@ public class SourceAndConverterService extends AbstractService implements
 		}
 		// Single UI update for all sources
 		if (!newSources.isEmpty()) {
-			ui.addSources(newSources);
+			sourceTree.addSources(newSources);
 		}
 	}
 
@@ -543,7 +543,7 @@ public class SourceAndConverterService extends AbstractService implements
 
 		// Single batch UI update for all sources
 		if (showUI && !allSources.isEmpty()) {
-			ui.addSources(allSources);
+			sourceTree.addSources(allSources);
 		}
 
 		WrapBasicImgLoader.removeWrapperIfPresent(asd);
@@ -706,7 +706,7 @@ public class SourceAndConverterService extends AbstractService implements
 				while (!flagPerformed.get()) {
 				    // busy waiting
 				}*/
-				ui.remove(source);
+				sourceTree.remove(source);
 			}
 		}
 	}
@@ -746,10 +746,10 @@ public class SourceAndConverterService extends AbstractService implements
 	 * Swing UI for this Service, exists only if a UI is available in the current
 	 * execution context
 	 */
-	SourceAndConverterServiceUI ui;
+	SourceTree sourceTree;
 
-	public SourceAndConverterServiceUI getUI() {
-		return ui;
+	public SourceTree tree() {
+		return sourceTree;
 	}
 
 	/**
@@ -796,9 +796,9 @@ public class SourceAndConverterService extends AbstractService implements
 		if (!uiService.isHeadless()) {
 			logger.debug(
 					"GUI detected : Constructing JFrame for BdvSourceAndConverterService");
-			ui = new SourceAndConverterServiceUI(this, context(), true);
+			sourceTree = new SourceTree(this, context(), true);
 		} else {
-			ui = new SourceAndConverterServiceUI(this, context(), false);
+			sourceTree = new SourceTree(this, context(), false);
 		}
 
 		SourceAndConverterServices.setSourceAndConverterService(this);
@@ -1010,7 +1010,7 @@ public class SourceAndConverterService extends AbstractService implements
 
 	public synchronized void setSpimDataName(AbstractSpimData asd, String name) {
 		spimdataToMetadata.getIfPresent(asd).put("NAME", name);
-		ui.updateSpimDataName(asd, name);
+		sourceTree.updateSpimDataName(asd, name);
 	}
 
 	@Override

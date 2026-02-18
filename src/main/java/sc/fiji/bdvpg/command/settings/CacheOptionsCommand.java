@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.cache.GlobalCacheBuilder;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
 @Plugin(type = BdvPlaygroundActionCommand.class, menuPath = ScijavaBdvDefaults.RootMenu +
 	"Settings>Set Cache Options (Needs Restart)",
@@ -108,7 +108,7 @@ public class CacheOptionsCommand implements BdvPlaygroundActionCommand {
 
 		logger.info("Cache builder : " + serializedCacheBuilder);
 
-		prefs.put(SourceAndConverterService.class, "cache.builder",
+		prefs.put(SourceService.class, "cache.builder",
 			serializedCacheBuilder);
 	}
 
@@ -116,7 +116,7 @@ public class CacheOptionsCommand implements BdvPlaygroundActionCommand {
 		Gson gson = new Gson();
 		String defaultCacheBuilder = gson.toJson(GlobalCacheBuilder.builder(),
 			GlobalCacheBuilder.class);
-		String cacheBuilderJson = prefs.get(SourceAndConverterService.class,
+		String cacheBuilderJson = prefs.get(SourceService.class,
 			"cache.builder", defaultCacheBuilder);
 		try {
 			GlobalCacheBuilder builder = gson.fromJson(cacheBuilderJson,

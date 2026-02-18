@@ -41,8 +41,8 @@ import org.scijava.script.ScriptService;
 import org.scijava.ui.UIService;
 import sc.fiji.bdvpg.command.source.SourceCreateFromModelCommand;
 import sc.fiji.bdvpg.command.source.SourceDeleteCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
 import sc.fiji.persist.IObjectScijavaAdapterService;
 
@@ -51,20 +51,20 @@ import java.util.concurrent.ExecutionException;
 public class TestSourcesCommands {
     Context ctx;
 
-    SourceAndConverterService sourceService;
-    SourceAndConverterBdvDisplayService sourceDisplayService;
+    SourceService sourceService;
+    SourceBdvDisplayService sourceDisplayService;
     CommandService commandService;
     @Before
     public void startFiji() {
         // Initializes static SourceService
         ctx = new Context(UIService.class,
-                SourceAndConverterService.class,
-                SourceAndConverterBdvDisplayService.class,
+                SourceService.class,
+                SourceBdvDisplayService.class,
                 IObjectScijavaAdapterService.class,
                 LegacyService.class); // for ij1 macro testing
 
-        sourceDisplayService = ctx.getService(SourceAndConverterBdvDisplayService.class);
-        sourceService = ctx.getService(SourceAndConverterService.class);
+        sourceDisplayService = ctx.getService(SourceBdvDisplayService.class);
+        sourceService = ctx.getService(SourceService.class);
         commandService = ctx.getService(CommandService.class);
 
         // Open two example sources

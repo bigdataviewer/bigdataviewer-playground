@@ -32,8 +32,8 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import com.formdev.flatlaf.FlatDarkLaf;
 import net.imagej.ImageJ;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -51,13 +51,13 @@ public class DemoHelper {
         try {
 
             // Closes bdv windows
-            SourceAndConverterBdvDisplayService ssource_display_service =
-                    ij.context().getService(SourceAndConverterBdvDisplayService.class);
+            SourceBdvDisplayService ssource_display_service =
+                    ij.context().getService(SourceBdvDisplayService.class);
             ssource_display_service.getDisplays().forEach(BdvHandle::close);
 
             // Clears all sources
-            SourceAndConverterService source_service =
-                    ij.context().getService(SourceAndConverterService.class);
+            SourceService source_service =
+                    ij.context().getService(SourceService.class);
             source_service.remove(source_service.getSourceAndConverters().toArray(new SourceAndConverter[0]));
 
             // Closes ij context

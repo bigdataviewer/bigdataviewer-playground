@@ -40,8 +40,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.scijava.Context;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 import sc.fiji.persist.IObjectScijavaAdapterService;
 
@@ -59,16 +59,16 @@ import static org.junit.Assert.*;
 public class SourceTreeModelTest {
 
     private Context context;
-    private SourceAndConverterService sourceService;
-    private SourceAndConverterBdvDisplayService displayService;
+    private SourceService sourceService;
+    private SourceBdvDisplayService displayService;
     private SourceTreeModel model;
     private final List<BdvHandle> bdvHandlesToClose = new ArrayList<>();
 
     @Before
     public void setUp() {
-        context = new Context(SourceAndConverterService.class, SourceAndConverterBdvDisplayService.class, IObjectScijavaAdapterService.class);
-        sourceService = context.getService(SourceAndConverterService.class);
-        displayService = context.getService(SourceAndConverterBdvDisplayService.class);
+        context = new Context(SourceService.class, SourceBdvDisplayService.class, IObjectScijavaAdapterService.class);
+        sourceService = context.getService(SourceService.class);
+        displayService = context.getService(SourceBdvDisplayService.class);
         model = new SourceTreeModel(sourceService);
     }
 

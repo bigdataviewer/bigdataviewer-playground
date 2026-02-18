@@ -34,7 +34,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
 import java.util.List;
 
@@ -51,7 +51,7 @@ public class SourceServiceClearState implements
 {
 
 	@Parameter
-	SourceAndConverterService source_service;
+    SourceService source_service;
 
 	@Override
 	public void run() {

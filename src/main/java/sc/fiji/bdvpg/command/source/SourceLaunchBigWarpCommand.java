@@ -37,8 +37,8 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.sourceandconverter.register.BigWarpLauncher;
 
 import java.util.Arrays;
@@ -97,10 +97,10 @@ public class SourceLaunchBigWarpCommand implements BdvPlaygroundActionCommand {
 	SourceAndConverter<?> warp_magnitude_source;
 
 	@Parameter
-	SourceAndConverterBdvDisplayService bsds;
+	SourceBdvDisplayService bsds;
 
 	@Parameter
-	SourceAndConverterService source_service;
+	SourceService source_service;
 
 	public void run() {
 		List<SourceAndConverter<?>> movingSources = Arrays.stream(moving_sources)

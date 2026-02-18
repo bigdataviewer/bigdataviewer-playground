@@ -35,7 +35,7 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterInspector;
 import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
 
@@ -45,7 +45,7 @@ import java.io.FileWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_LOCATION;
+import static sc.fiji.bdvpg.services.ISourceService.SPIM_DATA_LOCATION;
 
 /**
  * Big Objective : save the state of all open sources By Using Gson and specific
@@ -143,12 +143,12 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter
 				// We need to reset where they were saved, and then maybe restore their location
 				asds.forEach(asd -> {
 					String dataLocation = (String) getScijavaContext()
-							.getService(SourceAndConverterService.class).getMetadata(asd, SPIM_DATA_LOCATION);
+							.getService(SourceService.class).getMetadata(asd, SPIM_DATA_LOCATION);
 
 					originalLocations.put(asd, dataLocation);
 
 					getScijavaContext()
-							.getService(SourceAndConverterService.class).setMetadata(asd, SPIM_DATA_LOCATION, ""); // reset -> enforce serialization to XML
+							.getService(SourceService.class).setMetadata(asd, SPIM_DATA_LOCATION, ""); // reset -> enforce serialization to XML
 				});
 
 			}
@@ -170,7 +170,7 @@ public class SourceAndConverterServiceSaver extends SourceAndConverterAdapter
 						//originalLocations.put(asd, dataLocation);
 
 						getScijavaContext()
-								.getService(SourceAndConverterService.class).setMetadata(asd, SPIM_DATA_LOCATION, originalLocations.get(asd)); // reset -> enforce serialization to XML
+								.getService(SourceService.class).setMetadata(asd, SPIM_DATA_LOCATION, originalLocations.get(asd)); // reset -> enforce serialization to XML
 					});
 
 				}
