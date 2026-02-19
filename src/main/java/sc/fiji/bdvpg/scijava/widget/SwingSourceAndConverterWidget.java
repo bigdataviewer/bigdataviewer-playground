@@ -79,7 +79,7 @@ public class SwingSourceAndConverterWidget extends
 
 	@Override
 	public SourceAndConverter<?> getValue() {
-		return getSelectedSourceAndConverter();
+		return getSelectedSource();
 	}
 
 	@Parameter
@@ -87,7 +87,7 @@ public class SwingSourceAndConverterWidget extends
 
 	JTree tree;
 
-	public SourceAndConverter<?> getSelectedSourceAndConverter() {
+	public SourceAndConverter<?> getSelectedSource() {
 		ArrayList<SourceAndConverter<?>> sourceList = new ArrayList<>(); // A set
 																																	// avoids
 																																	// duplicate

@@ -63,7 +63,7 @@ public class SourceFromSpimDataCreator {
 		this.asd = asd;
 		setupIdToSourceAndConverter = new HashMap<>();
 		sourceAndConverterToMetadata = new HashMap<>();
-		createSourceAndConverters();
+		createSources();
 	}
 
 	public Map<Integer, SourceAndConverter<?>> getSetupIdToSourceAndConverter() {
@@ -76,7 +76,7 @@ public class SourceFromSpimDataCreator {
 		return sourceAndConverterToMetadata.get(sourceAndConverter);
 	}
 
-	private void createSourceAndConverters() {
+	private void createSources() {
 		boolean nonVolatile = WrapBasicImgLoader.wrapImgLoaderIfNecessary(asd);
 
 		if (nonVolatile) {
