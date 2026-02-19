@@ -111,7 +111,7 @@ public class BrightnessAutoAdjuster<T extends RealType<T>> implements Runnable {
 			minValue;
 
 		ConverterSetup converterSetup = SourceServices
-			.getSourceAndConverterService().getConverterSetup(source);
+			.getSourceService().getConverterSetup(source);
 		converterSetup.setDisplayRange(min, max);
 	}
 

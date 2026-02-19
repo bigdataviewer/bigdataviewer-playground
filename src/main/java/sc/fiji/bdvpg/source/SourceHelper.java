@@ -672,7 +672,7 @@ public class SourceHelper {
 		int nextAsdId = 0;
 
 		for (SourceAndConverter<?> source : sortedList) {
-			Object metadata = SourceServices.getSourceAndConverterService()
+			Object metadata = SourceServices.getSourceService()
 				.getMetadata(source, SourceService.SPIM_DATA_INFO);
 
 			ComparableKey key;
@@ -772,7 +772,7 @@ public class SourceHelper {
 		int nextAsdId = 0;
 
 		for (SourceAndConverter source : sortedList) {
-			Object metadata = SourceServices.getSourceAndConverterService()
+			Object metadata = SourceServices.getSourceService()
 				.getMetadata(source, SourceService.SPIM_DATA_INFO);
 
 			ComparableKey key;

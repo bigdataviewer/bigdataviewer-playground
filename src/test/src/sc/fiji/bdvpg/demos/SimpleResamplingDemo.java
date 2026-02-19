@@ -68,7 +68,7 @@ public class SimpleResamplingDemo {
         AbstractSpimData<?> asd = importer.get();
 
         SourceAndConverter<UnsignedShortType> source = (SourceAndConverter<UnsignedShortType>) SourceServices
-                .getSourceAndConverterService()
+                .getSourceService()
                 .getSourceAndConverterFromSpimdata(asd)
                 .get(0);
 

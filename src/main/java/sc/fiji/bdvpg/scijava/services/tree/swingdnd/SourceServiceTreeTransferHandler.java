@@ -67,17 +67,17 @@ import java.util.function.Function;
  * custom filters in the UI (sources cannot be dragged)
  */
 
-public class SourceServiceUITransferHandler extends
+public class SourceServiceTreeTransferHandler extends
 	TreeTransferHandler
 {
 
 	protected static final Logger logger = LoggerFactory.getLogger(
-		SourceServiceUITransferHandler.class);
+		SourceServiceTreeTransferHandler.class);
 
 	private final SourceTreeModel sourceTreeModel;
 	private final SourceTreeView sourceTreeView;
 
-	public SourceServiceUITransferHandler(
+	public SourceServiceTreeTransferHandler(
 		SourceTreeModel sourceTreeModel, SourceTreeView sourceTreeView)
 	{
 		this.sourceTreeModel = sourceTreeModel;
@@ -148,11 +148,11 @@ public class SourceServiceUITransferHandler extends
 		try {
 			extT.setNodesData(t.getTransferData(nodesFlavor));
 			if (SourceServices
-				.getSourceAndConverterService() instanceof SourceService)
+				.getSourceService() instanceof SourceService)
 			{
 				SourceTree ui =
 					((SourceService) SourceServices
-						.getSourceAndConverterService()).tree();
+						.getSourceService()).tree();
 				List<SourceAndConverter<?>> sources = new ArrayList<>();
 				// noinspection ManualArrayToCollectionCopy
 				for (SourceAndConverter<?> source : ui.getSelectedSourceAndConverters(

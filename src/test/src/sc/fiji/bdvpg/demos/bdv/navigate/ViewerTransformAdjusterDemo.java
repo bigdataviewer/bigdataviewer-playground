@@ -61,9 +61,9 @@ public class ViewerTransformAdjusterDemo
         AbstractSpimData<?> asd = sdix.get();
 
         // Register to the SourceAndConverter service
-        SourceServices.getSourceAndConverterService().register(asd);
+        SourceServices.getSourceService().register(asd);
 
-        SourceServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach(source ->
+        SourceServices.getSourceService().getSourceAndConverterFromSpimdata(asd).forEach(source ->
             SourceServices.getBdvDisplayService().show(bdvHandle, source)
         );
 
@@ -73,13 +73,13 @@ public class ViewerTransformAdjusterDemo
         asd = sdix.get();
 
         // Register to the SourceAndConverter service
-        SourceServices.getSourceAndConverterService().register(asd);
+        SourceServices.getSourceService().register(asd);
 
-        SourceServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach(source ->
+        SourceServices.getSourceService().getSourceAndConverterFromSpimdata(asd).forEach(source ->
             SourceServices.getBdvDisplayService().show(bdvHandle, source)
         );
 
-        new ViewerTransformAdjuster(bdvHandle, SourceServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
+        new ViewerTransformAdjuster(bdvHandle, SourceServices.getSourceService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
 
         DemoHelper.shot("ViewerTransformAdjusterDemo");
     }

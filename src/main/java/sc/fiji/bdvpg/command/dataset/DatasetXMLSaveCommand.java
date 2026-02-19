@@ -78,7 +78,7 @@ public class DatasetXMLSaveCommand implements BdvPlaygroundActionCommand {
 
 			SourceAndConverter<?> source = sources[0];
 
-			if (SourceServices.getSourceAndConverterService().getMetadata(
+			if (SourceServices.getSourceService().getMetadata(
 				source, SourceService.SPIM_DATA_INFO) == null)
 			{
 				System.err.println(
@@ -88,7 +88,7 @@ public class DatasetXMLSaveCommand implements BdvPlaygroundActionCommand {
 
 			AbstractSpimData<?> asd =
 				((SourceService.SpimDataInfo) SourceServices
-					.getSourceAndConverterService().getMetadata(source,
+					.getSourceService().getMetadata(source,
 						SourceService.SPIM_DATA_INFO)).asd;
 
 			asd.setBasePath(new File(xmlfilepath.getParent()));

@@ -71,7 +71,7 @@ public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 
 		SourceService.SpimDataInfo sdi =
 			(SourceService.SpimDataInfo) SourceServices
-				.getSourceAndConverterService().getMetadata(source, SPIM_DATA_INFO);
+				.getSourceService().getMetadata(source, SPIM_DATA_INFO);
 
 		if (sdi == null) {
 			System.err.println("Spim Source " + source.getSpimSource().getName() +
@@ -99,7 +99,7 @@ public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 		else {
 			int setupId = obj.getAsJsonPrimitive("viewsetup").getAsInt();
 			final ISourceService sourceService = SourceServices
-				.getSourceAndConverterService();
+				.getSourceService();
 			Optional<SourceAndConverter<?>> futureSource = sourceService
 				.getSourceAndConverters().stream().filter(source -> sourceService
 					.containsMetadata(source, SPIM_DATA_INFO)).filter(source -> {

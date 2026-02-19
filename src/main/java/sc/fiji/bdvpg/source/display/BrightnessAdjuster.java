@@ -48,7 +48,7 @@ public class BrightnessAdjuster implements Runnable {
 
 	@Override
 	public void run() {
-		SourceServices.getSourceAndConverterService().getConverterSetup(
+		SourceServices.getSourceService().getConverterSetup(
 				source).setDisplayRange(min, max);
 	}
 

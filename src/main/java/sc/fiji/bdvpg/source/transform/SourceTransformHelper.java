@@ -67,7 +67,7 @@ public class SourceTransformHelper {
 		SourceAndTimeRange<T> sourceTR)
 	{
 		if (sourceTR.source.getSpimSource() instanceof AbstractSpimSource) {
-			if (SourceServices.getSourceAndConverterService().getMetadata(
+			if (SourceServices.getSourceService().getMetadata(
 				sourceTR.source, SPIM_DATA_INFO) != null)
 			{
 				return mutateLastSpimdataTransformation(affineTransform3D, sourceTR);
@@ -105,7 +105,7 @@ public class SourceTransformHelper {
 		SourceAndTimeRange<T> sourceTR)
 	{
 		if (sourceTR.source.getSpimSource() instanceof AbstractSpimSource) {
-			if (SourceServices.getSourceAndConverterService().getMetadata(
+			if (SourceServices.getSourceService().getMetadata(
 				sourceTR.source, SPIM_DATA_INFO) != null)
 			{
 				return appendNewSpimdataTransformation(affineTransform3D, sourceTR);
@@ -137,7 +137,7 @@ public class SourceTransformHelper {
 		SourceAndTimeRange<T> sourceTR)
 	{
 		if (sourceTR.source.getSpimSource() instanceof AbstractSpimSource) {
-			if (SourceServices.getSourceAndConverterService().getMetadata(
+			if (SourceServices.getSourceService().getMetadata(
 				sourceTR.source, SPIM_DATA_INFO) != null)
 			{
 				return setLastSpimdataTransformation(affineTransform3D, sourceTR);
@@ -211,15 +211,15 @@ public class SourceTransformHelper {
 		AffineTransform3D affineTransform3D,
 		SourceAndTimeRange<T> sourceTR)
 	{
-		assert SourceServices.getSourceAndConverterService()
+		assert SourceServices.getSourceService()
 			.containsMetadata(sourceTR.source, SPIM_DATA_INFO);
-		assert SourceServices.getSourceAndConverterService()
+		assert SourceServices.getSourceService()
 			.getMetadata(sourceTR.source,
 				SPIM_DATA_INFO) instanceof SourceService.SpimDataInfo;
 
 		SourceService.SpimDataInfo sdi =
 			((SourceService.SpimDataInfo) SourceServices
-				.getSourceAndConverterService().getMetadata(sourceTR.source, SPIM_DATA_INFO));
+				.getSourceService().getMetadata(sourceTR.source, SPIM_DATA_INFO));
 
 		sourceTR.getTimePoints().forEach(timePoint -> {
 			ViewRegistration vr = sdi.asd.getViewRegistrations().getViewRegistration(
@@ -272,15 +272,15 @@ public class SourceTransformHelper {
 		AffineTransform3D affineTransform3D,
 		SourceAndTimeRange<T> sourceTR)
 	{
-		assert SourceServices.getSourceAndConverterService()
+		assert SourceServices.getSourceService()
 			.containsMetadata(sourceTR.source, SPIM_DATA_INFO);
-		assert SourceServices.getSourceAndConverterService()
+		assert SourceServices.getSourceService()
 			.getMetadata(sourceTR.source,
 				SPIM_DATA_INFO) instanceof SourceService.SpimDataInfo;
 
 		SourceService.SpimDataInfo sdi =
 			((SourceService.SpimDataInfo) SourceServices
-				.getSourceAndConverterService().getMetadata(sourceTR.source, SPIM_DATA_INFO));
+				.getSourceService().getMetadata(sourceTR.source, SPIM_DATA_INFO));
 
 		sourceTR.getTimePoints().forEach(timePoint -> {
 			ViewRegistration vr = sdi.asd.getViewRegistrations().getViewRegistration(
@@ -330,15 +330,15 @@ public class SourceTransformHelper {
 		AffineTransform3D affineTransform3D,
 		SourceAndTimeRange<T> sourceTR)
 	{
-		assert SourceServices.getSourceAndConverterService()
+		assert SourceServices.getSourceService()
 			.containsMetadata(sourceTR.source, SPIM_DATA_INFO);
-		assert SourceServices.getSourceAndConverterService()
+		assert SourceServices.getSourceService()
 			.getMetadata(sourceTR.source,
 				SPIM_DATA_INFO) instanceof SourceService.SpimDataInfo;
 
 		SourceService.SpimDataInfo sdi =
 			((SourceService.SpimDataInfo) SourceServices
-				.getSourceAndConverterService().getMetadata(sourceTR.source, SPIM_DATA_INFO));
+				.getSourceService().getMetadata(sourceTR.source, SPIM_DATA_INFO));
 
 		ViewTransform newvt = new ViewTransformAffine("Manual transform",
 			affineTransform3D);

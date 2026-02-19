@@ -66,7 +66,7 @@ public class SourceServiceSaver extends SourceAdapter
 	List<SourceAndConverter<?>> sources;
 
 	public SourceServiceSaver(File f, Context ctx) {
-		this(f, ctx, SourceServices.getSourceAndConverterService()
+		this(f, ctx, SourceServices.getSourceService()
 			.getSourceAndConverters());
 	}
 
@@ -107,7 +107,7 @@ public class SourceServiceSaver extends SourceAdapter
 			sources.forEach(source -> setOfSourcesNeedingSerialization.addAll(
 				SourceInspector.appendInspectorResult(
 					new DefaultMutableTreeNode(), source, SourceServices
-						.getSourceAndConverterService(), true)));
+						.getSourceService(), true)));
 
 			// Then let's get back all the sources - they may have increase in number
 			sources = new ArrayList<>(setOfSourcesNeedingSerialization);
@@ -128,12 +128,12 @@ public class SourceServiceSaver extends SourceAdapter
 			// other sourceAdnConverters
 			// Serializes datasets - required to avoid serialization issues
 			Set<AbstractSpimData<?>> asds = SourceServices
-				.getSourceAndConverterService().getSpimDatasets();
+				.getSourceService().getSpimDatasets();
 
 			// Avoid unnecessary serialization of unneeded spimdata
 			asds = asds.stream().filter(asd -> {
 				List<SourceAndConverter<?>> sources_in_asd = SourceServices
-					.getSourceAndConverterService().getSourceAndConverterFromSpimdata(
+					.getSourceService().getSourceAndConverterFromSpimdata(
 						asd);
 				return sources_in_asd.stream().anyMatch(source -> sources.contains(source));
 			}).collect(Collectors.toSet());

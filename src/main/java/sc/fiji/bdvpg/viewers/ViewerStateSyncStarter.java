@@ -99,7 +99,7 @@ public class ViewerStateSyncStarter implements Runnable {
 					if (adapterTest.bvvPanel != null) {
 						for (SourceAndConverter<?> source : stateToCopy) {
 							adapterTest.bvvPanel.getConverterSetups().put(source,
-								SourceServices.getSourceAndConverterService()
+								SourceServices.getSourceService()
 									.getConverterSetup(source));
 						}
 					}
@@ -109,7 +109,7 @@ public class ViewerStateSyncStarter implements Runnable {
 							.forEach(bdvh -> {
 								for (SourceAndConverter<?> source : stateToCopy) {
 									bdvh.getConverterSetups().put(source,
-										SourceServices.getSourceAndConverterService()
+										SourceServices.getSourceService()
 											.getConverterSetup(source));
 								}
 							});

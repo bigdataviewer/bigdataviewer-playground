@@ -69,7 +69,7 @@ public class WarpedSourceDemo {
         AbstractSpimData<?> asd = importer.get();
 
         SourceAndConverter<?> source = SourceServices
-                .getSourceAndConverterService()
+                .getSourceService()
                 .getSourceAndConverterFromSpimdata(asd)
                 .get(0);
 
@@ -122,7 +122,7 @@ public class WarpedSourceDemo {
             SourceAndConverter<?> transformed_source = new SourceRealTransformer(rt).apply(source);
 
             SourceServices
-                    .getSourceAndConverterService()
+                    .getSourceService()
                     .register(transformed_source);
 
             SourceServices

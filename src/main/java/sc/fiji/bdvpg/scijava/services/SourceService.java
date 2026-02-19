@@ -802,7 +802,7 @@ public class SourceService extends AbstractService implements
 			sourceTree = new SourceTree(this, context(), false);
 		}
 
-		SourceServices.setSourceAndConverterService(this);
+		SourceServices.setSourceService(this);
 		logger.debug("Service initialized.");
 	}
 

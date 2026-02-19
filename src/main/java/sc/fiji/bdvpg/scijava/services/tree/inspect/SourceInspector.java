@@ -79,12 +79,12 @@ public class SourceInspector {
 	public static void appendMetadata(DefaultMutableTreeNode parent,
 		SourceAndConverter<?> source)
 	{
-		SourceServices.getSourceAndConverterService().getMetadataKeys(
+		SourceServices.getSourceService().getMetadataKeys(
 			source).forEach(k -> {
 				DefaultMutableTreeNode nodeMetaKey = new DefaultMutableTreeNode(k);
 				parent.add(nodeMetaKey);
 				DefaultMutableTreeNode nodeMetaValue = new DefaultMutableTreeNode(
-					SourceServices.getSourceAndConverterService().getMetadata(
+					SourceServices.getSourceService().getMetadata(
 						source, k));
 				nodeMetaKey.add(nodeMetaValue);
 			});
@@ -282,7 +282,7 @@ public class SourceInspector {
 		// Add cache statistics for ResampledSource
 		try {
 			AbstractGlobalCache globalCache = SourceServices
-				.getSourceAndConverterService().getCache();
+				.getSourceService().getCache();
 			if (globalCache != null) {
 				DefaultMutableTreeNode cacheNode = new DefaultMutableTreeNode(
 					"Cache Statistics");
@@ -380,7 +380,7 @@ public class SourceInspector {
 	{
 		return getListToRootSourceAndConverter(source,
 			(SourceService) SourceServices
-				.getSourceAndConverterService()).getLast();
+				.getSourceService()).getLast();
 	}
 
 	/**
@@ -392,7 +392,7 @@ public class SourceInspector {
 	{
 		SourceAndConverter<?> src;
 		List<SourceAndConverter<?>> sources = SourceServices
-			.getSourceAndConverterService().getSourceAndConvertersFromSource(source);
+			.getSourceService().getSourceAndConvertersFromSource(source);
 		if (sources.isEmpty()) {
 			src = SourceHelper.createSourceAndConverter(source);
 		}
@@ -401,7 +401,7 @@ public class SourceInspector {
 		}
 		return getListToRootSourceAndConverter(src,
 			(SourceService) SourceServices
-				.getSourceAndConverterService()).getLast();
+				.getSourceService()).getLast();
 	}
 
 	/**
@@ -734,7 +734,7 @@ public class SourceInspector {
                 // Add cache statistics for this timepoint
                 try {
                     AbstractGlobalCache globalCache = SourceServices
-                        .getSourceAndConverterService().getCache();
+                        .getSourceService().getCache();
                     if (globalCache != null) {
                         // Get the root source object for cache lookup
                         //Source<?> rootSource = SourceAndConverterHelper.getRootSource(source.getSpimSource());

@@ -50,11 +50,11 @@ public class SourceServices {
 
 	private static SourceBdvDisplayService sourceBdvDisplayService;
 
-	public static ISourceService getSourceAndConverterService() {
+	public static ISourceService getSourceService() {
 		return sourceAndConverterService;
 	}
 
-	public static void setSourceAndConverterService(
+	public static void setSourceService(
 		ISourceService sourceAndConverterService)
 	{
 		SourceServices.sourceAndConverterService =

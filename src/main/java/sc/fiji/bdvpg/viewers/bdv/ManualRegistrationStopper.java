@@ -114,7 +114,7 @@ public class ManualRegistrationStopper implements Runnable {
 			tempSources.toArray(new SourceAndConverter[0]));
 
 		for (SourceAndConverter<?> source : tempSources) {
-			SourceServices.getSourceAndConverterService().remove(source);
+			SourceServices.getSourceService().remove(source);
 		}
 
 		int nSources = starter.getOriginalSources().length;

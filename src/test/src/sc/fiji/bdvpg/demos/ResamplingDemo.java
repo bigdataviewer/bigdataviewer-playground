@@ -76,7 +76,7 @@ public class ResamplingDemo {
 
         SourceAndConverter<UnsignedShortType> source = (SourceAndConverter<UnsignedShortType>)
                 SourceServices
-                .getSourceAndConverterService()
+                .getSourceService()
                 .getSourceAndConverterFromSpimdata(asd)
                 .get(0);
 

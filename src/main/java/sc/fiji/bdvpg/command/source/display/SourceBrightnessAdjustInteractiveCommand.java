@@ -126,10 +126,10 @@ public class SourceBrightnessAdjustInteractiveCommand extends InteractiveCommand
 	public void init() {
 		if (sources != null) if (sources.length > 0) {
 			double minSource = SourceServices
-				.getSourceAndConverterService().getConverterSetup(sources[0])
+				.getSourceService().getConverterSetup(sources[0])
 				.getDisplayRangeMin();
 			double maxSource = SourceServices
-				.getSourceAndConverterService().getConverterSetup(sources[0])
+				.getSourceService().getConverterSetup(sources[0])
 				.getDisplayRangeMax();
 
 			if (minSource >= 0) {

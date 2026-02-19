@@ -154,9 +154,9 @@ public class XmlFromSpimDataExporter implements Runnable {
 				}
 			}
 
-			SourceServices.getSourceAndConverterService().setSpimDataName(
+			SourceServices.getSourceService().setSpimDataName(
 				spimData, dataLocation);
-			SourceServices.getSourceAndConverterService().setMetadata(
+			SourceServices.getSourceService().setMetadata(
 				spimData, SPIM_DATA_LOCATION, dataLocation);
 
 			if (spimData instanceof SpimData) {

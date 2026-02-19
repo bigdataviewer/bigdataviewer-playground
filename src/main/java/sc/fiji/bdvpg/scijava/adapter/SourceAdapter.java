@@ -109,9 +109,9 @@ public class SourceAdapter implements
 					.getConverter();
 				obj.add("color", jsonSerializationContext.serialize(colorConverter
 					.getColor().get()));
-				double min = SourceServices.getSourceAndConverterService()
+				double min = SourceServices.getSourceService()
 					.getConverterSetup(sourceAndConverter).getDisplayRangeMin();
-				double max = SourceServices.getSourceAndConverterService()
+				double max = SourceServices.getSourceService()
 					.getConverterSetup(sourceAndConverter).getDisplayRangeMax();
 				obj.addProperty("converter_setup_min", min);
 				obj.addProperty("converter_setup_max", max);
@@ -119,9 +119,9 @@ public class SourceAdapter implements
 
 			Map<String, String> stringMetaData = new HashMap<>();
 
-			SourceServices.getSourceAndConverterService().getMetadataKeys(
+			SourceServices.getSourceService().getMetadataKeys(
 				sourceAndConverter).forEach(key -> {
-					Object o = SourceServices.getSourceAndConverterService()
+					Object o = SourceServices.getSourceService()
 						.getMetadata(sourceAndConverter, key);
 					if (o instanceof String) {
 						stringMetaData.put(key, (String) o);
@@ -188,7 +188,7 @@ public class SourceAdapter implements
 																													// volatile and
 																													// non-volatile
 				// Min Max display
-				SourceServices.getSourceAndConverterService()
+				SourceServices.getSourceService()
 					.getConverterSetup(source).setDisplayRange(jsonObject.getAsJsonPrimitive(
 						"converter_setup_min").getAsDouble(), jsonObject.getAsJsonPrimitive(
 							"converter_setup_max").getAsDouble());
@@ -206,7 +206,7 @@ public class SourceAdapter implements
 				.deserialize(jsonObject.get("string_metadata"), Map.class);// ,jsonSerializationContext.serialize(stringMetaData));
 
 			stringMetaData.keySet().forEach(key -> SourceServices
-				.getSourceAndConverterService().setMetadata(source, key, stringMetaData
+				.getSourceService().setMetadata(source, key, stringMetaData
 					.get(key)));
 
 			return source;

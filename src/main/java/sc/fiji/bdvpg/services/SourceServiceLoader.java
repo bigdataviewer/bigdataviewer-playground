@@ -77,11 +77,11 @@ public class SourceServiceLoader extends SourceAdapter
 
 		// Empty service
 		SourceAndConverter<?>[] sources = SourceServices
-			.getSourceAndConverterService().getSourceAndConverters().toArray(
+			.getSourceService().getSourceAndConverters().toArray(
 				new SourceAndConverter[0]);
 
 		if (erasePreviousState) {
-			SourceServices.getSourceAndConverterService().remove(sources);
+			SourceServices.getSourceService().remove(sources);
 		}
 
 		try {

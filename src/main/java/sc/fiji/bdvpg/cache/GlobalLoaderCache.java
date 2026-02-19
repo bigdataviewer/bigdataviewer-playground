@@ -66,7 +66,7 @@ public class GlobalLoaderCache<K, V> implements LoaderCache<K, V> {
 		this.source = source;
 		this.timepoint = timepoint;
 		this.level = level;
-		globalCache = SourceServices.getSourceAndConverterService()
+		globalCache = SourceServices.getSourceService()
 			.getCache();
 	}
 
@@ -80,7 +80,7 @@ public class GlobalLoaderCache<K, V> implements LoaderCache<K, V> {
 		this.source = source;
 		this.timepoint = -1;
 		this.level = -1;
-		globalCache = SourceServices.getSourceAndConverterService()
+		globalCache = SourceServices.getSourceService()
 			.getCache();
 	}
 

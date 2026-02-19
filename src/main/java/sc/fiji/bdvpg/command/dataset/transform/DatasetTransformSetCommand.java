@@ -135,7 +135,7 @@ public class DatasetTransformSetCommand implements BdvPlaygroundActionCommand {
 
 		for (SourceAndConverter<?> source : sources) {
 			// Get SpimData info
-			Object info = SourceServices.getSourceAndConverterService()
+			Object info = SourceServices.getSourceService()
 				.getMetadata(source, SourceService.SPIM_DATA_INFO);
 
 			if (info == null) {

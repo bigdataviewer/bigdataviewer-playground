@@ -509,7 +509,7 @@ public class SourceBdvDisplayService extends AbstractService
 			// ------------ Event handling in bdv sourceandconverterserviceui
 			final SourceService source_service =
 				(SourceService) SourceServices
-					.getSourceAndConverterService();
+					.getSourceService();
 			SourceTreeModel model = source_service.tree().getSourceTreeModel();
 			model.addBdvHandle(bdvh, windowTitle, model.getRoot());
 

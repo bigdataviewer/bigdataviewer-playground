@@ -111,7 +111,7 @@ public class SourcePopupMenu {
 			}
 			else {
 				this.addPopupAction(actionNameWithPath,
-					SourceServices.getSourceAndConverterService().getAction(
+					SourceServices.getSourceService().getAction(
 						actionName.trim()));
 			}
 		}

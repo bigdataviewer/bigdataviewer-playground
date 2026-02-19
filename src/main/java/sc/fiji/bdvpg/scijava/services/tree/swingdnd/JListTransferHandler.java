@@ -160,12 +160,12 @@ public class JListTransferHandler extends TransferHandler {
 			}
 
 			if (SourceServices
-				.getSourceAndConverterService() instanceof SourceService)
+				.getSourceService() instanceof SourceService)
 			{
 				List<SourceAndConverter<?>> sources = new ArrayList<>();
 				SourceTree ui =
 					((SourceService) SourceServices
-						.getSourceAndConverterService()).tree();
+						.getSourceService()).tree();
 
 				for (DefaultMutableTreeNode node : Objects.requireNonNull(nodes)) {
 					DefaultMutableTreeNode unwrapped = (DefaultMutableTreeNode) (node

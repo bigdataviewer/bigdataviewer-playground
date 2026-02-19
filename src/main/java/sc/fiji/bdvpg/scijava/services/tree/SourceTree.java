@@ -43,7 +43,7 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourcePopupMenu;
 import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.scijava.services.tree.inspect.SourceInspector;
-import sc.fiji.bdvpg.scijava.services.tree.swingdnd.SourceServiceUITransferHandler;
+import sc.fiji.bdvpg.scijava.services.tree.swingdnd.SourceServiceTreeTransferHandler;
 import sc.fiji.bdvpg.source.SourceHelper;
 
 import javax.swing.DropMode;
@@ -187,7 +187,7 @@ public class SourceTree {
 			// Enables:
 			// - drag -> SourceAndConverters
 			// - drop -> automatically import xml BDV datasets
-			tree.setTransferHandler(new SourceServiceUITransferHandler(
+			tree.setTransferHandler(new SourceServiceTreeTransferHandler(
 				sourceTreeModel, sourceTreeView));
 
 			// get the screen size as a java dimension

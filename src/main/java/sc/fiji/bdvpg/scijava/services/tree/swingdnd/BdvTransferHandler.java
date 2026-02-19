@@ -160,12 +160,12 @@ public class BdvTransferHandler extends TransferHandler {
 			}
 
 			if (SourceServices
-				.getSourceAndConverterService() instanceof SourceService)
+				.getSourceService() instanceof SourceService)
 			{
 				List<SourceAndConverter<?>> sources = new ArrayList<>();
 				SourceTree ui =
 					((SourceService) SourceServices
-						.getSourceAndConverterService()).tree();
+						.getSourceService()).tree();
 				for (DefaultMutableTreeNode node : nodes) {
 					DefaultMutableTreeNode unwrapped = (DefaultMutableTreeNode) (node
 						.getUserObject());
