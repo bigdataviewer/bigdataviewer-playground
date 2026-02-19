@@ -118,11 +118,11 @@ public class SourceInspector {
 			parent.add(nodeTransformedSource);
 			TransformedSource<?> transformedSource = (TransformedSource<?>) source.getSpimSource();
 
-			if (!sourceAndConverterService.getSourcesFromDataset(transformedSource
+			if (!sourceAndConverterService.getSourcesFromSpimSource(transformedSource
                     .getWrappedSource()).isEmpty())
 			{
 				// at least a SourceAndConverter already exists for this source
-				sourceAndConverterService.getSourcesFromDataset(transformedSource
+				sourceAndConverterService.getSourcesFromSpimSource(transformedSource
 					.getWrappedSource()).forEach((src) -> {
 						DefaultMutableTreeNode wrappedSourceNode =
 							new DefaultMutableTreeNode(new RenamableSource(src));
@@ -170,11 +170,11 @@ public class SourceInspector {
 			parent.add(nodeWarpedSource);
 			WarpedSource<?> warpedSource = (WarpedSource<?>) source.getSpimSource();
 
-			if (!sourceAndConverterService.getSourcesFromDataset(warpedSource
+			if (!sourceAndConverterService.getSourcesFromSpimSource(warpedSource
                     .getWrappedSource()).isEmpty())
 			{
 				// at least a SourceAndConverter already exists for this source
-				sourceAndConverterService.getSourcesFromDataset(warpedSource
+				sourceAndConverterService.getSourcesFromSpimSource(warpedSource
 					.getWrappedSource()).forEach((src) -> {
 						DefaultMutableTreeNode wrappedSourceNode =
 							new DefaultMutableTreeNode(new RenamableSource(src));
@@ -221,11 +221,11 @@ public class SourceInspector {
 			DefaultMutableTreeNode nodeOrigin = new DefaultMutableTreeNode("Origin");
 			nodeResampledSource.add(nodeOrigin);
 
-			if (!sourceAndConverterService.getSourcesFromDataset(resampledSource
+			if (!sourceAndConverterService.getSourcesFromSpimSource(resampledSource
                     .getOriginalSource()).isEmpty())
 			{
 				// at least a SourceAndConverter already exists for this source
-				sourceAndConverterService.getSourcesFromDataset(resampledSource
+				sourceAndConverterService.getSourcesFromSpimSource(resampledSource
 					.getOriginalSource()).forEach((src) -> {
 						DefaultMutableTreeNode wrappedSourceNode =
 							new DefaultMutableTreeNode(new RenamableSource(src));
@@ -252,11 +252,11 @@ public class SourceInspector {
 				"Sampler Model");
 			nodeResampledSource.add(nodeResampler);
 
-			if (!sourceAndConverterService.getSourcesFromDataset(resampledSource
+			if (!sourceAndConverterService.getSourcesFromSpimSource(resampledSource
                     .getModelResamplerSource()).isEmpty())
 			{
 				// at least a SourceAndConverter already exists for this source
-				sourceAndConverterService.getSourcesFromDataset(resampledSource
+				sourceAndConverterService.getSourcesFromSpimSource(resampledSource
 					.getModelResamplerSource()).forEach((src) -> {
 						DefaultMutableTreeNode wrappedSourceNode =
 							new DefaultMutableTreeNode(new RenamableSource(src));
@@ -392,7 +392,7 @@ public class SourceInspector {
 	{
 		SourceAndConverter<?> src;
 		List<SourceAndConverter<?>> sources = SourceServices
-			.getSourceService().getSourcesFromDataset(source);
+			.getSourceService().getSourcesFromSpimSource(source);
 		if (sources.isEmpty()) {
 			src = SourceHelper.createSourceAndConverter(source);
 		}

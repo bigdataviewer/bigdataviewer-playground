@@ -806,7 +806,7 @@ public class SourceService extends AbstractService implements
 		logger.debug("Service initialized.");
 	}
 
-	public List<SourceAndConverter<?>> getSourcesFromDataset(
+	public List<SourceAndConverter<?>> getSourcesFromSpimSource(
 		Source src)
 	{
 		return getSources().stream().filter(source -> source.getSpimSource()

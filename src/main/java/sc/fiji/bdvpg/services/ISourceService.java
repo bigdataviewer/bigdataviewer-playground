@@ -180,7 +180,7 @@ public interface ISourceService {
 	 * @param source to check ( not a SourceAndConverter )
 	 * @return a list of all sources which wraps the same underlying source
 	 */
-	List<SourceAndConverter<?>> getSourcesFromDataset(
+	List<SourceAndConverter<?>> getSourcesFromSpimSource(
 		Source<?> source);
 
 	/**
