@@ -112,7 +112,7 @@ public class XmlFromSpimDataExporter implements Runnable {
 				SourceService source_service = context.getService(
 					SourceService.class);
 
-				source_service.getSourceAndConverterFromSpimdata(spimData).forEach(source -> {
+				source_service.getSourcesFromDataset(spimData).forEach(source -> {
 					SourceService.SpimDataInfo sdi =
 						(SourceService.SpimDataInfo) source_service.getMetadata(
 							source, SPIM_DATA_INFO);
@@ -154,7 +154,7 @@ public class XmlFromSpimDataExporter implements Runnable {
 				}
 			}
 
-			SourceServices.getSourceService().setSpimDataName(
+			SourceServices.getSourceService().setDatasetName(
 				spimData, dataLocation);
 			SourceServices.getSourceService().setMetadata(
 				spimData, SPIM_DATA_LOCATION, dataLocation);

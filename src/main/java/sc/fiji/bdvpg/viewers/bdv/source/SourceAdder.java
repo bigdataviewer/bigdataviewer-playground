@@ -42,7 +42,7 @@ import java.util.function.Consumer;
  * interface allows to use this action in a functional way, in this case, the
  * constructor without SourceAndConverter can be used TODO : think if this
  * action is useful ? It looks unused because the direct call to
- * SourceAndConverterServices.getSourceAndConverterDisplayService().show is more
+ * SourceAndConverterServices.getSourceDisplayService().show is more
  * convenient
  */
 

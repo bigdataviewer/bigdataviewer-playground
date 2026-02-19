@@ -236,7 +236,7 @@ public class SourceTree {
 	}
 
 	public void show() {
-		if ((guiAvailable)&&(PlaygroundPrefs.getSourceAndConverterUIVisibility())) {
+		if ((guiAvailable)&&(PlaygroundPrefs.getSourceTreeVisibility())) {
 			frame.setVisible(true);
 		}
 	}
@@ -386,7 +386,7 @@ public class SourceTree {
 	 * Updates SpimData filter nodes based on currently registered SpimData sets.
 	 */
 	private void updateSpimDataFilterNodes() {
-		Set<AbstractSpimData<?>> currentSpimdatas = sourceAndConverterService.getSpimDatasets();
+		Set<AbstractSpimData<?>> currentSpimdatas = sourceAndConverterService.getDatasets();
 
 		for (AbstractSpimData<?> asd : currentSpimdatas) {
 			if (sourceTreeModel.getSpimDataNode(asd) == null) {
@@ -451,7 +451,7 @@ public class SourceTree {
 				sourceList.add(userObj);
 			}
 			else {
-				sourceList.addAll(getSourceAndConvertersFromChildrenOf(
+				sourceList.addAll(getSourcesFromChildrenOf(
 					(DefaultMutableTreeNode) tp.getLastPathComponent()));
 			}
 		}
@@ -464,7 +464,7 @@ public class SourceTree {
 	 * @return a set containing the list of all {@link SourceAndConverter}
 	 *         below the node
 	 */
-	public Set<SourceAndConverter<?>> getSourceAndConvertersFromChildrenOf(
+	public Set<SourceAndConverter<?>> getSourcesFromChildrenOf(
 		DefaultMutableTreeNode node)
 	{
 		Set<SourceAndConverter<?>> sources = new HashSet<>();
@@ -482,7 +482,7 @@ public class SourceTree {
 				// Fallback: traverse children
 				for (int i = 0; i < node.getChildCount(); i++) {
 					DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
-					sources.addAll(getSourceAndConvertersFromChildrenOf(child));
+					sources.addAll(getSourcesFromChildrenOf(child));
 				}
 			}
 		}
@@ -551,9 +551,9 @@ public class SourceTree {
 	 * @param path path
 	 * @return the list of sources in the path
 	 */
-	public List<SourceAndConverter<?>> getSourceAndConvertersFromTreePath(TreePath path) {
+	public List<SourceAndConverter<?>> getSourcesFromTreePath(TreePath path) {
 		return SourceHelper.sortDefaultGeneric(
-			getSourceAndConvertersFromChildrenOf((DefaultMutableTreeNode) path.getLastPathComponent()));
+			getSourcesFromChildrenOf((DefaultMutableTreeNode) path.getLastPathComponent()));
 	}
 
 	/**
@@ -562,10 +562,10 @@ public class SourceTree {
 	 * @param path path
 	 * @return the list of sources in the path
 	 */
-	public List<SourceAndConverter<?>> getSourceAndConvertersFromPath(String path) {
+	public List<SourceAndConverter<?>> getSources(String path) {
 		TreePath tp = getTreePathFromString(path);
 		if (tp != null) {
-			return getSourceAndConvertersFromTreePath(tp);
+			return getSourcesFromTreePath(tp);
 		} else {
 			return new ArrayList<>();
 		}

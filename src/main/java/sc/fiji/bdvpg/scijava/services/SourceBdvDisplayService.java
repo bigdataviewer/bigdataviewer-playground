@@ -98,7 +98,7 @@ public class SourceBdvDisplayService extends AbstractService
 	 * Service containing all registered BDV Sources
 	 **/
 	@Parameter
-	SourceService bdvSourceAndConverterService;
+	SourceService sourceService;
 
 	/**
 	 * Used to retrieve the last active BDV Windows (if the activated callback has
@@ -255,8 +255,8 @@ public class SourceBdvDisplayService extends AbstractService
 		List<SourceAndConverter<?>> sourcesToDisplay = new ArrayList<>();
 
 		for (SourceAndConverter<?> source : sources) {
-			if (!bdvSourceAndConverterService.isRegistered(source)) {
-				bdvSourceAndConverterService.register(source);
+			if (!sourceService.isRegistered(source)) {
+				sourceService.register(source);
 			}
 
 			boolean escape = false;
@@ -272,7 +272,7 @@ public class SourceBdvDisplayService extends AbstractService
 
 			if (!escape) {
 				sourcesToDisplay.add(source);
-				bdvh.getConverterSetups().put(source, bdvSourceAndConverterService
+				bdvh.getConverterSetups().put(source, sourceService
 					.getConverterSetup(source));
 			}
 		}
@@ -344,7 +344,7 @@ public class SourceBdvDisplayService extends AbstractService
 		scriptService.addAlias(BdvHandle.class);
 		displayToMetadata = CacheBuilder.newBuilder().weakKeys().build();// new
 																																			// HashMap<>();
-		bdvSourceAndConverterService.setDisplayService(this);
+		sourceService.setDisplayService(this);
 		SourceServices.setBdvDisplayService(this);
 		// Catching bdv supplier from Prefs
 		logger.debug("Bdv Playground Display Service initialized.");
@@ -406,8 +406,8 @@ public class SourceBdvDisplayService extends AbstractService
 	 */
 	public void registerBdvSource(BdvHandle bdvh_in) {
 		bdvh_in.getViewerPanel().state().getSources().forEach(source -> {
-			if (!bdvSourceAndConverterService.isRegistered(source)) {
-				bdvSourceAndConverterService.register(source);
+			if (!sourceService.isRegistered(source)) {
+				sourceService.register(source);
 			}
 		});
 	}
@@ -431,7 +431,7 @@ public class SourceBdvDisplayService extends AbstractService
 	 * @param bdvHandle the bdvhandle
 	 * @return all sources present in a bdvhandle
 	 */
-	public List<SourceAndConverter<?>> getSourceAndConverterOf(
+	public List<SourceAndConverter<?>> getSourcesOf(
 		BdvHandle bdvHandle)
 	{
 		return bdvHandle.getViewerPanel().state().getSources();
@@ -517,12 +517,6 @@ public class SourceBdvDisplayService extends AbstractService
 			// closed by the user
 			BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService, this, true,
 				() -> source_service.tree().removeBdvHandleNodes(bdvh));
-
-			//source_service.getUI().getTreeModel().
-
-			//((SourceFilterNode) source_service.getUI().getTreeModel().getRoot()).insert(
-			//	node, 0);
-
 		}
 	}
 

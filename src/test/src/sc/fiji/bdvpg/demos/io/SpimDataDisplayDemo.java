@@ -60,7 +60,7 @@ public class SpimDataDisplayDemo
 		new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
 
 		// Show all SourceAndConverter associated with above SpimData
-		SourceServices.getSourceService().getSourceAndConverters().forEach(source -> {
+		SourceServices.getSourceService().getSources().forEach(source -> {
 			SourceServices.getBdvDisplayService().show(bdvHandle, source);
 			new ViewerTransformAdjuster(bdvHandle, source).run();
 			new BrightnessAutoAdjuster<>(source, 0).run();

@@ -114,7 +114,7 @@ public class AbstractSpimdataAdapter implements
 		}
 		SourceService sourceService = sourceSerializer.getScijavaContext()
 				.getService(SourceService.class);
-		List<AbstractSpimData<?>> asds = sourceService.getSpimDatasets().stream().filter(
+		List<AbstractSpimData<?>> asds = sourceService.getDatasets().stream().filter(
 				asd -> {
 					Object location = sourceService.getMetadata(asd, SPIM_DATA_LOCATION);
 					return location != null && location.equals(finalDataLocation);

@@ -189,7 +189,7 @@ public class SourceNavigatorSliderAdder implements Runnable {
 		List<RealPoint> centers = new ArrayList<>(sortedSources.size());
 		List<String> srcsNames = new ArrayList<>(sortedSources.size());
 		for (SourceAndConverter<?> source : sortedSources) {
-			centers.add(SourceHelper.getSourceAndConverterCenterPoint(source, bdvh.getViewerPanel().state().getCurrentTimepoint()));
+			centers.add(SourceHelper.getSourceCenterPoint(source, bdvh.getViewerPanel().state().getCurrentTimepoint()));
 			srcsNames.add(source.getSpimSource().getName());
 		}
 		centerLocations = centers;

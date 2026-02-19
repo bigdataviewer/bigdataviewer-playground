@@ -55,7 +55,7 @@ public class SourceAndTimeRange<T> {
 		this.timePointEnd = timePoint + 1;
 	}
 
-	public SourceAndConverter<T> getSourceAndConverter() {
+	public SourceAndConverter<T> getSource() {
 		return source;
 	}
 

@@ -391,7 +391,7 @@ public class SourceTreeModel {
             // (called via invokeLater) will see the populated state and build source nodes.
             // Firing a separate SOURCES_ADDED after NODES_ADDED would cause duplicates.
             List<SourceAndConverter<?>> existingSources = sourceAndConverterService
-                    .getSourceAndConverterFromSpimdata(spimData);
+                    .getSourcesFromDataset(spimData);
             if (!existingSources.isEmpty()) {
                 Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
                 for (SourceAndConverter<?> source : existingSources) {

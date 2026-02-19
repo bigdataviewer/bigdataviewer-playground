@@ -77,7 +77,7 @@ public class SourceServiceLoader extends SourceAdapter
 
 		// Empty service
 		SourceAndConverter<?>[] sources = SourceServices
-			.getSourceService().getSourceAndConverters().toArray(
+			.getSourceService().getSources().toArray(
 				new SourceAndConverter[0]);
 
 		if (erasePreviousState) {

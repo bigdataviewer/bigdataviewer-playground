@@ -55,7 +55,7 @@ public class SourceServiceClearState implements
 
 	@Override
 	public void run() {
-		List<SourceAndConverter<?>> sources = source_service.getSourceAndConverters();
+		List<SourceAndConverter<?>> sources = source_service.getSources();
 		source_service.remove(sources.toArray(new SourceAndConverter[0]));
 	}
 }

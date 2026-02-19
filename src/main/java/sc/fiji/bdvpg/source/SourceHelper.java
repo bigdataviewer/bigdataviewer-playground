@@ -821,7 +821,7 @@ public class SourceHelper {
 	 * @param timepoint the timepoint at which to compute the center point
 	 * @return the center point of the source (assuming not warped)
 	 */
-	public static RealPoint getSourceAndConverterCenterPoint(
+	public static RealPoint getSourceCenterPoint(
 		SourceAndConverter<?> source, int timepoint)
 	{
 		AffineTransform3D sourceTransform = new AffineTransform3D();
@@ -1109,7 +1109,7 @@ public class SourceHelper {
 	 * @return List of SourceAndConverters
 	 */
 	public static List<SourceAndConverter<?>>
-		getSourceAndConvertersAtCurrentMousePosition(BdvHandle bdvHandle)
+	getSourcesAtCurrentMousePosition(BdvHandle bdvHandle)
 	{
 		// Gets mouse location in space (global 3D coordinates) and time
 		final RealPoint mousePosInBdv = new RealPoint(3);
@@ -1118,7 +1118,7 @@ public class SourceHelper {
 		int timePoint = bdvHandle.getViewerPanel().state().getCurrentTimepoint();
 
 		final List<SourceAndConverter<?>> sourceAndConverters =
-			SourceServices.getBdvDisplayService().getSourceAndConverterOf(
+			SourceServices.getBdvDisplayService().getSourcesOf(
 				bdvHandle).stream().filter(source -> isSourcePresentAt(source, timePoint,
 					mousePosInBdv)).filter(source -> SourceServices
 						.getBdvDisplayService().isVisible(source, bdvHandle)).collect(

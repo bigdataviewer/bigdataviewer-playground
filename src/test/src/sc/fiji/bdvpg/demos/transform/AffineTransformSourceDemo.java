@@ -72,7 +72,7 @@ public class AffineTransformSourceDemo {
         final AbstractSpimData<?> spimData = importer.get();
 
         SourceAndConverter<?> source = ij.get(SourceService.class)
-                .getSourceAndConverterFromSpimdata(spimData)
+                .getSourcesFromDataset(spimData)
                 .get(0);
 
         new ViewerTransformAdjuster(bdvHandle, source).run();

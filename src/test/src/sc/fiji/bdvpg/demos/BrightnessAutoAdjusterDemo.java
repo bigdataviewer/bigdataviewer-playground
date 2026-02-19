@@ -71,7 +71,7 @@ public class BrightnessAutoAdjusterDemo
 
         List<SourceAndConverter<?>> sourcesFromSpimData =
 				ij.get(SourceService.class)
-                .getSourceAndConverterFromSpimdata(asd);
+                .getSourcesFromDataset(asd);
 
         addSource(bdvHandle, sourcesFromSpimData.get(0));
 

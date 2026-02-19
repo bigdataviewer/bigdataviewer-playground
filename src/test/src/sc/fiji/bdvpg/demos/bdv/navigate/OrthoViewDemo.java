@@ -76,7 +76,7 @@ public class OrthoViewDemo {
         BdvHandle[] bdvhs = new BdvHandle[]{bdvHandleX,bdvHandleY,bdvHandleZ};
 
         // Get a handle on the sources
-        final List< SourceAndConverter<?> > sources = sourceService.getSourceAndConverters();
+        final List< SourceAndConverter<?> > sources = sourceService.getSources();
 
         ViewerOrthoSyncStarter syncstart = new ViewerOrthoSyncStarter(
                 new ViewerAdapter(bdvHandleX),

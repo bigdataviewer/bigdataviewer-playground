@@ -62,11 +62,11 @@ public class SelectorDemo {
         new SpimDataFromXmlImporter("src/test/resources/demoSlice.xml").get();
 
         BdvHandle bdvh = sourceDisplayService.getNewBdv();
-        sourceDisplayService.show(bdvh, sourceService.getSourceAndConverters().toArray(new SourceAndConverter[0]));
+        sourceDisplayService.show(bdvh, sourceService.getSources().toArray(new SourceAndConverter[0]));
 
-        new ViewerTransformAdjuster(bdvh, sourceService.getSourceAndConverters().toArray(new SourceAndConverter[0])).run();
-        new BrightnessAdjuster(sourceService.getSourceAndConverters().get(0),0,255).run();
-        new BrightnessAdjuster(sourceService.getSourceAndConverters().get(1),0,255).run();
+        new ViewerTransformAdjuster(bdvh, sourceService.getSources().toArray(new SourceAndConverter[0])).run();
+        new BrightnessAdjuster(sourceService.getSources().get(0),0,255).run();
+        new BrightnessAdjuster(sourceService.getSources().get(1),0,255).run();
 
         SourceSelectorBehaviour ssb = new SourceSelectorBehaviour(bdvh, "E");
 

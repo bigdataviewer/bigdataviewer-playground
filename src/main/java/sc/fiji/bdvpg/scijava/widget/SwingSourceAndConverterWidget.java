@@ -102,7 +102,7 @@ public class SwingSourceAndConverterWidget extends
 				sourceList.add(userObj);
 			}
 			else {
-				sourceList.addAll(getSourceAndConvertersFromChildrenOf(
+				sourceList.addAll(getSourcesFromChildrenOf(
 					(DefaultMutableTreeNode) tp.getLastPathComponent()));
 			}
 		}
@@ -114,7 +114,7 @@ public class SwingSourceAndConverterWidget extends
 		}
 	}
 
-	private Set<SourceAndConverter<?>> getSourceAndConvertersFromChildrenOf(
+	private Set<SourceAndConverter<?>> getSourcesFromChildrenOf(
 		DefaultMutableTreeNode node)
 	{
 		Set<SourceAndConverter<?>> sources = new HashSet<>();
@@ -127,7 +127,7 @@ public class SwingSourceAndConverterWidget extends
 				sources.add(userObj);
 			}
 			else {
-				sources.addAll(getSourceAndConvertersFromChildrenOf(child));
+				sources.addAll(getSourcesFromChildrenOf(child));
 			}
 		}
 		return sources;

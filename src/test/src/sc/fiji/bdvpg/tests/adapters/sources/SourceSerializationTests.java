@@ -110,7 +110,7 @@ public class SourceSerializationTests {
 
         // Verify
         List<SourceAndConverter<?>> restoredSources = SourceServices
-                .getSourceService().getSourceAndConverters();
+                .getSourceService().getSources();
 
         Assert.assertEquals("Should have one restored source", 1, restoredSources.size());
 
@@ -150,7 +150,7 @@ public class SourceSerializationTests {
 
         // Get the sources that were registered
         List<SourceAndConverter<?>> sources = SourceServices
-                .getSourceService().getSourceAndConverters();
+                .getSourceService().getSources();
 
         Assert.assertFalse("Should have loaded sources from SpimData", sources.isEmpty());
 
@@ -163,7 +163,7 @@ public class SourceSerializationTests {
 
         // Verify
         List<SourceAndConverter<?>> restoredSources = SourceServices
-                .getSourceService().getSourceAndConverters();
+                .getSourceService().getSources();
 
         Assert.assertEquals("Should have one restored source", 1, restoredSources.size());
 
@@ -185,7 +185,7 @@ public class SourceSerializationTests {
         new SpimDataFromXmlImporter(xmlPath).run();
 
         List<SourceAndConverter<?>> sources = SourceServices
-                .getSourceService().getSourceAndConverters();
+                .getSourceService().getSources();
 
         SourceAndConverter<?> baseSource = sources.get(0);
 
@@ -207,7 +207,7 @@ public class SourceSerializationTests {
 
         // Verify
         List<SourceAndConverter<?>> restoredSources = SourceServices
-                .getSourceService().getSourceAndConverters();
+                .getSourceService().getSources();
 
         Assert.assertEquals("Should have two restored sources", 2, restoredSources.size());
 
@@ -245,7 +245,7 @@ public class SourceSerializationTests {
         new SpimDataFromXmlImporter(xmlPath).run();
 
         List<SourceAndConverter<?>> sources = SourceServices
-                .getSourceService().getSourceAndConverters();
+                .getSourceService().getSources();
 
         SourceAndConverter<?> baseSource = sources.get(0);
 
@@ -275,7 +275,7 @@ public class SourceSerializationTests {
 
         // Verify
         List<SourceAndConverter<?>> restoredSources = SourceServices
-                .getSourceService().getSourceAndConverters();
+                .getSourceService().getSources();
 
         Assert.assertEquals("Should have two restored sources", 2, restoredSources.size());
 
@@ -314,7 +314,7 @@ public class SourceSerializationTests {
         new SpimDataFromXmlImporter(xmlPath).run();
 
         List<SourceAndConverter<?>> sources = SourceServices
-                .getSourceService().getSourceAndConverters();
+                .getSourceService().getSources();
 
         SourceAndConverter<?> originSource = sources.get(0);
 
@@ -351,7 +351,7 @@ public class SourceSerializationTests {
 
         // Verify
         List<SourceAndConverter<?>> restoredSources = SourceServices
-                .getSourceService().getSourceAndConverters();
+                .getSourceService().getSources();
 
         Assert.assertTrue("Should have at least three restored sources",
                 restoredSources.size() >= 3);
@@ -390,7 +390,7 @@ public class SourceSerializationTests {
     private void clearAndReload() {
         // Clear existing sources
         SourceService sourceService = ctx.getService(SourceService.class);
-        sourceService.remove(sourceService.getSourceAndConverters().toArray(new SourceAndConverter[0]));
+        sourceService.remove(sourceService.getSources().toArray(new SourceAndConverter[0]));
 
         // Reload from file
         new SourceServiceLoader(

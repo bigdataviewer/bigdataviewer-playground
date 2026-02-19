@@ -67,7 +67,7 @@ public class SourceServiceSaver extends SourceAdapter
 
 	public SourceServiceSaver(File f, Context ctx) {
 		this(f, ctx, SourceServices.getSourceService()
-			.getSourceAndConverters());
+			.getSources());
 	}
 
 	public SourceServiceSaver(File f, Context ctx,
@@ -128,12 +128,12 @@ public class SourceServiceSaver extends SourceAdapter
 			// other sourceAdnConverters
 			// Serializes datasets - required to avoid serialization issues
 			Set<AbstractSpimData<?>> asds = SourceServices
-				.getSourceService().getSpimDatasets();
+				.getSourceService().getDatasets();
 
 			// Avoid unnecessary serialization of unneeded spimdata
 			asds = asds.stream().filter(asd -> {
 				List<SourceAndConverter<?>> sources_in_asd = SourceServices
-					.getSourceService().getSourceAndConverterFromSpimdata(
+					.getSourceService().getSourcesFromDataset(
 						asd);
 				return sources_in_asd.stream().anyMatch(source -> sources.contains(source));
 			}).collect(Collectors.toSet());

@@ -59,7 +59,7 @@ public class SourceContextMenuClickBehaviour implements
 	 */
 	public SourceContextMenuClickBehaviour(BdvHandle bdv) {
 		this(bdv, () -> SourceHelper
-			.getSourceAndConvertersAtCurrentMousePosition(bdv));
+			.getSourcesAtCurrentMousePosition(bdv));
 	}
 
 	/**

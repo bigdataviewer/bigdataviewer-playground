@@ -538,7 +538,7 @@ public class SourceService extends AbstractService implements
 			SourceAndConverter<?> source = setupIdToSourceAndConverter.get(id);
 			// Register without tree update (we'll batch update later)
 			register(source, "no tree");
-			linkToSpimData(source, asd, id);
+			linkToDataset(source, asd, id);
 			allSources.add(source);
 		});
 
@@ -636,7 +636,7 @@ public class SourceService extends AbstractService implements
 					}
 
 					if (asd != null) {
-						if (this.getSourceAndConverterFromSpimdata(asd).size() == 1) {
+						if (this.getSourcesFromDataset(asd).size() == 1) {
 							// Last one! Time to invalidate the cache (if there's one,
 							// meaning, if the image loader
 							// is a ViewerImageLoader)
@@ -713,7 +713,7 @@ public class SourceService extends AbstractService implements
 	}
 
 	@Override
-	public List<SourceAndConverter<?>> getSourceAndConverters() {
+	public List<SourceAndConverter<?>> getSources() {
 		List<SourceAndConverter> list = objectService.getObjects(
 			SourceAndConverter.class);
 		List<SourceAndConverter<?>> nonRawList = new ArrayList<>();
@@ -723,7 +723,7 @@ public class SourceService extends AbstractService implements
 	}
 
 	@Override
-	public List<SourceAndConverter<?>> getSourceAndConverterFromSpimdata(
+	public List<SourceAndConverter<?>> getSourcesFromDataset(
 		AbstractSpimData<?> asd)
 	{
 		List<SourceAndConverter> rawList = objectService.getObjects(
@@ -736,8 +736,8 @@ public class SourceService extends AbstractService implements
 		return list;
 	}
 
-	public void linkToSpimData(SourceAndConverter source, AbstractSpimData asd,
-		int idSetup)
+	public void linkToDataset(SourceAndConverter source, AbstractSpimData asd,
+							  int idSetup)
 	{
 		sourceToMetadata.getIfPresent(source).put(SPIM_DATA_INFO, new SpimDataInfo(asd,
 			idSetup));
@@ -806,10 +806,10 @@ public class SourceService extends AbstractService implements
 		logger.debug("Service initialized.");
 	}
 
-	public List<SourceAndConverter<?>> getSourceAndConvertersFromSource(
+	public List<SourceAndConverter<?>> getSourcesFromDataset(
 		Source src)
 	{
-		return getSourceAndConverters().stream().filter(source -> source.getSpimSource()
+		return getSources().stream().filter(source -> source.getSpimSource()
 			.equals(src)).collect(Collectors.toList());
 	}
 
@@ -834,9 +834,9 @@ public class SourceService extends AbstractService implements
 	}
 
 	@Override
-	public Set<AbstractSpimData<?>> getSpimDatasets() {
+	public Set<AbstractSpimData<?>> getDatasets() {
 		Set<AbstractSpimData<?>> asds = new HashSet<>();
-		this.getSourceAndConverters().forEach(source -> {
+		this.getSources().forEach(source -> {
 			if (containsMetadata(source, SPIM_DATA_INFO)) {
 				asds.add(((SpimDataInfo) getMetadata(source, SPIM_DATA_INFO)).asd);
 			}
@@ -1014,7 +1014,7 @@ public class SourceService extends AbstractService implements
 	// loading)
 	// {@link XmlFromSpimDataExporter}
 
-	public synchronized void setSpimDataName(AbstractSpimData asd, String name) {
+	public synchronized void setDatasetName(AbstractSpimData asd, String name) {
 		spimdataToMetadata.getIfPresent(asd).put("NAME", name);
 		sourceTree.updateSpimDataName(asd, name);
 	}

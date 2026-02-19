@@ -89,7 +89,7 @@ public class TestBdvCommands {
         sourceDisplayService.getDisplays().forEach(BdvHandle::close);
 
         // Clears all sources
-        sourceService.remove(sourceService.getSourceAndConverters().toArray(new SourceAndConverter[0]));
+        sourceService.remove(sourceService.getSources().toArray(new SourceAndConverter[0]));
 
         // Closes context
         ctx.close();

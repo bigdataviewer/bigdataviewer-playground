@@ -522,14 +522,14 @@ public class SourceHelperTest {
     // ==================== Center Point Tests ====================
 
     @Test
-    public void testGetSourceAndConverterCenterPoint_identity() {
+    public void testGetSourceCenterPoint_identity() {
         AffineTransform3D transform = new AffineTransform3D();
         transform.identity();
         EmptySource source = createTestSource(100, 100, 50, "TestSource", transform);
         SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceHelper.createConverterRealType(new UnsignedShortType()));
 
-        RealPoint center = SourceHelper.getSourceAndConverterCenterPoint(src, 0);
+        RealPoint center = SourceHelper.getSourceCenterPoint(src, 0);
 
         // Center of 100x100x50 volume at identity transform: (49.5, 49.5, 24.5)
         assertEquals(49.5, center.getDoublePosition(0), EPSILON);
@@ -538,7 +538,7 @@ public class SourceHelperTest {
     }
 
     @Test
-    public void testGetSourceAndConverterCenterPoint_translated() {
+    public void testGetSourceCenterPoint_translated() {
         AffineTransform3D transform = new AffineTransform3D();
         transform.identity();
         transform.translate(100.0, 200.0, 300.0);
@@ -546,7 +546,7 @@ public class SourceHelperTest {
         SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceHelper.createConverterRealType(new UnsignedShortType()));
 
-        RealPoint center = SourceHelper.getSourceAndConverterCenterPoint(src, 0);
+        RealPoint center = SourceHelper.getSourceCenterPoint(src, 0);
 
         // Center should be translated
         assertEquals(149.5, center.getDoublePosition(0), EPSILON);
@@ -555,7 +555,7 @@ public class SourceHelperTest {
     }
 
     @Test
-    public void testGetSourceAndConverterCenterPoint_scaled() {
+    public void testGetSourceCenterPoint_scaled() {
         AffineTransform3D transform = new AffineTransform3D();
         transform.identity();
         transform.scale(2.0);
@@ -563,7 +563,7 @@ public class SourceHelperTest {
         SourceAndConverter<UnsignedShortType> src = new SourceAndConverter<>(source,
             SourceHelper.createConverterRealType(new UnsignedShortType()));
 
-        RealPoint center = SourceHelper.getSourceAndConverterCenterPoint(src, 0);
+        RealPoint center = SourceHelper.getSourceCenterPoint(src, 0);
 
         // Center in pixel space is (49.5, 49.5, 24.5), scaled by 2
         assertEquals(99.0, center.getDoublePosition(0), EPSILON);

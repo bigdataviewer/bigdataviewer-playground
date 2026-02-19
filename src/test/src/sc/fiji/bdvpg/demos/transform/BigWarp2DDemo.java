@@ -162,7 +162,7 @@ public class BigWarp2DDemo {
         AbstractSpimData<?> spimDataFixed = new SpimDataFromXmlImporter(xmlPath).get();
 
         SourceAndConverter<?> source = sourceService
-                .getSourceAndConverterFromSpimdata(spimDataFixed)
+                .getSourcesFromDataset(spimDataFixed)
                 .get(0);
 
         new BrightnessAutoAdjuster<>(source, 0).run();

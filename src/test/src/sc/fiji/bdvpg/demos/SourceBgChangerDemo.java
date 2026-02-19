@@ -62,7 +62,7 @@ public class SourceBgChangerDemo {
         final AbstractSpimData<?> spimData = importer.get();
 
         SourceAndConverter<UnsignedShortType> source = (SourceAndConverter<UnsignedShortType>) ij.get(SourceService.class)
-                .getSourceAndConverterFromSpimdata(spimData)
+                .getSourcesFromDataset(spimData)
                 .get(0);
 
         SourceAndConverter<UnsignedShortType> sourceBgModified = new SourceOutOfBoundsColorChanger<>(source, new UnsignedShortType(2000)).get();

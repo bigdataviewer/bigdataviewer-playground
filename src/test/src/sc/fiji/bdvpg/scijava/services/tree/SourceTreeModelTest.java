@@ -42,7 +42,6 @@ import org.junit.Test;
 import org.scijava.Context;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.scijava.services.tree.*;
 import sc.fiji.bdvpg.source.SourceHelper;
 import sc.fiji.persist.IObjectScijavaAdapterService;
 
@@ -111,7 +110,7 @@ public class SourceTreeModelTest {
             AbstractSpimData<?> asd = new XmlIoSpimData().load("src/test/resources/mri-stack.xml");
             for (int i = 0; i < sources.size(); i++) {
                 sourceService.register(sources.get(i));
-                sourceService.linkToSpimData(sources.get(i), asd, i);
+                sourceService.linkToDataset(sources.get(i), asd, i);
             }
             return asd;
         } catch (SpimDataException e) {

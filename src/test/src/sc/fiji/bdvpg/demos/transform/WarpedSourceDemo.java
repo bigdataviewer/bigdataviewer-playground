@@ -70,7 +70,7 @@ public class WarpedSourceDemo {
 
         SourceAndConverter<?> source = SourceServices
                 .getSourceService()
-                .getSourceAndConverterFromSpimdata(asd)
+                .getSourcesFromDataset(asd)
                 .get(0);
 
         SourceServices

@@ -71,7 +71,7 @@ public class BigWarpDemo {
         AbstractSpimData<?> spimData = importer.get();
 
         SourceAndConverter<?> sourceFixed = sourceService
-                .getSourceAndConverterFromSpimdata(spimData)
+                .getSourcesFromDataset(spimData)
                 .get(0);
 
         importer = new SpimDataFromXmlImporter(filePath);
@@ -79,7 +79,7 @@ public class BigWarpDemo {
         spimData = importer.get();
 
         SourceAndConverter<?> sourceMoving = sourceService
-                .getSourceAndConverterFromSpimdata(spimData)
+                .getSourcesFromDataset(spimData)
                 .get(0);
 
 
@@ -135,7 +135,7 @@ public class BigWarpDemo {
         AbstractSpimData<?> spimData = importer.get();
 
         SourceAndConverter<?> sourceFixed = sourceService
-                .getSourceAndConverterFromSpimdata(spimData)
+                .getSourcesFromDataset(spimData)
                 .get(0);
 
         importer = new SpimDataFromXmlImporter(filePath);
@@ -144,7 +144,7 @@ public class BigWarpDemo {
         spimData = importer.get();
 
         SourceAndConverter<?> sourceMoving = sourceService
-                .getSourceAndConverterFromSpimdata(spimData)
+                .getSourcesFromDataset(spimData)
                 .get(0);
 
 

@@ -77,7 +77,7 @@ public class ResamplingDemo {
         SourceAndConverter<UnsignedShortType> source = (SourceAndConverter<UnsignedShortType>)
                 SourceServices
                 .getSourceService()
-                .getSourceAndConverterFromSpimdata(asd)
+                .getSourcesFromDataset(asd)
                 .get(0);
 
         SourceServices
@@ -116,7 +116,6 @@ public class ResamplingDemo {
 
         bdvHandle = SourceServices.getBdvDisplayService().getNewBdv();
 
-        //SourceAndConverterServices.getSourceAndConverterDisplayService().show( bdvHandle, source );
         new ViewerTransformAdjuster( bdvHandle, source ).run();
 
         // DOWNSAMPLING

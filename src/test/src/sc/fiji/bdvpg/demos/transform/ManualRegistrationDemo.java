@@ -161,7 +161,7 @@ public class ManualRegistrationDemo {
             AbstractSpimData<?> asd =  new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
 
             // Show all SourceAndConverter associated with above SpimData
-            sourceService.getSourceAndConverters().forEach( src -> {
+            sourceService.getSources().forEach(src -> {
                 bdvDisplayService.show(bdvHandle, src);
                 new BrightnessAutoAdjuster<>(src, 0).run();
             });
@@ -170,7 +170,7 @@ public class ManualRegistrationDemo {
             new ViewerTransformAdjuster(bdvHandle, sourceReference).run();
 
             List<SourceAndConverter<?>> sourceList = sourceService
-                    .getSourceAndConverterFromSpimdata(asd);
+                    .getSourcesFromDataset(asd);
 
             ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sourceList.toArray(new SourceAndConverter[0]));
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
@@ -196,7 +196,7 @@ public class ManualRegistrationDemo {
             AbstractSpimData<?> asd =  new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
 
             // Show all SourceAndConverter associated with above SpimData
-            sourceService.getSourceAndConverters().forEach( src -> {
+            sourceService.getSources().forEach(src -> {
                 bdvDisplayService.show(bdvHandle, src);
                 new BrightnessAutoAdjuster<>(src, 0).run();
             });
@@ -205,7 +205,7 @@ public class ManualRegistrationDemo {
             new ViewerTransformAdjuster(bdvHandle, sourceReference).run();
 
             List<SourceAndConverter<?>> sourceList = sourceService
-                    .getSourceAndConverterFromSpimdata(asd);
+                    .getSourcesFromDataset(asd);
 
 
             ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sourceList.toArray(new SourceAndConverter[0]));

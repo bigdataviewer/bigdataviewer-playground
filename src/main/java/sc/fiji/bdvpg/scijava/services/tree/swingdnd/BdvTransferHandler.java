@@ -177,7 +177,7 @@ public class BdvTransferHandler extends TransferHandler {
 					}
 					else {
 						for (SourceAndConverter<?> source : ui
-							.getSourceAndConvertersFromChildrenOf(unwrapped))
+							.getSourcesFromChildrenOf(unwrapped))
 						{
 							// noinspection UseBulkOperation
 							sources.add(source);

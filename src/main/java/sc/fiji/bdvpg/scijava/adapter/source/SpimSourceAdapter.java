@@ -101,7 +101,7 @@ public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 			final ISourceService sourceService = SourceServices
 				.getSourceService();
 			Optional<SourceAndConverter<?>> futureSource = sourceService
-				.getSourceAndConverters().stream().filter(source -> sourceService
+				.getSources().stream().filter(source -> sourceService
 					.containsMetadata(source, SPIM_DATA_INFO)).filter(source -> {
 						SourceService.SpimDataInfo sdi =
 							(SourceService.SpimDataInfo) sourceService.getMetadata(

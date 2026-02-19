@@ -56,7 +56,7 @@ public class StringToSource<I extends String> extends
 		String str = (String) src;
 		TreePath tp = source_service.tree().getTreePathFromString(str);
 		if (tp != null) {
-			List<SourceAndConverter<?>> potentialSources = source_service.tree().getSourceAndConvertersFromTreePath(tp);
+			List<SourceAndConverter<?>> potentialSources = source_service.tree().getSourcesFromTreePath(tp);
 			if (potentialSources.size()!=1) {
 				log().warn("The specified parameters refers no either no source or too many sources");
 				return null;

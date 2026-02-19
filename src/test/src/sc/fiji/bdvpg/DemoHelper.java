@@ -58,7 +58,7 @@ public class DemoHelper {
             // Clears all sources
             SourceService source_service =
                     ij.context().getService(SourceService.class);
-            source_service.remove(source_service.getSourceAndConverters().toArray(new SourceAndConverter[0]));
+            source_service.remove(source_service.getSources().toArray(new SourceAndConverter[0]));
 
             // Closes ij context
             ij.context().close();

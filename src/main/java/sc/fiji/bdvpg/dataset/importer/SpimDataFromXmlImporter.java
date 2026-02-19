@@ -74,7 +74,7 @@ public class SpimDataFromXmlImporter implements Runnable,
 		try {
 			sd = new XmlIoSpimData().load(dataLocation);
 			SourceServices.getSourceService().register(sd);
-			SourceServices.getSourceService().setSpimDataName(sd, Paths.get(dataLocation).getFileName().toString());
+			SourceServices.getSourceService().setDatasetName(sd, Paths.get(dataLocation).getFileName().toString());
 			SourceServices.getSourceService().setMetadata(sd, SPIM_DATA_LOCATION, dataLocation);
 		}
 		catch (SpimDataException e) {

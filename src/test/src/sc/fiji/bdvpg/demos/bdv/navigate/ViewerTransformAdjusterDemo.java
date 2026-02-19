@@ -63,7 +63,7 @@ public class ViewerTransformAdjusterDemo
         // Register to the SourceAndConverter service
         SourceServices.getSourceService().register(asd);
 
-        SourceServices.getSourceService().getSourceAndConverterFromSpimdata(asd).forEach(source ->
+        SourceServices.getSourceService().getSourcesFromDataset(asd).forEach(source ->
             SourceServices.getBdvDisplayService().show(bdvHandle, source)
         );
 
@@ -75,11 +75,11 @@ public class ViewerTransformAdjusterDemo
         // Register to the SourceAndConverter service
         SourceServices.getSourceService().register(asd);
 
-        SourceServices.getSourceService().getSourceAndConverterFromSpimdata(asd).forEach(source ->
+        SourceServices.getSourceService().getSourcesFromDataset(asd).forEach(source ->
             SourceServices.getBdvDisplayService().show(bdvHandle, source)
         );
 
-        new ViewerTransformAdjuster(bdvHandle, SourceServices.getSourceService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
+        new ViewerTransformAdjuster(bdvHandle, SourceServices.getSourceService().getSourcesFromDataset(asd).get(0)).run();
 
         DemoHelper.shot("ViewerTransformAdjusterDemo");
     }

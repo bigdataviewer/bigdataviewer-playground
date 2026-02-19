@@ -109,7 +109,7 @@ public interface ISourceService {
 	/**
 	 * @return list of all registered sources
 	 */
-	List<SourceAndConverter<?>> getSourceAndConverters();
+	List<SourceAndConverter<?>> getSources();
 
 	/**
 	 * Return sources assigned to a SpimDataObject
@@ -118,7 +118,7 @@ public interface ISourceService {
 	 * @return a list of all sources contained in this spimdata object, provided
 	 *         it has been registered
 	 */
-	List<SourceAndConverter<?>> getSourceAndConverterFromSpimdata(
+	List<SourceAndConverter<?>> getSourcesFromDataset(
 		AbstractSpimData<?> asd);
 
 	/**
@@ -128,8 +128,8 @@ public interface ISourceService {
 	 */
 	void remove(SourceAndConverter<?>... sources);
 
-	void linkToSpimData(SourceAndConverter<?> source, AbstractSpimData<?> asd,
-		int idSetup);
+	void linkToDataset(SourceAndConverter<?> source, AbstractSpimData<?> asd,
+					   int idSetup);
 
 	/**
 	 * Adds metadata for a source
@@ -180,7 +180,7 @@ public interface ISourceService {
 	 * @param source to check ( not a SourceAndConverter )
 	 * @return a list of all sources which wraps the same underlying source
 	 */
-	List<SourceAndConverter<?>> getSourceAndConvertersFromSource(
+	List<SourceAndConverter<?>> getSourcesFromDataset(
 		Source<?> source);
 
 	/**
@@ -215,7 +215,7 @@ public interface ISourceService {
 	/**
 	 * @return all SpimDatas present in the service
 	 */
-	Set<AbstractSpimData<?>> getSpimDatasets();
+	Set<AbstractSpimData<?>> getDatasets();
 
 	/**
 	 * Attach a name to a SpimDataObject
@@ -223,7 +223,7 @@ public interface ISourceService {
 	 * @param asd spimdata
 	 * @param name name of the spimdata
 	 */
-	void setSpimDataName(AbstractSpimData<?> asd, String name);
+	void setDatasetName(AbstractSpimData<?> asd, String name);
 
 	/**
 	 * Adds metadata for a dataset

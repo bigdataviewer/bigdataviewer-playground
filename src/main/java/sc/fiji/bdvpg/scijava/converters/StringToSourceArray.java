@@ -57,9 +57,8 @@ public class StringToSourceArray<I extends String> extends
 		String str = (String) src;
 		TreePath tp = source_service.tree().getTreePathFromString(str);
 		if (tp != null) {
-			return (T) source_service.tree().getSourceAndConvertersFromTreePath(tp)
-				.toArray(new SourceAndConverter[0]);// source_service.getUI().getSourceAndConvertersFromTreePath(tp).toArray(new
-																						// SourceAndConverter[0]);
+			return (T) source_service.tree().getSourcesFromTreePath(tp)
+				.toArray(new SourceAndConverter[0]);
 		}
 		else {
 			return null;

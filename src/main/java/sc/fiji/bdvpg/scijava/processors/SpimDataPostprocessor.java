@@ -61,7 +61,7 @@ public class SpimDataPostprocessor extends AbstractPostprocessorPlugin {
 				module.resolveOutput(name);
 				if (module.getInputs().containsKey("datasetname")) {
 					String datasetname = (String) module.getInputs().get("datasetname");
-					bss.setSpimDataName(asd, datasetname);
+					bss.setDatasetName(asd, datasetname);
 				}
 			}
 			if (object instanceof AbstractSpimData<?>[]) {

@@ -57,10 +57,7 @@ public class PerfOpenMultipleSpimDataDemo
 	{
 		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
 		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
-
-		// Gets an active BdvHandle instance
-		// SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+		DemoHelper.startFiji(ij);
 
 		tic();
 		for (int i=0;i<100;i++) {
@@ -71,11 +68,6 @@ public class PerfOpenMultipleSpimDataDemo
 			System.out.println(i);
 		}
 		toc();
-
-        /*SourceAndConverterBdvDisplayService displayService = ij.get(SourceAndConverterBdvDisplayService.class);
-        BdvHandle bdvh = displayService.getNewBdv();
-        System.out.println("---------------------------------");
-        displayService.show(bdvh, ij.get(SourceAndConverterService.class).getSourceAndConverters().toArray(new SourceAndConverter[0]));*/
 	}
 
 	static Instant start;
