@@ -29,6 +29,7 @@
 
 package sc.fiji.bdvpg.viewers;
 
+import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.TimePointListener;
 import bdv.viewer.TransformListener;
 import bvv.vistools.BvvHandle;
@@ -47,13 +48,13 @@ import java.util.Map;
 
 public class ViewerTransformSyncStopper implements Runnable {
 
-	final Map<ViewerAdapter, TransformListener<AffineTransform3D>> handleToTransformListener;
+	final Map<AbstractViewerPanel, TransformListener<AffineTransform3D>> handleToTransformListener;
 
-	final Map<ViewerAdapter, TimePointListener> handleToTimePointListener;
+	final Map<AbstractViewerPanel, TimePointListener> handleToTimePointListener;
 
 	public ViewerTransformSyncStopper(
-		Map<ViewerAdapter, TransformListener<AffineTransform3D>> handleToTransformListener,
-		Map<ViewerAdapter, TimePointListener> handleToTimePointListener)
+		Map<AbstractViewerPanel, TransformListener<AffineTransform3D>> handleToTransformListener,
+		Map<AbstractViewerPanel, TimePointListener> handleToTimePointListener)
 	{
 		this.handleToTransformListener = handleToTransformListener;
 		this.handleToTimePointListener = handleToTimePointListener;
@@ -62,11 +63,11 @@ public class ViewerTransformSyncStopper implements Runnable {
 	@Override
 	public void run() {
 		handleToTransformListener.forEach((handle, listener) -> {
-			if ((handle != null)) handle.removeTransformListener(listener);
+			if ((handle != null)) handle.transformListeners().remove(listener);
 		});
 		if (handleToTimePointListener != null) {
 			handleToTimePointListener.forEach((handle, listener) -> {
-				if (handle != null) handle.removeTimePointListener(listener);
+				if (handle != null) handle.timePointListeners().remove(listener);
 			});
 		}
 	}

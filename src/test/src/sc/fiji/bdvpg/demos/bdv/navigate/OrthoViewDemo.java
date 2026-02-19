@@ -38,7 +38,6 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
 import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
 import sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper;
 
@@ -79,9 +78,9 @@ public class OrthoViewDemo {
         final List< SourceAndConverter<?> > sources = sourceService.getSources();
 
         ViewerOrthoSyncStarter syncstart = new ViewerOrthoSyncStarter(
-                new ViewerAdapter(bdvHandleX),
-                new ViewerAdapter(bdvHandleY),
-                new ViewerAdapter(bdvHandleZ), true);
+                bdvHandleX.getViewerPanel(),
+                bdvHandleY.getViewerPanel(),
+                bdvHandleZ.getViewerPanel(), true);
         ViewerTransformSyncStopper syncstop = new ViewerTransformSyncStopper(syncstart.getSynchronizers(), syncstart.getTimeSynchronizers());
 
         syncstart.run();
@@ -99,7 +98,7 @@ public class OrthoViewDemo {
                 if (isSynchronizing) {
                     syncstop.run();
                 } else {
-                    syncstart.setHandleInitialReference(new ViewerAdapter(bdvHandle));
+                    syncstart.setHandleInitialReference(bdvHandle.getViewerPanel());
                     syncstart.run();
                 }
                 isSynchronizing = !isSynchronizing;

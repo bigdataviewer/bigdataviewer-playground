@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.viewers;
 
 import bdv.util.BdvHandle;
+import bdv.viewer.AbstractViewerPanel;
 import bvv.vistools.BvvHandle;
 import bdv.viewer.TimePointListener;
 import bdv.viewer.TransformListener;
@@ -64,7 +65,7 @@ public class ViewerTransformSyncStarter implements Runnable {
 	/**
 	 * Array of BdvHandles to synchronize
 	 */
-	final ViewerAdapter[] handles;
+	final AbstractViewerPanel[] handles;
 
 	/**
 	 * Reference to the BdvHandle which will serve as a reference for the first
@@ -72,14 +73,14 @@ public class ViewerTransformSyncStarter implements Runnable {
 	 * used by the user. If not set, the first synchronization will look like it's
 	 * a random BdvHandle which is used (one not in focus)
 	 */
-	ViewerAdapter handleInitialReference = null;
+    AbstractViewerPanel handleInitialReference = null;
 
 	/**
 	 * Map which links each BdvHandle to the TransformListener which has been
 	 * added for synchronization purpose. This object contains all what's needed
 	 * to stop the synchronization
 	 */
-	final Map<ViewerAdapter, TransformListener<AffineTransform3D>> handleToTransformListener =
+	final Map<AbstractViewerPanel, TransformListener<AffineTransform3D>> handleToTransformListener =
 		new HashMap<>();
 
 	/**
@@ -92,15 +93,15 @@ public class ViewerTransformSyncStarter implements Runnable {
 	 * added for synchronization purpose. This object contains all what's needed
 	 * to stop the synchronization
 	 */
-	final Map<ViewerAdapter, TimePointListener> handleToTimeListener =
+	final Map<AbstractViewerPanel, TimePointListener> handleToTimeListener =
 		new HashMap<>();
 
 	public ViewerTransformSyncStarter(BdvHandle[] bdvHandles,
 		boolean synchronizeTime)
 	{
-		this.handles = new ViewerAdapter[bdvHandles.length];
+		this.handles = new AbstractViewerPanel[bdvHandles.length];
 		for (int i = 0; i < bdvHandles.length; i++) {
-			handles[i] = new ViewerAdapter(bdvHandles[i]);
+			handles[i] = bdvHandles[i].getViewerPanel();
 		}
 		this.synchronizeTime = synchronizeTime;
 	}
@@ -108,21 +109,21 @@ public class ViewerTransformSyncStarter implements Runnable {
 	public ViewerTransformSyncStarter(BvvHandle[] bvvHandles,
 		boolean synchronizeTime)
 	{
-		this.handles = new ViewerAdapter[bvvHandles.length];
+		this.handles = new AbstractViewerPanel[bvvHandles.length];
 		for (int i = 0; i < bvvHandles.length; i++) {
-			handles[i] = new ViewerAdapter(bvvHandles[i]);
+			handles[i] = bvvHandles[i].getViewerPanel();
 		}
 		this.synchronizeTime = synchronizeTime;
 	}
 
-	public ViewerTransformSyncStarter(ViewerAdapter[] handles,
+	public ViewerTransformSyncStarter(AbstractViewerPanel[] handles,
 		boolean synchronizeTime)
 	{
 		this.handles = handles;
 		this.synchronizeTime = synchronizeTime;
 	}
 
-	public void setHandleInitialReference(ViewerAdapter handle) {
+	public void setHandleInitialReference(AbstractViewerPanel handle) {
 		handleInitialReference = handle;
 	}
 
@@ -143,8 +144,8 @@ public class ViewerTransformSyncStarter implements Runnable {
 			// (called nextBdvHandle). nextBdvHandle is bdvHandles[i+1] in most cases,
 			// unless it's the end of the array,
 			// where in this case nextBdvHandle is bdvHandles[0]
-			ViewerAdapter currentHandle = handles[i];
-			ViewerAdapter nextHandle;
+            AbstractViewerPanel currentHandle = handles[i];
+            AbstractViewerPanel nextHandle;
 
 			// Identifying nextBdvHandle
 			if (i == handles.length - 1) {
@@ -159,7 +160,7 @@ public class ViewerTransformSyncStarter implements Runnable {
 				at3D) -> propagateTransformIfNecessary(at3D, currentHandle, nextHandle);
 
 			// Adding this transform listener to the current BdvHandle
-			currentHandle.addTransformListener(listener);
+			currentHandle.transformListeners().add(listener);
 
 			// Storing the transform listener -> needed to remove them in order to
 			// stop synchronization when needed
@@ -167,11 +168,10 @@ public class ViewerTransformSyncStarter implements Runnable {
 
 			if (synchronizeTime) {
 				TimePointListener timeListener = (timepoint) -> {
-					if (nextHandle.state().getCurrentTimepoint() != timepoint) nextHandle
-						.setTimepoint(timepoint);
+					if (nextHandle.state().getCurrentTimepoint() != timepoint) nextHandle.state().setCurrentTimepoint(timepoint);
 				};
 
-				currentHandle.addTimePointListener(timeListener);
+				currentHandle.timePointListeners().add(timeListener);
 				handleToTimeListener.put(handles[i], timeListener);
 			}
 		}
@@ -180,7 +180,7 @@ public class ViewerTransformSyncStarter implements Runnable {
 		// but only if the two necessary objects are present (the origin BdvHandle
 		// and the transform
 		if ((handleInitialReference != null) && (at3Dorigin != null)) {
-			for (ViewerAdapter handle : handles) {
+			for (AbstractViewerPanel handle : handles) {
 				handle.state().setViewerTransform(at3Dorigin.copy());
 				handle.requestRepaint();
 				if (synchronizeTime) {
@@ -192,7 +192,7 @@ public class ViewerTransformSyncStarter implements Runnable {
 	}
 
 	void propagateTransformIfNecessary(AffineTransform3D at3D,
-		ViewerAdapter currentHandle, ViewerAdapter nextHandle)
+                                       AbstractViewerPanel currentHandle, AbstractViewerPanel nextHandle)
 	{
 		// We need to transfer the transform - but while keeping the center of the
 		// window constant
@@ -266,7 +266,7 @@ public class ViewerTransformSyncStarter implements Runnable {
 	 */
 	private AffineTransform3D getViewTransformForInitialSynchronization() {
 		AffineTransform3D at3Dorigin = null;
-		for (ViewerAdapter handle : handles) {
+		for (AbstractViewerPanel handle : handles) {
 			// if the BdvHandle is the one that should be used for initial
 			// synchronization
 			if (handle.equals(handleInitialReference)) {
@@ -282,7 +282,7 @@ public class ViewerTransformSyncStarter implements Runnable {
 	 * @return map which can be used to stop the spatial synchronization see
 	 *         {@link ViewerTransformSyncStopper}
 	 */
-	public Map<ViewerAdapter, TransformListener<AffineTransform3D>>
+	public Map<AbstractViewerPanel, TransformListener<AffineTransform3D>>
 		getSynchronizers()
 	{
 		return handleToTransformListener;
@@ -296,7 +296,7 @@ public class ViewerTransformSyncStarter implements Runnable {
 	 * @return map which can be used to stop the time synchronization see
 	 *         {@link ViewerTransformSyncStopper}
 	 */
-	public Map<ViewerAdapter, TimePointListener> getTimeSynchronizers() {
+	public Map<AbstractViewerPanel, TimePointListener> getTimeSynchronizers() {
 		return handleToTimeListener;
 	}
 }

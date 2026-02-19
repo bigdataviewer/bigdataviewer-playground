@@ -37,6 +37,7 @@ import bdv.util.BdvHandlePanel;
 import bdv.util.BdvOptions;
 import bdv.util.BdvOverlay;
 import bdv.util.BdvOverlaySource;
+import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.Source;
 import net.imglib2.FinalInterval;
 import net.imglib2.FinalRealInterval;
@@ -55,7 +56,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.viewers.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -91,11 +91,11 @@ public class BdvHandleHelper {
 	public static AffineTransform3D getViewerTransformWithNewCenter(
 		BdvHandle bdvHandle, double[] xyz)
 	{
-		return getViewerTransformWithNewCenter(new ViewerAdapter(bdvHandle), xyz);
+		return getViewerTransformWithNewCenter(bdvHandle.getViewerPanel(), xyz);
 	}
 
 	public static AffineTransform3D getViewerTransformWithNewCenter(
-		ViewerAdapter handle, double[] xyz)
+            AbstractViewerPanel handle, double[] xyz)
 	{
 		final AffineTransform3D currentViewerTransform = new AffineTransform3D();
 		handle.state().getViewerTransform(currentViewerTransform);
@@ -123,7 +123,7 @@ public class BdvHandleHelper {
 		return adaptedViewerTransform;
 	}
 
-	public static double[] getWindowCentreInPixelUnits(ViewerAdapter handle) {
+	public static double[] getWindowCentreInPixelUnits(AbstractViewerPanel handle) {
 		final double[] windowCentreInPixelUnits = new double[3];
 		windowCentreInPixelUnits[0] = handle.getWidth() / 2.0;
 		windowCentreInPixelUnits[1] = handle.getHeight() / 2.0;
@@ -131,7 +131,7 @@ public class BdvHandleHelper {
 	}
 
 	public static double[] getWindowCentreInPixelUnits(BdvHandle bdvHandle) {
-		return getWindowCentreInPixelUnits(new ViewerAdapter(bdvHandle));
+		return getWindowCentreInPixelUnits(bdvHandle.getViewerPanel());
 	}
 
 	public static double[] getWindowCentreInCalibratedUnits(BdvHandle bdvHandle) {

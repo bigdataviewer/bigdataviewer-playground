@@ -38,7 +38,6 @@ import sc.fiji.bdvpg.viewers.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
 import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
 import sc.fiji.bdvpg.viewers.ViewerStateSyncStarter;
 
@@ -135,13 +134,11 @@ public class BdvOrthoCreatorCommand implements BdvPlaygroundActionCommand {
 		bdvhz.getViewerPanel().state().setNumTimepoints(ntimepoints);
 
 		ViewerOrthoSyncStarter starter = new ViewerOrthoSyncStarter(
-			new ViewerAdapter(bdvhx), new ViewerAdapter(bdvhz), new ViewerAdapter(
-				bdvhy), synctime);
+			bdvhx.getViewerPanel(), bdvhz.getViewerPanel(), bdvhy.getViewerPanel(), synctime);
 		starter.run();
 
 		if (synchronize_sources) {
-			new ViewerStateSyncStarter(new ViewerAdapter(bdvhx), new ViewerAdapter(
-				bdvhy), new ViewerAdapter(bdvhz)).run();
+			new ViewerStateSyncStarter(bdvhx.getViewerPanel(), bdvhy.getViewerPanel(), bdvhz.getViewerPanel()).run();
 		}
 
 	}

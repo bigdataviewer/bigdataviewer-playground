@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.viewers.bdv.navigate;
 
 import bdv.util.Affine3DHelpers;
 import bdv.util.BdvHandle;
+import bdv.viewer.AbstractViewerPanel;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerState;
 import bdv.viewer.animate.SimilarityTransformAnimator;
@@ -42,7 +43,6 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.Intervals;
 import net.imglib2.util.LinAlgHelpers;
 import sc.fiji.bdvpg.viewers.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
 
 public class ViewerTransformAdjuster implements Runnable {
 
-	private final ViewerAdapter handle;
+	private final AbstractViewerPanel handle;
 	private final SourceAndConverter<?>[] sources;
 	private final long animationDurationMs;
 
@@ -74,10 +74,10 @@ public class ViewerTransformAdjuster implements Runnable {
 	public ViewerTransformAdjuster(BdvHandle bdvHandle,
 		SourceAndConverter<?>[] sources)
 	{
-		this(new ViewerAdapter(bdvHandle), sources, 0);
+		this(bdvHandle.getViewerPanel(), sources, 0);
 	}
 
-	public ViewerTransformAdjuster(ViewerAdapter handle,
+	public ViewerTransformAdjuster(AbstractViewerPanel handle,
 		SourceAndConverter<?>[] sources)
 	{
 		this(handle, sources, 0);
@@ -104,7 +104,7 @@ public class ViewerTransformAdjuster implements Runnable {
 	public ViewerTransformAdjuster(BdvHandle bdvHandle,
 		SourceAndConverter<?>[] sources, long animationDurationMs)
 	{
-		this(new ViewerAdapter(bdvHandle), sources, animationDurationMs);
+		this(bdvHandle.getViewerPanel(), sources, animationDurationMs);
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class ViewerTransformAdjuster implements Runnable {
 	 * @param sources the sources to center on
 	 * @param animationDurationMs animation duration in milliseconds (0 for no animation)
 	 */
-	public ViewerTransformAdjuster(ViewerAdapter handle,
+	public ViewerTransformAdjuster(AbstractViewerPanel handle,
 		SourceAndConverter<?>[] sources, long animationDurationMs)
 	{
 		this.handle = handle;

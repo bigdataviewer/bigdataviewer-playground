@@ -29,6 +29,7 @@
 
 package sc.fiji.bdvpg.command.viewer.bvv;
 
+import bdv.viewer.AbstractViewerPanel;
 import bvv.vistools.BvvHandle;
 import bvv.vistools.BvvOptions;
 import org.scijava.ItemIO;
@@ -38,7 +39,6 @@ import sc.fiji.bdvpg.viewers.bvv.BvvCreator;
 import sc.fiji.bdvpg.viewers.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
 import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
 import sc.fiji.bdvpg.viewers.ViewerStateSyncStarter;
 
@@ -123,12 +123,10 @@ public class BvvOrthoWindowCreatorCommand implements
 		bvvhz = createBvv("-Bottom", locationx, locationy + sizey + 40);
 		bvvhz.getViewerPanel().state().setNumTimepoints(ntimepoints);
 
-		new ViewerOrthoSyncStarter(new ViewerAdapter(bvvhx), new ViewerAdapter(
-			bvvhz), new ViewerAdapter(bvvhy), synctime).run();
+		new ViewerOrthoSyncStarter(bvvhx.getViewerPanel(), bvvhz.getViewerPanel(), bvvhy.getViewerPanel(), synctime).run();
 
 		if (synchronize_sources) {
-			new ViewerStateSyncStarter(new ViewerAdapter(bvvhx), new ViewerAdapter(
-				bvvhy), new ViewerAdapter(bvvhz)).run();
+			new ViewerStateSyncStarter(bvvhx.getViewerPanel(), bvvhy.getViewerPanel(), bvvhz.getViewerPanel()).run();
 		}
 
 	}
