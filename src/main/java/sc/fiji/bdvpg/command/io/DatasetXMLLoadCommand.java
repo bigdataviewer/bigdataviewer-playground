@@ -26,29 +26,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.demos.io;
 
-import net.imagej.ImageJ;
-import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.command.io.DatasetXMLLoadCommand;
+package sc.fiji.bdvpg.command.io;
+
+import org.scijava.ItemVisibility;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
 
 import java.io.File;
 
-public class MultipleSpimDataImporterCommandDemo
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
+
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "File>Dataset - Open XML Dataset",
+	description = "Opens one or more BDV XML datasets")
+public class DatasetXMLLoadCommand implements
+	BdvPlaygroundActionCommand
 {
 
-	static ImageJ ij;
+	/**
+	 * Note: Due to a bug in SciJava there needs to be some text above the
+	 * `File[]` parameter. Otherwise, the UI for `File[]` is not built. But then
+	 * programmatically the message above is always shown...
+	 */
+	@Parameter(visibility = ItemVisibility.MESSAGE)
+	public String message = "Please choose XML files:";
 
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
+	@Parameter(label = "XML Files",
+			description = "Select one or more BDV XML files to open",
+			style = "extensions:xml")
+	public File[] files;
 
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( DatasetXMLLoadCommand.class, true, "files", files);
+	public void run() {
+		for (File file : files) {
+			new SpimDataFromXmlImporter(file).get();
+		}
 	}
 
 }

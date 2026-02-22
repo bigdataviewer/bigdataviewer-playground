@@ -26,29 +26,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.demos.io;
 
-import net.imagej.ImageJ;
-import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.command.io.DatasetXMLLoadCommand;
+package sc.fiji.bdvpg.command.view.bvv;
 
-import java.io.File;
+import bvv.vistools.BvvHandle;
+import bvv.vistools.BvvOptions;
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.viewers.bvv.BvvCreator;
+import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 
-public class MultipleSpimDataImporterCommandDemo
-{
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-	static ImageJ ij;
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menuPath = ScijavaBdvDefaults.RootMenu + "View>BVV>BVV - Create Empty BVV Frame",
+	description = "Creates an empty Bvv window")
+public class BvvWindowCreateCommand implements BdvPlaygroundActionCommand {
 
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
+	@Parameter(label = "Title of the new BVV window",
+			description = "Title for the new BigVolumeViewer window")
+	public String windowtitle = "BVV";
 
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( DatasetXMLLoadCommand.class, true, "files", files);
+	/**
+	 * TODO This triggers: BvvHandlePostprocessor
+	 */
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Created BVV Window",
+			description = "The newly created BigVolumeViewer window")
+	public BvvHandle bvvh;
+
+	@Override
+	public void run() {
+		// ------------ BdvHandleFrame
+		BvvOptions opts = BvvOptions.options().frameTitle(windowtitle);
+
+		BvvCreator creator = new BvvCreator(opts, 1);
+		creator.run();
+		bvvh = creator.get();
 	}
-
 }

@@ -27,64 +27,44 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.command.dataset.transform;
+package sc.fiji.bdvpg.command.process;
 
 import bdv.viewer.SourceAndConverter;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.dataset.SpimDataTransformViewer;
 
-import javax.swing.SwingUtilities;
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-/**
- * Command to open the SpimData Transform Viewer.
- *
- * This viewer displays the transform chain for SpimData sources in a
- * configurable table format. The 3D data (sources x timepoints x transforms)
- * can be viewed with any dimension as rows, columns, or slider.
- *
- * Sources without an associated SpimData object are excluded with a warning.
- *
- * @author Nicolas Chiaruttini, BIOP, EPFL
- */
-@SuppressWarnings({ "CanBeFinal", "unused" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-			"Dataset>Transform Stack>Dataset - View Transforms",
-	description = "Opens a viewer to explore SpimData transforms with " +
-		"configurable dimensions (sources, timepoints, transform chain)")
-public class DatasetTransformViewCommand implements BdvPlaygroundActionCommand
-{
+	menuPath = ScijavaBdvDefaults.RootMenu + "Process>Source - Add Metadata",
+	description = "Adds a metadata string to selected sources")
 
-	protected static final Logger logger = LoggerFactory.getLogger(
-		DatasetTransformViewCommand.class);
+public class SourceMetadataAddCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select source(s)",
-		description = "Select sources to view their SpimData transforms. " +
-			"Sources without SpimData will be excluded.")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to add metadata to")
 	SourceAndConverter<?>[] sources;
 
+	@Parameter(label = "Key",
+			description = "The metadata key (identifier)")
+	String key;
+
+	@Parameter(label = "Value",
+			description = "The metadata value to associate with the key")
+	String value;
+
 	@Parameter
-	SourceService source_service;
+    SourceService source_service;
+
 	@Override
 	public void run() {
-		if (sources == null || sources.length == 0) {
-			logger.error("No sources selected!");
-			return;
+		for (SourceAndConverter<?> source : sources) {
+			source_service.setMetadata(source, key, value);
 		}
-
-		logger.info("Opening SpimData Transform Viewer for {} source(s)",
-			sources.length);
-
-		SwingUtilities.invokeLater(() -> {
-			SpimDataTransformViewer viewer = new SpimDataTransformViewer(sources,
-					source_service);
-			viewer.showViewer();
-		});
 	}
 }

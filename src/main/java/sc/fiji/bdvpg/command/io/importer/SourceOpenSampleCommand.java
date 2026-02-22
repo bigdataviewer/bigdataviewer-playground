@@ -27,64 +27,66 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.command.dataset.transform;
+package sc.fiji.bdvpg.command.io.importer;
 
 import bdv.viewer.SourceAndConverter;
+import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.log.SystemLogger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.dataset.SpimDataTransformViewer;
-
-import javax.swing.SwingUtilities;
+import sc.fiji.bdvpg.source.importer.MandelbrotSourceGetter;
+import sc.fiji.bdvpg.source.importer.VoronoiSourceGetter;
+import sc.fiji.bdvpg.source.importer.Wave3DSourceGetter;
 
 /**
- * Command to open the SpimData Transform Viewer.
- *
- * This viewer displays the transform chain for SpimData sources in a
- * configurable table format. The 3D data (sources x timepoints x transforms)
- * can be viewed with any dimension as rows, columns, or slider.
- *
- * Sources without an associated SpimData object are excluded with a warning.
- *
- * @author Nicolas Chiaruttini, BIOP, EPFL
+ * @author Nicolas Chiaruttini, EPFL 2020
  */
-@SuppressWarnings({ "CanBeFinal", "unused" })
+
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-			"Dataset>Transform Stack>Dataset - View Transforms",
-	description = "Opens a viewer to explore SpimData transforms with " +
-		"configurable dimensions (sources, timepoints, transform chain)")
-public class DatasetTransformViewCommand implements BdvPlaygroundActionCommand
-{
+	menuPath = ScijavaBdvDefaults.RootMenu + "Import>Open Sample Source",
+	description = "Creates a sample source for testing and demonstration purposes")
+public class SourceOpenSampleCommand implements BdvPlaygroundActionCommand {
 
-	protected static final Logger logger = LoggerFactory.getLogger(
-		DatasetTransformViewCommand.class);
+	@Parameter(label = "Sample name",
+			description = "Type of sample source to create: Mandelbrot (2D fractal), Wave3D (3D procedural), Voronoi (cell-like pattern), Big Voronoi (large 3D volume)",
+			choices = { "Mandelbrot", "Wave3D", "Voronoi", "Big Voronoi" })
+	String sample_name;
 
-	@Parameter(label = "Select source(s)",
-		description = "Select sources to view their SpimData transforms. " +
-			"Sources without SpimData will be excluded.")
-	SourceAndConverter<?>[] sources;
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Sample Source",
+			description = "The created sample source")
+	SourceAndConverter<?> source;
 
-	@Parameter
-	SourceService source_service;
 	@Override
 	public void run() {
-		if (sources == null || sources.length == 0) {
-			logger.error("No sources selected!");
-			return;
+		switch (sample_name) {
+
+			case "Mandelbrot":
+				source = (new MandelbrotSourceGetter()).get();
+				break;
+
+			case "Wave3D":
+				source = (new Wave3DSourceGetter()).get();
+				break;
+
+			case "Voronoi":
+				source = (new VoronoiSourceGetter(new long[] { 512, 512, 1 }, 256, true)
+					.get());
+				break;
+
+			case "Big Voronoi":
+				source = (new VoronoiSourceGetter(new long[] { 2048, 2048, 2048 }, 65536,
+					false).get());
+				break;
+
+			default:
+				new SystemLogger().err("Invalid sample name");
 		}
-
-		logger.info("Opening SpimData Transform Viewer for {} source(s)",
-			sources.length);
-
-		SwingUtilities.invokeLater(() -> {
-			SpimDataTransformViewer viewer = new SpimDataTransformViewer(sources,
-					source_service);
-			viewer.showViewer();
-		});
 	}
 }

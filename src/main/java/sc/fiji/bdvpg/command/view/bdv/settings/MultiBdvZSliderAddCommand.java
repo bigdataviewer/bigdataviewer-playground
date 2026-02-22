@@ -27,64 +27,39 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.command.dataset.transform;
+package sc.fiji.bdvpg.command.view.bdv.settings;
 
-import bdv.viewer.SourceAndConverter;
+import bdv.util.BdvHandle;
+import ij.IJ;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.viewers.bdv.navigate.RayCastPositionerSliderAdder;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.dataset.SpimDataTransformViewer;
 
 import javax.swing.SwingUtilities;
 
-/**
- * Command to open the SpimData Transform Viewer.
- *
- * This viewer displays the transform chain for SpimData sources in a
- * configurable table format. The 3D data (sources x timepoints x transforms)
- * can be viewed with any dimension as rows, columns, or slider.
- *
- * Sources without an associated SpimData object are excluded with a warning.
- *
- * @author Nicolas Chiaruttini, BIOP, EPFL
- */
-@SuppressWarnings({ "CanBeFinal", "unused" })
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-			"Dataset>Transform Stack>Dataset - View Transforms",
-	description = "Opens a viewer to explore SpimData transforms with " +
-		"configurable dimensions (sources, timepoints, transform chain)")
-public class DatasetTransformViewCommand implements BdvPlaygroundActionCommand
-{
+	menuPath = ScijavaBdvDefaults.RootMenu + "View>BDV>Settings>BDV - Add Z Slider",
+	description = "Adds a z slider onto BDV windows")
+public class MultiBdvZSliderAddCommand implements BdvPlaygroundActionCommand {
 
-	protected static final Logger logger = LoggerFactory.getLogger(
-		DatasetTransformViewCommand.class);
+	@Parameter(label = "Select BDV Windows",
+			description = "The BigDataViewer windows where Z sliders will be added",
+			persist = false)
+	BdvHandle[] bdvhs;
 
-	@Parameter(label = "Select source(s)",
-		description = "Select sources to view their SpimData transforms. " +
-			"Sources without SpimData will be excluded.")
-	SourceAndConverter<?>[] sources;
-
-	@Parameter
-	SourceService source_service;
 	@Override
 	public void run() {
-		if (sources == null || sources.length == 0) {
-			logger.error("No sources selected!");
-			return;
-		}
-
-		logger.info("Opening SpimData Transform Viewer for {} source(s)",
-			sources.length);
-
+		if (bdvhs.length == 0) IJ.log("Please make sure to select a Bdv window.");
 		SwingUtilities.invokeLater(() -> {
-			SpimDataTransformViewer viewer = new SpimDataTransformViewer(sources,
-					source_service);
-			viewer.showViewer();
+			for (BdvHandle bdvh : bdvhs) {
+				new RayCastPositionerSliderAdder(bdvh).run();
+			}
 		});
 	}
 }

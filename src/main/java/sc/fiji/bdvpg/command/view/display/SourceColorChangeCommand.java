@@ -27,64 +27,43 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.command.dataset.transform;
+package sc.fiji.bdvpg.command.view.display;
 
 import bdv.viewer.SourceAndConverter;
+import net.imglib2.type.numeric.ARGBType;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.scijava.util.ColorRGB;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.dataset.SpimDataTransformViewer;
+import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.source.display.ColorChanger;
 
-import javax.swing.SwingUtilities;
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-/**
- * Command to open the SpimData Transform Viewer.
- *
- * This viewer displays the transform chain for SpimData sources in a
- * configurable table format. The 3D data (sources x timepoints x transforms)
- * can be viewed with any dimension as rows, columns, or slider.
- *
- * Sources without an associated SpimData object are excluded with a warning.
- *
- * @author Nicolas Chiaruttini, BIOP, EPFL
- */
-@SuppressWarnings({ "CanBeFinal", "unused" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-			"Dataset>Transform Stack>Dataset - View Transforms",
-	description = "Opens a viewer to explore SpimData transforms with " +
-		"configurable dimensions (sources, timepoints, transform chain)")
-public class DatasetTransformViewCommand implements BdvPlaygroundActionCommand
-{
+	menuPath = ScijavaBdvDefaults.RootMenu + "View>Source Display>Source - Set Color",
+	description = "Changes the display color of one or more sources")
+public class SourceColorChangeCommand implements BdvPlaygroundActionCommand {
 
-	protected static final Logger logger = LoggerFactory.getLogger(
-		DatasetTransformViewCommand.class);
+	@Parameter(label = "Color",
+			description = "The new display color for the selected sources")
+	ColorRGB color = new ColorRGB(255, 255, 255);
 
-	@Parameter(label = "Select source(s)",
-		description = "Select sources to view their SpimData transforms. " +
-			"Sources without SpimData will be excluded.")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) whose color will be changed")
 	SourceAndConverter<?>[] sources;
 
-	@Parameter
-	SourceService source_service;
 	@Override
 	public void run() {
-		if (sources == null || sources.length == 0) {
-			logger.error("No sources selected!");
-			return;
+		ARGBType imglib2color = new ARGBType(ARGBType.rgba(color.getRed(), color
+			.getGreen(), color.getBlue(), 255));// Fully opaque color.getAlpha()));
+		for (SourceAndConverter<?> source : sources) {
+			new ColorChanger(source, imglib2color).run();
 		}
-
-		logger.info("Opening SpimData Transform Viewer for {} source(s)",
-			sources.length);
-
-		SwingUtilities.invokeLater(() -> {
-			SpimDataTransformViewer viewer = new SpimDataTransformViewer(sources,
-					source_service);
-			viewer.showViewer();
-		});
+		SourceServices.getBdvDisplayService().updateDisplays(sources);
 	}
+
 }

@@ -59,7 +59,7 @@ import java.util.Set;
 @SuppressWarnings({ "CanBeFinal", "unused" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Dataset>Transform>Dataset - Add Transforms",
+		"Dataset>Transform Stack>Dataset - Add Transforms",
 	description = "Adds a transform to the chain at specified timepoints (prepend or append)")
 public class DatasetTransformAddCommand implements BdvPlaygroundActionCommand {
 

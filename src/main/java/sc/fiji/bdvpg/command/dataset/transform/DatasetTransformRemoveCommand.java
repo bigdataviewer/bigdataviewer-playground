@@ -57,7 +57,7 @@ import java.util.Set;
 @SuppressWarnings({ "CanBeFinal", "unused" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-			"Dataset>Transform>Dataset - Remove Transforms",
+			"Dataset>Transform Stack>Dataset - Remove Transforms",
 	description = "Removes transforms at specified timepoints and chain indices")
 public class DatasetTransformRemoveCommand implements BdvPlaygroundActionCommand {
 

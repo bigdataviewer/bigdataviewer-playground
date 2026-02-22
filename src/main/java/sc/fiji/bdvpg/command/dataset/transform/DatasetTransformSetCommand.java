@@ -64,7 +64,7 @@ import java.util.Set;
 @SuppressWarnings({ "CanBeFinal", "unused" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-			"Dataset>Transform>Dataset - Set Transforms",
+			"Dataset>Transform Stack>Dataset - Set Transforms",
 	description = "Sets (overrides) transforms at specified timepoints and chain indices")
 public class DatasetTransformSetCommand implements BdvPlaygroundActionCommand {
 

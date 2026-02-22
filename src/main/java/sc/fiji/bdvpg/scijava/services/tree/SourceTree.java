@@ -250,7 +250,7 @@ public class SourceTree {
 	void addUISpecificActions(JPopupMenu popup) {
 		// Delete node for inspection result only
 		JMenuItem deleteInspectNodesMenuItem = new JMenuItem(
-			"Delete Selected Inspect Nodes");
+			"Tree - Delete Selected Inspect Nodes");
 		deleteInspectNodesMenuItem.addActionListener(e -> {
 			TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
 			if (paths != null) {
@@ -269,7 +269,7 @@ public class SourceTree {
 
 		// Add show all item
 		JMenuItem addShowAllFilterNodeMenuItem = new JMenuItem(
-			"Add 'Show All' Filter Node");
+			"Tree - Add 'Show All' Filter Node");
 		addShowAllFilterNodeMenuItem.addActionListener(e -> {
 			TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
 			if (paths == null || paths.length != 1) {
@@ -291,7 +291,7 @@ public class SourceTree {
 		boolean found = false;
 		for (int i = 0; i<popup.getComponentCount(); i++) {
 			if (popup.getComponent(i) instanceof JMenu) {
-				if (((JMenu) popup.getComponent(i)).getText().equals("Tree View")) {
+				if (((JMenu) popup.getComponent(i)).getText().equals("Tree")) {
 					child = (JMenu) popup.getComponent(i);
 					found = true;
 					break;
@@ -300,7 +300,7 @@ public class SourceTree {
 		}
 
 		if (!found) {
-			JMenu menu = new JMenu("Tree View");
+			JMenu menu = new JMenu("Tree");
 			popup.add(menu);
 			child = menu;
 		}

@@ -27,64 +27,44 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.command.dataset.transform;
+package sc.fiji.bdvpg.command.view.display;
 
 import bdv.viewer.SourceAndConverter;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.dataset.SpimDataTransformViewer;
-
-import javax.swing.SwingUtilities;
+import sc.fiji.bdvpg.source.display.BrightnessAdjuster;
 
 /**
- * Command to open the SpimData Transform Viewer.
- *
- * This viewer displays the transform chain for SpimData sources in a
- * configurable table format. The 3D data (sources x timepoints x transforms)
- * can be viewed with any dimension as rows, columns, or slider.
- *
- * Sources without an associated SpimData object are excluded with a warning.
- *
- * @author Nicolas Chiaruttini, BIOP, EPFL
+ * @author Nicolas Chiaruttini, EPFL 2020
  */
-@SuppressWarnings({ "CanBeFinal", "unused" })
+
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-			"Dataset>Transform Stack>Dataset - View Transforms",
-	description = "Opens a viewer to explore SpimData transforms with " +
-		"configurable dimensions (sources, timepoints, transform chain)")
-public class DatasetTransformViewCommand implements BdvPlaygroundActionCommand
-{
+		"View>Source Display>Source - Brightness Adjust",
+	description = "Sets the display range (min and max) of one or more sources")
+public class SourceBrightnessAdjustCommand implements BdvPlaygroundActionCommand {
 
-	protected static final Logger logger = LoggerFactory.getLogger(
-		DatasetTransformViewCommand.class);
-
-	@Parameter(label = "Select source(s)",
-		description = "Select sources to view their SpimData transforms. " +
-			"Sources without SpimData will be excluded.")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) whose display range will be set")
 	SourceAndConverter<?>[] sources;
 
-	@Parameter
-	SourceService source_service;
-	@Override
+	@Parameter(label = "Min",
+			description = "Minimum value of the display range")
+	double min;
+
+	@Parameter(label = "Max",
+			description = "Maximum value of the display range")
+	double max;
+
 	public void run() {
-		if (sources == null || sources.length == 0) {
-			logger.error("No sources selected!");
-			return;
+		for (SourceAndConverter<?> source : sources) {
+			new BrightnessAdjuster(source, min, max).run();
 		}
-
-		logger.info("Opening SpimData Transform Viewer for {} source(s)",
-			sources.length);
-
-		SwingUtilities.invokeLater(() -> {
-			SpimDataTransformViewer viewer = new SpimDataTransformViewer(sources,
-					source_service);
-			viewer.showViewer();
-		});
 	}
 }

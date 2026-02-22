@@ -27,64 +27,61 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.command.dataset.transform;
+package sc.fiji.bdvpg.command.view.bdv;
 
+import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.dataset.SpimDataTransformViewer;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.source.SourceHelper;
+import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 
-import javax.swing.SwingUtilities;
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
 
-/**
- * Command to open the SpimData Transform Viewer.
- *
- * This viewer displays the transform chain for SpimData sources in a
- * configurable table format. The 3D data (sources x timepoints x transforms)
- * can be viewed with any dimension as rows, columns, or slider.
- *
- * Sources without an associated SpimData object are excluded with a warning.
- *
- * @author Nicolas Chiaruttini, BIOP, EPFL
- */
-@SuppressWarnings({ "CanBeFinal", "unused" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-			"Dataset>Transform Stack>Dataset - View Transforms",
-	description = "Opens a viewer to explore SpimData transforms with " +
-		"configurable dimensions (sources, timepoints, transform chain)")
-public class DatasetTransformViewCommand implements BdvPlaygroundActionCommand
-{
+	menuPath = ScijavaBdvDefaults.RootMenu + "View>BDV>BDV - Show Sources",
+	description = "Adds one or several sources to an existing BDV window")
+public class BdvSourcesAddCommand implements BdvPlaygroundActionCommand {
 
-	protected static final Logger logger = LoggerFactory.getLogger(
-		DatasetTransformViewCommand.class);
+	@Parameter(label = "Select BDV Window",
+			description = "The BigDataViewer window where sources will be displayed")
+	BdvHandle bdvh;
 
-	@Parameter(label = "Select source(s)",
-		description = "Select sources to view their SpimData transforms. " +
-			"Sources without SpimData will be excluded.")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to add to the BDV window")
 	SourceAndConverter<?>[] sources;
 
+	@Parameter(label = "Auto Contrast",
+			description = "Automatically adjusts brightness and contrast based on the current timepoint")
+	boolean auto_contrast;
+
+	@Parameter(label = "Adjust View on Source",
+			description = "Centers and zooms the view to fit the added sources")
+	boolean adjust_view_on_source;
+
 	@Parameter
-	SourceService source_service;
+    SourceBdvDisplayService bdvDisplayService;
+
 	@Override
 	public void run() {
-		if (sources == null || sources.length == 0) {
-			logger.error("No sources selected!");
-			return;
+
+		bdvDisplayService.show(bdvh,
+			SourceHelper.sortDefault(sources));
+		if (auto_contrast) {
+			for (SourceAndConverter<?> source : sources) {
+				int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
+				new BrightnessAutoAdjuster<>(source, timepoint).run();
+			}
 		}
 
-		logger.info("Opening SpimData Transform Viewer for {} source(s)",
-			sources.length);
-
-		SwingUtilities.invokeLater(() -> {
-			SpimDataTransformViewer viewer = new SpimDataTransformViewer(sources,
-					source_service);
-			viewer.showViewer();
-		});
+		if ((adjust_view_on_source) && (sources.length > 0)) {
+			new ViewerTransformAdjuster(bdvh, sources).run();
+		}
 	}
 }

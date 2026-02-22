@@ -32,9 +32,11 @@ package sc.fiji.bdvpg.scijava.services;
 import bdv.viewer.SourceAndConverter;
 import org.scijava.Context;
 import org.scijava.MenuEntry;
+import org.scijava.command.Command;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.PluginService;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.command.workspace.TreeSourceServiceShowCommand;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.services.SourceServices;
 
@@ -73,14 +75,15 @@ public class SourcePopupMenu {
 		String rootPrefix = ScijavaBdvDefaults.RootMenu;
 
 		this.popupActionWithPaths = pluginService
-			.getPluginsOfType(BdvPlaygroundActionCommand.class).stream()
+			.getPluginsOfType(Command.class).stream()
+			.filter(pi -> !pi.getClassName().equals(TreeSourceServiceShowCommand.class.getName()))
 			.map(pi -> commandService.getCommand(pi.getClassName()))
 			.filter(ci -> ci != null && ci.getMenuPath() != null && !ci.getMenuPath()
 				.isEmpty())
 			.map(ci -> ci.getMenuPath().stream().map(MenuEntry::getName).collect(
 				Collectors.joining(">")))
-			.map(path -> path.startsWith(rootPrefix) ? path.substring(rootPrefix
-				.length()) : path)
+				.filter(path -> path.startsWith(rootPrefix))
+			.map(path -> path.substring(rootPrefix.length()))
 			.filter(s -> !s.isEmpty())
 			.sorted()
 			.toArray(String[]::new);

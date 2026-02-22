@@ -27,64 +27,51 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.command.dataset.transform;
+package sc.fiji.bdvpg.command.view.bdv;
 
-import bdv.viewer.SourceAndConverter;
+import bdv.util.BdvHandle;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformLogger;
+import sc.fiji.bdvpg.log.Logger;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.dataset.SpimDataTransformViewer;
-
-import javax.swing.SwingUtilities;
 
 /**
- * Command to open the SpimData Transform Viewer.
- *
- * This viewer displays the transform chain for SpimData sources in a
- * configurable table format. The 3D data (sources x timepoints x transforms)
- * can be viewed with any dimension as rows, columns, or slider.
- *
- * Sources without an associated SpimData object are excluded with a warning.
- *
- * @author Nicolas Chiaruttini, BIOP, EPFL
+ * ViewTransformLoggerCommand Author: @haesleinhuepf 12 2019
  */
-@SuppressWarnings({ "CanBeFinal", "unused" })
+
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
+
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-			"Dataset>Transform Stack>Dataset - View Transforms",
-	description = "Opens a viewer to explore SpimData transforms with " +
-		"configurable dimensions (sources, timepoints, transform chain)")
-public class DatasetTransformViewCommand implements BdvPlaygroundActionCommand
-{
+	menuPath = ScijavaBdvDefaults.RootMenu + "View>BDV>BDV - Log View Transform",
+	description = "Outputs the current view transform of a BDV window into the standard IJ logger")
 
-	protected static final Logger logger = LoggerFactory.getLogger(
-		DatasetTransformViewCommand.class);
+public class BdvViewLogCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select source(s)",
-		description = "Select sources to view their SpimData transforms. " +
-			"Sources without SpimData will be excluded.")
-	SourceAndConverter<?>[] sources;
+	@Parameter(label = "Select BDV Window",
+			description = "The BigDataViewer window whose view transform will be logged")
+	BdvHandle bdvh;
 
 	@Parameter
-	SourceService source_service;
+	LogService ls;
+
 	@Override
 	public void run() {
-		if (sources == null || sources.length == 0) {
-			logger.error("No sources selected!");
-			return;
-		}
+		new ViewerTransformLogger(bdvh, new Logger() {
 
-		logger.info("Opening SpimData Transform Viewer for {} source(s)",
-			sources.length);
+			@Override
+			public void out(String msg) {
+				ls.info(msg);
+			}
 
-		SwingUtilities.invokeLater(() -> {
-			SpimDataTransformViewer viewer = new SpimDataTransformViewer(sources,
-					source_service);
-			viewer.showViewer();
-		});
+			@Override
+			public void err(String msg) {
+				ls.error(msg);
+			}
+		}).run();
 	}
 }
