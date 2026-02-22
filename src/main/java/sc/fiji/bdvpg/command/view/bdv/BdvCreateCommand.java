@@ -42,7 +42,7 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "View>BDV>BDV - Create Empty BDV Window",
+	menuPath = ScijavaBdvDefaults.RootMenu + "View>BDV>BDV - Create",
 	description = "Creates an empty BDV window")
 public class BdvCreateCommand implements BdvPlaygroundActionCommand {
 

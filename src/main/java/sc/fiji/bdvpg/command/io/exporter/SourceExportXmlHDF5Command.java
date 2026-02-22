@@ -45,7 +45,7 @@ import java.util.Arrays;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Export>Source - Export Sources To XML/HDF5 Dataset",
+		"Export>Source - Export To XML/HDF5 Dataset",
 	description = "Exports sources to an XML/HDF5 BigDataViewer dataset")
 public class SourceExportXmlHDF5Command implements BdvPlaygroundActionCommand {
 

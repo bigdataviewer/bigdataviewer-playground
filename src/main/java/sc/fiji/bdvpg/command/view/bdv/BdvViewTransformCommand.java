@@ -44,10 +44,10 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
-
-@Plugin(type = BdvPlaygroundActionCommand.class,
+// Not so useful
+/*@Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu + "View>BDV>BDV - Change View Transform",
-	description = "Applies a simple view transform (translation / rotation) to a BDV window")
+	description = "Applies a simple view transform (translation / rotation) to a BDV window")*/
 public class BdvViewTransformCommand implements BdvPlaygroundActionCommand {
 
 	@Parameter(label = "Select BDV Window",

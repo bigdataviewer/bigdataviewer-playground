@@ -158,7 +158,7 @@ public class SpimDataTransformViewer extends JFrame {
 
 		if (sourceEntries.isEmpty()) {
 			JOptionPane.showMessageDialog(this,
-				"No sources with SpimData found. Cannot display transforms.",
+				"No sources linked to SpimData found. Cannot display transforms.",
 				"No SpimData Sources", JOptionPane.WARNING_MESSAGE);
 			dispose();
 			return;

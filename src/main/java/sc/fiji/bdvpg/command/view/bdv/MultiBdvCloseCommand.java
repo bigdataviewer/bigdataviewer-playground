@@ -43,7 +43,7 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-		"View>BDV>BDV - Close BDV Windows",
+		"View>BDV>BDV - Close",
 	description = "Closes one or several bdv windows.")
 public class MultiBdvCloseCommand implements BdvPlaygroundActionCommand {
 

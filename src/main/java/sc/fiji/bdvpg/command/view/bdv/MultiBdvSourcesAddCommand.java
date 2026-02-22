@@ -43,7 +43,7 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-		"View>BDV>BDV - Show Sources In Multiple BDV Windows",
+		"View>BDV>BDV - Show Sources In Multiple Windows",
 	description = "Adds one or several sources into several existing BDV windows")
 public class MultiBdvSourcesAddCommand implements BdvPlaygroundActionCommand {
 

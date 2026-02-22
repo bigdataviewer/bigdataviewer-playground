@@ -291,7 +291,7 @@ public class SourceTree {
 		boolean found = false;
 		for (int i = 0; i<popup.getComponentCount(); i++) {
 			if (popup.getComponent(i) instanceof JMenu) {
-				if (((JMenu) popup.getComponent(i)).getText().equals("Tree")) {
+				if (((JMenu) popup.getComponent(i)).getText().equals("Workspace")) {
 					child = (JMenu) popup.getComponent(i);
 					found = true;
 					break;
@@ -300,7 +300,7 @@ public class SourceTree {
 		}
 
 		if (!found) {
-			JMenu menu = new JMenu("Tree");
+			JMenu menu = new JMenu("Workspace");
 			popup.add(menu);
 			child = menu;
 		}

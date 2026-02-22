@@ -47,7 +47,7 @@ import javax.swing.SwingUtilities;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-		"View>BDV>Settings>BDV - Install Editor",
+		"View>BDV>Settings>BDV - Add Editor",
 	description = "Installs the source selection editor on BDV windows. " +
 		"Press the toggle key to switch between navigation and editor mode.")
 public class BdvEditorInstallCommand implements BdvPlaygroundActionCommand {

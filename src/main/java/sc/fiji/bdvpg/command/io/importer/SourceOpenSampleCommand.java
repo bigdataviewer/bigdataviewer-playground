@@ -49,7 +49,7 @@ import sc.fiji.bdvpg.source.importer.Wave3DSourceGetter;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "Import>Open Sample Source",
+	menuPath = ScijavaBdvDefaults.RootMenu + "Import>Source - Open Sample Source",
 	description = "Creates a sample source for testing and demonstration purposes")
 public class SourceOpenSampleCommand implements BdvPlaygroundActionCommand {
 

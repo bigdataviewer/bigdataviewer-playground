@@ -46,7 +46,7 @@ import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu +
-		"View>BDV>BDV - Show Sources (New BDV Window)",
+		"View>BDV>BDV - Show Sources",
 	description = "Displays one or several sources into a new BDV window")
 public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
 
@@ -61,6 +61,10 @@ public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
 	@Parameter(label = "Adjust View on Sources",
 			description = "Centers and zooms the view to fit the displayed sources")
 	boolean adjust_view;
+
+	@Parameter(label = "Open In New Window",
+			description = "Force creation of a new window")
+	boolean make_new_window;
 
 	@Parameter(label = "Interpolate",
 			description = "Enables interpolation for smoother rendering")
@@ -79,7 +83,11 @@ public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
 
 	@Override
 	public void run() {
-		bdvh = bdvDisplayService.getNewBdv();
+		if (make_new_window) {
+			bdvh = bdvDisplayService.getNewBdv();
+		} else {
+			bdvh = bdvDisplayService.getActiveBdv();
+		}
 
 		bdvDisplayService.show(bdvh, sources);
 		if (auto_contrast) {

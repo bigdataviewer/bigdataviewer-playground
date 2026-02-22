@@ -39,10 +39,11 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
-
-@Plugin(type = BdvPlaygroundActionCommand.class,
+// I don't think this is so useful.
+/*@Plugin(type = BdvPlaygroundActionCommand.class,
 	menuPath = ScijavaBdvDefaults.RootMenu + "View>BDV>BDV - Select Window",
-	description = "Selects and brings a BDV window to the front")
+	description = "Selects and brings a BDV window to the front")*/
+
 
 public class BdvSelectCommand implements BdvPlaygroundActionCommand {
 

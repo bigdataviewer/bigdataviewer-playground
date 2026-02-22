@@ -47,7 +47,7 @@ import java.util.Set;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>Source - Make Global Source Group",
+	menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>Tree - Make Global Source Group",
 	description = "Adds a node in the tree view which selects the sources specified in the command")
 
 public class SourceGroupMakeCommand implements BdvPlaygroundActionCommand {
