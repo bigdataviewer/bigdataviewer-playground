@@ -35,6 +35,7 @@ import mpicbg.spim.data.registration.ViewRegistration;
 import mpicbg.spim.data.registration.ViewRegistrations;
 import mpicbg.spim.data.registration.ViewTransform;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +57,13 @@ import java.util.Set;
  */
 @SuppressWarnings({ "CanBeFinal", "unused" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-			"Dataset>Transform Stack>Dataset - Remove Transforms",
+	menu = {
+		@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+		@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+		@Menu(label = "Dataset"),
+		@Menu(label = "Transform Stack"),
+		@Menu(label = "Dataset - Remove Transforms", weight = 4.0)
+	},
 	description = "Removes transforms at specified timepoints and chain indices")
 public class DatasetTransformRemoveCommand implements BdvPlaygroundActionCommand {
 

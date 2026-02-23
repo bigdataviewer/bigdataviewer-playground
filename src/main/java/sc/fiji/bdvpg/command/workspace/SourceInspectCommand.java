@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.command.workspace;
 
 import bdv.viewer.SourceAndConverter;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
@@ -41,7 +42,13 @@ import sc.fiji.bdvpg.scijava.services.SourceService;
                                               // pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>Tree - Inspect Sources",
+		menu = {
+				@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+				@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+				@Menu(label = ScijavaBdvDefaults.WorkspaceMenu, weight = ScijavaBdvDefaults.WorkspaceW),
+				@Menu(label = "Tree - Inspect Sources", weight = -7)
+		},
+	//menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>Tree - Inspect Sources",
 	description = "Adds an inspection node in the tree view for each selected source, showing details about its properties and type hierarchy")
 public class SourceInspectCommand implements BdvPlaygroundActionCommand {
 

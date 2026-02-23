@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.command.workspace;
 
 import org.scijava.Context;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -40,8 +41,14 @@ import java.io.File;
 
 @SuppressWarnings({ "unused", "CanBeFinal" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Workspace > State - Save",
+	//menuPath = ScijavaBdvDefaults.RootMenu +
+	//	"Workspace > State - Save",
+		menu = {
+				@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+				@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+				@Menu(label = ScijavaBdvDefaults.WorkspaceMenu, weight = ScijavaBdvDefaults.WorkspaceW),
+				@Menu(label = "State - Save", weight = -9)
+		},
 	description = "Saves the current Bdv Playground state to a JSON file")
 public class StateSaveCommand implements
 	BdvPlaygroundActionCommand

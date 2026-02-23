@@ -39,7 +39,7 @@ import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
  * Test command to demo {@link sc.fiji.bdvpg.scijava.BdvScijavaHelper}
  */
 @SuppressWarnings({"unused", "CanBeFinal"})
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu + "Another sub menu>Rename Bdv Window")
+//@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu + "Another sub menu>Rename Bdv Window")
 public class RenameBdvCommandDemo implements Command {
 
     @Parameter

@@ -139,7 +139,7 @@ public class TestSourcesCommands {
         Assert.assertEquals("Error - there should be two sources at the beginning of the test", 2, sourceService.getSources().size());
         //New Source Based on Model Source
         ctx.getService(ScriptService.class).run("dummy.ijm",
-                "run(\"Source - Create New Source Based On Model\", \""+
+                "run(\"Source - Create Resampling Grid From Source\", \""+
                         "model=[mri-stack.xml>Channel>1] " +
                         "name=model " +
                         "vox_size_x=1 " +

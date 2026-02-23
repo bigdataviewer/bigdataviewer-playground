@@ -36,6 +36,7 @@ import mpicbg.spim.data.registration.ViewRegistrations;
 import mpicbg.spim.data.registration.ViewTransform;
 import mpicbg.spim.data.registration.ViewTransformAffine;
 import net.imglib2.realtransform.AffineTransform3D;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.TextWidget;
@@ -63,8 +64,13 @@ import java.util.Set;
  */
 @SuppressWarnings({ "CanBeFinal", "unused" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-			"Dataset>Transform Stack>Dataset - Set Transforms",
+	menu = {
+		@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+		@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+		@Menu(label = "Dataset"),
+		@Menu(label = "Transform Stack"),
+		@Menu(label = "Dataset - Set Transforms", weight = 3.0)
+	},
 	description = "Sets (overrides) transforms at specified timepoints and chain indices")
 public class DatasetTransformSetCommand implements BdvPlaygroundActionCommand {
 

@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.command.workspace;
 
 import bdv.viewer.SourceAndConverter;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -47,7 +48,14 @@ import java.util.Set;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>Tree - Make Global Source Group",
+		menu = {
+				@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+				@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+				@Menu(label = ScijavaBdvDefaults.WorkspaceMenu, weight = ScijavaBdvDefaults.WorkspaceW),
+				@Menu(label = "Tree - Make Global Source Group", weight = -6)
+		},
+
+	//menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>Tree - Make Global Source Group",
 	description = "Adds a node in the tree view which selects the sources specified in the command")
 
 public class SourceGroupMakeCommand implements BdvPlaygroundActionCommand {

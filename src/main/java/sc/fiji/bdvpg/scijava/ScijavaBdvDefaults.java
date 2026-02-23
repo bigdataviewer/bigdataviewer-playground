@@ -28,8 +28,65 @@
  */
 
 package sc.fiji.bdvpg.scijava;
+import org.scijava.plugin.Menu;
+
+import java.lang.annotation.Annotation;
 
 public class ScijavaBdvDefaults {
 
-	final public static String RootMenu = "Plugins>BigDataViewer-Playground>";
+	final public static String RootMenuL1 = "Plugins";
+	final public static String RootMenuL2 = "BigDataViewer-Playground";
+	final public static String RootMenu = RootMenuL1 + ">" + RootMenuL2 + ">";
+
+	// Layer 3
+	final public static String WorkspaceMenu = "Workspace";
+	final public static int WorkspaceW = -10;
+	final public static String ImportMenu = "Import";
+	final public static int ImportW = -9;
+	final public static String ViewMenu = "View";
+	final public static int ViewW = -8;
+	final public static String DatasetMenu = "Dataset";
+	final public static int DatasetW = -7;
+	final public static String ProcessMenu = "Process";
+	final public static int ProcessW = -6;
+	final public static String RegisterMenu = "Register";
+	final public static int RegisterW = -5;
+	final public static String ExportMenu = "Export";
+	final public static int ExportW = -4;
+
+	static Menu menu(String label, int weight) {
+		return new Menu(){
+
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return null;
+			}
+
+			@Override
+			public String label() {
+				return label;
+			}
+
+			@Override
+			public double weight() {
+				return weight;
+			}
+
+			@Override
+			public char mnemonic() {
+				return 0;
+			}
+
+			@Override
+			public String accelerator() {
+				return "";
+			}
+
+			@Override
+			public String iconPath() {
+				return "";
+			}
+		};
+	}
+
 }

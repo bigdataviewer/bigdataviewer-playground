@@ -35,6 +35,7 @@ import mpicbg.spim.data.registration.ViewRegistration;
 import mpicbg.spim.data.registration.ViewRegistrations;
 import mpicbg.spim.data.registration.ViewTransformAffine;
 import net.imglib2.realtransform.AffineTransform3D;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.TextWidget;
@@ -58,8 +59,13 @@ import java.util.Set;
  */
 @SuppressWarnings({ "CanBeFinal", "unused" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Dataset>Transform Stack>Dataset - Add Transforms",
+	menu = {
+		@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+		@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+		@Menu(label = ScijavaBdvDefaults.DatasetMenu, weight = ScijavaBdvDefaults.DatasetW),
+		@Menu(label = "Transform Stack"),
+		@Menu(label = "Dataset - Add Transforms", weight = 2.0)
+	},
 	description = "Adds a transform to the chain at specified timepoints (prepend or append)")
 public class DatasetTransformAddCommand implements BdvPlaygroundActionCommand {
 

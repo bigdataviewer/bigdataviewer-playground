@@ -29,6 +29,7 @@
 
 package sc.fiji.bdvpg.command.workspace;
 
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
@@ -37,7 +38,13 @@ import sc.fiji.bdvpg.scijava.services.SourceService;
 
 @SuppressWarnings({ "unused", "CanBeFinal" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>Show BDV Playground Window",
+		menu = {
+				@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+				@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+				@Menu(label = ScijavaBdvDefaults.WorkspaceMenu, weight = ScijavaBdvDefaults.WorkspaceW),
+				@Menu(label = "Show BDV Playground Window", weight = -11)
+		},
+	//menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>Show BDV Playground Window",
 	description = "Opens the Bdv Playground source management window")
 public class TreeSourceServiceShowCommand implements
 	BdvPlaygroundActionCommand

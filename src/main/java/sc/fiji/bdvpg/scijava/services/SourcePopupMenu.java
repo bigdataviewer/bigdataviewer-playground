@@ -80,12 +80,26 @@ public class SourcePopupMenu {
 			.map(pi -> commandService.getCommand(pi.getClassName()))
 			.filter(ci -> ci != null && ci.getMenuPath() != null && !ci.getMenuPath()
 				.isEmpty())
-			.map(ci -> ci.getMenuPath().stream().map(MenuEntry::getName).collect(
-				Collectors.joining(">")))
-				.filter(path -> path.startsWith(rootPrefix))
-			.map(path -> path.substring(rootPrefix.length()))
+			.filter(ci -> ci.getMenuPath().stream().map(MenuEntry::getName)
+				.collect(Collectors.joining(">")).startsWith(rootPrefix))
+			.sorted((a, b) -> {
+				int minLen = Math.min(a.getMenuPath().size(), b.getMenuPath().size());
+				for (int i = 0; i < minLen; i++) {
+					double wA = a.getMenuPath().get(i).getWeight();
+					double wB = b.getMenuPath().get(i).getWeight();
+					int cmp = Double.compare(
+						Double.isNaN(wA) ? Double.MAX_VALUE : wA,
+						Double.isNaN(wB) ? Double.MAX_VALUE : wB);
+					if (cmp != 0) return cmp;
+					cmp = a.getMenuPath().get(i).getName()
+						.compareTo(b.getMenuPath().get(i).getName());
+					if (cmp != 0) return cmp;
+				}
+				return Integer.compare(a.getMenuPath().size(), b.getMenuPath().size());
+			})
+			.map(ci -> ci.getMenuPath().stream().map(MenuEntry::getName)
+				.collect(Collectors.joining(">")).substring(rootPrefix.length()))
 			.filter(s -> !s.isEmpty())
-			.sorted()
 			.toArray(String[]::new);
 
 		this.popup = new JPopupMenu();

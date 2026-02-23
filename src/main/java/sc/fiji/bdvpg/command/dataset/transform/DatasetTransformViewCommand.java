@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.command.dataset.transform;
 
 import bdv.viewer.SourceAndConverter;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
@@ -54,8 +55,13 @@ import javax.swing.SwingUtilities;
  */
 @SuppressWarnings({ "CanBeFinal", "unused" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-			"Dataset>Transform Stack>Dataset - View Transforms",
+	menu = {
+		@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+		@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+		@Menu(label = "Dataset"),
+		@Menu(label = "Transform Stack"),
+		@Menu(label = "Dataset - View Transforms", weight = 1.0)
+	},
 	description = "Opens a viewer to explore SpimData transforms with " +
 		"configurable dimensions (sources, timepoints, transform chain)")
 public class DatasetTransformViewCommand implements BdvPlaygroundActionCommand

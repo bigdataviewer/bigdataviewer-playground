@@ -77,7 +77,7 @@ public class TestBdvCommands {
     @Test
     public void testBdvCreatorIJ1Macro() throws ExecutionException, InterruptedException{
         ctx.getService(ScriptService.class).run("dummy.ijm",
-                "run(\"BDV - Create Empty BDV Window\");", true).get();
+                "run(\"BDV - Create\");", true).get();
         Assert.assertEquals("Error - there should be one bdv created", 1, sourceDisplayService.getDisplays().size() );
     }
 
