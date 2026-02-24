@@ -33,6 +33,7 @@ import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.SourceAndConverter;
 import ij.IJ;
 import net.imglib2.realtransform.AffineTransform3D;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -50,8 +51,13 @@ import sc.fiji.bdvpg.source.transform.SourceTransformHelper;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Process>Transform>Source - Affine Transformation",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ProcessMenu, weight = ScijavaBdvDefaults.ProcessW),
+			@Menu(label = "Transform"),
+			@Menu(label = "Source - Affine Transformation", weight = 1)
+	},
 	description = "Applies an affine transformation on several sources.")
 
 public class SourceTransformCommand implements BdvPlaygroundActionCommand {

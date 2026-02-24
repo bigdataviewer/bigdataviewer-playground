@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.command.view.display;
 
 import bdv.viewer.SourceAndConverter;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -41,8 +42,13 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"View>Source Display>Source - Make Invisible",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "Source Display"),
+			@Menu(label = "Source - Make Invisible", weight = 5)
+	},
 	description = "Makes sources invisible in all BDV windows where they are displayed")
 public class SourceVisibleOFFCommand implements
 	BdvPlaygroundActionCommand

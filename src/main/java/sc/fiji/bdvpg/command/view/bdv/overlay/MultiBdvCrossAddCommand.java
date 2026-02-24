@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.command.view.bdv.overlay;
 
 import bdv.util.BdvHandle;
 import ij.IJ;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewers.bdv.BdvHandleHelper;
@@ -42,7 +43,14 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "View>BDV>Overlay>BDV - Add Center Cross Overlay",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "BDV"),
+			@Menu(label = "Overlay"),
+			@Menu(label = "BDV - Add Center Cross Overlay", weight = 2)
+	},
 	description = "Adds a centering cross onto BDV windows")
 public class MultiBdvCrossAddCommand implements BdvPlaygroundActionCommand {
 

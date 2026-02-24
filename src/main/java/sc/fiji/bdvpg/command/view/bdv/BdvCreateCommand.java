@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.command.view.bdv;
 
 import bdv.util.BdvHandle;
 import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -42,7 +43,13 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "View>BDV>BDV - Create",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "BDV"),
+			@Menu(label = "BDV - Create", weight = 1)
+	},
 	description = "Creates an empty BDV window")
 public class BdvCreateCommand implements BdvPlaygroundActionCommand {
 

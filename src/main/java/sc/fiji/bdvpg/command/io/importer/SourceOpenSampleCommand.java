@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.command.io.importer;
 
 import bdv.viewer.SourceAndConverter;
 import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.log.SystemLogger;
@@ -49,7 +50,12 @@ import sc.fiji.bdvpg.source.importer.Wave3DSourceGetter;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "Import>Source - Open Sample Source",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ImportMenu, weight = ScijavaBdvDefaults.ImportW),
+			@Menu(label = "Source - Open Sample Source", weight = 2)
+	},
 	description = "Creates a sample source for testing and demonstration purposes")
 public class SourceOpenSampleCommand implements BdvPlaygroundActionCommand {
 

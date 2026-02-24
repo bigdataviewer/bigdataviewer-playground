@@ -33,6 +33,7 @@ import bdv.tools.transformation.TransformedSource;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -55,8 +56,13 @@ import sc.fiji.bdvpg.source.transform.SourceTransformHelper;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Process>Transform>Source - Basic Transformation",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ProcessMenu, weight = ScijavaBdvDefaults.ProcessW),
+			@Menu(label = "Transform"),
+			@Menu(label = "Source - Basic Transformation", weight = 2)
+	},
 	description = "Performs basic transformation (rotate / flip) along X Y Z axis for several sources. " +
 		"If global is selected, the transformation is performed relative to the global origin (0,0,0). " +
 		"If global is not selected, the center of each source is unchanged.")

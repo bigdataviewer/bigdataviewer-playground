@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.command.view.bdv.overlay;
 
 import bdv.util.BdvHandle;
 import ij.IJ;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewers.bdv.overlay.SourceNameOverlayAdder;
@@ -45,7 +46,14 @@ import java.awt.Font;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "View>BDV>Overlay>BDV - Add Sources Name Overlay",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "BDV"),
+			@Menu(label = "Overlay"),
+			@Menu(label = "BDV - Add Sources Name Overlay", weight = 3)
+	},
 	description = "Adds a source name overlay onto BDV windows")
 public class MultiBdvSourceNameOverlayAddCommand implements BdvPlaygroundActionCommand {
 

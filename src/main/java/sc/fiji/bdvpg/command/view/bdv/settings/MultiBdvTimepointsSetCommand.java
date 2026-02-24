@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.command.view.bdv.settings;
 
 import bdv.util.BdvHandle;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -40,7 +41,14 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "View>BDV>Settings>BDV - Set Number Of Timepoints",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "BDV"),
+			@Menu(label = "Settings"),
+			@Menu(label = "BDV - Set Number Of Timepoints", weight = 2)
+	},
 	description = "Sets the number of timepoints in one or several BDV Windows")
 
 public class MultiBdvTimepointsSetCommand implements

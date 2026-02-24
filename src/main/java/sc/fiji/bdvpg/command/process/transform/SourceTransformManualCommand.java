@@ -32,6 +32,7 @@ package sc.fiji.bdvpg.command.process.transform;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import ij.IJ;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewers.bdv.ManualRegistrationStarter;
@@ -55,8 +56,13 @@ import java.awt.event.WindowEvent;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Process>Transform>Source - Manual Transformation",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ProcessMenu, weight = ScijavaBdvDefaults.ProcessW),
+			@Menu(label = "Transform"),
+			@Menu(label = "Source - Manual Transformation", weight = 3)
+	},
 	description = "Manual transformation of selected sources. Works only with a single bdv window (the active one)." +
 		"The sources that are not displayed but selected are transformed. During the registration, the user is" +
 		"placed in the reference of the moving sources. That's why they are not moving during the registration.")

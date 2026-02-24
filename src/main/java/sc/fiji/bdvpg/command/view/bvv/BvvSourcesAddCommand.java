@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.command.view.bvv;
 
 import bdv.viewer.SourceAndConverter;
 import bvv.vistools.BvvHandle;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
@@ -48,7 +49,13 @@ import sc.fiji.bdvpg.viewers.ViewerAdapter;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "View>BVV>BVV - Show Sources",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "BVV"),
+			@Menu(label = "BVV - Show Sources", weight = 2)
+	},
 	description = "Show sources in a BigVolumeViewer window")
 public class BvvSourcesAddCommand implements BdvPlaygroundActionCommand {
 

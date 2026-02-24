@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.command.view.bdv.settings;
 
 import org.scijava.Context;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewers.bdv.config.BdvSettingsGUISetter;
@@ -41,8 +42,14 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"View>BDV>Settings>BDV - Preferences - Set (Key) Bindings",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "BDV"),
+			@Menu(label = "Settings"),
+			@Menu(label = "BDV - Preferences - Set (Key) Bindings", weight = 4)
+	},
 	description = "Sets actions linked to key / mouse event in BDV")
 
 public class BdvSettingsCommand implements BdvPlaygroundActionCommand {

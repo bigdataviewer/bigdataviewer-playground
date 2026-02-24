@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.command.process.resample;
 
 import bdv.viewer.SourceAndConverter;
 import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -50,8 +51,13 @@ import sc.fiji.bdvpg.source.importer.EmptySourceCreator;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Process>Fuse & Resample>Source - Create Resampling Grid From Source",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ProcessMenu, weight = ScijavaBdvDefaults.ProcessW),
+			@Menu(label = "Fuse & Resample"),
+			@Menu(label = "Source - Create Resampling Grid From Source", weight = 2)
+	},
 	description = "Defines an empty source which occupied the same volume as a model source but with a potentially" +
 		" different voxel size. Works with a single timepoint.")
 

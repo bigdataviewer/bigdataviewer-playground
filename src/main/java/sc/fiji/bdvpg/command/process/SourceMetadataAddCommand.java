@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.command.process;
 
 import bdv.viewer.SourceAndConverter;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -41,7 +42,12 @@ import sc.fiji.bdvpg.scijava.services.SourceService;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "Process>Source - Add Metadata",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ProcessMenu, weight = ScijavaBdvDefaults.ProcessW),
+			@Menu(label = "Source - Add Metadata", weight = 4)
+	},
 	description = "Adds a metadata string to selected sources")
 
 public class SourceMetadataAddCommand implements BdvPlaygroundActionCommand {

@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.command.view.bdv;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -42,8 +43,13 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"View>BDV>BDV - Show Sources In Multiple Windows",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "BDV"),
+			@Menu(label = "BDV - Show Sources In Multiple Windows", weight = 3)
+	},
 	description = "Adds one or several sources into several existing BDV windows")
 public class MultiBdvSourcesAddCommand implements BdvPlaygroundActionCommand {
 

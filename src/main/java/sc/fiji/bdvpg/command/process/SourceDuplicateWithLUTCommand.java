@@ -39,6 +39,7 @@ import org.scijava.ItemIO;
 import org.scijava.command.DynamicCommand;
 import org.scijava.convert.ConvertService;
 import org.scijava.module.MutableModuleItem;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -55,8 +56,13 @@ import java.util.Map;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Process>Source - Duplicate With New LUT", initializer = "init",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ProcessMenu, weight = ScijavaBdvDefaults.ProcessW),
+			@Menu(label = "Source - Duplicate With New LUT", weight = 3)
+	},
+	initializer = "init",
 	description = "Duplicate one or several sources and sets an (identical) Look Up Table for these duplicated sources")
 
 public class SourceDuplicateWithLUTCommand extends DynamicCommand implements

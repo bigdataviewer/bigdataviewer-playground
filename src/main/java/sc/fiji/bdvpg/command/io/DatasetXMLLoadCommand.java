@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.command.io;
 
 import org.scijava.ItemVisibility;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -43,7 +44,12 @@ import java.io.File;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "File>Dataset - Open XML Dataset",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ImportMenu, weight = ScijavaBdvDefaults.ImportW),
+			@Menu(label = "Dataset - Open XML Dataset", weight = 1)
+	},
 	description = "Opens one or more BDV XML datasets")
 public class DatasetXMLLoadCommand implements
 	BdvPlaygroundActionCommand

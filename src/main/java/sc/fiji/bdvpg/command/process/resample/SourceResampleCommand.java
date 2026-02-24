@@ -32,6 +32,7 @@ package sc.fiji.bdvpg.command.process.resample;
 import bdv.viewer.SourceAndConverter;
 import org.scijava.ItemIO;
 import org.scijava.command.Command;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -42,8 +43,14 @@ import sc.fiji.bdvpg.source.transform.SourceResampler;
 																							// are set by SciJava
 																							// pre-processors
 
-@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu +
-	"Process>Fuse & Resample>Source - Resample Source",
+@Plugin(type = Command.class,
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ProcessMenu, weight = ScijavaBdvDefaults.ProcessW),
+			@Menu(label = "Fuse & Resample"),
+			@Menu(label = "Source - Resample Source", weight = 1)
+	},
 	description = "Resamples sources to match the voxel grid of a model source")
 public class SourceResampleCommand implements BdvPlaygroundActionCommand {
 

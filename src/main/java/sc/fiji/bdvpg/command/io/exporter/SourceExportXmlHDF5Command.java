@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.command.io.exporter;
 
 import bdv.viewer.SourceAndConverter;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -44,8 +45,12 @@ import java.util.Arrays;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Export>Source - Export To XML/HDF5 Dataset",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ExportMenu, weight = ScijavaBdvDefaults.ExportW),
+			@Menu(label = "Source - Export To XML/HDF5 Dataset", weight = 2)
+	},
 	description = "Exports sources to an XML/HDF5 BigDataViewer dataset")
 public class SourceExportXmlHDF5Command implements BdvPlaygroundActionCommand {
 

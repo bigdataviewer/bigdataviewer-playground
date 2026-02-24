@@ -32,6 +32,7 @@ package sc.fiji.bdvpg.command.view.bvv;
 import bvv.vistools.BvvHandle;
 import bvv.vistools.BvvOptions;
 import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewers.bvv.BvvCreator;
@@ -51,7 +52,13 @@ import java.awt.GraphicsEnvironment;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "View>BVV>BVV - Create Orthogonal Views",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "BVV"),
+			@Menu(label = "BVV - Create Orthogonal Views", weight = 4)
+	},
 	description = "Creates 3 BVV windows with synchronized orthogonal views")
 public class BvvOrthoWindowCreatorCommand implements
 	BdvPlaygroundActionCommand

@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.command.view.bdv;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
@@ -42,7 +43,13 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "View>BDV>BDV - Adjust View On Sources",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "BDV"),
+			@Menu(label = "BDV - Adjust View On Sources", weight = 7)
+	},
 	description = "Adjust current Bdv view on the selected sources")
 public class BdvViewAdjustOnSourcesCommand implements
 	BdvPlaygroundActionCommand

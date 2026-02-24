@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.command.view.bdv.settings;
 
 import bdv.util.BdvHandle;
 import ij.IJ;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewers.bdv.navigate.TimepointAdapterAdder;
@@ -43,8 +44,14 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"View>BDV>Settings>BDV - Adapt BDV Number Of Timepoints To Sources",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "BDV"),
+			@Menu(label = "Settings"),
+			@Menu(label = "BDV - Adapt BDV Number Of Timepoints To Sources", weight = 1)
+	},
 	description = "Adapts the bdv windows timepoints to the number of timepoints present in their sources.")
 public class MultiBdvTimepointAdaptCommand implements BdvPlaygroundActionCommand {
 

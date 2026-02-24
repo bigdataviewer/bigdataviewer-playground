@@ -32,6 +32,7 @@ package sc.fiji.bdvpg.command.process.transform;
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -43,8 +44,13 @@ import sc.fiji.bdvpg.source.transform.SourceAffineTransformer;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"Process>Transform>Source - Wrap As Transformed Source",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ProcessMenu, weight = ScijavaBdvDefaults.ProcessW),
+			@Menu(label = "Transform"),
+			@Menu(label = "Source - Wrap As Transformed Source", weight = 4)
+	},
 	description = "Wraps sources in a TransformedSource, allowing subsequent transformations to be applied")
 public class SourceWrapTransformCommand implements
 	BdvPlaygroundActionCommand

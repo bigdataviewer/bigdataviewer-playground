@@ -32,6 +32,7 @@ package sc.fiji.bdvpg.command.view.bvv;
 import bvv.vistools.BvvHandle;
 import bvv.vistools.BvvOptions;
 import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewers.bvv.BvvCreator;
@@ -43,7 +44,13 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "View>BVV>BVV - Create Empty BVV Frame",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "BVV"),
+			@Menu(label = "BVV - Create Empty BVV Frame", weight = 1)
+	},
 	description = "Creates an empty Bvv window")
 public class BvvWindowCreateCommand implements BdvPlaygroundActionCommand {
 

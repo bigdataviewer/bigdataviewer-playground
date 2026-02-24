@@ -33,6 +33,7 @@ import bdv.tools.brightness.ConverterSetup;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -54,7 +55,12 @@ import java.util.stream.Collectors;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "Register>Source - Launch BigWarp",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.RegisterMenu, weight = ScijavaBdvDefaults.RegisterW),
+			@Menu(label = "Source - Launch BigWarp", weight = 1)
+	},
 	description = "Starts BigWarp from existing sources")
 
 public class SourceLaunchBigWarpCommand implements BdvPlaygroundActionCommand {

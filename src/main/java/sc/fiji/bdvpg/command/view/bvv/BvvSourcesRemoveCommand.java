@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.command.view.bvv;
 
 import bdv.viewer.SourceAndConverter;
 import bvv.vistools.BvvHandle;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -41,7 +42,13 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "View>BVV>BVV - Remove Sources From BVV",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "BVV"),
+			@Menu(label = "BVV - Remove Sources From BVV", weight = 3)
+	},
 	description = "Removes one or several sources from an existing BVV window")
 public class BvvSourcesRemoveCommand implements BdvPlaygroundActionCommand {
 

@@ -32,6 +32,7 @@ package sc.fiji.bdvpg.command.io;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.Context;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -47,7 +48,12 @@ import java.io.File;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "File>Dataset - Save XML Dataset",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ExportMenu, weight = ScijavaBdvDefaults.ExportW),
+			@Menu(label = "Dataset - Save XML Dataset", weight = 1)
+	},
 	description = "Saves the Dataset associated with sources to an XML file")
 public class DatasetXMLSaveCommand implements BdvPlaygroundActionCommand {
 

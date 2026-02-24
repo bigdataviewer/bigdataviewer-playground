@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.command.view.bdv.settings;
 
 import bdv.util.BdvHandle;
 import ij.IJ;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewers.bdv.navigate.RayCastPositionerSliderAdder;
@@ -44,7 +45,14 @@ import javax.swing.SwingUtilities;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "View>BDV>Settings>BDV - Add Z Slider",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "BDV"),
+			@Menu(label = "Settings"),
+			@Menu(label = "BDV - Add Z Slider", weight = 6)
+	},
 	description = "Adds a z slider onto BDV windows")
 public class MultiBdvZSliderAddCommand implements BdvPlaygroundActionCommand {
 

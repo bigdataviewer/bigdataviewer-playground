@@ -32,6 +32,7 @@ package sc.fiji.bdvpg.command.view;
 import bdv.util.BdvHandle;
 import bvv.vistools.BvvHandle;
 import org.scijava.command.CommandService;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
@@ -66,7 +67,12 @@ import java.awt.event.WindowEvent;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu + "View>Viewers - Synchronize Views",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "Viewers - Synchronize Views", weight = 1)
+	},
 	description = "Synchronizes the view of a set of BDV or BVV windows. A window popup should be closed" +
 		" to stop the synchronization")
 public class ViewSynchronizerCommand implements BdvPlaygroundActionCommand {

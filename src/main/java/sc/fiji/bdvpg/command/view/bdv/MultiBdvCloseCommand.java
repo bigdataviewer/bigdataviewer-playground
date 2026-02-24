@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.command.view.bdv;
 
 import bdv.util.BdvHandle;
 import ij.IJ;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -42,8 +43,13 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"View>BDV>BDV - Close",
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "BDV"),
+			@Menu(label = "BDV - Close", weight = 5)
+	},
 	description = "Closes one or several bdv windows.")
 public class MultiBdvCloseCommand implements BdvPlaygroundActionCommand {
 

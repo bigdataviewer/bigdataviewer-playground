@@ -31,6 +31,7 @@ package sc.fiji.bdvpg.command.view.display;
 
 import bdv.viewer.SourceAndConverter;
 import org.scijava.command.InteractiveCommand;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
@@ -50,9 +51,15 @@ import static org.scijava.ItemVisibility.MESSAGE;
 																							// are set by SciJava
 																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class, initializer = "init",
-	menuPath = ScijavaBdvDefaults.RootMenu +
-		"View>Source Display>Source - Brightness Adjust (Interactive)",
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menu = {
+			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
+			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
+			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = "Source Display"),
+			@Menu(label = "Source - Brightness Adjust (Interactive)", weight = 3)
+	},
+	initializer = "init",
 	description = "Interactively adjusts the display range (min and max) of sources with live preview")
 public class SourceBrightnessAdjustInteractiveCommand extends InteractiveCommand
 	implements BdvPlaygroundActionCommand
