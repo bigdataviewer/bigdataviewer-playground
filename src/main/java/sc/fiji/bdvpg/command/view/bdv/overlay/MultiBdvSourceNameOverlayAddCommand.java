@@ -35,7 +35,7 @@ import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewers.bdv.overlay.SourceNameOverlayAdder;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 
 import javax.swing.SwingUtilities;
@@ -47,9 +47,9 @@ import java.awt.Font;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
 			@Menu(label = "BDV"),
 			@Menu(label = "Overlay"),
 			@Menu(label = "BDV - Add Sources Name Overlay", weight = 3)

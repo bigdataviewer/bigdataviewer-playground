@@ -211,11 +211,11 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
+		<!--dependency>
 			<groupId>ch.epfl.biop</groupId>
 			<artifactId>bigdataviewer-image-loaders</artifactId>
 			<version>0.12.999-SNAPSHOT</version>
-		</dependency>
+		</dependency-->
 
     </dependencies>
 

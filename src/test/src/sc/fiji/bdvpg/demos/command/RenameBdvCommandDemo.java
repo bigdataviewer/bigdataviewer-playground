@@ -31,9 +31,7 @@ package sc.fiji.bdvpg.demos.command;
 import bdv.util.BdvHandle;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewers.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
 
 /**
  * Test command to demo {@link sc.fiji.bdvpg.scijava.BdvScijavaHelper}

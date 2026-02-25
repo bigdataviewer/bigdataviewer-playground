@@ -35,7 +35,7 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewers.bdv.supplier.DefaultBdvSupplier;
 import sc.fiji.bdvpg.viewers.bdv.supplier.IBdvSupplier;
 import sc.fiji.bdvpg.viewers.bdv.supplier.SerializableBdvOptions;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 
@@ -47,12 +47,12 @@ import java.util.Arrays;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
-			@Menu(label = "BDV"),
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = BdvPgMenus.BDVMenu, weight = BdvPgMenus.BDVW),
 			@Menu(label = "Settings"),
-			@Menu(label = "BDV - Set Style (Default)", weight = 8)
+			@Menu(label = "BDV - Set Style (Default)", weight = 0)
 	},
 	description = "Sets the default preferences for newly created BDV windows")
 public class BdvDefaultViewerSetCommand implements

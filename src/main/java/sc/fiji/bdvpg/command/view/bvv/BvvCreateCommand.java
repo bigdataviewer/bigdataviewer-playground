@@ -36,7 +36,7 @@ import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewers.bvv.BvvCreator;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
@@ -45,14 +45,14 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
-			@Menu(label = "BVV"),
-			@Menu(label = "BVV - Create Empty BVV Frame", weight = 1)
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = BdvPgMenus.BVVMenu, weight = BdvPgMenus.BVVW),
+			@Menu(label = "BVV - Create", weight = 1)
 	},
 	description = "Creates an empty Bvv window")
-public class BvvWindowCreateCommand implements BdvPlaygroundActionCommand {
+public class BvvCreateCommand implements BdvPlaygroundActionCommand {
 
 	@Parameter(label = "Title of the new BVV window",
 			description = "Title for the new BigVolumeViewer window")

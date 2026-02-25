@@ -35,7 +35,7 @@ import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.ColorRGB;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceServices;
 import sc.fiji.bdvpg.source.display.ColorChanger;
@@ -46,10 +46,10 @@ import sc.fiji.bdvpg.source.display.ColorChanger;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
-			@Menu(label = "Source Display"),
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = "Source", weight = 3),
 			@Menu(label = "Source - Set Color", weight = 1)
 	},
 	description = "Changes the display color of one or more sources")

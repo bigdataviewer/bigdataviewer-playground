@@ -42,7 +42,7 @@ import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.source.display.ConverterChanger;
 
@@ -57,9 +57,9 @@ import java.util.Map;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-			@Menu(label = ScijavaBdvDefaults.ProcessMenu, weight = ScijavaBdvDefaults.ProcessW),
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ProcessMenu, weight = BdvPgMenus.ProcessW),
 			@Menu(label = "Source - Duplicate With New LUT", weight = 3)
 	},
 	initializer = "init",

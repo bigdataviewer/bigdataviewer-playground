@@ -32,27 +32,31 @@ import org.scijava.plugin.Menu;
 
 import java.lang.annotation.Annotation;
 
-public class ScijavaBdvDefaults {
+public class BdvPgMenus {
 
-	final public static String RootMenuL1 = "Plugins";
-	final public static String RootMenuL2 = "BigDataViewer-Playground";
-	final public static String RootMenu = RootMenuL1 + ">" + RootMenuL2 + ">";
+	final public static String L1 = "Plugins";
+	final public static String L2 = "BigDataViewer-Playground";
+	final public static String RootMenu = L1 + ">" + L2 + ">";
 
 	// Layer 3
 	final public static String WorkspaceMenu = "Workspace";
 	final public static int WorkspaceW = -10;
 	final public static String ImportMenu = "Import";
-	final public static int ImportW = -9;
+	final public static int ImportW = -8;
 	final public static String ViewMenu = "View";
-	final public static int ViewW = -8;
+	final public static int ViewW = -7;
 	final public static String DatasetMenu = "Dataset";
-	final public static int DatasetW = -7;
+	final public static int DatasetW = -9;
 	final public static String ProcessMenu = "Process";
 	final public static int ProcessW = -6;
 	final public static String RegisterMenu = "Register";
 	final public static int RegisterW = -5;
 	final public static String ExportMenu = "Export";
 	final public static int ExportW = -4;
+	public static final String BDVMenu = "BDV";
+	public static final int BDVW = 0;
+	public static final String BVVMenu = "BVV";
+	public static final int BVVW = 1;
 
 	static Menu menu(String label, int weight) {
 		return new Menu(){

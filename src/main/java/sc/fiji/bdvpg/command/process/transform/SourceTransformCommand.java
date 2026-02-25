@@ -36,7 +36,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.services.SourceServices;
 import sc.fiji.bdvpg.source.SourceAndTimeRange;
@@ -52,9 +52,9 @@ import sc.fiji.bdvpg.source.transform.SourceTransformHelper;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-			@Menu(label = ScijavaBdvDefaults.ProcessMenu, weight = ScijavaBdvDefaults.ProcessW),
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ProcessMenu, weight = BdvPgMenus.ProcessW),
 			@Menu(label = "Transform"),
 			@Menu(label = "Source - Affine Transformation", weight = 1)
 	},

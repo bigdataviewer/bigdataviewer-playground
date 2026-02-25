@@ -29,13 +29,16 @@
 
 package sc.fiji.bdvpg.command.view.bvv;
 
+import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import bvv.vistools.BvvHandle;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+
+import java.util.Arrays;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
@@ -43,18 +46,19 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
 			@Menu(label = "BVV"),
-			@Menu(label = "BVV - Remove Sources From BVV", weight = 3)
+			@Menu(label = "BVV - Remove Sources", weight = 4)
 	},
 	description = "Removes one or several sources from an existing BVV window")
 public class BvvSourcesRemoveCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select BVV Window",
-			description = "The BigVolumeViewer window from which sources will be removed")
-	BvvHandle bvvh;
+	@Parameter(label = "Select BVV Windows",
+			description = "The BigVolumeViewer windows from which sources will be removed",
+			persist = false)
+	BvvHandle[] bvvhs;
 
 	@Parameter(label = "Select Source(s)",
 			description = "The source(s) to remove from the BVV window")
@@ -62,8 +66,10 @@ public class BvvSourcesRemoveCommand implements BdvPlaygroundActionCommand {
 
 	@Override
 	public void run() {
-		for (SourceAndConverter<?> source : sources) {
-			bvvh.getViewerPanel().state().removeSource(source);
-		}
+        Arrays.stream(bvvhs).forEach(bvvh -> {
+            for (SourceAndConverter<?> source : sources) {
+                bvvh.getViewerPanel().state().removeSource(source);
+            }
+        });
 	}
 }

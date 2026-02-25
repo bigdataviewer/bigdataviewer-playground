@@ -29,12 +29,20 @@
 
 package sc.fiji.bdvpg.command.view.bvv;
 
+import bdv.viewer.SourceAndConverter;
 import bvv.vistools.BvvHandle;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.viewers.ViewerAdapter;
+
+/**
+ * Show sources in a BigVolumeViewer window - limited to 16 bit images
+ */
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
@@ -42,32 +50,41 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
 			@Menu(label = "BVV"),
-			@Menu(label = "BVV - Set Number Of Timepoints", weight = 5)
+			@Menu(label = "BVV - Show Sources", weight = 3)
 	},
-	description = "Sets the number of timepoints in one or several BVV Windows")
+	description = "Show sources in a BigVolumeViewer window")
+public class MultiBvvSourcesShowCommand implements BdvPlaygroundActionCommand {
 
-public class BvvSetTimepointsNumberCommand implements
-	BdvPlaygroundActionCommand
-{
+	@Parameter(label = "Select BVV Window",
+			description = "The BigVolumeViewer window where sources will be displayed")
+	BvvHandle bvvh;
 
-	@Parameter(label = "Select BVV Windows",
-			description = "The BigVolumeViewer windows whose timepoint range will be set",
-			persist = false)
-	BvvHandle[] bvvhs;
+	@Parameter(label = "Adjust View on Source",
+			description = "Centers and zooms the view to fit the added sources")
+	boolean adjust_view;
 
-	@Parameter(label = "Number of timepoints",
-			description = "Total number of timepoints available in the BVV windows",
-			min = "1")
-	int numberoftimepoints;
+	@Parameter(label = "Select source(s)",
+			description = "The source(s) to add")
+	SourceAndConverter<?>[] sources;
 
+	@Override
 	public void run() {
-		for (BvvHandle bvvh : bvvhs) {
-			bvvh.getViewerPanel().setNumTimepoints(numberoftimepoints);
-		}
-	}
 
+		for (SourceAndConverter<?> source : sources) {
+            bvvh.getConverterSetups().put(source, SourceServices
+                .getSourceService().getConverterSetup(source));
+            bvvh.getViewerPanel().state().addSource(source);
+
+            bvvh.getViewerPanel().state().setSourceActive(source, true);
+		}
+
+		if ((adjust_view) && (sources.length > 0)) {
+			new ViewerTransformAdjuster(new ViewerAdapter(bvvh), sources).run();
+		}
+
+	}
 }

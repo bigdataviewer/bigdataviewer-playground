@@ -33,7 +33,7 @@ import bdv.viewer.SourceAndConverter;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.source.display.BrightnessAdjuster;
 
@@ -47,11 +47,11 @@ import sc.fiji.bdvpg.source.display.BrightnessAdjuster;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
-			@Menu(label = "Source Display"),
-			@Menu(label = "Source - Brightness Adjust", weight = 2)
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = "Source", weight = 3),
+			@Menu(label = "Source - Set Brightness", weight = 2)
 	},
 	description = "Sets the display range (min and max) of one or more sources")
 public class SourceBrightnessAdjustCommand implements BdvPlaygroundActionCommand {

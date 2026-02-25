@@ -27,16 +27,14 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.command.view.bdv;
+package sc.fiji.bdvpg.command.view.bvv.settings;
 
-import bdv.util.BdvHandle;
-import bdv.viewer.SourceAndConverter;
+import bvv.vistools.BvvHandle;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
@@ -44,31 +42,33 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
-			@Menu(label = "BDV"),
-			@Menu(label = "BDV - Show Sources In Multiple Windows", weight = 3)
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = BdvPgMenus.BVVMenu, weight = BdvPgMenus.BVVW),
+			@Menu(label = "Settings", weight = 6),
+			@Menu(label = "BVV - Set Number Of Timepoints", weight = 5)
 	},
-	description = "Adds one or several sources into several existing BDV windows")
-public class MultiBdvSourcesAddCommand implements BdvPlaygroundActionCommand {
+	description = "Sets the number of timepoints in one or several BVV Windows")
 
-	@Parameter(label = "Select BDV Windows",
-			description = "The BigDataViewer windows where sources will be displayed",
+public class MultiBvvTimepointsSetCommand implements
+	BdvPlaygroundActionCommand
+{
+
+	@Parameter(label = "Select BVV Windows",
+			description = "The BigVolumeViewer windows whose timepoint range will be set",
 			persist = false)
-	BdvHandle[] bdvhs;
+	BvvHandle[] bvvhs;
 
-	@Parameter(label = "Select Source(s)",
-			description = "The source(s) to add to all selected BDV windows")
-	SourceAndConverter<?>[] sources;
+	@Parameter(label = "Number of timepoints",
+			description = "Total number of timepoints available in the BVV windows",
+			min = "1")
+	int numberoftimepoints;
 
-	@Parameter
-    SourceBdvDisplayService bdvDisplayService;
-
-	@Override
 	public void run() {
-		for (BdvHandle bdvh : bdvhs) {
-			bdvDisplayService.show(bdvh, sources);
+		for (BvvHandle bvvh : bvvhs) {
+			bvvh.getViewerPanel().setNumTimepoints(numberoftimepoints);
 		}
 	}
+
 }

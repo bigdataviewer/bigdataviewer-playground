@@ -27,22 +27,16 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.command.view.bvv;
+package sc.fiji.bdvpg.command.view.bdv;
 
+import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import bvv.vistools.BvvHandle;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceServices;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
-
-/**
- * Show sources in a BigVolumeViewer window - limited to 16 bit images
- */
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
@@ -50,41 +44,31 @@ import sc.fiji.bdvpg.viewers.ViewerAdapter;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
-			@Menu(label = "BVV"),
-			@Menu(label = "BVV - Show Sources", weight = 2)
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = BdvPgMenus.BDVMenu, weight = BdvPgMenus.BDVW),
+			@Menu(label = "BDV - Show Sources In Multiple Windows", weight = 4)
 	},
-	description = "Show sources in a BigVolumeViewer window")
-public class BvvSourcesAddCommand implements BdvPlaygroundActionCommand {
+	description = "Adds one or several sources into several existing BDV windows")
+public class MultiBdvSourcesShowCommand implements BdvPlaygroundActionCommand {
 
-	@Parameter(label = "Select BVV Window",
-			description = "The BigVolumeViewer window where sources will be displayed")
-	BvvHandle bvvh;
+	@Parameter(label = "Select BDV Windows",
+			description = "The BigDataViewer windows where sources will be displayed",
+			persist = false)
+	BdvHandle[] bdvhs;
 
-	@Parameter(label = "Adjust View on Source",
-			description = "Centers and zooms the view to fit the added sources")
-	boolean adjust_view;
-
-	@Parameter(label = "Select source(s)",
-			description = "The source(s) to add")
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to add to all selected BDV windows")
 	SourceAndConverter<?>[] sources;
+
+	@Parameter
+    SourceBdvDisplayService bdvDisplayService;
 
 	@Override
 	public void run() {
-
-		for (SourceAndConverter<?> source : sources) {
-            bvvh.getConverterSetups().put(source, SourceServices
-                .getSourceService().getConverterSetup(source));
-            bvvh.getViewerPanel().state().addSource(source);
-
-            bvvh.getViewerPanel().state().setSourceActive(source, true);
+		for (BdvHandle bdvh : bdvhs) {
+			bdvDisplayService.show(bdvh, sources);
 		}
-
-		if ((adjust_view) && (sources.length > 0)) {
-			new ViewerTransformAdjuster(new ViewerAdapter(bvvh), sources).run();
-		}
-
 	}
 }

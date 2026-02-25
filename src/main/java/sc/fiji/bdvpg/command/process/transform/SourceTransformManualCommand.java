@@ -37,7 +37,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewers.bdv.ManualRegistrationStarter;
 import sc.fiji.bdvpg.viewers.bdv.ManualRegistrationStopper;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.source.SourceHelper;
 import sc.fiji.bdvpg.source.transform.SourceTransformHelper;
@@ -57,9 +57,9 @@ import java.awt.event.WindowEvent;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-			@Menu(label = ScijavaBdvDefaults.ProcessMenu, weight = ScijavaBdvDefaults.ProcessW),
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ProcessMenu, weight = BdvPgMenus.ProcessW),
 			@Menu(label = "Transform"),
 			@Menu(label = "Source - Manual Transformation", weight = 3)
 	},

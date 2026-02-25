@@ -37,7 +37,7 @@ import org.scijava.command.CommandService;
 import org.scijava.plugin.PluginService;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.command.workspace.TreeSourceServiceShowCommand;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.services.SourceServices;
 
 import javax.swing.JComponent;
@@ -60,7 +60,7 @@ public class SourcePopupMenu {
 	/**
 	 * Builds the popup menu by discovering all {@link BdvPlaygroundActionCommand}
 	 * plugins via the SciJava context. The commands are sorted by their menu path
-	 * after stripping the {@link ScijavaBdvDefaults#RootMenu} prefix.
+	 * after stripping the {@link BdvPgMenus#RootMenu} prefix.
 	 *
 	 * @param sources_supplier supplier of sources to act on
 	 * @param context the SciJava context used to discover commands
@@ -72,7 +72,7 @@ public class SourcePopupMenu {
 
 		PluginService pluginService = context.getService(PluginService.class);
 		CommandService commandService = context.getService(CommandService.class);
-		String rootPrefix = ScijavaBdvDefaults.RootMenu;
+		String rootPrefix = BdvPgMenus.RootMenu;
 
 		this.popupActionWithPaths = pluginService
 			.getPluginsOfType(Command.class).stream()

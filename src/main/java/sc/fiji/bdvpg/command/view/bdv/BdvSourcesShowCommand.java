@@ -36,7 +36,7 @@ import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
@@ -47,11 +47,11 @@ import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
-			@Menu(label = "BDV"),
-			@Menu(label = "BDV - Show Sources", weight = 2)
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = BdvPgMenus.BDVMenu, weight = BdvPgMenus.BDVW),
+			@Menu(label = "BDV - Show Sources", weight = 3)
 	},
 	description = "Displays one or several sources into a new BDV window")
 public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {

@@ -34,7 +34,7 @@ import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.scijava.services.SourceService;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
@@ -43,9 +43,9 @@ import sc.fiji.bdvpg.scijava.services.SourceService;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 		menu = {
-				@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-				@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-				@Menu(label = ScijavaBdvDefaults.WorkspaceMenu, weight = ScijavaBdvDefaults.WorkspaceW),
+				@Menu(label = BdvPgMenus.L1),
+				@Menu(label = BdvPgMenus.L2),
+				@Menu(label = BdvPgMenus.WorkspaceMenu, weight = BdvPgMenus.WorkspaceW),
 				@Menu(label = "Tree - Inspect Sources", weight = -7)
 		},
 	//menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>Tree - Inspect Sources",

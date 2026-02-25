@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.viewers.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.viewers.bvv.BvvHandleHelper;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.viewers.ViewerAdapter;
 import sc.fiji.bdvpg.viewers.ViewerStateSyncStarter;
@@ -66,10 +66,10 @@ import java.awt.event.WindowEvent;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
-			@Menu(label = "Viewers - Synchronize States", weight = 2)
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = "Viewers - Synchronize States", weight = 5)
 	},
 	description = "Synchronizes the state of a set of BDV or BVV windows. A window popup should be closed" +
 		" to stop the synchronization")

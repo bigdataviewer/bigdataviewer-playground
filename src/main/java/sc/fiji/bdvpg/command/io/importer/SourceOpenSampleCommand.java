@@ -35,7 +35,7 @@ import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.log.SystemLogger;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.source.importer.MandelbrotSourceGetter;
 import sc.fiji.bdvpg.source.importer.VoronoiSourceGetter;
@@ -51,9 +51,9 @@ import sc.fiji.bdvpg.source.importer.Wave3DSourceGetter;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-			@Menu(label = ScijavaBdvDefaults.ImportMenu, weight = ScijavaBdvDefaults.ImportW),
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ImportMenu, weight = BdvPgMenus.ImportW),
 			@Menu(label = "Source - Open Sample Source", weight = 2)
 	},
 	description = "Creates a sample source for testing and demonstration purposes")

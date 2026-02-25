@@ -41,7 +41,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.widget.TextWidget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
@@ -60,9 +60,9 @@ import java.util.Set;
 @SuppressWarnings({ "CanBeFinal", "unused" })
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-		@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-		@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-		@Menu(label = ScijavaBdvDefaults.DatasetMenu, weight = ScijavaBdvDefaults.DatasetW),
+		@Menu(label = BdvPgMenus.L1),
+		@Menu(label = BdvPgMenus.L2),
+		@Menu(label = BdvPgMenus.DatasetMenu, weight = BdvPgMenus.DatasetW),
 		@Menu(label = "Transform Stack"),
 		@Menu(label = "Dataset - Add Transforms", weight = 2.0)
 	},

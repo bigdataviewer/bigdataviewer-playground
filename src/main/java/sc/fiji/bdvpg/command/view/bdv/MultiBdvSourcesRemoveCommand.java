@@ -34,7 +34,7 @@ import bdv.viewer.SourceAndConverter;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 
@@ -44,11 +44,11 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
-			@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-			@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-			@Menu(label = ScijavaBdvDefaults.ViewMenu, weight = ScijavaBdvDefaults.ViewW),
-			@Menu(label = "BDV"),
-			@Menu(label = "BDV - Remove Sources", weight = 4)
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = BdvPgMenus.BDVMenu, weight = BdvPgMenus.BDVW),
+			@Menu(label = "BDV - Remove Sources", weight = 6)
 	},
 	description = "Removes one or several sources from several existing BDV windows")
 public class MultiBdvSourcesRemoveCommand implements

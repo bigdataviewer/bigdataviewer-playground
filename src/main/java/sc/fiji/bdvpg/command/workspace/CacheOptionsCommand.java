@@ -39,14 +39,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.cache.GlobalCacheBuilder;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.ScijavaBdvDefaults;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.scijava.services.SourceService;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 		menu = {
-				@Menu(label = ScijavaBdvDefaults.RootMenuL1),
-				@Menu(label = ScijavaBdvDefaults.RootMenuL2),
-				@Menu(label = ScijavaBdvDefaults.WorkspaceMenu, weight = ScijavaBdvDefaults.WorkspaceW),
+				@Menu(label = BdvPgMenus.L1),
+				@Menu(label = BdvPgMenus.L2),
+				@Menu(label = BdvPgMenus.WorkspaceMenu, weight = BdvPgMenus.WorkspaceW),
 				@Menu(label = "Set Cache Options (Needs Restart)", weight = -0)
 		},
 	description = "Set BDV-Playground cache options (needs a restart)",
