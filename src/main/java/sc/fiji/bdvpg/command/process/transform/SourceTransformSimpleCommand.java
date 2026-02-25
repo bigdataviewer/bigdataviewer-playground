@@ -61,7 +61,7 @@ import sc.fiji.bdvpg.source.transform.SourceTransformHelper;
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ProcessMenu, weight = BdvPgMenus.ProcessW),
 			@Menu(label = "Transform"),
-			@Menu(label = "Source - Basic Transformation", weight = 2)
+			@Menu(label = "Source - Basic Transformation", weight = 1)
 	},
 	description = "Performs basic transformation (rotate / flip) along X Y Z axis for several sources. " +
 		"If global is selected, the transformation is performed relative to the global origin (0,0,0). " +

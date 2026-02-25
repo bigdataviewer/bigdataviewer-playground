@@ -27,7 +27,7 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.command.process.transform;
+package sc.fiji.bdvpg.command.process;
 
 import bdv.viewer.SourceAndConverter;
 import net.imglib2.realtransform.AffineTransform3D;
@@ -48,8 +48,7 @@ import sc.fiji.bdvpg.source.transform.SourceAffineTransformer;
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ProcessMenu, weight = BdvPgMenus.ProcessW),
-			@Menu(label = "Transform"),
-			@Menu(label = "Source - Wrap As Transformed Source", weight = 4)
+			@Menu(label = "Source - Wrap As Transformed Source", weight = 3)
 	},
 	description = "Wraps sources in a TransformedSource, allowing subsequent transformations to be applied")
 public class SourceWrapTransformCommand implements

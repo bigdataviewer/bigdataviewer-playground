@@ -46,7 +46,7 @@ import sc.fiji.bdvpg.source.importer.SourceDuplicator;
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ProcessMenu, weight = BdvPgMenus.ProcessW),
-			@Menu(label = "Source - Duplicate", weight = 2)
+			@Menu(label = "Source - Duplicate", weight = 1)
 	},
 	description = "Creates a copy of the selected sources")
 public class SourceDuplicateCommand implements BdvPlaygroundActionCommand {

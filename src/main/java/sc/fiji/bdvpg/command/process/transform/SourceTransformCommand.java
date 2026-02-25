@@ -50,7 +50,7 @@ import sc.fiji.bdvpg.source.transform.SourceTransformHelper;
 																							// are set by SciJava
 																							// pre-processors
 
-@Plugin(type = BdvPlaygroundActionCommand.class,
+/*@Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
@@ -58,7 +58,7 @@ import sc.fiji.bdvpg.source.transform.SourceTransformHelper;
 			@Menu(label = "Transform"),
 			@Menu(label = "Source - Affine Transformation", weight = 1)
 	},
-	description = "Applies an affine transformation on several sources.")
+	description = "Applies an affine transformation on several sources.")*/
 
 public class SourceTransformCommand implements BdvPlaygroundActionCommand {
 

@@ -46,7 +46,7 @@ import sc.fiji.bdvpg.scijava.services.SourceService;
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ProcessMenu, weight = BdvPgMenus.ProcessW),
-			@Menu(label = "Source - Add Metadata", weight = 4)
+			@Menu(label = "Source - Add Metadata", weight = 0)
 	},
 	description = "Adds a metadata string to selected sources")
 

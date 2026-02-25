@@ -56,7 +56,7 @@ import sc.fiji.bdvpg.source.importer.EmptySourceCreator;
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ProcessMenu, weight = BdvPgMenus.ProcessW),
 			@Menu(label = "Fuse & Resample"),
-			@Menu(label = "Source - Create Resampling Grid From Source", weight = 2)
+			@Menu(label = "Source - Create Resampling Grid From Source", weight = 1)
 	},
 	description = "Defines an empty source which occupied the same volume as a model source but with a potentially" +
 		" different voxel size. Works with a single timepoint.")
