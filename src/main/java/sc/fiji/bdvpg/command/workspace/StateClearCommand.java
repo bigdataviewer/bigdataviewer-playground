@@ -49,6 +49,7 @@ import java.util.List;
 				@Menu(label = BdvPgMenus.L1),
 				@Menu(label = BdvPgMenus.L2),
 				@Menu(label = BdvPgMenus.WorkspaceMenu, weight = BdvPgMenus.WorkspaceW),
+				@Menu(label = "State", weight = 0),
 				@Menu(label = "State - Clear", weight = -8)
 		},
 	//menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>State - Clear State",

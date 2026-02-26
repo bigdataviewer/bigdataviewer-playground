@@ -50,7 +50,7 @@ import javax.swing.SwingUtilities;
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
 			@Menu(label = "BDV"),
-			@Menu(label = "Settings"),
+			@Menu(label = "Settings", weight = -2),
 			@Menu(label = "BDV - Add Z Slider", weight = 6)
 	},
 	description = "Adds a z slider onto BDV windows")

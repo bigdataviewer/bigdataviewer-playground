@@ -47,7 +47,7 @@ import sc.fiji.bdvpg.scijava.services.SourceService;
 				@Menu(label = BdvPgMenus.L1),
 				@Menu(label = BdvPgMenus.L2),
 				@Menu(label = BdvPgMenus.WorkspaceMenu, weight = BdvPgMenus.WorkspaceW),
-				@Menu(label = "Set Cache Options (Needs Restart)", weight = -0)
+				@Menu(label = "Set Cache Options (Needs Restart)", weight = 3)
 		},
 	description = "Set BDV-Playground cache options (needs a restart)",
 	initializer = "initialize")

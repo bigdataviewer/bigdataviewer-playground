@@ -48,7 +48,7 @@ import sc.fiji.bdvpg.source.transform.SourceResampler;
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ProcessMenu, weight = BdvPgMenus.ProcessW),
-			@Menu(label = "Fuse & Resample"),
+			@Menu(label = "Fuse & Resample", weight = -1),
 			@Menu(label = "Source - Resample Source", weight = 2)
 	},
 	description = "Resamples sources to match the voxel grid of a model source")

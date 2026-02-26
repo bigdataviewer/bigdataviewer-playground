@@ -286,27 +286,38 @@ public class SourceTree {
 			}
 		});
 
-		JComponent child = popup;
-
-		boolean found = false;
-		for (int i = 0; i<popup.getComponentCount(); i++) {
+		// Find or create Workspace submenu
+		JMenu workspaceMenu = null;
+		for (int i = 0; i < popup.getComponentCount(); i++) {
 			if (popup.getComponent(i) instanceof JMenu) {
 				if (((JMenu) popup.getComponent(i)).getText().equals("Workspace")) {
-					child = (JMenu) popup.getComponent(i);
-					found = true;
+					workspaceMenu = (JMenu) popup.getComponent(i);
 					break;
 				}
 			}
 		}
-
-		if (!found) {
-			JMenu menu = new JMenu("Workspace");
-			popup.add(menu);
-			child = menu;
+		if (workspaceMenu == null) {
+			workspaceMenu = new JMenu("Workspace");
+			popup.add(workspaceMenu);
 		}
 
-		child.add(deleteInspectNodesMenuItem);
-		child.add(addShowAllFilterNodeMenuItem);
+		// Find or create Tree submenu inside Workspace
+		JMenu treeMenu = null;
+		for (int i = 0; i < workspaceMenu.getMenuComponentCount(); i++) {
+			if (workspaceMenu.getMenuComponent(i) instanceof JMenu) {
+				if (((JMenu) workspaceMenu.getMenuComponent(i)).getText().equals("Tree")) {
+					treeMenu = (JMenu) workspaceMenu.getMenuComponent(i);
+					break;
+				}
+			}
+		}
+		if (treeMenu == null) {
+			treeMenu = new JMenu("Tree");
+			workspaceMenu.add(treeMenu);
+		}
+
+		treeMenu.add(deleteInspectNodesMenuItem);
+		treeMenu.add(addShowAllFilterNodeMenuItem);
 	}
 
 	/**

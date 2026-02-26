@@ -46,7 +46,7 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
 			@Menu(label = "BDV"),
-			@Menu(label = "Overlay"),
+			@Menu(label = "Overlay", weight = 0),
 			@Menu(label = "BDV - Add Debug Overlay", weight = 1)
 	},
 	description = "Adds the overlay of the bdv tiled renderer")

@@ -46,6 +46,7 @@ import sc.fiji.bdvpg.scijava.services.SourceService;
 				@Menu(label = BdvPgMenus.L1),
 				@Menu(label = BdvPgMenus.L2),
 				@Menu(label = BdvPgMenus.WorkspaceMenu, weight = BdvPgMenus.WorkspaceW),
+				@Menu(label = "Tree", weight = 1),
 				@Menu(label = "Tree - Inspect Sources", weight = -7)
 		},
 	//menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>Tree - Inspect Sources",

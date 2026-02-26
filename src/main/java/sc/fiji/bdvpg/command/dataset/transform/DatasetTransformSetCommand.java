@@ -68,7 +68,7 @@ import java.util.Set;
 		@Menu(label = BdvPgMenus.L1),
 		@Menu(label = BdvPgMenus.L2),
 		@Menu(label = "Dataset"),
-		@Menu(label = "Transform Stack", weight = 10),
+		@Menu(label = "Transform Stack", weight = -1),
 		@Menu(label = "Dataset - Set Transforms", weight = 3.0)
 	},
 	description = "Sets (overrides) transforms at specified timepoints and chain indices")

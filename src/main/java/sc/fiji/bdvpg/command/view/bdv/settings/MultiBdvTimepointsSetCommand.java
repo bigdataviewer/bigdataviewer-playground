@@ -46,7 +46,7 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
 			@Menu(label = "BDV"),
-			@Menu(label = "Settings"),
+			@Menu(label = "Settings", weight = -2),
 			@Menu(label = "BDV - Set Number Of Timepoints", weight = 2)
 	},
 	description = "Sets the number of timepoints in one or several BDV Windows")

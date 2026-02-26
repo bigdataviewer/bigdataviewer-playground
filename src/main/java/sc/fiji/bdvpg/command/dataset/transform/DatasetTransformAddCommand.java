@@ -63,7 +63,7 @@ import java.util.Set;
 		@Menu(label = BdvPgMenus.L1),
 		@Menu(label = BdvPgMenus.L2),
 		@Menu(label = BdvPgMenus.DatasetMenu, weight = BdvPgMenus.DatasetW),
-		@Menu(label = "Transform Stack", weight = 10),
+		@Menu(label = "Transform Stack", weight = -1),
 		@Menu(label = "Dataset - Add Transforms", weight = 2.0)
 	},
 	description = "Adds a transform to the chain at specified timepoints (prepend or append)")

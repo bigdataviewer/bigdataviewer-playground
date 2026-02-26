@@ -60,7 +60,7 @@ import java.awt.event.WindowEvent;
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ProcessMenu, weight = BdvPgMenus.ProcessW),
-			@Menu(label = "Transform"),
+			@Menu(label = "Transform", weight = -2),
 			@Menu(label = "Source - Interactive Transformation", weight = 2)
 	},
 	description = "Manual transformation of selected sources. Works only with a single bdv window (the active one)." +

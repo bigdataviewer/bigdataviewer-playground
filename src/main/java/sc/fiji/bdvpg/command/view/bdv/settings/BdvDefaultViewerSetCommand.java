@@ -51,7 +51,7 @@ import java.util.Arrays;
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
 			@Menu(label = BdvPgMenus.BDVMenu, weight = BdvPgMenus.BDVW),
-			@Menu(label = "Settings"),
+			@Menu(label = "Settings", weight = -2),
 			@Menu(label = "BDV - Set Style (Default)", weight = 0)
 	},
 	description = "Sets the default preferences for newly created BDV windows")

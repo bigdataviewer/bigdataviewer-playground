@@ -47,7 +47,7 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
 			@Menu(label = "BDV"),
-			@Menu(label = "Settings"),
+			@Menu(label = "Settings", weight = -2),
 			@Menu(label = "BDV - Preferences - Set (Key) Bindings", weight = 4)
 	},
 	description = "Sets actions linked to key / mouse event in BDV")

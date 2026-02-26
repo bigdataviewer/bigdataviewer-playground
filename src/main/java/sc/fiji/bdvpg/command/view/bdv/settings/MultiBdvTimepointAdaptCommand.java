@@ -50,7 +50,7 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
 			@Menu(label = "BDV"),
 			@Menu(label = "Settings"),
-			@Menu(label = "BDV - Adapt BDV Number Of Timepoints To Sources", weight = 1)
+			@Menu(label = "BDV - Adapt Number Of Timepoints To Sources", weight = 1)
 	},
 	description = "Adapts the bdv windows timepoints to the number of timepoints present in their sources.")
 public class MultiBdvTimepointAdaptCommand implements BdvPlaygroundActionCommand {

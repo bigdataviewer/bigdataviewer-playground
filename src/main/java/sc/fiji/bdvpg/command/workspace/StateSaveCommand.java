@@ -47,6 +47,7 @@ import java.io.File;
 				@Menu(label = BdvPgMenus.L1),
 				@Menu(label = BdvPgMenus.L2),
 				@Menu(label = BdvPgMenus.WorkspaceMenu, weight = BdvPgMenus.WorkspaceW),
+				@Menu(label = "State", weight = 0),
 				@Menu(label = "State - Save", weight = -9)
 		},
 	description = "Saves the current Bdv Playground state to a JSON file")

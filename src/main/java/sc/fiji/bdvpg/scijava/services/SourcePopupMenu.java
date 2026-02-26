@@ -181,7 +181,7 @@ public class SourcePopupMenu {
 		int idx = 0;
 		while (idx < pathsAndAction.length - 1) {
 			String currentPath = pathsAndAction[idx];
-			Enumeration en = currentNode.depthFirstEnumeration();
+			Enumeration en = currentNode.children();
 			boolean found = false;
 			while (en.hasMoreElements()) {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) en.nextElement();

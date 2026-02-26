@@ -52,6 +52,7 @@ import java.util.Set;
 				@Menu(label = BdvPgMenus.L1),
 				@Menu(label = BdvPgMenus.L2),
 				@Menu(label = BdvPgMenus.WorkspaceMenu, weight = BdvPgMenus.WorkspaceW),
+				@Menu(label = "Tree", weight = 1),
 				@Menu(label = "Tree - Make Global Source Group", weight = -6)
 		},
 

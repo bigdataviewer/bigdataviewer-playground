@@ -51,7 +51,7 @@ import java.awt.Font;
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
 			@Menu(label = "BDV"),
-			@Menu(label = "Overlay"),
+			@Menu(label = "Overlay", weight = 0),
 			@Menu(label = "BDV - Add Sources Name Overlay", weight = 3)
 	},
 	description = "Adds a source name overlay onto BDV windows")
