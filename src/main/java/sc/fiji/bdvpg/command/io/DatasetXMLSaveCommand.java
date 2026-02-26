@@ -52,7 +52,7 @@ import java.io.File;
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.DatasetMenu, weight = BdvPgMenus.DatasetW),
-			@Menu(label = "Dataset - Save XML Dataset", weight = 1)
+			@Menu(label = "Dataset - Save XML Dataset", weight = 2)
 	},
 	description = "Saves the Dataset associated with sources to an XML file")
 public class DatasetXMLSaveCommand implements BdvPlaygroundActionCommand {

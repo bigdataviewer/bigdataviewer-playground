@@ -54,7 +54,7 @@ import sc.fiji.bdvpg.source.importer.Wave3DSourceGetter;
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ImportMenu, weight = BdvPgMenus.ImportW),
-			@Menu(label = "Source - Open Sample Source", weight = 2)
+			@Menu(label = "Source - Open Sample Source", weight = 20)
 	},
 	description = "Creates a sample source for testing and demonstration purposes")
 public class SourceOpenSampleCommand implements BdvPlaygroundActionCommand {

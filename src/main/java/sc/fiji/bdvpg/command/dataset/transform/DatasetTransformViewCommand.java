@@ -59,7 +59,7 @@ import javax.swing.SwingUtilities;
 		@Menu(label = BdvPgMenus.L1),
 		@Menu(label = BdvPgMenus.L2),
 		@Menu(label = "Dataset"),
-		@Menu(label = "Transform Stack"),
+		@Menu(label = "Transform Stack", weight = 10),
 		@Menu(label = "Dataset - View Transforms", weight = 1.0)
 	},
 	description = "Opens a viewer to explore SpimData transforms with " +

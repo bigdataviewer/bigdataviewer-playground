@@ -78,10 +78,8 @@ public class SourcePopupMenu {
 			.getPluginsOfType(Command.class).stream()
 			.filter(pi -> !pi.getClassName().equals(TreeSourceServiceShowCommand.class.getName()))
 			.map(pi -> commandService.getCommand(pi.getClassName()))
-			.filter(ci -> ci != null && ci.getMenuPath() != null && !ci.getMenuPath()
-				.isEmpty())
-			.filter(ci -> ci.getMenuPath().stream().map(MenuEntry::getName)
-				.collect(Collectors.joining(">")).startsWith(rootPrefix))
+			.filter(ci -> ci != null && ci.getMenuPath() != null && !ci.getMenuPath().isEmpty())
+			.filter(ci -> ci.getMenuPath().stream().map(MenuEntry::getName).collect(Collectors.joining(">")).startsWith(rootPrefix))
 			.sorted((a, b) -> {
 				int minLen = Math.min(a.getMenuPath().size(), b.getMenuPath().size());
 				for (int i = 0; i < minLen; i++) {
@@ -97,8 +95,7 @@ public class SourcePopupMenu {
 				}
 				return Integer.compare(a.getMenuPath().size(), b.getMenuPath().size());
 			})
-			.map(ci -> ci.getMenuPath().stream().map(MenuEntry::getName)
-				.collect(Collectors.joining(">")).substring(rootPrefix.length()))
+			.map(ci -> ci.getMenuPath().stream().map(MenuEntry::getName).collect(Collectors.joining(">")).substring(rootPrefix.length()))
 			.filter(s -> !s.isEmpty())
 			.toArray(String[]::new);
 
