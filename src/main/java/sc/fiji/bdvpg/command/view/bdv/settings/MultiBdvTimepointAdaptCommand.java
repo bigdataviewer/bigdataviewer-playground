@@ -48,7 +48,7 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
-			@Menu(label = "BDV"),
+			@Menu(label = BdvPgMenus.BDVMenu, weight = BdvPgMenus.BDVW),
 			@Menu(label = "Settings"),
 			@Menu(label = "BDV - Adapt Number Of Timepoints To Sources", weight = 1)
 	},

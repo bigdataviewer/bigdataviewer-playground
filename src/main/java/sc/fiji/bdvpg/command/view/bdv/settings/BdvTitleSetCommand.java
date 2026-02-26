@@ -46,7 +46,7 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
-			@Menu(label = "BDV"),
+			@Menu(label = BdvPgMenus.BDVMenu, weight = BdvPgMenus.BDVW),
 			@Menu(label = "Settings", weight = -2),
 			@Menu(label = "BDV - Set Title", weight = 3)
 	},

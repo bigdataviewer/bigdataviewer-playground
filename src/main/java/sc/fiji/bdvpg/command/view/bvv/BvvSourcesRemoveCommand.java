@@ -49,7 +49,7 @@ import java.util.Arrays;
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
-			@Menu(label = "BVV"),
+			@Menu(label = BdvPgMenus.BVVMenu, weight = BdvPgMenus.BVVW),
 			@Menu(label = "BVV - Remove Sources", weight = 4)
 	},
 	description = "Removes one or several sources from an existing BVV window")

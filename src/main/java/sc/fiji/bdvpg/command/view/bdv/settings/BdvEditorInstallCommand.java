@@ -51,7 +51,7 @@ import javax.swing.SwingUtilities;
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
-			@Menu(label = "BDV"),
+			@Menu(label = BdvPgMenus.BDVMenu, weight = BdvPgMenus.BDVW),
 			@Menu(label = "Settings", weight = -2),
 			@Menu(label = "BDV - Add Editor", weight = 7)
 	},
