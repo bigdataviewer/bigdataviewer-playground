@@ -218,6 +218,12 @@ public class SourceTreeView implements SourceTreeModelListener {
             allSources.addAll(newSources);
             List<SourceAndConverter<?>> sortedSources = SourceHelper.sortDefaultGeneric(allSources);
 
+            // Sort new sources by their position in the combined sorted list
+            // so that insertions happen in ascending index order.
+            // This is required because the tree index (filterChildCount + sortedIndex)
+            // is only correct when sources are inserted from lowest to highest position.
+            newSources.sort(Comparator.comparingInt(sortedSources::indexOf));
+
             // Find insertion points for each new source
             List<int[]> insertions = new ArrayList<>();
             for (SourceAndConverter<?> source : newSources) {

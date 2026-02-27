@@ -60,7 +60,7 @@ import java.util.Map;
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ProcessMenu, weight = BdvPgMenus.ProcessW),
-			@Menu(label = "Source - Duplicate With New LUT", weight = 2)
+			@Menu(label = "Source - Duplicate With LUT", weight = 2)
 	},
 	initializer = "init",
 	description = "Duplicate one or several sources and sets an (identical) Look Up Table for these duplicated sources")

@@ -48,7 +48,7 @@ import sc.fiji.bdvpg.scijava.services.tree.SourceTreeModel;
 				@Menu(label = BdvPgMenus.L2),
 				@Menu(label = BdvPgMenus.WorkspaceMenu, weight = BdvPgMenus.WorkspaceW),
 				@Menu(label = "Tree", weight = 1),
-				@Menu(label = "Tree - Make Metadata Filter Node", weight = -5)
+				@Menu(label = "Tree - Filter By Metadata", weight = -5)
 		},
 		//menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>Tree - Make Metadata Filter Node",
 	description = "Adds a node in the tree view which selects the sources which contain a certain key metadata and which matches a certain regular expression")
