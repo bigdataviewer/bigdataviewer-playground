@@ -49,7 +49,7 @@ import java.util.Arrays;
 	menu = {
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
-			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
 			@Menu(label = BdvPgMenus.BDVMenu, weight = BdvPgMenus.BDVW),
 			@Menu(label = "Settings", weight = -2),
 			@Menu(label = "BDV - Set Style (Default)", weight = 0)

@@ -48,7 +48,7 @@ import sc.fiji.bdvpg.source.transform.SourceAffineTransformer;
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.ProcessMenu, weight = BdvPgMenus.ProcessW),
-			@Menu(label = "Source - Wrap As Transformed Source", weight = 3)
+			@Menu(label = "Source - Duplicate As Transformed Source", weight = 3)
 	},
 	description = "Wraps sources in a TransformedSource, allowing subsequent transformations to be applied")
 public class SourceWrapTransformCommand implements

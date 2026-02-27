@@ -29,7 +29,6 @@
 
 package sc.fiji.bdvpg.command.view.bvv;
 
-import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import bvv.vistools.BvvHandle;
 import org.scijava.plugin.Menu;
@@ -48,7 +47,7 @@ import java.util.Arrays;
 	menu = {
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
-			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
 			@Menu(label = BdvPgMenus.BVVMenu, weight = BdvPgMenus.BVVW),
 			@Menu(label = "BVV - Remove Sources", weight = 4)
 	},

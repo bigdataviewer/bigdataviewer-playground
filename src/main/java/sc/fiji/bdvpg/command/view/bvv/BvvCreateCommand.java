@@ -47,7 +47,7 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 	menu = {
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
-			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
 			@Menu(label = BdvPgMenus.BVVMenu, weight = BdvPgMenus.BVVW),
 			@Menu(label = "BVV - Create", weight = 1)
 	},

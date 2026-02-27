@@ -49,7 +49,7 @@ import java.awt.Font;
 	menu = {
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
-			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
 			@Menu(label = BdvPgMenus.BDVMenu, weight = BdvPgMenus.BDVW),
 			@Menu(label = "Overlay", weight = 0),
 			@Menu(label = "BDV - Add Sources Name Overlay", weight = 3)

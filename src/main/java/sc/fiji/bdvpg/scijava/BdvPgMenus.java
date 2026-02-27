@@ -43,8 +43,8 @@ public class BdvPgMenus {
 	final public static int WorkspaceW = -10;
 	final public static String ImportMenu = "Import";
 	final public static int ImportW = -8;
-	final public static String ViewMenu = "View";
-	final public static int ViewW = -7;
+	final public static String DisplayMenu = "Display";
+	final public static int DisplayW = -7;
 	final public static String DatasetMenu = "Dataset";
 	final public static int DatasetW = -9;
 	final public static String ProcessMenu = "Process";

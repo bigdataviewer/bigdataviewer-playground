@@ -52,7 +52,7 @@ import sc.fiji.bdvpg.viewers.ViewerAdapter;
 	menu = {
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
-			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
 			@Menu(label = BdvPgMenus.BVVMenu, weight = BdvPgMenus.BVVW),
 			@Menu(label = "BVV - Show Sources", weight = 3)
 	},

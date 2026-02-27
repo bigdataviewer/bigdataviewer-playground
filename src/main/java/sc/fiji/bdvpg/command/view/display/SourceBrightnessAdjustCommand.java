@@ -49,7 +49,7 @@ import sc.fiji.bdvpg.source.display.BrightnessAdjuster;
 	menu = {
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
-			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
 			@Menu(label = "Source", weight = 3),
 			@Menu(label = "Source - Set Brightness", weight = 2)
 	},

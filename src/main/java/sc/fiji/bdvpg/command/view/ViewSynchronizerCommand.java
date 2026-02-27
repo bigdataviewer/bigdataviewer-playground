@@ -70,7 +70,7 @@ import java.awt.event.WindowEvent;
 	menu = {
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
-			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
 			@Menu(label = "Viewers - Synchronize Views", weight = 4)
 	},
 	description = "Synchronizes the view of a set of BDV or BVV windows. A window popup should be closed" +

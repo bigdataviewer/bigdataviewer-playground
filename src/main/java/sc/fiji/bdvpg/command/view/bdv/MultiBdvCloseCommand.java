@@ -46,7 +46,7 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 	menu = {
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
-			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
 			@Menu(label = BdvPgMenus.BDVMenu, weight = BdvPgMenus.BDVW),
 			@Menu(label = "BDV - Close", weight = 7)
 	},

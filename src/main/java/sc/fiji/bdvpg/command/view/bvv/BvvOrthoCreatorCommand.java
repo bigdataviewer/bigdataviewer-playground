@@ -55,7 +55,7 @@ import java.awt.GraphicsEnvironment;
 	menu = {
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
-			@Menu(label = BdvPgMenus.ViewMenu, weight = BdvPgMenus.ViewW),
+			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
 			@Menu(label = BdvPgMenus.BVVMenu, weight = BdvPgMenus.BVVW),
 			@Menu(label = "BVV - Create Orthogonal Views", weight = 2)
 	},
