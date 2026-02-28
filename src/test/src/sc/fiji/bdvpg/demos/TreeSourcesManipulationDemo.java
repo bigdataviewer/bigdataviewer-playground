@@ -34,6 +34,7 @@ import net.imagej.ImageJ;
 import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.scijava.services.SourceService;
+import sc.fiji.bdvpg.scijava.services.tree.FilterNode;
 import sc.fiji.bdvpg.scijava.services.tree.SourceTree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -57,13 +58,13 @@ public class TreeSourcesManipulationDemo {
         int nChildren = model.getChildCount(root);
         IJ.log("There are "+nChildren+" children in the root node");
 
-        // Easier interface:
-        SourceTree.Node r = treeUI.getRoot();
+        // Easier interface - uses the model directly via FilterNode:
+        FilterNode r = treeUI.getRoot();
 
         IJ.log("There are "+r.sources().length+" sources in the whole tree.");
-        IJ.log("The node "+r+" has "+r.children().size()+" children");
+        IJ.log("The node "+r+" has "+r.getChildren().size()+" children");
         IJ.log("Their names are:");
-        r.children().forEach(n -> IJ.log("- "+n.name()+" | path = "+n.path()));
+        r.getChildren().forEach(n -> IJ.log("- "+n.getName()+" | path = "+n.path()));
         IJ.log("nSources = "+r.child("demoSlice.xml").sources().length);
 
         DemoHelper.shot("TreeSourcesManipulationDemo");

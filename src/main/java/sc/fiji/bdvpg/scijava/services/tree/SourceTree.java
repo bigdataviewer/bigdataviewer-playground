@@ -47,7 +47,6 @@ import sc.fiji.bdvpg.scijava.services.tree.swingdnd.SourceServiceTreeTransferHan
 import sc.fiji.bdvpg.source.SourceHelper;
 
 import javax.swing.DropMode;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -597,86 +596,8 @@ public class SourceTree {
 		sourceTreeView.getTreeModel().nodesWereInserted(parent, new int[]{parent.getChildCount() - 1});
 	}
 
-	public Node getRoot() {
-		return new Node(sourceTreeView.getTreeRoot());
-	}
-
-	public static class Node {
-
-		private final TreeNode node;
-
-		protected Node(TreeNode node) {
-			this.node = node;
-		}
-
-		public Node child(int index) {
-			return new Node(node.getChildAt(index));
-		}
-
-		public Node child(String name) {
-			final Enumeration children = node.children();
-			while (children.hasMoreElements()) {
-				TreeNode testNode = (TreeNode) children.nextElement();
-				if (testNode.toString().equals(name)) {
-					return new Node(testNode);
-				}
-			}
-			return null;
-		}
-
-		public List<Node> children() {
-			ArrayList<Node> list = new ArrayList<>(node.getChildCount());
-			final Enumeration children = node.children();
-			while (children.hasMoreElements()) {
-				TreeNode n = (TreeNode) children.nextElement();
-				list.add(new Node(n));
-			}
-			return list;
-		}
-
-		public String name() {
-			return node.toString();
-		}
-
-		@Override
-		public String toString() {
-			return name();
-		}
-
-		public String path() {
-			String fullPath = name();
-			Node parent = parent();
-			while (parent != null) {
-				fullPath = parent().name() + ">" + fullPath;
-				parent = parent.parent();
-			}
-			return fullPath;
-		}
-
-		public SourceAndConverter<?>[] sources() {
-			Set<SourceAndConverter<?>> collected = new HashSet<>();
-			collectSources(node, collected);
-            return SourceHelper.sortDefaultGeneric(collected).toArray(
-                    new SourceAndConverter<?>[0]);
-		}
-
-		private static void collectSources(TreeNode node, Set<SourceAndConverter<?>> collected) {
-			if (node instanceof DefaultMutableTreeNode) {
-				Object userObject = ((DefaultMutableTreeNode) node).getUserObject();
-				if (userObject instanceof RenamableSource) {
-					collected.add(((RenamableSource) userObject).source);
-					return;
-				}
-			}
-			for (int i = 0; i < node.getChildCount(); i++) {
-				collectSources(node.getChildAt(i), collected);
-			}
-		}
-
-		public Node parent() {
-			if (node.getParent() == null) return null;
-			return new Node(node.getParent());
-		}
+	public FilterNode getRoot() {
+		return sourceTreeModel.getRoot();
 	}
 
 	/**

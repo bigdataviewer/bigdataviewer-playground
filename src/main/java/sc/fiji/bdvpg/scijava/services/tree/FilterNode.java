@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.scijava.services.tree;
 
 import bdv.viewer.SourceAndConverter;
+import sc.fiji.bdvpg.source.SourceHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -372,6 +373,50 @@ public class FilterNode {
     synchronized void clearSources() {
         inputSources.clear();
         outputSources.clear();
+    }
+
+    // ============ Convenience methods for programmatic tree navigation ============
+
+    /**
+     * Finds a direct child by name.
+     *
+     * @param childName the name to match
+     * @return the first child with the given name, or null if not found
+     */
+    public synchronized FilterNode child(String childName) {
+        for (FilterNode child : children) {
+            if (child.getName().equals(childName)) {
+                return child;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns all sources that pass this node's filter, sorted.
+     * Since sources propagate down the tree, this includes all sources
+     * visible in any descendant of this node.
+     *
+     * @return sorted array of all sources in this subtree
+     */
+    public SourceAndConverter<?>[] sources() {
+        return SourceHelper.sortDefaultGeneric(getOutputSources()).toArray(
+                new SourceAndConverter<?>[0]);
+    }
+
+    /**
+     * Returns the path from root to this node, with names separated by "&gt;".
+     *
+     * @return the path string
+     */
+    public String path() {
+        String fullPath = name;
+        FilterNode current = parent;
+        while (current != null) {
+            fullPath = current.getName() + ">" + fullPath;
+            current = current.getParent();
+        }
+        return fullPath;
     }
 
     @Override
