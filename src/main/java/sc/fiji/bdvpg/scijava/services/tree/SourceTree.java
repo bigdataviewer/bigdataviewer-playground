@@ -654,15 +654,23 @@ public class SourceTree {
 		}
 
 		public SourceAndConverter<?>[] sources() {
+			Set<SourceAndConverter<?>> collected = new HashSet<>();
+			collectSources(node, collected);
+            return SourceHelper.sortDefaultGeneric(collected).toArray(
+                    new SourceAndConverter<?>[0]);
+		}
+
+		private static void collectSources(TreeNode node, Set<SourceAndConverter<?>> collected) {
 			if (node instanceof DefaultMutableTreeNode) {
-				DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) node;
-				Object userObject = dmtn.getUserObject();
+				Object userObject = ((DefaultMutableTreeNode) node).getUserObject();
 				if (userObject instanceof RenamableSource) {
-					return new SourceAndConverter[] {
-						((RenamableSource) userObject).source};
+					collected.add(((RenamableSource) userObject).source);
+					return;
 				}
 			}
-			return null;
+			for (int i = 0; i < node.getChildCount(); i++) {
+				collectSources(node.getChildAt(i), collected);
+			}
 		}
 
 		public Node parent() {
