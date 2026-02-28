@@ -336,6 +336,149 @@ public class SourceTreeModelTest {
         assertEquals("Parent should still have 1 child", 1, parent.getChildCount());
     }
 
+    // ==================== 1.6 FilterNode - Convenience navigation methods ====================
+
+    // --- child(String) ---
+
+    @Test
+    public void filterNode_child_findsExistingChild() {
+        FilterNode parent = new FilterNode("Parent", source -> true, false);
+        FilterNode child1 = new FilterNode("Child1", source -> true, true);
+        FilterNode child2 = new FilterNode("Child2", source -> true, true);
+        parent.addChild(child1);
+        parent.addChild(child2);
+
+        assertSame("child('Child1') should return Child1", child1, parent.child("Child1"));
+        assertSame("child('Child2') should return Child2", child2, parent.child("Child2"));
+    }
+
+    @Test
+    public void filterNode_child_returnsNullForUnknown() {
+        FilterNode parent = new FilterNode("Parent", source -> true, false);
+        parent.addChild(new FilterNode("Child1", source -> true, true));
+
+        assertNull("child('NonExistent') should return null", parent.child("NonExistent"));
+    }
+
+    @Test
+    public void filterNode_child_emptyNode() {
+        FilterNode node = new FilterNode("Empty", source -> true, true);
+
+        assertNull("child('anything') on childless node should return null",
+                node.child("anything"));
+    }
+
+    // --- getAt(String) ---
+
+    @Test
+    public void filterNode_getAt_delegatesToChild() {
+        FilterNode parent = new FilterNode("Parent", source -> true, false);
+        FilterNode child = new FilterNode("X", source -> true, true);
+        parent.addChild(child);
+
+        assertSame("getAt('X') should return same as child('X')",
+                parent.child("X"), parent.getAt("X"));
+        assertNull("getAt for missing child should return null, same as child()",
+                parent.getAt("Missing"));
+    }
+
+    // --- sources() ---
+
+    @Test
+    public void filterNode_sources_returnsOutputSources() {
+        FilterNode node = new FilterNode("Test", source -> true, true);
+        SourceAndConverter<?> s1 = createTestSource("S1");
+        SourceAndConverter<?> s2 = createTestSource("S2");
+        node.addSource(s1);
+        node.addSource(s2);
+
+        SourceAndConverter<?>[] result = node.sources();
+
+        assertEquals("sources() should return 2 sources", 2, result.length);
+        Set<SourceAndConverter<?>> resultSet = new LinkedHashSet<>(Arrays.asList(result));
+        assertTrue("sources() should contain S1", resultSet.contains(s1));
+        assertTrue("sources() should contain S2", resultSet.contains(s2));
+    }
+
+    @Test
+    public void filterNode_sources_emptyNode() {
+        FilterNode node = new FilterNode("Test", source -> true, true);
+
+        SourceAndConverter<?>[] result = node.sources();
+
+        assertNotNull("sources() should not return null", result);
+        assertEquals("sources() on empty node should return empty array", 0, result.length);
+    }
+
+    @Test
+    public void filterNode_sources_parentContainsChildSources() {
+        // Build parent->child hierarchy; parent accepts all, child accepts all
+        FilterNode parent = new FilterNode("Parent", source -> true, false);
+        FilterNode child = new FilterNode("Child", source -> true, true);
+        parent.addChild(child);
+
+        SourceAndConverter<?> s1 = createTestSource("S1");
+        // Add to parent — passes filter → in parent's outputSources
+        parent.addSource(s1);
+        // Propagate to child (as SourceTreeModel would)
+        child.addSource(s1);
+
+        SourceAndConverter<?>[] parentSources = parent.sources();
+        SourceAndConverter<?>[] childSources = child.sources();
+
+        assertTrue("Parent sources() should contain s1",
+                Arrays.asList(parentSources).contains(s1));
+        assertTrue("Child sources() should contain s1",
+                Arrays.asList(childSources).contains(s1));
+    }
+
+    @Test
+    public void filterNode_sources_excludesFilteredSources() {
+        // Filter rejects sources whose name starts with "Reject"
+        FilterNode node = new FilterNode("Test",
+                source -> !source.getSpimSource().getName().startsWith("Reject"), true);
+
+        SourceAndConverter<?> accepted = createTestSource("Accepted");
+        SourceAndConverter<?> rejected = createTestSource("Rejected");
+        node.addSource(accepted);
+        node.addSource(rejected);
+
+        SourceAndConverter<?>[] result = node.sources();
+
+        assertEquals("sources() should return 1 source", 1, result.length);
+        assertSame("sources() should contain only the accepted source", accepted, result[0]);
+    }
+
+    // --- path() ---
+
+    @Test
+    public void filterNode_path_rootNode() {
+        FilterNode root = new FilterNode("Root", source -> true, false);
+
+        assertEquals("Root node path should be just its name", "Root", root.path());
+    }
+
+    @Test
+    public void filterNode_path_childNode() {
+        FilterNode parent = new FilterNode("Parent", source -> true, false);
+        FilterNode child = new FilterNode("Child", source -> true, true);
+        parent.addChild(child);
+
+        assertEquals("Child path should be 'Parent>Child'", "Parent>Child", child.path());
+    }
+
+    @Test
+    public void filterNode_path_deepNode() {
+        FilterNode root = new FilterNode("Root", source -> true, false);
+        FilterNode mid = new FilterNode("Parent", source -> true, false);
+        FilterNode leaf = new FilterNode("Child", source -> true, true);
+        root.addChild(mid);
+        mid.addChild(leaf);
+
+        assertEquals("Deep path should be 'Root>Parent>Child'",
+                "Root>Parent>Child", leaf.path());
+    }
+
     // ==================== 2.1 SourceTreeModel - addSources ====================
 
     @Test

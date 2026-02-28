@@ -393,6 +393,17 @@ public class FilterNode {
     }
 
     /**
+     * Subscript operator for Groovy: {@code node['childName']}.
+     * Equivalent to {@link #child(String)}.
+     *
+     * @param childName the name to match
+     * @return the first child with the given name, or null if not found
+     */
+    public FilterNode getAt(String childName) {
+        return child(childName);
+    }
+
+    /**
      * Returns all sources that pass this node's filter, sorted.
      * Since sources propagate down the tree, this includes all sources
      * visible in any descendant of this node.
