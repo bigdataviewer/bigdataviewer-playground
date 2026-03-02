@@ -86,7 +86,7 @@ public class SourceTreeView implements SourceTreeModelListener {
 
         // Create root tree node
         FilterNode modelRoot = sourceModel.getRoot();
-        treeRoot = new DefaultMutableTreeNode(modelRoot.getName());
+        treeRoot = new DefaultMutableTreeNode(modelRoot.name());
         filterToTreeNode.put(modelRoot, treeRoot);
 
         // Create the Swing tree model
@@ -123,8 +123,8 @@ public class SourceTreeView implements SourceTreeModelListener {
      */
     private void buildTreeNode(FilterNode filterNode, DefaultMutableTreeNode treeNode) {
         // Add child filter nodes - getChildren() returns a thread-safe copy
-        for (FilterNode child : filterNode.getChildren()) {
-            DefaultMutableTreeNode childTreeNode = new DefaultMutableTreeNode(child.getName());
+        for (FilterNode child : filterNode.children()) {
+            DefaultMutableTreeNode childTreeNode = new DefaultMutableTreeNode(child.name());
             filterToTreeNode.put(child, childTreeNode);
 
             treeNode.add(childTreeNode);
@@ -135,7 +135,7 @@ public class SourceTreeView implements SourceTreeModelListener {
         if (filterNode.isDisplaySources()) {
             // getOutputSources() returns a thread-safe copy
             List<SourceAndConverter<?>> sortedSources = SourceHelper.sortDefaultGeneric(
-                    filterNode.getOutputSources());
+                    filterNode.outputSources());
             for (SourceAndConverter<?> source : sortedSources) {
                 DefaultMutableTreeNode sourceNode = new DefaultMutableTreeNode(
                         new RenamableSource(source));
@@ -366,7 +366,7 @@ public class SourceTreeView implements SourceTreeModelListener {
             FilterNode filterNode = addedNodes.get(i);
             int index = indices.get(i);
 
-            DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(filterNode.getName());
+            DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(filterNode.name());
             filterToTreeNode.put(filterNode, treeNode);
 
             parentTreeNode.insert(treeNode, index);
@@ -444,7 +444,7 @@ public class SourceTreeView implements SourceTreeModelListener {
         }
 
         // Recursively clean up children - getChildren() returns a thread-safe copy
-        for (FilterNode child : filterNode.getChildren()) {
+        for (FilterNode child : filterNode.children()) {
             DefaultMutableTreeNode childTreeNode = filterToTreeNode.get(child);
             if (childTreeNode != null) {
                 cleanupMappings(child, childTreeNode);
@@ -459,7 +459,7 @@ public class SourceTreeView implements SourceTreeModelListener {
         FilterNode filterNode = event.getAffectedNodes().get(0);
         DefaultMutableTreeNode treeNode = filterToTreeNode.get(filterNode);
         if (treeNode != null) {
-            treeNode.setUserObject(filterNode.getName());
+            treeNode.setUserObject(filterNode.name());
             treeModel.nodeChanged(treeNode);
         }
     }

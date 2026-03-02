@@ -81,7 +81,7 @@ public class FilterNode {
     /**
      * @return the display name of this node
      */
-    public String getName() {
+    public String name() {
         return name;
     }
 
@@ -136,21 +136,21 @@ public class FilterNode {
     /**
      * @return the parent node, or null if this is the root
      */
-    public FilterNode getParent() {
+    public FilterNode parent() {
         return parent;
     }
 
     /**
      * @return a copy of the children list (thread-safe snapshot)
      */
-    public synchronized List<FilterNode> getChildren() {
+    public synchronized List<FilterNode> children() {
         return new ArrayList<>(children);
     }
 
     /**
      * @return the number of child nodes
      */
-    public synchronized int getChildCount() {
+    public synchronized int childCount() {
         return children.size();
     }
 
@@ -160,21 +160,21 @@ public class FilterNode {
      * @return the child node
      * @throws IndexOutOfBoundsException if index is out of range
      */
-    public synchronized FilterNode getChild(int index) {
+    public synchronized FilterNode child(int index) {
         return children.get(index);
     }
 
     /**
      * @return a copy of the input sources set (thread-safe snapshot)
      */
-    public synchronized Set<SourceAndConverter<?>> getInputSources() {
+    public synchronized Set<SourceAndConverter<?>> inputSources() {
         return new LinkedHashSet<>(inputSources);
     }
 
     /**
      * @return a copy of the output sources set (thread-safe snapshot)
      */
-    public synchronized Set<SourceAndConverter<?>> getOutputSources() {
+    public synchronized Set<SourceAndConverter<?>> outputSources() {
         return new LinkedHashSet<>(outputSources);
     }
 
@@ -385,7 +385,7 @@ public class FilterNode {
      */
     public synchronized FilterNode child(String childName) {
         for (FilterNode child : children) {
-            if (child.getName().equals(childName)) {
+            if (child.name().equals(childName)) {
                 return child;
             }
         }
@@ -411,7 +411,7 @@ public class FilterNode {
      * @return sorted array of all sources in this subtree
      */
     public SourceAndConverter<?>[] sources() {
-        return SourceHelper.sortDefaultGeneric(getOutputSources()).toArray(
+        return SourceHelper.sortDefaultGeneric(outputSources()).toArray(
                 new SourceAndConverter<?>[0]);
     }
 
@@ -424,8 +424,8 @@ public class FilterNode {
         String fullPath = name;
         FilterNode current = parent;
         while (current != null) {
-            fullPath = current.getName() + ">" + fullPath;
-            current = current.getParent();
+            fullPath = current.name() + ">" + fullPath;
+            current = current.parent();
         }
         return fullPath;
     }

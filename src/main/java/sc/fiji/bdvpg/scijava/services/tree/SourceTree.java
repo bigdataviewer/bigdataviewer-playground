@@ -487,7 +487,7 @@ public class SourceTree {
 			// Check if this is a filter node and get sources from the model
 			FilterNode filterNode = sourceTreeView.getFilterNode(node);
 			if (filterNode != null) {
-				sources.addAll(filterNode.getOutputSources());
+				sources.addAll(filterNode.outputSources());
 			} else {
 				// Fallback: traverse children
 				for (int i = 0; i < node.getChildCount(); i++) {
@@ -596,7 +596,7 @@ public class SourceTree {
 		sourceTreeView.getTreeModel().nodesWereInserted(parent, new int[]{parent.getChildCount() - 1});
 	}
 
-	public FilterNode getRoot() {
+	public FilterNode root() {
 		return sourceTreeModel.getRoot();
 	}
 
@@ -604,7 +604,7 @@ public class SourceTree {
 	 * Returns the JTree used by this UI.
 	 * @return the JTree component
 	 */
-	public JTree getTree() {
+	public JTree getJTree() {
 		return tree;
 	}
 

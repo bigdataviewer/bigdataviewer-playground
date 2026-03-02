@@ -134,7 +134,7 @@ public class SpimDataFilterFactory {
 
         // Sort and add class nodes to SpimData node
         List<FilterNode> orderedNodes = new ArrayList<>(classNodes.values());
-        orderedNodes.sort(Comparator.comparing(FilterNode::getName));
+        orderedNodes.sort(Comparator.comparing(FilterNode::name));
         for (FilterNode classNode : orderedNodes) {
             nodeSpimData.addChild(classNode);
         }

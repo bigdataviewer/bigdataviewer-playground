@@ -208,7 +208,7 @@ public class SourceTreeModel {
             sourceIndex.computeIfAbsent(source, k -> new HashSet<>()).add(node);
 
             // Recursively add to children
-            for (FilterNode child : node.getChildren()) {
+            for (FilterNode child : node.children()) {
                 addSourceToNode(source, child, affectedNodes);
             }
         }
@@ -267,11 +267,11 @@ public class SourceTreeModel {
         }
         for (AbstractSpimData<?> spimData : toRemove) {
             SpimDataFilterNode spimDataNode = spimDataIndex.remove(spimData);
-            int removeIndex = root.getChildren().indexOf(spimDataNode);
+            int removeIndex = root.children().indexOf(spimDataNode);
             root.removeChild(spimDataNode);
 
             // Clean up source index (should be empty, but be safe)
-            for (SourceAndConverter<?> source : spimDataNode.getOutputSources()) {
+            for (SourceAndConverter<?> source : spimDataNode.outputSources()) {
                 Set<FilterNode> nodes = sourceIndex.get(source);
                 if (nodes != null) {
                     removeNodesRecursively(spimDataNode, nodes);
@@ -298,7 +298,7 @@ public class SourceTreeModel {
         }
 
         // Recursively remove from children
-        for (FilterNode child : node.getChildren()) {
+        for (FilterNode child : node.children()) {
             removeSourceFromNode(source, child, affectedNodes);
         }
     }
@@ -362,7 +362,7 @@ public class SourceTreeModel {
         }
 
         // Recursively update children
-        for (FilterNode child : node.getChildren()) {
+        for (FilterNode child : node.children()) {
             updateSourceInNode(source, child, addedNodes, removedNodes);
         }
     }
@@ -400,7 +400,7 @@ public class SourceTreeModel {
             }
 
             // Add to root and fire structure changed event
-            int insertIndex = root.getChildCount();
+            int insertIndex = root.childCount();
             root.addChild(spimDataNode);
 
             StructureChangedEvent event = new StructureChangedEvent(
@@ -428,13 +428,13 @@ public class SourceTreeModel {
             }
 
             // Find index before removing
-            int removeIndex = root.getChildren().indexOf(spimDataNode);
+            int removeIndex = root.children().indexOf(spimDataNode);
 
             // Remove from root
             root.removeChild(spimDataNode);
 
             // Clean up source index
-            for (SourceAndConverter<?> source : spimDataNode.getOutputSources()) {
+            for (SourceAndConverter<?> source : spimDataNode.outputSources()) {
                 Set<FilterNode> nodes = sourceIndex.get(source);
                 if (nodes != null) {
                     removeNodesRecursively(spimDataNode, nodes);
@@ -458,7 +458,7 @@ public class SourceTreeModel {
      */
     private void removeNodesRecursively(FilterNode node, Set<FilterNode> nodes) {
         nodes.remove(node);
-        for (FilterNode child : node.getChildren()) {
+        for (FilterNode child : node.children()) {
             removeNodesRecursively(child, nodes);
         }
     }
@@ -472,7 +472,7 @@ public class SourceTreeModel {
      */
     private void clearNodeSources(FilterNode node) {
         // Clean source index for this node and all descendants
-        for (SourceAndConverter<?> source : node.getOutputSources()) {
+        for (SourceAndConverter<?> source : node.outputSources()) {
             Set<FilterNode> nodes = sourceIndex.get(source);
             if (nodes != null) {
                 removeNodesRecursively(node, nodes);
@@ -481,7 +481,7 @@ public class SourceTreeModel {
         // Clear the node's own sources
         node.clearSources();
         // Recursively clear children
-        for (FilterNode child : node.getChildren()) {
+        for (FilterNode child : node.children()) {
             clearNodeSources(child);
         }
     }
@@ -551,12 +551,12 @@ public class SourceTreeModel {
             // Populate with sources already in the parent BEFORE firing NODES_ADDED
             // This prevents the view from seeing an empty node and then receiving
             // a separate SOURCES_ADDED event that would double the source tree nodes
-            for (SourceAndConverter<?> source : parentNode.getOutputSources()) {
+            for (SourceAndConverter<?> source : parentNode.outputSources()) {
                 Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
                 addSourceToNode(source, bdvNode, affectedNodes);
             }
 
-            int insertIndex = parentNode.getChildCount();
+            int insertIndex = parentNode.childCount();
             parentNode.addChild(bdvNode);
 
             StructureChangedEvent event = new StructureChangedEvent(
@@ -585,9 +585,9 @@ public class SourceTreeModel {
 
             bdvNode.cleanup();
 
-            FilterNode parent = bdvNode.getParent();
+            FilterNode parent = bdvNode.parent();
             if (parent != null) {
-                int removeIndex = parent.getChildren().indexOf(bdvNode);
+                int removeIndex = parent.children().indexOf(bdvNode);
                 parent.removeChild(bdvNode);
 
                 StructureChangedEvent event = new StructureChangedEvent(
@@ -615,9 +615,9 @@ public class SourceTreeModel {
 
             for (BdvHandleFilterNode node : toRemove) {
                 node.cleanup();
-                FilterNode parent = node.getParent();
+                FilterNode parent = node.parent();
                 if (parent != null) {
-                    int removeIndex = parent.getChildren().indexOf(node);
+                    int removeIndex = parent.children().indexOf(node);
                     parent.removeChild(node);
 
                     StructureChangedEvent event = new StructureChangedEvent(
@@ -642,7 +642,7 @@ public class SourceTreeModel {
                 result.add(bfn);
             }
         }
-        for (FilterNode child : node.getChildren()) {
+        for (FilterNode child : node.children()) {
             collectBdvHandleNodes(child, bdvHandle, result);
         }
     }
@@ -667,7 +667,7 @@ public class SourceTreeModel {
                     bdvHandle.getViewerPanel().state().getSources());
 
             // Sources currently accepted by this node
-            Set<SourceAndConverter<?>> currentOutput = bdvNode.getOutputSources();
+            Set<SourceAndConverter<?>> currentOutput = bdvNode.outputSources();
 
             // Add sources that are in BDV but not yet in this node's output
             List<SourceAndConverter<?>> toAdd = new ArrayList<>();
@@ -730,12 +730,12 @@ public class SourceTreeModel {
             // Populate with sources from parent BEFORE firing NODES_ADDED
             // This prevents the view from seeing an empty node and then receiving
             // a separate SOURCES_ADDED event that would double the source tree nodes
-            for (SourceAndConverter<?> source : parent.getOutputSources()) {
+            for (SourceAndConverter<?> source : parent.outputSources()) {
                 Map<FilterNode, List<SourceAndConverter<?>>> affectedNodes = new HashMap<>();
                 addSourceToNode(source, child, affectedNodes);
             }
 
-            int insertIndex = parent.getChildCount();
+            int insertIndex = parent.childCount();
             parent.addChild(child);
 
             // Fire structure event only - no separate SOURCES_ADDED needed
@@ -758,16 +758,16 @@ public class SourceTreeModel {
     public void removeNode(FilterNode node) {
         lock.writeLock().lock();
         try {
-            FilterNode parent = node.getParent();
+            FilterNode parent = node.parent();
             if (parent == null) {
                 return; // Can't remove root
             }
 
-            int removeIndex = parent.getChildren().indexOf(node);
+            int removeIndex = parent.children().indexOf(node);
             parent.removeChild(node);
 
             // Clean up source index
-            for (SourceAndConverter<?> source : node.getOutputSources()) {
+            for (SourceAndConverter<?> source : node.outputSources()) {
                 Set<FilterNode> nodes = sourceIndex.get(source);
                 if (nodes != null) {
                     removeNodesRecursively(node, nodes);

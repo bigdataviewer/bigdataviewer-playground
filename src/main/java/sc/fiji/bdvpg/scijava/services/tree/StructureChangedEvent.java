@@ -92,7 +92,7 @@ public class StructureChangedEvent {
     public static StructureChangedEvent nodeRenamed(FilterNode node) {
         return new StructureChangedEvent(Type.NODE_RENAMED,
                 Collections.singletonList(node),
-                node.getParent(),
+                node.parent(),
                 null);
     }
 
@@ -150,7 +150,7 @@ public class StructureChangedEvent {
         return "StructureChangedEvent{" +
                 "type=" + type +
                 ", affectedNodes=" + affectedNodes.size() +
-                ", parentNode=" + (parentNode != null ? parentNode.getName() : "null") +
+                ", parentNode=" + (parentNode != null ? parentNode.name() : "null") +
                 '}';
     }
 }

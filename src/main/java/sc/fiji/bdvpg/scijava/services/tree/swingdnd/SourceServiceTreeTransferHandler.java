@@ -250,7 +250,7 @@ public class SourceServiceTreeTransferHandler extends
 					}
 
 					// Create a copy — the original stays in its old location (COPY mode)
-					FilterNode copy = new FilterNode(originalFilterNode.getName(),
+					FilterNode copy = new FilterNode(originalFilterNode.name(),
 						originalFilterNode.getFilter(),
 						originalFilterNode.isDisplaySources());
 

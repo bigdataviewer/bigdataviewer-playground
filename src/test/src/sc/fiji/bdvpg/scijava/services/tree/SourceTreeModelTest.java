@@ -170,8 +170,8 @@ public class SourceTreeModelTest {
         SourceAndConverter<?> source = createTestSource("S1");
 
         assertTrue("Source should pass filter", node.addSource(source));
-        assertTrue("Source should be in outputSources", node.getOutputSources().contains(source));
-        assertTrue("Source should be in inputSources", node.getInputSources().contains(source));
+        assertTrue("Source should be in outputSources", node.outputSources().contains(source));
+        assertTrue("Source should be in inputSources", node.inputSources().contains(source));
     }
 
     @Test
@@ -180,8 +180,8 @@ public class SourceTreeModelTest {
         SourceAndConverter<?> source = createTestSource("S1");
 
         assertFalse("Source should fail filter", node.addSource(source));
-        assertFalse("Source should not be in outputSources", node.getOutputSources().contains(source));
-        assertTrue("Source should be in inputSources", node.getInputSources().contains(source));
+        assertFalse("Source should not be in outputSources", node.outputSources().contains(source));
+        assertTrue("Source should be in inputSources", node.inputSources().contains(source));
     }
 
     @Test
@@ -200,8 +200,8 @@ public class SourceTreeModelTest {
         node.addSource(source);
 
         assertTrue("Remove should return true", node.removeSource(source));
-        assertFalse("Source should not be in outputSources", node.getOutputSources().contains(source));
-        assertFalse("Source should not be in inputSources", node.getInputSources().contains(source));
+        assertFalse("Source should not be in outputSources", node.outputSources().contains(source));
+        assertFalse("Source should not be in inputSources", node.inputSources().contains(source));
     }
 
     @Test
@@ -222,7 +222,7 @@ public class SourceTreeModelTest {
 
         assertFalse("First add should fail (count=1)", node.addSource(source));
         assertTrue("Second add should pass (count=2, re-evaluated)", node.addSource(source));
-        assertTrue("Source should be in outputSources", node.getOutputSources().contains(source));
+        assertTrue("Source should be in outputSources", node.outputSources().contains(source));
     }
 
     @Test
@@ -252,7 +252,7 @@ public class SourceTreeModelTest {
         node.addSource(source); // count=1, fails
 
         assertEquals("Should return 1 (added to output)", 1, node.reevaluateSource(source));
-        assertTrue("Source should now be in outputSources", node.getOutputSources().contains(source));
+        assertTrue("Source should now be in outputSources", node.outputSources().contains(source));
     }
 
     @Test
@@ -263,8 +263,8 @@ public class SourceTreeModelTest {
         node.addSource(source); // count=1, passes
 
         assertEquals("Should return -1 (removed from output)", -1, node.reevaluateSource(source));
-        assertFalse("Source should not be in outputSources", node.getOutputSources().contains(source));
-        assertTrue("Source should still be in inputSources", node.getInputSources().contains(source));
+        assertFalse("Source should not be in outputSources", node.outputSources().contains(source));
+        assertTrue("Source should still be in inputSources", node.inputSources().contains(source));
     }
 
     @Test
@@ -309,9 +309,9 @@ public class SourceTreeModelTest {
 
         parent.addChild(child);
 
-        assertEquals("Child should reference parent", parent, child.getParent());
-        assertEquals("Parent should have 1 child", 1, parent.getChildCount());
-        assertTrue("Children list should contain child", parent.getChildren().contains(child));
+        assertEquals("Child should reference parent", parent, child.parent());
+        assertEquals("Parent should have 1 child", 1, parent.childCount());
+        assertTrue("Children list should contain child", parent.children().contains(child));
     }
 
     @Test
@@ -321,8 +321,8 @@ public class SourceTreeModelTest {
         parent.addChild(child);
 
         assertTrue("Remove should return true", parent.removeChild(child));
-        assertNull("Child parent should be null", child.getParent());
-        assertEquals("Parent should have 0 children", 0, parent.getChildCount());
+        assertNull("Child parent should be null", child.parent());
+        assertEquals("Parent should have 0 children", 0, parent.childCount());
     }
 
     @Test
@@ -330,10 +330,10 @@ public class SourceTreeModelTest {
         FilterNode parent = new FilterNode("Parent", source -> true, false);
         parent.addChild(new FilterNode("Child", source -> true, true));
 
-        List<FilterNode> children = parent.getChildren();
+        List<FilterNode> children = parent.children();
         children.clear(); // modify returned list
 
-        assertEquals("Parent should still have 1 child", 1, parent.getChildCount());
+        assertEquals("Parent should still have 1 child", 1, parent.childCount());
     }
 
     // ==================== 1.6 FilterNode - Convenience navigation methods ====================
@@ -488,7 +488,7 @@ public class SourceTreeModelTest {
         model.addSources(sources);
 
         assertTrue("All sources should be in root",
-                model.getRoot().getOutputSources().containsAll(sources));
+                model.getRoot().outputSources().containsAll(sources));
     }
 
     @Test
@@ -503,7 +503,7 @@ public class SourceTreeModelTest {
         model.addSources(sources);
 
         assertTrue("Sources should appear in Other Sources",
-                model.getOtherSourcesNode().getOutputSources().containsAll(sources));
+                model.getOtherSourcesNode().outputSources().containsAll(sources));
     }
 
     @Test
@@ -553,7 +553,7 @@ public class SourceTreeModelTest {
         model.removeSources(sources);
 
         assertFalse("Sources should not be in root",
-                model.getRoot().getOutputSources().stream().anyMatch(sources::contains));
+                model.getRoot().outputSources().stream().anyMatch(sources::contains));
         assertEquals("Should fire 1 sourcesChanged event", 1, listener.sourcesEvents.size());
         assertEquals("Event type should be REMOVED",
                 SourcesChangedEvent.Type.REMOVED, listener.lastSourcesEvent().getType());
@@ -600,7 +600,7 @@ public class SourceTreeModelTest {
 
         // After addSource, the filter was called once for customNode (count=1) → failed
         assertFalse("Source should not be in custom node initially",
-                customNode.getOutputSources().contains(source));
+                customNode.outputSources().contains(source));
 
         TestListener listener = new TestListener();
         model.addListener(listener);
@@ -608,7 +608,7 @@ public class SourceTreeModelTest {
 
         // After updateSources, reevaluateSource calls filter again (count=2) → passes
         assertTrue("Source should be in custom node after update",
-                customNode.getOutputSources().contains(source));
+                customNode.outputSources().contains(source));
     }
 
     // ==================== 3.1 SourceTreeModel - addSpimData ====================
@@ -625,7 +625,7 @@ public class SourceTreeModelTest {
 
         SpimDataFilterNode spimNode = model.getSpimDataNode(asd);
         assertNotNull("SpimData node should be created", spimNode);
-        assertEquals("Node name should match", "TestDataset", spimNode.getName());
+        assertEquals("Node name should match", "TestDataset", spimNode.name());
 
         assertFalse("Should fire structureChanged event", listener.structureEvents.isEmpty());
         assertEquals("Event type should be NODES_ADDED",
@@ -644,7 +644,7 @@ public class SourceTreeModelTest {
 
         SpimDataFilterNode spimNode = model.getSpimDataNode(asd);
         assertTrue("SpimData node should contain existing sources",
-                spimNode.getOutputSources().containsAll(sources));
+                spimNode.outputSources().containsAll(sources));
     }
 
     @Test
@@ -653,12 +653,12 @@ public class SourceTreeModelTest {
         AbstractSpimData<?> asd = createLinkedSpimData(sources);
 
         model.addSpimData(asd, "TestDataset");
-        int childCountBefore = model.getRoot().getChildCount();
+        int childCountBefore = model.getRoot().childCount();
 
         model.addSpimData(asd, "TestDataset");
 
         assertEquals("Child count should not change on duplicate add",
-                childCountBefore, model.getRoot().getChildCount());
+                childCountBefore, model.getRoot().childCount());
     }
 
     // ==================== 3.2 SourceTreeModel - removeSpimData ====================
@@ -784,7 +784,7 @@ public class SourceTreeModelTest {
         model.renameSpimData(asd, "NewName");
 
         assertEquals("Node name should be updated", "NewName",
-                model.getSpimDataNode(asd).getName());
+                model.getSpimDataNode(asd).name());
         assertFalse("Should fire structureChanged event", listener.structureEvents.isEmpty());
         assertTrue("Event should be NODE_RENAMED",
                 listener.lastStructureEvent().isNodeRenamed());
@@ -922,7 +922,7 @@ public class SourceTreeModelTest {
 
         // Find the BdvHandleFilterNode in root's children
         FilterNode bdvNode = null;
-        for (FilterNode child : model.getRoot().getChildren()) {
+        for (FilterNode child : model.getRoot().children()) {
             if (child instanceof BdvHandleFilterNode
                     && ((BdvHandleFilterNode) child).getBdvHandle().equals(bdvh)) {
                 bdvNode = child;
@@ -931,12 +931,12 @@ public class SourceTreeModelTest {
         }
 
         assertNotNull("BdvHandle node should be created", bdvNode);
-        assertEquals("Node name should match", "TestBDV", bdvNode.getName());
+        assertEquals("Node name should match", "TestBDV", bdvNode.name());
 
         // Should have an "All Sources" child
-        assertEquals("BdvHandle node should have 1 child", 1, bdvNode.getChildCount());
+        assertEquals("BdvHandle node should have 1 child", 1, bdvNode.childCount());
         assertEquals("Child should be 'All Sources'", "All Sources",
-                bdvNode.getChild(0).getName());
+                bdvNode.child(0).name());
 
         // Check event
         assertFalse("Should fire structureChanged event", listener.structureEvents.isEmpty());
@@ -950,12 +950,12 @@ public class SourceTreeModelTest {
         BdvHandle bdvh = createBdvHandle();
 
         model.addBdvHandle(bdvh, "TestBDV", model.getRoot());
-        int childCountBefore = model.getRoot().getChildCount();
+        int childCountBefore = model.getRoot().childCount();
 
         model.addBdvHandle(bdvh, "TestBDV2", model.getRoot());
 
         assertEquals("Child count should not change on duplicate add",
-                childCountBefore, model.getRoot().getChildCount());
+                childCountBefore, model.getRoot().childCount());
     }
 
     @Test
@@ -1051,7 +1051,7 @@ public class SourceTreeModelTest {
                 bdvNode.hasConsumed(source));
 
         // "All Sources" child should also have the source
-        FilterNode allSourcesChild = bdvNode.getChild(0);
+        FilterNode allSourcesChild = bdvNode.child(0);
         assertTrue("Source should be in 'All Sources' child",
                 allSourcesChild.hasConsumed(source));
     }
@@ -1184,7 +1184,7 @@ public class SourceTreeModelTest {
      * Finds the BdvHandleFilterNode for a given BdvHandle in our model's root children.
      */
     private BdvHandleFilterNode findBdvNode(BdvHandle bdvh) {
-        for (FilterNode child : model.getRoot().getChildren()) {
+        for (FilterNode child : model.getRoot().children()) {
             BdvHandleFilterNode found = findBdvNodeRecursive(child, bdvh);
             if (found != null) return found;
         }
@@ -1196,7 +1196,7 @@ public class SourceTreeModelTest {
                 && ((BdvHandleFilterNode) node).getBdvHandle().equals(bdvh)) {
             return (BdvHandleFilterNode) node;
         }
-        for (FilterNode child : node.getChildren()) {
+        for (FilterNode child : node.children()) {
             BdvHandleFilterNode found = findBdvNodeRecursive(child, bdvh);
             if (found != null) return found;
         }
