@@ -63,6 +63,6 @@ public class PositionLogger implements Runnable {
 	public void run() {
 		final RealPoint realPoint = new RealPoint(3);
 		bdvHandle.getViewerPanel().getGlobalMouseCoordinates(realPoint);
-		logger.out(Logs.BDV + ": Position at Mouse: " + realPoint);
+		logger.out("BigDataViewer : Position at Mouse: " + realPoint);
 	}
 }

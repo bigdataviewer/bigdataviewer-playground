@@ -56,12 +56,6 @@ public class SourceAdapter {
 	final File basePath;
 	final boolean useRelativePaths; // For ABBA : store everything (spimdata XML and JSON files) in the same folder
 
-	/*public SourceAndConverterAdapter(Context ctx, File basePath) {
-		this.ctx = ctx;
-		this.basePath = basePath;
-		useRelativePaths = false;
-	}*/
-
 	public SourceAdapter(Context ctx, File basePath, boolean useRelativePaths) {
 		this.ctx = ctx;
 		this.basePath = basePath;

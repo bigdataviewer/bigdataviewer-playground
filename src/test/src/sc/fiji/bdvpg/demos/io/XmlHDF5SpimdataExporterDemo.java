@@ -34,7 +34,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.source.exporter.XmlHDF5SpimdataExporter;
+import sc.fiji.bdvpg.source.exporter.SourcesToXMLHDF5Exporter;
 import sc.fiji.bdvpg.source.importer.VoronoiSourceGetter;
 
 import java.io.BufferedReader;
@@ -66,7 +66,7 @@ public class XmlHDF5SpimdataExporterDemo {
         File fileH5Gen = folder.newFile("testVoronoi.h5");
 
         // Act
-        XmlHDF5SpimdataExporter exporter = new XmlHDF5SpimdataExporter(sources,"Channel", 1,0,1,4,64,64,1,512, fileXmlGen);
+        SourcesToXMLHDF5Exporter exporter = new SourcesToXMLHDF5Exporter(sources,"Channel", 1,0,1,4,64,64,1,512, fileXmlGen);
         exporter.run();
 
         // Assert

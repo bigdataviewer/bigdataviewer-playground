@@ -39,7 +39,7 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.source.importer.VoronoiSourceGetter;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 import java.util.List;
 
@@ -67,7 +67,7 @@ public class BrightnessAutoAdjusterDemo
 		// Creates a BdvHandle
 		bdvHandle = ij.get(SourceBdvDisplayService.class).getActiveBdv();
 
-        AbstractSpimData<?> asd = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
+        AbstractSpimData<?> asd = new XMLToDatasetImporter("src/test/resources/mri-stack.xml").get();
 
         List<SourceAndConverter<?>> sourcesFromSpimData =
 				ij.get(SourceService.class)

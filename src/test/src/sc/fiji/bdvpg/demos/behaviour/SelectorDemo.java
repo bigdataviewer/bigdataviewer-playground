@@ -41,7 +41,7 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.services.SourceServices;
 import sc.fiji.bdvpg.source.display.BrightnessAdjuster;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 /**
  * Demo of bigdataviewer-selector. Press E to enter into the selector mode.
@@ -58,8 +58,8 @@ public class SelectorDemo {
         SourceService sourceService = ctx.getService(SourceService.class);
 
         // Open two example sources
-        new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
-        new SpimDataFromXmlImporter("src/test/resources/demoSlice.xml").get();
+        new XMLToDatasetImporter("src/test/resources/mri-stack.xml").get();
+        new XMLToDatasetImporter("src/test/resources/demoSlice.xml").get();
 
         BdvHandle bdvh = sourceDisplayService.getNewBdv();
         sourceDisplayService.show(bdvh, sourceService.getSources().toArray(new SourceAndConverter[0]));

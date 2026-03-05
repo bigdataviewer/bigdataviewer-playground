@@ -31,15 +31,12 @@ package sc.fiji.bdvpg.command.display.bdv;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
-import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
@@ -51,60 +48,27 @@ import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
 			@Menu(label = BdvPgMenus.BDVMenu, weight = BdvPgMenus.BDVW),
-			@Menu(label = "BDV - Show Sources", weight = 3)
+			@Menu(label = "BDV - Show Sources In Multiple Windows", weight = 4)
 	},
-	description = "Displays one or several sources into a new BDV window")
+	description = "Adds one or several sources into several existing BDV windows")
 public class BdvSourcesShowCommand implements BdvPlaygroundActionCommand {
 
+	@Parameter(label = "Select BDV Windows",
+			description = "The BigDataViewer windows where sources will be displayed",
+			persist = false)
+	BdvHandle[] bdvhs;
+
 	@Parameter(label = "Select Source(s)",
-			description = "The source(s) to display in the new BDV window")
+			description = "The source(s) to add to all selected BDV windows")
 	SourceAndConverter<?>[] sources;
-
-	@Parameter(label = "Auto Contrast",
-			description = "Automatically adjusts brightness and contrast based on the current timepoint")
-	boolean auto_contrast;
-
-	@Parameter(label = "Adjust View on Sources",
-			description = "Centers and zooms the view to fit the displayed sources")
-	boolean adjust_view;
-
-	@Parameter(label = "Open In New Window",
-			description = "Force creation of a new window")
-	boolean make_new_window;
-
-	@Parameter(label = "Interpolate",
-			description = "Enables interpolation for smoother rendering")
-	public boolean interpolate = false;
-
-	/**
-	 * This triggers: BdvHandlePostprocessor
-	 */
-	@Parameter(type = ItemIO.OUTPUT,
-			label = "Created BDV Window",
-			description = "The newly created BigDataViewer window containing the sources")
-	public BdvHandle bdvh;
 
 	@Parameter
     SourceBdvDisplayService bdvDisplayService;
 
 	@Override
 	public void run() {
-		if (make_new_window) {
-			bdvh = bdvDisplayService.getNewBdv();
-		} else {
-			bdvh = bdvDisplayService.getActiveBdv();
-		}
-
-		bdvDisplayService.show(bdvh, sources);
-		if (auto_contrast) {
-			for (SourceAndConverter<?> source : sources) {
-				int timepoint = bdvh.getViewerPanel().state().getCurrentTimepoint();
-				new BrightnessAutoAdjuster<>(source, timepoint).run();
-			}
-		}
-
-		if ((adjust_view) && (sources.length > 0)) {
-			new ViewerTransformAdjuster(bdvh, sources).run();
+		for (BdvHandle bdvh : bdvhs) {
+			bdvDisplayService.show(bdvh, sources);
 		}
 	}
 }

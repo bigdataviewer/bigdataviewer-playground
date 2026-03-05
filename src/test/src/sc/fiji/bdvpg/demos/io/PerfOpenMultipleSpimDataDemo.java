@@ -30,7 +30,7 @@ package sc.fiji.bdvpg.demos.io;
 
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -62,9 +62,9 @@ public class PerfOpenMultipleSpimDataDemo
 		tic();
 		for (int i=0;i<100;i++) {
 			// Import SpimData
-			new SpimDataFromXmlImporter( "src/test/resources/mri-stack.xml" ).run();
-			new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
-			new SpimDataFromXmlImporter( "src/test/resources/mri-stack-shiftedY.xml" ).run();
+			new XMLToDatasetImporter( "src/test/resources/mri-stack.xml" ).run();
+			new XMLToDatasetImporter("src/test/resources/mri-stack-shiftedX.xml").run();
+			new XMLToDatasetImporter( "src/test/resources/mri-stack-shiftedY.xml" ).run();
 			System.out.println(i);
 		}
 		toc();

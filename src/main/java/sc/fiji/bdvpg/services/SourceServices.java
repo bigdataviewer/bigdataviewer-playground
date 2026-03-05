@@ -34,8 +34,8 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
 
 /**
- * Static methods to access BdvSourceAndConverterService and
- * BdvSourceAndConverterDisplayService
+ * Static methods to access SourceService and
+ * SourceBdvDisplayService
  * <p>
  * Should ideally not be used:
  * - try to fetch a {@link SourceService} or a
@@ -46,23 +46,23 @@ import sc.fiji.bdvpg.scijava.services.SourceService;
 
 public class SourceServices {
 
-	private static ISourceService sourceAndConverterService;
+	private static ISourceService sourceService;
 
 	private static SourceBdvDisplayService sourceBdvDisplayService;
 
 	public static ISourceService getSourceService() {
-		return sourceAndConverterService;
+		return sourceService;
 	}
 
 	public static void setSourceService(
 		ISourceService sourceAndConverterService)
 	{
-		SourceServices.sourceAndConverterService =
+		SourceServices.sourceService =
 			sourceAndConverterService;
 	}
 
 	public static Context getContext() {
-		return sourceAndConverterService != null ? sourceAndConverterService
+		return sourceService != null ? sourceService
 			.getContext() : null;
 	}
 

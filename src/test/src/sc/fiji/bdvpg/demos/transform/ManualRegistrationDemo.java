@@ -54,7 +54,7 @@ import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.source.display.ColorChanger;
 import sc.fiji.bdvpg.source.transform.SourceAffineTransformer;
 import sc.fiji.bdvpg.source.transform.SourceTransformHelper;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 import java.util.List;
 
@@ -158,7 +158,7 @@ public class ManualRegistrationDemo {
                 isTransforming = !isTransforming;
             }).install("Toggle Transformation", "ctrl M");
         } else if (demoMode == MutateLastSpimdataTransformation) {
-            AbstractSpimData<?> asd =  new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
+            AbstractSpimData<?> asd =  new XMLToDatasetImporter("src/test/resources/mri-stack.xml").get();
 
             // Show all SourceAndConverter associated with above SpimData
             sourceService.getSources().forEach(src -> {
@@ -193,7 +193,7 @@ public class ManualRegistrationDemo {
         }else if (demoMode == AppendNewSpimdataTransformation) {
             // TO complete
             // Import SpimData
-            AbstractSpimData<?> asd =  new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
+            AbstractSpimData<?> asd =  new XMLToDatasetImporter("src/test/resources/mri-stack.xml").get();
 
             // Show all SourceAndConverter associated with above SpimData
             sourceService.getSources().forEach(src -> {

@@ -43,7 +43,7 @@ import sc.fiji.bdvpg.command.process.resample.SourceCreateFromModelCommand;
 import sc.fiji.bdvpg.command.process.SourceDeleteCommand;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 import sc.fiji.persist.IObjectScijavaAdapterService;
 
 import java.util.concurrent.ExecutionException;
@@ -68,8 +68,8 @@ public class TestSourcesCommands {
         commandService = ctx.getService(CommandService.class);
 
         // Open two example sources
-        new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
-        new SpimDataFromXmlImporter("src/test/resources/demoSlice.xml").get();
+        new XMLToDatasetImporter("src/test/resources/mri-stack.xml").get();
+        new XMLToDatasetImporter("src/test/resources/demoSlice.xml").get();
 
     }
 

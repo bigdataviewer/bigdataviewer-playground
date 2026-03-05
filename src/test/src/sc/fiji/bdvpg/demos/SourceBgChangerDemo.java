@@ -38,7 +38,7 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.services.SourceServices;
 import sc.fiji.bdvpg.source.transform.SourceOutOfBoundsColorChanger;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 public class SourceBgChangerDemo {
 
@@ -56,7 +56,7 @@ public class SourceBgChangerDemo {
 
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData
-        SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
+        XMLToDatasetImporter importer = new XMLToDatasetImporter(filePath);
         //importer.run();
 
         final AbstractSpimData<?> spimData = importer.get();

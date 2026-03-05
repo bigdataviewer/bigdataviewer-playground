@@ -40,7 +40,7 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.source.transform.SourceAffineTransformer;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 import java.util.ArrayList;
 
@@ -66,7 +66,7 @@ public class AffineTransformSourceDemo {
 
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData
-        SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
+        XMLToDatasetImporter importer = new XMLToDatasetImporter(filePath);
         //importer.run();
 
         final AbstractSpimData<?> spimData = importer.get();

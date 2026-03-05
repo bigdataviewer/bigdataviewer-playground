@@ -45,7 +45,7 @@ import sc.fiji.bdvpg.source.importer.MandelbrotSourceGetter;
 import sc.fiji.bdvpg.source.importer.EmptySourceCreator;
 import sc.fiji.bdvpg.source.transform.SourceAffineTransformer;
 import sc.fiji.bdvpg.source.transform.SourceResampler;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 public class ResamplingDemo {
 
@@ -71,7 +71,7 @@ public class ResamplingDemo {
         // --- like a standard source backed by a RandomAccessibleInterval
 
         // Get Model Source
-        SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter("src/test/resources/mri-stack-multilevel.xml");
+        XMLToDatasetImporter importer = new XMLToDatasetImporter("src/test/resources/mri-stack-multilevel.xml");
         AbstractSpimData<?> asd = importer.get();
 
         SourceAndConverter<UnsignedShortType> source = (SourceAndConverter<UnsignedShortType>)

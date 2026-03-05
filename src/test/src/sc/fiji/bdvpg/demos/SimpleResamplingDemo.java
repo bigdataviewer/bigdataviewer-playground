@@ -44,7 +44,7 @@ import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.source.display.ColorChanger;
 import sc.fiji.bdvpg.source.importer.EmptySourceCreator;
 import sc.fiji.bdvpg.source.transform.SourceResampler;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 public class SimpleResamplingDemo {
 
@@ -64,7 +64,7 @@ public class SimpleResamplingDemo {
     public static void demo() {
 
         // Get Model Source
-        SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter("src/test/resources/mri-stack-multilevel.xml");
+        XMLToDatasetImporter importer = new XMLToDatasetImporter("src/test/resources/mri-stack-multilevel.xml");
         AbstractSpimData<?> asd = importer.get();
 
         SourceAndConverter<UnsignedShortType> source = (SourceAndConverter<UnsignedShortType>) SourceServices

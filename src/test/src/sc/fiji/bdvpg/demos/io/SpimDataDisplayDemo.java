@@ -35,7 +35,7 @@ import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.services.SourceServices;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 /**
  * Demonstrates visualisation of two spimData sources.
@@ -56,8 +56,8 @@ public class SpimDataDisplayDemo
 		BdvHandle bdvHandle = SourceServices.getBdvDisplayService().getActiveBdv();
 
 		// Import SpimData
-		new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").run();
-		new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
+		new XMLToDatasetImporter("src/test/resources/mri-stack.xml").run();
+		new XMLToDatasetImporter("src/test/resources/mri-stack-shiftedX.xml").run();
 
 		// Show all SourceAndConverter associated with above SpimData
 		SourceServices.getSourceService().getSources().forEach(source -> {

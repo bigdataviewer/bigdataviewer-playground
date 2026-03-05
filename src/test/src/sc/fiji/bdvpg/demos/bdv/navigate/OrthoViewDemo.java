@@ -37,7 +37,7 @@ import sc.fiji.bdvpg.viewers.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 import sc.fiji.bdvpg.viewers.ViewerAdapter;
 import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
 import sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper;
@@ -66,7 +66,7 @@ public class OrthoViewDemo {
         SourceBdvDisplayService bdvDisplayService = ij.get(SourceBdvDisplayService.class);
         SourceService sourceService = ij.get(SourceService.class);
 
-        new SpimDataFromXmlImporter( "src/test/resources/mri-stack.xml" ).run();
+        new XMLToDatasetImporter( "src/test/resources/mri-stack.xml" ).run();
 
         // Creates three Bdv windows
         BdvHandle bdvHandleX = bdvDisplayService.getNewBdv();

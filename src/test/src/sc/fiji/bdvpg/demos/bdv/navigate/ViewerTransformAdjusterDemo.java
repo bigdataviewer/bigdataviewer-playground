@@ -34,7 +34,7 @@ import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.services.SourceServices;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 /**
  * ViewerTransformAdjusterDemo
@@ -56,7 +56,7 @@ public class ViewerTransformAdjusterDemo
         BdvHandle bdvHandle = SourceServices.getBdvDisplayService().getActiveBdv();
 
         // Import SpimData object
-        SpimDataFromXmlImporter sdix = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml");
+        XMLToDatasetImporter sdix = new XMLToDatasetImporter("src/test/resources/mri-stack.xml");
 
         AbstractSpimData<?> asd = sdix.get();
 
@@ -68,7 +68,7 @@ public class ViewerTransformAdjusterDemo
         );
 
         // Import SpimData object
-        sdix = new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml");
+        sdix = new XMLToDatasetImporter("src/test/resources/mri-stack-shiftedX.xml");
 
         asd = sdix.get();
 

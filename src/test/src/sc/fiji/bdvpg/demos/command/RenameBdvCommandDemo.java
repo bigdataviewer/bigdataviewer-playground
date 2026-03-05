@@ -31,10 +31,11 @@ package sc.fiji.bdvpg.demos.command;
 import bdv.util.BdvHandle;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
+import sc.fiji.bdvpg.scijava.BdvMenuHelper;
 import sc.fiji.bdvpg.viewers.bdv.BdvHandleHelper;
 
 /**
- * Test command to demo {@link sc.fiji.bdvpg.scijava.BdvScijavaHelper}
+ * Test command to demo {@link BdvMenuHelper}
  */
 @SuppressWarnings({"unused", "CanBeFinal"})
 //@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu + "Another sub menu>Rename Bdv Window")

@@ -33,7 +33,7 @@ import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.viewers.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.BdvScijavaHelper;
+import sc.fiji.bdvpg.scijava.BdvMenuHelper;
 import sc.fiji.bdvpg.scijava.ScijavaSwingUI;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 
@@ -50,7 +50,7 @@ public class BdvScijavaCommandDemo {
         BdvHandle bdvh = ij.get(SourceBdvDisplayService.class).getActiveBdv();
 
         // Adds a SciJava Command in the menu bar
-        BdvScijavaHelper
+        BdvMenuHelper
                 .addCommandToBdvHandleMenu(
                         bdvh,
                         ij.context(),

@@ -42,7 +42,7 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.source.register.BigWarpLauncher;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +66,7 @@ public class BigWarpDemo {
 
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData
-        SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
+        XMLToDatasetImporter importer = new XMLToDatasetImporter(filePath);
 
         AbstractSpimData<?> spimData = importer.get();
 
@@ -74,7 +74,7 @@ public class BigWarpDemo {
                 .getSourcesFromDataset(spimData)
                 .get(0);
 
-        importer = new SpimDataFromXmlImporter(filePath);
+        importer = new XMLToDatasetImporter(filePath);
 
         spimData = importer.get();
 
@@ -129,7 +129,7 @@ public class BigWarpDemo {
 
         final String filePath = "src/test/resources/demoSlice.xml";
         // Import SpimData
-        SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
+        XMLToDatasetImporter importer = new XMLToDatasetImporter(filePath);
         //importer.run();
 
         AbstractSpimData<?> spimData = importer.get();
@@ -138,7 +138,7 @@ public class BigWarpDemo {
                 .getSourcesFromDataset(spimData)
                 .get(0);
 
-        importer = new SpimDataFromXmlImporter(filePath);
+        importer = new XMLToDatasetImporter(filePath);
         //importer.run();
 
         spimData = importer.get();

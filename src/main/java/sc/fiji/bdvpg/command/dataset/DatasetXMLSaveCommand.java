@@ -39,7 +39,7 @@ import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.bdvpg.services.SourceServices;
-import sc.fiji.bdvpg.dataset.exporter.XmlFromSpimDataExporter;
+import sc.fiji.bdvpg.dataset.exporter.DatasetToXMLExporter;
 
 import java.io.File;
 
@@ -98,7 +98,7 @@ public class DatasetXMLSaveCommand implements BdvPlaygroundActionCommand {
 						SourceService.SPIM_DATA_INFO)).asd;
 
 			asd.setBasePath(new File(xmlfilepath.getParent()));
-			new XmlFromSpimDataExporter(asd, xmlfilepath.getAbsolutePath(), context)
+			new DatasetToXMLExporter(asd, xmlfilepath.getAbsolutePath(), context)
 				.run();
 		}
 	}

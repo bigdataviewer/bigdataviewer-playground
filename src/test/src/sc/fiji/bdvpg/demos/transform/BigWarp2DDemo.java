@@ -43,7 +43,7 @@ import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.source.register.BigWarpLauncher;
 import sc.fiji.bdvpg.source.transform.SourceAffineTransformer;
 import sc.fiji.bdvpg.source.transform.SourceTransformHelper;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -159,7 +159,7 @@ public class BigWarp2DDemo {
     public static SourceAndConverter<?> takeFirstSource(String xmlPath) {
         SourceService sourceService = ij.get(SourceService.class);
         // Fixed SourceAndConverter
-        AbstractSpimData<?> spimDataFixed = new SpimDataFromXmlImporter(xmlPath).get();
+        AbstractSpimData<?> spimDataFixed = new XMLToDatasetImporter(xmlPath).get();
 
         SourceAndConverter<?> source = sourceService
                 .getSourcesFromDataset(spimDataFixed)

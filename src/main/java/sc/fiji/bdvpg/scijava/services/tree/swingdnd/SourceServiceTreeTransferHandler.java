@@ -40,7 +40,7 @@ import sc.fiji.bdvpg.scijava.services.tree.FilterNode;
 import sc.fiji.bdvpg.scijava.services.tree.SourceTreeModel;
 import sc.fiji.bdvpg.scijava.services.tree.SourceTreeView;
 import sc.fiji.bdvpg.services.SourceServices;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 import javax.swing.JComponent;
 import javax.swing.JTree;
@@ -208,7 +208,7 @@ public class SourceServiceTreeTransferHandler extends
 					DataFlavor.javaFileListFlavor);
 				for (File f : files) {
 					if (f.getAbsolutePath().endsWith(".xml")) {
-						new SpimDataFromXmlImporter(f).run();
+						new XMLToDatasetImporter(f).run();
 					}
 					else {
 						Optional<Integer> priorityOpt = priorityToFileSupport.keySet()

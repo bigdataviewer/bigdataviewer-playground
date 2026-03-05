@@ -43,7 +43,7 @@ import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.services.SourceServices;
 import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.source.transform.SourceRealTransformer;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -65,7 +65,7 @@ public class WarpedSourceDemo {
     public static void demo() throws Exception {
 
         // Get Model Source
-        SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter("src/test/resources/mri-stack-multilevel.xml");
+        XMLToDatasetImporter importer = new XMLToDatasetImporter("src/test/resources/mri-stack-multilevel.xml");
         AbstractSpimData<?> asd = importer.get();
 
         SourceAndConverter<?> source = SourceServices

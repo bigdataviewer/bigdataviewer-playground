@@ -49,7 +49,7 @@ import sc.fiji.bdvpg.source.SourceHelper;
 import sc.fiji.bdvpg.source.transform.SourceAffineTransformer;
 import sc.fiji.bdvpg.source.transform.SourceRealTransformer;
 import sc.fiji.bdvpg.source.transform.SourceResampler;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 import sc.fiji.persist.IObjectScijavaAdapterService;
 
 import java.io.File;
@@ -146,7 +146,7 @@ public class SourceSerializationTests {
     public void testSpimSourceSerialization() throws Exception {
         // Load SpimData from test resource
         String xmlPath = "src/test/resources/mri-stack.xml";
-        new SpimDataFromXmlImporter(xmlPath).run();
+        new XMLToDatasetImporter(xmlPath).run();
 
         // Get the sources that were registered
         List<SourceAndConverter<?>> sources = SourceServices
@@ -182,7 +182,7 @@ public class SourceSerializationTests {
     public void testTransformedSourceSerialization() throws Exception {
         // Load a SpimData source and apply an affine transform
         String xmlPath = "src/test/resources/mri-stack.xml";
-        new SpimDataFromXmlImporter(xmlPath).run();
+        new XMLToDatasetImporter(xmlPath).run();
 
         List<SourceAndConverter<?>> sources = SourceServices
                 .getSourceService().getSources();
@@ -242,7 +242,7 @@ public class SourceSerializationTests {
     public void testWarpedSourceSerialization_withThinPlateSpline() throws Exception {
         // Load a SpimData source
         String xmlPath = "src/test/resources/mri-stack.xml";
-        new SpimDataFromXmlImporter(xmlPath).run();
+        new XMLToDatasetImporter(xmlPath).run();
 
         List<SourceAndConverter<?>> sources = SourceServices
                 .getSourceService().getSources();
@@ -311,7 +311,7 @@ public class SourceSerializationTests {
     public void testResampledSourceSerialization() throws Exception {
         // Load a SpimData source as the origin
         String xmlPath = "src/test/resources/mri-stack.xml";
-        new SpimDataFromXmlImporter(xmlPath).run();
+        new XMLToDatasetImporter(xmlPath).run();
 
         List<SourceAndConverter<?>> sources = SourceServices
                 .getSourceService().getSources();

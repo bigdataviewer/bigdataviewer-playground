@@ -35,7 +35,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.dataset.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 import java.io.File;
 
@@ -70,7 +70,7 @@ public class DatasetXMLLoadCommand implements
 
 	public void run() {
 		for (File file : files) {
-			new SpimDataFromXmlImporter(file).get();
+			new XMLToDatasetImporter(file).get();
 		}
 	}
 
