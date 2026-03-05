@@ -39,7 +39,7 @@ import org.scijava.Context;
 import org.scijava.command.CommandService;
 import org.scijava.script.ScriptService;
 import org.scijava.ui.UIService;
-import sc.fiji.bdvpg.command.view.bdv.BdvCreateCommand;
+import sc.fiji.bdvpg.command.display.bdv.BdvCreateCommand;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
 import sc.fiji.persist.IObjectScijavaAdapterService;

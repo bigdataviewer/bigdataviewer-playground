@@ -26,29 +26,44 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.demos.io;
 
-import net.imagej.ImageJ;
-import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.command.dataset.DatasetXMLLoadCommand;
+package sc.fiji.bdvpg.command.workspace.state;
 
-import java.io.File;
+import bdv.viewer.SourceAndConverter;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
-public class MultipleSpimDataImporterCommandDemo
+import java.util.List;
+
+/**
+ * Command which clear all sources currently contained in the SourceAndConverter
+ * service
+ */
+@SuppressWarnings({ "unused", "CanBeFinal" })
+@Plugin(type = BdvPlaygroundActionCommand.class,
+		menu = {
+				@Menu(label = BdvPgMenus.L1),
+				@Menu(label = BdvPgMenus.L2),
+				@Menu(label = BdvPgMenus.WorkspaceMenu, weight = BdvPgMenus.WorkspaceW),
+				@Menu(label = "State", weight = 0),
+				@Menu(label = "State - Clear", weight = -8)
+		},
+	//menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>State - Clear State",
+	description = "Removes all sources from the SourceAndConverter service")
+public class StateClearCommand implements
+	BdvPlaygroundActionCommand
 {
 
-	static ImageJ ij;
+	@Parameter
+    SourceService source_service;
 
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
-
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( DatasetXMLLoadCommand.class, true, "files", files);
+	@Override
+	public void run() {
+		List<SourceAndConverter<?>> sources = source_service.getSources();
+		source_service.remove(sources.toArray(new SourceAndConverter[0]));
 	}
-
 }

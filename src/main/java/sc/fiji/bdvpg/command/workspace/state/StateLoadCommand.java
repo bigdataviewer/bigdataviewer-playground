@@ -26,29 +26,50 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.demos.io;
 
-import net.imagej.ImageJ;
-import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.command.dataset.DatasetXMLLoadCommand;
+package sc.fiji.bdvpg.command.workspace.state;
+
+import org.scijava.Context;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.services.SourceServiceLoader;
 
 import java.io.File;
 
-public class MultipleSpimDataImporterCommandDemo
+@SuppressWarnings({ "unused", "CanBeFinal" })
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	//menuPath = ScijavaBdvDefaults.RootMenu +
+	//	"Workspace > State - Load",
+		menu = {
+				@Menu(label = BdvPgMenus.L1),
+				@Menu(label = BdvPgMenus.L2),
+				@Menu(label = BdvPgMenus.WorkspaceMenu, weight = BdvPgMenus.WorkspaceW),
+				@Menu(label = "State", weight = 0),
+				@Menu(label = "State - Load", weight = -10)
+		},
+	description = "Loads a previously saved Bdv Playground state from a JSON file")
+public class StateLoadCommand implements
+	BdvPlaygroundActionCommand
 {
 
-	static ImageJ ij;
+	@Parameter(label = "State file (JSON)",
+			description = "The JSON file containing the saved state",
+			style = "open")
+	File file;
 
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
+	@Parameter
+	Context ctx;
 
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( DatasetXMLLoadCommand.class, true, "files", files);
+	@Parameter(label = "Erase current state",
+			description = "If checked, removes all current sources before loading the saved state")
+	Boolean erase_previous_state;
+
+	@Override
+	public void run() {
+		new SourceServiceLoader(file.getAbsolutePath(), file
+			.getParent(), ctx, erase_previous_state).run();
 	}
-
 }

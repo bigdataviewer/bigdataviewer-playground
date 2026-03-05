@@ -26,29 +26,49 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.demos.io;
 
-import net.imagej.ImageJ;
-import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.command.dataset.DatasetXMLLoadCommand;
+package sc.fiji.bdvpg.command.display.bdv.settings;
 
-import java.io.File;
+import bdv.util.BdvHandle;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 
-public class MultipleSpimDataImporterCommandDemo
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
+
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menu = {
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
+			@Menu(label = BdvPgMenus.BDVMenu, weight = BdvPgMenus.BDVW),
+			@Menu(label = "Settings", weight = -2),
+			@Menu(label = "BDV - Set Number Of Timepoints", weight = 2)
+	},
+	description = "Sets the number of timepoints in one or several BDV Windows")
+
+public class MultiBdvTimepointsSetCommand implements
+	BdvPlaygroundActionCommand
 {
 
-	static ImageJ ij;
+	@Parameter(label = "Select BDV Windows",
+			description = "The BigDataViewer windows whose timepoint range will be set",
+			persist = false)
+	BdvHandle[] bdvhs;
 
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
+	@Parameter(label = "Number of timepoints",
+			description = "Total number of timepoints available in the BDV windows",
+			min = "1")
+	int numberoftimepoints;
 
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( DatasetXMLLoadCommand.class, true, "files", files);
+	public void run() {
+		for (BdvHandle bdvh : bdvhs) {
+			bdvh.getViewerPanel().setNumTimepoints(numberoftimepoints);
+		}
 	}
 
 }

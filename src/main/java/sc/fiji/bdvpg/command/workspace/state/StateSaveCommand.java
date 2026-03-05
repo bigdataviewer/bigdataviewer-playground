@@ -26,29 +26,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.demos.io;
 
-import net.imagej.ImageJ;
-import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.command.dataset.DatasetXMLLoadCommand;
+package sc.fiji.bdvpg.command.workspace.state;
+
+import org.scijava.Context;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.services.SourceServiceSaver;
 
 import java.io.File;
 
-public class MultipleSpimDataImporterCommandDemo
+@SuppressWarnings({ "unused", "CanBeFinal" })
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	//menuPath = ScijavaBdvDefaults.RootMenu +
+	//	"Workspace > State - Save",
+		menu = {
+				@Menu(label = BdvPgMenus.L1),
+				@Menu(label = BdvPgMenus.L2),
+				@Menu(label = BdvPgMenus.WorkspaceMenu, weight = BdvPgMenus.WorkspaceW),
+				@Menu(label = "State", weight = 0),
+				@Menu(label = "State - Save", weight = -9)
+		},
+	description = "Saves the current Bdv Playground state to a JSON file")
+public class StateSaveCommand implements
+	BdvPlaygroundActionCommand
 {
 
-	static ImageJ ij;
+	@Parameter(label = "State file (JSON)",
+			description = "Path to save the state JSON file",
+			style = "save")
+	File file;
 
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
+	@Parameter
+	Context ctx;
 
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( DatasetXMLLoadCommand.class, true, "files", files);
+	@Override
+	public void run() {
+		new SourceServiceSaver(file, ctx).run();
 	}
-
 }

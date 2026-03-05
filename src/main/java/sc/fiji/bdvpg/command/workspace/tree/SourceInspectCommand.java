@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,29 +26,41 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.demos.io;
 
-import net.imagej.ImageJ;
-import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.command.dataset.DatasetXMLLoadCommand;
+package sc.fiji.bdvpg.command.workspace.tree;
 
-import java.io.File;
+import bdv.viewer.SourceAndConverter;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
-public class MultipleSpimDataImporterCommandDemo
-{
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+                                              // are set by SciJava
+                                              // pre-processors
 
-	static ImageJ ij;
+@Plugin(type = BdvPlaygroundActionCommand.class,
+		menu = {
+				@Menu(label = BdvPgMenus.L1),
+				@Menu(label = BdvPgMenus.L2),
+				@Menu(label = BdvPgMenus.WorkspaceMenu, weight = BdvPgMenus.WorkspaceW),
+				@Menu(label = "Tree", weight = 1),
+				@Menu(label = "Tree - Inspect Sources", weight = -7)
+		},
+	//menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>Tree - Inspect Sources",
+	description = "Adds an inspection node in the tree view for each selected source, showing details about its properties and type hierarchy")
+public class SourceInspectCommand implements BdvPlaygroundActionCommand {
 
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
+	@Parameter(label = "Source(s) to inspect")
+	SourceAndConverter<?>[] sources;
 
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( DatasetXMLLoadCommand.class, true, "files", files);
+	@Parameter
+	SourceService source_service;
+
+	@Override
+	public void run() {
+		source_service.tree().inspectSources(sources);
 	}
-
 }

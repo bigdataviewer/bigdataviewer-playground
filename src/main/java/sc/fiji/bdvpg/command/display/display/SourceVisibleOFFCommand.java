@@ -26,29 +26,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.demos.io;
 
-import net.imagej.ImageJ;
-import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.command.dataset.DatasetXMLLoadCommand;
+package sc.fiji.bdvpg.command.display.display;
 
-import java.io.File;
+import bdv.viewer.SourceAndConverter;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 
-public class MultipleSpimDataImporterCommandDemo
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
+
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menu = {
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
+			@Menu(label = "Source", weight = 3),
+			@Menu(label = "Source - Make Invisible", weight = 5)
+	},
+	description = "Makes sources invisible in all BDV windows where they are displayed")
+public class SourceVisibleOFFCommand implements
+	BdvPlaygroundActionCommand
 {
 
-	static ImageJ ij;
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to make invisible")
+	SourceAndConverter<?>[] sources;
 
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
+	@Parameter
+    SourceBdvDisplayService bsds;
 
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( DatasetXMLLoadCommand.class, true, "files", files);
+	@Override
+	public void run() {
+		for (SourceAndConverter<?> source : sources) {
+			bsds.setVisible(source, false);
+		}
 	}
-
 }

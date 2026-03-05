@@ -26,29 +26,40 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.demos.io;
 
-import net.imagej.ImageJ;
-import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.command.dataset.DatasetXMLLoadCommand;
+package sc.fiji.bdvpg.command.workspace;
 
-import java.io.File;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
+import sc.fiji.bdvpg.scijava.services.SourceService;
 
-public class MultipleSpimDataImporterCommandDemo
+@SuppressWarnings({ "unused", "CanBeFinal" })
+@Plugin(type = BdvPlaygroundActionCommand.class,
+		menu = {
+				@Menu(label = BdvPgMenus.L1),
+				@Menu(label = BdvPgMenus.L2),
+				@Menu(label = BdvPgMenus.WorkspaceMenu, weight = BdvPgMenus.WorkspaceW),
+				@Menu(label = "Show BDV Playground Window", weight = -11)
+		},
+	//menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>Show BDV Playground Window",
+	description = "Opens the Bdv Playground source management window")
+public class SourceServiceShowCommand implements
+	BdvPlaygroundActionCommand
 {
 
-	static ImageJ ij;
+	@Parameter
+	SourceService source_service;
 
-	public static void main( String[] args )
-	{
-		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
-		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
-
-		final File[] files = new File[ 2 ];
-		files[0] = new File("src/test/resources/mri-stack.xml");
-		files[1] = new File("src/test/resources/mri-stack-shiftedX.xml");
-		ij.command().run( DatasetXMLLoadCommand.class, true, "files", files);
+	public void run() {
+		if (source_service.tree() != null) {
+			source_service.tree().show();
+		}
+		else {
+			System.err.println("Error : no UI available");
+		}
 	}
 
 }

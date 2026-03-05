@@ -36,7 +36,7 @@ import org.scijava.command.Command;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.PluginService;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.command.workspace.TreeSourceServiceShowCommand;
+import sc.fiji.bdvpg.command.workspace.SourceServiceShowCommand;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.services.SourceServices;
 
@@ -76,7 +76,7 @@ public class SourcePopupMenu {
 
 		this.popupActionWithPaths = pluginService
 			.getPluginsOfType(Command.class).stream()
-			.filter(pi -> !pi.getClassName().equals(TreeSourceServiceShowCommand.class.getName()))
+			.filter(pi -> !pi.getClassName().equals(SourceServiceShowCommand.class.getName()))
 			.map(pi -> commandService.getCommand(pi.getClassName()))
 			.filter(ci -> ci != null && ci.getMenuPath() != null && !ci.getMenuPath().isEmpty())
 			.filter(ci -> ci.getMenuPath().stream().map(MenuEntry::getName).collect(Collectors.joining(">")).startsWith(rootPrefix))
