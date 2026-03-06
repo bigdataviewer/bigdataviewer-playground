@@ -35,7 +35,7 @@ import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
 import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.source.exporter.SourcesToXMLHDF5Exporter;
-import sc.fiji.bdvpg.source.importer.VoronoiSourceGetter;
+import sc.fiji.bdvpg.source.importer.VoronoiSourceCreator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,7 +57,7 @@ public class XmlHDF5SpimdataExporterDemo {
 
         // Arrange
         // creates a Voronoi SourceAndConverter
-        SourceAndConverter<?> source = new VoronoiSourceGetter(new long[]{512,512,1},256,true).get();
+        SourceAndConverter<?> source = new VoronoiSourceCreator(new long[]{512,512,1},256,true).get();
         // Puts it into a List
         List<SourceAndConverter<?>> sources = new ArrayList<>();
         sources.add(source);

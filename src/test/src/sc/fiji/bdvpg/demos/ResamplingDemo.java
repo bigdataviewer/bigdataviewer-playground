@@ -41,7 +41,7 @@ import sc.fiji.bdvpg.services.SourceServices;
 import sc.fiji.bdvpg.source.display.BrightnessAdjuster;
 import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.source.display.ColorChanger;
-import sc.fiji.bdvpg.source.importer.MandelbrotSourceGetter;
+import sc.fiji.bdvpg.source.importer.MandelbrotSourceCreator;
 import sc.fiji.bdvpg.source.importer.EmptySourceCreator;
 import sc.fiji.bdvpg.source.transform.SourceAffineTransformer;
 import sc.fiji.bdvpg.source.transform.SourceResampler;
@@ -92,7 +92,7 @@ public class ResamplingDemo {
         new BrightnessAutoAdjuster<>( source, 0 ).run();
 
         // Get generative source (works with warped source as well)
-        SourceAndConverter<UnsignedShortType> mandelbrot = new MandelbrotSourceGetter().get();
+        SourceAndConverter<UnsignedShortType> mandelbrot = new MandelbrotSourceCreator().get();
         AffineTransform3D at3d = new AffineTransform3D();
         at3d.scale(600);
         at3d.translate(-100,-100,0);

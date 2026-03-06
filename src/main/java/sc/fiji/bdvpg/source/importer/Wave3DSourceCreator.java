@@ -27,59 +27,31 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.viewers.bdv.source;
+package sc.fiji.bdvpg.source.importer;
 
-import bdv.util.BdvHandle;
+import bdv.util.Procedural3DImageShort;
+import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
-import sc.fiji.bdvpg.services.SourceServices;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
+import sc.fiji.bdvpg.source.SourceHelper;
 
-import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-/**
- * BigDataViewer Playground Action -- Removes a {@link SourceAndConverter} from
- * a {@link BdvHandle} Note : - the functional interface allows to use this
- * action in a functional way, in this case, the constructor without
- * SourceAndConverter can be used TODO : think if this action is useful ? It
- * looks unused because the direct call to
- * SourceServices.getSourcesDisplayService().remove is
- * more convenient
- */
-
-public class SourceRemover implements Runnable,
-	Consumer<SourceAndConverter<?>[]>
+public class Wave3DSourceCreator implements Runnable,
+	Supplier<SourceAndConverter<UnsignedShortType>>
 {
 
-	final SourceAndConverter<?> source;
-	final BdvHandle bdvh;
-
-	public SourceRemover(BdvHandle bdvh, SourceAndConverter<?> source) {
-		this.source = source;
-		this.bdvh = bdvh;
-	}
-
-	public SourceRemover(SourceAndConverter<?> source) {
-		this.source = source;
-		this.bdvh = null;
-	}
-
-	public SourceRemover() {
-		this.source = null;
-		this.bdvh = null;
-	}
-
+	@Override
 	public void run() {
-		accept(source);
+		// Useless
 	}
 
 	@Override
-	public void accept(SourceAndConverter... sources) {
-		if (bdvh == null) {
-			// Remove from all displays
-			SourceServices.getBdvDisplayService().removeFromAllBdvs(sources);
-		}
-		else {
-			// Remove from a specific bdvHandle
-			SourceServices.getBdvDisplayService().remove(bdvh, sources);
-		}
+	public SourceAndConverter<UnsignedShortType> get() {
+		Source<UnsignedShortType> s = new Procedural3DImageShort(p -> (int) ((Math
+			.sin(p[0] / 20) * Math.sin(p[1] / 40) * Math.sin(p[2] / 5) + 1) * 100))
+				.getSource("Wave 3D");
+
+		return SourceHelper.createSourceAndConverter(s);
 	}
 }

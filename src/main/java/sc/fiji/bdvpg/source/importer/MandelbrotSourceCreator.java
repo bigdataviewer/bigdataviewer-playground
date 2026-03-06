@@ -37,7 +37,7 @@ import sc.fiji.bdvpg.source.SourceHelper;
 
 import java.util.function.Supplier;
 
-public class MandelbrotSourceGetter implements Runnable,
+public class MandelbrotSourceCreator implements Runnable,
 	Supplier<SourceAndConverter<UnsignedShortType>>
 {
 

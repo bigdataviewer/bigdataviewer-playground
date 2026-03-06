@@ -37,9 +37,9 @@ import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.log.SystemLogger;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.source.importer.MandelbrotSourceGetter;
-import sc.fiji.bdvpg.source.importer.VoronoiSourceGetter;
-import sc.fiji.bdvpg.source.importer.Wave3DSourceGetter;
+import sc.fiji.bdvpg.source.importer.MandelbrotSourceCreator;
+import sc.fiji.bdvpg.source.importer.VoronoiSourceCreator;
+import sc.fiji.bdvpg.source.importer.Wave3DSourceCreator;
 
 /**
  * @author Nicolas Chiaruttini, EPFL 2020
@@ -74,20 +74,20 @@ public class SourceSampleOpenCommand implements BdvPlaygroundActionCommand {
 		switch (sample_name) {
 
 			case "Mandelbrot":
-				source = (new MandelbrotSourceGetter()).get();
+				source = (new MandelbrotSourceCreator()).get();
 				break;
 
 			case "Wave3D":
-				source = (new Wave3DSourceGetter()).get();
+				source = (new Wave3DSourceCreator()).get();
 				break;
 
 			case "Voronoi":
-				source = (new VoronoiSourceGetter(new long[] { 512, 512, 1 }, 256, true)
+				source = (new VoronoiSourceCreator(new long[] { 512, 512, 1 }, 256, true)
 					.get());
 				break;
 
 			case "Big Voronoi":
-				source = (new VoronoiSourceGetter(new long[] { 2048, 2048, 2048 }, 65536,
+				source = (new VoronoiSourceCreator(new long[] { 2048, 2048, 2048 }, 65536,
 					false).get());
 				break;
 

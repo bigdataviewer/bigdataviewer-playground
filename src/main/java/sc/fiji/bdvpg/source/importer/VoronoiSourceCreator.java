@@ -59,7 +59,7 @@ import sc.fiji.bdvpg.source.SourceHelper;
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class VoronoiSourceGetter implements Runnable,
+public class VoronoiSourceCreator implements Runnable,
 	Supplier<SourceAndConverter<?>>
 {
 
@@ -70,8 +70,8 @@ public class VoronoiSourceGetter implements Runnable,
 	// Flags if the image should be computed completely
 	final boolean copyImg;
 
-	public VoronoiSourceGetter(final long[] imgSize, int numPts,
-		boolean copyImg)
+	public VoronoiSourceCreator(final long[] imgSize, int numPts,
+								boolean copyImg)
 	{
 		this.imgSize = imgSize;
 		this.numPts = numPts;
