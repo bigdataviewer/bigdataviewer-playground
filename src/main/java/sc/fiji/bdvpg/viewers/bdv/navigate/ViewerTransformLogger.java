@@ -32,7 +32,6 @@ package sc.fiji.bdvpg.viewers.bdv.navigate;
 import bdv.util.BdvHandle;
 import net.imglib2.realtransform.AffineTransform3D;
 import sc.fiji.bdvpg.log.Logger;
-import sc.fiji.bdvpg.log.Logs;
 import sc.fiji.bdvpg.log.SystemLogger;
 
 /**
