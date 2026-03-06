@@ -27,24 +27,16 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.command.process.resample;
+package sc.fiji.bdvpg.command.display.bdv;
 
+import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
-import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.source.importer.EmptySourceCreator;
-
-/**
- * Command which creates an empty Source based on a model Source The created
- * source will cover the same portion of space as the model source, but with the
- * specified voxel size, and at a specific timepoint
- *
- * @author Nicolas Chiaruttini, EPFL 2020
- */
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
@@ -54,47 +46,27 @@ import sc.fiji.bdvpg.source.importer.EmptySourceCreator;
 	menu = {
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
-			@Menu(label = BdvPgMenus.ProcessMenu, weight = BdvPgMenus.ProcessW),
-			@Menu(label = "Fuse & Resample", weight = -1),
-			@Menu(label = "Source - Create Resampling Grid From Source", weight = 1)
+			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
+			@Menu(label = BdvPgMenus.BDVMenu, weight = BdvPgMenus.BDVW),
+			@Menu(label = "BDV - Adjust View On Sources", weight = 5)
 	},
-	description = "Defines an empty source which occupied the same volume as a model source but with a potentially" +
-		" different voxel size. Works with a single timepoint.")
+	description = "Adjust current Bdv view on the selected sources")
+public class BdvViewSourcesAdjustCommand implements
+	BdvPlaygroundActionCommand
+{
 
-public class SourceCreateFromModelCommand implements BdvPlaygroundActionCommand {
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) that the view will be adjusted to span")
+	SourceAndConverter<?>[] sources;
 
-	@Parameter(label = "Model Source",
-		description = "Defines the portion of space covered by the new source")
-	SourceAndConverter<?> model;
-
-	@Parameter(label = "Source name",
-			description = "Name for the new source")
-	String name;
-
-	@Parameter(type = ItemIO.OUTPUT,
-			label = "Created Source",
-			description = "The newly created empty source")
-	SourceAndConverter<?> source;
-
-	@Parameter(label = "Voxel Size X",
-			description = "Voxel size in X dimension (in world coordinates units)")
-	double vox_size_x;
-
-	@Parameter(label = "Voxel Size Y",
-			description = "Voxel size in Y dimension (in world coordinates units)")
-	double vox_size_y;
-
-	@Parameter(label = "Voxel Size Z",
-			description = "Voxel size in Z dimension (in world coordinates units)")
-	double vox_size_z;
-
-	@Parameter(label = "Timepoint",
-			description = "Timepoint to use from the model source (0-based)")
-	int timepoint;
+	@Parameter(label = "Select BDV Window",
+			description = "The BigDataViewer window whose view will be adjusted to fit all selected sources")
+	BdvHandle bdvh;
 
 	@Override
 	public void run() {
-		source = new EmptySourceCreator(name, model, timepoint, vox_size_x,
-				vox_size_y, vox_size_z).get();
+		if (sources.length > 0) {
+			new ViewerTransformAdjuster(bdvh, sources).run();
+		}
 	}
 }

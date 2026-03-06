@@ -27,66 +27,50 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.command.workspace.tree;
+package sc.fiji.bdvpg.command.display.source;
 
+import bdv.viewer.SourceAndConverter;
+import net.imglib2.type.numeric.ARGBType;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ColorRGB;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.scijava.services.tree.FilterNode;
-import sc.fiji.bdvpg.scijava.services.tree.SourceTreeModel;
+import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.source.display.ColorChanger;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-		menu = {
-				@Menu(label = BdvPgMenus.L1),
-				@Menu(label = BdvPgMenus.L2),
-				@Menu(label = BdvPgMenus.WorkspaceMenu, weight = BdvPgMenus.WorkspaceW),
-				@Menu(label = "Tree", weight = 1),
-				@Menu(label = "Tree - Filter By Metadata", weight = -5)
-		},
-		//menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>Tree - Make Metadata Filter Node",
-	description = "Adds a node in the tree view which selects the sources which contain a certain key metadata and which matches a certain regular expression")
+	menu = {
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
+			@Menu(label = "Source", weight = 3),
+			@Menu(label = "Source - Set Color", weight = 1)
+	},
+	description = "Changes the display color of one or more sources")
+public class SourceColorChangeCommand implements BdvPlaygroundActionCommand {
 
-public class TreeNodeFilterMetadataCommand implements
-	BdvPlaygroundActionCommand
-{
+	@Parameter(label = "Color",
+			description = "The new display color for the selected sources")
+	ColorRGB color = new ColorRGB(255, 255, 255);
 
-	@Parameter(label = "Name of the node",
-			description = "Display name for the filter node in the tree view")
-	String group_name;
-
-	@Parameter(label = "Metadata Key",
-			description = "The metadata key to filter sources by")
-	String key;
-
-	@Parameter(label = "Value regex",
-		description = "Regular expression to match metadata values (\".*\" matches everything)")
-	String value_regex = ".*";
-
-	@Parameter
-	SourceService source_service;
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) whose color will be changed")
+	SourceAndConverter<?>[] sources;
 
 	@Override
 	public void run() {
-		FilterNode filterNode = new FilterNode(group_name, (source) -> {
-			if (source_service.containsMetadata(source, key)) {
-				Object o = source_service.getMetadata(source, key);
-				if (o instanceof String) {
-					String str = (String) o;
-					return str.matches(value_regex);
-				}
-				else return false;
-			}
-			else return false;
-		}, false);
-		SourceTreeModel model = source_service.tree().getSourceTreeModel();
-		model.addNode(model.getRoot(), filterNode);
+		ARGBType imglib2color = new ARGBType(ARGBType.rgba(color.getRed(), color
+			.getGreen(), color.getBlue(), 255));// Fully opaque color.getAlpha()));
+		for (SourceAndConverter<?> source : sources) {
+			new ColorChanger(source, imglib2color).run();
+		}
+		SourceServices.getBdvDisplayService().updateDisplays(sources);
 	}
-}
 
+}

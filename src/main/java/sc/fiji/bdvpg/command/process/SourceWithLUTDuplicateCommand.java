@@ -65,7 +65,7 @@ import java.util.Map;
 	initializer = "init",
 	description = "Duplicate one or several sources and sets an (identical) Look Up Table for these duplicated sources")
 
-public class SourceDuplicateWithLUTCommand extends DynamicCommand implements
+public class SourceWithLUTDuplicateCommand extends DynamicCommand implements
 	BdvPlaygroundActionCommand
 {
 

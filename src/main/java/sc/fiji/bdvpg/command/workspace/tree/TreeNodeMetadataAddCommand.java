@@ -27,50 +27,66 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.command.display.display;
+package sc.fiji.bdvpg.command.workspace.tree;
 
-import bdv.viewer.SourceAndConverter;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.source.display.BrightnessAdjuster;
-
-/**
- * @author Nicolas Chiaruttini, EPFL 2020
- */
+import sc.fiji.bdvpg.scijava.services.SourceService;
+import sc.fiji.bdvpg.scijava.services.tree.FilterNode;
+import sc.fiji.bdvpg.scijava.services.tree.SourceTreeModel;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
 																							// pre-processors
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
-	menu = {
-			@Menu(label = BdvPgMenus.L1),
-			@Menu(label = BdvPgMenus.L2),
-			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
-			@Menu(label = "Source", weight = 3),
-			@Menu(label = "Source - Set Brightness", weight = 2)
-	},
-	description = "Sets the display range (min and max) of one or more sources")
-public class SourceBrightnessAdjustCommand implements BdvPlaygroundActionCommand {
+		menu = {
+				@Menu(label = BdvPgMenus.L1),
+				@Menu(label = BdvPgMenus.L2),
+				@Menu(label = BdvPgMenus.WorkspaceMenu, weight = BdvPgMenus.WorkspaceW),
+				@Menu(label = "Tree", weight = 1),
+				@Menu(label = "Tree - Filter By Metadata", weight = -5)
+		},
+		//menuPath = ScijavaBdvDefaults.RootMenu + "Workspace>Tree - Make Metadata Filter Node",
+	description = "Adds a node in the tree view which selects the sources which contain a certain key metadata and which matches a certain regular expression")
 
-	@Parameter(label = "Select Source(s)",
-			description = "The source(s) whose display range will be set")
-	SourceAndConverter<?>[] sources;
+public class TreeNodeMetadataAddCommand implements
+	BdvPlaygroundActionCommand
+{
 
-	@Parameter(label = "Min",
-			description = "Minimum value of the display range")
-	double min;
+	@Parameter(label = "Name of the node",
+			description = "Display name for the filter node in the tree view")
+	String group_name;
 
-	@Parameter(label = "Max",
-			description = "Maximum value of the display range")
-	double max;
+	@Parameter(label = "Metadata Key",
+			description = "The metadata key to filter sources by")
+	String key;
 
+	@Parameter(label = "Value regex",
+		description = "Regular expression to match metadata values (\".*\" matches everything)")
+	String value_regex = ".*";
+
+	@Parameter
+	SourceService source_service;
+
+	@Override
 	public void run() {
-		for (SourceAndConverter<?> source : sources) {
-			new BrightnessAdjuster(source, min, max).run();
-		}
+		FilterNode filterNode = new FilterNode(group_name, (source) -> {
+			if (source_service.containsMetadata(source, key)) {
+				Object o = source_service.getMetadata(source, key);
+				if (o instanceof String) {
+					String str = (String) o;
+					return str.matches(value_regex);
+				}
+				else return false;
+			}
+			else return false;
+		}, false);
+		SourceTreeModel model = source_service.tree().getSourceTreeModel();
+		model.addNode(model.getRoot(), filterNode);
 	}
 }
+

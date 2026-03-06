@@ -39,7 +39,7 @@ import org.scijava.Context;
 import org.scijava.command.CommandService;
 import org.scijava.script.ScriptService;
 import org.scijava.ui.UIService;
-import sc.fiji.bdvpg.command.process.resample.SourceCreateFromModelCommand;
+import sc.fiji.bdvpg.command.process.resample.SourceFromModelCreateCommand;
 import sc.fiji.bdvpg.command.process.SourceDeleteCommand;
 import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.services.SourceService;
@@ -124,7 +124,7 @@ public class TestSourcesCommands {
     @Test(timeout=5000)
     public void testNewSourceCommand() throws ExecutionException, InterruptedException {
         Assert.assertEquals("Error - there should be two sources at the beginning of the test", 2, sourceService.getSources().size());
-        commandService.run(SourceCreateFromModelCommand.class,true,
+        commandService.run(SourceFromModelCreateCommand.class,true,
                 "model", "mri-stack.xml>Channel>1",
                 "name", "model",
                 "vox_size_x",1,

@@ -27,7 +27,7 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.command.display.display;
+package sc.fiji.bdvpg.command.display.source;
 
 import bdv.viewer.SourceAndConverter;
 import org.scijava.plugin.Menu;
@@ -50,7 +50,7 @@ import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
 			@Menu(label = "Source - Make Visible", weight = 4)
 	},
 	description = "Makes sources visible in all BDV windows where they are displayed")
-public class SourceVisibleONCommand implements BdvPlaygroundActionCommand {
+public class SourceVisibilityONCommand implements BdvPlaygroundActionCommand {
 
 	@Parameter(label = "Select Source(s)",
 			description = "The source(s) to make visible")

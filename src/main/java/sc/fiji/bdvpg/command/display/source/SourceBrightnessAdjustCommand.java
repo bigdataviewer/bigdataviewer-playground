@@ -27,16 +27,19 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.command.display.bdv;
+package sc.fiji.bdvpg.command.display.source;
 
-import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.source.display.BrightnessAdjuster;
+
+/**
+ * @author Nicolas Chiaruttini, EPFL 2020
+ */
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
@@ -47,26 +50,27 @@ import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
 			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
-			@Menu(label = BdvPgMenus.BDVMenu, weight = BdvPgMenus.BDVW),
-			@Menu(label = "BDV - Adjust View On Sources", weight = 5)
+			@Menu(label = "Source", weight = 3),
+			@Menu(label = "Source - Set Brightness", weight = 2)
 	},
-	description = "Adjust current Bdv view on the selected sources")
-public class BdvViewAdjustOnSourcesCommand implements
-	BdvPlaygroundActionCommand
-{
+	description = "Sets the display range (min and max) of one or more sources")
+public class SourceBrightnessAdjustCommand implements BdvPlaygroundActionCommand {
 
 	@Parameter(label = "Select Source(s)",
-			description = "The source(s) that the view will be adjusted to span")
+			description = "The source(s) whose display range will be set")
 	SourceAndConverter<?>[] sources;
 
-	@Parameter(label = "Select BDV Window",
-			description = "The BigDataViewer window whose view will be adjusted to fit all selected sources")
-	BdvHandle bdvh;
+	@Parameter(label = "Min",
+			description = "Minimum value of the display range")
+	double min;
 
-	@Override
+	@Parameter(label = "Max",
+			description = "Maximum value of the display range")
+	double max;
+
 	public void run() {
-		if (sources.length > 0) {
-			new ViewerTransformAdjuster(bdvh, sources).run();
+		for (SourceAndConverter<?> source : sources) {
+			new BrightnessAdjuster(source, min, max).run();
 		}
 	}
 }

@@ -27,7 +27,7 @@
  * #L%
  */
 
-package sc.fiji.bdvpg.command.display.display;
+package sc.fiji.bdvpg.command.display.source;
 
 import bdv.viewer.SourceAndConverter;
 import org.scijava.command.InteractiveCommand;
@@ -61,7 +61,7 @@ import static org.scijava.ItemVisibility.MESSAGE;
 	},
 	initializer = "init",
 	description = "Interactively adjusts the display range (min and max) of sources with live preview")
-public class SourceBrightnessAdjustInteractiveCommand extends InteractiveCommand
+public class SourceBrightnessInteractiveAdjustCommand extends InteractiveCommand
 	implements BdvPlaygroundActionCommand
 {
 

@@ -52,7 +52,7 @@ import java.util.Arrays;
 			@Menu(label = "Source - Export To XML/HDF5 Dataset", weight = 2)
 	},
 	description = "Exports sources to an XML/HDF5 BigDataViewer dataset")
-public class SourceXmlHDF5ExportCommand implements BdvPlaygroundActionCommand {
+public class SourceXMLHDF5ExportCommand implements BdvPlaygroundActionCommand {
 
 	@Parameter(label = "Select Source(s)",
 			description = "The source(s) to export")
