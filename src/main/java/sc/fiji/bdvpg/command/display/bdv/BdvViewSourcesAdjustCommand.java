@@ -34,7 +34,7 @@ import bdv.viewer.SourceAndConverter;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 

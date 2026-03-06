@@ -35,11 +35,11 @@ import org.scijava.Context;
 import org.scijava.ui.UIService;
 import org.scijava.ui.swing.SwingUI;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.viewers.behaviour.EditorBehaviourInstaller;
-import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewer.behaviour.EditorBehaviourInstaller;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.service.SourceService;
+import sc.fiji.bdvpg.service.SourceServices;
 import sc.fiji.bdvpg.source.display.BrightnessAdjuster;
 import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 

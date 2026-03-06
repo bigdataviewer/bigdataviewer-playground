@@ -60,9 +60,9 @@ import net.imglib2.type.volatiles.VolatileARGBType;
 import net.imglib2.util.Intervals;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.viewers.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.viewer.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.scijava.service.SourceService;
+import sc.fiji.bdvpg.service.SourceServices;
 
 import java.util.ArrayList;
 import java.util.Arrays;

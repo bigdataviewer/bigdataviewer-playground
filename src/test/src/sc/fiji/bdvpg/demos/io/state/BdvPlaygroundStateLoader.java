@@ -30,7 +30,7 @@ package sc.fiji.bdvpg.demos.io.state;
 
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.services.SourceServiceLoader;
+import sc.fiji.bdvpg.service.SourceServiceLoader;
 
 public class BdvPlaygroundStateLoader {
 

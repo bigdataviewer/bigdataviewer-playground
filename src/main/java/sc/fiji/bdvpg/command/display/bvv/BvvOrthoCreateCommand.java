@@ -35,13 +35,13 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.viewers.bvv.BvvCreator;
-import sc.fiji.bdvpg.viewers.bvv.BvvHandleHelper;
+import sc.fiji.bdvpg.viewer.bvv.BvvCreator;
+import sc.fiji.bdvpg.viewer.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
-import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
-import sc.fiji.bdvpg.viewers.ViewerStateSyncStarter;
+import sc.fiji.bdvpg.viewer.ViewerAdapter;
+import sc.fiji.bdvpg.viewer.ViewerOrthoSyncStarter;
+import sc.fiji.bdvpg.viewer.ViewerStateSyncStarter;
 
 import javax.swing.JFrame;
 import java.awt.GraphicsDevice;

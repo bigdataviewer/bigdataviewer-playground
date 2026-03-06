@@ -35,7 +35,7 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.viewers.bvv.BvvCreator;
+import sc.fiji.bdvpg.viewer.bvv.BvvCreator;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 

@@ -36,7 +36,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
 																							// are set by SciJava
@@ -55,7 +55,7 @@ public class BdvCreateCommand implements BdvPlaygroundActionCommand {
 
 	/**
 	 * This triggers:
-	 * {@link sc.fiji.bdvpg.scijava.processors.BdvHandlePostprocessor}
+	 * {@link sc.fiji.bdvpg.scijava.processor.BdvHandlePostprocessor}
 	 */
 	@Parameter(type = ItemIO.OUTPUT,
 			label = "Created BDV Window",

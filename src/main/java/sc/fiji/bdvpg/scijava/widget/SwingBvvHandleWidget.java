@@ -37,7 +37,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.ui.swing.widget.SwingInputWidget;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
-import sc.fiji.bdvpg.viewers.bvv.BvvHandleHelper;
+import sc.fiji.bdvpg.viewer.bvv.BvvHandleHelper;
 
 import javax.swing.JList;
 import javax.swing.JPanel;

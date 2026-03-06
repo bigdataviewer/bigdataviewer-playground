@@ -34,11 +34,11 @@ import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.viewers.behaviour.EditorBehaviourInstaller;
+import sc.fiji.bdvpg.viewer.behaviour.EditorBehaviourInstaller;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
-import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
+import sc.fiji.bdvpg.service.SourceServices;
 
 import javax.swing.SwingUtilities;
 

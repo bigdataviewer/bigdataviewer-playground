@@ -31,10 +31,10 @@ package sc.fiji.bdvpg.demos;
 import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.viewers.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.viewers.bdv.navigate.RayCastPositionerSliderAdder;
+import sc.fiji.bdvpg.viewer.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.viewer.bdv.navigate.RayCastPositionerSliderAdder;
 import sc.fiji.bdvpg.demos.transform.AffineTransformSourceDemo;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.service.SourceServices;
 
 public class RayCastDemo {
 

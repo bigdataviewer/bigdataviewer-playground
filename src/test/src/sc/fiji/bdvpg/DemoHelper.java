@@ -32,8 +32,8 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import com.formdev.flatlaf.FlatDarkLaf;
 import net.imagej.ImageJ;
-import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceService;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.service.SourceService;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

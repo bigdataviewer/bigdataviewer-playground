@@ -31,10 +31,10 @@ package sc.fiji.bdvpg.demos.io;
 import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.scijava.services.SourceService;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.scijava.service.SourceService;
 import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.service.SourceServices;
 import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 /**

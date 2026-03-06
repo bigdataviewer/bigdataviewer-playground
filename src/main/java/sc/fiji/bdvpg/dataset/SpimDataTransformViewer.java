@@ -38,7 +38,7 @@ import mpicbg.spim.data.sequence.TimePoint;
 import net.imglib2.realtransform.AffineGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.services.SourceService;
+import sc.fiji.bdvpg.scijava.service.SourceService;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;

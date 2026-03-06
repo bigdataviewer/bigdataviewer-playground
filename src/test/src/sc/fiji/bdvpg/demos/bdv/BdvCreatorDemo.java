@@ -34,7 +34,7 @@ import org.scijava.ui.UIService;
 import org.scijava.ui.swing.SwingUI;
 import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.scijava.BdvMenuHelper;
-import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
 
 /**
  * Demos a way to create a Bdv window which will be registered by the {@link SourceBdvDisplayService}

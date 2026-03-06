@@ -33,7 +33,7 @@ import bdv.viewer.SourceAndConverter;
 import net.imglib2.display.ColorConverter;
 import net.imglib2.type.numeric.ARGBType;
 import sc.fiji.bdvpg.log.SystemLogger;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.service.SourceServices;
 
 import java.util.function.Consumer;
 

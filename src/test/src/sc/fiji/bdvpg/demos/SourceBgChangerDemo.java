@@ -34,9 +34,9 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.service.SourceService;
+import sc.fiji.bdvpg.service.SourceServices;
 import sc.fiji.bdvpg.source.transform.SourceOutOfBoundsColorChanger;
 import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 

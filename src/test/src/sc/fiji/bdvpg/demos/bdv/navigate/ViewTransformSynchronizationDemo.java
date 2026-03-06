@@ -40,13 +40,13 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.view.Views;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.viewers.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewer.behaviour.ClickBehaviourInstaller;
+import sc.fiji.bdvpg.service.SourceServices;
 import sc.fiji.bdvpg.source.SourceHelper;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
-import sc.fiji.bdvpg.viewers.ViewerTransformSyncStarter;
-import sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper;
+import sc.fiji.bdvpg.viewer.ViewerAdapter;
+import sc.fiji.bdvpg.viewer.ViewerTransformSyncStarter;
+import sc.fiji.bdvpg.viewer.ViewerTransformSyncStopper;
 
 /**
  * ViewTransformSynchronizationDemo

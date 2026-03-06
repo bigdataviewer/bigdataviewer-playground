@@ -35,7 +35,7 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import mpicbg.spim.data.generic.base.Entity;
 import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import org.scijava.plugin.SciJavaPlugin;
-import sc.fiji.bdvpg.scijava.services.SourceService;
+import sc.fiji.bdvpg.scijava.service.SourceService;
 
 /**
  * Plugins which can handle {@link mpicbg.spim.data.generic.base.Entity} when

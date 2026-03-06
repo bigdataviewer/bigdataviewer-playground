@@ -38,8 +38,8 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceService;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.service.SourceService;
 import sc.fiji.bdvpg.source.register.BigWarpLauncher;
 
 import java.util.Arrays;

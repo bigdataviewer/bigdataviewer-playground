@@ -32,7 +32,7 @@ package sc.fiji.bdvpg.cache;
 import net.imglib2.cache.CacheLoader;
 import net.imglib2.cache.LoaderCache;
 import net.imglib2.cache.ref.WeakRefLoaderCache;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.service.SourceServices;
 
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;

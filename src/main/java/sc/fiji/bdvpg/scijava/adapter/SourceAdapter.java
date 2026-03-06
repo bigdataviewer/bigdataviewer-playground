@@ -43,7 +43,7 @@ import net.imglib2.type.numeric.ARGBType;
 import org.scijava.InstantiableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.service.SourceServices;
 import sc.fiji.persist.IObjectScijavaAdapterService;
 import sc.fiji.bdvpg.scijava.adapter.source.ISourceAdapter;
 import sc.fiji.bdvpg.source.display.ColorChanger;
@@ -62,7 +62,7 @@ public class SourceAdapter implements
 	protected static final Logger logger = LoggerFactory.getLogger(
 		SourceAdapter.class);
 
-	final sc.fiji.bdvpg.services.SourceAdapter sourceSerializer;
+	final sc.fiji.bdvpg.service.SourceAdapter sourceSerializer;
 
 	final Map<Class<? extends Source<?>>, ISourceAdapter<?>> sourceSerializers =
 		new HashMap<>();
@@ -70,7 +70,7 @@ public class SourceAdapter implements
 		new HashMap<>();
 
 	public SourceAdapter(
-		sc.fiji.bdvpg.services.SourceAdapter sourceSerializer)
+		sc.fiji.bdvpg.service.SourceAdapter sourceSerializer)
 	{
 		this.sourceSerializer = sourceSerializer;
 		sourceSerializer.getScijavaContext().getService(

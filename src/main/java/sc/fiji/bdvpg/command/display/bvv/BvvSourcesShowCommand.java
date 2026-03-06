@@ -34,11 +34,11 @@ import bvv.vistools.BvvHandle;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceServices;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
+import sc.fiji.bdvpg.service.SourceServices;
+import sc.fiji.bdvpg.viewer.ViewerAdapter;
 
 /**
  * Show sources in a BigVolumeViewer window - limited to 16 bit images

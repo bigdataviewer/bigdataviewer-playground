@@ -32,7 +32,7 @@ package sc.fiji.bdvpg.command.display.bdv;
 import bdv.util.BdvHandle;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
-import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformLogger;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformLogger;
 import sc.fiji.bdvpg.log.Logger;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 

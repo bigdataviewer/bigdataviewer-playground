@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.cache.GlobalCacheBuilder;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
-import sc.fiji.bdvpg.scijava.services.SourceService;
+import sc.fiji.bdvpg.scijava.service.SourceService;
 
 @Plugin(type = BdvPlaygroundActionCommand.class,
 		menu = {

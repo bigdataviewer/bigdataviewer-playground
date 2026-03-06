@@ -41,12 +41,12 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.view.Views;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.viewers.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformChanger;
-import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformLogger;
-import sc.fiji.bdvpg.viewers.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.viewer.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformChanger;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformLogger;
+import sc.fiji.bdvpg.viewer.behaviour.ClickBehaviourInstaller;
+import sc.fiji.bdvpg.service.SourceServices;
 import sc.fiji.bdvpg.source.SourceHelper;
 
 /**

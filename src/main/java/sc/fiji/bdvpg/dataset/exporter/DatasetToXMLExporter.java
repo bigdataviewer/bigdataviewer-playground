@@ -43,8 +43,8 @@ import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.scijava.service.SourceService;
+import sc.fiji.bdvpg.service.SourceServices;
 import sc.fiji.bdvpg.dataset.EntityHandler;
 import sc.fiji.bdvpg.dataset.IEntityHandlerService;
 
@@ -54,8 +54,8 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-import static sc.fiji.bdvpg.scijava.services.SourceService.SPIM_DATA_LOCATION;
-import static sc.fiji.bdvpg.services.ISourceService.SPIM_DATA_INFO;
+import static sc.fiji.bdvpg.scijava.service.SourceService.SPIM_DATA_LOCATION;
+import static sc.fiji.bdvpg.service.ISourceService.SPIM_DATA_INFO;
 
 public class DatasetToXMLExporter implements Runnable {
 

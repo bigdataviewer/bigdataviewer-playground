@@ -32,7 +32,7 @@ import bdv.util.BdvHandle;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import sc.fiji.bdvpg.scijava.BdvMenuHelper;
-import sc.fiji.bdvpg.viewers.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.viewer.bdv.BdvHandleHelper;
 
 /**
  * Test command to demo {@link BdvMenuHelper}

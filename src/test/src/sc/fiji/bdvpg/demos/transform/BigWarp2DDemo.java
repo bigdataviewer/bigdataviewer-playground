@@ -37,7 +37,7 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.scijava.services.SourceService;
+import sc.fiji.bdvpg.scijava.service.SourceService;
 import sc.fiji.bdvpg.source.SourceAndTimeRange;
 import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.source.register.BigWarpLauncher;

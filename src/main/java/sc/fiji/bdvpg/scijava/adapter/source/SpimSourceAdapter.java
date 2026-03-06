@@ -38,15 +38,15 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.services.ISourceService;
-import sc.fiji.bdvpg.services.SourceAdapter;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.scijava.service.SourceService;
+import sc.fiji.bdvpg.service.ISourceService;
+import sc.fiji.bdvpg.service.SourceAdapter;
+import sc.fiji.bdvpg.service.SourceServices;
 
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-import static sc.fiji.bdvpg.services.ISourceService.SPIM_DATA_INFO;
+import static sc.fiji.bdvpg.service.ISourceService.SPIM_DATA_INFO;
 
 @Plugin(type = ISourceAdapter.class)
 public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {

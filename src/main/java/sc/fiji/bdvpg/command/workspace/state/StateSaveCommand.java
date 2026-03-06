@@ -35,7 +35,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceServiceSaver;
+import sc.fiji.bdvpg.service.SourceServiceSaver;
 
 import java.io.File;
 

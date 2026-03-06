@@ -32,15 +32,15 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.viewers.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceService;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewer.behaviour.ClickBehaviourInstaller;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.service.SourceService;
 import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
 import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
-import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
-import sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper;
+import sc.fiji.bdvpg.viewer.ViewerAdapter;
+import sc.fiji.bdvpg.viewer.ViewerOrthoSyncStarter;
+import sc.fiji.bdvpg.viewer.ViewerTransformSyncStopper;
 
 import java.util.List;
 

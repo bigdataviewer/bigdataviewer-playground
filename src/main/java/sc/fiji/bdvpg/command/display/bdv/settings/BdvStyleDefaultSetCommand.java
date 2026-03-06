@@ -32,12 +32,12 @@ package sc.fiji.bdvpg.command.display.bdv.settings;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.viewers.bdv.supplier.DefaultBdvSupplier;
-import sc.fiji.bdvpg.viewers.bdv.supplier.IBdvSupplier;
-import sc.fiji.bdvpg.viewers.bdv.supplier.SerializableBdvOptions;
+import sc.fiji.bdvpg.viewer.bdv.supplier.DefaultBdvSupplier;
+import sc.fiji.bdvpg.viewer.bdv.supplier.IBdvSupplier;
+import sc.fiji.bdvpg.viewer.bdv.supplier.SerializableBdvOptions;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
 
 import java.util.Arrays;
 

@@ -34,13 +34,13 @@ import mpicbg.spim.data.XmlIoSpimData;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.service.SourceServices;
 
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.function.Function;
 
-import static sc.fiji.bdvpg.scijava.services.SourceService.SPIM_DATA_LOCATION;
+import static sc.fiji.bdvpg.scijava.service.SourceService.SPIM_DATA_LOCATION;
 
 public class XMLToDatasetImporter implements Runnable,
 	Function<String, AbstractSpimData<?>>

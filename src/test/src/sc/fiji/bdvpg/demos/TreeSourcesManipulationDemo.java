@@ -33,9 +33,9 @@ import ij.IJ;
 import net.imagej.ImageJ;
 import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.scijava.services.tree.FilterNode;
-import sc.fiji.bdvpg.scijava.services.tree.SourceTree;
+import sc.fiji.bdvpg.scijava.service.SourceService;
+import sc.fiji.bdvpg.scijava.service.tree.FilterNode;
+import sc.fiji.bdvpg.scijava.service.tree.SourceTree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;

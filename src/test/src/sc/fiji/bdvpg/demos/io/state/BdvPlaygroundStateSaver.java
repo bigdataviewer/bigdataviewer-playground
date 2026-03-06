@@ -36,7 +36,7 @@ import sc.fiji.bdvpg.demos.transform.BigWarpDemo;
 import sc.fiji.bdvpg.demos.ResamplingDemo;
 import sc.fiji.bdvpg.DemoHelper;
 import sc.fiji.bdvpg.demos.transform.WarpedSourceDemo;
-import sc.fiji.bdvpg.services.SourceServiceSaver;
+import sc.fiji.bdvpg.service.SourceServiceSaver;
 
 import java.io.File;
 

@@ -33,7 +33,7 @@ import org.scijava.Context;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.viewers.bdv.config.BdvSettingsGUISetter;
+import sc.fiji.bdvpg.viewer.bdv.config.BdvSettingsGUISetter;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 

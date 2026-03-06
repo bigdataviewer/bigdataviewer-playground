@@ -35,7 +35,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
-import sc.fiji.bdvpg.services.SourceAdapter;
+import sc.fiji.bdvpg.service.SourceAdapter;
 import sc.fiji.persist.IObjectScijavaAdapter;
 
 import java.lang.reflect.Type;

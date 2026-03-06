@@ -25,7 +25,7 @@ SourceAndConverterService (batch events)
 
 ## Package Structure
 
-All tree-related classes are in `sc.fiji.bdvpg.scijava.services.tree.tree`:
+All tree-related classes are in `sc.fiji.bdvpg.scijava.service.tree.tree`:
 
 | Class | Responsibility |
 |-------|----------------|
@@ -281,4 +281,4 @@ The public API of `SourceAndConverterServiceUI` is preserved for backward compat
 | `getTreeModel()`            | Returns Swing `DefaultTreeModel` |
 | `getSourceTreeModel()`      | **New**: Returns thread-safe `SourceTreeModel` |
 
-The old `SourceFilterNode`, `SpimDataFilterNode` (old), `SpimDataElementFilter`, and `BdvHandleFilterNode` (old) classes in `sc.fiji.bdvpg.scijava.services.tree` are no longer used by the UI but remain for any external code that may reference them.
+The old `SourceFilterNode`, `SpimDataFilterNode` (old), `SpimDataElementFilter`, and `BdvHandleFilterNode` (old) classes in `sc.fiji.bdvpg.scijava.service.tree` are no longer used by the UI but remain for any external code that may reference them.

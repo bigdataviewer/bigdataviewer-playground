@@ -40,10 +40,10 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.viewers.bdv.navigate.PositionLogger;
-import sc.fiji.bdvpg.viewers.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.viewers.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.viewer.bdv.navigate.PositionLogger;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewer.behaviour.ClickBehaviourInstaller;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
 import sc.fiji.bdvpg.source.SourceHelper;
 
 /**

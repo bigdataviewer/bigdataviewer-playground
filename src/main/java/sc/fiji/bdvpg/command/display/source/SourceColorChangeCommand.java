@@ -37,7 +37,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.util.ColorRGB;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.service.SourceServices;
 import sc.fiji.bdvpg.source.display.ColorChanger;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields

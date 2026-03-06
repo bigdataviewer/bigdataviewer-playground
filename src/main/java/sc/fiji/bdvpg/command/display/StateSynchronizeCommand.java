@@ -36,13 +36,13 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.viewers.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.viewers.bvv.BvvHandleHelper;
+import sc.fiji.bdvpg.viewer.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.viewer.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
-import sc.fiji.bdvpg.viewers.ViewerStateSyncStarter;
-import sc.fiji.bdvpg.viewers.ViewerStateSyncStopper;
+import sc.fiji.bdvpg.viewer.ViewerAdapter;
+import sc.fiji.bdvpg.viewer.ViewerStateSyncStarter;
+import sc.fiji.bdvpg.viewer.ViewerStateSyncStopper;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;

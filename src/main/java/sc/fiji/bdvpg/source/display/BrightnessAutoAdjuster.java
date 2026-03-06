@@ -37,7 +37,7 @@ import net.imglib2.histogram.Histogram1d;
 import net.imglib2.histogram.Real1dBinMapper;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.service.SourceServices;
 
 public class BrightnessAutoAdjuster<T extends RealType<T>> implements Runnable {
 

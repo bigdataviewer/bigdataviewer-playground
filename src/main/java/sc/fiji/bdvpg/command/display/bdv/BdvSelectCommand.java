@@ -31,7 +31,7 @@ package sc.fiji.bdvpg.command.display.bdv;
 
 import bdv.util.BdvHandle;
 import org.scijava.plugin.Parameter;
-import sc.fiji.bdvpg.viewers.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.viewer.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields

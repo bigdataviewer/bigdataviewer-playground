@@ -41,8 +41,8 @@ import org.scijava.script.ScriptService;
 import org.scijava.ui.UIService;
 import sc.fiji.bdvpg.command.process.resample.SourceFromModelCreateCommand;
 import sc.fiji.bdvpg.command.process.SourceDeleteCommand;
-import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceService;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.service.SourceService;
 import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 import sc.fiji.persist.IObjectScijavaAdapterService;
 

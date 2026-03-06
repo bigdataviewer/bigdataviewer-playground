@@ -32,10 +32,10 @@ import bdv.ui.BdvDefaultCards;
 import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.viewers.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.viewer.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.scijava.BdvMenuHelper;
 import sc.fiji.bdvpg.scijava.ScijavaSwingUI;
-import sc.fiji.bdvpg.scijava.services.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
 
 public class BdvScijavaCommandDemo {
     static ImageJ ij;

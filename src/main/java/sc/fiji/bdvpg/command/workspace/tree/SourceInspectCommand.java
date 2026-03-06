@@ -35,7 +35,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
-import sc.fiji.bdvpg.scijava.services.SourceService;
+import sc.fiji.bdvpg.scijava.service.SourceService;
 
 @SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
                                               // are set by SciJava

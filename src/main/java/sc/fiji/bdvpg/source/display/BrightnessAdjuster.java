@@ -30,7 +30,7 @@
 package sc.fiji.bdvpg.source.display;
 
 import bdv.viewer.SourceAndConverter;
-import sc.fiji.bdvpg.services.SourceServices;
+import sc.fiji.bdvpg.service.SourceServices;
 
 public class BrightnessAdjuster implements Runnable {
 

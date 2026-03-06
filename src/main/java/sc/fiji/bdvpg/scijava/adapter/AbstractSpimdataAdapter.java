@@ -39,8 +39,8 @@ import com.google.gson.JsonSerializer;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.services.SourceService;
-import sc.fiji.bdvpg.services.SourceAdapter;
+import sc.fiji.bdvpg.scijava.service.SourceService;
+import sc.fiji.bdvpg.service.SourceAdapter;
 import sc.fiji.bdvpg.dataset.exporter.DatasetToXMLExporter;
 import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
@@ -49,7 +49,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static sc.fiji.bdvpg.services.ISourceService.SPIM_DATA_LOCATION;
+import static sc.fiji.bdvpg.service.ISourceService.SPIM_DATA_LOCATION;
 
 /**
  * Serializes SpimData objects
