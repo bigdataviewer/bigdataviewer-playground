@@ -23,6 +23,8 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y xvfb
       - name: Set up CI environment
         run: .github/setup.sh
+      - name: Increase Maven memory limits
+        run: echo "MAVEN_OPTS=-Xmx4g" >> $GITHUB_ENV
       - name: Execute the build
         run: xvfb-run --auto-servernum .github/build.sh
         env:
