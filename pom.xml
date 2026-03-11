@@ -223,6 +223,16 @@
 		<testSourceDirectory>src/test/src</testSourceDirectory>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!-- @{argLine} preserves JaCoCo agent; -Xmx2g caps test JVM heap -->
+					<argLine>@{argLine} -Xmx2g</argLine>
+					<!-- Fork a fresh JVM per test class to avoid memory accumulation -->
+					<reuseForks>false</reuseForks>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.11</version> <!-- Use the latest version -->
