@@ -37,19 +37,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
+import sc.fiji.bdvpg.service.SourceAdapter;
+import sc.fiji.bdvpg.source.SourceHelper;
 
 import java.lang.reflect.Type;
 
 @Plugin(type = ISourceAdapter.class)
 public class EmptySourceAdapter implements ISourceAdapter<EmptySource> {
 
-	SourceAndConverterAdapter sacSerializer;
+	SourceAdapter sourceSerializer;
 
 	@Override
-	public void setSacSerializer(SourceAndConverterAdapter sacSerializer) {
-		this.sacSerializer = sacSerializer;
+	public void setSourceSerializer(SourceAdapter sourceSerializer) {
+		this.sourceSerializer = sourceSerializer;
 	}
 
 	@Override
@@ -58,12 +58,12 @@ public class EmptySourceAdapter implements ISourceAdapter<EmptySource> {
 	}
 
 	@Override
-	public JsonElement serialize(SourceAndConverter<?> sac, Type type,
+	public JsonElement serialize(SourceAndConverter<?> source, Type type,
 		JsonSerializationContext jsonSerializationContext)
 	{
 		JsonObject obj = new JsonObject();
-		EmptySource source = (EmptySource) sac.getSpimSource();
-		obj.add("empty_source_parameters", jsonSerializationContext.serialize(source
+		EmptySource emptySource = (EmptySource) source.getSpimSource();
+		obj.add("empty_source_parameters", jsonSerializationContext.serialize(emptySource
 			.getParameters()));
 		return obj;
 	}
@@ -78,7 +78,7 @@ public class EmptySourceAdapter implements ISourceAdapter<EmptySource> {
 			.deserialize(obj.get("empty_source_parameters"),
 				EmptySource.EmptySourceParams.class);
 
-		return SourceAndConverterHelper.createSourceAndConverter(new EmptySource(
+		return SourceHelper.createSourceAndConverter(new EmptySource(
 			sourceParams));
 	}
 }

@@ -34,20 +34,20 @@ package sc.fiji.bdvpg;
  */
 public abstract class PlaygroundPrefs {
 
-	private static boolean sourceAndConverterUIVisibility = true;
+	private static boolean sourceTreeVisibility = true;
 
 	/**
 	 * @param visibility Sets whether the tree view should be displayed or not
 	 *          automatically
 	 */
-	public static void setSourceAndConverterUIVisibility(boolean visibility) {
-		sourceAndConverterUIVisibility = visibility;
+	public static void setSourceTreeVisibility(boolean visibility) {
+		sourceTreeVisibility = visibility;
 	}
 
 	/**
 	 * @return whether the tree view is displayed or not automatically
 	 */
-	public static boolean getSourceAndConverterUIVisibility() {
-		return sourceAndConverterUIVisibility;
+	public static boolean getSourceTreeVisibility() {
+		return sourceTreeVisibility;
 	}
 }

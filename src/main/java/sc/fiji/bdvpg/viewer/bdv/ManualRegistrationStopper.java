@@ -1,0 +1,147 @@
+/*-
+ * #%L
+ * BigDataViewer-Playground
+ * %%
+ * Copyright (C) 2019 - 2026 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+
+package sc.fiji.bdvpg.viewer.bdv;
+
+import bdv.viewer.SourceAndConverter;
+import net.imglib2.realtransform.AffineTransform3D;
+import sc.fiji.bdvpg.service.SourceServices;
+import sc.fiji.bdvpg.source.SourceAndTimeRange;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiFunction;
+
+// TODO : Ensure volatile is working with source which are not AbstractSpimSource
+
+/**
+ * BigDataViewer Playground Action -- Action which stops the manual registration
+ * of n {@link SourceAndConverter}s Works in coordination with
+ * {@link ManualRegistrationStarter} Works with a single BdvHandle (TODO :
+ * synchronizes with multiple BdvHandle) Working principle ( read
+ * {@link ManualRegistrationStarter} first ) : - Stops listener of manual
+ * registration - Removes transiently wrapped sources from display, and from
+ * {@link SourceServices} - Transform all the sources that needed to
+ * be transformed, according to the
+ * {@link ManualRegistrationStopper#registrationPolicy} (see details below) -
+ * Restores the initially displays sources, but transformed according to the
+ * chosen registrationPolicy a registrationPolicy is a function that outputs a
+ * registered source, with inputs being the initial source with a time range
+ * {@link SourceAndTimeRange} and an affine transform, thus it's
+ * {@code BiFunction<AffineTransform3D, SourceAndConverterAndTimeRange, SourceAndConverter>}
+ * This modularity allows for different ways to store the registration depending
+ * on the source. Standards policies are implemented in
+ * {@link sc.fiji.bdvpg.source.transform.SourceTransformHelper} *
+ * mutate : branch between mutateTransformedSourceAndConverter and
+ * mutateLastSpimdataTransformation depending on the source class * append :
+ * branch between createNewTransformedSourceAndConverter and
+ * appendNewSpimdataTransformation depending on the source class Any other
+ * policy can be used since it is a parameter of this action
+ *
+ * @author : Nicolas Chiaruttini, BIOP, EPFL 2019
+ */
+
+public class ManualRegistrationStopper implements Runnable {
+
+	final ManualRegistrationStarter starter;
+
+	final BiFunction<AffineTransform3D, SourceAndTimeRange<?>, SourceAndConverter<?>> registrationPolicy;// =
+																																																										// ManualRegistrationStopper::createNewTransformedSourceAndConverter;
+
+	SourceAndConverter<?>[] transformedSources;
+
+	public ManualRegistrationStopper(ManualRegistrationStarter starter,
+		BiFunction<AffineTransform3D, SourceAndTimeRange<?>, SourceAndConverter<?>> registrationPolicy)
+	{
+		this.starter = starter;
+		this.registrationPolicy = registrationPolicy;
+		this.minTimepoint = starter.bdvHandle.getViewerPanel().state()
+			.getCurrentTimepoint();
+		this.maxTimepoint = starter.bdvHandle.getViewerPanel().state()
+			.getCurrentTimepoint() + 1;
+	}
+
+	int minTimepoint;
+	int maxTimepoint;
+
+	public void setTimeRange(int min, int max) {
+		this.minTimepoint = min;
+		this.maxTimepoint = max;
+	}
+
+	@Override
+	public void run() {
+
+		// Gets the final transformation
+		AffineTransform3D transform3D = this.starter.getCurrentTransform().copy();
+
+		// Stops BdvHandle listener
+		this.starter.getBdvHandle().getViewerPanel().transformListeners().remove(
+			starter.getListener());
+
+		// Removes temporary TransformedSourceAndConverter - a two-step process in
+		// order to improve performance
+		List<SourceAndConverter<?>> tempSources = starter
+			.getTransformedSourceAndConverterDisplayed();
+
+		SourceServices.getBdvDisplayService().remove(starter.bdvHandle,
+			tempSources.toArray(new SourceAndConverter[0]));
+
+		for (SourceAndConverter<?> source : tempSources) {
+			SourceServices.getSourceService().remove(source);
+		}
+
+		int nSources = starter.getOriginalSources().length;
+		transformedSources = new SourceAndConverter[nSources];
+
+		List<SourceAndConverter<?>> transformedSourcesToDisplay = new ArrayList<>();
+		// Applies the policy
+		for (int i = 0; i < nSources; i++) {
+			SourceAndConverter<?> source = this.starter
+				.getOriginalSources()[i];
+
+			transformedSources[i] = registrationPolicy.apply(transform3D,
+				new SourceAndTimeRange<>(source, minTimepoint, maxTimepoint));
+			if (starter.getOriginallyDisplayedSources().contains(source)) {
+				transformedSourcesToDisplay.add(transformedSources[i]);
+			}
+		}
+
+		// Calls display ( array for better performance )
+		SourceServices.getBdvDisplayService().show(starter
+			.getBdvHandle(), transformedSourcesToDisplay.toArray(
+				new SourceAndConverter<?>[0]));
+
+	}
+
+	public SourceAndConverter<?>[] getTransformedSources() {
+		return transformedSources;
+	}
+
+}

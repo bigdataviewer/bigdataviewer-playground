@@ -38,24 +38,24 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.services.ISourceAndConverterService;
-import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
+import sc.fiji.bdvpg.scijava.service.SourceService;
+import sc.fiji.bdvpg.service.ISourceService;
+import sc.fiji.bdvpg.service.SourceAdapter;
+import sc.fiji.bdvpg.service.SourceServices;
 
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_INFO;
+import static sc.fiji.bdvpg.service.ISourceService.SPIM_DATA_INFO;
 
 @Plugin(type = ISourceAdapter.class)
 public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 
-	SourceAndConverterAdapter sacSerializer;
+	SourceAdapter sourceSerializer;
 
 	@Override
-	public void setSacSerializer(SourceAndConverterAdapter sacSerializer) {
-		this.sacSerializer = sacSerializer;
+	public void setSourceSerializer(SourceAdapter sourceSerializer) {
+		this.sourceSerializer = sourceSerializer;
 	}
 
 	@Override
@@ -64,17 +64,17 @@ public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 	}
 
 	@Override
-	public JsonElement serialize(SourceAndConverter sac, Type type,
+	public JsonElement serialize(SourceAndConverter source, Type type,
 		JsonSerializationContext jsonSerializationContext)
 	{
 		JsonObject obj = new JsonObject();
 
-		SourceAndConverterService.SpimDataInfo sdi =
-			(SourceAndConverterService.SpimDataInfo) SourceAndConverterServices
-				.getSourceAndConverterService().getMetadata(sac, SPIM_DATA_INFO);
+		SourceService.SpimDataInfo sdi =
+			(SourceService.SpimDataInfo) SourceServices
+				.getSourceService().getMetadata(source, SPIM_DATA_INFO);
 
 		if (sdi == null) {
-			System.err.println("Spim Source " + sac.getSpimSource().getName() +
+			System.err.println("Spim Source " + source.getSpimSource().getName() +
 				"  has no associated spimdata. Deserialization will fail.");
 		}
 		else {
@@ -98,22 +98,22 @@ public class SpimSourceAdapter implements ISourceAdapter<SpimSource> {
 		}
 		else {
 			int setupId = obj.getAsJsonPrimitive("viewsetup").getAsInt();
-			final ISourceAndConverterService sacservice = SourceAndConverterServices
-				.getSourceAndConverterService();
-			Optional<SourceAndConverter<?>> futureSac = sacservice
-				.getSourceAndConverters().stream().filter(sac -> sacservice
-					.containsMetadata(sac, SPIM_DATA_INFO)).filter(sac -> {
-						SourceAndConverterService.SpimDataInfo sdi =
-							(SourceAndConverterService.SpimDataInfo) sacservice.getMetadata(
-								sac, SPIM_DATA_INFO);
+			final ISourceService sourceService = SourceServices
+				.getSourceService();
+			Optional<SourceAndConverter<?>> futureSource = sourceService
+				.getSources().stream().filter(source -> sourceService
+					.containsMetadata(source, SPIM_DATA_INFO)).filter(source -> {
+						SourceService.SpimDataInfo sdi =
+							(SourceService.SpimDataInfo) sourceService.getMetadata(
+								source, SPIM_DATA_INFO);
 						return sdi.asd.equals(asd) && sdi.setupId == setupId;
 					}).findFirst();
-			if (futureSac.isPresent()) {
-				return futureSac.get();
+			if (futureSource.isPresent()) {
+				return futureSource.get();
 			}
 			else {
 				System.err.println(
-					"Couldn't deserialize spim source from json element " + jsonElement
+					"Couldn't deserialize spim source from JSON element " + jsonElement
 						.getAsString());
 				return null;
 			}

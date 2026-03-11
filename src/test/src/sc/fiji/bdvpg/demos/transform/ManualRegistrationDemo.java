@@ -42,19 +42,19 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
-import sc.fiji.bdvpg.bdv.ManualRegistrationStarter;
-import sc.fiji.bdvpg.bdv.ManualRegistrationStopper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
+import sc.fiji.bdvpg.viewer.bdv.ManualRegistrationStarter;
+import sc.fiji.bdvpg.viewer.bdv.ManualRegistrationStopper;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewer.behaviour.ClickBehaviourInstaller;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.display.ColorChanger;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.service.SourceService;
+import sc.fiji.bdvpg.source.SourceHelper;
+import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.source.display.ColorChanger;
+import sc.fiji.bdvpg.source.transform.SourceAffineTransformer;
+import sc.fiji.bdvpg.source.transform.SourceTransformHelper;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 import java.util.List;
 
@@ -86,8 +86,8 @@ public class ManualRegistrationDemo {
         // Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
         ij = new ImageJ();
         DemoHelper.startFiji(ij);//ij.ui().showUI();
-        SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
-        SourceAndConverterBdvDisplayService bdvDisplayService = ij.get(SourceAndConverterBdvDisplayService.class);
+        SourceService sourceService = ij.get(SourceService.class);
+        SourceBdvDisplayService bdvDisplayService = ij.get(SourceBdvDisplayService.class);
 
         // load and convert an image
         ImagePlus imp = IJ.openImage("src/test/resources/blobs.tif");
@@ -102,21 +102,21 @@ public class ManualRegistrationDemo {
         BdvHandle bdvHandle = bdvDisplayService.getNewBdv();
 
         // Creates SourceAndConverter Reference
-        SourceAndConverter<T> sacReference = SourceAndConverterHelper.createSourceAndConverter(source);
+        SourceAndConverter<T> sourceReference = SourceHelper.createSourceAndConverter(source);
 
         if (demoMode == CreateNewTransformedSourceAndConverter) {
 
-            SourceAndConverter<T> sacToTransform;
-            sacToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
-            new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
+            SourceAndConverter<T> sourceToTransform;
+            sourceToTransform = SourceHelper.createSourceAndConverter(source);
+            new ColorChanger(sourceToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
 
-            bdvDisplayService.show(bdvHandle, sacReference);
-            bdvDisplayService.show(bdvHandle, sacToTransform);
+            bdvDisplayService.show(bdvHandle, sourceReference);
+            bdvDisplayService.show(bdvHandle, sourceToTransform);
 
             // Adjust view on SourceAndConverter
-            new ViewerTransformAdjuster(bdvHandle, sacReference).run();
+            new ViewerTransformAdjuster(bdvHandle, sourceReference).run();
 
-            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacToTransform);
+            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sourceToTransform);
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
@@ -129,18 +129,18 @@ public class ManualRegistrationDemo {
 
         } else if (demoMode == MutateTransformedSourceAndConverter) {
 
-            SourceAndConverter<T> sacToTransform;
-            sacToTransform = SourceAndConverterHelper.createSourceAndConverter(source);
-            sacToTransform = new SourceAffineTransformer<>(sacToTransform, new AffineTransform3D()).get();
-            new ColorChanger(sacToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
+            SourceAndConverter<T> sourceToTransform;
+            sourceToTransform = SourceHelper.createSourceAndConverter(source);
+            sourceToTransform = new SourceAffineTransformer<>(sourceToTransform, new AffineTransform3D()).get();
+            new ColorChanger(sourceToTransform, new ARGBType(ARGBType.rgba(255, 0, 0, 255))).run();
 
-            bdvDisplayService.show(bdvHandle, sacReference);
-            bdvDisplayService.show(bdvHandle, sacToTransform);
+            bdvDisplayService.show(bdvHandle, sourceReference);
+            bdvDisplayService.show(bdvHandle, sourceToTransform);
 
             // Adjust view on SourceAndConverter
-            new ViewerTransformAdjuster(bdvHandle, sacReference).run();
+            new ViewerTransformAdjuster(bdvHandle, sourceReference).run();
 
-            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacToTransform);
+            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sourceToTransform);
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
@@ -158,21 +158,21 @@ public class ManualRegistrationDemo {
                 isTransforming = !isTransforming;
             }).install("Toggle Transformation", "ctrl M");
         } else if (demoMode == MutateLastSpimdataTransformation) {
-            AbstractSpimData<?> asd =  new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
+            AbstractSpimData<?> asd =  new XMLToDatasetImporter("src/test/resources/mri-stack.xml").get();
 
             // Show all SourceAndConverter associated with above SpimData
-            sourceService.getSourceAndConverters().forEach( sac -> {
-                bdvDisplayService.show(bdvHandle, sac);
-                new BrightnessAutoAdjuster<>(sac, 0).run();
+            sourceService.getSources().forEach(src -> {
+                bdvDisplayService.show(bdvHandle, src);
+                new BrightnessAutoAdjuster<>(src, 0).run();
             });
 
-            bdvDisplayService.show(bdvHandle, sacReference);
-            new ViewerTransformAdjuster(bdvHandle, sacReference).run();
+            bdvDisplayService.show(bdvHandle, sourceReference);
+            new ViewerTransformAdjuster(bdvHandle, sourceReference).run();
 
-            List<SourceAndConverter<?>> sacList = sourceService
-                    .getSourceAndConverterFromSpimdata(asd);
+            List<SourceAndConverter<?>> sourceList = sourceService
+                    .getSourcesFromDataset(asd);
 
-            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacList.toArray(new SourceAndConverter[0]));
+            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sourceList.toArray(new SourceAndConverter[0]));
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)
@@ -193,22 +193,22 @@ public class ManualRegistrationDemo {
         }else if (demoMode == AppendNewSpimdataTransformation) {
             // TO complete
             // Import SpimData
-            AbstractSpimData<?> asd =  new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
+            AbstractSpimData<?> asd =  new XMLToDatasetImporter("src/test/resources/mri-stack.xml").get();
 
             // Show all SourceAndConverter associated with above SpimData
-            sourceService.getSourceAndConverters().forEach( sac -> {
-                bdvDisplayService.show(bdvHandle, sac);
-                new BrightnessAutoAdjuster<>(sac, 0).run();
+            sourceService.getSources().forEach(src -> {
+                bdvDisplayService.show(bdvHandle, src);
+                new BrightnessAutoAdjuster<>(src, 0).run();
             });
 
-            bdvDisplayService.show(bdvHandle, sacReference);
-            new ViewerTransformAdjuster(bdvHandle, sacReference).run();
+            bdvDisplayService.show(bdvHandle, sourceReference);
+            new ViewerTransformAdjuster(bdvHandle, sourceReference).run();
 
-            List<SourceAndConverter<?>> sacList = sourceService
-                    .getSourceAndConverterFromSpimdata(asd);
+            List<SourceAndConverter<?>> sourceList = sourceService
+                    .getSourcesFromDataset(asd);
 
 
-            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sacList.toArray(new SourceAndConverter[0]));
+            ManualRegistrationStarter manualRegistrationStarter = new ManualRegistrationStarter(bdvHandle, sourceList.toArray(new SourceAndConverter[0]));
             ManualRegistrationStopper manualRegistrationStopper = new ManualRegistrationStopper(manualRegistrationStarter,
                     // What to do with the new registration:
                     //  (BiFunction<AffineTransform3D, SourceAndConverter, SourceAndConverter>)

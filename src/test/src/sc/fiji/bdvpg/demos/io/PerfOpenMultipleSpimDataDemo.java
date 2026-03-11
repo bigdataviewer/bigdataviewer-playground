@@ -28,13 +28,9 @@
  */
 package sc.fiji.bdvpg.demos.io;
 
-import bdv.util.BdvHandle;
-import bdv.viewer.SourceAndConverter;
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -61,25 +57,17 @@ public class PerfOpenMultipleSpimDataDemo
 	{
 		// Create the ImageJ application context with all available services; necessary for SourceAndConverterServices creation
 		ij = new ImageJ();
-		DemoHelper.startFiji(ij);//ij.ui().showUI();
-
-		// Gets an active BdvHandle instance
-		// SourceAndConverterServices.getSourceAndConverterDisplayService().getActiveBdv();
+		DemoHelper.startFiji(ij);
 
 		tic();
 		for (int i=0;i<100;i++) {
 			// Import SpimData
-			new SpimDataFromXmlImporter( "src/test/resources/mri-stack.xml" ).run();
-			new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
-			new SpimDataFromXmlImporter( "src/test/resources/mri-stack-shiftedY.xml" ).run();
+			new XMLToDatasetImporter( "src/test/resources/mri-stack.xml" ).run();
+			new XMLToDatasetImporter("src/test/resources/mri-stack-shiftedX.xml").run();
+			new XMLToDatasetImporter( "src/test/resources/mri-stack-shiftedY.xml" ).run();
 			System.out.println(i);
 		}
 		toc();
-
-        /*SourceAndConverterBdvDisplayService displayService = ij.get(SourceAndConverterBdvDisplayService.class);
-        BdvHandle bdvh = displayService.getNewBdv();
-        System.out.println("---------------------------------");
-        displayService.show(bdvh, ij.get(SourceAndConverterService.class).getSourceAndConverters().toArray(new SourceAndConverter[0]));*/
 	}
 
 	static Instant start;

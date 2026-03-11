@@ -41,13 +41,13 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.view.Views;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformChanger;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformLogger;
-import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
+import sc.fiji.bdvpg.viewer.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformChanger;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformLogger;
+import sc.fiji.bdvpg.viewer.behaviour.ClickBehaviourInstaller;
+import sc.fiji.bdvpg.service.SourceServices;
+import sc.fiji.bdvpg.source.SourceHelper;
 
 /**
  * ViewTransformSetAndLogDemo
@@ -74,16 +74,16 @@ public class ViewTransformSetAndLogDemo {
 
         // Makes BDV Source
         Source<UnsignedByteType> source = new RandomAccessibleIntervalSource<>(rai, rai.getType(), "blobs");
-        SourceAndConverter<UnsignedByteType> sac = SourceAndConverterHelper.createSourceAndConverter(source);
+        SourceAndConverter<UnsignedByteType> src = SourceHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceServices.getBdvDisplayService().getActiveBdv();
 
         // Show the SourceAndConverter
-        SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
+        SourceServices.getBdvDisplayService().show(bdvHandle, src);
 
         // Adjust view on SourceAndConverter
-        new ViewerTransformAdjuster(bdvHandle, sac).run();
+        new ViewerTransformAdjuster(bdvHandle, src).run();
 
         // add a click behavior for logging transforms
         new ClickBehaviourInstaller( bdvHandle, (x, y ) -> new ViewerTransformLogger( bdvHandle ).run() ).install( "Log view transform", "ctrl D" );

@@ -135,7 +135,7 @@ When documenting commands, add:
 3. **Service parameters** - No documentation needed (not user-facing):
    ```java
    @Parameter
-   SourceAndConverterService sacService;  // No label/description needed
+   SourceAndConverterService source_service;  // No label/description needed
    ```
 
 ### Style Guidelines

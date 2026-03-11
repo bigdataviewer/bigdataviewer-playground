@@ -39,17 +39,17 @@ import com.google.gson.JsonSerializer;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
-import sc.fiji.bdvpg.spimdata.exporter.XmlFromSpimDataExporter;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.scijava.service.SourceService;
+import sc.fiji.bdvpg.service.SourceAdapter;
+import sc.fiji.bdvpg.dataset.exporter.DatasetToXMLExporter;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static sc.fiji.bdvpg.services.ISourceAndConverterService.SPIM_DATA_LOCATION;
+import static sc.fiji.bdvpg.service.ISourceService.SPIM_DATA_LOCATION;
 
 /**
  * Serializes SpimData objects
@@ -61,12 +61,12 @@ public class AbstractSpimdataAdapter implements
 	protected static final Logger logger = LoggerFactory.getLogger(
 		AbstractSpimData.class);
 
-	final SourceAndConverterAdapter sacSerializer;
+	final SourceAdapter sourceSerializer;
 
 	int spimdataCounter = 0;
 
-	public AbstractSpimdataAdapter(SourceAndConverterAdapter sacSerializer) {
-		this.sacSerializer = sacSerializer;
+	public AbstractSpimdataAdapter(SourceAdapter sourceSerializer) {
+		this.sourceSerializer = sourceSerializer;
 	}
 
 	@Override
@@ -74,23 +74,23 @@ public class AbstractSpimdataAdapter implements
 		JsonSerializationContext jsonSerializationContext)
 	{
 		JsonObject obj = new JsonObject();
-		String dataLocation = (String) sacSerializer.getScijavaContext()
-				.getService(SourceAndConverterService.class).getMetadata(asd, SPIM_DATA_LOCATION);
+		String dataLocation = (String) sourceSerializer.getScijavaContext()
+				.getService(SourceService.class).getMetadata(asd, SPIM_DATA_LOCATION);
 		if ((dataLocation == null) || (dataLocation.isEmpty())) {
-			dataLocation = new File(sacSerializer.getBasePath(), "_bdvdataset_" +
+			dataLocation = new File(sourceSerializer.getBasePath(), "_bdvdataset_" +
 				spimdataCounter + ".xml").getAbsolutePath();
 			while (new File(dataLocation).exists()) {
 				spimdataCounter++;
-				dataLocation = new File(sacSerializer.getBasePath(), "_bdvdataset_" +
+				dataLocation = new File(sourceSerializer.getBasePath(), "_bdvdataset_" +
 					spimdataCounter + ".xml").getAbsolutePath();
 			}
 			spimdataCounter++;
 			logger.info("Previously unsaved bdv dataset, saving it to " +
 				dataLocation);
-			new XmlFromSpimDataExporter(asd, dataLocation, sacSerializer
+			new DatasetToXMLExporter(asd, dataLocation, sourceSerializer
 				.getScijavaContext()).run();
 		}
-		if (sacSerializer.useRelativePaths()) {
+		if (sourceSerializer.useRelativePaths()) {
 			dataLocation = new File(dataLocation).getName();
 		}
 		obj.addProperty("datalocation", dataLocation);
@@ -104,26 +104,26 @@ public class AbstractSpimdataAdapter implements
 	{
 		String datalocation = jsonElement.getAsJsonObject().get("datalocation")
 			.getAsString();
-		if (sacSerializer.useRelativePaths()) {
-			datalocation = new File(sacSerializer.getBasePath(), datalocation).getAbsolutePath();
+		if (sourceSerializer.useRelativePaths()) {
+			datalocation = new File(sourceSerializer.getBasePath(), datalocation).getAbsolutePath();
 		}
 		String finalDataLocation = datalocation;
 		// System.out.println("Deserialization of "+datalocation);
 		if (datalocation.endsWith(".qpath")) {
 			logger.error("qpath project unhandled in deserialization!");
 		}
-		SourceAndConverterService sacService = sacSerializer.getScijavaContext()
-				.getService(SourceAndConverterService.class);
-		List<AbstractSpimData<?>> asds = sacService.getSpimDatasets().stream().filter(
+		SourceService sourceService = sourceSerializer.getScijavaContext()
+				.getService(SourceService.class);
+		List<AbstractSpimData<?>> asds = sourceService.getDatasets().stream().filter(
 				asd -> {
-					Object location = sacService.getMetadata(asd, SPIM_DATA_LOCATION);
+					Object location = sourceService.getMetadata(asd, SPIM_DATA_LOCATION);
 					return location != null && location.equals(finalDataLocation);
 				}).collect(
 						Collectors.toList());
 
 		// SpimData not found
 		if (asds.isEmpty()) {
-			return new SpimDataFromXmlImporter(datalocation).get();
+			return new XMLToDatasetImporter(datalocation).get();
 		}
 		else if (asds.size() == 1) {
 			return asds.get(0);

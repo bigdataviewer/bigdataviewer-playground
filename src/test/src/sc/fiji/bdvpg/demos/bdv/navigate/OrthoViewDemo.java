@@ -32,15 +32,15 @@ import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
-import sc.fiji.bdvpg.viewers.ViewerOrthoSyncStarter;
-import sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewer.behaviour.ClickBehaviourInstaller;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.service.SourceService;
+import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
+import sc.fiji.bdvpg.viewer.ViewerAdapter;
+import sc.fiji.bdvpg.viewer.ViewerOrthoSyncStarter;
+import sc.fiji.bdvpg.viewer.ViewerTransformSyncStopper;
 
 import java.util.List;
 
@@ -63,10 +63,10 @@ public class OrthoViewDemo {
         DemoHelper.startFiji(ij);
 
         // Gets both services
-        SourceAndConverterBdvDisplayService bdvDisplayService = ij.get(SourceAndConverterBdvDisplayService.class);
-        SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
+        SourceBdvDisplayService bdvDisplayService = ij.get(SourceBdvDisplayService.class);
+        SourceService sourceService = ij.get(SourceService.class);
 
-        new SpimDataFromXmlImporter( "src/test/resources/mri-stack.xml" ).run();
+        new XMLToDatasetImporter( "src/test/resources/mri-stack.xml" ).run();
 
         // Creates three Bdv windows
         BdvHandle bdvHandleX = bdvDisplayService.getNewBdv();
@@ -75,8 +75,8 @@ public class OrthoViewDemo {
 
         BdvHandle[] bdvhs = new BdvHandle[]{bdvHandleX,bdvHandleY,bdvHandleZ};
 
-        // Get a handle on the sacs
-        final List< SourceAndConverter<?> > sacs = sourceService.getSourceAndConverters();
+        // Get a handle on the sources
+        final List< SourceAndConverter<?> > sources = sourceService.getSources();
 
         ViewerOrthoSyncStarter syncstart = new ViewerOrthoSyncStarter(
                 new ViewerAdapter(bdvHandleX),
@@ -89,10 +89,10 @@ public class OrthoViewDemo {
 
         for (BdvHandle bdvHandle:bdvhs) {
 
-            sacs.forEach( sac -> {
-                bdvDisplayService.show(bdvHandle, sac);
-                new ViewerTransformAdjuster(bdvHandle, sac).run();
-                new BrightnessAutoAdjuster<>(sac, 0).run();
+            sources.forEach( source -> {
+                bdvDisplayService.show(bdvHandle, source);
+                new ViewerTransformAdjuster(bdvHandle, source).run();
+                new BrightnessAutoAdjuster<>(source, 0).run();
             });
 
             new ClickBehaviourInstaller(bdvHandle, (x,y) -> {

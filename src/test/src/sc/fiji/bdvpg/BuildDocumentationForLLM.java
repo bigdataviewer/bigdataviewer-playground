@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 
 public class BuildDocumentationForLLM {
     static String doc = "";
-    static final String linkGitHubRepoPrefix = "https://github.com/bigdataviewer/bigdataviewer-playground/tree/master/src/main/java/";
+    static final String linkGitHubRepoPrefix = "https://raw.githubusercontent.com/bigdataviewer/bigdataviewer-playground/tree/master/src/main/java/";
 
     public static void main(String... args) {
         //

@@ -34,8 +34,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.sourceandconverter.exporter.XmlHDF5SpimdataExporter;
-import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
+import sc.fiji.bdvpg.source.exporter.SourcesToXMLHDF5Exporter;
+import sc.fiji.bdvpg.source.importer.VoronoiSourceCreator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,16 +57,16 @@ public class XmlHDF5SpimdataExporterDemo {
 
         // Arrange
         // creates a Voronoi SourceAndConverter
-        SourceAndConverter<?> sac = new VoronoiSourceGetter(new long[]{512,512,1},256,true).get();
+        SourceAndConverter<?> source = new VoronoiSourceCreator(new long[]{512,512,1},256,true).get();
         // Puts it into a List
-        List<SourceAndConverter<?>> sacs = new ArrayList<>();
-        sacs.add(sac);
+        List<SourceAndConverter<?>> sources = new ArrayList<>();
+        sources.add(source);
         // Makes temp file which will be deleted at the end of the test execution
         File fileXmlGen = folder.newFile("testVoronoi.xml");
         File fileH5Gen = folder.newFile("testVoronoi.h5");
 
         // Act
-        XmlHDF5SpimdataExporter exporter = new XmlHDF5SpimdataExporter(sacs,"Channel", 1,0,1,4,64,64,1,512, fileXmlGen);
+        SourcesToXMLHDF5Exporter exporter = new SourcesToXMLHDF5Exporter(sources,"Channel", 1,0,1,4,64,64,1,512, fileXmlGen);
         exporter.run();
 
         // Assert

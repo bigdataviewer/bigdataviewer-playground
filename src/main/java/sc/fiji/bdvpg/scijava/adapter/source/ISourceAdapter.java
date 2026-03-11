@@ -35,7 +35,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
-import sc.fiji.bdvpg.services.SourceAndConverterAdapter;
+import sc.fiji.bdvpg.service.SourceAdapter;
 import sc.fiji.persist.IObjectScijavaAdapter;
 
 import java.lang.reflect.Type;
@@ -44,11 +44,11 @@ public interface ISourceAdapter<S extends Source> extends
 	IObjectScijavaAdapter
 {
 
-	void setSacSerializer(SourceAndConverterAdapter sacSerializer);
+	void setSourceSerializer(SourceAdapter sourceSerializer);
 
 	Class<S> getSourceClass();
 
-	JsonElement serialize(SourceAndConverter<?> sac, Type type,
+	JsonElement serialize(SourceAndConverter<?> source, Type type,
 		JsonSerializationContext jsonSerializationContext);
 
 	SourceAndConverter<?> deserialize(JsonElement jsonElement, Type type,

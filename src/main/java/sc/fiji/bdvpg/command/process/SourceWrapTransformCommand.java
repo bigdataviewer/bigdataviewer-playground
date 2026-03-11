@@ -1,0 +1,75 @@
+/*-
+ * #%L
+ * BigDataViewer-Playground
+ * %%
+ * Copyright (C) 2019 - 2026 Nicolas Chiaruttini, EPFL - Robert Haase, MPI CBG - Christian Tischer, EMBL
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+
+package sc.fiji.bdvpg.command.process;
+
+import bdv.viewer.SourceAndConverter;
+import net.imglib2.realtransform.AffineTransform3D;
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.source.transform.SourceAffineTransformer;
+
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+																							// are set by SciJava
+																							// pre-processors
+
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menu = {
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.ProcessMenu, weight = BdvPgMenus.ProcessW),
+			@Menu(label = "Source - Make Transformable", weight = 3)
+	},
+	description = " Wraps sources in a TransformedSource, enabling interactive positioning and transforms.")
+public class SourceWrapTransformCommand implements
+	BdvPlaygroundActionCommand
+{
+
+	@Parameter(label = "Select Source(s)",
+			description = "The source(s) to wrap as TransformedSource")
+	SourceAndConverter<?>[] sources;
+
+	@Parameter(type = ItemIO.OUTPUT,
+			label = "Wrapped Sources",
+			description = "The newly created TransformedSource wrappers")
+	SourceAndConverter<?>[] sources_out;
+
+	@Override
+	public void run() {
+		sources_out = new SourceAndConverter<?>[sources.length];
+		for (int i = 0; i < sources.length; i++) {
+			sources_out[i] = new SourceAffineTransformer<>(null, new AffineTransform3D())
+				.apply((SourceAndConverter<Object>) sources[i]);
+		}
+	}
+}

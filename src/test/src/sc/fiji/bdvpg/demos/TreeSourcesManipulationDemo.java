@@ -33,8 +33,9 @@ import ij.IJ;
 import net.imagej.ImageJ;
 import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.scijava.services.ui.SourceAndConverterServiceUI;
+import sc.fiji.bdvpg.scijava.service.SourceService;
+import sc.fiji.bdvpg.scijava.service.tree.FilterNode;
+import sc.fiji.bdvpg.scijava.service.tree.SourceTree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -49,7 +50,7 @@ public class TreeSourcesManipulationDemo {
         System.out.println("BigWarp version:"+ VersionUtils.getVersion(BigWarp.class));
         demo2d(ij);
 
-        SourceAndConverterServiceUI treeUI = ij.get(SourceAndConverterService.class).getUI();
+        SourceTree treeUI = ij.get(SourceService.class).tree();
 
         DefaultTreeModel model = treeUI.getTreeModel();
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeUI.getTreeModel().getRoot();
@@ -57,8 +58,8 @@ public class TreeSourcesManipulationDemo {
         int nChildren = model.getChildCount(root);
         IJ.log("There are "+nChildren+" children in the root node");
 
-        // Easier interface:
-        SourceAndConverterServiceUI.Node r = treeUI.getRoot();
+        // Easier interface - uses the model directly via FilterNode:
+        FilterNode r = treeUI.root();
 
         IJ.log("There are "+r.sources().length+" sources in the whole tree.");
         IJ.log("The node "+r+" has "+r.children().size()+" children");

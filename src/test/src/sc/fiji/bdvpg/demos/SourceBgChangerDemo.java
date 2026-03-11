@@ -34,11 +34,11 @@ import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceOutOfBoundsColorChanger;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.service.SourceService;
+import sc.fiji.bdvpg.service.SourceServices;
+import sc.fiji.bdvpg.source.transform.SourceOutOfBoundsColorChanger;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 public class SourceBgChangerDemo {
 
@@ -52,22 +52,22 @@ public class SourceBgChangerDemo {
 
         // Creates a BdvHandle
         BdvHandle bdvHandle =
-                ij.get(SourceAndConverterBdvDisplayService.class).getActiveBdv();
+                ij.get(SourceBdvDisplayService.class).getActiveBdv();
 
         final String filePath = "src/test/resources/mri-stack.xml";
         // Import SpimData
-        SpimDataFromXmlImporter importer = new SpimDataFromXmlImporter(filePath);
+        XMLToDatasetImporter importer = new XMLToDatasetImporter(filePath);
         //importer.run();
 
         final AbstractSpimData<?> spimData = importer.get();
 
-        SourceAndConverter<UnsignedShortType> sac = (SourceAndConverter<UnsignedShortType>) ij.get(SourceAndConverterService.class)
-                .getSourceAndConverterFromSpimdata(spimData)
+        SourceAndConverter<UnsignedShortType> source = (SourceAndConverter<UnsignedShortType>) ij.get(SourceService.class)
+                .getSourcesFromDataset(spimData)
                 .get(0);
 
-        SourceAndConverter<UnsignedShortType> sourceBgModified = new SourceOutOfBoundsColorChanger<>(sac, new UnsignedShortType(2000)).get();
+        SourceAndConverter<UnsignedShortType> sourceBgModified = new SourceOutOfBoundsColorChanger<>(source, new UnsignedShortType(2000)).get();
 
-        SourceAndConverterServices.getBdvDisplayService().show(bdvHandle,sourceBgModified);
+        SourceServices.getBdvDisplayService().show(bdvHandle,sourceBgModified);
 
         DemoHelper.shot("SourceBgChangerDemo");
     }

@@ -39,9 +39,9 @@ import org.scijava.Context;
 import org.scijava.command.CommandService;
 import org.scijava.script.ScriptService;
 import org.scijava.ui.UIService;
-import sc.fiji.bdvpg.scijava.command.bdv.BdvCreatorCommand;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
+import sc.fiji.bdvpg.command.display.bdv.BdvCreateCommand;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.service.SourceService;
 import sc.fiji.persist.IObjectScijavaAdapterService;
 
 import java.util.concurrent.ExecutionException;
@@ -49,35 +49,35 @@ import java.util.concurrent.ExecutionException;
 public class TestBdvCommands {
     Context ctx;
 
-    SourceAndConverterService sourceService;
-    SourceAndConverterBdvDisplayService sourceDisplayService;
+    SourceService sourceService;
+    SourceBdvDisplayService sourceDisplayService;
     CommandService commandService;
     @Before
     public void startFiji() {
         // Initializes static SourceService
         ctx = new Context(UIService.class,
-                SourceAndConverterService.class,
-                SourceAndConverterBdvDisplayService.class,
+                SourceService.class,
+                SourceBdvDisplayService.class,
                 IObjectScijavaAdapterService.class,
                 LegacyService.class); // for ij1 macro testing
 
-        sourceDisplayService = ctx.getService(SourceAndConverterBdvDisplayService.class);
+        sourceDisplayService = ctx.getService(SourceBdvDisplayService.class);
 
-        sourceService = ctx.getService(SourceAndConverterService.class);
+        sourceService = ctx.getService(SourceService.class);
 
         commandService = ctx.getService(CommandService.class);
     }
 
     @Test
     public void testBdvCreatorCommand() throws ExecutionException, InterruptedException {
-        commandService.run(BdvCreatorCommand.class,true).get();
+        commandService.run(BdvCreateCommand.class,true).get();
         Assert.assertEquals("Error - there should be one bdv created", 1, sourceDisplayService.getDisplays().size() );
     }
 
     @Test
     public void testBdvCreatorIJ1Macro() throws ExecutionException, InterruptedException{
         ctx.getService(ScriptService.class).run("dummy.ijm",
-                "run(\"BDV - Create empty BDV window\");", true).get();
+                "run(\"BDV - Create\");", true).get();
         Assert.assertEquals("Error - there should be one bdv created", 1, sourceDisplayService.getDisplays().size() );
     }
 
@@ -89,7 +89,7 @@ public class TestBdvCommands {
         sourceDisplayService.getDisplays().forEach(BdvHandle::close);
 
         // Clears all sources
-        sourceService.remove(sourceService.getSourceAndConverters().toArray(new SourceAndConverter[0]));
+        sourceService.remove(sourceService.getSources().toArray(new SourceAndConverter[0]));
 
         // Closes context
         ctx.close();
