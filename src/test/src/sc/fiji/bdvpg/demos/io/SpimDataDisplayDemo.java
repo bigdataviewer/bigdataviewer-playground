@@ -31,14 +31,11 @@ package sc.fiji.bdvpg.demos.io;
 import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
-
-import javax.swing.*;
-import java.awt.*;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.scijava.service.SourceService;
+import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.service.SourceServices;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 /**
  * Demonstrates visualisation of two spimData sources.
@@ -56,21 +53,21 @@ public class SpimDataDisplayDemo
 		DemoHelper.startFiji(ij);
 
 		// Gets active BdvHandle instance
-		BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
+		BdvHandle bdvHandle = SourceServices.getBdvDisplayService().getActiveBdv();
 
 		// Import SpimData
-		new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").run();
-		new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml").run();
+		new XMLToDatasetImporter("src/test/resources/mri-stack.xml").run();
+		new XMLToDatasetImporter("src/test/resources/mri-stack-shiftedX.xml").run();
 
 		// Show all SourceAndConverter associated with above SpimData
-		SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverters().forEach( sac -> {
-			SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
-			new ViewerTransformAdjuster(bdvHandle, sac).run();
-			new BrightnessAutoAdjuster<>(sac, 0).run();
+		SourceServices.getSourceService().getSources().forEach(source -> {
+			SourceServices.getBdvDisplayService().show(bdvHandle, source);
+			new ViewerTransformAdjuster(bdvHandle, source).run();
+			new BrightnessAutoAdjuster<>(source, 0).run();
 		});
 
 		// Expand all nodes in the tree view (up to depth 3)
-		ij.get(SourceAndConverterService.class).getUI().expandToDepth(3);
+		ij.get(SourceService.class).tree().expandToDepth(3);
 
 		DemoHelper.shot("SpimDataDisplayDemo");
 

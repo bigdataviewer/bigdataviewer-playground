@@ -33,13 +33,15 @@ import bdv.viewer.Source;
 import mpicbg.spim.data.generic.sequence.BasicSetupImgLoader;
 import mpicbg.spim.data.generic.sequence.TypedBasicImgLoader;
 import net.imglib2.type.Type;
+import sc.fiji.bdvpg.source.exporter.SourcesToXMLHDF5Exporter;
+
 import java.util.List;
 
 /**
  * ImageLoader from a list of {@link bdv.viewer.Source} This is convenient in
  * order to save some sources which are not originating from an existing
  * dataset. See its use in
- * {@link sc.fiji.bdvpg.sourceandconverter.exporter.XmlHDF5SpimdataExporter}
+ * {@link SourcesToXMLHDF5Exporter}
  * Associated SetupLoader {@link BasicSetupImgLoaderFromSource}
  *
  * @param <T> : Type of the pixel used, should be

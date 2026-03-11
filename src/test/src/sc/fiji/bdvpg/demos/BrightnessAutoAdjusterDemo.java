@@ -33,13 +33,12 @@ import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.bdv.sourceandconverter.SourceAdder;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.importer.VoronoiSourceGetter;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
+import sc.fiji.bdvpg.scijava.service.SourceService;
+import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.source.importer.VoronoiSourceCreator;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 import java.util.List;
 
@@ -65,28 +64,30 @@ public class BrightnessAutoAdjusterDemo
 		DemoHelper.startFiji(ij);//ij.ui().showUI();
 
 		// Creates a BdvHandle
-		bdvHandle = ij.get(SourceAndConverterBdvDisplayService.class).getActiveBdv();
+		bdvHandle = ij.get(SourceBdvDisplayService.class).getActiveBdv();
 
-        AbstractSpimData<?> asd = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml").get();
+        AbstractSpimData<?> asd = new XMLToDatasetImporter("src/test/resources/mri-stack.xml").get();
 
         List<SourceAndConverter<?>> sourcesFromSpimData =
-				ij.get(SourceAndConverterService.class)
-                .getSourceAndConverterFromSpimdata(asd);
+				ij.get(SourceService.class)
+                .getSourcesFromDataset(asd);
 
         addSource(bdvHandle, sourcesFromSpimData.get(0));
 
 		// Voronoi
-		final SourceAndConverter<?> voronoiSource = new VoronoiSourceGetter( new long[]{ 512, 512, 1 }, 256, true ).get();
+		final SourceAndConverter<?> voronoiSource = new VoronoiSourceCreator( new long[]{ 512, 512, 1 }, 256, true ).get();
 		addSource( bdvHandle, voronoiSource );
 
 		DemoHelper.shot("BrightnessAutoAdjusterDemo");
 	}
 
-	public static void addSource(BdvHandle bdvHandle, SourceAndConverter<?> sac )
+	public static void addSource(BdvHandle bdvHandle, SourceAndConverter<?> source )
 	{
-		new SourceAdder( bdvHandle, sac ).run();
-		new ViewerTransformAdjuster( bdvHandle, sac ).run();
-		new BrightnessAutoAdjuster<>( sac,0 ).run();
+		ij.get(SourceBdvDisplayService.class)
+				.show(bdvHandle, source);
+
+		new ViewerTransformAdjuster( bdvHandle, source ).run();
+		new BrightnessAutoAdjuster<>( source,0 ).run();
 	}
 
 }

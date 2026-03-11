@@ -40,13 +40,13 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.view.Views;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.behaviour.ClickBehaviourInstaller;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterHelper;
-import sc.fiji.bdvpg.viewers.ViewerAdapter;
-import sc.fiji.bdvpg.viewers.ViewerTransformSyncStarter;
-import sc.fiji.bdvpg.viewers.ViewerTransformSyncStopper;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.viewer.behaviour.ClickBehaviourInstaller;
+import sc.fiji.bdvpg.service.SourceServices;
+import sc.fiji.bdvpg.source.SourceHelper;
+import sc.fiji.bdvpg.viewer.ViewerAdapter;
+import sc.fiji.bdvpg.viewer.ViewerTransformSyncStarter;
+import sc.fiji.bdvpg.viewer.ViewerTransformSyncStopper;
 
 /**
  * ViewTransformSynchronizationDemo
@@ -74,14 +74,14 @@ public class ViewTransformSynchronizationDemo {
 
         // Makes BDV Source
         Source<UnsignedByteType> source = new RandomAccessibleIntervalSource<>(rai, rai.getType(), "blobs");
-        SourceAndConverter<UnsignedByteType> sac = SourceAndConverterHelper.createSourceAndConverter(source);
+        SourceAndConverter<UnsignedByteType> src = SourceHelper.createSourceAndConverter(source);
 
         // Creates a BdvHandle
-        BdvHandle bdvHandle1 = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
+        BdvHandle bdvHandle1 = SourceServices.getBdvDisplayService().getNewBdv();
         // Creates a BdvHandle
-        BdvHandle bdvHandle2 = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
+        BdvHandle bdvHandle2 = SourceServices.getBdvDisplayService().getNewBdv();
         // Creates a BdvHandles
-        BdvHandle bdvHandle3 = SourceAndConverterServices.getBdvDisplayService().getNewBdv();
+        BdvHandle bdvHandle3 = SourceServices.getBdvDisplayService().getNewBdv();
 
         BdvHandle[] bdvhs = new BdvHandle[]{bdvHandle1,bdvHandle2,bdvHandle3};
 
@@ -93,10 +93,10 @@ public class ViewTransformSynchronizationDemo {
 
         for (BdvHandle bdvHandle:bdvhs) {
             // Show the SourceAndConverter
-            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, sac);
+            SourceServices.getBdvDisplayService().show(bdvHandle, src);
 
             // Adjust view on SourceAndConverter
-            new ViewerTransformAdjuster(bdvHandle, sac).run();
+            new ViewerTransformAdjuster(bdvHandle, src).run();
 
             new ClickBehaviourInstaller(bdvHandle, (x,y) -> {
                 if (isSynchronizing) {

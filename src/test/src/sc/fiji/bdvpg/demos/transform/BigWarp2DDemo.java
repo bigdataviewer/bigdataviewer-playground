@@ -37,13 +37,13 @@ import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.type.numeric.ARGBType;
 import org.scijava.util.VersionUtils;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
-import sc.fiji.bdvpg.sourceandconverter.SourceAndConverterAndTimeRange;
-import sc.fiji.bdvpg.sourceandconverter.display.BrightnessAutoAdjuster;
-import sc.fiji.bdvpg.sourceandconverter.register.BigWarpLauncher;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceAffineTransformer;
-import sc.fiji.bdvpg.sourceandconverter.transform.SourceTransformHelper;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.scijava.service.SourceService;
+import sc.fiji.bdvpg.source.SourceAndTimeRange;
+import sc.fiji.bdvpg.source.display.BrightnessAutoAdjuster;
+import sc.fiji.bdvpg.source.register.BigWarpLauncher;
+import sc.fiji.bdvpg.source.transform.SourceAffineTransformer;
+import sc.fiji.bdvpg.source.transform.SourceTransformHelper;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +53,7 @@ public class BigWarp2DDemo {
 
     static ImageJ ij;
 
-    static SourceAndConverterService sourceService;
+    static SourceService sourceService;
 
     static final String filePath = "src/test/resources/demoSlice.xml";
 
@@ -62,7 +62,7 @@ public class BigWarp2DDemo {
         ij = new ImageJ();
         DemoHelper.startFiji(ij);//ij.ui().showUI();
         System.out.println("BigWarp version:"+VersionUtils.getVersion(BigWarp.class));
-        sourceService = ij.get(SourceAndConverterService.class);
+        sourceService = ij.get(SourceService.class);
 
         // Makes BDV Source
         // --------------------------- START BIGWARP
@@ -120,7 +120,7 @@ public class BigWarp2DDemo {
         AffineTransform3D translateRight = new AffineTransform3D();
         translateRight.translate(3,0,0);
 
-        SourceAndConverter<?> rotatedTranslatedMovingSource = SourceTransformHelper.mutate(translateRight, new SourceAndConverterAndTimeRange<>(rotatedMovingSource,0,1));
+        SourceAndConverter<?> rotatedTranslatedMovingSource = SourceTransformHelper.mutate(translateRight, new SourceAndTimeRange<>(rotatedMovingSource,0,1));
 
         // Chqnge moving source color
         sourceService.getConverterSetup(rotatedMovingSource)
@@ -150,19 +150,19 @@ public class BigWarp2DDemo {
         AffineTransform3D translateRight = new AffineTransform3D();
         translateRight.translate(5,0,0);
 
-        SourceTransformHelper.mutate(translateRight, new SourceAndConverterAndTimeRange<>(rotatedMovingSource,0,1));
+        SourceTransformHelper.mutate(translateRight, new SourceAndTimeRange<>(rotatedMovingSource,0,1));
 
     }
 
 
 
     public static SourceAndConverter<?> takeFirstSource(String xmlPath) {
-        SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
+        SourceService sourceService = ij.get(SourceService.class);
         // Fixed SourceAndConverter
-        AbstractSpimData<?> spimDataFixed = new SpimDataFromXmlImporter(xmlPath).get();
+        AbstractSpimData<?> spimDataFixed = new XMLToDatasetImporter(xmlPath).get();
 
         SourceAndConverter<?> source = sourceService
-                .getSourceAndConverterFromSpimdata(spimDataFixed)
+                .getSourcesFromDataset(spimDataFixed)
                 .get(0);
 
         new BrightnessAutoAdjuster<>(source, 0).run();
@@ -172,7 +172,7 @@ public class BigWarp2DDemo {
 
 
     public static void startBigWarp(String bwName, SourceAndConverter<?> fixedSource, SourceAndConverter<?> movingSource, String landmarkFilePath) {
-        SourceAndConverterService sourceService = ij.get(SourceAndConverterService.class);
+        SourceService sourceService = ij.get(SourceService.class);
 
         List<SourceAndConverter<?>> movingSources = new ArrayList<>();
         movingSources.add(movingSource);

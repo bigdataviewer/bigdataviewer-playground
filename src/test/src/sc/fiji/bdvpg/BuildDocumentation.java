@@ -29,15 +29,10 @@
 package sc.fiji.bdvpg;
 
 import org.reflections.Reflections;
-import org.scijava.Context;
 import org.scijava.ItemIO;
 import org.scijava.command.Command;
-import org.scijava.command.CommandService;
-import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterService;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -50,14 +45,6 @@ public class BuildDocumentation {
     static Set<Class<?>> ignoredClasses = new HashSet<>();
 
     public static void main(String... args) {
-        //
-
-        ignoredClasses.add(SourceAndConverterService.class);
-        ignoredClasses.add(CommandService.class);
-        ignoredClasses.add(LogService.class);
-        ignoredClasses.add(SourceAndConverterBdvDisplayService.class);
-        ignoredClasses.add(Context.class);
-
         Reflections reflections = new Reflections("sc.fiji.bdvpg");
 
         Set<Class<? extends Command>> commandClasses =

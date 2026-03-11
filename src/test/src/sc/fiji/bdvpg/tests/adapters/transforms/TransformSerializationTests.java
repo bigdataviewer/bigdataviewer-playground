@@ -40,9 +40,9 @@ import net.imglib2.realtransform.inverse.WrappedIterativeInvertibleRealTransform
 import org.junit.*;
 import org.scijava.Context;
 import net.imglib2.realtransform.AffineTransform3DRunTimeAdapter;
-import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplierAdapter;
-import sc.fiji.bdvpg.bdv.supplier.DefaultBdvSupplier;
-import sc.fiji.bdvpg.bdv.supplier.SerializableBdvOptions;
+import sc.fiji.bdvpg.viewer.bdv.supplier.DefaultBdvSupplierAdapter;
+import sc.fiji.bdvpg.viewer.bdv.supplier.DefaultBdvSupplier;
+import sc.fiji.bdvpg.viewer.bdv.supplier.SerializableBdvOptions;
 import sc.fiji.persist.IObjectScijavaAdapterService;
 import sc.fiji.persist.ScijavaGsonHelper;
 

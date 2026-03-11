@@ -32,10 +32,10 @@ import bdv.ui.BdvDefaultCards;
 import bdv.util.BdvHandle;
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.scijava.BdvScijavaHelper;
+import sc.fiji.bdvpg.viewer.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.scijava.BdvMenuHelper;
 import sc.fiji.bdvpg.scijava.ScijavaSwingUI;
-import sc.fiji.bdvpg.scijava.services.SourceAndConverterBdvDisplayService;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
 
 public class BdvScijavaCommandDemo {
     static ImageJ ij;
@@ -47,10 +47,10 @@ public class BdvScijavaCommandDemo {
         DemoHelper.startFiji(ij);//ij.ui().showUI();
 
         // Creates a BDV since none exists yet
-        BdvHandle bdvh = ij.get(SourceAndConverterBdvDisplayService.class).getActiveBdv();
+        BdvHandle bdvh = ij.get(SourceBdvDisplayService.class).getActiveBdv();
 
         // Adds a SciJava Command in the menu bar
-        BdvScijavaHelper
+        BdvMenuHelper
                 .addCommandToBdvHandleMenu(
                         bdvh,
                         ij.context(),

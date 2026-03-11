@@ -32,9 +32,9 @@ import bdv.util.BdvHandle;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import net.imagej.ImageJ;
 import sc.fiji.bdvpg.DemoHelper;
-import sc.fiji.bdvpg.bdv.navigate.ViewerTransformAdjuster;
-import sc.fiji.bdvpg.services.SourceAndConverterServices;
-import sc.fiji.bdvpg.spimdata.importer.SpimDataFromXmlImporter;
+import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
+import sc.fiji.bdvpg.service.SourceServices;
+import sc.fiji.bdvpg.dataset.importer.XMLToDatasetImporter;
 
 /**
  * ViewerTransformAdjusterDemo
@@ -53,33 +53,33 @@ public class ViewerTransformAdjusterDemo
         DemoHelper.startFiji(ij);
 
         // Gets active BdvHandle instance
-        BdvHandle bdvHandle = SourceAndConverterServices.getBdvDisplayService().getActiveBdv();
+        BdvHandle bdvHandle = SourceServices.getBdvDisplayService().getActiveBdv();
 
         // Import SpimData object
-        SpimDataFromXmlImporter sdix = new SpimDataFromXmlImporter("src/test/resources/mri-stack.xml");
+        XMLToDatasetImporter sdix = new XMLToDatasetImporter("src/test/resources/mri-stack.xml");
 
         AbstractSpimData<?> asd = sdix.get();
 
         // Register to the SourceAndConverter service
-        SourceAndConverterServices.getSourceAndConverterService().register(asd);
+        SourceServices.getSourceService().register(asd);
 
-        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source ->
-            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source)
+        SourceServices.getSourceService().getSourcesFromDataset(asd).forEach(source ->
+            SourceServices.getBdvDisplayService().show(bdvHandle, source)
         );
 
         // Import SpimData object
-        sdix = new SpimDataFromXmlImporter("src/test/resources/mri-stack-shiftedX.xml");
+        sdix = new XMLToDatasetImporter("src/test/resources/mri-stack-shiftedX.xml");
 
         asd = sdix.get();
 
         // Register to the SourceAndConverter service
-        SourceAndConverterServices.getSourceAndConverterService().register(asd);
+        SourceServices.getSourceService().register(asd);
 
-        SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).forEach( source ->
-            SourceAndConverterServices.getBdvDisplayService().show(bdvHandle, source)
+        SourceServices.getSourceService().getSourcesFromDataset(asd).forEach(source ->
+            SourceServices.getBdvDisplayService().show(bdvHandle, source)
         );
 
-        new ViewerTransformAdjuster(bdvHandle, SourceAndConverterServices.getSourceAndConverterService().getSourceAndConverterFromSpimdata(asd).get(0)).run();
+        new ViewerTransformAdjuster(bdvHandle, SourceServices.getSourceService().getSourcesFromDataset(asd).get(0)).run();
 
         DemoHelper.shot("ViewerTransformAdjusterDemo");
     }
