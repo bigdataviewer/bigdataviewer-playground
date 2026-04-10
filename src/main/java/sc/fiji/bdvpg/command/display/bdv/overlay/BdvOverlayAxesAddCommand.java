@@ -6,13 +6,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,40 +26,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package sc.fiji.bdvpg.demos;
+
+package sc.fiji.bdvpg.command.display.bdv.overlay;
 
 import bdv.util.BdvHandle;
-import net.imagej.ImageJ;
-import sc.fiji.bdvpg.DemoHelper;
+import ij.IJ;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.viewer.bdv.BdvHandleHelper;
-import sc.fiji.bdvpg.viewer.bdv.navigate.RayCastPositionerSliderAdder;
-import sc.fiji.bdvpg.demos.transform.AffineTransformSourceDemo;
-import sc.fiji.bdvpg.service.SourceServices;
 import sc.fiji.bdvpg.viewer.bdv.overlay.AxesOverlay;
 
-public class RayCastDemo {
+@SuppressWarnings({ "CanBeFinal", "unused" }) // Because SciJava command fields
+                                              // are set by SciJava
+                                              // pre-processors
 
-    static ImageJ ij;
+@Plugin(type = BdvPlaygroundActionCommand.class,
+	menu = {
+			@Menu(label = BdvPgMenus.L1),
+			@Menu(label = BdvPgMenus.L2),
+			@Menu(label = BdvPgMenus.DisplayMenu, weight = BdvPgMenus.DisplayW),
+			@Menu(label = BdvPgMenus.BDVMenu, weight = BdvPgMenus.BDVW),
+			@Menu(label = "Overlay", weight = 0),
+			@Menu(label = "BDV - Add Axes Overlay", weight = 4)
+	},
+	description = "Adds a 3D axes orientation gizmo onto BDV windows")
+public class BdvOverlayAxesAddCommand implements BdvPlaygroundActionCommand {
 
-    public static void main(String... args) {
-        // Initializes static SourceService and Display Service
+	@Parameter(label = "Select BDV Windows",
+			description = "The BigDataViewer windows where axes overlays will be added",
+			persist = false)
+	BdvHandle[] bdvhs;
 
-        ij = new ImageJ();
-        DemoHelper.startFiji(ij);//ij.ui().showUI();
-
-        BdvHandle bdvh = SourceServices
-                .getBdvDisplayService()
-                .getActiveBdv();
-
-        AffineTransformSourceDemo.demo(ij,3);
-
-        BdvHandleHelper.addCenterCross(bdvh);
-
-        new RayCastPositionerSliderAdder(bdvh).run();
-
-        AxesOverlay overlay = new AxesOverlay(bdvh);
-        BdvHandleHelper.addOverlay(bdvh, overlay, "axes_overlay");
-
-        DemoHelper.shot("RayCastDemo");
-    }
+	@Override
+	public void run() {
+		if (bdvhs.length == 0) IJ.log("Please make sure to select a Bdv window.");
+		for (BdvHandle bdvh : bdvhs) {
+			AxesOverlay overlay = new AxesOverlay(bdvh);
+			BdvHandleHelper.addOverlay(bdvh, overlay, "axes_overlay");
+		}
+	}
 }
