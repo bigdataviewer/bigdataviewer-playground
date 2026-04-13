@@ -30,15 +30,25 @@ package sc.fiji.bdvpg.demos.command;
 
 import bdv.util.BdvHandle;
 import org.scijava.command.Command;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 import sc.fiji.bdvpg.scijava.BdvMenuHelper;
+import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.viewer.bdv.BdvHandleHelper;
 
 /**
  * Test command to demo {@link BdvMenuHelper}
  */
 @SuppressWarnings({"unused", "CanBeFinal"})
-//@Plugin(type = Command.class, menuPath = ScijavaBdvDefaults.RootMenu + "Another sub menu>Rename Bdv Window")
+@Plugin(type = Command.class,
+        //menuPath = BdvPgMenus.RootMenu + "Another sub menu>Rename Bdv Window",
+        menu = {
+                @Menu(label = BdvPgMenus.L1),
+                @Menu(label = BdvPgMenus.L2),
+                @Menu(label = "Another sub menu"),
+                @Menu(label = "Rename Bdv Window", weight = 2)
+        } )
 public class RenameBdvCommandDemo implements Command {
 
     @Parameter

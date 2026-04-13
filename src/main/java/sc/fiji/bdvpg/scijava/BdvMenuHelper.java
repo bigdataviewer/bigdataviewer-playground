@@ -78,8 +78,19 @@ public class BdvMenuHelper {
 		Class<? extends Command> commandClass, int skipTopLevels, Object... args)
 	{
 		Plugin plugin = commandClass.getDeclaredAnnotation(Plugin.class);
+		String path = plugin.menuPath();
+		if ((path==null)||(path.trim().isEmpty())) {
+			if (plugin.menu()==null) {
+				path = "Plugins>Unsorted>"+plugin.name();
+			} else {
+				path = String.join(">",
+						Arrays.stream(plugin.menu())
+								.map(m -> m.label())
+								.collect(Collectors.toList()));
+			}
+		}
 
-		addActionToBdvHandleMenu(bdvh, plugin.menuPath(), skipTopLevels, () -> ctx
+		addActionToBdvHandleMenu(bdvh, path, skipTopLevels, () -> ctx
 			.getService(CommandService.class).run(commandClass, true, args), plugin.iconPath(), plugin.description());
 	}
 
