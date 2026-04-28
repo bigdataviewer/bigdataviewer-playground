@@ -29,7 +29,6 @@
 
 package sc.fiji.bdvpg.scijava.service.tree.swingdnd;
 
-import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -191,7 +190,7 @@ public class TreeTransferHandler extends TransferHandler {
 
 		// Transferable
 		@Override
-		public @NonNull Object getTransferData(DataFlavor flavor) {
+		public Object getTransferData(DataFlavor flavor) {
 			if (!isDataFlavorSupported(flavor)) {
 				return false;
 			}
