@@ -104,17 +104,22 @@ public class SourcePopupMenu {
 		createPopupMenu();
 	}
 
-	/**
-	 * Convenience constructor that obtains the context from
-	 * {@link SourceServices}.
-	 *
-	 * @param sources_supplier supplier of sources to act on
-	 */
-	public SourcePopupMenu(
-		Supplier<SourceAndConverter<?>[]> sources_supplier)
-	{
-		this(sources_supplier, SourceServices.getContext());
-	}
+    /**
+     * Builds the popup menu by discovering all {@link BdvPlaygroundActionCommand}
+     * plugins via the SciJava context. The commands are sorted by their menu path
+     * after stripping the {@link BdvPgMenus#RootMenu} prefix.
+     *
+     * @param sources_supplier supplier of sources to act on
+     * @param actions the array of actions to display in the popup menu
+     */
+    public SourcePopupMenu(Supplier<SourceAndConverter<?>[]> sources_supplier, String[] actions)
+    {
+        this.sources_supplier = sources_supplier;
+        this.popupActionWithPaths = actions;
+        this.popup = new JPopupMenu();
+        this.menuRoot = new DefaultMutableTreeNode(popup);
+        createPopupMenu();
+    }
 
 	private void createPopupMenu() {
 		for (String actionNameWithPath : popupActionWithPaths) {

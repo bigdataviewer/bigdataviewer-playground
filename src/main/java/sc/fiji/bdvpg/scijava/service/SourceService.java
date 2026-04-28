@@ -64,6 +64,7 @@ import org.scijava.command.CommandInfo;
 import org.scijava.command.CommandService;
 import org.scijava.module.ModuleItem;
 import org.scijava.object.ObjectService;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
@@ -857,8 +858,20 @@ public class SourceService extends AbstractService implements
 	}
 
 	public static String getCommandName(Class<? extends Command> c) {
-		String menuPath = c.getDeclaredAnnotation(Plugin.class).menuPath();
-		return menuPath.substring(menuPath.lastIndexOf(">") + 1);
+        String name = c.getAnnotation(Plugin.class).name();
+        if ((name!=null)&&(!name.isEmpty())) {
+            return name;
+        }
+        String menuPath = c.getDeclaredAnnotation(Plugin.class).menuPath();
+        if (menuPath!=null) {
+            return menuPath.substring(menuPath.lastIndexOf(">") + 1);
+        }
+        Menu[] menus = c.getDeclaredAnnotation(Plugin.class).menu();
+        if ((menus!=null)&&(menus.length!=0)) {
+            return menus[menus.length-1].label();
+        } else {
+            return "Could not find name of command "+c.getSimpleName();
+        }
 	}
 
 	void registerDefaultActions() {

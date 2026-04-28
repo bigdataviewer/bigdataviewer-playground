@@ -53,6 +53,7 @@ public class SourceContextMenuClickBehaviour implements
 
 	final BdvHandle bdv;
 	final Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier;
+    final String[] actions;
 
 	/**
 	 * @param bdv bdv handle; sources at the current mouse position are used
@@ -71,7 +72,20 @@ public class SourceContextMenuClickBehaviour implements
 	{
 		this.bdv = bdv;
 		this.sourcesSupplier = sourcesSupplier;
+        actions = null;
 	}
+
+    /**
+     * @param bdv bdv handle
+     * @param sourcesSupplier a function which returns the sources to act on
+     */
+    public SourceContextMenuClickBehaviour(BdvHandle bdv,
+                                           Supplier<Collection<SourceAndConverter<?>>> sourcesSupplier, String[] actions)
+    {
+        this.bdv = bdv;
+        this.sourcesSupplier = sourcesSupplier;
+        this.actions = actions;
+    }
 
 	@Override
 	public void click(int x, int y) {
@@ -82,9 +96,17 @@ public class SourceContextMenuClickBehaviour implements
 		final List<SourceAndConverter<?>> sources = new ArrayList<>(sourcesSupplier
 			.get());
 
-		final SourcePopupMenu popupMenu =
-			new SourcePopupMenu(() -> sources.toArray(
-				new SourceAndConverter[0]), SourceServices.getContext());
+        final SourcePopupMenu popupMenu;
+
+        if (actions == null) {
+            popupMenu =
+                    new SourcePopupMenu(() -> sources.toArray(
+                            new SourceAndConverter[0]), SourceServices.getContext());
+        } else {
+            popupMenu =
+                    new SourcePopupMenu(() -> sources.toArray(
+                            new SourceAndConverter[0]), actions);
+        }
 
 		popupMenu.getPopup().show(bdv.getViewerPanel().getDisplay(), x, y);
 	}
