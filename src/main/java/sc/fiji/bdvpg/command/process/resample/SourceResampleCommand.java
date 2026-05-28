@@ -43,7 +43,7 @@ import sc.fiji.bdvpg.source.transform.SourceResampler;
 																							// are set by SciJava
 																							// pre-processors
 
-@Plugin(type = Command.class,
+@Plugin(type = BdvPlaygroundActionCommand.class,
 	menu = {
 			@Menu(label = BdvPgMenus.L1),
 			@Menu(label = BdvPgMenus.L2),
