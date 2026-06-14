@@ -156,8 +156,8 @@ public class BdvOrthoCreateCommand implements BdvPlaygroundActionCommand {
 	BdvHandle createBdv(String suffix, double locX, double locY) {
 
 		BdvHandle bdvh = sourceDisplayService.getNewBdv();
-		BdvHandleHelper.setWindowTitle(bdvh, BdvHandleHelper.getWindowTitle(bdvh) +
-			suffix);
+		sourceDisplayService.setWindowTitle(bdvh, BdvHandleHelper.getWindowTitle(
+			bdvh) + suffix);
 
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gd = ge.getScreenDevices();

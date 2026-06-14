@@ -603,6 +603,30 @@ public class SourceTreeModel {
     }
 
     /**
+     * Updates the displayed name of a BdvHandle node to match its (new) window title.
+     *
+     * <p>Mirrors {@link #renameSpimData}: looks up the node registered for this
+     * BdvHandle and, if found, renames it and fires a {@code NODE_RENAMED} event so
+     * the view can refresh the label. Does nothing if the BdvHandle has no node
+     * (e.g. it was renamed before being registered in the tree).</p>
+     *
+     * @param bdvHandle the BdvHandle whose node to rename
+     * @param name the new name (window title)
+     */
+    public void renameBdvHandle(BdvHandle bdvHandle, String name) {
+        lock.writeLock().lock();
+        try {
+            BdvHandleFilterNode node = bdvHandleIndex.get(bdvHandle);
+            if (node != null) {
+                node.setName(name);
+                fireStructureChanged(StructureChangedEvent.nodeRenamed(node));
+            }
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    /**
      * Removes all BdvHandle nodes for a specific BdvHandle from anywhere in the tree.
      *
      * @param bdvHandle the BdvHandle to remove

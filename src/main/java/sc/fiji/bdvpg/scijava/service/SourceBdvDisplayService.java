@@ -494,6 +494,23 @@ public class SourceBdvDisplayService extends AbstractService
 		}
 	}
 
+	/**
+	 * Sets the title of a BDV window and keeps the source tree label in sync.
+	 *
+	 * <p>This is the authoritative entry point for renaming a BDV window: it
+	 * updates the {@link javax.swing.JFrame} title via
+	 * {@link BdvHandleHelper#setWindowTitle} and refreshes the corresponding tree
+	 * node. Prefer this over calling {@link BdvHandleHelper#setWindowTitle}
+	 * directly, which only touches the window and would leave the tree stale.</p>
+	 *
+	 * @param bdvh the BDV window to rename
+	 * @param title the new title
+	 */
+	public void setWindowTitle(BdvHandle bdvh, String title) {
+		BdvHandleHelper.setWindowTitle(bdvh, title);
+		sourceService.tree().getSourceTreeModel().renameBdvHandle(bdvh, title);
+	}
+
 	public void registerBdvHandle(BdvHandle bdvh) {
 		// ------------ Register BdvHandle in ObjectService
 		if (!os.getObjects(BdvHandle.class).contains(bdvh)) { // adds it only if not
@@ -507,16 +524,13 @@ public class SourceBdvDisplayService extends AbstractService
 			BdvHandleHelper.setWindowTitle(bdvh, windowTitle);
 
 			// ------------ Event handling in bdv sourceandconverterserviceui
-			final SourceService source_service =
-				(SourceService) SourceServices
-					.getSourceService();
-			SourceTreeModel model = source_service.tree().getSourceTreeModel();
+			SourceTreeModel model = sourceService.tree().getSourceTreeModel();
 			model.addBdvHandle(bdvh, windowTitle, model.getRoot());
 
 			// ------------ Allows to remove the BdvHandle from the objectService when
 			// closed by the user
 			BdvHandleHelper.setBdvHandleCloseOperation(bdvh, cacheService, this, true,
-				() -> source_service.tree().removeBdvHandleNodes(bdvh));
+				() -> sourceService.tree().removeBdvHandleNodes(bdvh));
 		}
 	}
 

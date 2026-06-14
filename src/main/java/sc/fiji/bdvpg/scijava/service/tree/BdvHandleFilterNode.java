@@ -32,6 +32,7 @@ package sc.fiji.bdvpg.scijava.service.tree;
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
 import bdv.viewer.ViewerStateChangeListener;
+import sc.fiji.bdvpg.viewer.bdv.BdvHandleHelper;
 
 /**
  * Filter node that filters sources based on their presence in a specific BdvHandle.
@@ -68,6 +69,26 @@ public class BdvHandleFilterNode extends FilterNode {
             }
         };
         bdvHandle.getViewerPanel().state().changeListeners().add(stateListener);
+    }
+
+    /**
+     * Returns the live window title of the BdvHandle, so the tree label can never
+     * hold a stale copy of the title (single source of truth = the BDV window).
+     *
+     * <p>The value stored via {@link #setName} is kept only as a fallback and is
+     * not used here. After the window title changes, the model must still fire a
+     * {@code NODE_RENAMED} event so the Swing view re-reads this value.</p>
+     *
+     * @return the current window title of the BdvHandle
+     */
+    @Override
+    public String name() {
+        return BdvHandleHelper.getWindowTitle(bdvHandle);
+    }
+
+    @Override
+    public String toString() {
+        return name();
     }
 
     /**

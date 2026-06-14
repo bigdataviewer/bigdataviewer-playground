@@ -33,7 +33,7 @@ import bdv.util.BdvHandle;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import sc.fiji.bdvpg.viewer.bdv.BdvHandleHelper;
+import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 
@@ -62,8 +62,12 @@ public class BdvTitleSetCommand implements BdvPlaygroundActionCommand {
 			description = "The new title for the BDV window")
 	String title;
 
+	@Parameter
+	SourceBdvDisplayService display_service;
+
 	public void run() {
-		BdvHandleHelper.setWindowTitle(bdvh, title);
+		// Authoritative rename: updates the window and the source tree together
+		display_service.setWindowTitle(bdvh, title);
 	}
 
 }
