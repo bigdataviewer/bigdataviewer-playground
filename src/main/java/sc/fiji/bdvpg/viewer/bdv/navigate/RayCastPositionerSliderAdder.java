@@ -67,7 +67,6 @@ public class RayCastPositionerSliderAdder implements Runnable {
 		slider = new JSlider(JSlider.VERTICAL);
 		slider.addMouseWheelListener(e -> {
 			int notches = e.getWheelRotation();
-			System.out.println(notches);
 			if (notches < 0) {
 				slider.setValue(slider.getValue() + 1);
 			} else if (notches > 0) {
@@ -80,20 +79,33 @@ public class RayCastPositionerSliderAdder implements Runnable {
 	int currentPosition;
 	RealPoint lastDirection = new RealPoint();
 
+	// True while the slider is being mutated programmatically (setMaximum /
+	// setValue). Swing fires ChangeEvents for these the same way it does for user
+	// actions, so the change listener must ignore them - otherwise e.g. a value
+	// clamp triggered by setMaximum (when the plane count shrinks below the
+	// current value) would be mistaken for a user drag and shift the viewer.
+	private boolean adjustingProgrammatically = false;
+
 	synchronized void setPositions(List<Double> zLocations) {
 		// if (zLocations.size()>0) {
 		this.zLocations = new ArrayList<>(zLocations);
-		if (nPositions != zLocations.size()) {
-			// Change of number of planes
-			nPositions = zLocations.size();
-			slider.setMaximum(nPositions - 1);
+		adjustingProgrammatically = true;
+		try {
+			if (nPositions != zLocations.size()) {
+				// Change of number of planes
+				nPositions = zLocations.size();
+				slider.setMaximum(nPositions - 1);
+			}
+			int i = 0;
+			while ((i < nPositions) && (this.zLocations.get(i) < 0))
+				i++;
+			if (currentPosition != i) {
+				currentPosition = i;
+				slider.setValue(i);
+			}
 		}
-		int i = 0;
-		while ((i < nPositions) && (this.zLocations.get(i) < 0))
-			i++;
-		if (currentPosition != i) {
-			currentPosition = i;
-			slider.setValue(i);
+		finally {
+			adjustingProgrammatically = false;
 		}
 		// }
 	}
@@ -115,6 +127,9 @@ public class RayCastPositionerSliderAdder implements Runnable {
 
 		slider.addChangeListener((e) -> {
 			synchronized (RayCastPositionerSliderAdder.this) {
+				// Ignore events caused by our own setMaximum / setValue calls:
+				// only genuine user interaction should move the viewer.
+				if (adjustingProgrammatically) return;
 				if (!zLocations.isEmpty()) {
 					JSlider slider = (JSlider) e.getSource();
 					int newValue = slider.getValue();
