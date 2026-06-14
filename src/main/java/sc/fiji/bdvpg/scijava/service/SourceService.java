@@ -79,6 +79,7 @@ import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.cache.AbstractGlobalCache;
 import sc.fiji.bdvpg.cache.GlobalCacheBuilder;
 import sc.fiji.bdvpg.cache.GlobalLoaderCache;
+import sc.fiji.bdvpg.cache.GlobalSharedQueue;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.service.tree.SourceTree;
 import sc.fiji.bdvpg.service.ISourceService;
@@ -350,8 +351,10 @@ public class SourceService extends AbstractService implements
 	private boolean replaceSpimDataCacheByGlobalCache(AbstractSpimData<?> asd) {
 		LoaderCache loaderCache = new GlobalLoaderCache(asd);
 		BasicImgLoader imageLoader = asd.getSequenceDescription().getImgLoader();
-		VolatileGlobalCellCache cache = new VolatileGlobalCellCache(10, Math.max(1,
-			Runtime.getRuntime().availableProcessors() - 1));
+		// Reuse the process-wide shared queue instead of spawning a new pool of
+		// fetcher threads for every registered SpimData (see GlobalSharedQueue).
+		VolatileGlobalCellCache cache = new VolatileGlobalCellCache(
+			GlobalSharedQueue.getInstance());
 		// Now override the backingCache field of the VolatileGlobalCellCache
 		try {
 			Field backingCacheField = VolatileGlobalCellCache.class.getDeclaredField(

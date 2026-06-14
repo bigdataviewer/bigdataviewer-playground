@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -82,24 +83,30 @@ public class BoundedLinkedHashMapGlobalCache extends AbstractGlobalCache {
 
 	@Override
 	public Object get(GlobalCacheKey key) throws ExecutionException {
-		return cache.get(key);
+		// Access-order get() reorders the map (a structural modification), so it
+		// must be guarded against concurrent touch()/trim eviction.
+		synchronized (cache) {
+			return cache.get(key);
+		}
 	}
 
 	@Override
 	public Object getIfPresent(GlobalCacheKey key) {
-		return cache.get(key);
+		synchronized (cache) {
+			return cache.get(key);
+		}
 	}
 
 	@Override
 	public void invalidate(GlobalCacheKey key) {
-		cache.remove(key);
+		cache.removeEntry(key);
 	}
 
 	@Override
 	public void invalidateIf(long parallelismThreshold,
 		Predicate<GlobalCacheKey> condition)
 	{
-		cache.keySet().removeIf(condition);
+		cache.removeIfKey(condition);
 	}
 
 	@Override
@@ -137,8 +144,9 @@ public class BoundedLinkedHashMapGlobalCache extends AbstractGlobalCache {
 			this.maxCost = maxCost;
 		}
 
-		public void setMaxCost(long maxCost) {
+		synchronized public void setMaxCost(long maxCost) {
 			this.maxCost = maxCost;
+			trimToCost(null);
 		}
 
 		public long getCost() {
@@ -149,18 +157,15 @@ public class BoundedLinkedHashMapGlobalCache extends AbstractGlobalCache {
 			return maxCost;
 		}
 
-		@Override
-		protected boolean removeEldestEntry(
-			final Map.Entry<GlobalCacheKey, SoftReference<Object>> eldest)
-		{
-			if (totalWeight.get() > maxCost) {
-				totalWeight.addAndGet(-cost.get(eldest.getKey()));
-				cost.remove(eldest.getKey());
-				eldest.getValue().clear();
-				return true;
-			}
-			else return false;
-		}
+		/*
+		 * Note: we deliberately do NOT override removeEldestEntry. That hook is
+		 * invoked at most once per insertion and removes at most a single
+		 * (possibly tiny) entry, with no notion of how much weight still needs
+		 * to be reclaimed. When block sizes vary a lot - e.g. a 10 MB block is
+		 * inserted while the LRU tail holds only 10 kB entries - evicting one
+		 * entry frees far too little and the cache overshoots maxCost. Eviction
+		 * is therefore performed by the explicit loop in trimToCost() below.
+		 */
 
 		synchronized public void touch(final GlobalCacheKey key,
 			final Object value)
@@ -171,9 +176,77 @@ public class BoundedLinkedHashMapGlobalCache extends AbstractGlobalCache {
 				totalWeight.addAndGet(costValue);
 				cost.put(key, costValue);
 				put(key, new SoftReference<>(value));
+				trimToCost(key);
 			}
 			else if (ref.get() == null) {
 				put(key, new SoftReference<>(value));
+			}
+		}
+
+		/**
+		 * Evicts least-recently-used entries until the total weight no longer
+		 * exceeds {@link #maxCost}. Iterates in access order (eldest first); the
+		 * just-inserted {@code protect} key, if any, is skipped so that a single
+		 * block larger than the whole budget is still cached rather than
+		 * discarded immediately after being loaded (in that degenerate case the
+		 * cache holds exactly that one block and maxCost is exceeded by it
+		 * alone). Must be called while holding this monitor.
+		 *
+		 * @param protect key that must not be evicted, or {@code null}
+		 */
+		private void trimToCost(final GlobalCacheKey protect) {
+			if (totalWeight.get() <= maxCost) return;
+			final Iterator<Map.Entry<GlobalCacheKey, SoftReference<Object>>> it =
+				entrySet().iterator();
+			while (totalWeight.get() > maxCost && it.hasNext()) {
+				final Map.Entry<GlobalCacheKey, SoftReference<Object>> eldest = it
+					.next();
+				if (eldest.getKey() == protect) continue;
+				final Long c = cost.remove(eldest.getKey());
+				if (c != null) totalWeight.addAndGet(-c);
+				eldest.getValue().clear();
+				it.remove();
+			}
+		}
+
+		/**
+		 * Removes a single entry, keeping the weight accounting consistent:
+		 * decrements {@link #totalWeight} and drops the entry from the
+		 * {@link #cost} map. Plain {@code remove()} would leave the weight
+		 * counted forever, inflating the perceived cache size.
+		 *
+		 * @param key key to remove
+		 */
+		synchronized public void removeEntry(final GlobalCacheKey key) {
+			final SoftReference<Object> ref = remove(key);
+			if (ref != null) {
+				ref.clear();
+				final Long c = cost.remove(key);
+				if (c != null) totalWeight.addAndGet(-c);
+			}
+		}
+
+		/**
+		 * Removes every entry whose key matches {@code condition}, keeping the
+		 * weight accounting consistent. Replaces {@code keySet().removeIf(...)},
+		 * which would remove entries without updating {@link #totalWeight} or the
+		 * {@link #cost} map.
+		 *
+		 * @param condition predicate selecting keys to remove
+		 */
+		synchronized public void removeIfKey(
+			final Predicate<GlobalCacheKey> condition)
+		{
+			final Iterator<Map.Entry<GlobalCacheKey, SoftReference<Object>>> it =
+				entrySet().iterator();
+			while (it.hasNext()) {
+				final Map.Entry<GlobalCacheKey, SoftReference<Object>> e = it.next();
+				if (condition.test(e.getKey())) {
+					final Long c = cost.remove(e.getKey());
+					if (c != null) totalWeight.addAndGet(-c);
+					e.getValue().clear();
+					it.remove();
+				}
 			}
 		}
 
