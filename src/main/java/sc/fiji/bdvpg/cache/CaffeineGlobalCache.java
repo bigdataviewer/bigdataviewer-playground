@@ -51,7 +51,14 @@ public class CaffeineGlobalCache extends AbstractGlobalCache {
 
 	CaffeineGlobalCache(long maxCacheSize, boolean log, int msBetweenLogs) {
 		this.maxCacheSize = maxCacheSize;
-		cache = Caffeine.newBuilder().maximumWeight(maxCacheSize).softValues()
+		// Strong values: eviction is driven solely by Caffeine's Window-TinyLFU
+		// against the byte-accurate weigher below. softValues() was previously
+		// added here as an OOM backstop, but it handed eviction to the GC, which
+		// ignores the access frequency recorded via touch()/getIfPresent() and
+		// clears soft references in bulk under memory pressure - evicting hot
+		// blocks and forcing constant reloads. The weigher counts real bytes, so
+		// maximumWeight is itself a hard memory bound and no soft-ref net is needed.
+		cache = Caffeine.newBuilder().maximumWeight(maxCacheSize)
 			.weigher((Weigher<GlobalCacheKey, Object>) (key,
 				value) -> (int) AbstractGlobalCache.getWeight(value)).build();
 
