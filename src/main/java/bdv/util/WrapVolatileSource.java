@@ -51,6 +51,7 @@ import net.imglib2.type.volatiles.VolatileUnsignedIntType;
 import net.imglib2.type.volatiles.VolatileUnsignedShortType;
 import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.Views;
+import sc.fiji.bdvpg.cache.GlobalSharedQueue;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -84,7 +85,7 @@ public class WrapVolatileSource<T extends NumericType<T>, V extends Volatile<T> 
 
 	public WrapVolatileSource(final Source<T> source) {
 		this.originSource = source;
-		queue = new SharedQueue(2);
+		queue = GlobalSharedQueue.getInstance();
 	}
 
 	public WrapVolatileSource(final Source<T> originSource, final SharedQueue queue) {

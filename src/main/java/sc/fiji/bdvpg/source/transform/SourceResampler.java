@@ -31,7 +31,6 @@ package sc.fiji.bdvpg.source.transform;
 
 import java.util.function.Function;
 
-import bdv.cache.SharedQueue;
 import bdv.util.ResampledSource;
 import bdv.util.VolatileSource;
 import bdv.util.volatiles.VolatileTypeMatcher;
@@ -40,6 +39,7 @@ import bdv.viewer.SourceAndConverter;
 import net.imglib2.Volatile;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.NumericType;
+import sc.fiji.bdvpg.cache.GlobalSharedQueue;
 import sc.fiji.bdvpg.source.SourceHelper;
 
 public class SourceResampler<T extends NumericType<T> & NativeType<T>>
@@ -96,7 +96,7 @@ public class SourceResampler<T extends NumericType<T> & NativeType<T>>
 				vsrcResampled = new VolatileSource(
 						srcRsampled,
 						() -> VolatileTypeMatcher.getVolatileTypeForType((NativeType)srcRsampled.getType()),
-						new SharedQueue(Math.max(Runtime.getRuntime().availableProcessors()-1, 1)));
+						GlobalSharedQueue.getInstance());
 			}
 			else {
 				vsrcResampled = new ResampledSource(src.asVolatile().getSpimSource(),

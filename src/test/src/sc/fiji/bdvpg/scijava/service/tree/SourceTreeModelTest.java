@@ -29,6 +29,7 @@
 package sc.fiji.bdvpg.scijava.service.tree;
 
 import bdv.util.BdvHandle;
+import sc.fiji.bdvpg.viewer.bdv.BdvHandleHelper;
 import bdv.util.EmptySource;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.SpimDataException;
@@ -914,6 +915,8 @@ public class SourceTreeModelTest {
     @Test
     public void model_addBdvHandle_createsNodeWithAllSourcesChild() {
         BdvHandle bdvh = createBdvHandle();
+        // The node name tracks the live window title (single source of truth)
+        BdvHandleHelper.setWindowTitle(bdvh, "TestBDV");
 
         TestListener listener = new TestListener();
         model.addListener(listener);
@@ -931,7 +934,7 @@ public class SourceTreeModelTest {
         }
 
         assertNotNull("BdvHandle node should be created", bdvNode);
-        assertEquals("Node name should match", "TestBDV", bdvNode.name());
+        assertEquals("Node name should match window title", "TestBDV", bdvNode.name());
 
         // Should have an "All Sources" child
         assertEquals("BdvHandle node should have 1 child", 1, bdvNode.childCount());
