@@ -173,7 +173,7 @@ also makes them available to end users through the Fiji menus and to other scrip
 
 Released under the **Simplified (2-clause) BSD License** — see [`LICENSE.txt`](LICENSE.txt).
 
-Developed and maintained by Nicolas Chiaruttini (EPFL), Robert Haase (MPI-CBG) and
-Christian Tischer (EMBL), with contributions from the imaging community.
+Developed and maintained by Nicolas Chiaruttini, Robert Haase and
+Christian Tischer, with contributions from the imaging community.
 
 Questions and discussion: the [image.sc forum](https://forum.image.sc/).
