@@ -31,14 +31,31 @@ package sc.fiji.bdvpg.scijava.service.tree;
 
 import bdv.util.BdvHandle;
 import bdv.viewer.SourceAndConverter;
+import bdv.viewer.SynchronizedViewerState;
 import bdv.viewer.ViewerStateChangeListener;
 import sc.fiji.bdvpg.viewer.bdv.BdvHandleHelper;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Filter node that filters sources based on their presence in a specific BdvHandle.
  *
  * <p>This node listens to the BdvHandle's viewer state and triggers filter updates
  * when sources are added or removed from the viewer.</p>
+ *
+ * <h2>Lock ordering</h2>
+ *
+ * <p>{@link SynchronizedViewerState} notifies its change listeners <em>while holding
+ * its own monitor</em>, and this node's listener then asks {@link SourceTreeModel} to
+ * refresh, which takes the model write lock. The resulting order is
+ * {@code viewer state monitor -> tree model lock}. To avoid a lock inversion (and the
+ * deadlock it caused between the EDT adding an overlay source and a SciJava thread
+ * registering a BdvHandle), the filter must <em>never</em> take the viewer state
+ * monitor while the tree model lock is held. It therefore tests against
+ * {@link #viewerSources()}, a snapshot refreshed outside of the model lock, rather
+ * than querying the live viewer state.</p>
  *
  * @author Nicolas Chiaruttini, BIOP, EPFL
  */
@@ -47,6 +64,13 @@ public class BdvHandleFilterNode extends FilterNode {
     private final BdvHandle bdvHandle;
     private final ViewerStateChangeListener stateListener;
     private Runnable filterUpdateCallback;
+
+    /**
+     * Snapshot of the sources currently displayed in the BdvHandle. Read by
+     * {@link #filter} (possibly under the tree model lock), written only from
+     * {@link #refreshViewerSources()}, which is called outside of that lock.
+     */
+    private volatile Set<SourceAndConverter<?>> viewerSources = Collections.emptySet();
 
     /**
      * Creates a new BdvHandleFilterNode.
@@ -63,12 +87,41 @@ public class BdvHandleFilterNode extends FilterNode {
         // Listen for source changes in the BdvHandle
         stateListener = change -> {
             if ("NUM_SOURCES_CHANGED".equals(change.toString())) {
+                // Called with the viewer state monitor held: refresh the snapshot
+                // here (reentrant, no extra lock) so that the model refresh below
+                // never has to query the viewer state under the model lock.
+                refreshViewerSources();
                 if (filterUpdateCallback != null) {
                     filterUpdateCallback.run();
                 }
             }
         };
         bdvHandle.getViewerPanel().state().changeListeners().add(stateListener);
+        refreshViewerSources();
+    }
+
+    /**
+     * Re-reads the sources of the BdvHandle into the snapshot used by {@link #filter}.
+     *
+     * <p><b>Must not be called while the {@link SourceTreeModel} lock is held</b>: it
+     * acquires the viewer state monitor, and doing so under the model lock would
+     * invert the {@code viewer state monitor -> tree model lock} order used by the
+     * viewer state change listener.</p>
+     */
+    public final void refreshViewerSources() {
+        final SynchronizedViewerState state = bdvHandle.getViewerPanel().state();
+        // getSources() returns a collection backed by the state, so the copy has to
+        // be made while holding the state monitor.
+        synchronized (state) {
+            viewerSources = new HashSet<>(state.getSources());
+        }
+    }
+
+    /**
+     * @return the last known snapshot of the sources displayed in the BdvHandle
+     */
+    public Set<SourceAndConverter<?>> viewerSources() {
+        return viewerSources;
     }
 
     /**
@@ -93,9 +146,13 @@ public class BdvHandleFilterNode extends FilterNode {
 
     /**
      * Filters sources that are present in the BdvHandle's viewer.
+     *
+     * <p>Tests against the {@link #viewerSources()} snapshot on purpose: this method
+     * runs under the {@link SourceTreeModel} lock and must not take the viewer state
+     * monitor (see the lock ordering note in the class javadoc).</p>
      */
     private boolean filter(SourceAndConverter<?> source) {
-        return bdvHandle.getViewerPanel().state().getSources().contains(source);
+        return viewerSources.contains(source);
     }
 
     /**

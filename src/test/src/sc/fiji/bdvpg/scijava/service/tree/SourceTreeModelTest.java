@@ -47,6 +47,12 @@ import sc.fiji.bdvpg.source.SourceHelper;
 import sc.fiji.persist.IObjectScijavaAdapterService;
 
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
@@ -1120,6 +1126,81 @@ public class SourceTreeModelTest {
         // Show again
         bdvh.getViewerPanel().state().addSources(Collections.singletonList(source));
         assertTrue("After re-show: source should be in node again", bdvNode.hasConsumed(source));
+    }
+
+    // ==================== 4.3b BdvHandle - Lock ordering ====================
+
+    /**
+     * Regression test for a deadlock between the EDT and a SciJava thread.
+     *
+     * <p>BDV notifies its viewer state listeners while holding the state monitor, and
+     * {@link BdvHandleFilterNode}'s listener then takes the model lock. Any model
+     * operation that took the viewer state monitor while holding the model lock (the
+     * BdvHandle filter used to call {@code state().getSources()}) therefore inverted
+     * that order and could deadlock: the EDT adding an overlay source blocked on the
+     * model lock while a SciJava thread registering the BdvHandle blocked on the
+     * viewer state monitor.</p>
+     *
+     * <p>The test pins the invariant directly: while a foreign thread holds the viewer
+     * state monitor, model writes must still complete.</p>
+     */
+    @Test
+    public void model_bdvHandle_writesDoNotBlockOnViewerStateMonitor() throws Exception {
+        BdvHandle bdvh = createBdvHandle();
+        model.addBdvHandle(bdvh, "TestBDV", model.getRoot());
+
+        // Created up front: window creation is slow and must not weigh on the timeout
+        BdvHandle otherBdvh = createBdvHandle();
+
+        SourceAndConverter<?> source = createTestSource("S1");
+        sourceService.register(source);
+
+        CountDownLatch monitorHeld = new CountDownLatch(1);
+        CountDownLatch releaseMonitor = new CountDownLatch(1);
+
+        Thread holder = new Thread(() -> {
+            synchronized (bdvh.getViewerPanel().state()) {
+                monitorHeld.countDown();
+                try {
+                    releaseMonitor.await(30, TimeUnit.SECONDS);
+                }
+                catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }, "viewer-state-monitor-holder");
+        // Daemon, so a regression cannot keep the JVM alive after the test fails
+        holder.setDaemon(true);
+        holder.start();
+
+        assertTrue("Helper thread should have acquired the viewer state monitor",
+                monitorHeld.await(10, TimeUnit.SECONDS));
+
+        ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
+            Thread t = new Thread(r, "model-writer");
+            t.setDaemon(true);
+            return t;
+        });
+        try {
+            Future<?> write = executor.submit(() -> {
+                // Recurses into the BdvHandle node's filter while holding the model lock
+                model.addSource(source);
+                // Same for registering another BdvHandle node
+                model.addBdvHandle(otherBdvh, "TestBDV2", model.getRoot());
+            });
+
+            try {
+                write.get(10, TimeUnit.SECONDS);
+            }
+            catch (TimeoutException e) {
+                fail("Model write blocked while the viewer state monitor was held: " +
+                        "the model must not take the viewer state monitor under its own lock");
+            }
+        }
+        finally {
+            releaseMonitor.countDown();
+            executor.shutdownNow();
+        }
     }
 
     // ==================== 4.4 BdvHandle - Dynamic filter interaction ====================

@@ -530,13 +530,20 @@ public class SourceTreeModel {
      * @param parentNode the parent to add to (usually root)
      */
     public void addBdvHandle(BdvHandle bdvHandle, String name, FilterNode parentNode) {
+        // Created outside of the write lock on purpose: the constructor registers a
+        // viewer state listener and snapshots the viewer sources, which takes the
+        // viewer state monitor. Taking it while holding the model lock would invert
+        // the lock order used when the viewer notifies its listeners (see
+        // BdvHandleFilterNode's class javadoc) and can deadlock.
+        BdvHandleFilterNode bdvNode = new BdvHandleFilterNode(name, bdvHandle);
+
         lock.writeLock().lock();
         try {
             if (bdvHandleIndex.containsKey(bdvHandle)) {
+                bdvNode.cleanup(); // unregister the listener of the unused node
                 return;
             }
 
-            BdvHandleFilterNode bdvNode = new BdvHandleFilterNode(name, bdvHandle);
             bdvHandleIndex.put(bdvHandle, bdvNode);
 
             // Set up callback for filter updates when sources are added/removed from BDV
@@ -686,9 +693,12 @@ public class SourceTreeModel {
             BdvHandleFilterNode bdvNode = bdvHandleIndex.get(bdvHandle);
             if (bdvNode == null) return;
 
-            // Sources currently in the BDV viewer
-            Set<SourceAndConverter<?>> bdvSources = new HashSet<>(
-                    bdvHandle.getViewerPanel().state().getSources());
+            // Sources currently in the BDV viewer. Read from the node's snapshot
+            // (refreshed by the viewer state listener before this call) rather than
+            // from the live viewer state: querying the state here would take the
+            // viewer monitor while holding this write lock, inverting the lock order
+            // used by the listener and deadlocking (see BdvHandleFilterNode).
+            Set<SourceAndConverter<?>> bdvSources = bdvNode.viewerSources();
 
             // Sources currently accepted by this node
             Set<SourceAndConverter<?>> currentOutput = bdvNode.outputSources();
