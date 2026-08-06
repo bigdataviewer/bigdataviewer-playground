@@ -34,9 +34,13 @@ import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
 import org.scijava.Context;
 import org.scijava.object.ObjectService;
+import org.scijava.command.CommandService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.PlaygroundPrefs;
+import sc.fiji.bdvpg.command.display.bdv.BdvCloseCommand;
+import sc.fiji.bdvpg.command.process.SourceDeleteCommand;
+import sc.fiji.bdvpg.viewer.bdv.BdvHandleHelper;
 import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.service.RenamableSource;
 import sc.fiji.bdvpg.scijava.service.SourceBdvDisplayService;
@@ -46,15 +50,19 @@ import sc.fiji.bdvpg.scijava.service.tree.inspect.SourceInspector;
 import sc.fiji.bdvpg.scijava.service.tree.swingdnd.SourceServiceTreeTransferHandler;
 import sc.fiji.bdvpg.source.SourceHelper;
 
+import javax.swing.AbstractAction;
 import javax.swing.DropMode;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -63,6 +71,8 @@ import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -74,6 +84,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 /**
  * Swing UI for SciJava {@link SourceService}.
@@ -94,6 +105,12 @@ public class SourceTree {
 
 	protected static final Logger logger = LoggerFactory.getLogger(
 		SourceTree.class);
+
+	/**
+	 * Prefix of the throwaway tree nodes created by
+	 * {@link #inspectSource(SourceAndConverter)}
+	 */
+	public static final String INSPECT_NODE_PREFIX = "Inspect Results [";
 
 	/**
 	 * Linked {@link SourceService}
@@ -189,6 +206,8 @@ public class SourceTree {
 			tree.setTransferHandler(new SourceServiceTreeTransferHandler(
 				sourceTreeModel, sourceTreeView));
 
+			installDefaultKeyActions();
+
 			// get the screen size as a java dimension
 			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -255,7 +274,7 @@ public class SourceTree {
 			if (paths != null) {
 				for (TreePath tp : paths) {
 					if ((tp.getLastPathComponent()).toString().startsWith(
-						"Inspect Results ["))
+						INSPECT_NODE_PREFIX))
 					{
 						((DefaultMutableTreeNode) tp.getLastPathComponent())
 							.removeFromParent();
@@ -342,7 +361,7 @@ public class SourceTree {
 			show();
 		}
 		DefaultMutableTreeNode parentNodeInspect = new DefaultMutableTreeNode(
-			"Inspect Results [" + source.getSpimSource().getName() + "]");
+			INSPECT_NODE_PREFIX + source.getSpimSource().getName() + "]");
 		SourceInspector.appendInspectorResult(parentNodeInspect, source,
 			sourceAndConverterService, false);
 		// Add to tree root directly via Swing model
@@ -694,5 +713,124 @@ public class SourceTree {
 		}
 
 		new ViewerTransformAdjuster(activeBdv, selectedSources, 300).run();
+	}
+
+	// ============ Keyboard Actions ============
+
+	/**
+	 * Binds a keystroke on the tree to an action which receives the current
+	 * selection, classified as a {@link TreeSelectionContext}.
+	 *
+	 * <p>Registering a keystroke that is already bound (including the default
+	 * bindings: Delete/Backspace, Enter, Escape) overrides the previous
+	 * binding.</p>
+	 *
+	 * @param keyStroke the keystroke triggering the action
+	 * @param actionId a unique identifier for the action
+	 * @param handler the action, executed on the EDT
+	 */
+	public void registerKeyAction(KeyStroke keyStroke, String actionId,
+		Consumer<TreeSelectionContext> handler)
+	{
+		tree.getInputMap(JComponent.WHEN_FOCUSED).put(keyStroke, actionId);
+		tree.getActionMap().put(actionId, new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				handler.accept(getSelectionContext());
+			}
+		});
+	}
+
+	/**
+	 * @return the current tree selection, classified by the kind of object each
+	 *         selected node designates
+	 */
+	public TreeSelectionContext getSelectionContext() {
+		return new TreeSelectionContext(tree.getSelectionModel()
+			.getSelectionPaths(), sourceTreeView::getFilterNode);
+	}
+
+	private void installDefaultKeyActions() {
+		registerKeyAction(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0),
+			"bdvpg-delete-selection", this::deleteSelection);
+		registerKeyAction(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0),
+			"bdvpg-delete-selection", this::deleteSelection);
+		registerKeyAction(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+			"bdvpg-focus-selection", ctx -> adjustViewOnSelectedSources());
+		registerKeyAction(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+			"bdvpg-clear-selection", ctx -> tree.clearSelection());
+	}
+
+	/**
+	 * Delete key behavior: deletes the selected sources from the service and
+	 * closes the selected BDV windows, after a single confirmation dialog
+	 * spelling out both consequences. Selected inspection result nodes are
+	 * removed without confirmation (they are throwaway UI artifacts), but only
+	 * if the dialog - when one is needed - was not cancelled.
+	 *
+	 * <p>The confirmation lives here, in the UI layer: the actual work is
+	 * delegated to {@link SourceDeleteCommand} and {@link BdvCloseCommand} so
+	 * that scripts and macros calling these commands never get a popup.</p>
+	 *
+	 * @param selection the classified selection
+	 */
+	private void deleteSelection(TreeSelectionContext selection) {
+		List<SourceAndConverter<?>> sourcesToDelete = SourceHelper
+			.sortDefaultGeneric(selection.sources());
+		List<BdvHandle> windowsToClose = selection.bdvHandles();
+
+		if (!sourcesToDelete.isEmpty() || !windowsToClose.isEmpty()) {
+			if (!confirmDeletion(sourcesToDelete, windowsToClose)) {
+				return;
+			}
+		}
+
+		selection.inspectNodes().forEach(this::removeNode);
+
+		if (sourcesToDelete.isEmpty() && windowsToClose.isEmpty()) {
+			return;
+		}
+
+		CommandService commandService = context.getService(CommandService.class);
+		if (!sourcesToDelete.isEmpty()) {
+			commandService.run(SourceDeleteCommand.class, true, "sources",
+				sourcesToDelete.toArray(new SourceAndConverter<?>[0]));
+		}
+		if (!windowsToClose.isEmpty()) {
+			commandService.run(BdvCloseCommand.class, true, "bdvhs", windowsToClose
+				.toArray(new BdvHandle[0]));
+		}
+	}
+
+	private boolean confirmDeletion(
+		List<SourceAndConverter<?>> sourcesToDelete, List<BdvHandle> windowsToClose)
+	{
+		final int maxNames = 10;
+		StringBuilder message = new StringBuilder("You are about to:\n");
+		if (!sourcesToDelete.isEmpty()) {
+			message.append("\nDelete ").append(sourcesToDelete.size()).append(
+				" source(s) permanently:\n");
+			for (int i = 0; i < Math.min(sourcesToDelete.size(), maxNames); i++) {
+				message.append("    ").append(sourcesToDelete.get(i).getSpimSource()
+					.getName()).append("\n");
+			}
+			if (sourcesToDelete.size() > maxNames) {
+				message.append("    (+ ").append(sourcesToDelete.size() - maxNames)
+					.append(" more)\n");
+			}
+		}
+		if (!windowsToClose.isEmpty()) {
+			message.append("\nClose ").append(windowsToClose.size()).append(
+				" BDV window(s):\n");
+			for (BdvHandle bdvh : windowsToClose) {
+				message.append("    ").append(BdvHandleHelper.getWindowTitle(bdvh))
+					.append("\n");
+			}
+		}
+		message.append("\nThis cannot be undone.");
+		return JOptionPane.showConfirmDialog(frame, message.toString(),
+			"Delete Selection", JOptionPane.OK_CANCEL_OPTION,
+			JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION;
 	}
 }

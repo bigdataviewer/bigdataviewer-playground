@@ -220,6 +220,41 @@ List<SourceAndConverter<?>> sortedSources =
 
 This keeps the Model simple and allows different Views to use different sort orders.
 
+## Keyboard Actions
+
+The tree supports keyboard actions on the current (multi-)selection. The
+selection is first classified into a `TreeSelectionContext`:
+
+| Selected node | Classified as |
+|---------------|---------------|
+| Source leaf (`RenamableSource`) | `sources()` |
+| `BdvHandleFilterNode` | `bdvNodes()` — its sources are NOT added to `sources()` |
+| `SpimDataFilterNode` | `spimDataNodes()` + all its sources into `sources()` |
+| Any other `FilterNode` (entity nodes, user filter nodes) | all its sources into `sources()` |
+| "Inspect Results [...]" node | `inspectNodes()` |
+
+Since sources can appear multiple times in the tree, `sources()` is a set:
+duplicated selections collapse.
+
+Default bindings:
+
+| Key | Action |
+|-----|--------|
+| Delete / Backspace | Deletes the selected sources (via `SourceDeleteCommand`) and closes the selected BDV windows (via `BdvCloseCommand`), after a single confirmation dialog listing both consequences. Selected inspect nodes are removed without confirmation. |
+| Enter | Adjusts the active BDV view on the selected sources (same as double-click). |
+| Escape | Clears the selection. |
+
+The confirmation dialog lives in the UI layer, not in the commands, so
+scripts and macros calling the commands never get a popup.
+
+Custom keys can be registered by anyone holding the `SourceTree`:
+
+```java
+sourceTree.registerKeyAction(
+    KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0), "my-action",
+    selectionContext -> { /* ... */ });
+```
+
 ## Usage Examples
 
 ### Adding Sources (Batch)

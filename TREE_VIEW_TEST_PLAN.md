@@ -143,6 +143,26 @@ These tests require a mock BdvHandle (or at least a mock ViewerState).
 - addBdvHandle when no sources registered yet
 - refreshBdvHandleNode when BdvHandleFilterNode has been removed (race condition)
 
+## 8. Keyboard Actions
+
+The classification of a selection is unit-tested in
+`sc.fiji.bdvpg.scijava.service.tree.TreeSelectionContextTest` (source leaves, filter nodes,
+SpimData nodes, BDV window nodes, inspect nodes, duplicates, null/empty selection).
+
+The rest needs the GUI and is checked manually — launch `SimpleIJLaunch`, open the sources
+window, register a few sources and two BDV windows:
+
+- Escape clears the selection (also proves the bindings are installed and the tree has focus)
+- Delete on source leaves -> one dialog listing them, then removal from tree and from BDV;
+  Cancel deletes nothing
+- Delete on a BDV window node -> dialog mentions only the window, sources survive
+- Delete on a mixed selection (BDV node + unrelated source leaf) -> a single dialog, both act
+- Delete on an inspect node alone -> removed with no dialog; with a source also selected and
+  the dialog cancelled, the inspect node must stay
+- Enter adjusts the active BDV view on the selected sources (same as double-click)
+- Backspace behaves like Delete; Delete on an empty selection does nothing
+- A source selected in several places at once is listed once in the dialog
+
 ## Implementation Notes
 
 - Test class location: `src/test/src/sc/fiji/bdvpg/` (non-standard path from pom-scijava)

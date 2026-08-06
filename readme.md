@@ -31,8 +31,9 @@ programmatic API and as SciJava commands in the Fiji menus.
 - **Multi-window display management** — `SourceAndConverterBdvDisplayService` tracks several
   BDV/BVV windows at once and the visibility of each source in each window.
 - **A source-management GUI** — a hierarchical, filterable tree view of all sources, grouped by
-  dataset, channel/angle/other entities, and by the window they are shown in (see
-  [`SOURCE_TREE_ARCHITECTURE.md`](SOURCE_TREE_ARCHITECTURE.md)).
+  dataset, channel/angle/other entities, and by the window they are shown in, with keyboard
+  actions on the selection (Delete, Enter, Escape) that can be extended with custom bindings
+  (see [`SOURCE_TREE_ARCHITECTURE.md`](SOURCE_TREE_ARCHITECTURE.md)).
 - **~57 SciJava commands** for importing, displaying, transforming, resampling, coloring,
   registering (BigWarp), and exporting sources — all reachable from
   `Plugins > BigDataViewer-Playground` and listed in
