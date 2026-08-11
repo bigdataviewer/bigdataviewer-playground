@@ -38,7 +38,6 @@ import sc.fiji.bdvpg.viewer.bdv.navigate.ViewerTransformAdjuster;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.service.SourceServices;
-import sc.fiji.bdvpg.viewer.ViewerAdapter;
 
 /**
  * Show sources in a BigVolumeViewer window - limited to 16 bit images
@@ -83,7 +82,7 @@ public class BvvSourcesShowCommand implements BdvPlaygroundActionCommand {
 		}
 
 		if ((adjust_view) && (sources.length > 0)) {
-			new ViewerTransformAdjuster(new ViewerAdapter(bvvh), sources).run();
+			new ViewerTransformAdjuster(bvvh.getViewerPanel(), sources).run();
 		}
 
 	}

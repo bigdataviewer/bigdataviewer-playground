@@ -30,6 +30,7 @@
 package sc.fiji.bdvpg.command.display;
 
 import bdv.util.BdvHandle;
+import bdv.viewer.AbstractViewerPanel;
 import bvv.vistools.BvvHandle;
 import org.scijava.command.CommandService;
 import org.scijava.plugin.Menu;
@@ -42,7 +43,6 @@ import sc.fiji.bdvpg.viewer.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.service.SourceServices;
-import sc.fiji.bdvpg.viewer.ViewerAdapter;
 import sc.fiji.bdvpg.viewer.ViewerTransformSyncStarter;
 import sc.fiji.bdvpg.viewer.ViewerTransformSyncStopper;
 
@@ -106,18 +106,17 @@ public class ViewSynchronizeCommand implements BdvPlaygroundActionCommand {
 			return;
 		}
 
-		ViewerAdapter[] handles = new ViewerAdapter[bdvhs.length + bvvhs.length];
+		AbstractViewerPanel[] handles = new AbstractViewerPanel[bdvhs.length + bvvhs.length];
 		for (int i = 0; i < bdvhs.length; i++) {
-			handles[i] = new ViewerAdapter(bdvhs[i]);
+			handles[i] = bdvhs[i].getViewerPanel();
 		}
 		for (int i = 0; i < bvvhs.length; i++) {
-			handles[i + bdvhs.length] = new ViewerAdapter(bvvhs[i]);
+			handles[i + bdvhs.length] = bvvhs[i].getViewerPanel();
 		}
 		// Starting synchronization of selected bdvhandles
 		sync = new ViewerTransformSyncStarter(handles, synchronizetime);
 		if (bdvhs.length > 0) {
-			sync.setHandleInitialReference(new ViewerAdapter(
-				SourceServices.getBdvDisplayService().getActiveBdv()));
+			sync.setHandleInitialReference(SourceServices.getBdvDisplayService().getActiveBdv().getViewerPanel());
 		}
 		/*else {
 			sync.setHandleInitialReference(new ViewerAdapter(bvvhs[0]));

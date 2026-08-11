@@ -39,7 +39,6 @@ import sc.fiji.bdvpg.viewer.bvv.BvvCreator;
 import sc.fiji.bdvpg.viewer.bvv.BvvHandleHelper;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
-import sc.fiji.bdvpg.viewer.ViewerAdapter;
 import sc.fiji.bdvpg.viewer.ViewerOrthoSyncStarter;
 import sc.fiji.bdvpg.viewer.ViewerStateSyncStarter;
 
@@ -130,12 +129,10 @@ public class BvvOrthoCreateCommand implements
 		bvvhz = createBvv("-Bottom", locationx, locationy + sizey + 40);
 		bvvhz.getViewerPanel().state().setNumTimepoints(ntimepoints);
 
-		new ViewerOrthoSyncStarter(new ViewerAdapter(bvvhx), new ViewerAdapter(
-			bvvhz), new ViewerAdapter(bvvhy), synctime).run();
+		new ViewerOrthoSyncStarter(bvvhx.getViewerPanel(), bvvhz.getViewerPanel(), bvvhy.getViewerPanel(), synctime).run();
 
 		if (synchronize_sources) {
-			new ViewerStateSyncStarter(new ViewerAdapter(bvvhx), new ViewerAdapter(
-				bvvhy), new ViewerAdapter(bvvhz)).run();
+			new ViewerStateSyncStarter(bvvhx.getViewerPanel(), bvvhy.getViewerPanel(), bvvhz.getViewerPanel()).run();
 		}
 
 	}
