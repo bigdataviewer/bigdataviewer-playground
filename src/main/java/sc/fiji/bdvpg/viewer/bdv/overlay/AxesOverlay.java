@@ -44,7 +44,10 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
 
+import bdv.TransformEventHandler2D;
 import bdv.util.Affine3DHelpers;
 import bdv.util.BdvHandle;
 import bdv.util.BdvOverlay;
@@ -52,8 +55,10 @@ import bdv.viewer.ViewerPanel;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.util.LinAlgHelpers;
-import org.scijava.ui.behaviour.io.InputTriggerConfig;
-import org.scijava.ui.behaviour.util.Behaviours;
+import org.scijava.ui.behaviour.BehaviourMap;
+import org.scijava.ui.behaviour.InputTrigger;
+import org.scijava.ui.behaviour.InputTriggerMap;
+import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
 /**
  * Blender-style 3D axes gizmo overlay for BigDataViewer.
@@ -117,19 +122,53 @@ public class AxesOverlay extends BdvOverlay {
 
 	//private final ClickBehaviourInstaller cbi;
 
-	final Behaviours behaviours = new Behaviours(new InputTriggerConfig());
+	/** id of the maps this overlay adds to the trigger bindings while hovered */
+	private static final String AXES_OVERLAY = "axes_overlay";
+
+	/** name of the drag behaviour rotating the view while the gizmo is hovered */
+	private static final String AXES_OVERLAY_ROTATE = "axes_overlay_rotate";
+
+	/**
+	 * Id BigDataViewer installs its navigation behaviours under, see
+	 * {@code bdv.viewer.ViewerFrame} and {@code bdv.util.BdvHandlePanel}.
+	 */
+	private static final String BDV_TRANSFORM = "transform";
+
+	/** the trigger the gizmo takes over while it is hovered */
+	private static final InputTrigger LEFT_BUTTON = InputTrigger.getFromString(
+		"button1");
+
 	final AxesOverlayClickBehaviour behaviour;
 
+	/** behaviours of the gizmo, added to the bindings while it is hovered */
+	private final BehaviourMap gizmoBehaviours = new BehaviourMap();
+
+	/**
+	 * Whether left dragging the gizmo rotates the view. Out of plane rotation is
+	 * exactly what the 2D mode is meant to prevent, so there the gizmo keeps to
+	 * clicking an axis to align.
+	 */
+	private final boolean dragRotates;
 
 	public AxesOverlay(BdvHandle bdvh) {
 		this.viewer = bdvh.getViewerPanel();
 		behaviour =	new AxesOverlayClickBehaviour(AxesOverlay.this);
+		dragRotates = !(viewer
+			.getTransformEventHandler() instanceof TransformEventHandler2D);
+
+		gizmoBehaviours.put(AXES_OVERLAY, behaviour);
+		if (dragRotates) {
+			gizmoBehaviours.put(AXES_OVERLAY_ROTATE,
+				new AxesOverlayDragRotateBehaviour(viewer));
+		}
+
 		//cbi = new ClickBehaviourInstaller(bdvh, new AxesOverlayClickBehaviour(AxesOverlay.this));
 		viewer.getDisplay().addHandler(new MouseMotionListener() {
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				// Do nothing
-
+				// Do nothing. Note that not tracking the mouse during a drag is what
+				// lets a rotation started on the gizmo carry on once the pointer has
+				// left it, which is the whole point of dragging it.
 			}
 
 			@Override
@@ -141,16 +180,15 @@ public class AxesOverlay extends BdvOverlay {
 					if (!mouseAbove) {
 						// Install Axes Overlay Behaviour
 						mouseAbove = true;
-						behaviours.install(bdvh.getTriggerbindings(), "axes_overlay");
-						behaviours.behaviour(behaviour,"axes_overlay", "button1");
+						installGizmoBindings(bdvh);
 						bdvh.getViewerPanel().getDisplay().repaint();
 					}
 				} else {
 					if (mouseAbove) {
 						mouseAbove = false;
 						// Uninstall Axes Overlay Behaviour
-						bdvh.getTriggerbindings().removeBehaviourMap("axes_overlay");
-						bdvh.getTriggerbindings().removeInputTriggerMap("axes_overlay");
+						bdvh.getTriggerbindings().removeBehaviourMap(AXES_OVERLAY);
+						bdvh.getTriggerbindings().removeInputTriggerMap(AXES_OVERLAY);
 						bdvh.getViewerPanel().getDisplay().repaint();
 					}
 				}
@@ -162,6 +200,44 @@ public class AxesOverlay extends BdvOverlay {
 			}
 		});
 		initAlignmentQuaternions();
+	}
+
+	/**
+	 * Gives the left button to the gizmo for as long as it is hovered: clicking
+	 * aligns to an axis, dragging rotates the view.
+	 * <p>
+	 * The navigation triggers of BigDataViewer have to be blocked, otherwise the
+	 * left button would keep whatever it is bound to — panning, with the BIOP
+	 * keymap — and do it on top of the rotation. Blocking is per map though, so
+	 * everything else the window had, zooming and browsing Z in particular, is
+	 * copied over first: losing it as soon as the pointer touches a small circle
+	 * in the corner would just read as a frozen viewer. Only the plain left
+	 * button is dropped, so a modified drag such as {@code shift button1} keeps
+	 * working.
+	 * <p>
+	 * Note that blocking applies to the trigger maps alone, so the behaviours of
+	 * BigDataViewer stay in the chain and the copied triggers still resolve.
+	 */
+	private void installGizmoBindings(BdvHandle bdvh) {
+		final TriggerBehaviourBindings bindings = bdvh.getTriggerbindings();
+
+		final InputTriggerMap map = new InputTriggerMap();
+		for (Map.Entry<InputTrigger, Set<String>> entry : bindings
+			.getConcatenatedInputTriggerMap().getAllBindings().entrySet())
+		{
+			if (LEFT_BUTTON.equals(entry.getKey())) continue;
+			for (String behaviourName : entry.getValue()) {
+				map.put(entry.getKey(), behaviourName);
+			}
+		}
+
+		map.put(LEFT_BUTTON, AXES_OVERLAY);
+		if (dragRotates) {
+			map.put(LEFT_BUTTON, AXES_OVERLAY_ROTATE);
+		}
+
+		bindings.addBehaviourMap(AXES_OVERLAY, gizmoBehaviours);
+		bindings.addInputTriggerMap(AXES_OVERLAY, map, BDV_TRANSFORM);
 	}
 
 	private boolean isPresentAt(int x, int y) {
