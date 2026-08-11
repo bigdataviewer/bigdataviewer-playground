@@ -34,6 +34,7 @@ import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import sc.fiji.bdvpg.viewer.bdv.config.BdvKeymapHelper;
 import sc.fiji.bdvpg.viewer.behaviour.EditorBehaviourInstaller;
 import sc.fiji.bdvpg.command.BdvPlaygroundActionCommand;
 import sc.fiji.bdvpg.scijava.BdvPgMenus;
@@ -81,8 +82,10 @@ public class BdvEditorInstallCommand implements BdvPlaygroundActionCommand {
 				{
 					continue;
 				}
+				// toggle_key is only the default: a toggle set in the keymap of the
+				// window wins over it
 				SourceSelectorBehaviour ssb = new SourceSelectorBehaviour(bdvh,
-					toggle_key);
+					BdvKeymapHelper.getConfig(bdvh), toggle_key);
 				bdv_display_service.setDisplayMetadata(bdvh,
 					SourceSelectorBehaviour.class.getSimpleName(), ssb);
 				new EditorBehaviourInstaller(ssb).run();

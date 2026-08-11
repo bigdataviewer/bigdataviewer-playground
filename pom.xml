@@ -120,7 +120,7 @@
 		<!-- <scijava.app.directory>C:/Users/nicol/Desktop/fiji-win64-bdv-playground/Fiji.app/</scijava.app.directory> -->
 
 		<!-- package version below are not present in the parent pom. A version is needed -->
-		<bigdataviewer-selector.version>0.22.1</bigdataviewer-selector.version>
+		<bigdataviewer-selector.version>0.22.2-SNAPSHOT</bigdataviewer-selector.version>
 		<reflections.version>0.10.2</reflections.version> <!-- for test only -->
 
 		<!-- package version below are determined by the parent pom but need to be upgraded or temporarily fixed for bugs -->

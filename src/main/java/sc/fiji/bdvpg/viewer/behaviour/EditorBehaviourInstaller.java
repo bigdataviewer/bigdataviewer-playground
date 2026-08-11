@@ -29,15 +29,21 @@
 
 package sc.fiji.bdvpg.viewer.behaviour;
 
+import bdv.KeyConfigContexts;
+import bdv.KeyConfigScopes;
 import bdv.util.BdvHandle;
 import ch.epfl.biop.bdv.select.SourceSelectorBehaviour;
 import ch.epfl.biop.bdv.select.ToggleListener;
+import org.scijava.plugin.Plugin;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptionProvider;
+import org.scijava.ui.behaviour.io.gui.CommandDescriptions;
 import org.scijava.ui.behaviour.util.Behaviours;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.service.SourceServices;
+import sc.fiji.bdvpg.viewer.bdv.config.BdvKeymapHelper;
 
 /**
  * BDV Actions called by default on each BDV Window being created See
@@ -52,6 +58,20 @@ public class EditorBehaviourInstaller implements Runnable {
 	protected static final Logger logger = LoggerFactory.getLogger(
 		EditorBehaviourInstaller.class);
 
+	/**
+	 * Command names, i.e. the keys a user edits in the keymap page of the BDV
+	 * preferences dialog, and the triggers used when the keymap does not define
+	 * them.
+	 */
+	public static final String REMOVE_SOURCES_FROM_BDV =
+		"remove-sources-from-bdv";
+	public static final String SOURCES_CONTEXT_MENU = "sources-context-menu";
+
+	public static final String[] REMOVE_SOURCES_FROM_BDV_KEYS = new String[] {
+		"DELETE" };
+	public static final String[] SOURCES_CONTEXT_MENU_KEYS = new String[] {
+		"button3" };
+
 	final SourceSelectorBehaviour ssb;
 	final BdvHandle bdvh;
 
@@ -64,16 +84,26 @@ public class EditorBehaviourInstaller implements Runnable {
 
 	@Override
 	public void run() {
-		Behaviours editor = new Behaviours(new InputTriggerConfig());
+		final InputTriggerConfig config = BdvKeymapHelper.getConfig(bdvh);
+		Behaviours editor = new Behaviours(config,
+			KeyConfigContexts.BIGDATAVIEWER);
 
 		ClickBehaviour delete = (x, y) -> bdvh.getViewerPanel().state()
 			.removeSources(ssb.getSelectedSources());
 
-		editor.behaviour(delete, "remove-sources-from-bdv", "DELETE");
+		editor.behaviour(delete, REMOVE_SOURCES_FROM_BDV,
+			REMOVE_SOURCES_FROM_BDV_KEYS);
 
 		editor.behaviour(new SourceContextMenuClickBehaviour(bdvh,
-			ssb::getSelectedSources), "Sources Context Menu",
-			"button3");
+			ssb::getSelectedSources), SOURCES_CONTEXT_MENU,
+			SOURCES_CONTEXT_MENU_KEYS);
+
+		// Re-read the triggers when the user edits the keymap, and forward the
+		// change to the selector, whose own bindings live in another module
+		BdvKeymapHelper.onKeymapChanged(bdvh, () -> {
+			editor.updateKeyConfig(config);
+			ssb.updateKeyConfig(config);
+		});
 
 		toggleListener = new ToggleListener() {
 
@@ -107,6 +137,26 @@ public class EditorBehaviourInstaller implements Runnable {
 
 	public ToggleListener getToggleListener() {
 		return toggleListener;
+	}
+
+	/**
+	 * Lists the editor mode commands in the keymap page of the BDV preferences
+	 * dialog, next to the commands of BDV itself.
+	 */
+	@Plugin(type = CommandDescriptionProvider.class)
+	public static class Descriptions extends CommandDescriptionProvider {
+
+		public Descriptions() {
+			super(KeyConfigScopes.BIGDATAVIEWER, KeyConfigContexts.BIGDATAVIEWER);
+		}
+
+		@Override
+		public void getCommandDescriptions(final CommandDescriptions descriptions) {
+			descriptions.add(REMOVE_SOURCES_FROM_BDV, REMOVE_SOURCES_FROM_BDV_KEYS,
+				"Remove the selected sources from the viewer. Editor mode only.");
+			descriptions.add(SOURCES_CONTEXT_MENU, SOURCES_CONTEXT_MENU_KEYS,
+				"Open the context menu acting on the selected sources. Editor mode only.");
+		}
 	}
 
 }

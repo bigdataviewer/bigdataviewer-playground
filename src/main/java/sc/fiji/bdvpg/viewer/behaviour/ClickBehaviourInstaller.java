@@ -29,11 +29,13 @@
 
 package sc.fiji.bdvpg.viewer.behaviour;
 
+import bdv.KeyConfigContexts;
 import bdv.util.BdvHandle;
 import org.scijava.ui.behaviour.Behaviour;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
+import sc.fiji.bdvpg.viewer.bdv.config.BdvKeymapHelper;
 
 public class ClickBehaviourInstaller {
 
@@ -50,13 +52,18 @@ public class ClickBehaviourInstaller {
 	/**
 	 * TODO: probably just create one behaviour for each BDV?
 	 *
-	 * @param name name of the behaviour
-	 * @param trigger how this behaviour is triggered, see wiki of behaviour ui
-	 *          SciJava
+	 * @param name name of the behaviour, and the key under which the user can
+	 *          rebind it in the keymap page of the BDV preferences dialog
+	 * @param trigger how this behaviour is triggered when the keymap does not
+	 *          define {@code name}, see wiki of behaviour ui SciJava
 	 */
 	public void install(String name, String trigger) {
-		Behaviours behaviours = new Behaviours(new InputTriggerConfig());
+		final InputTriggerConfig config = BdvKeymapHelper.getConfig(bdvHandle);
+		Behaviours behaviours = new Behaviours(config,
+			KeyConfigContexts.BIGDATAVIEWER);
 		behaviours.install(bdvHandle.getTriggerbindings(), name);
 		behaviours.behaviour(behaviour, name, trigger);
+		BdvKeymapHelper.onKeymapChanged(bdvHandle, () -> behaviours.updateKeyConfig(
+			config));
 	}
 }

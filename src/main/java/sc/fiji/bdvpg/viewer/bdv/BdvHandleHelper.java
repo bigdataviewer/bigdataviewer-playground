@@ -504,39 +504,6 @@ public class BdvHandleHelper {
 		}
 	}
 
-	/**
-	 * Install trigger bindings according to the path specified See
-	 * {@link BdvSettingsGUISetter} Key bindings can not be overridden yet
-	 * 
-	 * @param bdv bdvhandle
-	 * @param pathToBindings string path to the folder containing the YAML file
-	 */
-	static void install(BdvHandle bdv, String pathToBindings) {
-		String yamlDataLocation = pathToBindings + File.separator +
-			BdvSettingsGUISetter.bdvKeyConfigFileName;
-
-		InputTriggerConfig yamlConf = null;
-
-		try {
-			yamlConf = new InputTriggerConfig(YamlConfigIO.read(yamlDataLocation));
-		}
-		catch (final Exception e) {
-			logger.warn("Could not create " + yamlDataLocation +
-				" file. Using defaults instead.");
-		}
-
-		if (yamlConf != null) {
-
-			bdv.getTriggerbindings().addInputTriggerMap(pathToBindings,
-				InputTriggerConfigHelper.getInputTriggerMap(yamlConf), "transform");
-
-			// TODO : support replacement of key bindings
-			// bdv.getKeybindings().addInputMap("bdvpg", new InputMap(), "bdv",
-			// "navigation");
-		}
-
-	}
-
 	public static BdvOverlay addCenterCross(BdvHandle bdvh) {
 		final BdvOverlay overlay = new BdvOverlay() {
 
