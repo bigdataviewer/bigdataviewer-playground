@@ -5,3 +5,4 @@
 *.releaseBackup
 release.properties
 /documentation/resources/
+/.claude/
