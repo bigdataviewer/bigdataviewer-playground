@@ -583,14 +583,13 @@ public class SourceTreeModel {
      * @param bdvHandle the BdvHandle to remove
      */
     public void removeBdvHandle(BdvHandle bdvHandle) {
+        BdvHandleFilterNode bdvNode = null;
         lock.writeLock().lock();
         try {
-            BdvHandleFilterNode bdvNode = bdvHandleIndex.remove(bdvHandle);
+            bdvNode = bdvHandleIndex.remove(bdvHandle);
             if (bdvNode == null) {
                 return;
             }
-
-            bdvNode.cleanup();
 
             FilterNode parent = bdvNode.parent();
             if (parent != null) {
@@ -607,6 +606,8 @@ public class SourceTreeModel {
         } finally {
             lock.writeLock().unlock();
         }
+        // Outside of the write lock, as FilterNode#cleanup mandates
+        bdvNode.cleanup();
     }
 
     /**
@@ -639,13 +640,12 @@ public class SourceTreeModel {
      * @param bdvHandle the BdvHandle to remove
      */
     public void removeBdvHandleNodes(BdvHandle bdvHandle) {
+        final List<BdvHandleFilterNode> toRemove = new ArrayList<>();
         lock.writeLock().lock();
         try {
-            List<BdvHandleFilterNode> toRemove = new ArrayList<>();
             collectBdvHandleNodes(root, bdvHandle, toRemove);
 
             for (BdvHandleFilterNode node : toRemove) {
-                node.cleanup();
                 FilterNode parent = node.parent();
                 if (parent != null) {
                     int removeIndex = parent.children().indexOf(node);
@@ -663,6 +663,10 @@ public class SourceTreeModel {
             bdvHandleIndex.remove(bdvHandle);
         } finally {
             lock.writeLock().unlock();
+        }
+        // Outside of the write lock, as FilterNode#cleanup mandates
+        for (BdvHandleFilterNode node : toRemove) {
+            node.cleanup();
         }
     }
 
@@ -847,6 +851,61 @@ public class SourceTreeModel {
             return root.hasConsumed(source);
         } finally {
             lock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Releases everything this model holds: every source reference in the nodes
+     * and in the indexes, the tree structure itself, and the listener list.
+     *
+     * <p>Intended for models with a bounded lifetime, where the sources must be
+     * released at a known point rather than whenever the model graph happens to
+     * become unreachable. Calling it makes the release deterministic, and
+     * testable. It is a no-op to call it twice.</p>
+     *
+     * <p>The model must not be used afterwards.</p>
+     */
+    public void dispose() {
+        final List<FilterNode> allNodes = new ArrayList<>();
+
+        lock.writeLock().lock();
+        try {
+            collectNodes(root, allNodes);
+            clearSubtree(root);
+            sourceIndex.clear();
+            spimDataIndex.clear();
+            bdvHandleIndex.clear();
+        } finally {
+            lock.writeLock().unlock();
+        }
+
+        // Outside of the write lock, as FilterNode#cleanup mandates: a node may
+        // unregister from something that takes its own monitor, and doing that
+        // under the model lock would invert the viewer state monitor -> model
+        // lock order used by the viewer state change listeners (see the class
+        // javadoc of BdvHandleFilterNode).
+        for (FilterNode node : allNodes) {
+            node.cleanup();
+        }
+
+        listeners.clear();
+    }
+
+    /**
+     * Recursively drops the sources and the children of a node.
+     */
+    private void clearSubtree(FilterNode node) {
+        for (FilterNode child : node.children()) {
+            clearSubtree(child);
+        }
+        node.clearSources();
+        node.clearChildren();
+    }
+
+    private void collectNodes(FilterNode node, List<FilterNode> result) {
+        result.add(node);
+        for (FilterNode child : node.children()) {
+            collectNodes(child, result);
         }
     }
 }

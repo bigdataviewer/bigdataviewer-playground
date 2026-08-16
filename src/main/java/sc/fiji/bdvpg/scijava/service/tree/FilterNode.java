@@ -30,6 +30,8 @@
 package sc.fiji.bdvpg.scijava.service.tree;
 
 import bdv.viewer.SourceAndConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.source.SourceHelper;
 
 import java.util.ArrayList;
@@ -53,6 +55,8 @@ import java.util.function.Predicate;
  * @author Nicolas Chiaruttini, BIOP, EPFL
  */
 public class FilterNode {
+
+    private static final Logger logger = LoggerFactory.getLogger(FilterNode.class);
 
     private String name;
     private Predicate<SourceAndConverter<?>> filter;
@@ -373,6 +377,96 @@ public class FilterNode {
     synchronized void clearSources() {
         inputSources.clear();
         outputSources.clear();
+    }
+
+    // ============ Lifecycle ============
+
+    /**
+     * Releases whatever this node registered outside of the tree.
+     *
+     * <p>Called by {@link SourceTreeModel} when the node leaves the tree, and by
+     * {@link SourceTreeModel#dispose()} for every node still in it. The base
+     * implementation does nothing: a plain node only holds outgoing references,
+     * so dropping its sources and children is enough to release it.</p>
+     *
+     * <p>Override this when a node subscribes to something that outlives the
+     * tree - a viewer state, a service, a timer - otherwise that subscription
+     * keeps the node, and through it every source it holds, alive forever. See
+     * {@link BdvHandleFilterNode#cleanup()}.</p>
+     *
+     * <p><b>Never called while the model lock is held</b>, so an implementation
+     * is free to take an external monitor (as unregistering from a
+     * {@link bdv.viewer.SynchronizedViewerState} does). Implementations must be
+     * idempotent.</p>
+     */
+    public void cleanup() {
+        // No external registration to release by default.
+    }
+
+    // ============ Copying ============
+
+    /**
+     * Creates a fresh, empty, detached node that filters like this one.
+     *
+     * <p>Used to reuse a tree's <em>structure</em> with a different set of
+     * sources: the copy starts out with no sources, no children and no parent,
+     * and it is up to the caller to feed it.</p>
+     *
+     * <h2>This is not {@link Object#clone()}</h2>
+     *
+     * <p>{@link FilterNode} does not implement {@link Cloneable} and must not. A
+     * field-by-field copy would share the {@code inputSources} /
+     * {@code outputSources} sets, so both trees would write into the same source
+     * state; it would share the {@code children} list; it would carry over the
+     * {@code parent} pointer into the original tree; and - worst - subclasses
+     * install their predicate as {@code setFilter(this::filter)}, so the copy's
+     * filter would stay bound to the original instance. Each subclass therefore
+     * rebuilds itself through its own constructor instead.</p>
+     *
+     * <p>Returning null means "this node must not be copied", and the caller is
+     * expected to drop it along with its subtree. The default implementation
+     * refuses any subclass that has not overridden this method, rather than
+     * building a plain {@link FilterNode} around a predicate that may be bound to
+     * this instance.</p>
+     *
+     * @return a new node of the same type with the same filtering behaviour, or
+     *         null if this node must not be copied
+     */
+    public FilterNode copyNode() {
+        if (getClass() != FilterNode.class) {
+            logger.warn("Cannot copy node '" + name() + "' of type " +
+                    getClass().getName() + ": this FilterNode subclass does not " +
+                    "override copyNode(), the subtree is skipped.");
+            return null;
+        }
+        FilterNode copy = new FilterNode(name(), filter, displaySources);
+        copy.setDynamicFilter(dynamicFilter);
+        return copy;
+    }
+
+    /**
+     * Copies this node and, recursively, everything below it.
+     *
+     * <p>Children that refuse to be copied are skipped, so the returned subtree
+     * may be smaller than this one.</p>
+     *
+     * @return the copied subtree, detached and empty of sources, or null if this
+     *         node itself must not be copied
+     */
+    public FilterNode copySubtree() {
+        FilterNode copy = copyNode();
+        if (copy == null) {
+            return null;
+        }
+        // children() hands back a snapshot, so the recursion runs without holding
+        // this node's monitor
+        for (FilterNode child : children()) {
+            FilterNode childCopy = child.copySubtree();
+            if (childCopy != null) {
+                copy.addChild(childCopy);
+            }
+        }
+        return copy;
     }
 
     // ============ Convenience methods for programmatic tree navigation ============

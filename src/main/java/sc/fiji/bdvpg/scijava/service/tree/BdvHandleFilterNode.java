@@ -145,6 +145,22 @@ public class BdvHandleFilterNode extends FilterNode {
     }
 
     /**
+     * Never copied.
+     *
+     * <p>This node's filter tests against a snapshot of one specific window, kept
+     * up to date by a listener registered on that window's viewer state. A copy
+     * would either alias that window or, without the listener, silently filter
+     * nothing. Callers building a per-window view of the tree have no use for the
+     * other windows' nodes anyway.</p>
+     *
+     * @return null, always
+     */
+    @Override
+    public FilterNode copyNode() {
+        return null;
+    }
+
+    /**
      * Filters sources that are present in the BdvHandle's viewer.
      *
      * <p>Tests against the {@link #viewerSources()} snapshot on purpose: this method
@@ -175,7 +191,12 @@ public class BdvHandleFilterNode extends FilterNode {
     /**
      * Cleans up resources by removing the listener from the BdvHandle.
      * This should be called when the node is removed from the tree.
+     *
+     * <p>This node is the reason {@link FilterNode#cleanup()} exists: the
+     * listener registered in the constructor lives on the viewer state, which
+     * outlives the tree, so clearing the node's sources would not release it.</p>
      */
+    @Override
     public void cleanup() {
         bdvHandle.getViewerPanel().state().changeListeners().remove(stateListener);
         filterUpdateCallback = null;

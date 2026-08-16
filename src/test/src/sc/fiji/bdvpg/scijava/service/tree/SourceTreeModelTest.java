@@ -1286,4 +1286,183 @@ public class SourceTreeModelTest {
         }
         return null;
     }
+
+    // ==================== FilterNode.copyNode / copySubtree ====================
+
+    /** A subclass that forgets to override {@link FilterNode#copyNode()}. */
+    private static class UnknownFilterNode extends FilterNode {
+
+        UnknownFilterNode(String name) {
+            super(name, null, false);
+            setFilter(this::filter);
+        }
+
+        private boolean filter(SourceAndConverter<?> source) {
+            return true;
+        }
+    }
+
+    /**
+     * The whole point of rebuilding through the constructors rather than copying
+     * fields: the two nodes must not end up sharing their source sets.
+     */
+    @Test
+    public void copySubtree_doesNotShareSourceStateWithTheOriginal() {
+        List<SourceAndConverter<?>> sources = createTestSources(2);
+        FilterNode original = new FilterNode("Group", source -> true, true);
+        model.addNode(model.getRoot(), original);
+        model.addSources(sources);
+        assertEquals(2, original.outputSources().size());
+
+        FilterNode copy = original.copySubtree();
+
+        assertNotNull(copy);
+        assertNotSame(original, copy);
+        assertTrue("A copied node must start empty", copy.outputSources().isEmpty());
+        assertTrue(copy.inputSources().isEmpty());
+        assertNull("A copied node must be detached", copy.parent());
+
+        // Feeding one must leave the other alone, in both directions
+        SourceTreeModel other = new SourceTreeModel(sourceService);
+        other.addNode(other.getRoot(), copy);
+        other.addSources(Collections.singletonList(sources.get(0)));
+        assertEquals(1, copy.outputSources().size());
+        assertEquals(2, original.outputSources().size());
+    }
+
+    @Test
+    public void copySubtree_keepsNameFilterAndDisplayFlag() {
+        List<SourceAndConverter<?>> sources = createTestSources(3);
+        Set<SourceAndConverter<?>> accepted = new HashSet<>(sources.subList(0, 2));
+        FilterNode original = new FilterNode("Group", accepted::contains, true);
+
+        FilterNode copy = original.copySubtree();
+
+        assertNotNull(copy);
+        assertEquals("Group", copy.name());
+        assertTrue(copy.isDisplaySources());
+
+        SourceTreeModel other = new SourceTreeModel(sourceService);
+        other.addNode(other.getRoot(), copy);
+        other.addSources(sources);
+        assertEquals("The copy must filter like the original", 2, copy.outputSources().size());
+    }
+
+    /**
+     * SpimData and Entity nodes must be rebuilt as their own type, not flattened
+     * into a plain FilterNode carrying a predicate bound to the original.
+     */
+    @Test
+    public void copySubtree_rebuildsSpimDataHierarchyWithTypesPreserved() {
+        List<SourceAndConverter<?>> sources = createTestSources(2);
+        AbstractSpimData<?> asd = createLinkedSpimData(sources);
+        model.addSpimData(asd, "SpimData 0");
+        SpimDataFilterNode original = model.getSpimDataNode(asd);
+        assertNotNull(original);
+
+        FilterNode copy = original.copySubtree();
+
+        assertTrue("A SpimData node must stay a SpimData node",
+                copy instanceof SpimDataFilterNode);
+        assertEquals(asd, ((SpimDataFilterNode) copy).getSpimData());
+        assertNotSame(original, copy);
+        assertEquals("The whole subtree must be copied",
+                original.childCount(), copy.childCount());
+
+        // The rebuilt hierarchy must still route sources the same way
+        SourceTreeModel other = new SourceTreeModel(sourceService);
+        other.addNode(other.getRoot(), copy);
+        other.addSources(sources);
+        assertEquals(2, copy.outputSources().size());
+
+        boolean foundEntityNode = false;
+        for (FilterNode child : copy.children()) {
+            for (FilterNode grandChild : child.children()) {
+                if (grandChild instanceof EntityFilterNode) {
+                    foundEntityNode = true;
+                    assertFalse("Entity nodes must route sources too",
+                            grandChild.outputSources().isEmpty());
+                }
+            }
+        }
+        assertTrue("Expected at least one copied EntityFilterNode", foundEntityNode);
+    }
+
+    @Test
+    public void copySubtree_refusesBdvHandleNodes() {
+        BdvHandle bdvh = createBdvHandle();
+        model.addBdvHandle(bdvh, "TestBDV", model.getRoot());
+        BdvHandleFilterNode bdvNode = findBdvNode(bdvh);
+        assertNotNull(bdvNode);
+
+        assertNull("A BdvHandle node's filter is bound to its own viewer snapshot," +
+                " it must never be copied", bdvNode.copySubtree());
+    }
+
+    /**
+     * A subclass that does not override copyNode() must be refused, not silently
+     * flattened into a plain FilterNode holding a predicate bound to it.
+     */
+    @Test
+    public void copySubtree_refusesSubclassesThatDoNotOverrideCopyNode() {
+        assertNull(new UnknownFilterNode("Unknown").copySubtree());
+    }
+
+    @Test
+    public void copySubtree_dropsChildrenThatRefuseToBeCopied() {
+        FilterNode original = new FilterNode("Group", source -> true, true);
+        original.addChild(new FilterNode("Kept", source -> true, true));
+        original.addChild(new UnknownFilterNode("Dropped"));
+
+        FilterNode copy = original.copySubtree();
+
+        assertNotNull(copy);
+        assertEquals(1, copy.childCount());
+        assertEquals("Kept", copy.child(0).name());
+    }
+
+    // ==================== SourceTreeModel.dispose ====================
+
+    @Test
+    public void dispose_releasesSourcesAndStructure() {
+        List<SourceAndConverter<?>> sources = createTestSources(3);
+        AbstractSpimData<?> asd = createLinkedSpimData(sources);
+        model.addSpimData(asd, "SpimData 0");
+        model.addSources(sources);
+        assertFalse(model.getRoot().outputSources().isEmpty());
+        assertTrue(model.getRoot().childCount() > 0);
+
+        model.dispose();
+
+        assertTrue("Sources must be released", model.getRoot().outputSources().isEmpty());
+        assertTrue(model.getRoot().inputSources().isEmpty());
+        assertEquals("The tree must be torn down", 0, model.getRoot().childCount());
+        assertTrue(model.getNodesForSource(sources.get(0)).isEmpty());
+        assertNull(model.getSpimDataNode(asd));
+    }
+
+    @Test
+    public void dispose_disposedModelIsNoLongerFedByItsViewers() {
+        BdvHandle bdvh = createBdvHandle();
+        model.addBdvHandle(bdvh, "TestBDV", model.getRoot());
+        assertNotNull(findBdvNode(bdvh));
+
+        model.dispose();
+
+        // A disposed model must no longer react to the viewer it was watching
+        List<SourceAndConverter<?>> sources = createTestSources(1);
+        sourceService.register(sources.get(0));
+        displayService.show(bdvh, sources.get(0));
+
+        assertTrue("A disposed model must not be fed by a viewer it no longer watches",
+                model.getRoot().outputSources().isEmpty());
+    }
+
+    @Test
+    public void dispose_isIdempotent() {
+        model.addSources(createTestSources(2));
+        model.dispose();
+        model.dispose();
+        assertTrue(model.getRoot().outputSources().isEmpty());
+    }
 }

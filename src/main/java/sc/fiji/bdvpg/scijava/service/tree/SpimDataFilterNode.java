@@ -77,6 +77,15 @@ public class SpimDataFilterNode extends FilterNode {
     }
 
     /**
+     * Rebuilt through the constructor, so the copy keeps its type and its own
+     * {@code this::filter} binding.
+     */
+    @Override
+    public FilterNode copyNode() {
+        return new SpimDataFilterNode(name(), spimData, sourceAndConverterService);
+    }
+
+    /**
      * @return the SpimData dataset this node filters for
      */
     public AbstractSpimData<?> getSpimData() {
