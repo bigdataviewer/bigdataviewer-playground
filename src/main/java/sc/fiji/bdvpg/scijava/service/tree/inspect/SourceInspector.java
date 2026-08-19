@@ -32,8 +32,10 @@ package sc.fiji.bdvpg.scijava.service.tree.inspect;
 import bdv.AbstractSpimSource;
 import bdv.img.WarpedSource;
 import bdv.img.cache.VolatileGlobalCellCache;
+import bdv.tools.brightness.ConverterSetup;
 import bdv.tools.transformation.TransformedSource;
 import bdv.util.ResampledSource;
+import bdv.util.UnmodifiableConverterSetup;
 import bdv.viewer.Source;
 import bdv.viewer.SourceAndConverter;
 import mpicbg.spim.data.generic.AbstractSpimData;
@@ -45,8 +47,14 @@ import mpicbg.spim.data.generic.sequence.BasicViewSetup;
 import mpicbg.spim.data.registration.ViewRegistrations;
 import mpicbg.spim.data.registration.ViewRegistration;
 import mpicbg.spim.data.sequence.TimePoint;
+import net.imglib2.converter.Converter;
+import net.imglib2.converter.RealLUTConverter;
+import net.imglib2.display.ColorConverter;
+import net.imglib2.display.ColorTable;
+import net.imglib2.display.LinearRange;
 import net.imglib2.realtransform.AffineTransform3D;
 import net.imglib2.realtransform.RealTransform;
+import net.imglib2.type.numeric.ARGBType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sc.fiji.bdvpg.cache.AbstractGlobalCache;
@@ -59,6 +67,7 @@ import sc.fiji.bdvpg.source.SourceHelper;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -83,11 +92,241 @@ public class SourceInspector {
 			source).forEach(k -> {
 				DefaultMutableTreeNode nodeMetaKey = new DefaultMutableTreeNode(k);
 				parent.add(nodeMetaKey);
-				DefaultMutableTreeNode nodeMetaValue = new DefaultMutableTreeNode(
-					SourceServices.getSourceService().getMetadata(
-						source, k));
-				nodeMetaKey.add(nodeMetaValue);
+				Object value = SourceServices.getSourceService().getMetadata(source, k);
+				if (value instanceof ConverterSetup) {
+					appendConverterSetup(nodeMetaKey, (ConverterSetup) value);
+				}
+				else {
+					nodeMetaKey.add(new DefaultMutableTreeNode(value));
+				}
 			});
+	}
+
+	/**
+	 * Appends a readable snapshot of the converters of a SourceAndConverter into
+	 * a tree structure: the converter of the source, and the converter of its
+	 * volatile counterpart if it exists.
+	 * <p>
+	 * The converter holds the settings which are actually used to render the
+	 * pixels, whereas the {@link ConverterSetup} is only a controller over it -
+	 * and, for converters which are neither a {@link ColorConverter} nor a
+	 * {@link RealLUTConverter}, a controller which does not report the real
+	 * values, see {@link UnmodifiableConverterSetup}.
+	 * <p>
+	 * As for the converter setup, this is a snapshot: the values are read once,
+	 * at inspection time. And this is fail-safe: if the description cannot be
+	 * built, the class of the converter is displayed instead.
+	 *
+	 * @param parent node below which the converter nodes will be added
+	 * @param source source for which the converters are fetched
+	 */
+	public static void appendConverter(DefaultMutableTreeNode parent,
+		SourceAndConverter<?> source)
+	{
+		List<DefaultMutableTreeNode> nodes = new ArrayList<>();
+		try {
+			nodes.add(describeConverter("Converter", source.getConverter()));
+			SourceAndConverter<?> volatileSource = source.asVolatile();
+			if ((volatileSource != null) && (volatileSource.getConverter() != null)) {
+				nodes.add(describeConverter("Volatile converter", volatileSource
+					.getConverter()));
+			}
+		}
+		catch (Throwable t) {
+			logger.debug("Could not render the converter of source " + source + ": " +
+				t.getMessage());
+			// falls back to the class of the converter only
+			nodes.clear();
+			Converter<?, ?> converter = source.getConverter();
+			nodes.add(new DefaultMutableTreeNode("Converter: " + (converter == null
+				? "null" : converter.getClass().getName())));
+		}
+		nodes.forEach(parent::add);
+	}
+
+	/**
+	 * Builds - but does not append - the node describing a single converter.
+	 *
+	 * @param label prefix of the node, to tell apart the converter of a source
+	 *          from the converter of its volatile counterpart
+	 * @param converter the converter to describe
+	 * @return the node describing the converter
+	 */
+	private static DefaultMutableTreeNode describeConverter(String label,
+		Converter<?, ?> converter)
+	{
+		if (converter == null) {
+			return new DefaultMutableTreeNode(label + ": null");
+		}
+
+		String className = converter.getClass().getSimpleName();
+		if (className.isEmpty()) { // anonymous class
+			className = converter.getClass().getName();
+		}
+
+		DefaultMutableTreeNode node = new DefaultMutableTreeNode(label + ": " +
+			className);
+
+		// ColorConverter extends LinearRange : min and max are available for both
+		if (converter instanceof LinearRange) {
+			LinearRange range = (LinearRange) converter;
+			node.add(new DefaultMutableTreeNode("Display range: [" + format(range
+				.getMin()) + " ; " + format(range.getMax()) + "]"));
+		}
+
+		if (converter instanceof ColorConverter) {
+			ColorConverter colorConverter = (ColorConverter) converter;
+			node.add(describeColor(colorConverter.supportsColor(), colorConverter
+				.getColor()));
+		}
+
+		if (converter instanceof RealLUTConverter) {
+			ColorTable lut = ((RealLUTConverter<?>) converter).getLUT();
+			if (lut == null) {
+				node.add(new DefaultMutableTreeNode("LUT: none"));
+			}
+			else {
+				node.add(new DefaultMutableTreeNode("LUT: " + lut.getClass()
+					.getSimpleName() + " (" + lut.getLength() + " entries, " + lut
+						.getComponentCount() + " components)"));
+			}
+		}
+
+		return node;
+	}
+
+	/**
+	 * Builds - but does not append - the node describing a color.
+	 *
+	 * @param supportsColor whether the color is meaningful
+	 * @param color the color, may be null
+	 * @return the node describing the color
+	 */
+	private static DefaultMutableTreeNode describeColor(boolean supportsColor,
+		ARGBType color)
+	{
+		if (!supportsColor) {
+			return new DefaultMutableTreeNode("Color: not supported");
+		}
+		if (color == null) {
+			return new DefaultMutableTreeNode("Color: none");
+		}
+		int argb = color.get();
+		return new DefaultMutableTreeNode(String.format(
+			"Color: #%08X (alpha = %d, r = %d, g = %d, b = %d)", argb, ARGBType.alpha(
+				argb), ARGBType.red(argb), ARGBType.green(argb), ARGBType.blue(argb)));
+	}
+
+	/**
+	 * Appends a readable snapshot of a {@link ConverterSetup} into a tree
+	 * structure: class, setup id, display range and color are read once, at
+	 * inspection time - no listener is registered, thus the nodes are not updated
+	 * if the converter setup is modified afterwards.
+	 * <p>
+	 * This is fail-safe: if anything goes wrong while reading the converter setup
+	 * (unsupported operation, exception in a custom implementation...), the
+	 * default rendering of the object is used instead.
+	 *
+	 * @param parent node below which the converter setup node will be added
+	 * @param setup the converter setup to render
+	 */
+	public static void appendConverterSetup(DefaultMutableTreeNode parent,
+		ConverterSetup setup)
+	{
+		DefaultMutableTreeNode node = null;
+		if (setup != null) {
+			try {
+				node = describeConverterSetup(setup);
+			}
+			catch (Throwable t) {
+				logger.debug("Could not render the ConverterSetup " + setup.getClass() +
+					": " + t.getMessage());
+				node = null;
+			}
+		}
+		// falls back to the default rendering of the object
+		if (node == null) node = new DefaultMutableTreeNode(setup);
+		parent.add(node);
+	}
+
+	/**
+	 * Builds - but does not append - the node describing a
+	 * {@link ConverterSetup}. Kept separate from
+	 * {@link #appendConverterSetup(DefaultMutableTreeNode, ConverterSetup)} so
+	 * that a failure in the middle of the description never leaves a half built
+	 * node in the tree.
+	 *
+	 * @param setup the converter setup to describe
+	 * @return the node describing the converter setup
+	 */
+	private static DefaultMutableTreeNode describeConverterSetup(
+		ConverterSetup setup)
+	{
+		String className = setup.getClass().getSimpleName();
+		if (className.isEmpty()) { // anonymous class
+			className = setup.getClass().getName();
+		}
+
+		DefaultMutableTreeNode node = new DefaultMutableTreeNode(className +
+			" [id = " + setup.getSetupId() + "]");
+
+		if (setup instanceof UnmodifiableConverterSetup) {
+			// this setup does not read the converters it wraps : it returns constants
+			// which have nothing to do with the actual display settings - showing
+			// them would be misleading, the Converter node has the real values
+			node.add(new DefaultMutableTreeNode(
+				"Read-only setup: display settings not reported, see the Converter node"));
+		}
+		else {
+			node.add(new DefaultMutableTreeNode("Display range: [" + format(setup
+				.getDisplayRangeMin()) + " ; " + format(setup.getDisplayRangeMax()) +
+				"]"));
+			node.add(describeColor(setup.supportsColor(), setup.getColor()));
+		}
+
+		return node;
+	}
+
+	/**
+	 * Formats a display range bound in a compact and readable way.
+	 *
+	 * @param value the value to format
+	 * @return the formatted value
+	 */
+	private static String format(double value) {
+		if (Double.isNaN(value) || Double.isInfinite(value)) {
+			return String.valueOf(value);
+		}
+		double abs = Math.abs(value);
+		if (value == Math.rint(value) && abs < 1e7) {
+			return String.valueOf((long) value);
+		}
+		if (abs < 1e-3 || abs >= 1e7) {
+			return String.format(java.util.Locale.US, "%.3e", value);
+		}
+		return String.format(java.util.Locale.US, "%.3f", value);
+	}
+
+	/**
+	 * Appends the pixel type of a SourceAndConverter (simple class name of the
+	 * type of the underlying source) into a tree structure
+	 *
+	 * @param parent node below which the pixel type node will be added
+	 * @param source source for which the pixel type is fetched
+	 */
+	public static void appendPixelType(DefaultMutableTreeNode parent,
+		SourceAndConverter<?> source)
+	{
+		try {
+			Object type = source.getSpimSource().getType();
+			if (type != null) {
+				parent.add(new DefaultMutableTreeNode("Pixel Type: " + type.getClass()
+					.getSimpleName()));
+			}
+		}
+		catch (Exception e) {
+			logger.debug("Could not get the pixel type: " + e.getMessage());
+		}
 	}
 
 	/**
@@ -161,6 +400,8 @@ public class SourceInspector {
 				});
 
 			nodeTransformedSource.add(nodeAffineTransformGetter);
+			appendPixelType(nodeTransformedSource, source);
+			appendConverter(nodeTransformedSource, source);
 			appendMetadata(nodeTransformedSource, source);
 		}
 
@@ -209,6 +450,8 @@ public class SourceInspector {
 					}
 				});
 			nodeWarpedSource.add(nodeRealTransformGetter);
+			appendPixelType(nodeWarpedSource, source);
+			appendConverter(nodeWarpedSource, source);
 			appendMetadata(nodeWarpedSource, source);
 		}
 
@@ -319,6 +562,8 @@ public class SourceInspector {
 			logger.debug("Could not get cache stats for ResampledSource: " + e
 				.getMessage());
 		}
+			appendPixelType(nodeResampledSource, source);
+			appendConverter(nodeResampledSource, source);
 			appendMetadata(nodeResampledSource, source);
 		}
 
@@ -329,6 +574,10 @@ public class SourceInspector {
 
 			// Add detailed SpimData information if available
 			appendSpimDataInfo(nodeSpimSource, source, sourceAndConverterService);
+
+			// Add the pixel type and the converters
+			appendPixelType(nodeSpimSource, source);
+			appendConverter(nodeSpimSource, source);
 
 			// Add general metadata
 			appendMetadata(nodeSpimSource, source);
@@ -341,6 +590,9 @@ public class SourceInspector {
 					source.getSpimSource().getClass().getSimpleName());
 
 			subSources.addAll(inspector.inspect(nodeSource, source, sourceAndConverterService, registerIntermediateSources));
+
+			appendPixelType(nodeSource, source);
+			appendConverter(nodeSource, source);
 
 			parent.add(nodeSource);
 		}
