@@ -412,7 +412,7 @@ public class FilterNode {
      * sources: the copy starts out with no sources, no children and no parent,
      * and it is up to the caller to feed it.</p>
      *
-     * <h2>This is not {@link Object#clone()}</h2>
+     * <h4>This is not {@link Object#clone()}</h4>
      *
      * <p>{@link FilterNode} does not implement {@link Cloneable} and must not. A
      * field-by-field copy would share the {@code inputSources} /
